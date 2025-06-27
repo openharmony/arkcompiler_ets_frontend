@@ -16,6 +16,9 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as ts from 'typescript';
+import { processSyncErr } from '../lib/utils/functions/ProcessWrite';
+import * as qEd from './autofixes/QuasiEditor';
+import type { BaseTypeScriptLinter } from './BaseTypeScriptLinter';
 import type { CommandLineOptions } from './CommandLineOptions';
 import { InteropTypescriptLinter } from './InteropTypescriptLinter';
 import type { LinterConfig } from './LinterConfig';
@@ -23,25 +26,24 @@ import type { LinterOptions } from './LinterOptions';
 import type { LintRunResult } from './LintRunResult';
 import { Logger } from './Logger';
 import type { ProblemInfo } from './ProblemInfo';
-import { TypeScriptLinter } from './TypeScriptLinter';
+import { ProjectStatistics } from './statistics/ProjectStatistics';
+import { generateMigrationStatisicsReport } from './statistics/scan/ProblemStatisticsCommonFunction';
+import type { TimeRecorder } from './statistics/scan/TimeRecorder';
+import type { createProgramCallback } from './ts-compiler/Compiler';
+import { compileLintOptions } from './ts-compiler/Compiler';
 import { getTscDiagnostics } from './ts-diagnostics/GetTscDiagnostics';
 import { transformTscDiagnostics } from './ts-diagnostics/TransformTscDiagnostics';
+import { TypeScriptLinter } from './TypeScriptLinter';
 import {
   ARKTS_IGNORE_DIRS_NO_OH_MODULES,
   ARKTS_IGNORE_DIRS_OH_MODULES,
   ARKTS_IGNORE_FILES
 } from './utils/consts/ArktsIgnorePaths';
+import { EXTNAME_JS, EXTNAME_TS } from './utils/consts/ExtensionName';
 import { USE_STATIC } from './utils/consts/InteropAPI';
-import { EXTNAME_TS, EXTNAME_JS } from './utils/consts/ExtensionName';
+import { LibraryTypeCallDiagnosticChecker } from './utils/functions/LibraryTypeCallDiagnosticChecker';
 import { mergeArrayMaps } from './utils/functions/MergeArrayMaps';
 import { clearPathHelperCache, pathContainsDirectory } from './utils/functions/PathHelper';
-import { LibraryTypeCallDiagnosticChecker } from './utils/functions/LibraryTypeCallDiagnosticChecker';
-import type { createProgramCallback } from './ts-compiler/Compiler';
-import { compileLintOptions } from './ts-compiler/Compiler';
-import * as qEd from './autofixes/QuasiEditor';
-import { ProjectStatistics } from './statistics/ProjectStatistics';
-import type { BaseTypeScriptLinter } from './BaseTypeScriptLinter';
-import { processSyncErr } from '../lib/utils/functions/ProcessWrite';
 
 function prepareInputFilesList(cmdOptions: CommandLineOptions): string[] {
   let inputFiles = cmdOptions.inputFiles.map((x) => {
@@ -77,6 +79,7 @@ function prepareInputFilesList(cmdOptions: CommandLineOptions): string[] {
 
 export function lint(
   config: LinterConfig,
+  timeRecorder: TimeRecorder,
   etsLoaderPath?: string,
   hcResults?: Map<string, ProblemInfo[]>
 ): LintRunResult {
@@ -84,7 +87,10 @@ export function lint(
     config.cmdOptions.linterOptions.etsLoaderPath = etsLoaderPath;
   }
   const lintResult = lintImpl(config);
-  return config.cmdOptions.linterOptions.migratorMode ? migrate(config, lintResult, hcResults) : lintResult;
+  timeRecorder.endScan();
+  return config.cmdOptions.linterOptions.migratorMode ?
+    migrate(config, lintResult, timeRecorder, hcResults) :
+    lintResult;
 }
 
 function lintImpl(config: LinterConfig): LintRunResult {
@@ -156,8 +162,10 @@ function lintFiles(
 function migrate(
   initialConfig: LinterConfig,
   initialLintResult: LintRunResult,
+  timeRecorder: TimeRecorder,
   hcResults?: Map<string, ProblemInfo[]>
 ): LintRunResult {
+  timeRecorder.startMigration();
   let linterConfig = initialConfig;
   const { cmdOptions } = initialConfig;
   const updatedSourceTexts: Map<string, string> = new Map();
@@ -187,6 +195,9 @@ function migrate(
     const writeFileName = filePathMap?.get(fileName) ?? fileName;
     fs.writeFileSync(writeFileName, newText);
   });
+
+  timeRecorder.endMigration();
+  generateMigrationStatisicsReport(lintResult, timeRecorder, cmdOptions.outputFilePath);
 
   if (cmdOptions.linterOptions.ideInteractive) {
     lintResult.problemsInfos = problemsInfosBeforeMigrate;

@@ -15,20 +15,20 @@
     ],
     "result": [
         {
-            "line": 3,
-            "column": 17,
-            "endLine": 3,
-            "endColumn": 27,
+            "line": 18,
+            "column": 28,
+            "endLine": 18,
+            "endColumn": 33,
             "problem": "LimitedStdLibNoImportConcurrency",
             "suggest": "",
             "rule": "Import Concurrency is not required (arkts-limited-stdlib-no-import-concurrency)",
             "severity": "ERROR"
         },
         {
-            "line": 5,
-            "column": 17,
-            "endLine": 5,
-            "endColumn": 27,
+            "line": 20,
+            "column": 28,
+            "endLine": 20,
+            "endColumn": 33,
             "problem": "LimitedStdLibNoImportConcurrency",
             "suggest": "",
             "rule": "Import Concurrency is not required (arkts-limited-stdlib-no-import-concurrency)",

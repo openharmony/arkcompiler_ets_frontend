@@ -280,7 +280,7 @@ cookBookTag[270] = 'ArkTS1.2 cannot catch a non Error instance thrown from JS co
 cookBookTag[274] =
   'The subclass constructor must call the parent class\'s parametered constructor (arkts-subclass-must-call-super-constructor-with-args)';
 cookBookTag[275] =
-  'Custom components with custom layout capability need to add the "@CustomLayout" decorator (arkui-custom-layout-need-add-decorator)';
+  'The Custom component with custom layout capability needs to add the "@CustomLayout" decorator (arkui-custom-layout-need-add-decorator)';
 cookBookTag[281] = '"@Prop" decorator is not supported (arkui-no-prop-decorator)';
 cookBookTag[282] = '"@StorageProp" decorator is not supported (arkui-no-storageprop-decorator)';
 cookBookTag[283] = '"@LocalStorageProp" decorator is not supported (arkui-no-localstorageprop-decorator)';
@@ -369,6 +369,8 @@ cookBookTag[377] =
 cookBookTag[378] = 'Operator is not support (arkts-unsupport-operator)';
 cookBookTag[381] =
   'The code block passed to stateStyles needs to be an arrow function (arkui-statestyles-block-need-arrow-func)';
+cookBookTag[382] =
+  'Promise<void>constructor only supports using resolve (undefined) (arkts-promise-with-void-type-need-undefined-as-resolve-arg)';
 
 for (let i = 0; i <= cookBookTag.length; i++) {
   cookBookMsg[i] = '';

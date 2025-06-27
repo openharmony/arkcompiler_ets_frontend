@@ -59,7 +59,7 @@ import { WarnInfo } from '../../utils/common/Utils';
 import { ArkClass } from 'arkanalyzer/lib/core/model/ArkClass';
 import { Language } from 'arkanalyzer/lib/core/model/ArkFile';
 import { MethodParameter } from 'arkanalyzer/lib/core/model/builder/ArkMethodBuilder';
-import { AbstractFieldRef } from 'arkanalyzer';
+import { AbstractFieldRef, ArkReturnStmt } from 'arkanalyzer';
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'DeprecatedBuiltInAPICheck');
 const gMetaData: BaseMetaData = {
@@ -427,7 +427,7 @@ export class InteropDeprecatedBuiltInAPICheck implements BaseChecker {
             let checkAll = { value: true };
             let visited: Set<Stmt> = new Set();
             if (this.checkFromStmt(checkStmt, globalVarMap, checkAll, visited)) {
-                this.addIssueReport(stmt, targetLocal);
+                this.addIssueReport(stmt, targetLocal, checkAll.value);
             }
         }
     }
@@ -654,6 +654,10 @@ export class InteropDeprecatedBuiltInAPICheck implements BaseChecker {
             if (api.name !== callApiName) {
                 continue;
             }
+            // 对于for...of的语句，ArkAnalyzer会为其生成Symbol.iterator的调用语句，此处从源码中查找关键字以区分是源码中有还是自动生成的
+            if (api.name === 'Symbol.iterator' && !stmt.getOriginalText()?.includes('Symbol.iterator')) {
+                continue;
+            }
             if (api.isStatic) {
                 continue;
             }
@@ -662,7 +666,7 @@ export class InteropDeprecatedBuiltInAPICheck implements BaseChecker {
             }
 
             // Array concat API ArkAnalyzer当前无法很好处理...items形式的入参，此处作为特例处理
-            if (api.name === 'concat') {
+            if (api.name === 'concat' && api.base === APIBaseCategory.Array) {
                 return this.isMatchArrayConcatAPI(args);
             }
 
@@ -670,18 +674,7 @@ export class InteropDeprecatedBuiltInAPICheck implements BaseChecker {
             if (apiParams === undefined) {
                 return true;
             }
-            let allParamTypeMatch = true;
-            if (apiParams.length !== callApiParams.length) {
-                allParamTypeMatch = false;
-            } else {
-                for (let i = 0; i < apiParams.length; i++) {
-                    if (!this.isTypeMatch(apiParams[i], callApiParams[i].getType())) {
-                        allParamTypeMatch = false;
-                        break;
-                    }
-                }
-            }
-
+            let allParamTypeMatch = this.compareParamTypes(apiParams, callApiParams);
             if (allParamTypeMatch) {
                 // 形参匹配的情况下，进一步比较传入的实参，因为当前废弃接口大多数为去掉any类型的第二个可选参数
                 // TODO：这里需要考虑如何做的更通用
@@ -733,7 +726,10 @@ export class InteropDeprecatedBuiltInAPICheck implements BaseChecker {
             if (apiMatch === null || callApiMatch === null) {
                 return false;
             }
-            return apiMatch[0] === callApiMatch[0];
+            // 移除字符串中的类型的文件签名、类签名、泛型等信息后进行比较
+            let apiParamsStr = apiMatch[0].replace(/@[^:]+:/, '').replace(/<[^>]+>/, '');
+            let callApiParamsStr = callApiMatch[0].replace(/@[^:]+:/, '').replace(/<[^>]+>/, '');
+            return apiParamsStr === callApiParamsStr;
         } else if (callApiType instanceof ClassType && apiType instanceof ClassType) {
             // 若类型为FunctionType，仅需匹配class name，因为apiTypeStr类型推导后有可能为@%unk/%unk: ArrayLike，而callApiTypeStr有明确的declaring file
             return callApiType.getClassSignature().getClassName() === apiType.getClassSignature().getClassName();
@@ -763,7 +759,7 @@ export class InteropDeprecatedBuiltInAPICheck implements BaseChecker {
     private checkFromStmt(stmt: Stmt, globalVarMap: Map<string, Stmt[]>, checkAll: { value: boolean }, visited: Set<Stmt>, depth: number = 0): boolean {
         if (depth > CALL_DEPTH_LIMIT) {
             checkAll.value = false;
-            return false;
+            return true;
         }
         const node = this.dvfg.getOrNewDVFGNode(stmt);
         let worklist: DVFGNode[] = [node];
@@ -775,10 +771,11 @@ export class InteropDeprecatedBuiltInAPICheck implements BaseChecker {
             }
             visited.add(currentStmt);
 
-            if (this.isLeftOpDefinedInStaticArkTS(currentStmt)) {
+            if (this.isLeftOpOrReturnOpDefinedInStaticArkTS(currentStmt)) {
                 return true;
             }
 
+            // 当前语句的右值是全局变量，查找全局变量的定义语句
             const gv = this.isRightOpGlobalVar(currentStmt);
             if (gv) {
                 const globalDefs = globalVarMap.get(gv.getName());
@@ -794,6 +791,7 @@ export class InteropDeprecatedBuiltInAPICheck implements BaseChecker {
                 continue;
             }
 
+            // 当前语句的右值是函数返回值，查找调用函数的所有return语句
             const callsite = this.cg.getCallSiteByStmt(currentStmt);
             for (const cs of callsite) {
                 const declaringMtd = this.cg.getArkMethodByFuncID(cs.calleeFuncID);
@@ -812,6 +810,8 @@ export class InteropDeprecatedBuiltInAPICheck implements BaseChecker {
                     }
                 }
             }
+
+            // 当前语句的右值是函数参数赋值语句，查找所有调用处的入参情况
             const paramRef = this.isFromParameter(currentStmt);
             if (paramRef) {
                 const paramIdx = paramRef.getIndex();
@@ -826,6 +826,7 @@ export class InteropDeprecatedBuiltInAPICheck implements BaseChecker {
                 }
             }
 
+            // 当前语句的右值是属性赋值语句，查找该属性的初始化语句
             if (currentStmt instanceof ArkAssignStmt && currentStmt.getRightOp() instanceof AbstractFieldRef) {
                 const fieldSignature = (currentStmt.getRightOp() as AbstractFieldRef).getFieldSignature();
                 const classSignature = fieldSignature.getDeclaringSignature();
@@ -833,6 +834,19 @@ export class InteropDeprecatedBuiltInAPICheck implements BaseChecker {
                     const field = this.scene.getClass(classSignature)?.getField(fieldSignature);
                     if (field) {
                         field.getInitializer().forEach(s => worklist.push(this.dvfg.getOrNewDVFGNode(s)));
+                    }
+                }
+            }
+
+            // 当前语句是return语句，查找return操作数的相关语句
+            if (currentStmt instanceof ArkReturnStmt) {
+                const returnOp = currentStmt.getOp();
+                if (returnOp instanceof Local) {
+                    let checkStmt =
+                        this.getLastAssignStmt(returnOp, stmt) ??
+                        this.checkTargetLocalAsGlobal(currentStmt.getCfg().getDeclaringMethod(), stmt, returnOp, globalVarMap);
+                    if (checkStmt !== null) {
+                        worklist.push(this.dvfg.getOrNewDVFGNode(checkStmt));
                     }
                 }
             }
@@ -882,15 +896,20 @@ export class InteropDeprecatedBuiltInAPICheck implements BaseChecker {
     }
 
     // 判断语句是否为赋值语句，且左值的定义来自于ArkTS1.2
-    private isLeftOpDefinedInStaticArkTS(stmt: Stmt): boolean {
-        if (!(stmt instanceof ArkAssignStmt)) {
+    private isLeftOpOrReturnOpDefinedInStaticArkTS(stmt: Stmt): boolean {
+        if (!(stmt instanceof ArkAssignStmt) && !(stmt instanceof ArkReturnStmt)) {
             return false;
         }
-        const leftOp = stmt.getLeftOp();
-        if (!(leftOp instanceof Local)) {
+        let operand: Value;
+        if (stmt instanceof ArkAssignStmt) {
+            operand = stmt.getLeftOp();
+        } else {
+            operand = stmt.getOp();
+        }
+        if (!(operand instanceof Local)) {
             return false;
         }
-        return this.isLocalDefinedInStaticArkTS(leftOp);
+        return this.isLocalDefinedInStaticArkTS(operand);
     }
 
     private isFromParameter(stmt: Stmt): ArkParameterRef | undefined {
@@ -927,11 +946,14 @@ export class InteropDeprecatedBuiltInAPICheck implements BaseChecker {
         });
     }
 
-    private addIssueReport(stmt: Stmt, operand: Value): void {
+    private addIssueReport(stmt: Stmt, operand: Value, checkAll: boolean = true): void {
         const severity = this.rule.alert ?? this.metaData.severity;
         const warnInfo = this.getLineAndColumn(stmt, operand);
         const problem = 'builtin-api';
-        const desc = `Builtin API is not support in ArkTS1.2 (${this.rule.ruleId.replace('@migration/', '')})`;
+        let desc = `Builtin API is not support in ArkTS1.2 (${this.rule.ruleId.replace('@migration/', '')})`;
+        if (!checkAll) {
+            desc = `Can not check when function call chain depth exceeds ${CALL_DEPTH_LIMIT}, please check it manually (${this.rule.ruleId.replace('@migration/', '')})`;
+        }
 
         let defects = new Defects(
             warnInfo.line,

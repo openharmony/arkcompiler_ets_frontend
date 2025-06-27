@@ -98,7 +98,7 @@ export class CheckEntry {
 
     /**
      * 按规则维度统计并输出告警信息，按文件维度汇总并返回告警信息。
-     * 
+     *
      * @returns FileReport[] 文件报告数组，每个元素包含文件名、缺陷列表和输出信息
      */
     public sortIssues(): FileIssues[] {
@@ -235,7 +235,7 @@ export async function checkEntryBuilder(checkEntry: CheckEntry): Promise<boolean
 
 /**
  * 获取指定检查的文件列表
- * 
+ *
  * @param checkFilePath - 指定的检查文件路径的配置文件路径，该文件内容示例{'checkPath': [{'filePath': 'xxx', 'fixKey': ['%line%sCol%eCol%ruleId']}]}
  * filePath为需要检查的文件路径，fixKey为需要修复的缺陷key，空数组则不修复。
  * @returns SelectFileInfo[] - 需要检查的文件列表
@@ -269,7 +269,9 @@ function buildScene(fileList: string[], checkEntry: CheckEntry): boolean {
         checkEntry.scene.buildSceneFromFiles(sceneConfig);
         logger.info('Build scene completed.');
         checkEntry.scene.inferTypes();
-        logger.info('Infer types completed.');
+        logger.info('No.1 Infer types completed.');
+        checkEntry.scene.inferTypes();
+        logger.info('No.2 Infer types completed.');
     } catch (error) {
         logger.error('Build scene or infer types error: ', error);
         return false;

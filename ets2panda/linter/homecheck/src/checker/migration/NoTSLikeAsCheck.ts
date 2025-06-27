@@ -15,46 +15,46 @@
 
 import path from 'path';
 import {
-    ArkMethod,
-    ArkAssignStmt,
-    FieldSignature,
-    Stmt,
-    Scene,
-    Value,
-    DVFGBuilder,
-    ArkInstanceOfExpr,
-    CallGraph,
-    ArkParameterRef,
-    ArkInstanceFieldRef,
-    ArkNamespace,
-    Local,
-    ArkCastExpr,
-    ClassType,
-    classSignatureCompare,
-    ArkField,
-    fileSignatureCompare,
-    Cfg,
-    BasicBlock,
-    ArkIfStmt,
-    ArkUnopExpr,
-    RelationalBinaryOperator,
-    LineColPosition,
-    UnaryOperator,
-    ArkNormalBinopExpr,
-    NormalBinaryOperator,
     AbstractFieldRef,
+    ArkAssignStmt,
+    ArkCastExpr,
+    ArkField,
+    ArkIfStmt,
+    ArkInstanceFieldRef,
+    ArkInstanceOfExpr,
+    ArkMethod,
+    ArkNamespace,
+    ArkNormalBinopExpr,
+    ArkParameterRef,
+    ArkUnopExpr,
+    BasicBlock,
+    CallGraph,
+    Cfg,
     ClassSignature,
+    classSignatureCompare,
+    ClassType,
+    DVFGBuilder,
+    FieldSignature,
+    fileSignatureCompare,
+    LineColPosition,
+    Local,
+    NormalBinaryOperator,
+    RelationalBinaryOperator,
+    Scene,
+    Stmt,
+    UnaryOperator,
+    Value,
 } from 'arkanalyzer/lib';
 import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
 import { BaseChecker, BaseMetaData } from '../BaseChecker';
-import { Rule, Defects, MatcherCallback } from '../../Index';
+import { Defects, MatcherCallback, Rule } from '../../Index';
 import { IssueReport } from '../../model/Defects';
 import { DVFG, DVFGNode } from 'arkanalyzer/lib/VFG/DVFG';
-import { CALL_DEPTH_LIMIT, getGlobalsDefineInDefaultMethod, GlobalCallGraphHelper } from './Utils';
-import { WarnInfo } from '../../utils/common/Utils';
+import { CALL_DEPTH_LIMIT, getGlobalsDefineInDefaultMethod, getLineAndColumn, GlobalCallGraphHelper } from './Utils';
 import { ClassCategory } from 'arkanalyzer/lib/core/model/ArkClass';
 import { Language } from 'arkanalyzer/lib/core/model/ArkFile';
-import { BooleanConstant } from 'arkanalyzer/lib/core/base/Constant';
+import { BooleanConstant, NumberConstant } from 'arkanalyzer/lib/core/base/Constant';
+import { ArkClass, NumberType } from 'arkanalyzer';
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'NoTSLikeAsCheck');
 const gMetaData: BaseMetaData = {
@@ -74,6 +74,7 @@ export class NoTSLikeAsCheck implements BaseChecker {
     public rule: Rule;
     public defects: Defects[] = [];
     public issues: IssueReport[] = [];
+    private scene: Scene;
     private cg: CallGraph;
     private dvfg: DVFG;
     private dvfgBuilder: DVFGBuilder;
@@ -88,6 +89,7 @@ export class NoTSLikeAsCheck implements BaseChecker {
     }
 
     public check = (scene: Scene): void => {
+        this.scene = scene;
         this.cg = GlobalCallGraphHelper.getCGInstance(scene);
 
         this.dvfg = new DVFG(this.cg);
@@ -105,58 +107,38 @@ export class NoTSLikeAsCheck implements BaseChecker {
                 globalVarMap = getGlobalsDefineInDefaultMethod(defaultMethod);
             }
             for (let clazz of arkFile.getClasses()) {
-                for (let field of clazz.getFields()) {
-                    this.processClassField(field, globalVarMap, scene);
-                }
-                for (let mtd of clazz.getMethods()) {
-                    this.processArkMethod(mtd, globalVarMap, scene);
-                }
+                this.processClass(clazz, globalVarMap);
             }
             for (let namespace of arkFile.getAllNamespacesUnderThisFile()) {
-                this.processNameSpace(namespace, globalVarMap, scene);
+                this.processNameSpace(namespace, globalVarMap);
             }
         }
     };
 
-    public processNameSpace(namespace: ArkNamespace, globalVarMap: Map<string, Stmt[]>, scene: Scene): void {
+    public processClass(arkClass: ArkClass, globalVarMap: Map<string, Stmt[]>): void {
+        for (let field of arkClass.getFields()) {
+            this.processClassField(field, globalVarMap);
+        }
+        for (let mtd of arkClass.getMethods()) {
+            this.processArkMethod(mtd, globalVarMap);
+        }
+    }
+
+    public processNameSpace(namespace: ArkNamespace, globalVarMap: Map<string, Stmt[]>): void {
         for (let ns of namespace.getNamespaces()) {
-            this.processNameSpace(ns, globalVarMap, scene);
+            this.processNameSpace(ns, globalVarMap);
         }
         for (let clazz of namespace.getClasses()) {
-            for (let field of clazz.getFields()) {
-                this.processClassField(field, globalVarMap, scene);
-            }
-            for (let mtd of clazz.getMethods()) {
-                this.processArkMethod(mtd, globalVarMap, scene);
-            }
+            this.processClass(clazz, globalVarMap);
         }
     }
 
-    public processClassField(field: ArkField, globalVarMap: Map<string, Stmt[]>, scene: Scene): void {
-        const stmts = field.getInitializer();
-        for (const stmt of stmts) {
-            const castExpr = this.getCastExpr(stmt);
-            if (castExpr === null) {
-                continue;
-            }
-            // 判断cast类型断言的类型是否是class，非class的场景不在本规则检查范围内
-            if (!(castExpr.getType() instanceof ClassType)) {
-                continue;
-            }
-            let checkAll = { value: true };
-            let visited: Set<Stmt> = new Set();
-            const result = this.checkFromStmt(stmt, scene, globalVarMap, checkAll, visited);
-            if (result !== null) {
-                this.addIssueReport(stmt, castExpr, result);
-            } else {
-                if (!checkAll.value) {
-                    this.addIssueReport(stmt, castExpr);
-                }
-            }
-        }
+    public processClassField(field: ArkField, globalVarMap: Map<string, Stmt[]>): void {
+        const instInit = field.getDeclaringArkClass().getInstanceInitMethod();
+        this.processArkMethod(instInit, globalVarMap);
     }
 
-    public processArkMethod(target: ArkMethod, globalVarMap: Map<string, Stmt[]>, scene: Scene): void {
+    public processArkMethod(target: ArkMethod, globalVarMap: Map<string, Stmt[]>): void {
         const stmts = target.getBody()?.getCfg().getStmts() ?? [];
         for (const stmt of stmts) {
             // cast表达式所在语句为sink点，从该点开始进行逆向数据流分析
@@ -164,6 +146,13 @@ export class NoTSLikeAsCheck implements BaseChecker {
             if (castExpr === null) {
                 continue;
             }
+
+            // 判断是否为cast表达式的自增自减运算，属于告警场景之一
+            if (this.isCastExprWithIncrementDecrement(stmt)) {
+                this.addIssueReport(stmt, castExpr, undefined, true);
+                continue;
+            }
+
             // 判断cast类型断言的类型是否是class，非class的场景不在本规则检查范围内
             if (!(castExpr.getType() instanceof ClassType)) {
                 continue;
@@ -178,7 +167,7 @@ export class NoTSLikeAsCheck implements BaseChecker {
 
             let checkAll = { value: true };
             let visited: Set<Stmt> = new Set();
-            const result = this.checkFromStmt(stmt, scene, globalVarMap, checkAll, visited);
+            const result = this.checkFromStmt(stmt, globalVarMap, checkAll, visited);
             if (result !== null) {
                 this.addIssueReport(stmt, castExpr, result);
             } else {
@@ -187,6 +176,62 @@ export class NoTSLikeAsCheck implements BaseChecker {
                 }
             }
         }
+    }
+
+    private isCastExprWithIncrementDecrement(stmt: Stmt): boolean {
+        if (!(stmt instanceof ArkAssignStmt) || !(stmt.getRightOp() instanceof ArkCastExpr)) {
+            return false;
+        }
+        const castLocal = stmt.getLeftOp();
+        if (!(castLocal instanceof Local)) {
+            return false;
+        }
+        // 判断是否为自增或自减语句，需要判断used stmt是否至少包含%0 = %0 + 1 和 castExpr = %0两条语句，不新增临时变量
+        // 非自增或自减语句，used stmt中仅包含%1 = %0 + 1
+        const usedStmts = castLocal.getUsedStmts();
+        if (usedStmts.length !== 2) {
+            return false;
+        }
+        let selfAssignFlag = false;
+        let assignBackFlag = false;
+        for (const usedStmt of usedStmts) {
+            if (!(usedStmt instanceof ArkAssignStmt)) {
+                return false;
+            }
+            const leftOp = usedStmt.getLeftOp();
+            const rightOp = usedStmt.getRightOp();
+            if (leftOp instanceof Local) {
+                if (leftOp !== castLocal) {
+                    return false;
+                }
+                if (!(rightOp instanceof ArkNormalBinopExpr)) {
+                    return false;
+                }
+                const op1 = rightOp.getOp1();
+                const op2 = rightOp.getOp2();
+                const operator = rightOp.getOperator();
+                if (op1 !== castLocal) {
+                    return false;
+                }
+                if (operator !== NormalBinaryOperator.Addition && operator !== NormalBinaryOperator.Subtraction) {
+                    return false;
+                }
+                if (!(op2 instanceof NumberConstant) || !(op2.getType() instanceof NumberType) || op2.getValue() !== '1') {
+                    return false;
+                }
+                selfAssignFlag = true;
+            }
+            if (leftOp instanceof ArkCastExpr) {
+                if (leftOp !== stmt.getRightOp()) {
+                    return false;
+                }
+                if (rightOp !== castLocal) {
+                    return false;
+                }
+                assignBackFlag = true;
+            }
+        }
+        return selfAssignFlag && assignBackFlag;
     }
 
     private hasCheckedWithInstanceof(cfg: Cfg, stmt: Stmt): boolean {
@@ -346,14 +391,7 @@ export class NoTSLikeAsCheck implements BaseChecker {
         return null;
     }
 
-    private checkFromStmt(
-        stmt: Stmt,
-        scene: Scene,
-        globalVarMap: Map<string, Stmt[]>,
-        checkAll: { value: boolean },
-        visited: Set<Stmt>,
-        depth: number = 0
-    ): Stmt | null {
+    private checkFromStmt(stmt: Stmt, globalVarMap: Map<string, Stmt[]>, checkAll: { value: boolean }, visited: Set<Stmt>, depth: number = 0): Stmt | null {
         if (depth > CALL_DEPTH_LIMIT) {
             checkAll.value = false;
             return null;
@@ -367,11 +405,11 @@ export class NoTSLikeAsCheck implements BaseChecker {
                 continue;
             }
             visited.add(currentStmt);
-            if (this.isWithInterfaceAnnotation(currentStmt, scene)) {
+            if (this.isWithInterfaceAnnotation(currentStmt)) {
                 return currentStmt;
             }
 
-            const fieldDeclareStmt = this.isCastOpFieldWithInterfaceType(currentStmt, scene);
+            const fieldDeclareStmt = this.isCastOpFieldWithInterfaceType(currentStmt);
             if (fieldDeclareStmt) {
                 return fieldDeclareStmt;
             }
@@ -401,7 +439,7 @@ export class NoTSLikeAsCheck implements BaseChecker {
                 }
                 const returnStmts = declaringMtd.getReturnStmt();
                 for (const stmt of returnStmts) {
-                    const res = this.checkFromStmt(stmt, scene, globalVarMap, checkAll, visited, depth + 1);
+                    const res = this.checkFromStmt(stmt, globalVarMap, checkAll, visited, depth + 1);
                     if (res !== null) {
                         return res;
                     }
@@ -414,7 +452,7 @@ export class NoTSLikeAsCheck implements BaseChecker {
                 this.processCallsites(callsites);
                 const argDefs = this.collectArgDefs(paramIdx, callsites);
                 for (const stmt of argDefs) {
-                    const res = this.checkFromStmt(stmt, scene, globalVarMap, checkAll, visited, depth + 1);
+                    const res = this.checkFromStmt(stmt, globalVarMap, checkAll, visited, depth + 1);
                     if (res !== null) {
                         return res;
                     }
@@ -425,7 +463,7 @@ export class NoTSLikeAsCheck implements BaseChecker {
         return null;
     }
 
-    private isCastOpFieldWithInterfaceType(stmt: Stmt, scene: Scene): Stmt | undefined {
+    private isCastOpFieldWithInterfaceType(stmt: Stmt): Stmt | undefined {
         const obj = this.getCastOp(stmt);
         if (obj === null || !(obj instanceof Local)) {
             return undefined;
@@ -440,13 +478,13 @@ export class NoTSLikeAsCheck implements BaseChecker {
         }
         const fieldDeclaring = rightOp.getFieldSignature().getDeclaringSignature();
         if (fieldDeclaring instanceof ClassSignature) {
-            const field = scene.getClass(fieldDeclaring)?.getField(rightOp.getFieldSignature());
+            const field = this.scene.getClass(fieldDeclaring)?.getField(rightOp.getFieldSignature());
             if (!field) {
                 return undefined;
             }
             const fieldInitializer = field.getInitializer();
             const lastStmt = fieldInitializer[fieldInitializer.length - 1];
-            if (this.isWithInterfaceAnnotation(lastStmt, scene)) {
+            if (this.isWithInterfaceAnnotation(lastStmt)) {
                 return lastStmt;
             }
         }
@@ -497,7 +535,7 @@ export class NoTSLikeAsCheck implements BaseChecker {
     }
 
     // 判断语句是否为赋值语句，且左值的类型注解为Interface，右值的类型与左值不一样
-    private isWithInterfaceAnnotation(stmt: Stmt, scene: Scene): boolean {
+    private isWithInterfaceAnnotation(stmt: Stmt): boolean {
         if (!(stmt instanceof ArkAssignStmt)) {
             return false;
         }
@@ -505,7 +543,7 @@ export class NoTSLikeAsCheck implements BaseChecker {
         if (!(leftOpType instanceof ClassType)) {
             return false;
         }
-        const leftOpTypeclass = scene.getClass(leftOpType.getClassSignature());
+        const leftOpTypeclass = this.scene.getClass(leftOpType.getClassSignature());
         if (leftOpTypeclass === null) {
             return false;
         }
@@ -567,15 +605,17 @@ export class NoTSLikeAsCheck implements BaseChecker {
         });
     }
 
-    private addIssueReport(stmt: Stmt, operand: ArkCastExpr, relatedStmt?: Stmt): void {
+    private addIssueReport(stmt: Stmt, operand: ArkCastExpr, relatedStmt?: Stmt, incrementCase: boolean = false): void {
         const severity = this.rule.alert ?? this.metaData.severity;
-        const warnInfo = this.getLineAndColumn(stmt, operand);
+        const warnInfo = getLineAndColumn(stmt, operand);
         const problem = 'As';
         const descPrefix = 'The value in type assertion is assigned by value with interface annotation';
         let desc = `(${this.rule.ruleId.replace('@migration/', '')})`;
 
-        if (relatedStmt === undefined) {
-            desc = `Can not find all assignments of the value in type assertion, please check it manually ` + desc;
+        if (incrementCase) {
+            desc = 'Can not use neither increment nor decrement with cast expression ' + desc;
+        } else if (relatedStmt === undefined) {
+            desc = `Can not check when function call chain depth exceeds ${CALL_DEPTH_LIMIT}, please check it manually ` + desc;
         } else {
             const sinkFile = stmt.getCfg().getDeclaringMethod().getDeclaringArkFile();
             const relatedFile = relatedStmt.getCfg().getDeclaringMethod().getDeclaringArkFile();
@@ -585,6 +625,7 @@ export class NoTSLikeAsCheck implements BaseChecker {
                 desc = `${descPrefix} in file ${path.normalize(relatedFile.getName())}: ${relatedStmt.getOriginPositionInfo().getLineNo()} ` + desc;
             }
         }
+
         let defects = new Defects(
             warnInfo.line,
             warnInfo.startCol,
@@ -600,20 +641,5 @@ export class NoTSLikeAsCheck implements BaseChecker {
             false
         );
         this.issues.push(new IssueReport(defects, undefined));
-    }
-
-    private getLineAndColumn(stmt: Stmt, operand: Value): WarnInfo {
-        const arkFile = stmt.getCfg().getDeclaringMethod().getDeclaringArkFile();
-        const originPosition = stmt.getOperandOriginalPosition(operand);
-        if (arkFile && originPosition) {
-            const originPath = arkFile.getFilePath();
-            const line = originPosition.getFirstLine();
-            const startCol = originPosition.getFirstCol();
-            const endCol = startCol;
-            return { line, startCol, endCol, filePath: originPath };
-        } else {
-            logger.debug('ArkFile is null.');
-        }
-        return { line: -1, startCol: -1, endCol: -1, filePath: '' };
     }
 }

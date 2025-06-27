@@ -15,9 +15,11 @@
 
 import type { ProblemInfo } from './ProblemInfo';
 import type { ProjectStatistics } from './statistics/ProjectStatistics';
+import type { TimeRecorder } from './statistics/scan/TimeRecorder';
 
 export interface LintRunResult {
   hasErrors: boolean;
   problemsInfos: Map<string, ProblemInfo[]>;
   projectStats: ProjectStatistics;
+  timeRecorder?: TimeRecorder;
 }

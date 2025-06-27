@@ -221,7 +221,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "Custom components with custom layout capability need to add the \"@CustomLayout\" decorator (arkui-custom-layout-need-add-decorator)",
+            "rule": "The Custom component \"CustomLayout1\" with custom layout capability needs to add the \"@CustomLayout\" decorator (arkui-custom-layout-need-add-decorator)",
             "severity": "ERROR"
         },
         {
@@ -368,7 +368,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "Custom components with custom layout capability need to add the \"@CustomLayout\" decorator (arkui-custom-layout-need-add-decorator)",
+            "rule": "The Custom component \"CustomLayout2\" with custom layout capability needs to add the \"@CustomLayout\" decorator (arkui-custom-layout-need-add-decorator)",
             "severity": "ERROR"
         },
         {
@@ -557,7 +557,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "Custom components with custom layout capability need to add the \"@CustomLayout\" decorator (arkui-custom-layout-need-add-decorator)",
+            "rule": "The Custom component \"CustomLayout3\" with custom layout capability needs to add the \"@CustomLayout\" decorator (arkui-custom-layout-need-add-decorator)",
             "severity": "ERROR"
         },
         {
