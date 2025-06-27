@@ -97,7 +97,7 @@ options:
 
 - name: opt-level
   type: int
-  default: 0
+  default: 1
   description: Compiler optimization level
   range: 0-2
 

@@ -103,7 +103,7 @@ ast/compiler/ets/lambda_infer_type/lambda_param_type_cannot_be_determined.ets
 # Issue: #24605 incorrect column
 ast/parser/ets/named_types_2.ets
 
-# 
+#
 ast/parser/ets/partialGenericInterface.ets
 ast/parser/ets/partialGenericInterface_n.ets
 
@@ -160,3 +160,7 @@ ast/parser/ets/switch_num_compare_char_duplicate.ets
 
 #26700
 ast/parser/ets/unexpected_token_62.ets
+
+#26984
+ast/parser/ets/primitive_type_method_2.ets
+ast/parser/ets/staticFunctionCallOfObject.ets
