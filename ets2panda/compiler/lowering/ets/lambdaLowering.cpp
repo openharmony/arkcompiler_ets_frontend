@@ -228,6 +228,7 @@ static void ProcessCalleeMethodBody(ir::AstNode *body, checker::ETSChecker *chec
             auto *id = node->AsIdentifier();
             if (auto ref = varMap.find(id->Variable()); ref != varMap.end()) {
                 id->SetVariable(ref->second);
+                id->Check(checker);
             }
         }
         if (substitution == nullptr) {
