@@ -230,6 +230,27 @@ function migrate(
   return lintResult;
 }
 
+function filterLinterProblemsWithAutofixConfig(
+  cmdOptions: CommandLineOptions,
+  problemsInfos: Map<string, ProblemInfo[]>
+): Map<string, ProblemInfo[]> {
+  const autofixRuleConfigTags = cmdOptions.linterOptions.autofixRuleConfigTags;
+  if (!cmdOptions.linterOptions.ideInteractive || !autofixRuleConfigTags) { 
+    return problemsInfos; 
+  }
+
+  const needToBeFixedProblemsInfos = new Map<string, ProblemInfo[]>();
+  for (const [filePath, problems] of problemsInfos) {
+    const needToFix: ProblemInfo[] = problems.filter((problem) => {
+      return autofixRuleConfigTags.has(problem.ruleTag);
+    });
+    if (needToFix.length > 0) {
+      needToBeFixedProblemsInfos.set(filePath, needToFix);
+    }
+  }
+  return needToBeFixedProblemsInfos;
+}
+
 function updateSourceFiles(updatedSourceTexts: Map<string, string>, cmdOptions: CommandLineOptions): void {
   updatedSourceTexts.forEach((newText, fileName) => {
     if (!cmdOptions.linterOptions.noMigrationBackupFile) {
@@ -263,7 +284,7 @@ function fix(
   let appliedFix = false;
   // Apply homecheck fixes first to avoid them being skipped due to conflict with linter autofixes
   let mergedProblems: Map<string, ProblemInfo[]> = hcResults ?? new Map();
-  mergedProblems = mergeArrayMaps(mergedProblems, lintResult.problemsInfos);
+  mergedProblems = mergeArrayMaps(mergedProblems, filterLinterProblemsWithAutofixConfig(linterConfig.cmdOptions, lintResult.problemsInfos));
   mergedProblems.forEach((problemInfos, fileName) => {
     const srcFile = program.getSourceFile(fileName);
     if (!srcFile) {
