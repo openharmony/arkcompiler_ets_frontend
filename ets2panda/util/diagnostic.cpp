@@ -142,6 +142,11 @@ DiagnosticType Diagnostic::Type() const
     return diagnosticKind_->Type();
 }
 
+uint32_t Diagnostic::GetId() const
+{
+    return diagnosticKind_->Id();
+}
+
 std::string Diagnostic::Message() const
 {
     return Format(diagnosticKind_->Message(), diagnosticParams_);
@@ -230,6 +235,11 @@ Suggestion::Suggestion(const diagnostic::DiagnosticKind *kind, std::vector<std::
 DiagnosticType Suggestion::Type() const
 {
     return kind_->Type();
+}
+
+uint32_t Suggestion::GetId() const
+{
+    return kind_->Id();
 }
 
 Diagnostic::Diagnostic(const diagnostic::DiagnosticKind &diagnosticKind,

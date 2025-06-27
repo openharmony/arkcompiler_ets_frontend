@@ -107,6 +107,7 @@ semantic:
 - name: ASSIGNMENT_INVALID_LHS
   id: 25
   message: "Invalid left-hand side of assignment expression"
+  code_fix_ids: [FixConvertConstToLet]
 
 - name: ABSTRACT_CALL
   id: 26
@@ -758,6 +759,7 @@ semantic:
 - name: MISSING_OVERRIDE_OF_ABSTRACT_METH
   id: 190
   message: "{} is not abstract and does not override abstract method {}{} in {}"
+  code_fix_ids: [FixClassNotImplementingInheritedMembers]
 
 - name: LOCAL_CLASS_INVALID_CTX
   id: 191
