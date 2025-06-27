@@ -62,3 +62,27 @@ class AA3 {
     return this.instance; // Error
   }
 }
+
+function foo2(str:string){
+}
+function foo22(str:number|string){
+}
+function foo(spec :string|number){
+  foo2(spec) // Error
+}
+function foo3(spec :string|number){
+ if (typeof spec == "string") {
+    foo2(spec) // Error
+ }
+}
+function foo3(spec :string|number){
+ if (typeof spec == "string") {
+    foo22(spec)
+ }
+}
+
+const input = true;
+if (typeof input === 'boolean') {
+} else {
+  let result = input as string | number | null;  // Error
+}
