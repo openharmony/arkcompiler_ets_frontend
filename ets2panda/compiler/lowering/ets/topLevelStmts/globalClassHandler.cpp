@@ -17,18 +17,20 @@
 #include <algorithm>
 #include "compiler/lowering/util.h"
 
-#include "ir/statements/classDeclaration.h"
 #include "ir/base/classDefinition.h"
 #include "ir/base/classProperty.h"
 #include "ir/base/classStaticBlock.h"
 #include "ir/base/scriptFunction.h"
 #include "ir/base/methodDefinition.h"
+#include "ir/ets/etsIntrinsicNode.h"
+#include "ir/expressions/memberExpression.h"
 #include "ir/expressions/identifier.h"
 #include "ir/expressions/classExpression.h"
 #include "ir/expressions/functionExpression.h"
 #include "ir/expressions/callExpression.h"
-#include "ir/statements/expressionStatement.h"
 #include "ir/statements/blockStatement.h"
+#include "ir/statements/classDeclaration.h"
+#include "ir/statements/expressionStatement.h"
 #include "util/helpers.h"
 #include "util/ustring.h"
 #include "utils/arena_containers.h"
@@ -295,7 +297,8 @@ ir::ClassDeclaration *GlobalClassHandler::TransformNamespace(ir::ETSModule *ns)
         initializerBlock.emplace_back(GlobalStmts {globalProgram_, std::move(initBlock)});
     }
     AddStaticBlockToClass(globalClass);
-    const ModuleDependencies md {allocator_->Adapter()};
+    const ModuleDependencies md(ArenaVector<parser::Program *>(allocator_->Adapter()),
+                                ArenaUnorderedSet<parser::Program *>(allocator_->Adapter()));
     auto immediateInitStatements = FormInitMethodStatements(&md, std::move(immediateInitializers));
     auto initializerBlockStatements = FormInitStaticBlockMethodStatements(&md, std::move(initializerBlock));
     SetupGlobalMethods(std::move(immediateInitStatements), globalClass, ns->IsDeclare());
@@ -515,11 +518,27 @@ ArenaVector<ir::Statement *> GlobalClassHandler::FormInitMethodStatements(const 
     return statements;
 }
 
-void GlobalClassHandler::FormDependentInitTriggers([[maybe_unused]] ArenaVector<ir::Statement *> &statements,
-                                                   [[maybe_unused]] const ModuleDependencies *moduleDependencies)
+void GlobalClassHandler::FormDependentInitTriggers(ArenaVector<ir::Statement *> &statements,
+                                                   const ModuleDependencies *moduleDependencies)
 {
-    // NOTE(dslynko, #26183): leaving this function for later reuse in `import "path"` feature,
-    // which would initialize the dependency.
+    for (const auto module : moduleDependencies->first) {
+        ArenaVector<ir::Expression *> params(allocator_->Adapter());
+        auto moduleStr = util::UString {
+            module->ModuleInfo().modulePrefix.Mutf8().append(compiler::Signatures::ETS_GLOBAL), allocator_};
+        auto moduleName = NodeAllocator::Alloc<ir::StringLiteral>(allocator_, moduleStr.View());
+        params.emplace_back(moduleName);
+        // Note (daizihan): #27086, we should not use stringLiteral as argument in ETSIntrinsicNode, should be TypeNode.
+        auto moduleNode = NodeAllocator::Alloc<ir::ETSIntrinsicNode>(allocator_, ir::IntrinsicNodeType::TYPE_REFERENCE,
+                                                                     std::move(params));
+        auto initIdent =
+            NodeAllocator::Alloc<ir::Identifier>(allocator_, compiler::Signatures::CLASS_INITIALIZE_METHOD, allocator_);
+        auto *callee = NodeAllocator::Alloc<ir::MemberExpression>(
+            allocator_, moduleNode, initIdent, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
+        auto *const callExpr = NodeAllocator::Alloc<ir::CallExpression>(
+            allocator_, callee, ArenaVector<ir::Expression *>(allocator_->Adapter()), nullptr, false, false);
+        auto stmt = NodeAllocator::Alloc<ir::ExpressionStatement>(allocator_, callExpr);
+        statements.emplace_back(stmt);
+    }
 }
 
 ir::ClassStaticBlock *GlobalClassHandler::CreateStaticBlock(ir::ClassDefinition *classDef)

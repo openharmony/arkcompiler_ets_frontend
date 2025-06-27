@@ -37,6 +37,7 @@
 #include "ir/base/tsSignatureDeclaration.h"
 #include "ir/ets/etsClassLiteral.h"
 #include "ir/ets/etsFunctionType.h"
+#include "ir/ets/etsIntrinsicNode.h"
 #include "ir/ets/etsImportDeclaration.h"
 #include "ir/ets/etsKeyofType.h"
 #include "ir/ets/etsNewArrayInstanceExpression.h"

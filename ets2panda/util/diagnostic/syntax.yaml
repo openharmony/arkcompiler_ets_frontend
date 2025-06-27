@@ -1287,3 +1287,11 @@ syntax:
 - name: FUNC_EXPR
   id: 320
   message: "Function expressions are not supported, use arrow functions instead"
+
+- name: ONLY_STRING_LITERAL_IN_INIT_MODULE
+  id: 321
+  message: "initModule() only accept string literal as argument."
+
+- name: INIT_MODULE_DECLARATION_POSITION
+  id: 322
+  message: "initModule() must only be called immediately after the import statement, and before any other declarations or statements."

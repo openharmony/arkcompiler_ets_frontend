@@ -377,6 +377,23 @@ void CheckLoweredNode(varbinder::ETSBinder *varBinder, checker::ETSChecker *chec
     node->Check(checker);
 }
 
+parser::Program *SearchExternalProgramInImport(const parser::Program::DirectExternalSource &extSource,
+                                               const util::ImportPathManager::ImportMetadata &importMetadata)
+{
+    parser::Program *extProg = nullptr;
+    const auto importPath = importMetadata.resolvedSource;
+    // Search Correct external program by comparing importPath and absolutePath
+    for (auto &[_, progs] : extSource) {
+        auto it = std::find_if(progs.begin(), progs.end(),
+                               [&](const auto *prog) { return prog->AbsoluteName() == importPath; });
+        if (it != progs.end()) {
+            extProg = *it;
+            break;
+        }
+    }
+    return extProg;
+}
+
 bool IsAnonymousClassType(const checker::Type *type)
 {
     if (type == nullptr || !type->IsETSObjectType()) {

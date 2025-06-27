@@ -24,6 +24,8 @@ defines:
     ref: INIT_METHOD
   - name: _$initializerBlockInit$_
     ref: INITIALIZER_BLOCK_INIT
+  - name: initModule
+    ref: INIT_MODULE_METHOD
   - name: $_get
     ref: GET_INDEX_METHOD
   - name: $_set
@@ -244,6 +246,8 @@ defines:
     ref: UNUSED_ETSGLOBAL_INIT
   - name: 'ETSGLOBAL.main:void;'
     ref: UNUSED_ETSGLOBAL_MAIN
+  - name: "initialize"
+    ref: CLASS_INITIALIZE_METHOD
 
 packages:
   - name: 'std.core'

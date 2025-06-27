@@ -65,6 +65,7 @@ enum class GlobalTypeId : std::size_t {
     ETS_WILDCARD,
     ETS_BOOLEAN_BUILTIN,
     ETS_BYTE_BUILTIN,
+    ETS_CLASS_BUILTIN,
     ETS_CHAR_BUILTIN,
     ETS_COMPARABLE_BUILTIN,
     ETS_CONSOLE_BUILTIN,
@@ -278,6 +279,7 @@ public:
     Type *GlobalWildcardType();
     Type *GlobalETSBooleanBuiltinType();
     Type *GlobalByteBuiltinType();
+    Type *GlobalClassBuiltinType();
     Type *GlobalCharBuiltinType();
     Type *GlobalComparableBuiltinType();
     Type *GlobalConsoleBuiltinType();

@@ -20,6 +20,7 @@
 #include "parser/parserFlags.h"
 #include "util/errorRecovery.h"
 #include "util/helpers.h"
+#include "util/importPathManager.h"
 #include "utils/arena_containers.h"
 #include "varbinder/varbinder.h"
 #include "varbinder/ETSBinder.h"
@@ -256,6 +257,32 @@ ir::Statement *ETSParser::ParseTopLevelStatement()
         result = ParseStatement(flags);
     }
     return result;
+}
+
+ir::Statement *ETSParser::ParseInitModuleStatement(StatementParsingFlags flags)
+{
+    auto startLoc = Lexer()->GetToken().Start();
+    if ((flags & StatementParsingFlags::INIT_MODULE) == 0) {
+        LogError(diagnostic::INIT_MODULE_DECLARATION_POSITION);
+        return AllocBrokenStatement(startLoc);
+    }
+
+    auto *callee = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
+    Lexer()->NextToken();  // eat initModule
+    if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS) {
+        LogExpectedToken(lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
+        return AllocBrokenStatement(startLoc);
+    }
+    ir::CallExpression *expr = ParseCallExpression(callee, false, false);
+    expr->SetRange({startLoc, Lexer()->GetToken().End()});
+    if (expr->Arguments().size() != 1 || !expr->Arguments().front()->IsStringLiteral()) {
+        LogError(diagnostic::ONLY_STRING_LITERAL_IN_INIT_MODULE, {}, expr->Start());
+        return AllocBrokenStatement(startLoc);
+    }
+    // In order to build relationship between the current program and initModule program.
+    importPathManager_->GatherImportMetadata(const_cast<parser::Program *>(GetContext().GetProgram()),
+                                             util::ImportFlags::NONE, expr->Arguments().front()->AsStringLiteral());
+    return AllocNode<ir::ExpressionStatement>(expr);
 }
 
 ir::Statement *ETSParser::ParseAnnotationsInStatement(StatementParsingFlags flags)

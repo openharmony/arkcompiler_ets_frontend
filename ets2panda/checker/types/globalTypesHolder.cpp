@@ -160,6 +160,7 @@ void GlobalTypesHolder::AddEtsSpecificBuiltinTypes()
     builtinNameMappings_.emplace("Boolean", GlobalTypeId::ETS_BOOLEAN_BUILTIN);
     builtinNameMappings_.emplace("Byte", GlobalTypeId::ETS_BYTE_BUILTIN);
     builtinNameMappings_.emplace("Char", GlobalTypeId::ETS_CHAR_BUILTIN);
+    builtinNameMappings_.emplace("Class", GlobalTypeId::ETS_CLASS_BUILTIN);
     builtinNameMappings_.emplace("Comparable", GlobalTypeId::ETS_COMPARABLE_BUILTIN);
     builtinNameMappings_.emplace("Console", GlobalTypeId::ETS_CONSOLE_BUILTIN);
     builtinNameMappings_.emplace("Double", GlobalTypeId::ETS_DOUBLE_BUILTIN);
@@ -446,6 +447,11 @@ Type *GlobalTypesHolder::GlobalETSBooleanBuiltinType()
 Type *GlobalTypesHolder::GlobalByteBuiltinType()
 {
     return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_BYTE_BUILTIN));
+}
+
+Type *GlobalTypesHolder::GlobalClassBuiltinType()
+{
+    return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_CLASS_BUILTIN));
 }
 
 Type *GlobalTypesHolder::GlobalCharBuiltinType()

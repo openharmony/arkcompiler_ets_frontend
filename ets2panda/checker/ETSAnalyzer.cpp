@@ -2768,6 +2768,25 @@ checker::Type *ETSAnalyzer::Check(ir::StringLiteral *expr) const
     return expr->TsType();
 }
 
+checker::Type *ETSAnalyzer::Check(ir::ETSIntrinsicNode *node) const
+{
+    ETSChecker *checker = GetETSChecker();
+    for (auto *arg : node->Arguments()) {
+        arg->Check(checker);
+    }
+    // Note (daizihan): #27074, make it more scalable when IntrinsicNodeType is extended.
+    if (node->Type() == ir::IntrinsicNodeType::TYPE_REFERENCE) {
+        auto type = checker->GlobalBuiltinClassType()->Clone(checker);
+        // Since std.core.Class initialize() is instance method, need to remove the variable flag.
+        auto newVar = type->Variable()->AsLocalVariable()->Copy(checker->Allocator(), type->Variable()->Declaration());
+        newVar->RemoveFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE);
+        type->SetVariable(newVar);
+        return node->SetTsType(type);
+    }
+    ES2PANDA_UNREACHABLE();
+    return checker->GlobalTypeError();
+}
+
 checker::Type *ETSAnalyzer::Check(ir::ImportDeclaration *st) const
 {
     ETSChecker *checker = GetETSChecker();

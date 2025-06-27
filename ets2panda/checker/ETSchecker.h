@@ -150,6 +150,7 @@ public:
     ETSObjectType *GlobalETSObjectType() const;
     ETSUnionType *GlobalETSUnionUndefinedNull() const;
     ETSUnionType *GlobalETSUnionUndefinedNullObject() const;
+    ETSObjectType *GlobalBuiltinClassType() const;
     ETSObjectType *GlobalBuiltinETSResizableArrayType() const;
     ETSObjectType *GlobalBuiltinETSStringType() const;
     ETSObjectType *GlobalBuiltinETSBigIntType() const;

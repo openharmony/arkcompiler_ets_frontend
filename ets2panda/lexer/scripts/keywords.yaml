@@ -305,6 +305,11 @@ keywords:
     token: KEYW_INFER
     keyword_like: [ts]
 
+  - name: 'initModule'
+    token: KEYW_INIT_MODULE
+    keyword_like: [ets]
+    flags: [reserved_type_name]
+
   - name: 'instanceof'
     token: KEYW_INSTANCEOF
     keyword: [as, js, ts]

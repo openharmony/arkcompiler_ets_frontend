@@ -98,6 +98,11 @@ void JSCompiler::Compile([[maybe_unused]] const ir::ETSClassLiteral *expr) const
     ES2PANDA_UNREACHABLE();
 }
 
+void JSCompiler::Compile([[maybe_unused]] const ir::ETSIntrinsicNode *expr) const
+{
+    ES2PANDA_UNREACHABLE();
+}
+
 void JSCompiler::Compile([[maybe_unused]] const ir::ETSFunctionType *expr) const
 {
     ES2PANDA_UNREACHABLE();

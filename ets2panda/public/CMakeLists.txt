@@ -200,6 +200,7 @@ set (HEADERS_TO_BE_PARSED
     ${ES2PANDA_ROOT}/checker/types/ets/etsTupleType.h
     ${ES2PANDA_ROOT}/checker/types/signature.h
     ${ES2PANDA_ROOT}/ir/ets/etsPrimitiveType.h
+    ${ES2PANDA_ROOT}/ir/ets/etsIntrinsicNode.h
     ${ES2PANDA_ROOT}/ir/as/namedType.h
     ${ES2PANDA_ROOT}/ir/statements/throwStatement.h
     ${ES2PANDA_ROOT}/ir/statements/forOfStatement.h
@@ -439,6 +440,7 @@ set (ES2PANDA_API_GENERATED
     ${LIBGEN_DIR}/gen/headers/checker/types/ets/intType.yaml
     ${LIBGEN_DIR}/gen/headers/checker/types/ts/objectLiteralType.yaml
     ${LIBGEN_DIR}/gen/headers/checker/types/typeFlag.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ets/etsIntrinsicNode.yaml
     ${LIBGEN_DIR}/gen/headers/ir/ets/etsPackageDeclaration.yaml
     ${LIBGEN_DIR}/gen/headers/ir/ets/etsImportDeclaration.yaml
     ${LIBGEN_DIR}/gen/headers/ir/ets/etsStructDeclaration.yaml
