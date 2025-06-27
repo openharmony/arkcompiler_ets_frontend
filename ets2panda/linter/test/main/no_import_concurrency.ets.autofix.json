@@ -24,7 +24,11 @@
                 {
                     "start": 629,
                     "end": 646,
-                    "replacementText": ""
+                    "replacementText": "",
+                    "line": 17,
+                    "column": 21,
+                    "endLine": 17,
+                    "endColumn": 36
                 }
             ],
             "suggest": "",
@@ -32,16 +36,20 @@
             "severity": "ERROR"
         },
         {
-            "line": 20,
+            "line": 19,
             "column": 8,
-            "endLine": 20,
-            "endColumn": 16,
+            "endLine": 19,
+            "endColumn": 12,
             "problem": "LimitedStdLibNoImportConcurrency",
             "autofix": [
                 {
-                    "start": 783,
-                    "end": 793,
-                    "replacementText": ""
+                    "start": 726,
+                    "end": 732,
+                    "replacementText": "",
+                    "line": 19,
+                    "column": 8,
+                    "endLine": 19,
+                    "endColumn": 12
                 }
             ],
             "suggest": "",
@@ -50,15 +58,19 @@
         },
         {
             "line": 20,
-            "column": 20,
+            "column": 25,
             "endLine": 20,
-            "endColumn": 37,
+            "endColumn": 42,
             "problem": "LimitedStdLibNoImportConcurrency",
             "autofix": [
                 {
-                    "start": 795,
-                    "end": 814,
-                    "replacementText": ""
+                    "start": 800,
+                    "end": 819,
+                    "replacementText": "",
+                    "line": 20,
+                    "column": 25,
+                    "endLine": 20,
+                    "endColumn": 42
                 }
             ],
             "suggest": "",
@@ -73,9 +85,13 @@
             "problem": "LimitedStdLibNoImportConcurrency",
             "autofix": [
                 {
-                    "start": 853,
-                    "end": 872,
-                    "replacementText": ""
+                    "start": 858,
+                    "end": 877,
+                    "replacementText": "",
+                    "line": 21,
+                    "column": 15,
+                    "endLine": 21,
+                    "endColumn": 32
                 }
             ],
             "suggest": "",
@@ -90,9 +106,13 @@
             "problem": "LimitedStdLibNoImportConcurrency",
             "autofix": [
                 {
-                    "start": 870,
-                    "end": 885,
-                    "replacementText": ""
+                    "start": 875,
+                    "end": 890,
+                    "replacementText": "",
+                    "line": 21,
+                    "column": 34,
+                    "endLine": 21,
+                    "endColumn": 47
                 }
             ],
             "suggest": "",
@@ -100,16 +120,50 @@
             "severity": "ERROR"
         },
         {
-            "line": 22,
-            "column": 15,
-            "endLine": 22,
-            "endColumn": 32,
+            "line": 23,
+            "column": 16,
+            "endLine": 23,
+            "endColumn": 31,
             "problem": "LimitedStdLibNoImportConcurrency",
             "autofix": [
                 {
-                    "start": 921,
-                    "end": 940,
-                    "replacementText": ""
+                    "start": 986,
+                    "end": 1003,
+                    "replacementText": "",
+                    "line": 23,
+                    "column": 16,
+                    "endLine": 23,
+                    "endColumn": 31
+                },
+                {
+                    "start": 1397,
+                    "end": 1400,
+                    "replacementText": "taskpool",
+                    "line": 23,
+                    "column": 16,
+                    "endLine": 23,
+                    "endColumn": 31
+                }
+            ],
+            "suggest": "",
+            "rule": "Import Concurrency is not required (arkts-limited-stdlib-no-import-concurrency)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 23,
+            "column": 33,
+            "endLine": 23,
+            "endColumn": 47,
+            "problem": "LimitedStdLibNoImportConcurrency",
+            "autofix": [
+                {
+                    "start": 1001,
+                    "end": 1017,
+                    "replacementText": "",
+                    "line": 23,
+                    "column": 33,
+                    "endLine": 23,
+                    "endColumn": 47
                 }
             ],
             "suggest": "",
@@ -118,15 +172,19 @@
         },
         {
             "line": 24,
-            "column": 1,
+            "column": 8,
             "endLine": 24,
-            "endColumn": 47,
+            "endColumn": 13,
             "problem": "LimitedStdLibNoImportConcurrency",
             "autofix": [
                 {
-                    "start": 1008,
-                    "end": 1054,
-                    "replacementText": ""
+                    "start": 1039,
+                    "end": 1073,
+                    "replacementText": "",
+                    "line": 24,
+                    "column": 8,
+                    "endLine": 24,
+                    "endColumn": 13
                 }
             ],
             "suggest": "",
@@ -135,15 +193,58 @@
         },
         {
             "line": 25,
-            "column": 1,
+            "column": 10,
             "endLine": 25,
-            "endColumn": 37,
+            "endColumn": 23,
             "problem": "LimitedStdLibNoImportConcurrency",
             "autofix": [
                 {
-                    "start": 1055,
-                    "end": 1091,
-                    "replacementText": ""
+                    "start": 1083,
+                    "end": 1098,
+                    "replacementText": "",
+                    "line": 25,
+                    "column": 10,
+                    "endLine": 25,
+                    "endColumn": 23
+                },
+                {
+                    "start": 1373,
+                    "end": 1375,
+                    "replacementText": "process",
+                    "line": 25,
+                    "column": 10,
+                    "endLine": 25,
+                    "endColumn": 23
+                }
+            ],
+            "suggest": "",
+            "rule": "Import Concurrency is not required (arkts-limited-stdlib-no-import-concurrency)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 25,
+            "column": 25,
+            "endLine": 25,
+            "endColumn": 43,
+            "problem": "LimitedStdLibNoImportConcurrency",
+            "autofix": [
+                {
+                    "start": 1096,
+                    "end": 1116,
+                    "replacementText": "",
+                    "line": 25,
+                    "column": 25,
+                    "endLine": 25,
+                    "endColumn": 43
+                },
+                {
+                    "start": 1441,
+                    "end": 1444,
+                    "replacementText": "collections",
+                    "line": 25,
+                    "column": 25,
+                    "endLine": 25,
+                    "endColumn": 43
                 }
             ],
             "suggest": "",
@@ -152,19 +253,155 @@
         },
         {
             "line": 26,
-            "column": 1,
+            "column": 8,
             "endLine": 26,
-            "endColumn": 74,
+            "endColumn": 15,
             "problem": "LimitedStdLibNoImportConcurrency",
             "autofix": [
                 {
-                    "start": 1092,
-                    "end": 1165,
-                    "replacementText": ""
+                    "start": 1138,
+                    "end": 1174,
+                    "replacementText": "",
+                    "line": 26,
+                    "column": 8,
+                    "endLine": 26,
+                    "endColumn": 15
                 }
             ],
             "suggest": "",
             "rule": "Import Concurrency is not required (arkts-limited-stdlib-no-import-concurrency)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 27,
+            "column": 8,
+            "endLine": 27,
+            "endColumn": 11,
+            "problem": "LimitedStdLibNoImportConcurrency",
+            "autofix": [
+                {
+                    "start": 1175,
+                    "end": 1207,
+                    "replacementText": "",
+                    "line": 27,
+                    "column": 8,
+                    "endLine": 27,
+                    "endColumn": 11
+                },
+                {
+                    "start": 1278,
+                    "end": 1281,
+                    "replacementText": "taskpool",
+                    "line": 27,
+                    "column": 8,
+                    "endLine": 27,
+                    "endColumn": 11
+                }
+            ],
+            "suggest": "",
+            "rule": "Import Concurrency is not required (arkts-limited-stdlib-no-import-concurrency)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 28,
+            "column": 8,
+            "endLine": 28,
+            "endColumn": 10,
+            "problem": "LimitedStdLibNoImportConcurrency",
+            "autofix": [
+                {
+                    "start": 1208,
+                    "end": 1237,
+                    "replacementText": "",
+                    "line": 28,
+                    "column": 8,
+                    "endLine": 28,
+                    "endColumn": 10
+                },
+                {
+                    "start": 1411,
+                    "end": 1413,
+                    "replacementText": "ArkTSUtils",
+                    "line": 28,
+                    "column": 8,
+                    "endLine": 28,
+                    "endColumn": 10
+                }
+            ],
+            "suggest": "",
+            "rule": "Import Concurrency is not required (arkts-limited-stdlib-no-import-concurrency)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 29,
+            "column": 8,
+            "endLine": 29,
+            "endColumn": 12,
+            "problem": "LimitedStdLibNoImportConcurrency",
+            "autofix": [
+                {
+                    "start": 1238,
+                    "end": 1276,
+                    "replacementText": "",
+                    "line": 29,
+                    "column": 8,
+                    "endLine": 29,
+                    "endColumn": 12
+                },
+                {
+                    "start": 1430,
+                    "end": 1434,
+                    "replacementText": "collections",
+                    "line": 29,
+                    "column": 8,
+                    "endLine": 29,
+                    "endColumn": 12
+                }
+            ],
+            "suggest": "",
+            "rule": "Import Concurrency is not required (arkts-limited-stdlib-no-import-concurrency)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 34,
+            "column": 11,
+            "endLine": 34,
+            "endColumn": 20,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1337,
+                    "end": 1346,
+                    "replacementText": "aaa: number = 123",
+                    "line": 34,
+                    "column": 11,
+                    "endLine": 34,
+                    "endColumn": 20
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 34,
+            "column": 17,
+            "endLine": 34,
+            "endColumn": 20,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1343,
+                    "end": 1346,
+                    "replacementText": "123.0",
+                    "line": 34,
+                    "column": 17,
+                    "endLine": 34,
+                    "endColumn": 20
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         }
     ]

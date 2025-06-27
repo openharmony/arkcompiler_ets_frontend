@@ -2423,20 +2423,14 @@ export class Autofixer {
     return [{ start: node.getStart(), end: node.getEnd(), replacementText }];
   }
 
-  removeImportSpecifier(
-    specToRemove: ts.ImportSpecifier,
-    importDeclaration: ts.ImportDeclaration
-  ): Autofix[] | undefined {
-    if (!importDeclaration) {
+  removeImportSpecifier(specToRemove: ts.ImportSpecifier, importDecl: ts.ImportDeclaration): Autofix[] | undefined {
+    const importClause = importDecl.importClause;
+    const namedBindings = importClause?.namedBindings;
+    if (!importClause || !namedBindings || !ts.isNamedImports(namedBindings)) {
       return undefined;
     }
 
-    const importClause = importDeclaration.importClause;
-    if (!importClause?.namedBindings || !ts.isNamedImports(importClause.namedBindings)) {
-      return undefined;
-    }
-
-    const namedBindings = importClause.namedBindings;
+    const fixes: Autofix[] = [];
     const allSpecifiers = namedBindings.elements;
     const remainingSpecifiers = allSpecifiers.filter((spec) => {
       return spec !== specToRemove;
@@ -2444,48 +2438,88 @@ export class Autofixer {
 
     // If none are valid, remove all named imports.
     if (remainingSpecifiers.length === 0) {
-      if (importClause.name) {
-        const start = importClause.name.end;
-        const end = namedBindings.end;
-        return [{ start, end, replacementText: '' }];
+      fixes.push({
+        start: importClause.name ? importClause.name.end : importDecl.getStart(),
+        end: importClause.name ? namedBindings.end : importDecl.getEnd(),
+        replacementText: ''
+      });
+    } else {
+      const specIndex = allSpecifiers.findIndex((spec) => {
+        return spec === specToRemove;
+      });
+      const isLast = specIndex === allSpecifiers.length - 1;
+      const isFirst = specIndex === 0;
+
+      let start = specToRemove.getStart();
+      let end = specToRemove.getEnd();
+
+      if (!isLast) {
+        end = allSpecifiers[specIndex + 1].getStart();
+      } else if (!isFirst) {
+        const prev = allSpecifiers[specIndex - 1];
+        start = prev.getEnd();
       }
-      return this.removeNode(importDeclaration);
+      fixes.push({
+        start: start,
+        end: end,
+        replacementText: ''
+      });
     }
 
-    const specIndex = allSpecifiers.findIndex((spec) => {
-      return spec === specToRemove;
-    });
-    const isLast = specIndex === allSpecifiers.length - 1;
-    const isFirst = specIndex === 0;
-
-    let start = specToRemove.getStart();
-    let end = specToRemove.getEnd();
-
-    if (!isLast) {
-      end = allSpecifiers[specIndex + 1].getStart();
-    } else if (!isFirst) {
-      const prev = allSpecifiers[specIndex - 1];
-      start = prev.getEnd();
-    }
-
-    return [{ start, end, replacementText: '' }];
+    const alias = specToRemove.name;
+    const original = specToRemove.propertyName ?? specToRemove.name;
+    const replacements = this.replaceIdentifierUsages(alias, original.getText());
+    fixes.push(...replacements);
+    return fixes;
   }
 
-  removeDefaultImport(importDecl: ts.ImportDeclaration, defaultImport: ts.Identifier): Autofix[] | undefined {
+  removeDefaultImport(
+    importDecl: ts.ImportDeclaration,
+    defaultImport: ts.Identifier,
+    replacementName: string
+  ): Autofix[] | undefined {
     const importClause = importDecl.importClause;
     if (!importClause || !defaultImport) {
       return undefined;
     }
-
+    const fixes: Autofix[] = [];
     const namedBindings = importClause.namedBindings;
+    fixes.push({
+      start: namedBindings ? defaultImport.getStart() : importDecl.getStart(),
+      end: namedBindings ? namedBindings.getStart() : importDecl.getEnd(),
+      replacementText: ''
+    });
 
-    if (!namedBindings) {
-      return this.removeNode(importDecl);
+    const replacements = this.replaceIdentifierUsages(defaultImport, replacementName);
+    fixes.push(...replacements);
+
+    return fixes;
+  }
+
+  replaceIdentifierUsages(importedIdentifier: ts.Identifier, replacementName: string): Autofix[] {
+    const fixes: Autofix[] = [];
+    const file = importedIdentifier.getSourceFile();
+    const originalSymbol = this.typeChecker.getSymbolAtLocation(importedIdentifier);
+    if (!originalSymbol) {
+      return fixes;
     }
-    const start = defaultImport.getStart();
-    const end = namedBindings.getStart();
 
-    return [{ start, end, replacementText: '' }];
+    const visit = (node: ts.Node): void => {
+      if (ts.isIdentifier(node) && !ts.isImportClause(node.parent) && !ts.isImportSpecifier(node.parent)) {
+        const nodeSymbol = this.typeChecker.getSymbolAtLocation(node);
+        if (nodeSymbol === originalSymbol) {
+          fixes.push({
+            start: node.getStart(),
+            end: node.getEnd(),
+            replacementText: replacementName
+          });
+        }
+      }
+      ts.forEachChild(node, visit);
+    };
+
+    visit(file);
+    return fixes;
   }
 
   fixSendableExplicitFieldType(node: ts.PropertyDeclaration): Autofix[] | undefined {

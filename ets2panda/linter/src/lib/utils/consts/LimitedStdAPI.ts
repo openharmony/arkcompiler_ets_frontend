@@ -153,9 +153,11 @@ export const LIMITED_STD_API = new Map<string | undefined, LimitedStdLibApiEntry
 ]);
 
 export const MODULE_IMPORTS: Record<string, string[]> = {
-  '@kit.ArkTS': ['taskpool', 'ArkTSUtils', 'process'],
+  '@kit.ArkTS': ['taskpool', 'ArkTSUtils', 'process', 'collections'],
   '@ohos.process': ['process'],
-  '@ohos.taskpool': ['taskpool']
+  '@ohos.taskpool': ['taskpool'],
+  '@arkts.utils': ['ArkTSUtils'],
+  '@arkts.collections': ['collections']
 };
 
 export const ARKTSUTILS_MODULES = ['@arkts.utils', '@kit.ArkTS'];
