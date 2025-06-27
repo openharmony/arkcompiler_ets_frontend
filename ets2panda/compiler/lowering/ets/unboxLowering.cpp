@@ -1010,14 +1010,14 @@ struct UnboxVisitor : public ir::visitor::EmptyAstVisitor {
             auto *oldRight = bexpr->Right();
             auto *leftBoxed = uctx_->checker->MaybeBoxType(leftType);
             auto *rightBoxed = uctx_->checker->MaybeBoxType(rightType);
-            auto *resType = uctx_->checker->MaybeUnboxType(uctx_->checker->CreateETSUnionType(
-                {leftBoxed, rightBoxed}));  // currently CreateETSUnionType returns nonunion numeric type if you try to
-                                            // create a *Numeric*|*OtherNumeric*
-            if (bexpr->Right()->IsNumberLiteral()) {
+            checker::Type *resType;
+
+            if (oldRight->IsNumberLiteral() && !oldLeft->IsNumberLiteral() && leftBoxed->IsBuiltinNumeric()) {
                 resType = leftBoxed;
-            }
-            if (bexpr->Left()->IsNumberLiteral()) {
+            } else if (oldLeft->IsNumberLiteral() && !oldRight->IsNumberLiteral() && rightBoxed->IsBuiltinNumeric()) {
                 resType = rightBoxed;
+            } else {
+                resType = uctx_->checker->MaybeUnboxType(uctx_->checker->CreateETSUnionType({leftBoxed, rightBoxed}));
             }
 
             bexpr->SetLeft(AdjustType(uctx_, oldLeft, resType));
