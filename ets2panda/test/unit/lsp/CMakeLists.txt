@@ -87,6 +87,10 @@ ets2panda_add_gtest(lsp_quick_info_api_test CPP_SOURCES
     quick_info_test.cpp
 )
 
+ets2panda_add_gtest(lsp_quick_info_api_test_1 CPP_SOURCES
+    quick_info_test_1.cpp
+)
+
 ets2panda_add_gtest(lsp_api_completions_entry_details_test CPP_SOURCES
     get_completions_entry_details.cpp
 )
@@ -148,6 +152,10 @@ ets2panda_add_gtest(lsp_api_test_suggestion_diagnostics CPP_SOURCES
     suggestion_diagnostics_test.cpp
 )
 
+ets2panda_add_gtest(lsp_api_test_suggestion_diagnostics_1 CPP_SOURCES
+    suggestion_diagnostics_test_1.cpp
+)
+
 ets2panda_add_gtest(lsp_api_test_get_class_property_info CPP_SOURCES
     get_class_property_info_test.cpp
 )
@@ -158,6 +166,10 @@ ets2panda_add_gtest(lsp_api_test_brace_matching CPP_SOURCES
 
 ets2panda_add_gtest(lsp_api_completions_test CPP_SOURCES
     get_completions.cpp
+)
+
+ets2panda_add_gtest(lsp_api_completions_test_1 CPP_SOURCES
+    get_completions_1.cpp
 )
 
 ets2panda_add_gtest(lsp_api_ui_suggest_test CPP_SOURCES
