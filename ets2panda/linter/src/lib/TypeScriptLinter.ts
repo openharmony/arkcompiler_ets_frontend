@@ -143,6 +143,15 @@ import type { ArrayAccess, UncheckedIdentifier } from './utils/consts/RuntimeChe
 import { NUMBER_LITERAL } from './utils/consts/RuntimeCheckAPI';
 import { globalApiAssociatedInfo } from './utils/consts/AssociatedInfo';
 import { ARRAY_API_LIST } from './utils/consts/ArraysAPI';
+import {
+  ABILITY_KIT,
+  ASYNC_LIFECYCLE_SDK_LIST,
+  ON_DESTROY,
+  ON_DISCONNECT,
+  PROMISE,
+  SERVICE_EXTENSION_ABILITY,
+  VOID
+} from './utils/consts/AsyncLifecycleSDK';
 import { ERROR_PROP_LIST } from './utils/consts/ErrorProp';
 import { D_ETS, D_TS } from './utils/consts/TsSuffix';
 import { arkTsBuiltInTypeName } from './utils/consts/ArkuiImportList';
@@ -3391,6 +3400,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleMethodInherit(tsMethodDecl);
     this.handleSdkGlobalApi(tsMethodDecl);
     this.handleLimitedVoidFunction(tsMethodDecl);
+    this.checkVoidLifecycleReturn(tsMethodDecl);
   }
 
   private handleLimitedVoidFunction(node: ts.FunctionLikeDeclaration): void {
@@ -8362,6 +8372,152 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (matchedApi) {
       this.incrementCounters(decl.name, FaultID.SdkTypeQuery);
     }
+  }
+
+  /**
+   * Returns true if the method’s declared return type or body returns Promise<void>.
+   */
+  private hasPromiseVoidReturn(method: ts.MethodDeclaration): boolean {
+    return (
+      this.hasAnnotatedPromiseVoidReturn(method) || this.isAsyncMethod(method) || this.hasBodyPromiseReturn(method)
+    );
+  }
+
+  /**
+   * Checks if the method’s declared return type annotation includes Promise<void>.
+   */
+  private hasAnnotatedPromiseVoidReturn(method: ts.MethodDeclaration): boolean {
+    void this;
+    if (!method.type) {
+      return false;
+    }
+    const t = method.type;
+    // Union type check
+    if (ts.isUnionTypeNode(t)) {
+      return t.types.some((u) => {
+        return this.isSinglePromiseVoid(u);
+      });
+    }
+    // Single Promise<void> check
+    return this.isSinglePromiseVoid(t);
+  }
+
+  private isSinglePromiseVoid(n: ts.Node): boolean {
+    void this;
+    return ts.isTypeReferenceNode(n) && n.typeName.getText() === PROMISE && n.typeArguments?.[0]?.getText() === VOID;
+  }
+
+  /**
+   * Checks if the method is declared async (implying Promise return).
+   */
+  private isAsyncMethod(method: ts.MethodDeclaration): boolean {
+    void this;
+    return (
+      method.modifiers?.some((m) => {
+        return m.kind === ts.SyntaxKind.AsyncKeyword;
+      }) ?? false
+    );
+  }
+
+  /**
+   * Scans the method body iteratively for any Promise-returning statements.
+   */
+  private hasBodyPromiseReturn(method: ts.MethodDeclaration): boolean {
+    if (!method.body) {
+      return false;
+    }
+
+    let found = false;
+    const visit = (node: ts.Node): void => {
+      if (ts.isReturnStatement(node) && node.expression) {
+        const retType = this.tsTypeChecker.getTypeAtLocation(node.expression);
+        if (retType.symbol?.getName() === PROMISE) {
+          found = true;
+          return;
+        }
+      }
+      ts.forEachChild(node, visit);
+    };
+    ts.forEachChild(method.body, visit);
+
+    return found;
+  }
+
+  /**
+   * Returns true if this method name is onDestroy/onDisconnect and class extends one of the supported Ability subclasses.
+   */
+  private isLifecycleMethodOnAbilitySubclass(method: ts.MethodDeclaration): boolean {
+    const name = method.name.getText();
+    if (name !== ON_DESTROY && name !== ON_DISCONNECT) {
+      return false;
+    }
+    const cls = method.parent;
+    if (!ts.isClassDeclaration(cls) || !cls.heritageClauses) {
+      return false;
+    }
+    return cls.heritageClauses.some((h) => {
+      return (
+        h.token === ts.SyntaxKind.ExtendsKeyword &&
+        h.types.some((tn) => {
+          return this.isSupportedAbilityBase(method.name.getText(), tn.expression);
+        })
+      );
+    });
+  }
+
+  /**
+   * Checks that the base class name and its import source or declaration file are supported,
+   * and matches the lifecycle method (onDestroy vs onDisconnect).
+   */
+  private isSupportedAbilityBase(methodName: string, baseExprNode: ts.Expression): boolean {
+    const sym = this.tsTypeChecker.getSymbolAtLocation(baseExprNode);
+    if (!sym) {
+      return false;
+    }
+
+    const baseName = sym.getName();
+    if (!ASYNC_LIFECYCLE_SDK_LIST.has(baseName)) {
+      return false;
+    }
+
+    if (methodName === ON_DISCONNECT && baseName !== SERVICE_EXTENSION_ABILITY) {
+      return false;
+    }
+    if (methodName === ON_DESTROY && baseName === SERVICE_EXTENSION_ABILITY) {
+      return false;
+    }
+
+    const decl = sym.getDeclarations()?.[0];
+    if (!decl || !ts.isImportSpecifier(decl)) {
+      return false;
+    }
+
+    const importDecl = decl.parent.parent.parent;
+    const moduleName = (importDecl.moduleSpecifier as ts.StringLiteral).text;
+    const srcFile = decl.getSourceFile().fileName;
+
+    return moduleName === ABILITY_KIT || srcFile.endsWith(`${baseName}.${EXTNAME_D_TS}`);
+  }
+
+  /**
+   * Rule sdk-void-lifecycle-return:
+   * Flags onDestroy/onDisconnect methods in Ability subclasses
+   * whose return type includes Promise<void>.
+   */
+  private checkVoidLifecycleReturn(method: ts.MethodDeclaration): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    if (!this.isLifecycleMethodOnAbilitySubclass(method)) {
+      return;
+    }
+
+    if (!this.hasPromiseVoidReturn(method)) {
+      return;
+    }
+
+    this.incrementCounters(method.name, FaultID.SdkAbilityAsynchronousLifecycle);
   }
 
   private handleGetOwnPropertyNames(decl: ts.PropertyAccessExpression): void {

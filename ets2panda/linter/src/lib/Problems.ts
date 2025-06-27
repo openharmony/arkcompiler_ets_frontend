@@ -229,6 +229,7 @@ export enum FaultID {
   SharedArrayBufferDeprecated,
   SetCloneListDeprecated,
   SetTransferListDeprecated,
+  SdkAbilityAsynchronousLifecycle,
   LimitedStdLibNoSendableDecorator,
   LimitedStdLibNoDoncurrentDecorator,
   NoNeedStdlibWorker,
