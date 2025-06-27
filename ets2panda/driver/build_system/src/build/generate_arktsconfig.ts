@@ -36,7 +36,8 @@ import {
 import {
   AliasConfig,
   BuildConfig,
-  ModuleInfo
+  ModuleInfo,
+  PathsConfig
 } from '../types';
 import {
   LANGUAGE_VERSION,
@@ -250,6 +251,11 @@ export class ArkTSConfigGenerator {
     }
     this.processAlias(moduleInfo, dependenciesection);
     let baseUrl: string = path.resolve(moduleInfo.moduleRootPath, moduleInfo.sourceRoots[0]);
+    if (buildConfig.paths) {
+      Object.entries(buildConfig.paths).map(([key, value]) => {
+        pathSection[key] = value
+      });
+    }
     let arktsConfig: ArkTSConfigObject = {
       compilerOptions: {
         package: moduleInfo.packageName,
