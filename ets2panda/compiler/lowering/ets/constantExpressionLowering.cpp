@@ -312,6 +312,9 @@ static ir::AstNode *CastNumberOrCharLiteralFrom(const ir::Literal *lit, ir::Prim
                                                 public_lib::Context *context)
 {
     switch (type) {
+        case ir::PrimitiveType::BOOLEAN:
+            // Note: we do nothing for `class A {b5 : boolean = 7;}` here, type error will be thrown in checker.
+            return const_cast<ir::Literal *>(lit);
         case ir::PrimitiveType::CHAR:
             return CastNumberOrCharLiteralFromTo<From, char16_t>(lit, context);
         case ir::PrimitiveType::BYTE:

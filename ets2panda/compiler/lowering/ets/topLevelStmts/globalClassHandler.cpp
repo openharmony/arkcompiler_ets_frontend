@@ -262,18 +262,18 @@ ArenaVector<ir::Statement *> GlobalClassHandler::TransformNamespaces(ArenaVector
     return classDecls;
 }
 
-void GlobalClassHandler::TransformBrokenNamespace()
+void GlobalClassHandler::TransformBrokenNamespace(ir::AstNode *node)
 {
-    globalProgram_->Ast()->TransformChildrenRecursively(
+    node->TransformChildrenRecursively(
         // clang-format off
         // CC-OFFNXT(G.FMT.14-CPP) project code style
-        [this](ir::AstNode *node) -> ir::AstNode* {
-            if (node->IsETSModule() && node->AsETSModule()->IsNamespace()) {
-                auto res = TransformNamespace(node->AsETSModule());
-                res->SetParent(node->Parent());
+        [this](ir::AstNode *child) -> ir::AstNode* {
+            if (child->IsETSModule() && child->AsETSModule()->IsNamespace()) {
+                auto res = TransformNamespace(child->AsETSModule());
+                res->SetParent(child->Parent());
                 return res;
             }
-            return node;
+            return child;
         },
         // clang-format on
         "TransformBrokenNamespace");
@@ -400,7 +400,7 @@ void GlobalClassHandler::SetupGlobalClass(const ArenaVector<parser::Program *> &
     globalClass->SetGlobalInitialized();
 
     CollectProgramGlobalClasses(namespaces);
-    TransformBrokenNamespace();
+    TransformBrokenNamespace(globalProgram_->Ast());
     auto initializerBlockStmts = FormInitStaticBlockMethodStatements(moduleDependencies, std::move(initializerBlock));
 
     CollectExportedClasses(globalProgram_, globalClass, globalProgram_->Ast()->Statements());
@@ -513,6 +513,7 @@ ArenaVector<ir::Statement *> GlobalClassHandler::FormInitMethodStatements(const 
         statements.insert(statements.end(), ps.begin(), ps.end());
     }
     for (auto st : statements) {
+        TransformBrokenNamespace(st);
         st->SetParent(nullptr);
     }
     return statements;
