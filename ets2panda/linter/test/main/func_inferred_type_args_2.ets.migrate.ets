@@ -115,3 +115,13 @@ class A {
     }
   }
 }
+class SubArr extends Array {}
+let subArr = new SubArr();
+class SubSet extends Set{}
+let subSet = new SubSet();
+class SubMap extends Map{}
+let subMap = new SubMap();
+class SubWeakMap extends WeakMap{}
+let subWeakMap = new SubWeakMap();
+class SubWeakSet extends WeakSet{}
+let subWeakSet = new SubWeakSet();

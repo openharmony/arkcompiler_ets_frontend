@@ -4804,8 +4804,8 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   }
 
   private handleGenericCallWithNoTypeArgs(
-    callLikeExpr: ts.CallExpression | ts.NewExpression,
-    callSignature: ts.Signature
+    callLikeExpr: ts.CallExpression | ts.NewExpression | ts.ExpressionWithTypeArguments,
+    callSignature?: ts.Signature
   ): void {
 
     /*
@@ -4819,19 +4819,20 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       this.incrementCounters(callLikeExpr, FaultID.GenericCallNoTypeArgs, autofix);
       return;
     }
-    this.checkTypeArgumentsForGenericCallWithNoTypeArgs(callLikeExpr, callSignature);
+    if (callSignature) {
+      this.checkTypeArgumentsForGenericCallWithNoTypeArgs(callLikeExpr, callSignature);
+    }
   }
 
-  private static isInvalidBuiltinGenericConstructorCall(newExpression: ts.CallExpression | ts.NewExpression): boolean {
-    if (!ts.isNewExpression(newExpression)) {
-      return false;
-    }
+  private static isInvalidBuiltinGenericConstructorCall(
+    newExpression: ts.CallExpression | ts.NewExpression | ts.ExpressionWithTypeArguments
+  ): boolean {
     const isBuiltin = BUILTIN_GENERIC_CONSTRUCTORS.has(newExpression.expression.getText().replace(/Constructor$/, ''));
     return isBuiltin && (!newExpression.typeArguments || newExpression.typeArguments.length === 0);
   }
 
   private checkTypeArgumentsForGenericCallWithNoTypeArgs(
-    callLikeExpr: ts.CallExpression | ts.NewExpression,
+    callLikeExpr: ts.CallExpression | ts.NewExpression | ts.ExpressionWithTypeArguments,
     callSignature: ts.Signature
   ): void {
     if (ts.isNewExpression(callLikeExpr) && this.isNonGenericClass(callLikeExpr)) {
@@ -4872,7 +4873,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   }
 
   private checkForUnknownTypeInNonArkTS2(
-    callLikeExpr: ts.CallExpression | ts.NewExpression,
+    callLikeExpr: ts.CallExpression | ts.NewExpression | ts.ExpressionWithTypeArguments,
     resolvedTypeArgs: ts.NodeArray<ts.TypeNode>,
     startTypeArg: number
   ): void {
@@ -7141,6 +7142,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (node.token === ts.SyntaxKind.ExtendsKeyword || node.token === ts.SyntaxKind.ImplementsKeyword) {
       node.types.forEach((type) => {
         const expr = type.expression;
+        this.handleGenericCallWithNoTypeArgs(type);
         if (ts.isCallExpression(expr)) {
           this.incrementCounters(expr, FaultID.ExtendsExpression);
           return;

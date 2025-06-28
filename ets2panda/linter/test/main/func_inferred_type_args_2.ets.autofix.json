@@ -749,6 +749,56 @@
             "severity": "ERROR"
         },
         {
+            "line": 111,
+            "column": 22,
+            "endLine": 111,
+            "endColumn": 27,
+            "problem": "GenericCallNoTypeArgs",
+            "suggest": "",
+            "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 113,
+            "column": 22,
+            "endLine": 113,
+            "endColumn": 25,
+            "problem": "GenericCallNoTypeArgs",
+            "suggest": "",
+            "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 115,
+            "column": 22,
+            "endLine": 115,
+            "endColumn": 25,
+            "problem": "GenericCallNoTypeArgs",
+            "suggest": "",
+            "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 117,
+            "column": 26,
+            "endLine": 117,
+            "endColumn": 33,
+            "problem": "GenericCallNoTypeArgs",
+            "suggest": "",
+            "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 119,
+            "column": 26,
+            "endLine": 119,
+            "endColumn": 33,
+            "problem": "GenericCallNoTypeArgs",
+            "suggest": "",
+            "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
+            "severity": "ERROR"
+        },
+        {
             "line": 84,
             "column": 2,
             "endLine": 84,
