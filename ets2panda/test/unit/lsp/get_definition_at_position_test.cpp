@@ -294,3 +294,23 @@ a.Foo(1, 2);)"};
     ASSERT_EQ(result1.start, expectedStart1);
     ASSERT_EQ(result1.length, expectedLength1);
 }
+
+TEST_F(LspGetDefTests, GetDefinitionAtPositionForStdLibraryTaskPool)
+{
+    std::vector<std::string> files = {"getDefinitionAtPositionForStdLibraryTaskPool.ets"};
+    std::vector<std::string> texts = {R"(const task = new taskpool.Task(()=>{});)"};
+    auto filePaths = CreateTempFile(files, texts);
+    size_t const expectedFileCount = 1;
+    ASSERT_EQ(filePaths.size(), expectedFileCount);
+
+    LSPAPI const *lspApi = GetImpl();
+    size_t const offset = 21;
+    Initializer initializer = Initializer();
+    auto ctx = initializer.CreateContext(filePaths[0].c_str(), ES2PANDA_STATE_CHECKED);
+    auto result = lspApi->getDefinitionAtPosition(ctx, offset);
+    initializer.DestroyContext(ctx);
+    std::string expectedFileName = "taskpool.ets";
+    size_t const expectedLength = 8;
+    ASSERT_TRUE(result.fileName.find(expectedFileName) != std::string::npos);
+    ASSERT_EQ(result.length, expectedLength);
+}
