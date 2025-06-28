@@ -166,7 +166,7 @@ ir::Statement *TypedParser::ParsePotentialExpressionStatement(StatementParsingFl
         }
         case lexer::TokenType::KEYW_NAMESPACE: {
             if (((GetContext().Status() & ParserStatus::IN_AMBIENT_CONTEXT) != 0U) || IsNamespaceDecl()) {
-                return ParseModuleDeclaration();
+                return ParseNamespace(ir::ModifierFlags::NONE);
             }
             [[fallthrough]];
         }
@@ -219,6 +219,11 @@ ir::Statement *TypedParser::ParseModuleDeclaration([[maybe_unused]] StatementPar
     }
 
     return ParseModuleOrNamespaceDeclaration(startLoc);
+}
+
+ir::Statement *TypedParser::ParseNamespace([[maybe_unused]] ir::ModifierFlags flags)
+{
+    return ParseModuleDeclaration();
 }
 
 ir::ArrowFunctionExpression *TypedParser::ParseGenericArrowFunction()
