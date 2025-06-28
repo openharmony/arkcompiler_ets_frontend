@@ -613,12 +613,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "returnNullableFromMethod.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "returnNullableFromMethod.ets"
                     }
                   }
                 },
@@ -626,12 +626,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "returnNullableFromMethod.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "returnNullableFromMethod.ets"
                   }
                 }
               },
@@ -639,12 +639,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "returnNullableFromMethod.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "returnNullableFromMethod.ets"
                 }
               }
             },
@@ -719,12 +719,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "returnNullableFromMethod.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "returnNullableFromMethod.ets"
                     }
                   }
                 },
@@ -732,12 +732,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "returnNullableFromMethod.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "returnNullableFromMethod.ets"
                   }
                 }
               },
@@ -745,12 +745,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "returnNullableFromMethod.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "returnNullableFromMethod.ets"
                 }
               }
             },

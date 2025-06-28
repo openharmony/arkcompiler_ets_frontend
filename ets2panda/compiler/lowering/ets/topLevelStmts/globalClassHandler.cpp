@@ -437,7 +437,24 @@ ir::MethodDefinition *GlobalClassHandler::CreateGlobalMethod(const std::string_v
     auto *methodDef = NodeAllocator::Alloc<ir::MethodDefinition>(allocator_, ir::MethodDefinitionKind::METHOD,
                                                                  ident->Clone(allocator_, nullptr)->AsExpression(),
                                                                  funcExpr, functionModifiers, allocator_, false);
-    methodDef->SetRange({lexer::SourcePosition(globalProgram_), lexer::SourcePosition(globalProgram_)});
+    auto minBound = lexer::SourcePosition(globalProgram_);
+    auto maxBound = lexer::SourcePosition(globalProgram_);
+    if (!body->Statements().empty()) {
+        minBound = body->Statements().front()->Start();
+        maxBound = body->Statements().front()->End();
+        for (const auto &stmt : body->Statements()) {
+            if (stmt->Start().index < minBound.index) {
+                minBound = stmt->Start();
+            }
+            if (stmt->End().index > maxBound.index) {
+                maxBound = stmt->End();
+            }
+        }
+    }
+    body->SetRange({minBound, maxBound});
+    func->SetRange({minBound, maxBound});
+    funcExpr->SetRange({minBound, maxBound});
+    methodDef->SetRange({minBound, maxBound});
     return methodDef;
 }
 

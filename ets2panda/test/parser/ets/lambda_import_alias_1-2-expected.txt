@@ -256,12 +256,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "lambda_import_alias_1-2.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "lambda_import_alias_1-2.ets"
                     }
                   }
                 },
@@ -269,12 +269,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "lambda_import_alias_1-2.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "lambda_import_alias_1-2.ets"
                   }
                 }
               },
@@ -282,12 +282,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "lambda_import_alias_1-2.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "lambda_import_alias_1-2.ets"
                 }
               }
             },
@@ -460,40 +460,40 @@
                   ],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1,
-                      "program": null
+                      "line": 18,
+                      "column": 12,
+                      "program": "lambda_import_alias_1-2.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1,
-                      "program": null
+                      "line": 18,
+                      "column": 42,
+                      "program": "lambda_import_alias_1-2.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1,
-                    "program": null
+                    "line": 18,
+                    "column": 12,
+                    "program": "lambda_import_alias_1-2.ets"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1,
-                    "program": null
+                    "line": 18,
+                    "column": 42,
+                    "program": "lambda_import_alias_1-2.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1,
-                  "program": null
+                  "line": 18,
+                  "column": 12,
+                  "program": "lambda_import_alias_1-2.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1,
-                  "program": null
+                  "line": 18,
+                  "column": 42,
+                  "program": "lambda_import_alias_1-2.ets"
                 }
               }
             },
@@ -501,13 +501,13 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
-                "column": 1,
+                "line": 18,
+                "column": 12,
                 "program": "lambda_import_alias_1-2.ets"
               },
               "end": {
-                "line": 1,
-                "column": 1,
+                "line": 18,
+                "column": 42,
                 "program": "lambda_import_alias_1-2.ets"
               }
             }

@@ -143,12 +143,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "trailing_lambda_type_alias.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "trailing_lambda_type_alias.ets"
                     }
                   }
                 },
@@ -156,12 +156,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "trailing_lambda_type_alias.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "trailing_lambda_type_alias.ets"
                   }
                 }
               },
@@ -169,12 +169,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "trailing_lambda_type_alias.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "trailing_lambda_type_alias.ets"
                 }
               }
             },
@@ -542,7 +542,7 @@
                           },
                           "end": {
                             "line": 24,
-                            "column": 10,
+                            "column": 14,
                             "program": "trailing_lambda_type_alias.ets"
                           }
                         }

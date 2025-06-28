@@ -1118,12 +1118,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "returnTypeGenericArray.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "returnTypeGenericArray.ets"
                     }
                   }
                 },
@@ -1131,12 +1131,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "returnTypeGenericArray.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "returnTypeGenericArray.ets"
                   }
                 }
               },
@@ -1144,12 +1144,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "returnTypeGenericArray.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "returnTypeGenericArray.ets"
                 }
               }
             },
@@ -1224,12 +1224,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "returnTypeGenericArray.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "returnTypeGenericArray.ets"
                     }
                   }
                 },
@@ -1237,12 +1237,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "returnTypeGenericArray.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "returnTypeGenericArray.ets"
                   }
                 }
               },
@@ -1250,12 +1250,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "returnTypeGenericArray.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "returnTypeGenericArray.ets"
                 }
               }
             },

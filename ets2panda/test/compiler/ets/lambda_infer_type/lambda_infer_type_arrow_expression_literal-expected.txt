@@ -605,12 +605,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "lambda_infer_type_arrow_expression_literal.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "lambda_infer_type_arrow_expression_literal.ets"
                     }
                   }
                 },
@@ -618,12 +618,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "lambda_infer_type_arrow_expression_literal.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "lambda_infer_type_arrow_expression_literal.ets"
                   }
                 }
               },
@@ -631,12 +631,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "lambda_infer_type_arrow_expression_literal.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "lambda_infer_type_arrow_expression_literal.ets"
                 }
               }
             },
@@ -711,12 +711,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "lambda_infer_type_arrow_expression_literal.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "lambda_infer_type_arrow_expression_literal.ets"
                     }
                   }
                 },
@@ -724,12 +724,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "lambda_infer_type_arrow_expression_literal.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "lambda_infer_type_arrow_expression_literal.ets"
                   }
                 }
               },
@@ -737,12 +737,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "lambda_infer_type_arrow_expression_literal.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "lambda_infer_type_arrow_expression_literal.ets"
                 }
               }
             },

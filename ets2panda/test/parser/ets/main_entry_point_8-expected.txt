@@ -159,12 +159,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "main_entry_point_8.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "main_entry_point_8.ets"
                     }
                   }
                 },
@@ -172,12 +172,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "main_entry_point_8.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "main_entry_point_8.ets"
                   }
                 }
               },
@@ -185,12 +185,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "main_entry_point_8.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "main_entry_point_8.ets"
                 }
               }
             },

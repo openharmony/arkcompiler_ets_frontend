@@ -227,12 +227,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "import_several_4.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "import_several_4.ets"
                     }
                   }
                 },
@@ -240,12 +240,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "import_several_4.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "import_several_4.ets"
                   }
                 }
               },
@@ -253,12 +253,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "import_several_4.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "import_several_4.ets"
                 }
               }
             },
@@ -634,40 +634,40 @@
                   ],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1,
-                      "program": null
+                      "line": 19,
+                      "column": 5,
+                      "program": "import_several_4.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1,
-                      "program": null
+                      "line": 20,
+                      "column": 55,
+                      "program": "import_several_4.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1,
-                    "program": null
+                    "line": 19,
+                    "column": 5,
+                    "program": "import_several_4.ets"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1,
-                    "program": null
+                    "line": 20,
+                    "column": 55,
+                    "program": "import_several_4.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1,
-                  "program": null
+                  "line": 19,
+                  "column": 5,
+                  "program": "import_several_4.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1,
-                  "program": null
+                  "line": 20,
+                  "column": 55,
+                  "program": "import_several_4.ets"
                 }
               }
             },
@@ -675,13 +675,13 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
-                "column": 1,
+                "line": 19,
+                "column": 5,
                 "program": "import_several_4.ets"
               },
               "end": {
-                "line": 1,
-                "column": 1,
+                "line": 20,
+                "column": 55,
                 "program": "import_several_4.ets"
               }
             }

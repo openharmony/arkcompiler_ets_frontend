@@ -340,12 +340,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "method_modifier_check_14.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "method_modifier_check_14.ets"
                     }
                   }
                 },
@@ -353,12 +353,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "method_modifier_check_14.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "method_modifier_check_14.ets"
                   }
                 }
               },
@@ -366,12 +366,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "method_modifier_check_14.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "method_modifier_check_14.ets"
                 }
               }
             },
@@ -446,12 +446,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "method_modifier_check_14.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "method_modifier_check_14.ets"
                     }
                   }
                 },
@@ -459,12 +459,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "method_modifier_check_14.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "method_modifier_check_14.ets"
                   }
                 }
               },
@@ -472,12 +472,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "method_modifier_check_14.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "method_modifier_check_14.ets"
                 }
               }
             },

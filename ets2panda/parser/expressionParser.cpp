@@ -1412,6 +1412,9 @@ ir::CallExpression *ParserImpl::ParseCallExpression(ir::Expression *callee, bool
 
         if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS) {
             ParseTrailingBlock(callExpr);
+            if (callExpr->TrailingBlock() != nullptr) {
+                callExpr->SetRange({callee->Start(), callExpr->TrailingBlock()->End()});
+            }
             return callExpr;
         }
 

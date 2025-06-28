@@ -80,12 +80,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "trailing_lambda_with_throw.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "trailing_lambda_with_throw.ets"
                     }
                   }
                 },
@@ -93,12 +93,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "trailing_lambda_with_throw.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "trailing_lambda_with_throw.ets"
                   }
                 }
               },
@@ -106,12 +106,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "trailing_lambda_with_throw.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "trailing_lambda_with_throw.ets"
                 }
               }
             },
@@ -553,8 +553,8 @@
                             "program": "trailing_lambda_with_throw.ets"
                           },
                           "end": {
-                            "line": 23,
-                            "column": 10,
+                            "line": 25,
+                            "column": 6,
                             "program": "trailing_lambda_with_throw.ets"
                           }
                         }
@@ -566,8 +566,8 @@
                           "program": "trailing_lambda_with_throw.ets"
                         },
                         "end": {
-                          "line": 23,
-                          "column": 10,
+                          "line": 25,
+                          "column": 6,
                           "program": "trailing_lambda_with_throw.ets"
                         }
                       }
@@ -603,7 +603,7 @@
                           },
                           "end": {
                             "line": 27,
-                            "column": 10,
+                            "column": 13,
                             "program": "trailing_lambda_with_throw.ets"
                           }
                         }
@@ -616,7 +616,7 @@
                         },
                         "end": {
                           "line": 27,
-                          "column": 10,
+                          "column": 13,
                           "program": "trailing_lambda_with_throw.ets"
                         }
                       }
@@ -651,8 +651,8 @@
                             "program": "trailing_lambda_with_throw.ets"
                           },
                           "end": {
-                            "line": 29,
-                            "column": 11,
+                            "line": 31,
+                            "column": 6,
                             "program": "trailing_lambda_with_throw.ets"
                           }
                         }
@@ -664,8 +664,8 @@
                           "program": "trailing_lambda_with_throw.ets"
                         },
                         "end": {
-                          "line": 29,
-                          "column": 11,
+                          "line": 31,
+                          "column": 6,
                           "program": "trailing_lambda_with_throw.ets"
                         }
                       }
@@ -701,7 +701,7 @@
                           },
                           "end": {
                             "line": 33,
-                            "column": 11,
+                            "column": 14,
                             "program": "trailing_lambda_with_throw.ets"
                           }
                         }
@@ -714,7 +714,7 @@
                         },
                         "end": {
                           "line": 33,
-                          "column": 11,
+                          "column": 14,
                           "program": "trailing_lambda_with_throw.ets"
                         }
                       }

@@ -3062,12 +3062,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "memberExpressionFromStaticContext.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "memberExpressionFromStaticContext.ets"
                     }
                   }
                 },
@@ -3075,12 +3075,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "memberExpressionFromStaticContext.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "memberExpressionFromStaticContext.ets"
                   }
                 }
               },
@@ -3088,12 +3088,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "memberExpressionFromStaticContext.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "memberExpressionFromStaticContext.ets"
                 }
               }
             },
@@ -3168,12 +3168,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "memberExpressionFromStaticContext.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "memberExpressionFromStaticContext.ets"
                     }
                   }
                 },
@@ -3181,12 +3181,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "memberExpressionFromStaticContext.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "memberExpressionFromStaticContext.ets"
                   }
                 }
               },
@@ -3194,12 +3194,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "memberExpressionFromStaticContext.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "memberExpressionFromStaticContext.ets"
                 }
               }
             },

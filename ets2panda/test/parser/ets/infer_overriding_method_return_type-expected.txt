@@ -711,12 +711,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "infer_overriding_method_return_type.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "infer_overriding_method_return_type.ets"
                     }
                   }
                 },
@@ -724,12 +724,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "infer_overriding_method_return_type.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "infer_overriding_method_return_type.ets"
                   }
                 }
               },
@@ -737,12 +737,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "infer_overriding_method_return_type.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "infer_overriding_method_return_type.ets"
                 }
               }
             },
@@ -817,12 +817,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "infer_overriding_method_return_type.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "infer_overriding_method_return_type.ets"
                     }
                   }
                 },
@@ -830,12 +830,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "infer_overriding_method_return_type.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "infer_overriding_method_return_type.ets"
                   }
                 }
               },
@@ -843,12 +843,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "infer_overriding_method_return_type.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "infer_overriding_method_return_type.ets"
                 }
               }
             },

@@ -502,12 +502,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "switch_readonly_member_compare_char_2.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "switch_readonly_member_compare_char_2.ets"
                     }
                   }
                 },
@@ -515,12 +515,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "switch_readonly_member_compare_char_2.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "switch_readonly_member_compare_char_2.ets"
                   }
                 }
               },
@@ -528,12 +528,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "switch_readonly_member_compare_char_2.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "switch_readonly_member_compare_char_2.ets"
                 }
               }
             },

@@ -1216,12 +1216,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "ambient_object_iterable.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "ambient_object_iterable.ets"
                     }
                   }
                 },
@@ -1229,12 +1229,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "ambient_object_iterable.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "ambient_object_iterable.ets"
                   }
                 }
               },
@@ -1242,12 +1242,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "ambient_object_iterable.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "ambient_object_iterable.ets"
                 }
               }
             },
