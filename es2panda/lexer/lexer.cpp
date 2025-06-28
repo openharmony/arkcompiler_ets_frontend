@@ -372,14 +372,27 @@ void Lexer::ConvertNumber(size_t exponentSignPos)
         GetToken().src_ = sv;
     }
 
-    try {
-        GetToken().number_ = static_cast<double>(std::stold(utf8, nullptr));
-    } catch (const std::invalid_argument &) {
+    errno = 0;
+    char *endptr = nullptr;
+    double value = std::strtod(utf8.c_str(), &endptr);
+
+    if (endptr == utf8.c_str()) {
         ThrowError("Invalid number");
-    } catch (const std::out_of_range &) {
-        // TODO(frobert): look for a more elegant solution to this
-        GetToken().number_ = std::numeric_limits<double>::infinity();
+        return;
     }
+
+    /*
+     * Extreme value handling:
+     * If the number exceeds Number.MAX_VALUE (~1.7976931348623157e+308), treat it as Infinity / -Infinity
+     * If the number is smaller than Number.MIN_VALUE (5e-324), it may be rounded to 0.0 or Number.MIN_VALUE,
+     * depending on platform behavior.
+     */
+    if (errno == ERANGE && std::abs(value) > std::numeric_limits<double>::max()) {
+        value = (value > 0.0 ? std::numeric_limits<double>::infinity()
+                             : -std::numeric_limits<double>::infinity());
+    }
+
+    GetToken().number_ = value;
 }
 void Lexer::ScanNumber(bool allowNumericSeparator, bool allowBigInt)
 {
