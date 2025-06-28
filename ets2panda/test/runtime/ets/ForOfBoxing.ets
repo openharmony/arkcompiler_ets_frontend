@@ -97,7 +97,7 @@ function check6() {
 function check7() {
     let str = "";
     let a7 : string = "ffff"
-    for (let idx7 : char of a7) {
+    for (let idx7 : string of a7) {
         let b7 = idx7
         str += b7;
     }
