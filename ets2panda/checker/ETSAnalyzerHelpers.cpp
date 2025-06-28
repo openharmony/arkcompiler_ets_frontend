@@ -535,11 +535,14 @@ void SetTsTypeForUnaryExpression(ETSChecker *checker, ir::UnaryExpression *expr,
         case lexer::TokenType::PUNCTUATOR_TILDE: {
             if (operandType == nullptr || !operandType->IsETSObjectType() ||
                 !operandType->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::CONVERTIBLE_TO_NUMERIC)) {
+                checker->LogError(diagnostic::OPERAND_NOT_NUMERIC, {}, expr->Argument()->Start());
                 expr->SetTsType(checker->GlobalTypeError());
                 break;
             }
-
-            expr->Argument()->SetTsType(expr->SetTsType(checker->SelectGlobalIntegerTypeForNumeric(operandType)));
+            auto exprType = expr->SetTsType(checker->SelectGlobalIntegerTypeForNumeric(operandType));
+            if (!expr->Argument()->TsType()->IsETSIntEnumType()) {
+                expr->Argument()->SetTsType(exprType);
+            }
             break;
         }
         case lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK: {

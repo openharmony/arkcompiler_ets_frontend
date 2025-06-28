@@ -638,7 +638,7 @@ public:
     void InferAliasLambdaType(ir::TypeNode *localTypeAnnotation, ir::ArrowFunctionExpression *init);
     checker::Type *ApplyConditionalOperatorPromotion(checker::ETSChecker *checker, checker::Type *unboxedL,
                                                      checker::Type *unboxedR);
-    Type *ApplyUnaryOperatorPromotion(Type *type, bool isCondExpr = false);
+    Type *ApplyUnaryOperatorPromotion(ir::Expression *expr, Type *type, bool isCondExpr = false);
     Type *GetUnaryOperatorPromotedType(Type *type, const bool doPromotion = true);
     Type *HandleBooleanLogicalOperators(Type *leftType, Type *rightType, lexer::TokenType tokenType);
 

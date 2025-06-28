@@ -2672,8 +2672,7 @@ checker::Type *ETSAnalyzer::Check(ir::UnaryExpression *expr) const
 
     auto argType = expr->argument_->Check(checker);
     const auto isCondExpr = expr->OperatorType() == lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK;
-    checker::Type *operandType = checker->ApplyUnaryOperatorPromotion(argType, isCondExpr);
-
+    checker::Type *operandType = checker->ApplyUnaryOperatorPromotion(expr->argument_, argType, isCondExpr);
     if (argType != nullptr && argType->IsETSBigIntType() && argType->HasTypeFlag(checker::TypeFlag::BIGINT_LITERAL)) {
         switch (expr->OperatorType()) {
             case lexer::TokenType::PUNCTUATOR_MINUS: {
