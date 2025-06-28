@@ -287,6 +287,9 @@ Type *ETSChecker::ResolveIdentifier(ir::Identifier *ident)
     if (resolved == nullptr) {
         resolved = ExtraCheckForResolvedError(ident);
         if (resolved == nullptr) {
+            if (VarBinder()->GetScope()->IsClassScope() && this->IsAnyError()) {
+                return ident->SetTsType(GlobalTypeError());
+            }
             auto [decl, var] = VarBinder()->NewVarDecl<varbinder::LetDecl>(
                 ident->Start(),
                 !ident->IsErrorPlaceHolder() ? ident->Name() : compiler::GenName(ProgramAllocator()).View());
