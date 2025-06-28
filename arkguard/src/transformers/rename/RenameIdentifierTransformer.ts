@@ -875,7 +875,6 @@ namespace secharmony {
         tmpReservedProps.forEach(item => {
           PropCollections.reservedProperties.add(item);
         });
-        PropCollections.globalMangledNamesInCache = new Set(PropCollections.historyMangledTable?.values());
         addToSet(PropCollections.reservedProperties, AtKeepCollections.keepSymbol.propertyNames);
         addToSet(PropCollections.reservedProperties, AtKeepCollections.keepAsConsumer.propertyNames);
         addToSet(PropCollections.reservedProperties, AtIntentCollections.propertyNames);
@@ -893,6 +892,7 @@ namespace secharmony {
           UnobfuscationCollections.reservedSdkApiForProp.add(element);
         });
       }
+      PropCollections.globalMangledNamesInCache = new Set(PropCollections.historyMangledTable?.values());
       LocalVariableCollections.reservedConfig = new Set(profile?.mReservedNames ?? []);
       profile?.mReservedToplevelNames?.forEach(item => PropCollections.reservedProperties.add(item));
       addToSet(PropCollections.reservedProperties, AtKeepCollections.keepSymbol.globalNames);
