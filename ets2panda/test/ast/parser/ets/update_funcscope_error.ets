@@ -37,5 +37,5 @@ export const updateIfChanged = (t: Record<string, Object>) => {
 /* @@? 21:19 Error TypeError: Unresolved reference u */
 /* @@? 21:19 Error TypeError: Indexed access is not supported for such expression type. */
 /* @@? 24:7 Error TypeError: Type '(v: Record<String,Object>) => Boolean' is not compatible with type '(previousValue: Boolean, currentValue: Boolean, index: Double, array: FixedArray<Boolean>) => Boolean' at index 2 */
-/* @@? 27:11 Error SyntaxError: Property or signature expected. */
+/* @@? 27:11 Error TypeError: Invalid record property */
 /* @@? 30:16 Error TypeError: Unresolved reference update */

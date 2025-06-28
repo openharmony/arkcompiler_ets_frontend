@@ -786,42 +786,87 @@ static void CheckAssignForDeclare(ir::Identifier *ident, ir::TypeNode *typeAnnot
     }
 }
 
+static void CheckRecordSpreadElement(ir::SpreadElement *spreadElement, ArenaVector<checker::Type *> &typeArguments,
+                                     ETSChecker *checker, const lexer::SourcePosition &start)
+{
+    auto spreadArg = spreadElement->Argument();
+    auto spreadType = spreadArg->Check(checker);
+    // Verify spread source is also a Record type
+    if (!spreadType->IsETSObjectType()) {
+        checker->LogError(diagnostic::INVALID_RECORD_PROPERTY, start);
+        return;
+    }
+    // Check if spread type is Record or Map using proper type identity checking
+    auto *spreadObjType = spreadType->AsETSObjectType();
+    auto *spreadOriginalBaseType = spreadObjType->GetOriginalBaseType();
+    auto *globalTypes = checker->GetGlobalTypesHolder();
+    if (!checker->IsTypeIdenticalTo(spreadOriginalBaseType, globalTypes->GlobalMapBuiltinType()) &&
+        !checker->IsTypeIdenticalTo(spreadOriginalBaseType, globalTypes->GlobalRecordBuiltinType())) {
+        checker->LogError(diagnostic::INVALID_RECORD_PROPERTY, start);
+        return;
+    }
+    // Verify type parameters match
+    auto spreadTypeArgs = spreadType->AsETSObjectType()->TypeArguments();
+    constexpr size_t EXPECTED_TYPE_ARGUMENTS_SIZE = 2;
+    if (spreadTypeArgs.size() != EXPECTED_TYPE_ARGUMENTS_SIZE) {
+        checker->LogError(diagnostic::INVALID_RECORD_PROPERTY, start);
+        return;
+    }
+    // Checking if the key type is a subtype of the type argument
+    if (!checker->Relation()->IsSupertypeOf(typeArguments[0], spreadTypeArgs[0])) {
+        checker->LogError(diagnostic::TYPE_MISMATCH_AT_IDX, {spreadTypeArgs[0], typeArguments[0], size_t(1)}, start);
+    }
+    checker::AssignmentContext(checker->Relation(), spreadArg, spreadTypeArgs[1], typeArguments[1], start,
+                               util::DiagnosticWithParams {diagnostic::TYPE_MISMATCH_AT_IDX,
+                                                           {spreadTypeArgs[1], typeArguments[1], size_t(2)}});
+}
+
+static void CheckRecordProperty(ir::Property *p, ArenaVector<checker::Type *> &typeArguments, ETSChecker *checker)
+{
+    p->Key()->SetPreferredType(typeArguments[0]);
+    p->Value()->SetPreferredType(typeArguments[1]);
+
+    checker::Type *keyType = p->Key()->Check(checker);
+    checker::Type *valueType = p->Value()->Check(checker);
+
+    // Checking if the key type is a subtype of the type argument
+    if (!checker->Relation()->IsSupertypeOf(typeArguments[0], keyType)) {
+        checker->LogError(diagnostic::TYPE_MISMATCH_AT_IDX, {keyType, typeArguments[0], size_t(1)}, p->Key()->Start());
+    }
+    checker::AssignmentContext(
+        checker->Relation(), p->Value(), valueType, typeArguments[1], p->Value()->Start(),
+        util::DiagnosticWithParams {diagnostic::TYPE_MISMATCH_AT_IDX, {valueType, typeArguments[1], size_t(2)}});
+}
+
 static void CheckRecordType(ir::Expression *init, checker::Type *annotationType, ETSChecker *checker)
 {
     if (!annotationType->IsETSObjectType() || !init->IsObjectExpression()) {
         return;
     }
+    // Check if this is actually a Record or Map type using proper type identity checking
+    auto *objType = annotationType->AsETSObjectType();
+    auto *originalBaseType = objType->GetOriginalBaseType();
+    auto *globalTypes = checker->GetGlobalTypesHolder();
 
-    std::stringstream ss;
-    init->TsType()->ToAssemblerType(ss);
-    if (ss.str() != "escompat.Record" && ss.str() != "escompat.Map") {
+    if (!checker->IsTypeIdenticalTo(originalBaseType, globalTypes->GlobalMapBuiltinType()) &&
+        !checker->IsTypeIdenticalTo(originalBaseType, globalTypes->GlobalRecordBuiltinType())) {
         return;
     }
 
     auto objectExpr = init->AsObjectExpression();
     auto typeArguments = annotationType->AsETSObjectType()->TypeArguments();
     auto properties = objectExpr->Properties();
-
     for (const auto &property : properties) {
-        if (!property->IsProperty()) {
-            checker->LogError(diagnostic::IMPROPER_NESTING_INTERFACE, {}, property->Start());
+        if (property->IsSpreadElement()) {
+            CheckRecordSpreadElement(property->AsSpreadElement(), typeArguments, checker, property->Start());
             continue;
         }
-        ES2PANDA_ASSERT(property->IsProperty());
-        auto p = property->AsProperty();
+        if (!property->IsProperty()) {
+            checker->LogError(diagnostic::INVALID_RECORD_PROPERTY, property->Start());
+            continue;
+        }
 
-        p->Key()->SetPreferredType(typeArguments[0]);
-        p->Value()->SetPreferredType(typeArguments[1]);
-
-        Type *keyType = p->Key()->Check(checker);
-        Type *valueType = p->Value()->Check(checker);
-
-        checker::AssignmentContext(
-            checker->Relation(), p->Key(), keyType, typeArguments[0], p->Key()->Start(),
-            util::DiagnosticWithParams {diagnostic::TYPE_MISMATCH_AT_IDX, {keyType, typeArguments[0], size_t(1)}});
-        checker::AssignmentContext(
-            checker->Relation(), p->Value(), valueType, typeArguments[1], p->Value()->Start(),
-            util::DiagnosticWithParams {diagnostic::TYPE_MISMATCH_AT_IDX, {valueType, typeArguments[1], size_t(2)}});
+        CheckRecordProperty(property->AsProperty(), typeArguments, checker);
     }
 }
 
