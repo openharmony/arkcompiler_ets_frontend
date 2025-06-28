@@ -58,6 +58,18 @@ public:
         ident->SetParent(this);
     }
 
+    SpreadElement *Spread() noexcept
+    {
+        return GetHistoryNodeAs<ETSParameterExpression>()->spread_;
+    }
+
+    const SpreadElement *Spread() const noexcept
+    {
+        return GetHistoryNodeAs<ETSParameterExpression>()->spread_;
+    }
+
+    void SetSpread(SpreadElement *spread);
+
     [[nodiscard]] const SpreadElement *RestParameter() const noexcept;
     [[nodiscard]] SpreadElement *RestParameter() noexcept;
 
@@ -125,17 +137,6 @@ public:
 
 private:
     friend class SizeOfNodeTest;
-    SpreadElement *Spread() noexcept
-    {
-        return GetHistoryNodeAs<ETSParameterExpression>()->spread_;
-    }
-
-    const SpreadElement *Spread() const noexcept
-    {
-        return GetHistoryNodeAs<ETSParameterExpression>()->spread_;
-    }
-
-    void SetSpread(SpreadElement *spread);
 
     Identifier *ident_;
     Expression *initializer_ = nullptr;

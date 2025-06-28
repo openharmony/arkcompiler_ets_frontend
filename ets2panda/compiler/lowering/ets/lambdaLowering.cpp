@@ -193,15 +193,19 @@ ParamsAndVarMap CreateLambdaCalleeParameters(public_lib::Context *ctx, ir::Arrow
             newParam->SetOptional(false);
             newParamType = checker->CreateETSUnionType({newParamType, checker->GlobalETSUndefinedType()});
         }
-        newParam->Ident()->SetTsTypeAnnotation(allocator->New<ir::OpaqueTypeNode>(newParamType, allocator));
-        newParam->Ident()->TypeAnnotation()->SetParent(newParam->Ident());
-        newParam->Ident()->SetVariable(nullptr);  // Remove the cloned variable.
+        newParam->SetTypeAnnotation(allocator->New<ir::OpaqueTypeNode>(newParamType, allocator));
         auto *var = varBinder->AddParamDecl(newParam);
         var->SetTsType(newParamType);
         var->SetScope(paramScope);
         newParam->SetVariable(var);
         newParam->SetTsType(newParamType);
         newParam->Ident()->SetTsType(newParamType);
+        if (newParam->IsRestParameter()) {
+            newParam->TypeAnnotation()->SetParent(newParam->Spread());
+            newParam->Spread()->SetTsType(newParamType);
+        } else {
+            newParam->TypeAnnotation()->SetParent(newParam->Ident());
+        }
         resParams.push_back(newParam);
         varMap[oldParam->AsETSParameterExpression()->Variable()] = var;
 
