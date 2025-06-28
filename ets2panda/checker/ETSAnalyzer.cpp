@@ -3185,7 +3185,7 @@ checker::Type *ETSAnalyzer::Check(ir::ForOfStatement *const st) const
         return checker->GlobalTypeError();
     }
 
-    checker::Type *elemType = nullptr;
+    checker::Type *elemType = checker->GlobalTypeError();
 
     if (exprType->IsETSStringType()) {
         elemType = checker->GlobalCharBuiltinType();
@@ -3195,7 +3195,7 @@ checker::Type *ETSAnalyzer::Check(ir::ForOfStatement *const st) const
         elemType = st->CheckIteratorMethod(checker);
     }
 
-    if (elemType == nullptr) {
+    if (elemType == checker->GlobalTypeError()) {
         checker->LogError(diagnostic::FOROF_SOURCE_NONITERABLE, {}, st->Right()->Start());
         return checker->GlobalTypeError();
     }

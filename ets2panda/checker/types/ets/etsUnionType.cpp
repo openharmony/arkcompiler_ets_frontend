@@ -303,6 +303,7 @@ void ETSUnionType::LinearizeAndEraseIdentical(TypeRelation *relation, ArenaVecto
     std::size_t const initialSz = types.size();
     for (std::size_t i = 0U; i < initialSz; ++i) {
         auto ct = types[i];
+        ES2PANDA_ASSERT(ct != nullptr);
         if (ct->IsETSUnionType()) {
             auto const &otherTypes = ct->AsETSUnionType()->ConstituentTypes();
             types.insert(types.end(), otherTypes.begin(), otherTypes.end());
