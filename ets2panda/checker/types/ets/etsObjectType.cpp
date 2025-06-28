@@ -25,10 +25,6 @@
 
 namespace ark::es2panda::checker {
 
-static std::multimap<size_t, Signature *> GetSignaturesForSyntheticType(ETSObjectType const *owner,
-                                                                        util::StringView name,
-                                                                        PropertySearchFlags flags);
-
 void ETSObjectType::Iterate(const PropertyTraverser &cb) const
 {
     for (const auto *prop : GetAllProperties()) {
@@ -212,7 +208,11 @@ static void UpdateDeclarationForGetterSetter(varbinder::LocalVariable *res, cons
     if (!HasAccessor(flags, funcType) || res->Declaration() != nullptr) {
         return;
     }
-    auto var = funcType->CallSignatures().front()->OwnerVar();
+
+    auto frontGetter = std::find_if(funcType->CallSignatures().begin(), funcType->CallSignatures().end(),
+                                    [](Signature *sig) { return sig->Function()->IsGetter(); });
+    auto var = frontGetter == funcType->CallSignatures().end() ? funcType->CallSignatures().front()->OwnerVar()
+                                                               : (*frontGetter)->OwnerVar();
     auto decl = var->Declaration();
     if (decl == nullptr || decl->Node() == nullptr) {
         return;
@@ -220,20 +220,32 @@ static void UpdateDeclarationForGetterSetter(varbinder::LocalVariable *res, cons
     res->Reset(decl, var->Flags());
 }
 
-varbinder::LocalVariable *ETSObjectType::CreateSyntheticVarFromEverySignature(util::StringView name,
+varbinder::LocalVariable *ETSObjectType::CreateSyntheticVarFromEverySignature(const util::StringView &name,
                                                                               PropertySearchFlags flags) const
 {
-    auto signatureSet = GetSignaturesForSyntheticType(this, name, flags);
-    if (signatureSet.empty()) {
+    std::vector<Signature *> signatures;
+    // Since both "first match" and "best match" exist at present, overloadDeclarationCall is temporarily used. After
+    // "best match" removed, this marking needs to be removed.
+    bool overloadDeclarationCall = false;
+    varbinder::LocalVariable *functionalInterface =
+        CollectSignaturesForSyntheticType(signatures, name, flags, overloadDeclarationCall);
+    // #22952: the called function *always* returns nullptr
+    ES2PANDA_ASSERT(functionalInterface == nullptr);
+    (void)functionalInterface;
+
+    if (signatures.empty()) {
         return nullptr;
     }
 
-    varbinder::LocalVariable *res = allocator_->New<varbinder::LocalVariable>(varbinder::VariableFlags::SYNTHETIC |
-                                                                              varbinder::VariableFlags::METHOD);
+    varbinder::VariableFlags varianceFlag =
+        overloadDeclarationCall ? varbinder::VariableFlags::SYNTHETIC | varbinder::VariableFlags::METHOD |
+                                      varbinder::VariableFlags::OVERLOAD
+                                : varbinder::VariableFlags::SYNTHETIC | varbinder::VariableFlags::METHOD;
+    varbinder::LocalVariable *res = allocator_->New<varbinder::LocalVariable>(varianceFlag);
 
     ETSFunctionType *funcType = CreateMethodTypeForProp(name);
-    for (auto &s : signatureSet) {
-        funcType->AddCallSignature(s.second);
+    for (auto &s : signatures) {
+        funcType->AddCallSignature(s);
     }
     res->SetTsType(funcType);
     funcType->SetVariable(res);
@@ -249,89 +261,137 @@ ETSFunctionType *ETSObjectType::CreateMethodTypeForProp(util::StringView name) c
     return GetRelation()->GetChecker()->AsETSChecker()->CreateETSMethodType(name, {{}, Allocator()->Adapter()});
 }
 
-static void ReplaceArgInSig(std::multimap<size_t, Signature *> *signatureSet, Signature *sigToInsert,
-                            TypeRelation *relation)
+bool ETSObjectType::ReplaceArgumentInSignature(std::vector<Signature *> &signatures, Signature *sigToInsert,
+                                               TypeRelation *relation) const
 {
-    auto range = signatureSet->equal_range(sigToInsert->ArgCount());
-    for (auto it = range.first; it != range.second; ++it) {
-        auto sigToReplace = it->second;
-
+    for (auto *&sigToReplace : signatures) {
+        if (sigToReplace->ArgCount() != sigToInsert->ArgCount()) {
+            continue;
+        }
         if (relation->IsSupertypeOf(sigToInsert->Owner(), sigToReplace->Owner()) &&
             relation->SignatureIsSupertypeOf(sigToInsert, sigToReplace)) {
             // Already overridden by a subtype's signature
-            return;
+            return true;
         }
         if (relation->IsSupertypeOf(sigToReplace->Owner(), sigToInsert->Owner()) &&
             relation->SignatureIsSupertypeOf(sigToReplace, sigToInsert)) {
-            signatureSet->erase(it);
-            signatureSet->insert({sigToInsert->ArgCount(), sigToInsert});
-            return;
+            sigToReplace = sigToInsert;
+            return true;
         }
     }
-    signatureSet->insert({sigToInsert->ArgCount(), sigToInsert});
+
+    return false;
 }
 
-// CC-OFFNXT(huge_depth) solid logic
-static void AddSignatureToSignatureSet(std::multimap<size_t, Signature *> *signatureSet,
-                                       varbinder::LocalVariable *found, TypeRelation *relation,
-                                       PropertySearchFlags flags)
+void ETSObjectType::AddSignatureFromFunction(std::vector<Signature *> &signatures, PropertySearchFlags flags,
+                                             ETSChecker *checker, varbinder::LocalVariable *found) const
 {
-    for (auto *sigToInsert : found->TsType()->AsETSFunctionType()->CallSignatures()) {
-        if (((flags & PropertySearchFlags::IGNORE_ABSTRACT) != 0) &&
-            sigToInsert->HasSignatureFlag(SignatureFlags::ABSTRACT)) {
+    for (auto *it : found->TsType()->AsETSFunctionType()->CallSignatures()) {
+        if (std::find(signatures.begin(), signatures.end(), it) != signatures.end()) {
             continue;
         }
-
-        if (signatureSet->count(sigToInsert->ArgCount()) != 0U) {
-            ReplaceArgInSig(signatureSet, sigToInsert, relation);
-        } else {
-            signatureSet->insert({sigToInsert->ArgCount(), sigToInsert});
+        if (((flags & PropertySearchFlags::IGNORE_ABSTRACT) != 0) && it->HasSignatureFlag(SignatureFlags::ABSTRACT)) {
+            continue;
         }
+        if (ReplaceArgumentInSignature(signatures, it, checker->Relation())) {
+            continue;
+        }
+        signatures.emplace_back(it);
     }
 }
 
-static void CollectSignaturesForSyntheticType(ETSObjectType const *owner,
-                                              std::multimap<size_t, Signature *> *signatureSet, util::StringView name,
-                                              PropertySearchFlags flags)
+void ETSObjectType::AddSignatureFromOverload(std::vector<Signature *> &signatures, PropertySearchFlags flags,
+                                             varbinder::LocalVariable *found, bool &overloadDeclarationCall) const
 {
-    if ((flags & PropertySearchFlags::SEARCH_STATIC_METHOD) != 0) {
-        if (auto *found = owner->GetOwnProperty<PropertyType::STATIC_METHOD>(name);
-            found != nullptr && !found->TsType()->IsTypeError()) {
-            ES2PANDA_ASSERT(found->TsType()->IsETSFunctionType());
-            AddSignatureToSignatureSet(signatureSet, found, owner->GetRelation(), flags);
-        }
-    }
-
-    if ((flags & PropertySearchFlags::SEARCH_INSTANCE_METHOD) != 0) {
-        if (auto *found = owner->GetOwnProperty<PropertyType::INSTANCE_METHOD>(name);
-            found != nullptr && !found->TsType()->IsTypeError()) {
-            ES2PANDA_ASSERT(found->TsType()->IsETSFunctionType());
-            AddSignatureToSignatureSet(signatureSet, found, owner->GetRelation(), flags);
-        }
-    }
-
-    if ((flags & PropertySearchFlags::SEARCH_INSTANCE_METHOD) == 0) {
+    auto *overloadDeclaration = found->Declaration()->Node()->AsOverloadDeclaration();
+    std::vector<Signature *> methodSignature;
+    if (overloadDeclaration->Id()->IsErrorPlaceHolder()) {
         return;
     }
 
-    if (owner->SuperType() != nullptr && ((flags & PropertySearchFlags::SEARCH_IN_BASE) != 0)) {
-        CollectSignaturesForSyntheticType(owner->SuperType(), signatureSet, name, flags);
+    overloadDeclarationCall |= true;
+    if (overloadDeclaration->IsConstructorOverloadDeclaration()) {
+        return AddSignatureFromConstructor(signatures, found);
     }
 
-    if ((flags & PropertySearchFlags::SEARCH_IN_INTERFACES) != 0) {
-        for (auto *interface : owner->Interfaces()) {
-            CollectSignaturesForSyntheticType(interface, signatureSet, name, flags);
+    for (auto *method : overloadDeclaration->OverloadedList()) {
+        // Identical type cannot be obtained directly, because typeparamter has not been substitute.
+        methodSignature.clear();
+        util::StringView methodName =
+            method->IsIdentifier() ? method->AsIdentifier()->Name() : method->AsTSQualifiedName()->Right()->Name();
+        CollectSignaturesForSyntheticType(methodSignature, methodName, flags, overloadDeclarationCall);
+        if (!methodSignature.empty()) {
+            signatures.emplace_back(methodSignature.front());
         }
     }
 }
 
-static std::multimap<size_t, Signature *> GetSignaturesForSyntheticType(ETSObjectType const *owner,
-                                                                        util::StringView name,
-                                                                        PropertySearchFlags flags)
+void ETSObjectType::AddSignatureFromConstructor(std::vector<Signature *> &signatures,
+                                                varbinder::LocalVariable *found) const
 {
-    std::multimap<size_t, Signature *> signatureSet;
-    CollectSignaturesForSyntheticType(owner, &signatureSet, name, flags);
-    return signatureSet;
+    auto *overloadDeclaration = found->Declaration()->Node()->AsOverloadDeclaration();
+    for (auto *method : overloadDeclaration->OverloadedList()) {
+        util::StringView orderConstructorName = method->AsIdentifier()->Name();
+
+        // Constructor will lowering to multiple Constructor if have rest parameters or optional parameters.
+        // Need to modify RestTupleConstructionPhase.
+        std::vector<Signature *> matches;
+        std::copy_if(
+            constructSignatures_.begin(), constructSignatures_.end(), std::back_inserter(matches),
+            [orderConstructorName](Signature *sig) { return sig->Function()->Id()->Name() == orderConstructorName; });
+
+        if (!matches.empty()) {
+            std::copy(matches.begin(), matches.end(), std::back_inserter(signatures));
+        }
+    }
+}
+
+void ETSObjectType::AddSignature(std::vector<Signature *> &signatures, PropertySearchFlags flags, ETSChecker *checker,
+                                 varbinder::LocalVariable *found, bool &overloadDeclarationCall) const
+{
+    if (found != nullptr && found->HasFlag(varbinder::VariableFlags::OVERLOAD)) {
+        if (!found->Declaration()->Node()->IsOverloadDeclaration()) {
+            return;
+        }
+        AddSignatureFromOverload(signatures, flags, found, overloadDeclarationCall);
+    } else if (found != nullptr && !found->TsType()->IsTypeError()) {
+        ES2PANDA_ASSERT(found->TsType()->IsETSFunctionType());
+        AddSignatureFromFunction(signatures, flags, checker, found);
+    }
+}
+
+varbinder::LocalVariable *ETSObjectType::CollectSignaturesForSyntheticType(std::vector<Signature *> &signatures,
+                                                                           const util::StringView &name,
+                                                                           PropertySearchFlags flags,
+                                                                           bool &overloadDeclarationCall) const
+{
+    auto *checker = GetRelation()->GetChecker()->AsETSChecker();
+
+    if ((flags & PropertySearchFlags::SEARCH_STATIC_METHOD) != 0) {
+        auto *found = GetOwnProperty<PropertyType::STATIC_METHOD>(name);
+        AddSignature(signatures, flags, checker, found, overloadDeclarationCall);
+    }
+
+    if ((flags & PropertySearchFlags::SEARCH_INSTANCE_METHOD) != 0) {
+        auto *found = GetOwnProperty<PropertyType::INSTANCE_METHOD>(name);
+        AddSignature(signatures, flags, checker, found, overloadDeclarationCall);
+    }
+
+    if ((flags & PropertySearchFlags::SEARCH_INSTANCE_METHOD) == 0) {
+        return nullptr;
+    }
+
+    if (superType_ != nullptr && ((flags & PropertySearchFlags::SEARCH_IN_BASE) != 0)) {
+        superType_->CollectSignaturesForSyntheticType(signatures, name, flags, overloadDeclarationCall);
+    }
+
+    if ((flags & PropertySearchFlags::SEARCH_IN_INTERFACES) != 0) {
+        for (auto *interface : Interfaces()) {
+            interface->CollectSignaturesForSyntheticType(signatures, name, flags, overloadDeclarationCall);
+        }
+    }
+
+    return nullptr;
 }
 
 std::vector<varbinder::LocalVariable *> ETSObjectType::GetAllProperties() const
@@ -370,16 +430,42 @@ std::vector<varbinder::LocalVariable *> ETSObjectType::GetAllProperties() const
     return allProperties;
 }
 
+std::vector<varbinder::LocalVariable *> ETSObjectType::Overloads() const
+{
+    std::vector<varbinder::LocalVariable *> methods;
+    for (const auto &[_, prop] : InstanceMethods()) {
+        (void)_;
+        if (prop->HasFlag(varbinder::VariableFlags::OVERLOAD)) {
+            methods.push_back(prop);
+        }
+    }
+
+    for (const auto &[_, prop] : StaticMethods()) {
+        (void)_;
+        if (prop->HasFlag(varbinder::VariableFlags::OVERLOAD)) {
+            methods.push_back(prop);
+        }
+    }
+
+    return methods;
+}
+
 std::vector<varbinder::LocalVariable *> ETSObjectType::Methods() const
 {
     std::vector<varbinder::LocalVariable *> methods;
     for (const auto &[_, prop] : InstanceMethods()) {
         (void)_;
+        if (prop->HasFlag(varbinder::VariableFlags::OVERLOAD)) {
+            continue;
+        }
         methods.push_back(prop);
     }
 
     for (const auto &[_, prop] : StaticMethods()) {
         (void)_;
+        if (prop->HasFlag(varbinder::VariableFlags::OVERLOAD)) {
+            continue;
+        }
         methods.push_back(prop);
     }
 

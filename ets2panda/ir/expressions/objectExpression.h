@@ -119,6 +119,8 @@ public:
         SetPreferredType(nullptr);
     }
 
+    void CleanCheckInformation() override;
+
 private:
     std::tuple<bool, varbinder::Variable *, checker::Type *, varbinder::LocalVariable *> CheckPatternIsShorthand(
         CheckPatternIsShorthandArgs *args);

@@ -110,6 +110,7 @@ private:
     void GenClassInheritedFields(const checker::ETSObjectType *baseType, pandasm::Record &classRecord);
     pandasm::AnnotationData GenAnnotationSignature(const ir::ClassDefinition *classDef);
     pandasm::AnnotationData GenAnnotationModule(const ir::ClassDefinition *classDef);
+    pandasm::AnnotationData GenAnnotationFunctionOverload(const ArenaVector<ir::AstNode *> &body);
     pandasm::AnnotationData GenAnnotationEnclosingClass(std::string_view className);
     pandasm::AnnotationData GenAnnotationEnclosingMethod(const ir::MethodDefinition *methodDef);
     pandasm::AnnotationData GenAnnotationFunctionalReference(const ir::ClassDefinition *classDef);

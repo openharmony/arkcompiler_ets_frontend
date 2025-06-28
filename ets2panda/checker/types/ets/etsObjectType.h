@@ -342,8 +342,21 @@ public:
                                            TypeRelation *relation, GlobalTypesHolder *globalTypes);
     std::vector<varbinder::LocalVariable *> Methods() const;
     std::vector<varbinder::LocalVariable *> Fields() const;
-    varbinder::LocalVariable *CreateSyntheticVarFromEverySignature(util::StringView name,
+    std::vector<varbinder::LocalVariable *> Overloads() const;
+    varbinder::LocalVariable *CreateSyntheticVarFromEverySignature(const util::StringView &name,
                                                                    PropertySearchFlags flags) const;
+    varbinder::LocalVariable *CollectSignaturesForSyntheticType(std::vector<Signature *> &signatures,
+                                                                const util::StringView &name, PropertySearchFlags flags,
+                                                                bool &overloadDeclarationCall) const;
+    void AddSignature(std::vector<Signature *> &signatures, PropertySearchFlags flags, ETSChecker *checker,
+                      varbinder::LocalVariable *found, bool &overloadDeclarationCall) const;
+    void AddSignatureFromFunction(std::vector<Signature *> &signatures, PropertySearchFlags flags, ETSChecker *checker,
+                                  varbinder::LocalVariable *found) const;
+    void AddSignatureFromOverload(std::vector<Signature *> &signatures, PropertySearchFlags flags,
+                                  varbinder::LocalVariable *found, bool &overloadDeclarationCall) const;
+    void AddSignatureFromConstructor(std::vector<Signature *> &signatures, varbinder::LocalVariable *found) const;
+    bool ReplaceArgumentInSignature(std::vector<Signature *> &signatures, Signature *sigToInsert,
+                                    TypeRelation *relation) const;
     bool CheckIdenticalFlags(ETSObjectType *other) const;
     ETSObjectType *CreateETSObjectType(ir::AstNode *declNode, ETSObjectFlags flags);
     void Iterate(const PropertyTraverser &cb) const;

@@ -109,6 +109,9 @@ defines:
   - name: ets/annotation/FunctionalReference
     ref: ETS_ANNOTATION_FUNCTIONAL_REFERENCE
     comment: Ets record
+  - name: ets/annotation/FunctionOverload
+    ref: ETS_ANNOTATION_FUNCTION_OVERLOAD
+    comment: Ets record
   - name: ets/coroutine/Async
     ref: ETS_COROUTINE_ASYNC
   - name: ets/annotation/DynamicCall
@@ -248,6 +251,10 @@ defines:
     ref: UNUSED_ETSGLOBAL_MAIN
   - name: "initialize"
     ref: CLASS_INITIALIZE_METHOD
+  - name: 'constructor'
+    ref: CONSTRUCTOR_NAME
+  - name: 'gensym%%_constructor_overload_declaration'
+    ref: CONSTRUCTOR_OVERLOAD_DEFINITION_NAME
 
 packages:
   - name: 'std.core'

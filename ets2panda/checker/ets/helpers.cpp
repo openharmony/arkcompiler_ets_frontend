@@ -72,6 +72,12 @@ bool ETSChecker::IsVariableGetterSetter(const varbinder::Variable *var)
     return var != nullptr && var->TsType() != nullptr && var->TsType()->HasTypeFlag(TypeFlag::GETTER_SETTER);
 }
 
+bool ETSChecker::IsVariableOverloadDeclaration(const varbinder::Variable *var)
+{
+    return var != nullptr && var->Declaration() != nullptr && var->Declaration()->Node() != nullptr &&
+           var->Declaration()->Node()->IsOverloadDeclaration();
+}
+
 bool ETSChecker::IsVariableExtensionAccessor(const varbinder::Variable *var)
 {
     return var != nullptr && var->TsType() != nullptr && var->TsType()->IsETSFunctionType() &&
@@ -313,6 +319,10 @@ Type *ETSChecker::ResolveIdentifier(ir::Identifier *ident)
 
     ValidatePropertyAccess(resolved, Context().ContainingClass(), ident->Start());
     SaveCapturedVariable(resolved, ident);
+
+    if (IsVariableOverloadDeclaration(resolved)) {
+        return CreateSyntheticTypeFromOverload(resolved);
+    }
 
     return GetTypeOfVariable(resolved);
 }

@@ -109,6 +109,15 @@ void ETSNewArrayInstanceExpression::ClearPreferredType()
     SetTsType(nullptr);
 }
 
+void ETSNewArrayInstanceExpression::CleanCheckInformation()
+{
+    SetPreferredType(nullptr);
+    SetTsType(nullptr);
+    if (dimension_ != nullptr) {
+        dimension_->CleanCheckInformation();
+    }
+}
+
 void ETSNewArrayInstanceExpression::SetPreferredTypeBasedOnFuncParam(checker::ETSChecker *checker, checker::Type *param,
                                                                      checker::TypeRelationFlag flags)
 {

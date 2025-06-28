@@ -345,6 +345,11 @@ void MethodDefinition::Dump(ir::SrcDumper *dumper) const
     }
     DumpPrefix(dumper);
 
+    if (IsConstructor() &&
+        !(Key()->IsIdentifier() && Key()->AsIdentifier()->Name().Is(compiler::Signatures::CONSTRUCTOR_NAME))) {
+        dumper->Add(std::string(compiler::Signatures::CONSTRUCTOR_NAME) + " ");
+    }
+
     auto key = Key();
     if (key != nullptr) {
         key->Dump(dumper);

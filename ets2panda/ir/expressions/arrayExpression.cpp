@@ -363,6 +363,16 @@ void ArrayExpression::ClearPreferredType()
     }
 }
 
+void ArrayExpression::CleanCheckInformation()
+{
+    SetPreferredType(nullptr);
+    SetTsType(nullptr);
+    for (auto *element : elements_) {
+        element->SetAstNodeFlags(ir::AstNodeFlags::NO_OPTS);
+        element->CleanCheckInformation();
+    }
+}
+
 bool ArrayExpression::TrySetPreferredTypeForNestedArrayExpr(checker::ETSChecker *const checker,
                                                             ArrayExpression *const nestedArrayExpr,
                                                             const std::size_t idx) const

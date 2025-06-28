@@ -48,6 +48,11 @@ void GlobalDeclTransformer::VisitExpressionStatement(ir::ExpressionStatement *ex
     result_.immediateInit.emplace_back(exprStmt);
 }
 
+void GlobalDeclTransformer::VisitOverloadDeclaration(ir::OverloadDeclaration *overloadDeclaration)
+{
+    result_.classProperties.emplace_back(overloadDeclaration);
+}
+
 void GlobalDeclTransformer::VisitFunctionDeclaration(ir::FunctionDeclaration *funcDecl)
 {
     auto *funcExpr = util::NodeAllocator::ForceSetParent<ir::FunctionExpression>(allocator_, funcDecl->Function());

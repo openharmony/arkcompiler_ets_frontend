@@ -683,7 +683,7 @@ ir::MethodDefinition *ParserImpl::BuildImplicitConstructor(ir::ClassDefinitionMo
     }
 
     auto *ctor = AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::CONSTRUCTOR, key, funcExpr,
-                                                 ir::ModifierFlags::NONE, Allocator(), false);
+                                                 ir::ModifierFlags::CONSTRUCTOR, Allocator(), false);
 
     const auto rangeImplicitContstuctor = lexer::SourceRange(startLoc, startLoc);
     ctor->IterateRecursively(

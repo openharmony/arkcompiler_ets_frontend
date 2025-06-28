@@ -137,6 +137,7 @@ public:
     void BuildInterfaceDeclaration(ir::TSInterfaceDeclaration *decl);
     void BuildMemberExpression(ir::MemberExpression *memberExpr);
     void BuildMethodDefinition(ir::MethodDefinition *methodDef);
+    void BuildOverloadDeclaration(ir::OverloadDeclaration *overloadDef);
     void BuildAnnotationDeclaration(ir::AnnotationDeclaration *annoDecl);
     void BuildAnnotationUsage(ir::AnnotationUsage *annoUsage);
     void BuildImportDeclaration(ir::ETSImportDeclaration *decl);

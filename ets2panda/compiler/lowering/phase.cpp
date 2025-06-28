@@ -54,6 +54,7 @@
 #include "compiler/lowering/ets/opAssignment.h"
 #include "compiler/lowering/ets/optionalArgumentsLowering.h"
 #include "compiler/lowering/ets/optionalLowering.h"
+#include "compiler/lowering/ets/overloadMappingLowering.h"
 #include "compiler/lowering/ets/packageImplicitImport.h"
 #include "compiler/lowering/ets/partialExportClassGen.h"
 #include "compiler/lowering/ets/primitiveConversionPhase.h"
@@ -135,6 +136,7 @@ std::vector<Phase *> GetETSPhaseList()
         new AnnotationCopyPostLowering,
         new AsyncMethodLowering,
         new DeclareOverloadLowering,
+        new OverloadMappingLowering,
         new EnumPostCheckLoweringPhase,
         new SpreadConstructionPhase,
         new RestArgsLowering,

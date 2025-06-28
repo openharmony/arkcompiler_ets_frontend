@@ -261,7 +261,7 @@ ir::ScriptFunction *CreateNewScriptFunction(public_lib::Context *ctx, ir::Script
     auto *newScriptFunc = ctx->AllocNode<ir::ScriptFunction>(
         allocator, ir::ScriptFunction::ScriptFunctionData {
                        body, ir::FunctionSignature(newParamDeclaration, std::move(newParams), newReturnTypeAnno),
-                       scriptFunc->Flags()});
+                       scriptFunc->Flags() | ir::ScriptFunctionFlags::SYNTHETIC});
     newScriptFunc->AddModifier(scriptFunc->AsScriptFunction()->Modifiers());
 
     ArenaVector<ir::AnnotationUsage *> annotationUsages {allocator->Adapter()};

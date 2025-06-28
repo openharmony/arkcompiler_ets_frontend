@@ -77,4 +77,7 @@ checker::VerifiedType OpaqueTypeNode::Check([[maybe_unused]] checker::ETSChecker
 {
     return {this, checker->GetAnalyzer()->Check(this)};
 }
+
+void OpaqueTypeNode::CleanCheckInformation() {}
+
 }  // namespace ark::es2panda::ir

@@ -74,6 +74,7 @@ public:
     void PreMergeNamespaces(parser::Program *program);
 
 private:
+    void VisitOverloadDeclaration(ir::OverloadDeclaration *overloadDeclaration) override;
     void VisitFunctionDeclaration(ir::FunctionDeclaration *funcDecl) override;
     void VisitVariableDeclaration(ir::VariableDeclaration *varDecl) override;
     void VisitExportNamedDeclaration(ir::ExportNamedDeclaration *exportDecl) override;

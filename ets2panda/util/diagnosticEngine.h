@@ -48,6 +48,8 @@ public:
 
 using DiagnosticStorage = std::vector<std::shared_ptr<DiagnosticBase>>;
 
+using DiagnosticCheckpoint = std::array<size_t, DiagnosticType::COUNT>;
+
 class DiagnosticEngine {
 public:
     explicit DiagnosticEngine() : printer_(std::make_unique<CLIDiagnosticPrinter>())
@@ -64,6 +66,12 @@ public:
 
     // NOTE(schernykh): should be removed
     const DiagnosticBase &GetAnyError() const;
+
+    DiagnosticCheckpoint Save() const;
+
+    void Rollback(const DiagnosticCheckpoint &checkpoint);
+
+    void UndoRange(const DiagnosticCheckpoint &from, const DiagnosticCheckpoint &to);
 
     [[nodiscard]] bool IsAnyError() const noexcept;
 

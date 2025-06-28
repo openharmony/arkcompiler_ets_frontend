@@ -181,7 +181,7 @@ static void CreateFunctionOverload(ir::MethodDefinition *method, ArenaVector<ir:
     auto *const overloadMethod = util::NodeAllocator::ForceSetParent<ir::MethodDefinition>(
         allocator, method->Kind(), ident, funcExpression, method->Modifiers(), allocator, false);
 
-    overloadMethod->Function()->AddFlag(ir::ScriptFunctionFlags::OVERLOAD);
+    overloadMethod->Function()->AddFlag(ir::ScriptFunctionFlags::OVERLOAD | ir::ScriptFunctionFlags::SYNTHETIC);
     overloadMethod->SetRange(funcExpression->Range());
 
     if (!method->IsDeclare() && method->Parent()->IsTSInterfaceBody()) {

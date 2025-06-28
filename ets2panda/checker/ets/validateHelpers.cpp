@@ -65,6 +65,10 @@ void ETSChecker::ValidateCallExpressionIdentifier(ir::Identifier *const ident, T
 
     ES2PANDA_ASSERT(ident->Variable() != nullptr);
     if (ident->Variable()->Declaration()->Node() != nullptr &&
+        ident->Variable()->Declaration()->Node()->IsOverloadDeclaration()) {
+        return;
+    }
+    if (ident->Variable()->Declaration()->Node() != nullptr &&
         ident->Variable()->Declaration()->Node()->IsImportNamespaceSpecifier()) {
         std::ignore = TypeError(ident->Variable(), diagnostic::NAMESPACE_CALL, {ident->ToString()}, ident->Start());
     }

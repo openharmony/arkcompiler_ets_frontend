@@ -110,6 +110,7 @@ public:
     }
 
     void ClearPreferredType();
+    void CleanCheckInformation() override;
 
 private:
     ir::TypeNode *typeReference_;

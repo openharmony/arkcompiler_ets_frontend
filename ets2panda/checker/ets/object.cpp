@@ -82,8 +82,35 @@ static bool CheckGetterSetterDecl(varbinder::LocalVariable const *child, varbind
     return checkChild && checkParent && (child->TsType()->IsETSFunctionType() || parent->TsType()->IsETSFunctionType());
 }
 
+static bool CheckOverloadDecl(varbinder::LocalVariable *child, varbinder::LocalVariable *parent)
+{
+    if (!child->Declaration()->Node()->IsOverloadDeclaration() ||
+        !parent->Declaration()->Node()->IsOverloadDeclaration()) {
+        return false;
+    }
+
+    auto *childOverload = child->Declaration()->Node()->AsOverloadDeclaration();
+    auto *parentOverload = parent->Declaration()->Node()->AsOverloadDeclaration();
+    for (auto *baseMethodName : parentOverload->OverloadedList()) {
+        ES2PANDA_ASSERT(baseMethodName->IsIdentifier());
+        auto res = std::find_if(childOverload->OverloadedList().begin(), childOverload->OverloadedList().end(),
+                                [baseMethodName](ir::Expression *subMethodName) {
+                                    return subMethodName->IsIdentifier() && subMethodName->AsIdentifier()->Name() ==
+                                                                                baseMethodName->AsIdentifier()->Name();
+                                });
+        if (res == childOverload->OverloadedList().end()) {
+            return false;
+        }
+    }
+    return true;
+}
+
 static bool CheckFunctionDecl(varbinder::LocalVariable *child, varbinder::LocalVariable *parent)
 {
+    if (child->Declaration()->Node()->IsOverloadDeclaration() ||
+        parent->Declaration()->Node()->IsOverloadDeclaration()) {
+        return false;
+    }
     ES2PANDA_ASSERT(child->Declaration()->Type() == parent->Declaration()->Type());
     if (!child->TsType()->IsETSMethodType()) {
         return true;
@@ -565,49 +592,57 @@ static void ResolveDeclaredMethodsOfObject(ETSChecker *checker, const ETSObjectT
 {
     for (auto &[_, it] : scope->InstanceMethodScope()->Bindings()) {
         (void)_;
-        auto *method = it->Declaration()->Node()->AsMethodDefinition();
-        auto *function = method->Function();
-        if (function->IsProxy()) {
-            continue;
-        }
+        if (it->Declaration()->Node()->IsMethodDefinition()) {
+            auto *method = it->Declaration()->Node()->AsMethodDefinition();
+            auto *function = method->Function();
+            if (function->IsProxy()) {
+                continue;
+            }
 
-        it->AddFlag(checker->GetAccessFlagFromNode(method));
-        auto *funcType = checker->BuildMethodSignature(method);
-        if (!funcType->IsTypeError()) {
-            funcType->SetVariable(it);
+            it->AddFlag(checker->GetAccessFlagFromNode(method));
+            auto *funcType = checker->BuildMethodSignature(method);
+            if (!funcType->IsTypeError()) {
+                funcType->SetVariable(it);
+            }
+            it->SetTsType(funcType);
+            method->SetTsType(funcType);
+            type->AddProperty<PropertyType::INSTANCE_METHOD>(it->AsLocalVariable());
+        } else if (it->Declaration()->Node()->IsOverloadDeclaration()) {
+            type->AddProperty<PropertyType::INSTANCE_METHOD>(it->AsLocalVariable());
+        } else {
+            ES2PANDA_UNREACHABLE();
         }
-        it->SetTsType(funcType);
-        method->SetTsType(funcType);
-        type->AddProperty<PropertyType::INSTANCE_METHOD>(it->AsLocalVariable());
     }
 
     for (auto &[_, it] : scope->StaticMethodScope()->Bindings()) {
         (void)_;
-        if (!it->Declaration()->Node()->IsMethodDefinition()) {
+        if (it->Declaration()->Node()->IsMethodDefinition()) {
+            auto *method = it->Declaration()->Node()->AsMethodDefinition();
+            auto *function = method->Function();
+
+            if (function->IsProxy()) {
+                continue;
+            }
+
+            it->AddFlag(checker->GetAccessFlagFromNode(method));
+            auto *funcType = checker->BuildMethodSignature(method);
+            if (!funcType->IsTypeError()) {
+                funcType->SetVariable(it);
+            }
+            it->SetTsType(funcType);
+            method->SetTsType(funcType);
+
+            if (method->IsConstructor() && funcType->IsETSFunctionType()) {
+                type->AddConstructSignature(funcType->AsETSFunctionType()->CallSignatures());
+                continue;
+            }
+
+            type->AddProperty<PropertyType::STATIC_METHOD>(it->AsLocalVariable());
+        } else if (it->Declaration()->Node()->IsOverloadDeclaration()) {
+            type->AddProperty<PropertyType::STATIC_METHOD>(it->AsLocalVariable());
+        } else {
             continue;
         }
-
-        auto *method = it->Declaration()->Node()->AsMethodDefinition();
-        auto *function = method->Function();
-
-        if (function->IsProxy()) {
-            continue;
-        }
-
-        it->AddFlag(checker->GetAccessFlagFromNode(method));
-        auto *funcType = checker->BuildMethodSignature(method);
-        if (!funcType->IsTypeError()) {
-            funcType->SetVariable(it);
-        }
-        it->SetTsType(funcType);
-        method->SetTsType(funcType);
-
-        if (method->IsConstructor() && funcType->IsETSFunctionType()) {
-            type->AddConstructSignature(funcType->AsETSFunctionType()->CallSignatures());
-            continue;
-        }
-
-        type->AddProperty<PropertyType::STATIC_METHOD>(it->AsLocalVariable());
     }
 }
 
@@ -715,6 +750,10 @@ std::vector<Signature *> ETSChecker::CollectAbstractSignaturesFromObject(const E
 {
     std::vector<Signature *> abstracts;
     for (const auto &prop : objType->Methods()) {
+        if (prop->Declaration()->Node()->IsOverloadDeclaration()) {
+            continue;
+        }
+
         GetTypeOfVariable(prop);
 
         if (!prop->TsType()->IsETSFunctionType()) {
@@ -913,6 +952,10 @@ void ETSChecker::CheckInterfaceFunctions(ETSObjectType *classType)
 
     for (auto *const &interface : interfaces) {
         for (auto *const &prop : interface->Methods()) {
+            if (prop->Declaration()->Node()->IsOverloadDeclaration()) {
+                continue;
+            }
+
             ir::MethodDefinition *node = prop->Declaration()->Node()->AsMethodDefinition();
             if (prop->TsType()->IsTypeError()) {
                 continue;
@@ -1935,6 +1978,10 @@ PropertySearchFlags ETSChecker::GetInitialSearchFlags(const ir::MemberExpression
             }
             break;
         }
+        case ir::AstNodeType::OVERLOAD_DECLARATION: {
+            return FUNCTIONAL_FLAGS | GETTER_FLAGS;
+            break;
+        }
         case ir::AstNodeType::ETS_NEW_CLASS_INSTANCE_EXPRESSION: {
             if (memberExpr->Parent()->AsETSNewClassInstanceExpression()->GetTypeRef() == memberExpr) {
                 return PropertySearchFlags::SEARCH_DECL;
@@ -2249,6 +2296,17 @@ std::vector<ResolveResult *> ETSChecker::ResolveMemberReference(const ir::Member
     return resolveRes;
 }
 
+varbinder::LocalVariable *ETSChecker::ResolveOverloadReference(const ir::Identifier *ident, ETSObjectType *objType,
+                                                               PropertySearchFlags searchFlags)
+{
+    auto *var = objType->GetProperty(ident->Name(), searchFlags);
+    if (var == nullptr) {
+        return nullptr;
+    }
+    ValidatePropertyAccess(var, objType, ident->Start());
+    return var;
+}
+
 void ETSChecker::WarnForEndlessLoopInGetterSetter(const ir::MemberExpression *const memberExpr)
 {
     if (!memberExpr->Object()->IsThisExpression() || memberExpr->Property() == nullptr ||
@@ -2329,6 +2387,8 @@ void ETSChecker::CheckProperties(ETSObjectType *classType, ir::ClassDefinition *
         if (CheckGetterSetterDecl(it, found)) {
             return;
         }
+    } else if (CheckOverloadDecl(it, found)) {
+        return;
     } else if (CheckFunctionDecl(it, found)) {
         return;
     }
@@ -2347,6 +2407,8 @@ void ETSChecker::CheckProperties(ETSObjectType *classType, ir::ClassDefinition *
         targetType = "namespace";
     } else if (it->HasFlag(varbinder::VariableFlags::ENUM_LITERAL)) {
         targetType = "enum";
+    } else if (it->HasFlag(varbinder::VariableFlags::OVERLOAD)) {
+        targetType = "overload";
     } else {
         ES2PANDA_UNREACHABLE();
     }

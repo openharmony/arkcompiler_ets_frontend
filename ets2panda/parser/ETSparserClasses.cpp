@@ -514,6 +514,50 @@ void ETSParser::ParseClassFieldDefinition(ir::Identifier *fieldName, ir::Modifie
     declarations->push_back(field);
 }
 
+void ETSParser::ValidateOverloadList(ArenaVector<ir::Expression *> const &overloadList)
+{
+    for (ir::Expression *overloadedName : overloadList) {
+        if (!overloadedName->IsIdentifier()) {
+            LogError(diagnostic::CLASS_INTERFACE_METHOD_OVERLOADED_NAME_MUST_IDENT, {}, overloadedName->Start());
+        }
+    }
+}
+
+ir::OverloadDeclaration *ETSParser::ParseClassOverloadDeclaration(ir::ModifierFlags modifiers)
+{
+    ValidateOverloadDeclarationModifiers(modifiers);
+    ir::Identifier *overloadName = nullptr;
+    // To avoid duplicate names with anonymous constructors, overload constructor name is
+    // "constructorOverloadDeclaration", instead of "constructor"
+    if (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_CONSTRUCTOR) {
+        overloadName =
+            AllocNode<ir::Identifier>(compiler::Signatures::CONSTRUCTOR_OVERLOAD_DEFINITION_NAME, Allocator());
+        modifiers |= ir::ModifierFlags::CONSTRUCTOR;
+        Lexer()->NextToken();
+    } else {
+        overloadName = ExpectIdentifier(false, true, TypeAnnotationParsingOptions::REPORT_ERROR);
+    }
+
+    auto *overloadDef = AllocNode<ir::OverloadDeclaration>(overloadName->Clone(Allocator(), nullptr)->AsExpression(),
+                                                           modifiers, Allocator());
+    overloadDef->AddOverloadDeclFlag(ir::OverloadDeclFlags::CLASS_METHOD);
+
+    auto startLoc = Lexer()->GetToken().Start();
+    if (!Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_LEFT_BRACE)) {
+        LogExpectedToken(lexer::TokenType::PUNCTUATOR_LEFT_BRACE);
+    }
+    ArenaVector<ir::Expression *> overloads(Allocator()->Adapter());
+    lexer::SourcePosition endLoc;
+
+    ParseList(
+        lexer::TokenType::PUNCTUATOR_RIGHT_BRACE, lexer::NextTokenFlags::NONE,
+        [this, &overloads, overloadDef]() { return ParseOverloadListElement(overloads, overloadDef); }, &endLoc, true);
+    overloadDef->SetOverloadedList(std::move(overloads));
+    overloadDef->SetRange({startLoc, endLoc});
+    ValidateOverloadList(overloadDef->OverloadedList());
+    return overloadDef;
+}
+
 ir::MethodDefinition *ETSParser::ParseClassMethodDefinition(ir::Identifier *methodName, ir::ModifierFlags modifiers,
                                                             bool isDefault)
 {
@@ -930,7 +974,8 @@ ir::ModifierFlags ETSParser::ParseInterfaceMethodModifiers()
 {
     if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT ||
         Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET ||
-        Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS) {
+        Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS ||
+        Lexer()->GetToken().Type() == lexer::TokenType::KEYW_OVERLOAD) {
         return ir::ModifierFlags::PUBLIC;
     }
 
@@ -1042,6 +1087,31 @@ static lexer::SourcePosition GetEndLoc(ir::BlockStatement *body, ir::ScriptFunct
     }
 
     return lexer->GetToken().End();
+}
+
+ir::OverloadDeclaration *ETSParser::ParseInterfaceOverload(ir::ModifierFlags modifiers)
+{
+    ValidateOverloadDeclarationModifiers(modifiers);
+    auto *overloadName = ExpectIdentifier(false, true, TypeAnnotationParsingOptions::REPORT_ERROR);
+    auto *overloadDef = AllocNode<ir::OverloadDeclaration>(overloadName->Clone(Allocator(), nullptr)->AsExpression(),
+                                                           modifiers, Allocator());
+    overloadDef->AddOverloadDeclFlag(ir::OverloadDeclFlags::INTERFACE_METHOD);
+
+    auto startLoc = Lexer()->GetToken().Start();
+    if (!Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_LEFT_BRACE)) {
+        LogExpectedToken(lexer::TokenType::PUNCTUATOR_LEFT_BRACE);
+    }
+    ArenaVector<ir::Expression *> overloads(Allocator()->Adapter());
+    lexer::SourcePosition endLoc;
+
+    ParseList(
+        lexer::TokenType::PUNCTUATOR_RIGHT_BRACE, lexer::NextTokenFlags::NONE,
+        [this, &overloads, overloadDef]() { return ParseOverloadListElement(overloads, overloadDef); }, &endLoc, true);
+
+    overloadDef->SetOverloadedList(std::move(overloads));
+    overloadDef->SetRange({startLoc, endLoc});
+    ValidateOverloadList(overloadDef->OverloadedList());
+    return overloadDef;
 }
 
 ir::MethodDefinition *ETSParser::ParseInterfaceMethod(ir::ModifierFlags flags, ir::MethodDefinitionKind methodKind)
@@ -1167,6 +1237,12 @@ ir::AstNode *ETSParser::ParseTypeLiteralOrInterfaceMember()
     auto startLoc = Lexer()->GetToken().Start();
     auto readonlyTok = Lexer()->TryEatTokenKeyword(lexer::TokenType::KEYW_READONLY);
     bool isReadonly = readonlyTok.has_value();
+
+    if (Lexer()->TryEatTokenFromKeywordType(lexer::TokenType::KEYW_OVERLOAD)) {
+        auto *overloadDeclaration = ParseInterfaceOverload(modifiers);
+        overloadDeclaration->SetStart(startLoc);
+        return overloadDeclaration;
+    }
 
     if (nextCp == lexer::LEX_CHAR_LEFT_PAREN || nextCp == lexer::LEX_CHAR_LESS_THAN) {
         if (isReadonly) {
@@ -1332,7 +1408,8 @@ std::pair<ir::ModifierFlags, lexer::SourcePosition> ETSParser::ParseMemberModifi
         }
         Lexer()->NextToken();
 
-        if (Lexer()->GetToken().Type() != lexer::TokenType::KEYW_FUNCTION) {
+        if (Lexer()->GetToken().Type() != lexer::TokenType::KEYW_FUNCTION &&
+            Lexer()->GetToken().KeywordType() != lexer::TokenType::KEYW_OVERLOAD) {
             // async_function_bas.ets
             if (isAsync) {
                 LogError(diagnostic::ASYNC_FLAG_ONLY_FOR_TOP_FUN);

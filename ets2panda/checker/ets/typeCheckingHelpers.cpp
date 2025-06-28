@@ -477,6 +477,30 @@ Type *ETSChecker::GetTypeOfSetterGetter(varbinder::Variable *const var)
     return propType->FindSetter()->Params()[0]->TsType();
 }
 
+ETSFunctionType *ETSChecker::CreateSyntheticTypeFromOverload(varbinder::Variable *const var)
+{
+    auto *overloadDeclaration = var->Declaration()->Node()->AsOverloadDeclaration();
+    std::vector<Signature *> signatures;
+    ETSFunctionType *syntheticFunctionType =
+        CreateETSMethodType(overloadDeclaration->Id()->Name(), {{}, Allocator()->Adapter()});
+
+    for (auto *overloadFunction : overloadDeclaration->OverloadedList()) {
+        Type *functionType = overloadFunction->Check(this);
+        ES2PANDA_ASSERT(functionType->IsETSFunctionType());
+        auto *signature = functionType->AsETSFunctionType()->CallSignatures().front();
+        if (std::find(signatures.begin(), signatures.end(), signature) != signatures.end()) {
+            continue;
+        }
+        signatures.emplace_back(signature);
+    }
+
+    for (auto &s : signatures) {
+        syntheticFunctionType->AddCallSignature(s);
+    }
+
+    return syntheticFunctionType;
+}
+
 void ETSChecker::IterateInVariableContext(varbinder::Variable *const var)
 {
     // Before computing the given variables type, we have to make a new checker context frame so that the checking is
@@ -1615,6 +1639,182 @@ void ETSChecker::CheckExceptionClauseType(const std::vector<checker::ETSObjectTy
         this->Relation()->IsIdenticalTo(clauseType, exception);
         if (this->Relation()->IsTrue()) {
             LogError(diagnostic::EXCEPTION_REDECLARATION, {}, catchClause->Start());
+        }
+    }
+}
+
+static bool CheckAccessModifierForOverloadDeclaration(ETSChecker *const checker,
+                                                      const ir::ModifierFlags &overLoadAliasFlags,
+                                                      const ir::ModifierFlags &overloadedMethodFlags,
+                                                      const lexer::SourcePosition &pos)
+{
+    if ((overloadedMethodFlags & (ir::ModifierFlags::ABSTRACT)) != 0) {
+        checker->LogError(diagnostic::OVERLOAD_MODIFIERS_ABSTRACT, {}, pos);
+        return false;
+    }
+
+    if (((overLoadAliasFlags ^ overloadedMethodFlags) & (ir::ModifierFlags::STATIC | ir::ModifierFlags::ASYNC)) != 0) {
+        checker->LogError(diagnostic::OVERLOAD_SAME_ACCESS_MODIFIERS_STATIC_ASYNC, {}, pos);
+        return false;
+    }
+
+    if (((overLoadAliasFlags ^ overloadedMethodFlags) & (ir::ModifierFlags::CONSTRUCTOR)) != 0) {
+        checker->LogError(diagnostic::OVERLOAD_MUST_BOTH_CONSTRUCT, {}, pos);
+        return false;
+    }
+
+    if ((overLoadAliasFlags & ir::ModifierFlags::EXPORT) != 0 &&
+        (overloadedMethodFlags & ir::ModifierFlags::EXPORT) == 0) {
+        checker->LogError(diagnostic::OVERLOADED_NAME_MUST_ALSO_EXPORTED, {}, pos);
+        return false;
+    }
+    return true;
+}
+
+static bool CheckOverloadedName(ETSChecker *checker, ir::OverloadDeclaration *node, ir::Expression *overloadedName)
+{
+    if (overloadedName->Variable()->Declaration() == nullptr) {
+        checker->LogError(diagnostic::OVERLOADED_NAME_MUST_FUNCTION, {}, overloadedName->Start());
+        overloadedName->SetTsType(checker->GlobalTypeError());
+        return false;
+    }
+
+    auto *identDeclNode = overloadedName->Variable()->Declaration()->Node();
+    if (!identDeclNode->IsMethodDefinition()) {
+        checker->LogError(diagnostic::OVERLOADED_NAME_MUST_FUNCTION, {}, overloadedName->Start());
+        overloadedName->SetTsType(checker->GlobalTypeError());
+        return false;
+    }
+    // Constructor will lowering to multiple Constructor if have rest parameters or optional parameters.
+    // Need to modify RestTupleConstructionPhase.
+    if (!identDeclNode->AsMethodDefinition()->Overloads().empty() && !identDeclNode->IsConstructor()) {
+        checker->LogError(diagnostic::OVERLOADED_NAME_REFER_TO_OVERLOAD_FUNCTION, {overloadedName->Variable()->Name()},
+                          overloadedName->Start());
+        overloadedName->SetTsType(checker->GlobalTypeError());
+        return false;
+    }
+
+    return CheckAccessModifierForOverloadDeclaration(checker, node->Modifiers(), identDeclNode->Modifiers(),
+                                                     overloadedName->Start());
+}
+
+void ETSChecker::CheckFunctionOverloadDeclaration(ETSChecker *checker, ir::OverloadDeclaration *node) const
+{
+    for (auto *overloadedName : node->OverloadedList()) {
+        if (overloadedName->IsMemberExpression()) {
+            overloadedName->Check(checker);
+            overloadedName->SetVariable(overloadedName->AsMemberExpression()->Property()->Variable());
+        } else if (overloadedName->IsIdentifier()) {
+            ir::Identifier *ident = overloadedName->AsIdentifier();
+
+            Type *classType = node->Parent()->AsClassDefinition()->TsType();
+            ES2PANDA_ASSERT(classType->IsETSObjectType());
+
+            PropertySearchFlags searchFlags = PropertySearchFlags::SEARCH_METHOD | PropertySearchFlags::SEARCH_IN_BASE |
+                                              PropertySearchFlags::SEARCH_IN_INTERFACES |
+                                              PropertySearchFlags::IS_GETTER;
+            auto *variable =
+                checker->ResolveOverloadReference(ident->AsIdentifier(), classType->AsETSObjectType(), searchFlags);
+            if (variable == nullptr) {
+                checker->LogError(diagnostic::OVERLOADED_NAME_MUST_FUNCTION, {}, ident->Start());
+                ident->SetTsType(checker->GlobalTypeError());
+                continue;
+            }
+
+            ident->SetTsType(variable->TsType());
+            ident->SetVariable(variable);
+
+            if (!CheckOverloadedName(checker, node, overloadedName)) {
+                continue;
+            }
+        } else {
+            overloadedName->SetTsType(checker->GlobalTypeError());
+            continue;
+        }
+    }
+}
+
+void ETSChecker::CheckClassMethodOverloadDeclaration(ETSChecker *checker, ir::OverloadDeclaration *node) const
+{
+    for (auto *overloadedName : node->OverloadedList()) {
+        if (!overloadedName->IsIdentifier()) {
+            overloadedName->SetTsType(checker->GlobalTypeError());
+            continue;
+        }
+        ir::Identifier *ident = overloadedName->AsIdentifier();
+
+        Type *classType = node->Parent()->AsClassDefinition()->TsType();
+        ES2PANDA_ASSERT(classType->IsETSObjectType());
+
+        PropertySearchFlags searchFlags = PropertySearchFlags::SEARCH_METHOD | PropertySearchFlags::SEARCH_IN_BASE |
+                                          PropertySearchFlags::SEARCH_IN_INTERFACES | PropertySearchFlags::IS_GETTER;
+        auto *variable =
+            checker->ResolveOverloadReference(ident->AsIdentifier(), classType->AsETSObjectType(), searchFlags);
+        if (variable == nullptr) {
+            checker->LogError(diagnostic::OVERLOADED_NAME_MUST_FUNCTION, {}, ident->Start());
+            ident->SetTsType(checker->GlobalTypeError());
+            continue;
+        }
+
+        ident->SetTsType(variable->TsType());
+        ident->SetVariable(variable);
+
+        if (!CheckOverloadedName(checker, node, overloadedName)) {
+            continue;
+        }
+    }
+}
+
+void ETSChecker::CheckInterfaceMethodOverloadDeclaration(ETSChecker *checker, ir::OverloadDeclaration *node) const
+{
+    for (auto *overloadedName : node->OverloadedList()) {
+        if (!overloadedName->IsIdentifier()) {
+            overloadedName->SetTsType(checker->GlobalTypeError());
+            continue;
+        }
+        ir::Identifier *ident = overloadedName->AsIdentifier();
+
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+        Type *identType = checker->ResolveIdentifier(ident);
+        ident->SetTsType(identType);
+        if (!CheckOverloadedName(checker, node, overloadedName)) {
+            continue;
+        }
+    }
+}
+
+void ETSChecker::CheckConstructorOverloadDeclaration(ETSChecker *checker, ir::OverloadDeclaration *node) const
+{
+    for (auto *overloadedName : node->OverloadedList()) {
+        if (!overloadedName->IsIdentifier()) {
+            overloadedName->SetTsType(checker->GlobalTypeError());
+            continue;
+        }
+        ir::Identifier *ident = overloadedName->AsIdentifier();
+
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+        Type *identType = checker->ResolveIdentifier(ident->AsIdentifier());
+        ident->SetTsType(identType);
+        if (identType->IsTypeError()) {
+            continue;
+        }
+
+        ES2PANDA_ASSERT(identType->IsETSFunctionType());
+        const size_t singleSignatureSize = 1;
+        if (identType->AsETSFunctionType()->CallSignatures().size() > singleSignatureSize) {
+            size_t userDefinedConstructorSize =
+                std::count_if(identType->AsETSFunctionType()->CallSignatures().begin(),
+                              identType->AsETSFunctionType()->CallSignatures().end(),
+                              [](Signature *sig) { return !sig->Function()->IsSynthetic(); });
+            if (userDefinedConstructorSize > singleSignatureSize) {
+                checker->LogError(diagnostic::OVERLOADED_NAME_REFER_TO_OVERLOAD_FUNCTION, {ident->Name()},
+                                  node->Start());
+                continue;
+            }
+        }
+
+        if (!CheckOverloadedName(checker, node, overloadedName)) {
+            continue;
         }
     }
 }

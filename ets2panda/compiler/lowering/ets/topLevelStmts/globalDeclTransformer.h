@@ -79,6 +79,7 @@ public:
      */
     ResultT TransformStatements(const ArenaVector<ir::Statement *> &stmts);
 
+    void VisitOverloadDeclaration(ir::OverloadDeclaration *overloadDeclaration) override;
     void VisitFunctionDeclaration(ir::FunctionDeclaration *funcDecl) override;
     void VisitVariableDeclaration(ir::VariableDeclaration *varDecl) override;
     void VisitClassStaticBlock(ir::ClassStaticBlock *classStaticBlock) override;
