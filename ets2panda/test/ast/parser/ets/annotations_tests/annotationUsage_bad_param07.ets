@@ -23,3 +23,4 @@ function foo(@MyAnno ...a/* @@ label */){}
 
 /* @@@ label Error SyntaxError: Parameter declaration should have an explicit type annotation.  */
 /* @@? 22:15 Error TypeError: The required field 'testProperty1' must be specified. Fields without default values cannot be omitted. */
+/* @@? 22:22 Error TypeError: The type of parameter 'a' cannot be inferred */
