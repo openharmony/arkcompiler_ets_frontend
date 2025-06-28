@@ -406,13 +406,14 @@ void Lexer::ScanString()
     PrepareStringTokenHelper();
     const auto startPos = Iterator().Index();
     auto escapeEnd = startPos;
-    bool validEscape = true;
+    bool isFinalizedStr = true;
 
     do {
         const char32_t cp = Iterator().Peek();
         switch (cp) {
             case util::StringView::Iterator::INVALID_CP: {
                 LogError(diagnostic::UNTERMINATED_STRING);
+                isFinalizedStr = false;
                 break;
             }
             case LEX_CHAR_CR:
@@ -425,7 +426,7 @@ void Lexer::ScanString()
                 continue;
             }
             case LEX_CHAR_BACKSLASH: {
-                validEscape &= HandleBackslashHelper(&str, &escapeEnd);
+                isFinalizedStr &= HandleBackslashHelper(&str, &escapeEnd);
                 continue;
             }
             case LEX_CHAR_BACK_TICK:
@@ -448,7 +449,7 @@ void Lexer::ScanString()
             }
         }
 
-        FinalizeTokenHelper(&str, startPos, escapeEnd, validEscape);
+        FinalizeTokenHelper(&str, startPos, escapeEnd, isFinalizedStr);
         break;
     } while (true);
 
