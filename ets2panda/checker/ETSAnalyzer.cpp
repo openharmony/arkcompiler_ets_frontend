@@ -3005,7 +3005,7 @@ checker::Type *ETSAnalyzer::Check(ir::ForOfStatement *const st) const
     checker::Type *elemType = checker->GlobalTypeError();
 
     if (exprType->IsETSStringType()) {
-        elemType = checker->GetGlobalTypesHolder()->GlobalCharType();
+        elemType = checker->GlobalBuiltinETSStringType();
     } else if (exprType->IsETSArrayType() || exprType->IsETSResizableArrayType()) {
         elemType = checker->GetElementTypeOfArray(exprType);
     } else if (exprType->IsETSObjectType() || exprType->IsETSUnionType() || exprType->IsETSTypeParameter()) {
