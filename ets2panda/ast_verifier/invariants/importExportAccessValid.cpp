@@ -14,7 +14,7 @@
  */
 
 #include "importExportAccessValid.h"
-#include "../helpers.h"
+#include "ast_verifier/helpers.h"
 #include "ir/expressions/callExpression.h"
 #include "checker/types/ets/etsObjectType.h"
 #include "ir/module/importSpecifier.h"

@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-#include "../helpers.h"
+#include "ast_verifier/helpers.h"
 #include "nodeHasType.h"
 #include "ir/base/classDefinition.h"
 #include "ir/base/methodDefinition.h"

@@ -19,7 +19,7 @@
 #include "ir/ts/tsInterfaceDeclaration.h"
 #include "ir/ts/tsEnumDeclaration.h"
 #include "ir/ts/tsInterfaceBody.h"
-#include "../helpers.h"
+#include "ast_verifier/helpers.h"
 
 namespace ark::es2panda::compiler::ast_verifier {
 

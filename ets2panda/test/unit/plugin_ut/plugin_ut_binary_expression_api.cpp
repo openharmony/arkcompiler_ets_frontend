@@ -19,7 +19,7 @@
 #include <ir/expression.h>
 #include <ostream>
 #include <string>
-#include "../plugin/util.h"
+#include "test/unit/plugin/util.h"
 #include "public/es2panda_lib.h"
 
 // NOLINTBEGIN

@@ -16,7 +16,7 @@
 #include "localClassLowering.h"
 
 #include "checker/ETSchecker.h"
-#include "../util.h"
+#include "compiler/lowering/util.h"
 
 namespace ark::es2panda::compiler {
 

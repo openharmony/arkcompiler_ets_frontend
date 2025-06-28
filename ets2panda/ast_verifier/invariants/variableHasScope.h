@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_COMPILER_CORE_AST_VERIFIER_INVARIANTS_VARIABLEHASSCOPE_H
 #define ES2PANDA_COMPILER_CORE_AST_VERIFIER_INVARIANTS_VARIABLEHASSCOPE_H
 
-#include "../invariantBase.h"
+#include "ast_verifier/invariantBase.h"
 
 #include "varbinder/varbinder.h"
 
