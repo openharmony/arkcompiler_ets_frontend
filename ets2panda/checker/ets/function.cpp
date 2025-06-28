@@ -1090,6 +1090,10 @@ Signature *ETSChecker::ResolvePotentialTrailingLambdaWithReceiver(ir::CallExpres
     ArenaVector<Signature *> sigContainLambdaWithReceiverAsParam(ProgramAllocator()->Adapter());
     Signature *signature = nullptr;
     for (auto sig : signatures) {
+        if (!sig->HasFunction()) {
+            continue;
+        }
+
         if (!IsLastParameterLambdaWithReceiver(sig)) {
             normalSig.emplace_back(sig);
             continue;

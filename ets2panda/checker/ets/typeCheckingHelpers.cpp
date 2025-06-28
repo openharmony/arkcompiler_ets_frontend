@@ -1143,6 +1143,10 @@ void ETSChecker::CheckMultiplePropertiesAnnotation(ir::AnnotationUsage *st, util
             continue;
         }
 
+        if (result->second == nullptr || result->second->TypeAnnotation() == nullptr) {
+            continue;
+        }
+
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         auto clone = result->second->TypeAnnotation()->Clone(ProgramAllocator(), param);
         param->SetTypeAnnotation(clone);
