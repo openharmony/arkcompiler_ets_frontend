@@ -72,6 +72,7 @@ import {
 import { ArkTSConfigGenerator } from './generate_arktsconfig';
 import { SetupClusterOptions } from '../types';
 import { KitImportTransformer } from '../plugins/KitImportTransformer';
+
 export abstract class BaseMode {
   public buildConfig: BuildConfig;
   public entryFiles: Set<string>;
@@ -248,7 +249,8 @@ export abstract class BaseMode {
       if (this.buildConfig.aliasConfig?.size > 0) {
         // if aliasConfig is set, transform aliasName@kit.xxx to default@ohos.xxx through the plugin
         this.logger.printInfo('Transforming import statements with alias config');
-        let transformAst = new KitImportTransformer(arkts, arktsGlobal.compilerContext.program, this.buildConfig.buildSdkPath,this.buildConfig.aliasConfig).transform(ast);
+        let transformAst = new KitImportTransformer(arkts, arktsGlobal.compilerContext.program,
+                                                    this.buildConfig.buildSdkPath,this.buildConfig.aliasConfig).transform(ast);
         PluginDriver.getInstance().getPluginContext().setArkTSAst(transformAst);
       } else {
         PluginDriver.getInstance().getPluginContext().setArkTSAst(ast);

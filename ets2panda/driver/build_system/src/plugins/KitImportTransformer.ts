@@ -27,7 +27,7 @@ import { KIT_CONFIGS_PATH_FROM_SDK } from '../pre_define';
 export class KitImportTransformer {
 
     private arkts: ArkTS;
-    private extraImports: ArkTS["ETSImportDeclaration"][] = [];
+    private extraImports: ArkTS['ETSImportDeclaration'][] = [];
     private sdkAliasConfig: Map<string, Map<string, AliasConfig>>;
     private buildSdkPath: string;
     private program: object;
@@ -41,12 +41,12 @@ export class KitImportTransformer {
         this.logger = Logger.getInstance();
     }
 
-    public transform(astNode: ArkTS["AstNode"]): ArkTS["AstNode"] {
+    public transform(astNode: ArkTS['AstNode']): ArkTS['AstNode'] {
         if (!this.arkts.isEtsScript(astNode)) {
             return astNode;
         }
 
-        const newStatements: ArkTS["AstNode"][] = [];
+        const newStatements: ArkTS['AstNode'][] = [];
         const dynamicAliasNames = new Set(this.getDynamicAliasNames());
         if (astNode.statements.length === 0) {
             return astNode;
@@ -64,7 +64,7 @@ export class KitImportTransformer {
         return this.arkts.factory.updateEtsScript(astNode, finalStatements);
     }
 
-    private splitKitImport(importNode: ArkTS["ETSImportDeclaration"]): void {
+    private splitKitImport(importNode: ArkTS['ETSImportDeclaration']): void {
         const kitName = importNode.source.str;
         const symbolsJson = this.loadKitSymbolsJson(kitName);
         if (!symbolsJson) {
@@ -75,7 +75,7 @@ export class KitImportTransformer {
         this.generateSplitImportDeclarations(groupedSymbols);
     }
     
-    private loadKitSymbolsJson(kitName: string): any | null {
+    private loadKitSymbolsJson(kitName: string): unknown | null {
         let jsonFileName: string = this.getOriginalNameByAlias(kitName);
         if (jsonFileName === '') {
             this.logger.printError(LogDataFactory.newInstance(
@@ -107,7 +107,7 @@ export class KitImportTransformer {
         }
     }
 
-    private groupImportSpecifiersBySource(importNode: ArkTS["ETSImportDeclaration"], symbolsJson: any, kitName: string): Map<string, string[]> {
+    private groupImportSpecifiersBySource(importNode: ArkTS['ETSImportDeclaration'], symbolsJson: unknown, kitName: string): Map<string, string[]> {
         const grouped = new Map<string, string[]>();
     
         for (const specifier of importNode.specifiers) {
@@ -120,13 +120,14 @@ export class KitImportTransformer {
                 continue;
             }
     
-            const symbolEntry = symbolsJson.symbols?.[symbolName];
+            const typedSymbols = (symbolsJson as { symbols: Record<string, { source: string }> });
+            const symbolEntry = typedSymbols.symbols?.[symbolName];
             if (!symbolEntry?.source) {
                 this.logger.printWarn(`Symbol '${symbolName}' not found in ${kitName}.json`);
                 continue;
             }
     
-            const sourcePath = "default" + symbolEntry.source.replace(/\.d\.ts$/, '');
+            const sourcePath = 'default' + symbolEntry.source.replace(/\.d\.ts$/, '');
             if (!grouped.has(sourcePath)) {
                 grouped.set(sourcePath, []);
             }

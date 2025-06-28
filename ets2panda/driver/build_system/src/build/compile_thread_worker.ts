@@ -76,7 +76,8 @@ function compileAbc(jobInfo: JobInfo): void {
     if (config.aliasConfig?.size > 0) {
       // if aliasConfig is set, transform aliasName@kit.xxx to default@ohos.xxx through the plugin
       let ast = arkts.EtsScript.fromContext();
-      let transformAst = new KitImportTransformer(arkts, arktsGlobal.compilerContext.program, config.buildSdkPath, config.aliasConfig).transform(ast);
+      let transformAst = new KitImportTransformer(arkts, arktsGlobal.compilerContext.program,
+                                                  config.buildSdkPath, config.aliasConfig).transform(ast);
       PluginDriver.getInstance().getPluginContext().setArkTSAst(transformAst);
     }
     PluginDriver.getInstance().runPluginHook(PluginHook.PARSED);
