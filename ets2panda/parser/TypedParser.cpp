@@ -610,8 +610,9 @@ ArenaVector<ir::AstNode *> TypedParser::ParseTypeLiteralOrInterfaceBody()
                 LogExpectedToken(lexer::TokenType::PUNCTUATOR_COMMA);
             }
 
-            if (Lexer()->GetToken().IsKeyword() && ((Lexer()->GetToken().Type() != lexer::TokenType::KEYW_STATIC) &&
-                                                    (Lexer()->GetToken().Type() != lexer::TokenType::KEYW_PRIVATE))) {
+            if (Lexer()->GetToken().IsKeyword() && (Lexer()->GetToken().Type() != lexer::TokenType::KEYW_STATIC &&
+                                                    Lexer()->GetToken().Type() != lexer::TokenType::KEYW_PRIVATE &&
+                                                    Lexer()->GetToken().Type() != lexer::TokenType::KEYW_DEFAULT)) {
                 Lexer()->GetToken().SetTokenType(lexer::TokenType::LITERAL_IDENT);
                 Lexer()->GetToken().SetTokenStr(ERROR_LITERAL);
             }

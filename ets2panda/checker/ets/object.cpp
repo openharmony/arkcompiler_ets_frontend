@@ -1145,6 +1145,9 @@ void ETSChecker::MaybeReportErrorsForOverridingValidation(ArenaVector<ETSFunctio
     if (!abstractsToBeImplemented.empty() && reportError) {
         auto unimplementedSignature = abstractsToBeImplemented.front()->CallSignatures().front();
         auto containingObjectName = GetContainingObjectNameFromSignature(unimplementedSignature);
+        if (unimplementedSignature->HasSignatureFlag(SignatureFlags::DEFAULT)) {
+            return;
+        }
         if (unimplementedSignature->HasSignatureFlag(SignatureFlags::GETTER)) {
             LogError(diagnostic::GETTER_MISSING_IMPL,
                      {classType->Name(), unimplementedSignature->Function()->Id()->Name(), containingObjectName}, pos);
