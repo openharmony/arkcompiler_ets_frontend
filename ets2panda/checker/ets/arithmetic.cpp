@@ -566,10 +566,11 @@ checker::Type *ETSChecker::CheckBinaryOperatorLogical(ir::Expression *left, ir::
         right->RemoveAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF);
         return CreateETSUnionType({MaybeBoxExpression(left), MaybeBoxExpression(right)});
     }
-    if (right->IsNumberLiteral()) {
+
+    if (right->IsNumberLiteral() && !left->IsNumberLiteral() && leftType->IsBuiltinNumeric()) {
         return leftType;
     }
-    if (left->IsNumberLiteral()) {
+    if (left->IsNumberLiteral() && !right->IsNumberLiteral() && rightType->IsBuiltinNumeric()) {
         return rightType;
     }
 
