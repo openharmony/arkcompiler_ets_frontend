@@ -818,7 +818,6 @@ Type *ETSChecker::GetTypeFromTypeAliasReference(varbinder::Variable *var)
     aliasTypeNode->Check(this);
     Type *targetType = aliasTypeNode->TypeAnnotation()->GetType(this);
     typeAliasType->AsETSTypeAliasType()->SetTargetType(targetType);
-    typeAliasType->AsETSTypeAliasType()->ApplySubstitution(Relation());
 
     var->SetTsType(targetType);
     return targetType;
