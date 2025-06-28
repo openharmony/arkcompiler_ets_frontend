@@ -579,25 +579,6 @@ std::tuple<bool, ir::BlockStatement *, lexer::SourcePosition, bool> ETSParser::P
     return {true, body, body->End(), false};
 }
 
-ir::ScriptFunctionFlags ETSParser::ParseFunctionThrowMarker(bool isRethrowsAllowed)
-{
-    ir::ScriptFunctionFlags throwMarker = ir::ScriptFunctionFlags::NONE;
-
-    if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT) {
-        if (Lexer()->TryEatTokenKeyword(lexer::TokenType::KEYW_THROWS)) {
-            throwMarker = ir::ScriptFunctionFlags::THROWS;
-        } else if (Lexer()->TryEatTokenKeyword(lexer::TokenType::KEYW_RETHROWS)) {
-            if (isRethrowsAllowed) {
-                throwMarker = ir::ScriptFunctionFlags::RETHROWS;
-            } else {
-                LogError(diagnostic::ONLY_THROWS_IN_FUN_TYPE);
-            }
-        }
-    }
-
-    return throwMarker;
-}
-
 ir::AstNode *ETSParser::ParseInnerTypeDeclaration(ir::ModifierFlags memberModifiers, lexer::LexerPosition savedPos,
                                                   bool isStepToken, bool seenStatic)
 {

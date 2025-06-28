@@ -242,16 +242,6 @@ public:
         return (Flags() & ir::ScriptFunctionFlags::HAS_THROW) != 0;
     }
 
-    [[nodiscard]] bool IsThrowing() const noexcept
-    {
-        return (Flags() & ir::ScriptFunctionFlags::THROWS) != 0;
-    }
-
-    [[nodiscard]] bool IsRethrowing() const noexcept
-    {
-        return (Flags() & ir::ScriptFunctionFlags::RETHROWS) != 0;
-    }
-
     [[nodiscard]] bool IsTrailingLambda() const noexcept
     {
         return (Flags() & ir::ScriptFunctionFlags::TRAILING_LAMBDA) != 0;

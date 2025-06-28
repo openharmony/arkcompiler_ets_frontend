@@ -197,9 +197,6 @@ static SignatureFlags ConvertToSignatureFlags(ir::ModifierFlags inModifiers, ir:
         }
     };
 
-    convertFlag(ir::ScriptFunctionFlags::THROWS, SignatureFlags::THROWS);
-    convertFlag(ir::ScriptFunctionFlags::RETHROWS, SignatureFlags::RETHROWS);
-
     convertFlag(ir::ScriptFunctionFlags::CONSTRUCTOR, SignatureFlags::CONSTRUCTOR);
     convertFlag(ir::ScriptFunctionFlags::SETTER, SignatureFlags::SETTER);
     convertFlag(ir::ScriptFunctionFlags::GETTER, SignatureFlags::GETTER);

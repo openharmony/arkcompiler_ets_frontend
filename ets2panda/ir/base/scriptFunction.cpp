@@ -256,12 +256,6 @@ void ScriptFunction::SetReturnTypeAnnotation(TypeNode *node) noexcept
 
 void ScriptFunction::Dump(ir::AstDumper *dumper) const
 {
-    const char *throwMarker = nullptr;
-    if (IsThrowing()) {
-        throwMarker = "throws";
-    } else if (IsRethrowing()) {
-        throwMarker = "rethrows";
-    }
     dumper->Add({{"type", "ScriptFunction"},
                  {"id", AstDumper::Nullish(Id())},
                  {"generator", IsGenerator()},
@@ -272,8 +266,7 @@ void ScriptFunction::Dump(ir::AstDumper *dumper) const
                  {"typeParameters", AstDumper::Optional(TypeParams())},
                  {"declare", AstDumper::Optional(IsDeclare())},
                  {"body", AstDumper::Optional(Body())},
-                 {"annotations", AstDumper::Optional(Annotations())},
-                 {"throwMarker", AstDumper::Optional(throwMarker)}});
+                 {"annotations", AstDumper::Optional(Annotations())}});
 }
 
 void ScriptFunction::DumpCheckerTypeForDeclGen(ir::SrcDumper *dumper) const
@@ -321,11 +314,6 @@ void ScriptFunction::Dump(ir::SrcDumper *dumper) const
         ReturnTypeAnnotation()->Dump(dumper);
     }
     DumpCheckerTypeForDeclGen(dumper);
-    if (IsThrowing()) {
-        dumper->Add(" throws");
-    } else if (IsRethrowing()) {
-        dumper->Add(" rethrows");
-    }
     if (dumper->IsDeclgen()) {
         dumper->Add(";");
         dumper->Endl();

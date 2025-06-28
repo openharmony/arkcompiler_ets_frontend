@@ -37,17 +37,10 @@ void ETSFunctionType::Iterate(const NodeTraverser &cb) const
 
 void ETSFunctionType::Dump(ir::AstDumper *dumper) const
 {
-    const char *throwMarker = nullptr;
-    if (IsThrowing()) {
-        throwMarker = "throws";
-    } else if (IsRethrowing()) {
-        throwMarker = "rethrows";
-    }
     dumper->Add({{"type", "ETSFunctionType"},
                  {"params", Params()},
                  {"typeParameters", AstDumper::Optional(TypeParams())},
                  {"returnType", ReturnType()},
-                 {"throwMarker", AstDumper::Optional(throwMarker)},
                  {"annotations", AstDumper::Optional(Annotations())}});
 }
 
@@ -74,12 +67,6 @@ void ETSFunctionType::Dump(ir::SrcDumper *dumper) const
     if (ReturnType() != nullptr) {
         dumper->Add("=> ");
         ReturnType()->Dump(dumper);
-    }
-
-    if (IsThrowing()) {
-        dumper->Add(" throws");
-    } else if (IsRethrowing()) {
-        dumper->Add(" rethrows");
     }
 
     dumper->Add(")");

@@ -475,11 +475,6 @@ protected:
         return nullptr;
     }
 
-    virtual ir::ScriptFunctionFlags ParseFunctionThrowMarker([[maybe_unused]] const bool isRethrowsAllowed)
-    {
-        return ir::ScriptFunctionFlags::NONE;
-    }
-
     using NodeFormatType = std::tuple<bool, char, std::size_t>;
     virtual ir::Identifier *ParseIdentifierFormatPlaceholder(std::optional<NodeFormatType> nodeFormat);
     virtual ir::Statement *ParseStatementFormatPlaceholder();

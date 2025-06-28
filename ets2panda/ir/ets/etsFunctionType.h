@@ -110,16 +110,6 @@ public:
         return GetHistoryNodeAs<ETSFunctionType>()->funcFlags_;
     }
 
-    bool IsThrowing() const
-    {
-        return (Flags() & ir::ScriptFunctionFlags::THROWS) != 0;
-    }
-
-    bool IsRethrowing() const
-    {
-        return (Flags() & ir::ScriptFunctionFlags::RETHROWS) != 0;
-    }
-
     bool IsExtensionFunction() const
     {
         return GetHistoryNodeAs<ETSFunctionType>()->signature_.HasReceiver();

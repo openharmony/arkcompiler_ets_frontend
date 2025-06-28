@@ -2476,14 +2476,6 @@ util::StringView ETSChecker::GetHashFromFunctionType(ir::ETSFunctionType *type)
 
     ss << ";";
 
-    if (type->IsThrowing()) {
-        ss << "throws;";
-    }
-
-    if (type->IsRethrowing()) {
-        ss << "rethrows;";
-    }
-
     return util::UString(ss.str(), ProgramAllocator()).View();
 }
 
