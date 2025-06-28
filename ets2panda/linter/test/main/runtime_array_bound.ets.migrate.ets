@@ -170,3 +170,114 @@ let b: Array<string> = new Array<string>(a.length);
 for (let i: number = 0.0; i < a.length; i++) {
   b[i as int];
 }
+
+function test1(arr: object[]) {
+  if (arr.length == 1.0 && arr[0] instanceof Array) {}
+}
+
+function test2(arr: object[]) {
+  const str = arr.length < 2.0 ? arr[0] : arr[1];
+}
+
+function test3(arr: object[]) {
+  let index: number = 1.0;
+  if (index < arr.length) {
+    const value = arr[index++ as int];
+  }
+
+  if (index > arr.length) {
+    const value = arr[++index as int];
+  }
+}
+
+function test4(arr?: object[]) {
+  if (arr && arr.length > 0.0) {
+    const a = arr[0];
+  }
+}
+
+function test5(arrA: object[], arrB: object[]) {
+  const length: number = Math.max(arrA.length, arrB.length);
+  for (let i: number = 0.0; i < length; i++) {
+    let numA = arrA[i as int] || 0.0;
+    let numB = arrB[i as int] || 0.0;
+  }
+}
+
+function test6(arr: object[]) {
+  if(arr.length < 2.0){
+    arr[0]
+  }
+}
+
+let arr:number[]=[];
+if(arr.length > 1.0){
+    arr[1]
+}
+
+let arr1: number[] = [0.0, 1.0, 2.0, 3.0, 4.0, 5.0]
+let arr2: number[] = new Array<number>();
+let arr3: number[] = new Array<number>(10.0)
+
+let index1: number = 0.0
+let index2: number = 1.0
+let index3: number = 2.0
+
+
+arr1[index1 as int]
+
+if (index1 >= 0.0 && index1 < arr1.length) {
+    arr1[index1 as int]
+}
+
+arr1[3]
+
+if (arr1.length > 3.0) {
+    arr1[3]
+}
+
+for(let i: number = 0.0; i < arr1.length; i++) {
+    arr1[i as int];
+}
+
+let i: number = 0.0;
+while(i < arr1.length) {
+    arr1[i as int];
+}
+
+if (index1 >= 0.0 && index1 < arr1.length) {
+    index1 = 100.0
+    arr1[index1 as int]
+}
+
+let a: string[] = [];
+let b: Array<string> = new Array<string>(a.length);
+for (let i: number = 0.0; i < a.length; i++) {
+  b[i as int];
+}
+
+for (let i: number = 0.0; i < a.length; i++) {
+  b.push("abc");
+  b[i as int];
+}
+
+for (let i: number = 0.0; i < a.length; i++) {
+  b.pop();
+  b[i as int];
+}
+
+let arr_len: number = 8.0;
+let b: Array<string> = new Array<string>(arr_len);
+for (let i: number = 0.0; i < arr_len; i++) {
+  b[i as int];
+}
+
+function test7(config: Record<string, object>, name: string) {
+  if (config[name][getValue()]) {
+
+  }
+}
+
+function getValue(): string {
+  return '';
+}
