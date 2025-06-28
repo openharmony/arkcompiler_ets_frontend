@@ -17,6 +17,6 @@ function main(){
     let a: Record/* @@ label */<char | string, number> = {
         "key1": 1,
         "key2": 2
-    } 
+    }
 }
-/* @@@ label Error TypeError: Type Char|String is not assignable to constraint type Numeric|String  */
+/* @@@ label Error TypeError: Type Char|String is not assignable to constraint type Numeric|String|BaseEnum<Int>|BaseEnum<Long>|BaseEnum<String>  */
