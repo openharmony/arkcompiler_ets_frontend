@@ -262,7 +262,6 @@ void GlobalClassHandler::SetupGlobalClass(const ArenaVector<parser::Program *> &
     globalClass->SetGlobalInitialized();
 
     CollectProgramGlobalClasses(globalProgram, namespaces);
-
     CollectExportedClasses(globalClass, globalProgram->Ast()->Statements());
 
     // NOTE(vpukhov): stdlib checks are to be removed - do not extend the existing logic
@@ -395,9 +394,6 @@ ArenaVector<ir::Statement *> GlobalClassHandler::FormInitMethodStatements(parser
     }
     for (const auto &[p, ps] : initStatements) {
         statements.insert(statements.end(), ps.begin(), ps.end());
-    }
-    for (auto st : statements) {
-        st->SetParent(nullptr);
     }
     return statements;
 }

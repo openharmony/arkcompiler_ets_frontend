@@ -41,7 +41,7 @@ ir::ETSModule *ETSParser::ParseNamespaceStatement(ir::ModifierFlags memberModifi
     GetContext().Status() |= ParserStatus::IN_NAMESPACE;
     IncrementNamespaceNestedRank();
 
-    ir::ETSModule *result = ParseNamespace(modifiers);
+    auto *result = ParseNamespace(modifiers);
 
     DecrementNamespaceNestedRank();
     if (GetNamespaceNestedRank() == 0) {
@@ -50,10 +50,10 @@ ir::ETSModule *ETSParser::ParseNamespaceStatement(ir::ModifierFlags memberModifi
     if ((memberModifiers & ir::ModifierFlags::DECLARE) != 0) {
         GetContext().Status() &= ~ParserStatus::IN_AMBIENT_CONTEXT;
     }
-    return result;
+    return result->AsETSModule();
 }
 
-ir::ETSModule *ETSParser::ParseNamespace(ir::ModifierFlags flags)
+ir::Statement *ETSParser::ParseNamespace(ir::ModifierFlags flags)
 {
     if ((GetContext().Status() & ParserStatus::IN_NAMESPACE) == 0) {
         LogError(diagnostic::NAMESPACE_ONLY_TOP_OR_IN_NAMESPACE);

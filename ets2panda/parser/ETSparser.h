@@ -499,7 +499,7 @@ private:
                                               ir::ModifierFlags flags = ir::ModifierFlags::NONE) override;
     bool CheckInNamespaceContextIsExported();
     ir::ETSModule *ParseNamespaceStatement(ir::ModifierFlags memberModifiers);
-    ir::ETSModule *ParseNamespace(ir::ModifierFlags flags);
+    ir::Statement *ParseNamespace(ir::ModifierFlags flags) override;
     ir::ETSModule *ParseNamespaceImp(ir::ModifierFlags flags);
     using NamespaceBody = std::tuple<ir::MethodDefinition *, ArenaVector<ir::AstNode *>, lexer::SourceRange>;
     NamespaceBody ParseNamespaceBody(ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags flags);
