@@ -2344,6 +2344,10 @@ static checker::ETSObjectType *ResolveObjectTypeFromPreferredType(ETSChecker *ch
     // Assume not null, checked by caller in Check()
     checker::Type *preferredType = expr->PreferredType();
 
+    if (preferredType->IsETSAsyncFuncReturnType()) {
+        preferredType = preferredType->AsETSAsyncFuncReturnType()->GetPromiseTypeArg();
+    }
+
     if (preferredType->IsETSUnionType()) {
         return ResolveUnionObjectTypeForObjectLiteral(checker, expr, preferredType->AsETSUnionType());
     }
@@ -2473,6 +2477,7 @@ void ETSAnalyzer::CheckObjectExprProps(const ir::ObjectExpression *expr,
         }
 
         value->SetPreferredType(propType);
+        propExpr->SetTsType(propType);
         key->SetTsType(propType);
         value->SetTsType(value->Check(checker));
 
