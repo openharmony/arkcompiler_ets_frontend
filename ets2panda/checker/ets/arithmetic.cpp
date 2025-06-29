@@ -1152,6 +1152,12 @@ std::tuple<Type *, Type *> ETSChecker::CheckArithmeticOperations(
         if (tsType->IsETSPrimitiveType()) {
             tsType = MaybeBoxType(tsType);
         }
+        if (left->TsType()->IsTypeError()) {
+            left->SetTsType(tsType);
+        }
+        if (right->TsType()->IsTypeError()) {
+            right->SetTsType(tsType);
+        }
         return {tsType, tsType};
     }
 
