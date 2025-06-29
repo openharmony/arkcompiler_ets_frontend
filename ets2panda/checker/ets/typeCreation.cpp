@@ -162,9 +162,8 @@ Type *ETSChecker::CreateETSUnionType(Span<Type *const> constituentTypes)
     if (newConstituentTypes.size() == 1) {
         return newConstituentTypes[0];
     }
-    auto *un = ProgramAllocator()->New<ETSUnionType>(this, std::move(newConstituentTypes));
-    unionAssemblerTypes_.insert(un);
-    return un;
+
+    return ProgramAllocator()->New<ETSUnionType>(this, std::move(newConstituentTypes));
 }
 
 ETSTypeAliasType *ETSChecker::CreateETSTypeAliasType(util::StringView name, const ir::AstNode *declNode,
