@@ -65,9 +65,7 @@ import {
   DependentModuleConfig,
   JobInfo,
   KPointer,
-  ModuleInfo,
-  PathsConfig,
-  ES2PANDA_MODE
+  ModuleInfo
 } from '../types';
 import { ArkTSConfigGenerator } from './generate_arktsconfig';
 import { SetupClusterOptions } from '../types';
@@ -201,7 +199,8 @@ export abstract class BaseMode {
         const logData: LogData = LogDataFactory.newInstance(
           ErrorCode.BUILDSYSTEM_DECLGEN_FAIL,
           'Generate declaration files failed.',
-          error.message
+          error.message,
+          fileInfo.filePath
         );
         this.logger.printError(logData);
       }
@@ -286,7 +285,8 @@ export abstract class BaseMode {
         const logData: LogData = LogDataFactory.newInstance(
           ErrorCode.BUILDSYSTEM_COMPILE_ABC_FAIL,
           'Compile abc files failed.',
-          error.message
+          error.message,
+          fileInfo.filePath
         );
         this.logger.printError(logData);
       }
@@ -972,8 +972,18 @@ export abstract class BaseMode {
       success: boolean;
       filePath?: string;
       error?: string;
+      isDeclFile?: boolean;
     }) => {
       if (message.success) {
+        return;
+      }
+      if (message.isDeclFile) {
+        this.logger.printError(LogDataFactory.newInstance(
+          ErrorCode.BUILDSYSTEM_DECLGEN_FAIL,
+          'Generate declaration files failed in worker.',
+          message.error || 'Unknown error',
+          message.filePath
+        ));
         return;
       }
       this.logger.printError(LogDataFactory.newInstance(

@@ -30,12 +30,7 @@ import {
   BUILD_MODE,
   OHOS_MODULE_TYPE
 } from '../types';
-import {
-  LogData,
-  LogDataFactory,
-  Logger
-} from '../logger';
-import { ErrorCode } from '../error_code';
+import { Logger } from '../logger';
 
 process.on('message', (message: {
   taskList: CompileFileInfo[];
@@ -106,18 +101,12 @@ process.on('message', (message: {
     } catch (error) {
       errorStatus = true;
       if (error instanceof Error) {
-        const logData: LogData = LogDataFactory.newInstance(
-          ErrorCode.BUILDSYSTEM_COMPILE_ABC_FAIL,
-          'Compile abc files failed.',
-          error.message
-        );
-        Logger.getInstance().printError(logData);
+        process.send({
+          success: false,
+          filePath: fileInfo.filePath,
+          error: 'Compile abc files failed.\n' + error.message
+        });
       }
-      process.send({
-        success: false,
-        filePath: fileInfo.filePath,
-        error: 'Compile abc files failed.'
-      });
     } finally {
       if (!errorStatus) {
         // when error occur,wrapper will destroy context.

@@ -169,6 +169,7 @@ typedef u64 Es2panda<%= name %>;
 interface es2panda_Impl {
     es2panda_Config CreateConfig(i32 argc, sequence<String> argv);
     void DestroyConfig(es2panda_Config config);
+    String GetAllErrorMessages(es2panda_Context context);
     es2panda_Options ConfigGetOptions(es2panda_Config config);
 
     es2panda_Context CreateContextFromFile(es2panda_Config config, String source_file_name);
