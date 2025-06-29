@@ -1790,7 +1790,8 @@ static Type *TransformTypeForMethodReference(ETSChecker *checker, ir::Expression
 
     auto it = signatures.begin();
     while (it != signatures.end()) {
-        if ((*it)->HasSignatureFlag(SignatureFlags::ABSTRACT)) {
+        if ((*it)->HasSignatureFlag(SignatureFlags::ABSTRACT) &&
+            !(*it)->Owner()->GetDeclNode()->IsTSInterfaceDeclaration()) {
             it = signatures.erase(it);
         } else {
             ++it;
