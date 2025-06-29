@@ -199,6 +199,22 @@ uint32_t FunctionEmitter::UpdateForReturnIns(const ir::AstNode *astNode, panda::
     return columnNum;
 }
 
+bool FunctionEmitter::NeedToAddColumnForPandaIns(panda::pandasm::Ins *pandaIns)
+{
+    if (pg_->IsDebug()) {
+        return true;
+    }
+    // In other mode, adds column numbers to the call instructions can include the column numbers in the backstack info
+    // of the 'not a callable' type errors.
+    return pg_->EnableColumn() && (pandaIns->opcode == pandasm::Opcode::CALLTHIS0 ||
+        pandaIns->opcode == pandasm::Opcode::CALLTHIS1 || pandaIns->opcode == pandasm::Opcode::CALLTHIS2 ||
+        pandaIns->opcode == pandasm::Opcode::CALLTHIS3 || pandaIns->opcode == pandasm::Opcode::CALLTHISRANGE ||
+        pandaIns->opcode == pandasm::Opcode::WIDE_CALLTHISRANGE ||
+        pandaIns->opcode == pandasm::Opcode::CALLARG0 || pandaIns->opcode == pandasm::Opcode::CALLARG1 ||
+        pandaIns->opcode == pandasm::Opcode::CALLARGS2 || pandaIns->opcode == pandasm::Opcode::CALLARGS3 ||
+        pandaIns->opcode == pandasm::Opcode::CALLRANGE || pandaIns->opcode == pandasm::Opcode::WIDE_CALLRANGE);
+}
+
 void FunctionEmitter::GenInstructionDebugInfo(const IRNode *ins, panda::pandasm::Ins *pandaIns)
 {
     const ir::AstNode *astNode = ins->Node();
@@ -210,7 +226,7 @@ void FunctionEmitter::GenInstructionDebugInfo(const IRNode *ins, panda::pandasm:
     }
     uint32_t columnNum = UpdateForReturnIns(astNode, pandaIns);
 
-    if (pg_->IsDebug()) {
+    if (NeedToAddColumnForPandaIns(pandaIns)) {
         size_t insLen = GetIRNodeWholeLength(ins);
         offset_ += insLen;
         pandaIns->ins_debug.column_number = columnNum;
