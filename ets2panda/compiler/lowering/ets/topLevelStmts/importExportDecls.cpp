@@ -247,10 +247,14 @@ void ImportExportDecls::VisitETSImportDeclaration(ir::ETSImportDeclaration *impo
         if (spec->IsImportSpecifier()) {
             importedSpecifiersForExportCheck_.emplace(spec->AsImportSpecifier()->Local()->Name(),
                                                       spec->AsImportSpecifier()->Imported()->Name());
-        }
-        if (spec->IsImportDefaultSpecifier()) {
+        } else if (spec->IsImportDefaultSpecifier()) {
             importedSpecifiersForExportCheck_.emplace(spec->AsImportDefaultSpecifier()->Local()->Name(),
                                                       spec->AsImportDefaultSpecifier()->Local()->Name());
+        } else if (spec->IsImportNamespaceSpecifier()) {
+            importedSpecifiersForExportCheck_.emplace(spec->AsImportNamespaceSpecifier()->Local()->Name(),
+                                                      spec->AsImportNamespaceSpecifier()->Local()->Name());
+        } else {
+            ES2PANDA_UNREACHABLE();
         }
     }
 }

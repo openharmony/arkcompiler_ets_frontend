@@ -3765,6 +3765,58 @@ checker::Type *ETSAnalyzer::Check(ir::TSNonNullExpression *expr) const
     return expr->TsType();
 }
 
+static varbinder::Variable *FindNameForImportNamespace(ETSChecker *checker, util::StringView &searchName,
+                                                       ETSObjectType *baseType)
+{
+    /* This function try to find name1.name2, name1.A in file file1.ets,
+     * ./file1.ets:
+     * import * as name1 from "./file2"
+     *
+     * ./file2.ets:
+     * import * as name2 from "./file3"
+     * import {A} from "./file3"
+     * export {name2}
+     * export {A}
+     *
+     * ./file3.ets
+     * export class A{}
+     *
+     * 1. Find in file2->program->ast->scope first
+     * 2. Find in varbinder->selectiveExportAliasMultimap second
+     * if both found, return variable
+     */
+    auto declNode = baseType->GetDeclNode();
+    if (!declNode->IsIdentifier()) {
+        return nullptr;
+    }
+    if (declNode->Parent() == nullptr || declNode->Parent()->Parent() == nullptr) {
+        return nullptr;
+    }
+    auto importDeclNode = declNode->Parent()->Parent();
+    if (!importDeclNode->IsETSImportDeclaration()) {
+        return nullptr;
+    }
+
+    auto importDecl = importDeclNode->AsETSImportDeclaration();
+
+    parser::Program *program = checker->SelectEntryOrExternalProgram(
+        static_cast<varbinder::ETSBinder *>(checker->VarBinder()), importDecl->ImportMetadata().resolvedSource);
+
+    auto &bindings = program->Ast()->Scope()->Bindings();
+
+    if (auto result = bindings.find(searchName); result != bindings.end()) {
+        auto &sMap = checker->VarBinder()
+                         ->AsETSBinder()
+                         ->GetSelectiveExportAliasMultimap()
+                         .find(importDecl->ImportMetadata().resolvedSource)
+                         ->second;
+        if (auto it = sMap.find(searchName); it != sMap.end()) {
+            return result->second;
+        }
+    }
+    return nullptr;
+}
+
 checker::Type *ETSAnalyzer::Check(ir::TSQualifiedName *expr) const
 {
     ETSChecker *checker = GetETSChecker();
@@ -3779,6 +3831,10 @@ checker::Type *ETSAnalyzer::Check(ir::TSQualifiedName *expr) const
         }
         varbinder::Variable *prop =
             baseType->AsETSObjectType()->GetProperty(searchName, PropertySearchFlags::SEARCH_DECL);
+
+        if (prop == nullptr) {
+            prop = FindNameForImportNamespace(GetETSChecker(), searchName, baseType->AsETSObjectType());
+        }
         // NOTE(dslynko): in debugger evaluation mode must lazily generate module's properties here.
         if (prop == nullptr) {
             checker->LogError(diagnostic::NONEXISTENT_TYPE, {expr->Right()->Name()}, expr->Right()->Start());
