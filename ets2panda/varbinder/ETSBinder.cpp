@@ -822,7 +822,7 @@ static ir::AstNode *GetSpecifier(const util::StringView &importedLocal, ir::ETSI
         return decl->Specifiers()[0];
     }
     ES2PANDA_UNREACHABLE();
-};
+}
 
 std::pair<ir::ETSImportDeclaration *, ir::AstNode *> ETSBinder::FindImportDeclInReExports(
     const ir::ETSImportDeclaration *const import, const util::StringView &imported,
