@@ -2204,12 +2204,12 @@ static bool AreAllRequiredInterfacePropertiesSatisfied(ir::ObjectExpression *exp
     auto allProperties = interfaceType->GetAllProperties();
 
     // Create a set of property names provided in the object literal
-    std::unordered_set<std::string> literalProperties;
+    std::unordered_set<std::string_view> literalProperties;
     for (ir::Expression *propExpr : expr->Properties()) {
         if (propExpr->IsProperty()) {
             ir::Expression *key = propExpr->AsProperty()->Key();
             if (auto optPname = GetPropertyNameFromKey(key); optPname.has_value()) {
-                literalProperties.insert(std::string(optPname.value().Utf8()));
+                literalProperties.insert(optPname.value().Utf8());
             }
         }
     }
@@ -2230,7 +2230,6 @@ static bool AreAllRequiredInterfacePropertiesSatisfied(ir::ObjectExpression *exp
 
     // Check that all required interface properties are satisfied
     for (auto *property : allProperties) {
-        std::string propName(property->Name().Utf8());
         auto *propertyType = checker->GetTypeOfVariable(property);
 
         // Skip method types that aren't getters/setters (they make interface incompatible anyway)
@@ -2241,7 +2240,7 @@ static bool AreAllRequiredInterfacePropertiesSatisfied(ir::ObjectExpression *exp
             }
         }
         // Check if this property is provided in the literal
-        bool isInLiteral = literalProperties.find(propName) != literalProperties.end();
+        bool isInLiteral = literalProperties.find(property->Name().Utf8()) != literalProperties.end();
         if (!isInLiteral) {
             // Property not in literal - check if it's optional or has default value
             bool isOptional = IsPropertyOptional(property, propertyType);

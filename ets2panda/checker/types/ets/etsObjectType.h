@@ -338,6 +338,8 @@ public:
     std::vector<const varbinder::LocalVariable *> ForeignProperties() const;
     varbinder::LocalVariable *GetProperty(util::StringView name, PropertySearchFlags flags) const;
     std::vector<varbinder::LocalVariable *> GetAllProperties() const;
+    void ForEachAllOwnProperties(const PropertyTraverser &cb) const;
+    void ForEachAllNonOwnProperties(const PropertyTraverser &cb) const;
     varbinder::LocalVariable *CopyProperty(varbinder::LocalVariable *prop, ArenaAllocator *allocator,
                                            TypeRelation *relation, GlobalTypesHolder *globalTypes);
     std::vector<varbinder::LocalVariable *> Methods() const;
