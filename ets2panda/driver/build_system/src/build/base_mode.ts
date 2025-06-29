@@ -738,6 +738,9 @@ export abstract class BaseMode {
       if (!(moduleInfo.moduleType === OHOS_MODULE_TYPE.HAR && moduleInfo.byteCodeHar)) {
         continue;
       }
+      if (moduleInfo.language === LANGUAGE_VERSION.ARKTS_1_1) {
+        continue;
+      }
       if (!moduleInfo.abcPath) {
         const logData: LogData = LogDataFactory.newInstance(
           ErrorCode.BUILDSYSTEM_ABC_FILE_MISSING_IN_BCHAR,
@@ -745,6 +748,13 @@ export abstract class BaseMode {
         );
         this.logger.printError(logData);
         continue;
+      }
+      if (!fs.existsSync(moduleInfo.abcPath)) {
+        const logData: LogData = LogDataFactory.newInstance(
+          ErrorCode.BUILDSYSTEM_ABC_FILE_NOT_EXIST_IN_BCHAR,
+          `${moduleInfo.abcPath} does not exist. `
+        );
+        this.logger.printErrorAndExit(logData);
       }
       this.abcFiles.add(moduleInfo.abcPath);
     }
