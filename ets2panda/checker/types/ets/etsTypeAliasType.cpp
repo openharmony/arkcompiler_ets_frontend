@@ -257,34 +257,6 @@ bool ETSTypeAliasType::SubstituteTypeArgs(TypeRelation *const relation, ArenaVec
     return anyChange;
 }
 
-void ETSTypeAliasType::ApplySubstitution(TypeRelation *relation)
-{
-    ES2PANDA_ASSERT(base_ == nullptr);
-
-    const util::StringView hash = relation->GetChecker()->AsETSChecker()->GetHashFromTypeArguments(typeArguments_);
-    EmplaceInstantiatedType(hash, this);
-
-    auto getTypes = [this]() {
-        std::vector<ETSTypeAliasType *> types;
-
-        for (auto [name, type] : instantiationMap_) {
-            if (type->targetType_ == nullptr) {
-                types.push_back(type);
-            }
-        }
-
-        return types;
-    };
-
-    std::vector<ETSTypeAliasType *> types;
-
-    while (!(types = getTypes(), types.empty())) {
-        for (auto type : types) {
-            type->SetTargetType(type->parent_->targetType_->Substitute(relation, type->substitution_));
-        }
-    }
-}
-
 void ETSTypeAliasType::SetTypeArguments(ArenaVector<Type *> typeArguments)
 {
     typeArguments_ = std::move(typeArguments);

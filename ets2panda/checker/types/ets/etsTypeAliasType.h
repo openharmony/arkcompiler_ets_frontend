@@ -87,8 +87,6 @@ public:
 
     Type *Substitute(TypeRelation *relation, const Substitution *substitution) override;
 
-    void ApplySubstitution(TypeRelation *relation);
-
     void SetTypeArguments(ArenaVector<Type *> typeArguments);
 
 private:
