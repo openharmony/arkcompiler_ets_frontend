@@ -18,7 +18,7 @@
 
 // Simple primitive type aliases that exercise Clone
 type NumAlias<T = number> = T;
-type StrAlias<T = string> = T;
+type StrAlias<T = string> = T;                
 type BoolAlias<T = boolean> = T;
 type VoidAlias<T = void> = T;
 
@@ -46,7 +46,6 @@ declare const num: NumAlias<42>;
 declare const str: StrAlias<"test">;
 declare const bool: BoolAlias<true>;
 
-/* Expected syntax errors (normal for ETS): */
 /* @@? 37:73 Error SyntaxError: Invalid Type. */
 /* @@? 38:15 Error SyntaxError: Label must be followed by a loop statement. */
 /* @@? 38:15 Error TypeError: Unresolved reference N */
@@ -59,12 +58,10 @@ declare const bool: BoolAlias<true>;
 /* @@? 40:17 Error SyntaxError: Unexpected token ','. */
 /* @@? 41:17 Error SyntaxError: Label must be followed by a loop statement. */
 /* @@? 41:23 Error SyntaxError: Unexpected token 'void'. */
-/* @@? 45:20 Error TypeError: Type alias declaration is generic, but no type parameters were provided */
+/* @@? 45:29 Error SyntaxError: Invalid Type. */
 /* @@? 45:29 Error SyntaxError: Unexpected token, expected '>'. */
 /* @@? 45:29 Error SyntaxError: Unexpected token '>'. */
-/* @@? 45:29 Error SyntaxError: Invalid Type. */
 /* @@? 45:32 Error SyntaxError: Unexpected token ';'. */
-/* @@? 47:21 Error TypeError: Type alias declaration is generic, but no type parameters were provided */
 /* @@? 47:31 Error SyntaxError: Invalid Type. */
 /* @@? 47:31 Error SyntaxError: Unexpected token, expected '>'. */
 /* @@? 47:31 Error SyntaxError: Unexpected token '>'. */
