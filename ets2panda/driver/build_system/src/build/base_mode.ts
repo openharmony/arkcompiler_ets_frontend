@@ -395,6 +395,7 @@ export abstract class BaseMode {
   private getDependentModules(moduleInfo: ModuleInfo): Map<string, ModuleInfo>[] {
     const dynamicDepModules: Map<string, ModuleInfo> = new Map<string, ModuleInfo>();
     const staticDepModules: Map<string, ModuleInfo> = new Map<string, ModuleInfo>();
+    this.collectDependencyModules(moduleInfo.packageName, moduleInfo, dynamicDepModules, staticDepModules);
 
     if (moduleInfo.isMainModule) {
       this.moduleInfos.forEach((module: ModuleInfo, packageName: string) => {
