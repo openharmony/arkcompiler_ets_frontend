@@ -651,7 +651,8 @@ class CompilerTest(Test):
         es2abc_cmd = runner.cmd_prefix + [runner.es2panda]
         es2abc_cmd.extend(self.flags)
         es2abc_cmd.extend(["--output=" + test_abc_path])
-        es2abc_cmd.append(self.path)
+        relative_path = os.path.relpath(self.path)
+        es2abc_cmd.append(relative_path)
         enable_arkguard = runner.args.enable_arkguard
         if enable_arkguard:
             success = self.execute_arkguard(runner)
@@ -2972,6 +2973,10 @@ def add_directory_for_asm(runners, args, mode=""):
 def add_directory_for_compiler(runners, args):
     runner = CompilerRunner(args)
     compiler_test_infos = []
+    compiler_test_infos.append(CompilerTestInfo("compiler/crashStack/enableColumn/js", "js", ["--enable-release-column"]))
+    compiler_test_infos.append(CompilerTestInfo("compiler/crashStack/enableColumn/ts", "ts", ["--enable-release-column"]))
+    compiler_test_infos.append(CompilerTestInfo("compiler/crashStack/offColumn/js", "js", []))
+    compiler_test_infos.append(CompilerTestInfo("compiler/crashStack/offColumn/ts", "ts", []))
     compiler_test_infos.append(CompilerTestInfo("compiler/js", "js", ["--module"]))
     compiler_test_infos.append(CompilerTestInfo("compiler/ts/cases", "ts", []))
     compiler_test_infos.append(CompilerTestInfo("compiler/ts/projects", "ts", ["--module"]))
