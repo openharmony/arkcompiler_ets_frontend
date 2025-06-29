@@ -1586,6 +1586,58 @@
             "suggest": "",
             "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)",
             "severity": "ERROR"
+        },
+        {
+            "line": 207,
+            "column": 1,
+            "endLine": 207,
+            "endColumn": 20,
+            "problem": "PropertyAccessByIndex",
+            "autofix": [
+                {
+                    "replacementText": "b1.a.foo1",
+                    "start": 4194,
+                    "end": 4221,
+                    "line": 207,
+                    "column": 1,
+                    "endLine": 207,
+                    "endColumn": 20
+                }
+            ],
+            "suggest": "",
+            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 208,
+            "column": 1,
+            "endLine": 208,
+            "endColumn": 20,
+            "problem": "PropertyAccessByIndex",
+            "suggest": "",
+            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 209,
+            "column": 1,
+            "endLine": 209,
+            "endColumn": 20,
+            "problem": "PropertyAccessByIndex",
+            "autofix": [
+                {
+                    "replacementText": "b1.a.aa",
+                    "start": 4255,
+                    "end": 4280,
+                    "line": 209,
+                    "column": 1,
+                    "endLine": 209,
+                    "endColumn": 20
+                }
+            ],
+            "suggest": "",
+            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)",
+            "severity": "ERROR"
         }
     ]
 }
