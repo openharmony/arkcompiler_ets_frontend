@@ -16,7 +16,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as JSON5 from 'json5';
-import { BuildConfig } from './types';
+import { BuildConfig, PathConfig } from '../common/types';
+import { DEFAULT_CACHE_DIR, EXTERNAL_API_PATH_FROM_SDK } from '../common/preDefine';
 
 export interface ModuleDescriptor {
   arktsversion: string;
@@ -92,9 +93,8 @@ function getEtsFiles(modulePath: string): string[] {
   const files: string[] = [];
 
   const shouldSkipDirectory = (relativePath: string): boolean => {
-    const testDir1 = `src${path.sep}test`;
-    const testDir2 = `src${path.sep}ohosTest`;
-    return relativePath.startsWith(testDir1) || relativePath.startsWith(testDir2);
+    const filterList = [`src${path.sep}test`, `src${path.sep}ohosTest`, `build${path.sep}`, `oh_modules${path.sep}`];
+    return filterList.some((directoryPrefix: string) => relativePath.startsWith(directoryPrefix));
   };
 
   const processEntry = (dir: string, entry: fs.Dirent): void => {
@@ -150,15 +150,8 @@ function getModuleDependencies(modulePath: string, visited = new Set<string>()):
     }
   };
 
-  const resolveNestedDependencies = (deps: string[]): string[] => {
-    return deps.flatMap((depPath) =>
-      visited.has(depPath) ? [] : [depPath, ...getModuleDependencies(depPath, visited)]
-    );
-  };
-
   const dependencies = extractDependencies();
-  const nestedDependencies = resolveNestedDependencies(dependencies);
-  return Array.from(new Set([...dependencies, ...nestedDependencies]));
+  return Array.from(new Set([...dependencies]));
 }
 
 function createMapEntryForPlugin(buildSdkPath: string, pluginName: string): string {
@@ -175,67 +168,73 @@ function createPluginMap(buildSdkPath: string): Record<string, string> {
 }
 
 export function generateBuildConfigs(
-  buildSdkPath: string,
-  projectRoot: string,
+  pathConfig: PathConfig,
   modules?: ModuleDescriptor[]
 ): Record<string, BuildConfig> {
   const allBuildConfigs: Record<string, BuildConfig> = {};
 
   if (!modules) {
-    const buildProfilePath = path.join(projectRoot, 'build-profile.json5');
+    const buildProfilePath = path.join(pathConfig.projectPath, 'build-profile.json5');
     modules = getModulesFromBuildProfile(buildProfilePath);
   }
 
   const definedModules = modules;
-  const cacheDir = path.join(projectRoot, '.idea', '.deveco');
+
+  const enableDeclgen: Map<string, boolean> = new Map(modules.map((module) => [module.name, false]));
 
   for (const module of definedModules) {
     const modulePath = module.srcPath;
     const compileFiles = new Set(getEtsFiles(modulePath));
-    const pluginMap = createPluginMap(buildSdkPath);
+    const pluginMap = createPluginMap(pathConfig.buildSdkPath);
 
     // Get recursive dependencies
     const dependencies = getModuleDependencies(modulePath);
     for (const depPath of dependencies) {
       getEtsFiles(depPath).forEach((file) => compileFiles.add(file));
+      const depModule = definedModules.find((m) => m.srcPath === depPath);
+      if (module.arktsversion === '1.1' && depModule?.arktsversion === '1.2') {
+        enableDeclgen.set(depModule.name, true);
+      }
     }
 
     allBuildConfigs[module.name] = {
       plugins: pluginMap,
-      arkts: {},
-      arktsGlobal: {},
       compileFiles: Array.from(compileFiles),
       packageName: module.name,
       moduleType: module.moduleType,
-      buildType: 'build',
-      buildMode: 'Debug',
       moduleRootPath: modulePath,
-      sourceRoots: ['./'],
-      hasMainModule: true,
-      loaderOutPath: path.join(modulePath, 'build', 'default', 'cache'),
-      cachePath: cacheDir,
-      buildSdkPath: buildSdkPath,
+      language: module.arktsversion,
+      buildSdkPath: pathConfig.buildSdkPath,
+      projectPath: pathConfig.projectPath,
+      declgenOutDir: pathConfig.declgenOutDir,
+      externalApiPath: pathConfig.externalApiPath
+        ? pathConfig.externalApiPath
+        : path.resolve(pathConfig.buildSdkPath, EXTERNAL_API_PATH_FROM_SDK),
+      cacheDir:
+        pathConfig.cacheDir !== undefined ? pathConfig.cacheDir : path.join(pathConfig.projectPath, DEFAULT_CACHE_DIR),
       enableDeclgenEts2Ts: false,
-      declgenDtsOutPath: path.join(modulePath, 'build', 'default', 'cache'),
-      declgenTsOutPath: path.join(modulePath, 'build', 'default', 'cache'),
-      dependentModuleList: dependencies.map((dep) => {
+      declFilesPath:
+        module.arktsversion === '1.1'
+          ? path.join(pathConfig.declgenOutDir, 'static', module.name, 'decl-fileInfo.json')
+          : undefined,
+      dependencies: dependencies.map((dep) => {
         const depModule = definedModules.find((m) => m.srcPath === dep);
-        return {
-          packageName: path.basename(dep),
-          moduleName: path.basename(dep),
-          moduleType: depModule ? depModule.moduleType : 'har',
-          modulePath: dep,
-          sourceRoots: ['./'],
-          entryFile: 'index.ets',
-          language: depModule ? depModule.arktsversion : '1.1'
-        };
+        return depModule!.name;
       })
     };
   }
-  const outputPath = path.join(cacheDir, 'lsp_build_config.json');
-  if (!fs.existsSync(cacheDir)) {
-    fs.mkdirSync(cacheDir, { recursive: true });
-  }
-  fs.writeFileSync(outputPath, JSON.stringify(allBuildConfigs, null, 4));
+  Object.entries(allBuildConfigs).forEach(([key, config]) => {
+    if (enableDeclgen.get(key) === true) {
+      config.enableDeclgenEts2Ts = true;
+      config.declgenV1OutPath = path.join(pathConfig.declgenOutDir, 'dynamic', key, 'declgenV1');
+      config.declgenBridgeCodePath = path.join(pathConfig.declgenOutDir, 'dynamic', key, 'declgenBridgeCode');
+      if (!fs.existsSync(config.declgenV1OutPath)) {
+        fs.mkdirSync(config.declgenV1OutPath, { recursive: true });
+      }
+      if (!fs.existsSync(config.declgenBridgeCodePath)) {
+        fs.mkdirSync(config.declgenBridgeCodePath, { recursive: true });
+      }
+    }
+  });
   return allBuildConfigs;
 }

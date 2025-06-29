@@ -15,16 +15,9 @@
 
 import path from 'path';
 import fs from 'fs';
-import {
-  Lsp,
-  LspDefinitionData,
-  LspCompletionInfo,
-  LspDiagsNode,
-  ModuleDescriptor,
-  generateArkTsConfigByModules
-} from '../src/index';
+import { Lsp, LspDefinitionData, LspCompletionInfo, LspDiagsNode, ModuleDescriptor, PathConfig } from '../src/index';
 import { testCases } from './cases';
-import { LspCompletionEntry } from '../src/lspNode';
+import { LspCompletionEntry } from '../src/lsp/lspNode';
 
 interface ComparisonOptions {
   subMatch?: boolean;
@@ -364,13 +357,16 @@ if (require.main === module) {
     updateMode = true;
   }
   const testDir = path.resolve(process.argv[2]);
-  const buildSdkPath = path.join(testDir, 'ets', 'ets1.2');
-  const projectRoot = path.join(testDir, 'testcases');
-  const modules = getModules(projectRoot);
+  const pathConfig: PathConfig = {
+    buildSdkPath: path.join(testDir, 'ets', 'ets1.2'),
+    projectPath: path.join(testDir, 'testcases'),
+    declgenOutDir: ''
+  };
 
-  generateArkTsConfigByModules(buildSdkPath, projectRoot, modules);
-  const lsp = new Lsp(projectRoot);
+  const modules = getModules(pathConfig.projectPath);
 
-  process.env.BINDINGS_PATH = path.join(buildSdkPath, 'build-tools', 'bindings');
+  const lsp = new Lsp(pathConfig, undefined, modules);
+
+  process.env.BINDINGS_PATH = path.join(pathConfig.buildSdkPath, 'build-tools', 'bindings');
   runTests(testDir, lsp);
 }

@@ -14,7 +14,7 @@
  */
 
 import path from 'path';
-import { TextSpan } from '../src/lspNode';
+import { TextSpan } from '../src/lsp/lspNode';
 
 export interface TestConfig {
   expectedFilePath: string;

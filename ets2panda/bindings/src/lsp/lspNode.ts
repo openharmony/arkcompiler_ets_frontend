@@ -13,12 +13,12 @@
  * limitations under the License.
  */
 
-import { KBoolean, KInt, KNativePointer, KUInt } from './InteropTypes';
-import { unpackString, VariantTypes } from './private';
-import { throwError } from './utils';
-import { isNullPtr } from './Wrapper';
-import { global } from './global';
-import { NativePtrDecoder } from './Platform';
+import { KBoolean, KInt, KNativePointer, KUInt } from '../common/InteropTypes';
+import { unpackString, VariantTypes } from '../common/private';
+import { throwError } from '../common/utils';
+import { isNullPtr } from '../common/Wrapper';
+import { global } from '../common/global';
+import { NativePtrDecoder } from '../common/Platform';
 
 enum HierarchyType {
   OTHERS,

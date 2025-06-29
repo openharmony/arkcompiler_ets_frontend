@@ -24,7 +24,7 @@ import {
   KStringPtr,
   KInt32ArrayPtr
 } from './InteropTypes';
-import { Es2pandaNativeModule as GeneratedEs2pandaNativeModule } from './generated/Es2pandaNativeModule';
+import { Es2pandaNativeModule as GeneratedEs2pandaNativeModule } from '../generated/Es2pandaNativeModule';
 import { loadNativeModuleLibrary, registerNativeModuleLibraryName } from './loadLibraries';
 import { throwError } from './utils';
 
@@ -978,7 +978,7 @@ export class Es2pandaNativeModule {
 export function initEs2panda(): Es2pandaNativeModule {
   let libPath = process.env.BINDINGS_PATH;
   if (libPath === undefined) {
-    libPath = path.resolve(__dirname, '../ts_bindings.node');
+    libPath = path.resolve(__dirname, '../../ts_bindings.node');
   } else {
     libPath = path.join(libPath, 'ts_bindings.node');
   }
@@ -994,7 +994,7 @@ export function initEs2panda(): Es2pandaNativeModule {
 export function initGeneratedEs2panda(): GeneratedEs2pandaNativeModule {
   let libPath = process.env.BINDINGS_PATH;
   if (libPath === undefined) {
-    libPath = path.resolve(__dirname, '../ts_bindings.node');
+    libPath = path.resolve(__dirname, '../../ts_bindings.node');
   } else {
     libPath = path.join(libPath, 'ts_bindings.node');
   }
@@ -1010,7 +1010,7 @@ export function initGeneratedEs2panda(): GeneratedEs2pandaNativeModule {
 export function initPublicEs2panda(): Es2pandaNativeModule {
   let libPath = process.env.BINDINGS_PATH;
   if (libPath === undefined) {
-    libPath = path.resolve(__dirname, '../public.node');
+    libPath = path.resolve(__dirname, '../../public.node');
   } else {
     libPath = path.join(libPath, 'public.node');
   }
@@ -1026,7 +1026,7 @@ export function initPublicEs2panda(): Es2pandaNativeModule {
 export function initPublicGeneratedEs2panda(): GeneratedEs2pandaNativeModule {
   let libPath = process.env.BINDINGS_PATH;
   if (libPath === undefined) {
-    libPath = path.resolve(__dirname, '../public.node');
+    libPath = path.resolve(__dirname, '../../public.node');
   } else {
     libPath = path.join(libPath, 'public.node');
   }
