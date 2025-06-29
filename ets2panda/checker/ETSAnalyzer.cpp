@@ -902,7 +902,8 @@ checker::Type *ETSAnalyzer::Check(ir::ArrayExpression *expr) const
             expr->SetPreferredType(InferPreferredTypeFromElements(checker, expr));
         }
 
-        if (!CheckArrayExpressionElements(checker, expr)) {
+        if (!ValidArrayExprSizeForTupleSize(checker, expr->GetPreferredType(), expr) ||
+            !CheckArrayExpressionElements(checker, expr)) {
             return checker->InvalidateType(expr);
         }
     }
