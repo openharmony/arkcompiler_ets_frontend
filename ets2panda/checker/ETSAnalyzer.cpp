@@ -394,6 +394,9 @@ checker::Type *ETSAnalyzer::Check(ir::SpreadElement *expr) const
     }
 
     ETSChecker *checker = GetETSChecker();
+    if (expr->PreferredType() != nullptr) {
+        expr->Argument()->SetPreferredType(expr->PreferredType());
+    }
     auto type = expr->AsSpreadElement()->Argument()->Check(checker);
     Type *exprType = type->MaybeBaseTypeOfGradualType();
 
@@ -787,6 +790,7 @@ static ArenaVector<std::pair<Type *, ir::Expression *>> GetElementTypes(ETSCheck
         ir::Expression *const element = expr->Elements()[idx];
 
         if (element->IsSpreadElement()) {
+            element->SetPreferredType(exprPreferredType);
             AddSpreadElementTypes(checker, element->AsSpreadElement(), elementTypes);
             continue;
         }
