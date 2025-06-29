@@ -137,4 +137,36 @@ checker::VerifiedType TSTypeReference::Check([[maybe_unused]] checker::ETSChecke
 {
     return {this, checker->GetAnalyzer()->Check(this)};
 }
+
+TSTypeReference *TSTypeReference::Clone(ArenaAllocator *allocator, AstNode *parent)
+{
+    auto *clonedTypeName = typeName_->Clone(allocator, nullptr)->AsExpression();
+    auto *clonedTypeParams =
+        typeParams_ != nullptr ? typeParams_->Clone(allocator, nullptr)->AsTSTypeParameterInstantiation() : nullptr;
+
+    auto *clone = allocator->New<TSTypeReference>(clonedTypeName, clonedTypeParams, allocator);
+
+    // Set parent relationships
+    clonedTypeName->SetParent(clone);
+    if (clonedTypeParams != nullptr) {
+        clonedTypeParams->SetParent(clone);
+    }
+
+    if (parent != nullptr) {
+        clone->SetParent(parent);
+    }
+
+    clone->SetRange(Range());
+
+    // Clone annotations if any
+    if (!Annotations().empty()) {
+        ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
+        for (auto *annotationUsage : Annotations()) {
+            annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
+        }
+        clone->SetAnnotations(std::move(annotationUsages));
+    }
+
+    return clone;
+}
 }  // namespace ark::es2panda::ir

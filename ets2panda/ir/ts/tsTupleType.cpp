@@ -158,4 +158,36 @@ checker::VerifiedType TSTupleType::Check([[maybe_unused]] checker::ETSChecker *c
 {
     return {this, checker->GetAnalyzer()->Check(this)};
 }
+
+TSTupleType *TSTupleType::Clone(ArenaAllocator *allocator, AstNode *parent)
+{
+    ArenaVector<TypeNode *> clonedElementTypes(allocator->Adapter());
+    for (auto *elementType : elementTypes_) {
+        clonedElementTypes.push_back(elementType->Clone(allocator, nullptr)->AsTypeNode());
+    }
+
+    auto *clone = allocator->New<TSTupleType>(std::move(clonedElementTypes), allocator);
+
+    // Set parent relationships for cloned element types
+    for (auto *elementType : clone->elementTypes_) {
+        elementType->SetParent(clone);
+    }
+
+    if (parent != nullptr) {
+        clone->SetParent(parent);
+    }
+
+    clone->SetRange(Range());
+
+    // Clone annotations if any
+    if (!Annotations().empty()) {
+        ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
+        for (auto *annotationUsage : Annotations()) {
+            annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
+        }
+        clone->SetAnnotations(std::move(annotationUsages));
+    }
+
+    return clone;
+}
 }  // namespace ark::es2panda::ir

@@ -95,4 +95,36 @@ checker::VerifiedType TSTypeLiteral::Check([[maybe_unused]] checker::ETSChecker 
 {
     return {this, checker->GetAnalyzer()->Check(this)};
 }
+
+TSTypeLiteral *TSTypeLiteral::Clone(ArenaAllocator *allocator, AstNode *parent)
+{
+    ArenaVector<AstNode *> clonedMembers(allocator->Adapter());
+    for (auto *member : members_) {
+        clonedMembers.push_back(member->Clone(allocator, nullptr));
+    }
+
+    auto *clone = allocator->New<TSTypeLiteral>(std::move(clonedMembers), allocator);
+
+    // Set parent relationships for cloned members
+    for (auto *member : clone->members_) {
+        member->SetParent(clone);
+    }
+
+    if (parent != nullptr) {
+        clone->SetParent(parent);
+    }
+
+    clone->SetRange(Range());
+
+    // Clone annotations if any
+    if (!Annotations().empty()) {
+        ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
+        for (auto *annotationUsage : Annotations()) {
+            annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
+        }
+        clone->SetAnnotations(std::move(annotationUsages));
+    }
+
+    return clone;
+}
 }  // namespace ark::es2panda::ir

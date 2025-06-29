@@ -95,4 +95,33 @@ checker::VerifiedType TSIndexedAccessType::Check([[maybe_unused]] checker::ETSCh
 {
     return {this, checker->GetAnalyzer()->Check(this)};
 }
+
+TSIndexedAccessType *TSIndexedAccessType::Clone(ArenaAllocator *allocator, AstNode *parent)
+{
+    auto *clonedObjectType = objectType_->Clone(allocator, nullptr)->AsTypeNode();
+    auto *clonedIndexType = indexType_->Clone(allocator, nullptr)->AsTypeNode();
+
+    auto *clone = allocator->New<TSIndexedAccessType>(clonedObjectType, clonedIndexType, allocator);
+
+    // Set parent relationships
+    clonedObjectType->SetParent(clone);
+    clonedIndexType->SetParent(clone);
+
+    if (parent != nullptr) {
+        clone->SetParent(parent);
+    }
+
+    clone->SetRange(Range());
+
+    // Clone annotations if any
+    if (!Annotations().empty()) {
+        ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
+        for (auto *annotationUsage : Annotations()) {
+            annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
+        }
+        clone->SetAnnotations(std::move(annotationUsages));
+    }
+
+    return clone;
+}
 }  // namespace ark::es2panda::ir
