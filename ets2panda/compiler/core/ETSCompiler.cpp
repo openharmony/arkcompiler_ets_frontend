@@ -833,6 +833,7 @@ void ETSCompiler::Compile(const ir::Identifier *expr) const
     ETSGen *etsg = GetETSGen();
 
     auto const *smartType = expr->TsType();
+    ES2PANDA_ASSERT(smartType != nullptr);
     if (smartType->IsETSTypeParameter() || smartType->IsETSPartialTypeParameter() || smartType->IsETSNonNullishType()) {
         smartType = etsg->Checker()->GetApparentType(smartType);
     }
