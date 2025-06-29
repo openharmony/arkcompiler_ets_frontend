@@ -1663,12 +1663,25 @@ static Type *TransformTypeForMethodReference(ETSChecker *checker, ir::Expression
         return type;  // type is actually used as method
     }
 
-    if (type->AsETSFunctionType()->CallSignatures().at(0)->HasSignatureFlag(SignatureFlags::PRIVATE)) {
+    auto *const functionType = type->AsETSFunctionType();
+    auto &signatures = functionType->CallSignatures();
+
+    if (signatures.at(0)->HasSignatureFlag(SignatureFlags::PRIVATE)) {
         checker->LogError(diagnostic::PRIVATE_METHOD_AS_VALUE, getUseSite());
         return checker->GlobalTypeError();
     }
 
-    if (type->AsETSFunctionType()->CallSignatures().size() > 1) {
+    auto it = signatures.begin();
+    while (it != signatures.end()) {
+        if ((*it)->HasSignatureFlag(SignatureFlags::ABSTRACT) &&
+            !(*it)->Owner()->GetDeclNode()->IsTSInterfaceDeclaration()) {
+            it = signatures.erase(it);
+        } else {
+            ++it;
+        }
+    }
+
+    if (signatures.size() > 1U) {
         checker->LogError(diagnostic::OVERLOADED_METHOD_AS_VALUE, getUseSite());
         return checker->GlobalTypeError();
     }
