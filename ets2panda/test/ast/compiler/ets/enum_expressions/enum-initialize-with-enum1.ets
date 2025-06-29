@@ -18,5 +18,3 @@ enum Color2 { a = Color.Red, b = Color.Green}
 
 arktest.assertEQ(Color2.a.valueOf(), 0)
 arktest.assertEQ(Color2.b.valueOf(), 3)
-
-/* @@? 17:19 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type.  */
