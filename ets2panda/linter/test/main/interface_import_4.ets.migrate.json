@@ -15,9 +15,9 @@
     ],
     "result": [
         {
-            "line": 22,
+            "line": 35,
             "column": 28,
-            "endLine": 22,
+            "endLine": 35,
             "endColumn": 36,
             "problem": "DynamicCtorCall",
             "suggest": "",

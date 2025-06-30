@@ -326,12 +326,12 @@ namespace X {
       console.log("C - 1");
     }
   }
- 
+
   export interface I {
     m(a: number, b: string): void;
   }
 }
- 
+
 class GeneratedObjectLiteralClass_11 extends X.C {
     m() {
         console.log("C - 2");
@@ -346,6 +346,18 @@ class GeneratedObjectLiteralClass_12 implements X.I {
 
 function test() {
   let c: X.C = new GeneratedObjectLiteralClass_11()
- 
+
   let i: X.I = new GeneratedObjectLiteralClass_12()
+}
+
+class FooBarBaz {
+    foo?: Map<string, Object>
+    bar?: string
+}
+
+function baz(fooBar: Map<string, Object>) {
+    baz2({fooBar});
+}
+
+function baz2(fooBarBaz: FooBarBaz) {
 }

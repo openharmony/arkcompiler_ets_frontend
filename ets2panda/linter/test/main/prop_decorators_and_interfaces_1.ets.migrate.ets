@@ -13,9 +13,18 @@
  * limitations under the License.
  */
 
-import { PropRef, StoragePropRef, LocalStoragePropRef } from '@kit.ArkUI';
+import {
+  PropRef,
+  StoragePropRef,
+  LocalStoragePropRef,
+} from '@kit.ArkUI';
 
-import { Entry, Component, StorageLink, LocalStorageLink } from '@kit.ArkUI';
+import {
+  Entry,
+  Component,
+  StorageLink,
+  LocalStorageLink,
+} from '@kit.ArkUI';
 
 class User {
   name: string = ""

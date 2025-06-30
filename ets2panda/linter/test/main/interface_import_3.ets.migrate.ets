@@ -13,7 +13,10 @@
  * limitations under the License.
  */
 
-import { Entry, Component } from '@kit.ArkUI';
+import {
+  Entry,
+  Component,
+} from '@kit.ArkUI';
 
 import { A } from './har'
 

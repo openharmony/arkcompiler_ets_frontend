@@ -108,7 +108,6 @@ export const arkts2Rules: number[] = [
   321,
   322,
   323,
-  324,
   325,
   326,
   327,
@@ -136,6 +135,7 @@ export const arkts2Rules: number[] = [
   349,
   350,
   351,
+  352,
   355,
   356,
   357,
@@ -149,7 +149,9 @@ export const arkts2Rules: number[] = [
   375,
   376,
   377,
-  378
+  378,
+  381,
+  382
 ];
 
 export const onlyArkts2SyntaxRules: Map<number, string> = new Map([
@@ -193,5 +195,17 @@ export const onlyArkts2SyntaxRules: Map<number, string> = new Map([
   [255, 'arkts-no-extends-expression'],
   [300, 'arkts-no-ts-like-function-call'],
   [301, 'arkts-ohmurl-full-path'],
-  [304, 'arkts-no-duplicate-function-name']
+  [304, 'arkts-no-duplicate-function-name'],
+  [319, 'arkts-method-inherit-rule'],
+  [325, 'arkts-default-args-behind-required-args'],
+  [329, 'arkts-unsupport-prop-name-from-value'],
+  [370, 'arkts-no-sparse-array'],
+  [371, 'arkts-no-enum-prop-as-type'],
+  [372, 'arkts-no-ts-like-smart-type'],
+  [373, 'arkts-array-type-immutable'],
+  [374, 'arkts-primitive-type-normalization'],
+  [375, 'arkts-no-ts-like-catch-type'],
+  [376, 'arkts-numeric-bigint-compare'],
+  [377, 'arkts-only-support-decimal-bigint-literal'],
+  [378, 'arkts-unsupport-operator']
 ]);

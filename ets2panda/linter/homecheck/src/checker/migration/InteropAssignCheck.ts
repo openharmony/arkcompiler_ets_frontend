@@ -95,33 +95,35 @@ export class InteropAssignCheck implements BaseChecker {
 
     private checkPassToFunction(target: ArkMethod, scene: Scene) {
         const callsites = this.cg.getInvokeStmtByMethod(target.getSignature());
-        callsites.forEach(cs => {
-            let hasTargetArg = false;
-            const invoke = cs.getInvokeExpr()!;
-            const csMethod = cs.getCfg().getDeclaringMethod();
-            invoke.getArgs().forEach(arg => {
-                const argTy = arg.getType();
-                if (argTy instanceof PrimitiveType || this.isBoxedType(argTy)) {
+        callsites
+            .filter(cs => cs.getCfg().getDeclaringMethod().getLanguage() === Language.ARKTS1_1)
+            .forEach(cs => {
+                let hasTargetArg = false;
+                const invoke = cs.getInvokeExpr()!;
+                const csMethod = cs.getCfg().getDeclaringMethod();
+                invoke.getArgs().forEach(arg => {
+                    const argTy = arg.getType();
+                    if (argTy instanceof PrimitiveType || this.isBoxedType(argTy)) {
+                        return;
+                    }
+                    const argTyLang = this.getTypeDefinedLang(argTy, scene) ?? csMethod?.getLanguage() ?? Language.UNKNOWN;
+                    if (argTyLang === Language.ARKTS1_1) {
+                        hasTargetArg = true;
+                    }
+                });
+                if (!hasTargetArg) {
                     return;
                 }
-                const argTyLang = this.getTypeDefinedLang(argTy, scene) ?? csMethod?.getLanguage() ?? Language.UNKNOWN;
-                if (argTyLang === Language.ARKTS1_1) {
-                    hasTargetArg = true;
-                }
+                let line = cs.getOriginPositionInfo().getLineNo();
+                let column = cs.getOriginPositionInfo().getColNo();
+                const problem = 'Interop';
+                const desc = `${this.metaData.description} (${RULE_ID})`;
+                const severity = this.metaData.severity;
+                const ruleId = this.rule.ruleId;
+                const filePath = csMethod?.getDeclaringArkFile()?.getFilePath() ?? '';
+                const defeats = new Defects(line, column, column, problem, desc, severity, ruleId, filePath, '', true, false, false);
+                this.issues.push(new IssueReport(defeats, undefined));
             });
-            if (!hasTargetArg) {
-                return;
-            }
-            let line = cs.getOriginPositionInfo().getLineNo();
-            let column = cs.getOriginPositionInfo().getColNo();
-            const problem = 'Interop';
-            const desc = `${this.metaData.description} (${RULE_ID})`;
-            const severity = this.metaData.severity;
-            const ruleId = this.rule.ruleId;
-            const filePath = csMethod?.getDeclaringArkFile()?.getFilePath() ?? '';
-            const defeats = new Defects(line, column, column, problem, desc, severity, ruleId, filePath, '', true, false, false);
-            this.issues.push(new IssueReport(defeats, undefined));
-        });
     }
 
     private isBoxedType(checkType: Type): boolean {

@@ -16,15 +16,15 @@
 
 
 let GeneratedImportVar_3 = ESValue.load('./interop_import_js_js');
-let wiki = GeneratedImportVar_3.getPropertyByName('Wiki');
+let wiki = GeneratedImportVar_3.getProperty('Wiki');
 let GeneratedImportVar_2 = ESValue.load('./interop_import_js_js');
-let Doge = GeneratedImportVar_2.getPropertyByName('Dog');
+let Doge = GeneratedImportVar_2.getProperty('Dog');
 let GeneratedImportVar_1 = ESValue.load('./interop_import_js_js');
-let myAaa = GeneratedImportVar_1.getPropertyByName('aaa');
-let ClassA = GeneratedImportVar_1.getPropertyByName('ClassA');
-let Dog = GeneratedImportVar_1.getPropertyByName('Dog');
-let Person = GeneratedImportVar_1.getPropertyByName('Person');
-let Wiki = GeneratedImportVar_1.getPropertyByName('Wiki');
+let myAaa = GeneratedImportVar_1.getProperty('aaa');
+let ClassA = GeneratedImportVar_1.getProperty('ClassA');
+let Dog = GeneratedImportVar_1.getProperty('Dog');
+let Person = GeneratedImportVar_1.getProperty('Person');
+let Wiki = GeneratedImportVar_1.getProperty('Wiki');
 
 
 myAaa.invoke().typeOf(); //error
@@ -34,15 +34,15 @@ Dog.typeOf(); //error
 Dog.invoke(ESValue.wrap('doge')).typeOf(); //error
 Doge.invoke(ESValue.wrap('doge')).typeOf(); //error
 Wiki.typeOf() //error
-Wiki.getPropertyByName('name').typeOf() //error
+Wiki.getProperty('name').typeOf() //error
 wiki.typeOf() //error
-let val = wiki.getPropertyByName("name")
+let val = wiki.getProperty("name")
 typeof val;
 const aClass:ClassA = ClassA.instantiate()
 ClassA.instantiate().typeOf() //error
 typeof aClass;
 let person:Person = Person.instantiate();
-let name =person.getPropertyByName("name")
+let name =person.getProperty("name")
 let name2 =person.invokeMethod("getName")
 function getPersonInfo(){
   typeof person;
@@ -68,7 +68,7 @@ class Object {
     typeof location;
   }
   tips(){
-    wiki.getPropertyByName('name').typeOf(); //error
+    wiki.getProperty('name').typeOf(); //error
     typeof age;
     typeof person2;
     typeof fun;
@@ -77,6 +77,6 @@ class Object {
 }
 
 myAaa.typeOf(); //error
-Person.instantiate().getPropertyByName('name').typeOf()  //error
+Person.instantiate().getProperty('name').typeOf()  //error
 Person.instantiate().invokeMethod("getName").typeOf() //error
 Person.instantiate().invokeMethod("setAge", ESValue.wrap(22.0)).typeOf() //error

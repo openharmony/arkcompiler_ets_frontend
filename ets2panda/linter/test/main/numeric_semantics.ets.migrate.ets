@@ -16,7 +16,14 @@
 // TypeScript: treats 'n' as having type number
 // ArkTS: treats 'n' as having type int to reach max code performance
 
-import { Entry, Component, State, RelativeContainer, Text, AppStorage } from '@kit.ArkUI';
+import {
+  Entry,
+  Component,
+  State,
+  RelativeContainer,
+  Text,
+  AppStorage,
+} from '@kit.ArkUI';
 
 let a: number = 1.0;
 

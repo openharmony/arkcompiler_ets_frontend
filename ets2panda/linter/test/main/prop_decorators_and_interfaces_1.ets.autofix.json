@@ -108,7 +108,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, StorageLink, LocalStorageLink } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  StorageLink,\n  LocalStorageLink,\n} from '@kit.ArkUI';",
                     "line": 32,
                     "column": 2,
                     "endLine": 32,
@@ -129,7 +129,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, StorageLink, LocalStorageLink } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  StorageLink,\n  LocalStorageLink,\n} from '@kit.ArkUI';",
                     "line": 32,
                     "column": 2,
                     "endLine": 32,
@@ -150,7 +150,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, StorageLink, LocalStorageLink } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  StorageLink,\n  LocalStorageLink,\n} from '@kit.ArkUI';",
                     "line": 32,
                     "column": 2,
                     "endLine": 32,
@@ -171,7 +171,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, StorageLink, LocalStorageLink } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  StorageLink,\n  LocalStorageLink,\n} from '@kit.ArkUI';",
                     "line": 32,
                     "column": 2,
                     "endLine": 32,
@@ -192,7 +192,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, StorageLink, LocalStorageLink } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  StorageLink,\n  LocalStorageLink,\n} from '@kit.ArkUI';",
                     "line": 32,
                     "column": 2,
                     "endLine": 32,

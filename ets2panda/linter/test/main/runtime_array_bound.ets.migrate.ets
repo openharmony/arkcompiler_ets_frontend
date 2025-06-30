@@ -165,3 +165,8 @@ enum TE{
 }
 arr1[TE.AA] = 12.0;
 
+let a: string[] = [];
+let b: Array<string> = new Array<string>(a.length);
+for (let i: number = 0.0; i < a.length; i++) {
+  b[i as int];
+}

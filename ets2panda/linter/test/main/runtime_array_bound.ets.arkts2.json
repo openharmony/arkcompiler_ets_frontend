@@ -1853,6 +1853,36 @@
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
+        },
+        {
+            "line": 169,
+            "column": 24,
+            "endLine": 169,
+            "endColumn": 43,
+            "problem": "GenericCallNoTypeArgs",
+            "suggest": "",
+            "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 170,
+            "column": 10,
+            "endLine": 170,
+            "endColumn": 15,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 170,
+            "column": 14,
+            "endLine": 170,
+            "endColumn": 15,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
         }
     ]
 }

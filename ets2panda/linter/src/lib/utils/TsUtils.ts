@@ -48,6 +48,7 @@ import { ETS_MODULE, PATH_SEPARATOR, VALID_OHM_COMPONENTS_MODULE_PATH } from './
 import { EXTNAME_ETS, EXTNAME_JS, EXTNAME_D_ETS } from './consts/ExtensionName';
 import { STRING_ERROR_LITERAL } from './consts/Literals';
 
+export const PROMISE_METHODS = new Set(['all', 'race', 'any', 'resolve', 'allSettled']);
 export const SYMBOL = 'Symbol';
 export const SYMBOL_CONSTRUCTOR = 'SymbolConstructor';
 const ITERATOR = 'iterator';
@@ -824,18 +825,22 @@ export class TsUtils {
     isStrict: boolean = false
   ): boolean {
     if (
-      TsUtils.reduceReference(lhsType) === TsUtils.reduceReference(rhsType) &&
-      TsUtils.isTypeReference(lhsType) &&
-      TsUtils.isTypeReference(rhsType)
+      TsUtils.reduceReference(lhsType) !== TsUtils.reduceReference(rhsType) ||
+      !TsUtils.isTypeReference(lhsType) ||
+      !TsUtils.isTypeReference(rhsType)
     ) {
-      const lhsArgs = lhsType.typeArguments;
-      const rhsArgs = rhsType.typeArguments;
-      if (lhsArgs && lhsArgs.length > 0) {
-        if (rhsArgs && rhsArgs.length > 0) {
-          return this.needToDeduceStructuralIdentity(lhsArgs[0], rhsArgs[0], rhsExpr, isStrict);
+      return false;
+    }
+    const lhsArgs = lhsType.typeArguments;
+    const rhsArgs = rhsType.typeArguments;
+    if (lhsArgs && lhsArgs.length > 0) {
+      if (rhsArgs && rhsArgs.length > 0) {
+        if (rhsArgs[0] === lhsArgs[0]) {
+          return false;
         }
-        return this.needToDeduceStructuralIdentity(lhsArgs[0], rhsType, rhsExpr, isStrict);
+        return this.needToDeduceStructuralIdentity(lhsArgs[0], rhsArgs[0], rhsExpr, isStrict);
       }
+      return this.needToDeduceStructuralIdentity(lhsArgs[0], rhsType, rhsExpr, isStrict);
     }
     return false;
   }
@@ -3699,41 +3704,6 @@ export class TsUtils {
     }
 
     return undefined;
-  }
-
-  /**
-   * Checks whether an exported identifier is imported from an ArkTS1 file.
-   * @param exportIdentifier The exported identifier to check.
-   * @param node The node where the export occurs (used to get the current source file).
-   * @returns true if imported from ArkTS1, false if not, undefined if undetermined.
-   */
-  isExportImportedFromArkTs1(exportIdentifier: ts.Identifier, node: ts.Node): boolean | undefined {
-    // Get the symbol associated with the identifier.
-    const symbol = this.tsTypeChecker.getSymbolAtLocation(exportIdentifier);
-    if (!symbol) {
-      return undefined;
-    }
-
-    // If the symbol is an alias (imported), resolve the real symbol.
-    const realSymbol =
-      (symbol.flags & ts.SymbolFlags.Alias) !== 0 ? this.tsTypeChecker.getAliasedSymbol(symbol) : undefined;
-
-    const declarations = realSymbol?.getDeclarations();
-    if (!declarations || declarations.length === 0) {
-      return undefined;
-    }
-
-    // Get the source file where the declaration is located.
-    const importSourceFile = declarations[0].getSourceFile();
-
-    // Ensure import is from ArkTS1 file and usage is in ArkTS1.2 file
-    const currentSourceFile = node.getSourceFile();
-    return (
-      importSourceFile.fileName.endsWith(EXTNAME_ETS) &&
-      currentSourceFile.fileName.endsWith(EXTNAME_ETS) &&
-      !this.isArkts12File(importSourceFile) &&
-      this.isArkts12File(currentSourceFile)
-    );
   }
 
   isArkts12File(sourceFile: ts.SourceFile): boolean {

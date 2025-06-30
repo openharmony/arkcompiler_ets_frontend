@@ -15,7 +15,22 @@
 
 import { CustomLayout } from '@kit.ArkUI';
 
-import { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';
+import {
+  Entry,
+  Component,
+  Column,
+  Builder,
+  ForEach,
+  Text,
+  BuilderParam,
+  State,
+  SizeResult,
+  GeometryInfo,
+  Layoutable,
+  ConstraintSizeOptions,
+  Measurable,
+  MeasureResult,
+} from '@kit.ArkUI';
 
 @Entry
 @Component

@@ -129,16 +129,6 @@
             "column": 14,
             "endLine": 39,
             "endColumn": 18,
-            "problem": "ConstructorIfaceFromSdk",
-            "suggest": "",
-            "rule": "Construct signatures are not supported in interfaces.(sdk-ctor-signatures-iface)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 39,
-            "column": 14,
-            "endLine": 39,
-            "endColumn": 18,
             "problem": "DynamicCtorCall",
             "suggest": "",
             "rule": "\"new\" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)",

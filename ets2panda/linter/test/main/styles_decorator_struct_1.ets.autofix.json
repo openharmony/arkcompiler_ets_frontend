@@ -24,7 +24,7 @@
                 {
                     "start": 635,
                     "end": 716,
-                    "replacementText": "cardStyle1 = (instance: CommonMethod): void => {\n    instance.backgroundColor('#ffffff');\n    instance.borderRadius(8);\n  };",
+                    "replacementText": "cardStyle1: CustomStyles = (instance: CommonMethod): void => {\n    instance.backgroundColor('#ffffff');\n    instance.borderRadius(8);\n  };",
                     "line": 18,
                     "column": 3,
                     "endLine": 22,
@@ -84,7 +84,7 @@
                 {
                     "start": 870,
                     "end": 1010,
-                    "replacementText": "cardStyle2 = (instance: CommonMethod): void => {\n    instance.border({\n        color: this.getColor(),\n        width: this.getWidth()\n    });\n    instance.backgroundColor('#ffffff');\n  };",
+                    "replacementText": "cardStyle2: CustomStyles = (instance: CommonMethod): void => {\n    instance.border({\n        color: this.getColor(),\n        width: this.getWidth()\n    });\n    instance.backgroundColor('#ffffff');\n  };",
                     "line": 35,
                     "column": 3,
                     "endLine": 42,
@@ -144,7 +144,7 @@
                 {
                     "start": 1326,
                     "end": 1388,
-                    "replacementText": "NormalStyles = (instance: CommonMethod): void => {\n    instance.backgroundColor(Color.Red);\n  };",
+                    "replacementText": "NormalStyles: CustomStyles = (instance: CommonMethod): void => {\n    instance.backgroundColor(Color.Red);\n  };",
                     "line": 67,
                     "column": 3,
                     "endLine": 70,
@@ -165,7 +165,7 @@
                 {
                     "start": 1392,
                     "end": 1457,
-                    "replacementText": "PressedStyles = (instance: CommonMethod): void => {\n    instance.backgroundColor(Color.Green);\n  };",
+                    "replacementText": "PressedStyles: CustomStyles = (instance: CommonMethod): void => {\n    instance.backgroundColor(Color.Green);\n  };",
                     "line": 72,
                     "column": 3,
                     "endLine": 75,
@@ -196,7 +196,7 @@
                 {
                     "start": 1953,
                     "end": 2449,
-                    "replacementText": "imageStyle = (instance: CommonMethod): void => {\n    instance.draggable(this.isShowLongPressMenu() && this.isPC());\n    instance.onDragStart(() => {\n        console.info(TAG, 'onDragStart');\n        this.touchVibrate(VibrateType.DRAG);\n        if (this.mediaItem?.path) {\n            this.previewUri =\n                this.getPreviewUri(this.mediaItem?.path, this.mediaItem?.getDateModified?.(), false, true);\n        }\n        return this.DragBuilder;\n    });\n    instance.accessibilityText(this.isOpenTouchGuide ? this.getImageItemGridAccessibilityText() : '');\n  };",
+                    "replacementText": "imageStyle: CustomStyles = (instance: CommonMethod): void => {\n    instance.draggable(this.isShowLongPressMenu() && this.isPC());\n    instance.onDragStart(() => {\n        console.info(TAG, 'onDragStart');\n        this.touchVibrate(VibrateType.DRAG);\n        if (this.mediaItem?.path) {\n            this.previewUri =\n                this.getPreviewUri(this.mediaItem?.path, this.mediaItem?.getDateModified?.(), false, true);\n        }\n        return this.DragBuilder;\n    });\n    instance.accessibilityText(this.isOpenTouchGuide ? this.getImageItemGridAccessibilityText() : '');\n  };",
                     "line": 105,
                     "column": 3,
                     "endLine": 118,
@@ -227,7 +227,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, CommonMethod, Column, Text, Color, BuilderParam, Require, Button, CustomBuilder } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  CommonMethod,\n  Column,\n  Text,\n  Color,\n  BuilderParam,\n  Require,\n  Button,\n  CustomBuilder,\n} from '@kit.ArkUI';",
                     "line": 103,
                     "column": 24,
                     "endLine": 103,
@@ -248,7 +248,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, CommonMethod, Column, Text, Color, BuilderParam, Require, Button, CustomBuilder } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  CommonMethod,\n  Column,\n  Text,\n  Color,\n  BuilderParam,\n  Require,\n  Button,\n  CustomBuilder,\n} from '@kit.ArkUI';",
                     "line": 103,
                     "column": 24,
                     "endLine": 103,
@@ -269,7 +269,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, CommonMethod, Column, Text, Color, BuilderParam, Require, Button, CustomBuilder } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  CommonMethod,\n  Column,\n  Text,\n  Color,\n  BuilderParam,\n  Require,\n  Button,\n  CustomBuilder,\n} from '@kit.ArkUI';",
                     "line": 103,
                     "column": 24,
                     "endLine": 103,
@@ -290,7 +290,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, CommonMethod, Column, Text, Color, BuilderParam, Require, Button, CustomBuilder } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  CommonMethod,\n  Column,\n  Text,\n  Color,\n  BuilderParam,\n  Require,\n  Button,\n  CustomBuilder,\n} from '@kit.ArkUI';",
                     "line": 103,
                     "column": 24,
                     "endLine": 103,
@@ -311,7 +311,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, CommonMethod, Column, Text, Color, BuilderParam, Require, Button, CustomBuilder } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  CommonMethod,\n  Column,\n  Text,\n  Color,\n  BuilderParam,\n  Require,\n  Button,\n  CustomBuilder,\n} from '@kit.ArkUI';",
                     "line": 103,
                     "column": 24,
                     "endLine": 103,
@@ -332,7 +332,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, CommonMethod, Column, Text, Color, BuilderParam, Require, Button, CustomBuilder } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  CommonMethod,\n  Column,\n  Text,\n  Color,\n  BuilderParam,\n  Require,\n  Button,\n  CustomBuilder,\n} from '@kit.ArkUI';",
                     "line": 103,
                     "column": 24,
                     "endLine": 103,
@@ -353,7 +353,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, CommonMethod, Column, Text, Color, BuilderParam, Require, Button, CustomBuilder } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  CommonMethod,\n  Column,\n  Text,\n  Color,\n  BuilderParam,\n  Require,\n  Button,\n  CustomBuilder,\n} from '@kit.ArkUI';",
                     "line": 103,
                     "column": 24,
                     "endLine": 103,
@@ -374,7 +374,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, CommonMethod, Column, Text, Color, BuilderParam, Require, Button, CustomBuilder } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  CommonMethod,\n  Column,\n  Text,\n  Color,\n  BuilderParam,\n  Require,\n  Button,\n  CustomBuilder,\n} from '@kit.ArkUI';",
                     "line": 103,
                     "column": 24,
                     "endLine": 103,
@@ -395,7 +395,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, CommonMethod, Column, Text, Color, BuilderParam, Require, Button, CustomBuilder } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  CommonMethod,\n  Column,\n  Text,\n  Color,\n  BuilderParam,\n  Require,\n  Button,\n  CustomBuilder,\n} from '@kit.ArkUI';",
                     "line": 103,
                     "column": 24,
                     "endLine": 103,
@@ -416,7 +416,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, CommonMethod, Column, Text, Color, BuilderParam, Require, Button, CustomBuilder } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  CommonMethod,\n  Column,\n  Text,\n  Color,\n  BuilderParam,\n  Require,\n  Button,\n  CustomBuilder,\n} from '@kit.ArkUI';",
                     "line": 103,
                     "column": 24,
                     "endLine": 103,
@@ -437,7 +437,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, CommonMethod, Column, Text, Color, BuilderParam, Require, Button, CustomBuilder } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  CommonMethod,\n  Column,\n  Text,\n  Color,\n  BuilderParam,\n  Require,\n  Button,\n  CustomBuilder,\n} from '@kit.ArkUI';",
                     "line": 103,
                     "column": 24,
                     "endLine": 103,
@@ -458,7 +458,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, CommonMethod, Column, Text, Color, BuilderParam, Require, Button, CustomBuilder } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  CommonMethod,\n  Column,\n  Text,\n  Color,\n  BuilderParam,\n  Require,\n  Button,\n  CustomBuilder,\n} from '@kit.ArkUI';",
                     "line": 103,
                     "column": 24,
                     "endLine": 103,
@@ -479,7 +479,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, CommonMethod, Column, Text, Color, BuilderParam, Require, Button, CustomBuilder } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  CommonMethod,\n  Column,\n  Text,\n  Color,\n  BuilderParam,\n  Require,\n  Button,\n  CustomBuilder,\n} from '@kit.ArkUI';",
                     "line": 103,
                     "column": 24,
                     "endLine": 103,
@@ -500,7 +500,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, CommonMethod, Column, Text, Color, BuilderParam, Require, Button, CustomBuilder } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  CommonMethod,\n  Column,\n  Text,\n  Color,\n  BuilderParam,\n  Require,\n  Button,\n  CustomBuilder,\n} from '@kit.ArkUI';",
                     "line": 103,
                     "column": 24,
                     "endLine": 103,
@@ -521,7 +521,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, CommonMethod, Column, Text, Color, BuilderParam, Require, Button, CustomBuilder } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  CommonMethod,\n  Column,\n  Text,\n  Color,\n  BuilderParam,\n  Require,\n  Button,\n  CustomBuilder,\n} from '@kit.ArkUI';",
                     "line": 103,
                     "column": 24,
                     "endLine": 103,
@@ -542,7 +542,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, CommonMethod, Column, Text, Color, BuilderParam, Require, Button, CustomBuilder } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  CommonMethod,\n  Column,\n  Text,\n  Color,\n  BuilderParam,\n  Require,\n  Button,\n  CustomBuilder,\n} from '@kit.ArkUI';",
                     "line": 103,
                     "column": 24,
                     "endLine": 103,
@@ -563,7 +563,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, CommonMethod, Column, Text, Color, BuilderParam, Require, Button, CustomBuilder } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  CommonMethod,\n  Column,\n  Text,\n  Color,\n  BuilderParam,\n  Require,\n  Button,\n  CustomBuilder,\n} from '@kit.ArkUI';",
                     "line": 103,
                     "column": 24,
                     "endLine": 103,
@@ -584,7 +584,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, CommonMethod, Column, Text, Color, BuilderParam, Require, Button, CustomBuilder } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  CommonMethod,\n  Column,\n  Text,\n  Color,\n  BuilderParam,\n  Require,\n  Button,\n  CustomBuilder,\n} from '@kit.ArkUI';",
                     "line": 103,
                     "column": 24,
                     "endLine": 103,

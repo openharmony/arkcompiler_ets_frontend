@@ -27,7 +27,6 @@ import {
     ArkNamespace,
     Local,
     ClassType,
-    ArkField,
     ClassSignature,
     Type,
     BooleanType,
@@ -60,6 +59,7 @@ import { WarnInfo } from '../../utils/common/Utils';
 import { ArkClass } from 'arkanalyzer/lib/core/model/ArkClass';
 import { Language } from 'arkanalyzer/lib/core/model/ArkFile';
 import { MethodParameter } from 'arkanalyzer/lib/core/model/builder/ArkMethodBuilder';
+import { AbstractFieldRef, ArkReturnStmt } from 'arkanalyzer';
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'DeprecatedBuiltInAPICheck');
 const gMetaData: BaseMetaData = {
@@ -226,7 +226,7 @@ class DeprecatedAPIList {
         this.createMapForEachAPI(),
         this.createArraySymbolIteratorAPI(),
         this.createSetSymbolIteratorAPI(),
-        this.createMapSymbolIteratorAPI()
+        this.createMapSymbolIteratorAPI(),
     ];
 
     private static createArrayEveryAPI1(): DeprecatedAPIInfo {
@@ -385,9 +385,8 @@ export class InteropDeprecatedBuiltInAPICheck implements BaseChecker {
     };
 
     public processArkClass(arkClass: ArkClass, globalVarMap: Map<string, Stmt[]>): void {
-        for (let field of arkClass.getFields()) {
-            this.processClassField(field, globalVarMap);
-        }
+        this.processArkMethod(arkClass.getInstanceInitMethod(), globalVarMap);
+        this.processArkMethod(arkClass.getStaticInitMethod(), globalVarMap);
         for (let mtd of arkClass.getMethods()) {
             this.processArkMethod(mtd, globalVarMap);
         }
@@ -399,16 +398,6 @@ export class InteropDeprecatedBuiltInAPICheck implements BaseChecker {
         }
         for (let arkClass of namespace.getClasses()) {
             this.processArkClass(arkClass, globalVarMap);
-        }
-    }
-
-    public processClassField(field: ArkField, globalVarMap: Map<string, Stmt[]>): void {
-        const stmts = field.getInitializer();
-        for (const stmt of stmts) {
-            const invokeExpr = this.getInvokeExpr(stmt);
-            if (invokeExpr === null) {
-                continue;
-            }
         }
     }
 
@@ -438,7 +427,7 @@ export class InteropDeprecatedBuiltInAPICheck implements BaseChecker {
             let checkAll = { value: true };
             let visited: Set<Stmt> = new Set();
             if (this.checkFromStmt(checkStmt, globalVarMap, checkAll, visited)) {
-                this.addIssueReport(stmt, targetLocal);
+                this.addIssueReport(stmt, targetLocal, checkAll.value);
             }
         }
     }
@@ -514,13 +503,14 @@ export class InteropDeprecatedBuiltInAPICheck implements BaseChecker {
             if (this.isInstanceCallMethodInDeprecatedAPIs(base, stmt, invokeExpr.getMethodSignature(), invokeExpr.getArgs())) {
                 return base;
             }
-            // instance invoke未匹配到，继续匹配静态调用。Array.from的API调用ArkAnalyzer也表示为ArkInstanceInvokeExpr，因为API定义里没有明确的static标识。
-            return this.getTargetValueInStaticInvokeWithDeprecatedAPIs(invokeExpr);
+            // Array.from的API调用ArkAnalyzer也表示为ArkInstanceInvokeExpr，因为API定义里没有明确的static标识
+            return this.getTargetLocalInArrayFrom(invokeExpr);
         } else if (invokeExpr instanceof ArkPtrInvokeExpr) {
             // TODO：可能存在ptr invoke的场景吗？
             return null;
         } else if (invokeExpr instanceof ArkStaticInvokeExpr) {
-            return null;
+            // Symbol.iterator API 检测的Reflect.get场景，是static invoke
+            return this.getTargetLocalInReflectGet(invokeExpr);
         }
         return null;
     }
@@ -553,8 +543,64 @@ export class InteropDeprecatedBuiltInAPICheck implements BaseChecker {
         return true;
     }
 
-    private getTargetValueInStaticInvokeWithDeprecatedAPIs(staticInvokeExpr: ArkStaticInvokeExpr): Local | null {
-        const callApiMethod = staticInvokeExpr.getMethodSignature();
+    // 此函数仅用作Symbol.iterator API 检测的Reflect.get场景
+    private getTargetLocalInReflectGet(staticInvokeExpr: ArkStaticInvokeExpr): Local | null {
+        const method = staticInvokeExpr.getMethodSignature();
+        const methodName = method.getMethodSubSignature().getMethodName();
+        const namespaceName = method.getDeclaringClassSignature().getDeclaringNamespaceSignature()?.getNamespaceName();
+        if (namespaceName !== 'Reflect' || methodName !== 'get') {
+            return null;
+        }
+
+        const args = staticInvokeExpr.getArgs();
+        if (args.length < 2) {
+            return null;
+        }
+        const targetLocal = args[0];
+        const apiCall = args[1];
+        if (!(targetLocal instanceof Local) || !(apiCall instanceof Local)) {
+            return null;
+        }
+
+        const declaringStmt = apiCall.getDeclaringStmt();
+        if (declaringStmt === null || !(declaringStmt instanceof ArkAssignStmt)) {
+            return null;
+        }
+        const rightOp = declaringStmt.getRightOp();
+        if (!(rightOp instanceof ArkInstanceFieldRef)) {
+            return null;
+        }
+        const fieldBaseName = rightOp.getBase().getName();
+        const fieldName = rightOp.getFieldName();
+        if (fieldBaseName !== 'Symbol' || fieldName !== 'iterator') {
+            return null;
+        }
+
+        for (const api of DeprecatedAPIList.DeprecatedAPIs) {
+            if (api.name !== 'Symbol.iterator') {
+                continue;
+            }
+            if (api.base === APIBaseCategory.Array && targetLocal.getType() instanceof ArrayType) {
+                return targetLocal;
+            }
+            if (api.base === APIBaseCategory.Set) {
+                const localType = targetLocal.getType();
+                if (localType instanceof ClassType && localType.getClassSignature().getClassName() === 'Set') {
+                    return targetLocal;
+                }
+            }
+            if (api.base === APIBaseCategory.Map) {
+                const localType = targetLocal.getType();
+                if (localType instanceof ClassType && localType.getClassSignature().getClassName() === 'Map') {
+                    return targetLocal;
+                }
+            }
+        }
+        return null;
+    }
+
+    private getTargetLocalInArrayFrom(invokeExpr: ArkInstanceInvokeExpr): Local | null {
+        const callApiMethod = invokeExpr.getMethodSignature();
         const callApiClass = callApiMethod.getDeclaringClassSignature();
         for (const api of DeprecatedAPIList.DeprecatedAPIs) {
             if (!api.isStatic) {
@@ -572,7 +618,7 @@ export class InteropDeprecatedBuiltInAPICheck implements BaseChecker {
                 continue;
             }
             if (this.compareParamTypes(api.params, callApiMethod.getMethodSubSignature().getParameters())) {
-                const args = staticInvokeExpr.getArgs();
+                const args = invokeExpr.getArgs();
                 // 形参匹配的情况下，进一步比较传入的实参，因为当前废弃接口大多数为去掉any类型的第二个可选参数
                 // TODO：这里需要考虑如何做的更通用
                 if (args.length !== api.params.length) {
@@ -600,30 +646,16 @@ export class InteropDeprecatedBuiltInAPICheck implements BaseChecker {
         return null;
     }
 
-    private isMatchSymbolIterator(apiName: string, callApiName: string, stmt: Stmt): boolean {
-        // 对于map[Symbol.iterator]这样的API，这里会存在%0 = Symbol.iterator的操作
-        if (apiName !== 'Symbol.iterator' || !callApiName.startsWith('%')) {
-            return false;
-        }
-        const tempLocalDeclaring = stmt.getCfg().getDeclaringMethod().getBody()?.getLocals().get(callApiName)?.getDeclaringStmt();
-        if (tempLocalDeclaring && tempLocalDeclaring instanceof ArkAssignStmt) {
-            const rightOp = tempLocalDeclaring.getRightOp();
-            if (!(rightOp instanceof ArkInstanceFieldRef)) {
-                return false;
-            }
-            if (rightOp.getFieldName() === 'iterator' && rightOp.getBase().getName() === 'Symbol') {
-                return true;
-            }
-        }
-        return false;
-    }
-
     private isInstanceCallMethodInDeprecatedAPIs(callBase: Local, stmt: Stmt, callMethod: MethodSignature, args: Value[]): boolean {
         const callApiName = callMethod.getMethodSubSignature().getMethodName();
         const callApiParams = callMethod.getMethodSubSignature().getParameters();
         for (const api of DeprecatedAPIList.DeprecatedAPIs) {
             // 对于map[Symbol.iterator]这样的API调用，callApiName是临时变量，需要进一步匹配
             if (api.name !== callApiName) {
+                continue;
+            }
+            // 对于for...of的语句，ArkAnalyzer会为其生成Symbol.iterator的调用语句，此处从源码中查找关键字以区分是源码中有还是自动生成的
+            if (api.name === 'Symbol.iterator' && !stmt.getOriginalText()?.includes('Symbol.iterator')) {
                 continue;
             }
             if (api.isStatic) {
@@ -634,7 +666,7 @@ export class InteropDeprecatedBuiltInAPICheck implements BaseChecker {
             }
 
             // Array concat API ArkAnalyzer当前无法很好处理...items形式的入参，此处作为特例处理
-            if (api.name === 'concat') {
+            if (api.name === 'concat' && api.base === APIBaseCategory.Array) {
                 return this.isMatchArrayConcatAPI(args);
             }
 
@@ -642,18 +674,7 @@ export class InteropDeprecatedBuiltInAPICheck implements BaseChecker {
             if (apiParams === undefined) {
                 return true;
             }
-            let allParamTypeMatch = true;
-            if (apiParams.length !== callApiParams.length) {
-                allParamTypeMatch = false;
-            } else {
-                for (let i = 0; i < apiParams.length; i++) {
-                    if (!this.isTypeMatch(apiParams[i], callApiParams[i].getType())) {
-                        allParamTypeMatch = false;
-                        break;
-                    }
-                }
-            }
-
+            let allParamTypeMatch = this.compareParamTypes(apiParams, callApiParams);
             if (allParamTypeMatch) {
                 // 形参匹配的情况下，进一步比较传入的实参，因为当前废弃接口大多数为去掉any类型的第二个可选参数
                 // TODO：这里需要考虑如何做的更通用
@@ -705,7 +726,10 @@ export class InteropDeprecatedBuiltInAPICheck implements BaseChecker {
             if (apiMatch === null || callApiMatch === null) {
                 return false;
             }
-            return apiMatch[0] === callApiMatch[0];
+            // 移除字符串中的类型的文件签名、类签名、泛型等信息后进行比较
+            let apiParamsStr = apiMatch[0].replace(/@[^:]+:/, '').replace(/<[^>]+>/, '');
+            let callApiParamsStr = callApiMatch[0].replace(/@[^:]+:/, '').replace(/<[^>]+>/, '');
+            return apiParamsStr === callApiParamsStr;
         } else if (callApiType instanceof ClassType && apiType instanceof ClassType) {
             // 若类型为FunctionType，仅需匹配class name，因为apiTypeStr类型推导后有可能为@%unk/%unk: ArrayLike，而callApiTypeStr有明确的declaring file
             return callApiType.getClassSignature().getClassName() === apiType.getClassSignature().getClassName();
@@ -735,7 +759,7 @@ export class InteropDeprecatedBuiltInAPICheck implements BaseChecker {
     private checkFromStmt(stmt: Stmt, globalVarMap: Map<string, Stmt[]>, checkAll: { value: boolean }, visited: Set<Stmt>, depth: number = 0): boolean {
         if (depth > CALL_DEPTH_LIMIT) {
             checkAll.value = false;
-            return false;
+            return true;
         }
         const node = this.dvfg.getOrNewDVFGNode(stmt);
         let worklist: DVFGNode[] = [node];
@@ -747,10 +771,11 @@ export class InteropDeprecatedBuiltInAPICheck implements BaseChecker {
             }
             visited.add(currentStmt);
 
-            if (this.isLeftOpDefinedInStaticArkTS(currentStmt)) {
+            if (this.isLeftOpOrReturnOpDefinedInStaticArkTS(currentStmt)) {
                 return true;
             }
 
+            // 当前语句的右值是全局变量，查找全局变量的定义语句
             const gv = this.isRightOpGlobalVar(currentStmt);
             if (gv) {
                 const globalDefs = globalVarMap.get(gv.getName());
@@ -766,6 +791,7 @@ export class InteropDeprecatedBuiltInAPICheck implements BaseChecker {
                 continue;
             }
 
+            // 当前语句的右值是函数返回值，查找调用函数的所有return语句
             const callsite = this.cg.getCallSiteByStmt(currentStmt);
             for (const cs of callsite) {
                 const declaringMtd = this.cg.getArkMethodByFuncID(cs.calleeFuncID);
@@ -784,6 +810,8 @@ export class InteropDeprecatedBuiltInAPICheck implements BaseChecker {
                     }
                 }
             }
+
+            // 当前语句的右值是函数参数赋值语句，查找所有调用处的入参情况
             const paramRef = this.isFromParameter(currentStmt);
             if (paramRef) {
                 const paramIdx = paramRef.getIndex();
@@ -794,6 +822,31 @@ export class InteropDeprecatedBuiltInAPICheck implements BaseChecker {
                     const res = this.checkFromStmt(stmt, globalVarMap, checkAll, visited, depth + 1);
                     if (res) {
                         return true;
+                    }
+                }
+            }
+
+            // 当前语句的右值是属性赋值语句，查找该属性的初始化语句
+            if (currentStmt instanceof ArkAssignStmt && currentStmt.getRightOp() instanceof AbstractFieldRef) {
+                const fieldSignature = (currentStmt.getRightOp() as AbstractFieldRef).getFieldSignature();
+                const classSignature = fieldSignature.getDeclaringSignature();
+                if (classSignature instanceof ClassSignature) {
+                    const field = this.scene.getClass(classSignature)?.getField(fieldSignature);
+                    if (field) {
+                        field.getInitializer().forEach(s => worklist.push(this.dvfg.getOrNewDVFGNode(s)));
+                    }
+                }
+            }
+
+            // 当前语句是return语句，查找return操作数的相关语句
+            if (currentStmt instanceof ArkReturnStmt) {
+                const returnOp = currentStmt.getOp();
+                if (returnOp instanceof Local) {
+                    let checkStmt =
+                        this.getLastAssignStmt(returnOp, stmt) ??
+                        this.checkTargetLocalAsGlobal(currentStmt.getCfg().getDeclaringMethod(), stmt, returnOp, globalVarMap);
+                    if (checkStmt !== null) {
+                        worklist.push(this.dvfg.getOrNewDVFGNode(checkStmt));
                     }
                 }
             }
@@ -843,15 +896,20 @@ export class InteropDeprecatedBuiltInAPICheck implements BaseChecker {
     }
 
     // 判断语句是否为赋值语句，且左值的定义来自于ArkTS1.2
-    private isLeftOpDefinedInStaticArkTS(stmt: Stmt): boolean {
-        if (!(stmt instanceof ArkAssignStmt)) {
+    private isLeftOpOrReturnOpDefinedInStaticArkTS(stmt: Stmt): boolean {
+        if (!(stmt instanceof ArkAssignStmt) && !(stmt instanceof ArkReturnStmt)) {
             return false;
         }
-        const leftOp = stmt.getLeftOp();
-        if (!(leftOp instanceof Local)) {
+        let operand: Value;
+        if (stmt instanceof ArkAssignStmt) {
+            operand = stmt.getLeftOp();
+        } else {
+            operand = stmt.getOp();
+        }
+        if (!(operand instanceof Local)) {
             return false;
         }
-        return this.isLocalDefinedInStaticArkTS(leftOp);
+        return this.isLocalDefinedInStaticArkTS(operand);
     }
 
     private isFromParameter(stmt: Stmt): ArkParameterRef | undefined {
@@ -888,11 +946,14 @@ export class InteropDeprecatedBuiltInAPICheck implements BaseChecker {
         });
     }
 
-    private addIssueReport(stmt: Stmt, operand: Value): void {
+    private addIssueReport(stmt: Stmt, operand: Value, checkAll: boolean = true): void {
         const severity = this.rule.alert ?? this.metaData.severity;
         const warnInfo = this.getLineAndColumn(stmt, operand);
         const problem = 'builtin-api';
-        const desc = `Builtin API is not support in ArkTS1.2 (${this.rule.ruleId.replace('@migration/', '')})`;
+        let desc = `Builtin API is not support in ArkTS1.2 (${this.rule.ruleId.replace('@migration/', '')})`;
+        if (!checkAll) {
+            desc = `Can not check when function call chain depth exceeds ${CALL_DEPTH_LIMIT}, please check it manually (${this.rule.ruleId.replace('@migration/', '')})`;
+        }
 
         let defects = new Defects(
             warnInfo.line,

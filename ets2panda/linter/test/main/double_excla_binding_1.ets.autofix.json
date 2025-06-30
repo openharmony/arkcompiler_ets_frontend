@@ -255,7 +255,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text, Entry, ComponentV2, Local, Column, Button, Param, Event } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  State,\n  Row,\n  Slider,\n  $$,\n  Checkbox,\n  Blank,\n  Text,\n  Entry,\n  ComponentV2,\n  Local,\n  Column,\n  Button,\n  Param,\n  Event,\n} from '@kit.ArkUI';",
                     "line": 107,
                     "column": 7,
                     "endLine": 107,
@@ -276,7 +276,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text, Entry, ComponentV2, Local, Column, Button, Param, Event } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  State,\n  Row,\n  Slider,\n  $$,\n  Checkbox,\n  Blank,\n  Text,\n  Entry,\n  ComponentV2,\n  Local,\n  Column,\n  Button,\n  Param,\n  Event,\n} from '@kit.ArkUI';",
                     "line": 107,
                     "column": 7,
                     "endLine": 107,
@@ -297,7 +297,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text, Entry, ComponentV2, Local, Column, Button, Param, Event } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  State,\n  Row,\n  Slider,\n  $$,\n  Checkbox,\n  Blank,\n  Text,\n  Entry,\n  ComponentV2,\n  Local,\n  Column,\n  Button,\n  Param,\n  Event,\n} from '@kit.ArkUI';",
                     "line": 107,
                     "column": 7,
                     "endLine": 107,
@@ -318,7 +318,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text, Entry, ComponentV2, Local, Column, Button, Param, Event } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  State,\n  Row,\n  Slider,\n  $$,\n  Checkbox,\n  Blank,\n  Text,\n  Entry,\n  ComponentV2,\n  Local,\n  Column,\n  Button,\n  Param,\n  Event,\n} from '@kit.ArkUI';",
                     "line": 107,
                     "column": 7,
                     "endLine": 107,
@@ -339,7 +339,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text, Entry, ComponentV2, Local, Column, Button, Param, Event } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  State,\n  Row,\n  Slider,\n  $$,\n  Checkbox,\n  Blank,\n  Text,\n  Entry,\n  ComponentV2,\n  Local,\n  Column,\n  Button,\n  Param,\n  Event,\n} from '@kit.ArkUI';",
                     "line": 107,
                     "column": 7,
                     "endLine": 107,
@@ -360,7 +360,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text, Entry, ComponentV2, Local, Column, Button, Param, Event } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  State,\n  Row,\n  Slider,\n  $$,\n  Checkbox,\n  Blank,\n  Text,\n  Entry,\n  ComponentV2,\n  Local,\n  Column,\n  Button,\n  Param,\n  Event,\n} from '@kit.ArkUI';",
                     "line": 107,
                     "column": 7,
                     "endLine": 107,
@@ -381,7 +381,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text, Entry, ComponentV2, Local, Column, Button, Param, Event } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  State,\n  Row,\n  Slider,\n  $$,\n  Checkbox,\n  Blank,\n  Text,\n  Entry,\n  ComponentV2,\n  Local,\n  Column,\n  Button,\n  Param,\n  Event,\n} from '@kit.ArkUI';",
                     "line": 107,
                     "column": 7,
                     "endLine": 107,
@@ -402,7 +402,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text, Entry, ComponentV2, Local, Column, Button, Param, Event } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  State,\n  Row,\n  Slider,\n  $$,\n  Checkbox,\n  Blank,\n  Text,\n  Entry,\n  ComponentV2,\n  Local,\n  Column,\n  Button,\n  Param,\n  Event,\n} from '@kit.ArkUI';",
                     "line": 107,
                     "column": 7,
                     "endLine": 107,
@@ -423,7 +423,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text, Entry, ComponentV2, Local, Column, Button, Param, Event } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  State,\n  Row,\n  Slider,\n  $$,\n  Checkbox,\n  Blank,\n  Text,\n  Entry,\n  ComponentV2,\n  Local,\n  Column,\n  Button,\n  Param,\n  Event,\n} from '@kit.ArkUI';",
                     "line": 107,
                     "column": 7,
                     "endLine": 107,
@@ -444,7 +444,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text, Entry, ComponentV2, Local, Column, Button, Param, Event } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  State,\n  Row,\n  Slider,\n  $$,\n  Checkbox,\n  Blank,\n  Text,\n  Entry,\n  ComponentV2,\n  Local,\n  Column,\n  Button,\n  Param,\n  Event,\n} from '@kit.ArkUI';",
                     "line": 107,
                     "column": 7,
                     "endLine": 107,
@@ -465,7 +465,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text, Entry, ComponentV2, Local, Column, Button, Param, Event } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  State,\n  Row,\n  Slider,\n  $$,\n  Checkbox,\n  Blank,\n  Text,\n  Entry,\n  ComponentV2,\n  Local,\n  Column,\n  Button,\n  Param,\n  Event,\n} from '@kit.ArkUI';",
                     "line": 107,
                     "column": 7,
                     "endLine": 107,
@@ -486,7 +486,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text, Entry, ComponentV2, Local, Column, Button, Param, Event } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  State,\n  Row,\n  Slider,\n  $$,\n  Checkbox,\n  Blank,\n  Text,\n  Entry,\n  ComponentV2,\n  Local,\n  Column,\n  Button,\n  Param,\n  Event,\n} from '@kit.ArkUI';",
                     "line": 107,
                     "column": 7,
                     "endLine": 107,
@@ -507,7 +507,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text, Entry, ComponentV2, Local, Column, Button, Param, Event } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  State,\n  Row,\n  Slider,\n  $$,\n  Checkbox,\n  Blank,\n  Text,\n  Entry,\n  ComponentV2,\n  Local,\n  Column,\n  Button,\n  Param,\n  Event,\n} from '@kit.ArkUI';",
                     "line": 107,
                     "column": 7,
                     "endLine": 107,
@@ -528,7 +528,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text, Entry, ComponentV2, Local, Column, Button, Param, Event } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  State,\n  Row,\n  Slider,\n  $$,\n  Checkbox,\n  Blank,\n  Text,\n  Entry,\n  ComponentV2,\n  Local,\n  Column,\n  Button,\n  Param,\n  Event,\n} from '@kit.ArkUI';",
                     "line": 107,
                     "column": 7,
                     "endLine": 107,
@@ -549,7 +549,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text, Entry, ComponentV2, Local, Column, Button, Param, Event } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  State,\n  Row,\n  Slider,\n  $$,\n  Checkbox,\n  Blank,\n  Text,\n  Entry,\n  ComponentV2,\n  Local,\n  Column,\n  Button,\n  Param,\n  Event,\n} from '@kit.ArkUI';",
                     "line": 107,
                     "column": 7,
                     "endLine": 107,
@@ -570,7 +570,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text, Entry, ComponentV2, Local, Column, Button, Param, Event } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  State,\n  Row,\n  Slider,\n  $$,\n  Checkbox,\n  Blank,\n  Text,\n  Entry,\n  ComponentV2,\n  Local,\n  Column,\n  Button,\n  Param,\n  Event,\n} from '@kit.ArkUI';",
                     "line": 107,
                     "column": 7,
                     "endLine": 107,
@@ -591,7 +591,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text, Entry, ComponentV2, Local, Column, Button, Param, Event } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  State,\n  Row,\n  Slider,\n  $$,\n  Checkbox,\n  Blank,\n  Text,\n  Entry,\n  ComponentV2,\n  Local,\n  Column,\n  Button,\n  Param,\n  Event,\n} from '@kit.ArkUI';",
                     "line": 107,
                     "column": 7,
                     "endLine": 107,
@@ -612,7 +612,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text, Entry, ComponentV2, Local, Column, Button, Param, Event } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  State,\n  Row,\n  Slider,\n  $$,\n  Checkbox,\n  Blank,\n  Text,\n  Entry,\n  ComponentV2,\n  Local,\n  Column,\n  Button,\n  Param,\n  Event,\n} from '@kit.ArkUI';",
                     "line": 107,
                     "column": 7,
                     "endLine": 107,
@@ -633,7 +633,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text, Entry, ComponentV2, Local, Column, Button, Param, Event } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  State,\n  Row,\n  Slider,\n  $$,\n  Checkbox,\n  Blank,\n  Text,\n  Entry,\n  ComponentV2,\n  Local,\n  Column,\n  Button,\n  Param,\n  Event,\n} from '@kit.ArkUI';",
                     "line": 107,
                     "column": 7,
                     "endLine": 107,
@@ -654,7 +654,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text, Entry, ComponentV2, Local, Column, Button, Param, Event } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  State,\n  Row,\n  Slider,\n  $$,\n  Checkbox,\n  Blank,\n  Text,\n  Entry,\n  ComponentV2,\n  Local,\n  Column,\n  Button,\n  Param,\n  Event,\n} from '@kit.ArkUI';",
                     "line": 107,
                     "column": 7,
                     "endLine": 107,
@@ -675,7 +675,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text, Entry, ComponentV2, Local, Column, Button, Param, Event } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  State,\n  Row,\n  Slider,\n  $$,\n  Checkbox,\n  Blank,\n  Text,\n  Entry,\n  ComponentV2,\n  Local,\n  Column,\n  Button,\n  Param,\n  Event,\n} from '@kit.ArkUI';",
                     "line": 107,
                     "column": 7,
                     "endLine": 107,
@@ -696,7 +696,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text, Entry, ComponentV2, Local, Column, Button, Param, Event } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  State,\n  Row,\n  Slider,\n  $$,\n  Checkbox,\n  Blank,\n  Text,\n  Entry,\n  ComponentV2,\n  Local,\n  Column,\n  Button,\n  Param,\n  Event,\n} from '@kit.ArkUI';",
                     "line": 107,
                     "column": 7,
                     "endLine": 107,
@@ -717,7 +717,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text, Entry, ComponentV2, Local, Column, Button, Param, Event } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  State,\n  Row,\n  Slider,\n  $$,\n  Checkbox,\n  Blank,\n  Text,\n  Entry,\n  ComponentV2,\n  Local,\n  Column,\n  Button,\n  Param,\n  Event,\n} from '@kit.ArkUI';",
                     "line": 107,
                     "column": 7,
                     "endLine": 107,
@@ -738,7 +738,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text, Entry, ComponentV2, Local, Column, Button, Param, Event } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  State,\n  Row,\n  Slider,\n  $$,\n  Checkbox,\n  Blank,\n  Text,\n  Entry,\n  ComponentV2,\n  Local,\n  Column,\n  Button,\n  Param,\n  Event,\n} from '@kit.ArkUI';",
                     "line": 107,
                     "column": 7,
                     "endLine": 107,
@@ -759,7 +759,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text, Entry, ComponentV2, Local, Column, Button, Param, Event } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  State,\n  Row,\n  Slider,\n  $$,\n  Checkbox,\n  Blank,\n  Text,\n  Entry,\n  ComponentV2,\n  Local,\n  Column,\n  Button,\n  Param,\n  Event,\n} from '@kit.ArkUI';",
                     "line": 107,
                     "column": 7,
                     "endLine": 107,
@@ -780,7 +780,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text, Entry, ComponentV2, Local, Column, Button, Param, Event } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  State,\n  Row,\n  Slider,\n  $$,\n  Checkbox,\n  Blank,\n  Text,\n  Entry,\n  ComponentV2,\n  Local,\n  Column,\n  Button,\n  Param,\n  Event,\n} from '@kit.ArkUI';",
                     "line": 107,
                     "column": 7,
                     "endLine": 107,
@@ -801,7 +801,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text, Entry, ComponentV2, Local, Column, Button, Param, Event } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  State,\n  Row,\n  Slider,\n  $$,\n  Checkbox,\n  Blank,\n  Text,\n  Entry,\n  ComponentV2,\n  Local,\n  Column,\n  Button,\n  Param,\n  Event,\n} from '@kit.ArkUI';",
                     "line": 107,
                     "column": 7,
                     "endLine": 107,
@@ -822,7 +822,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text, Entry, ComponentV2, Local, Column, Button, Param, Event } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  State,\n  Row,\n  Slider,\n  $$,\n  Checkbox,\n  Blank,\n  Text,\n  Entry,\n  ComponentV2,\n  Local,\n  Column,\n  Button,\n  Param,\n  Event,\n} from '@kit.ArkUI';",
                     "line": 107,
                     "column": 7,
                     "endLine": 107,
@@ -843,7 +843,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text, Entry, ComponentV2, Local, Column, Button, Param, Event } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  State,\n  Row,\n  Slider,\n  $$,\n  Checkbox,\n  Blank,\n  Text,\n  Entry,\n  ComponentV2,\n  Local,\n  Column,\n  Button,\n  Param,\n  Event,\n} from '@kit.ArkUI';",
                     "line": 107,
                     "column": 7,
                     "endLine": 107,
@@ -864,7 +864,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text, Entry, ComponentV2, Local, Column, Button, Param, Event } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  State,\n  Row,\n  Slider,\n  $$,\n  Checkbox,\n  Blank,\n  Text,\n  Entry,\n  ComponentV2,\n  Local,\n  Column,\n  Button,\n  Param,\n  Event,\n} from '@kit.ArkUI';",
                     "line": 107,
                     "column": 7,
                     "endLine": 107,
@@ -885,7 +885,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text, Entry, ComponentV2, Local, Column, Button, Param, Event } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  State,\n  Row,\n  Slider,\n  $$,\n  Checkbox,\n  Blank,\n  Text,\n  Entry,\n  ComponentV2,\n  Local,\n  Column,\n  Button,\n  Param,\n  Event,\n} from '@kit.ArkUI';",
                     "line": 107,
                     "column": 7,
                     "endLine": 107,
@@ -906,7 +906,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text, Entry, ComponentV2, Local, Column, Button, Param, Event } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  State,\n  Row,\n  Slider,\n  $$,\n  Checkbox,\n  Blank,\n  Text,\n  Entry,\n  ComponentV2,\n  Local,\n  Column,\n  Button,\n  Param,\n  Event,\n} from '@kit.ArkUI';",
                     "line": 107,
                     "column": 7,
                     "endLine": 107,
@@ -927,7 +927,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text, Entry, ComponentV2, Local, Column, Button, Param, Event } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  State,\n  Row,\n  Slider,\n  $$,\n  Checkbox,\n  Blank,\n  Text,\n  Entry,\n  ComponentV2,\n  Local,\n  Column,\n  Button,\n  Param,\n  Event,\n} from '@kit.ArkUI';",
                     "line": 107,
                     "column": 7,
                     "endLine": 107,
@@ -948,7 +948,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text, Entry, ComponentV2, Local, Column, Button, Param, Event } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  State,\n  Row,\n  Slider,\n  $$,\n  Checkbox,\n  Blank,\n  Text,\n  Entry,\n  ComponentV2,\n  Local,\n  Column,\n  Button,\n  Param,\n  Event,\n} from '@kit.ArkUI';",
                     "line": 107,
                     "column": 7,
                     "endLine": 107,
@@ -969,7 +969,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text, Entry, ComponentV2, Local, Column, Button, Param, Event } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Component,\n  State,\n  Row,\n  Slider,\n  $$,\n  Checkbox,\n  Blank,\n  Text,\n  Entry,\n  ComponentV2,\n  Local,\n  Column,\n  Button,\n  Param,\n  Event,\n} from '@kit.ArkUI';",
                     "line": 107,
                     "column": 7,
                     "endLine": 107,

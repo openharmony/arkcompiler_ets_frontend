@@ -15,9 +15,9 @@
     ],
     "result": [
         {
-            "line": 101,
+            "line": 116,
             "column": 24,
-            "endLine": 101,
+            "endLine": 116,
             "endColumn": 37,
             "problem": "LimitedVoidTypeFromSdk",
             "suggest": "",
@@ -25,9 +25,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 105,
+            "line": 120,
             "column": 26,
-            "endLine": 113,
+            "endLine": 128,
             "endColumn": 6,
             "problem": "LimitedReturnTypeInference",
             "suggest": "",

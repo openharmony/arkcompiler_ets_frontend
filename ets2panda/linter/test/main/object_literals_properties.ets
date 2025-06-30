@@ -264,22 +264,34 @@ namespace X {
       console.log("C - 1");
     }
   }
- 
+
   export interface I {
     m(a: number, b: string): void;
   }
 }
- 
+
 function test() {
   let c: X.C = {
     m() {
       console.log("C - 2");
     }
   }
- 
+
   let i: X.I = {
     m(): void {
       console.log("I");
     }
   }
+}
+
+class FooBarBaz {
+    foo?: Map<string, Object>
+    bar?: string
+}
+
+function baz(fooBar: Map<string, Object>) {
+    baz2({fooBar});
+}
+
+function baz2(fooBarBaz: FooBarBaz) {
 }

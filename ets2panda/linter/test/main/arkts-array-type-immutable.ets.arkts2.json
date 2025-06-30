@@ -135,6 +135,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 40,
+            "column": 5,
+            "endLine": 40,
+            "endColumn": 67,
+            "problem": "ArrayTypeImmutable",
+            "suggest": "",
+            "rule": "Array type is immutable in ArkTS1.2 (arkts-array-type-immutable)",
+            "severity": "ERROR"
+        },
+        {
             "line": 43,
             "column": 36,
             "endLine": 43,
@@ -172,6 +182,26 @@
             "problem": "NumericSemantics",
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 48,
+            "column": 3,
+            "endLine": 48,
+            "endColumn": 66,
+            "problem": "ArrayTypeImmutable",
+            "suggest": "",
+            "rule": "Array type is immutable in ArkTS1.2 (arkts-array-type-immutable)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 49,
+            "column": 3,
+            "endLine": 49,
+            "endColumn": 72,
+            "problem": "ArrayTypeImmutable",
+            "suggest": "",
+            "rule": "Array type is immutable in ArkTS1.2 (arkts-array-type-immutable)",
             "severity": "ERROR"
         },
         {

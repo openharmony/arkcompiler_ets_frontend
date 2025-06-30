@@ -202,7 +202,6 @@ export enum FaultID {
   InteropJsObjectTraverseJsInstance,
   InteropJsObjectCallStaticFunc,
   InteropJsObjectExport,
-  InteropArkTs1ObjectExport,
   DefaultArgsBehindRequiredArgs,
   LimitedStdLibNoImportConcurrency,
   MissingSuperCall,
@@ -230,6 +229,7 @@ export enum FaultID {
   SharedArrayBufferDeprecated,
   SetCloneListDeprecated,
   SetTransferListDeprecated,
+  SdkAbilityAsynchronousLifecycle,
   LimitedStdLibNoSendableDecorator,
   LimitedStdLibNoDoncurrentDecorator,
   NoNeedStdlibWorker,
@@ -253,6 +253,8 @@ export enum FaultID {
   PropFunctionNotSupported,
   SetAndPropFunctionNotSupported,
   PropNeedCallMethodForDeepCopy,
+  StateStylesBlockNeedArrowFunc,
+  PromiseVoidNeedResolveArg,
   // this should always be last enum
   LAST_ID
 }

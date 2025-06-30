@@ -221,7 +221,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "Custom components with custom layout capability need to add the \"@CustomLayout\" decorator (arkui-custom-layout-need-add-decorator)",
+            "rule": "The Custom component \"CustomLayout1\" with custom layout capability needs to add the \"@CustomLayout\" decorator (arkui-custom-layout-need-add-decorator)",
             "severity": "ERROR"
         },
         {
@@ -368,7 +368,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "Custom components with custom layout capability need to add the \"@CustomLayout\" decorator (arkui-custom-layout-need-add-decorator)",
+            "rule": "The Custom component \"CustomLayout2\" with custom layout capability needs to add the \"@CustomLayout\" decorator (arkui-custom-layout-need-add-decorator)",
             "severity": "ERROR"
         },
         {
@@ -557,7 +557,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "Custom components with custom layout capability need to add the \"@CustomLayout\" decorator (arkui-custom-layout-need-add-decorator)",
+            "rule": "The Custom component \"CustomLayout3\" with custom layout capability needs to add the \"@CustomLayout\" decorator (arkui-custom-layout-need-add-decorator)",
             "severity": "ERROR"
         },
         {
@@ -801,7 +801,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  Column,\n  Builder,\n  ForEach,\n  Text,\n  BuilderParam,\n  State,\n  SizeResult,\n  GeometryInfo,\n  Layoutable,\n  ConstraintSizeOptions,\n  Measurable,\n  MeasureResult,\n} from '@kit.ArkUI';",
                     "line": 133,
                     "column": 2,
                     "endLine": 133,
@@ -822,7 +822,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  Column,\n  Builder,\n  ForEach,\n  Text,\n  BuilderParam,\n  State,\n  SizeResult,\n  GeometryInfo,\n  Layoutable,\n  ConstraintSizeOptions,\n  Measurable,\n  MeasureResult,\n} from '@kit.ArkUI';",
                     "line": 133,
                     "column": 2,
                     "endLine": 133,
@@ -843,7 +843,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  Column,\n  Builder,\n  ForEach,\n  Text,\n  BuilderParam,\n  State,\n  SizeResult,\n  GeometryInfo,\n  Layoutable,\n  ConstraintSizeOptions,\n  Measurable,\n  MeasureResult,\n} from '@kit.ArkUI';",
                     "line": 133,
                     "column": 2,
                     "endLine": 133,
@@ -864,7 +864,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  Column,\n  Builder,\n  ForEach,\n  Text,\n  BuilderParam,\n  State,\n  SizeResult,\n  GeometryInfo,\n  Layoutable,\n  ConstraintSizeOptions,\n  Measurable,\n  MeasureResult,\n} from '@kit.ArkUI';",
                     "line": 133,
                     "column": 2,
                     "endLine": 133,
@@ -885,7 +885,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  Column,\n  Builder,\n  ForEach,\n  Text,\n  BuilderParam,\n  State,\n  SizeResult,\n  GeometryInfo,\n  Layoutable,\n  ConstraintSizeOptions,\n  Measurable,\n  MeasureResult,\n} from '@kit.ArkUI';",
                     "line": 133,
                     "column": 2,
                     "endLine": 133,
@@ -906,7 +906,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  Column,\n  Builder,\n  ForEach,\n  Text,\n  BuilderParam,\n  State,\n  SizeResult,\n  GeometryInfo,\n  Layoutable,\n  ConstraintSizeOptions,\n  Measurable,\n  MeasureResult,\n} from '@kit.ArkUI';",
                     "line": 133,
                     "column": 2,
                     "endLine": 133,
@@ -927,7 +927,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  Column,\n  Builder,\n  ForEach,\n  Text,\n  BuilderParam,\n  State,\n  SizeResult,\n  GeometryInfo,\n  Layoutable,\n  ConstraintSizeOptions,\n  Measurable,\n  MeasureResult,\n} from '@kit.ArkUI';",
                     "line": 133,
                     "column": 2,
                     "endLine": 133,
@@ -948,7 +948,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  Column,\n  Builder,\n  ForEach,\n  Text,\n  BuilderParam,\n  State,\n  SizeResult,\n  GeometryInfo,\n  Layoutable,\n  ConstraintSizeOptions,\n  Measurable,\n  MeasureResult,\n} from '@kit.ArkUI';",
                     "line": 133,
                     "column": 2,
                     "endLine": 133,
@@ -969,7 +969,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  Column,\n  Builder,\n  ForEach,\n  Text,\n  BuilderParam,\n  State,\n  SizeResult,\n  GeometryInfo,\n  Layoutable,\n  ConstraintSizeOptions,\n  Measurable,\n  MeasureResult,\n} from '@kit.ArkUI';",
                     "line": 133,
                     "column": 2,
                     "endLine": 133,
@@ -990,7 +990,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  Column,\n  Builder,\n  ForEach,\n  Text,\n  BuilderParam,\n  State,\n  SizeResult,\n  GeometryInfo,\n  Layoutable,\n  ConstraintSizeOptions,\n  Measurable,\n  MeasureResult,\n} from '@kit.ArkUI';",
                     "line": 133,
                     "column": 2,
                     "endLine": 133,
@@ -1011,7 +1011,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  Column,\n  Builder,\n  ForEach,\n  Text,\n  BuilderParam,\n  State,\n  SizeResult,\n  GeometryInfo,\n  Layoutable,\n  ConstraintSizeOptions,\n  Measurable,\n  MeasureResult,\n} from '@kit.ArkUI';",
                     "line": 133,
                     "column": 2,
                     "endLine": 133,
@@ -1032,7 +1032,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  Column,\n  Builder,\n  ForEach,\n  Text,\n  BuilderParam,\n  State,\n  SizeResult,\n  GeometryInfo,\n  Layoutable,\n  ConstraintSizeOptions,\n  Measurable,\n  MeasureResult,\n} from '@kit.ArkUI';",
                     "line": 133,
                     "column": 2,
                     "endLine": 133,
@@ -1053,7 +1053,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  Column,\n  Builder,\n  ForEach,\n  Text,\n  BuilderParam,\n  State,\n  SizeResult,\n  GeometryInfo,\n  Layoutable,\n  ConstraintSizeOptions,\n  Measurable,\n  MeasureResult,\n} from '@kit.ArkUI';",
                     "line": 133,
                     "column": 2,
                     "endLine": 133,
@@ -1074,7 +1074,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  Column,\n  Builder,\n  ForEach,\n  Text,\n  BuilderParam,\n  State,\n  SizeResult,\n  GeometryInfo,\n  Layoutable,\n  ConstraintSizeOptions,\n  Measurable,\n  MeasureResult,\n} from '@kit.ArkUI';",
                     "line": 133,
                     "column": 2,
                     "endLine": 133,
@@ -1095,7 +1095,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  Column,\n  Builder,\n  ForEach,\n  Text,\n  BuilderParam,\n  State,\n  SizeResult,\n  GeometryInfo,\n  Layoutable,\n  ConstraintSizeOptions,\n  Measurable,\n  MeasureResult,\n} from '@kit.ArkUI';",
                     "line": 133,
                     "column": 2,
                     "endLine": 133,
@@ -1116,7 +1116,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  Column,\n  Builder,\n  ForEach,\n  Text,\n  BuilderParam,\n  State,\n  SizeResult,\n  GeometryInfo,\n  Layoutable,\n  ConstraintSizeOptions,\n  Measurable,\n  MeasureResult,\n} from '@kit.ArkUI';",
                     "line": 133,
                     "column": 2,
                     "endLine": 133,
@@ -1137,7 +1137,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  Column,\n  Builder,\n  ForEach,\n  Text,\n  BuilderParam,\n  State,\n  SizeResult,\n  GeometryInfo,\n  Layoutable,\n  ConstraintSizeOptions,\n  Measurable,\n  MeasureResult,\n} from '@kit.ArkUI';",
                     "line": 133,
                     "column": 2,
                     "endLine": 133,
@@ -1158,7 +1158,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  Column,\n  Builder,\n  ForEach,\n  Text,\n  BuilderParam,\n  State,\n  SizeResult,\n  GeometryInfo,\n  Layoutable,\n  ConstraintSizeOptions,\n  Measurable,\n  MeasureResult,\n} from '@kit.ArkUI';",
                     "line": 133,
                     "column": 2,
                     "endLine": 133,
@@ -1179,7 +1179,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  Column,\n  Builder,\n  ForEach,\n  Text,\n  BuilderParam,\n  State,\n  SizeResult,\n  GeometryInfo,\n  Layoutable,\n  ConstraintSizeOptions,\n  Measurable,\n  MeasureResult,\n} from '@kit.ArkUI';",
                     "line": 133,
                     "column": 2,
                     "endLine": 133,
@@ -1200,7 +1200,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  Column,\n  Builder,\n  ForEach,\n  Text,\n  BuilderParam,\n  State,\n  SizeResult,\n  GeometryInfo,\n  Layoutable,\n  ConstraintSizeOptions,\n  Measurable,\n  MeasureResult,\n} from '@kit.ArkUI';",
                     "line": 133,
                     "column": 2,
                     "endLine": 133,
@@ -1221,7 +1221,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  Column,\n  Builder,\n  ForEach,\n  Text,\n  BuilderParam,\n  State,\n  SizeResult,\n  GeometryInfo,\n  Layoutable,\n  ConstraintSizeOptions,\n  Measurable,\n  MeasureResult,\n} from '@kit.ArkUI';",
                     "line": 133,
                     "column": 2,
                     "endLine": 133,
@@ -1242,7 +1242,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  Column,\n  Builder,\n  ForEach,\n  Text,\n  BuilderParam,\n  State,\n  SizeResult,\n  GeometryInfo,\n  Layoutable,\n  ConstraintSizeOptions,\n  Measurable,\n  MeasureResult,\n} from '@kit.ArkUI';",
                     "line": 133,
                     "column": 2,
                     "endLine": 133,
@@ -1263,7 +1263,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  Column,\n  Builder,\n  ForEach,\n  Text,\n  BuilderParam,\n  State,\n  SizeResult,\n  GeometryInfo,\n  Layoutable,\n  ConstraintSizeOptions,\n  Measurable,\n  MeasureResult,\n} from '@kit.ArkUI';",
                     "line": 133,
                     "column": 2,
                     "endLine": 133,
@@ -1284,7 +1284,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  Column,\n  Builder,\n  ForEach,\n  Text,\n  BuilderParam,\n  State,\n  SizeResult,\n  GeometryInfo,\n  Layoutable,\n  ConstraintSizeOptions,\n  Measurable,\n  MeasureResult,\n} from '@kit.ArkUI';",
                     "line": 133,
                     "column": 2,
                     "endLine": 133,
@@ -1305,7 +1305,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  Column,\n  Builder,\n  ForEach,\n  Text,\n  BuilderParam,\n  State,\n  SizeResult,\n  GeometryInfo,\n  Layoutable,\n  ConstraintSizeOptions,\n  Measurable,\n  MeasureResult,\n} from '@kit.ArkUI';",
                     "line": 133,
                     "column": 2,
                     "endLine": 133,
@@ -1326,7 +1326,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  Column,\n  Builder,\n  ForEach,\n  Text,\n  BuilderParam,\n  State,\n  SizeResult,\n  GeometryInfo,\n  Layoutable,\n  ConstraintSizeOptions,\n  Measurable,\n  MeasureResult,\n} from '@kit.ArkUI';",
                     "line": 133,
                     "column": 2,
                     "endLine": 133,
@@ -1347,7 +1347,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  Column,\n  Builder,\n  ForEach,\n  Text,\n  BuilderParam,\n  State,\n  SizeResult,\n  GeometryInfo,\n  Layoutable,\n  ConstraintSizeOptions,\n  Measurable,\n  MeasureResult,\n} from '@kit.ArkUI';",
                     "line": 133,
                     "column": 2,
                     "endLine": 133,
@@ -1368,7 +1368,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  Column,\n  Builder,\n  ForEach,\n  Text,\n  BuilderParam,\n  State,\n  SizeResult,\n  GeometryInfo,\n  Layoutable,\n  ConstraintSizeOptions,\n  Measurable,\n  MeasureResult,\n} from '@kit.ArkUI';",
                     "line": 133,
                     "column": 2,
                     "endLine": 133,
@@ -1389,7 +1389,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  Column,\n  Builder,\n  ForEach,\n  Text,\n  BuilderParam,\n  State,\n  SizeResult,\n  GeometryInfo,\n  Layoutable,\n  ConstraintSizeOptions,\n  Measurable,\n  MeasureResult,\n} from '@kit.ArkUI';",
                     "line": 133,
                     "column": 2,
                     "endLine": 133,
@@ -1410,7 +1410,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  Column,\n  Builder,\n  ForEach,\n  Text,\n  BuilderParam,\n  State,\n  SizeResult,\n  GeometryInfo,\n  Layoutable,\n  ConstraintSizeOptions,\n  Measurable,\n  MeasureResult,\n} from '@kit.ArkUI';",
                     "line": 133,
                     "column": 2,
                     "endLine": 133,
@@ -1431,7 +1431,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  Column,\n  Builder,\n  ForEach,\n  Text,\n  BuilderParam,\n  State,\n  SizeResult,\n  GeometryInfo,\n  Layoutable,\n  ConstraintSizeOptions,\n  Measurable,\n  MeasureResult,\n} from '@kit.ArkUI';",
                     "line": 133,
                     "column": 2,
                     "endLine": 133,
@@ -1452,7 +1452,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  Column,\n  Builder,\n  ForEach,\n  Text,\n  BuilderParam,\n  State,\n  SizeResult,\n  GeometryInfo,\n  Layoutable,\n  ConstraintSizeOptions,\n  Measurable,\n  MeasureResult,\n} from '@kit.ArkUI';",
                     "line": 133,
                     "column": 2,
                     "endLine": 133,
@@ -1473,7 +1473,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  Column,\n  Builder,\n  ForEach,\n  Text,\n  BuilderParam,\n  State,\n  SizeResult,\n  GeometryInfo,\n  Layoutable,\n  ConstraintSizeOptions,\n  Measurable,\n  MeasureResult,\n} from '@kit.ArkUI';",
                     "line": 133,
                     "column": 2,
                     "endLine": 133,
@@ -1494,7 +1494,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  Column,\n  Builder,\n  ForEach,\n  Text,\n  BuilderParam,\n  State,\n  SizeResult,\n  GeometryInfo,\n  Layoutable,\n  ConstraintSizeOptions,\n  Measurable,\n  MeasureResult,\n} from '@kit.ArkUI';",
                     "line": 133,
                     "column": 2,
                     "endLine": 133,
@@ -1515,7 +1515,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  Column,\n  Builder,\n  ForEach,\n  Text,\n  BuilderParam,\n  State,\n  SizeResult,\n  GeometryInfo,\n  Layoutable,\n  ConstraintSizeOptions,\n  Measurable,\n  MeasureResult,\n} from '@kit.ArkUI';",
                     "line": 133,
                     "column": 2,
                     "endLine": 133,
@@ -1536,7 +1536,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  Column,\n  Builder,\n  ForEach,\n  Text,\n  BuilderParam,\n  State,\n  SizeResult,\n  GeometryInfo,\n  Layoutable,\n  ConstraintSizeOptions,\n  Measurable,\n  MeasureResult,\n} from '@kit.ArkUI';",
                     "line": 133,
                     "column": 2,
                     "endLine": 133,

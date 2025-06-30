@@ -13,7 +13,14 @@
  * limitations under the License.
  */
 
-import { Component, State, Column, Link, Row, Text } from '@kit.ArkUI';
+import {
+  Component,
+  State,
+  Column,
+  Link,
+  Row,
+  Text,
+} from '@kit.ArkUI';
 
 @Component
 struct MyComponent {

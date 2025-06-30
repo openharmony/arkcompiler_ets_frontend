@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
+import { CustomStyles } from '@kit.ArkUI';
+
 import { CommonMethod, Color, Entry, Component, BuilderParam, Require, Button } from '@kit.ArkUI';
 
 function NormalStyles(instance: CommonMethod): void {
@@ -26,7 +28,7 @@ struct MyButton1 {
   @Require
   content: () => void;
 
-  PressedStyles = (instance: CommonMethod): void => {
+  PressedStyles: CustomStyles = (instance: CommonMethod): void => {
     instance.backgroundColor(Color.Green);
   };
 

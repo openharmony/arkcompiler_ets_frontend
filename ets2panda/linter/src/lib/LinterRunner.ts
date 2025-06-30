@@ -16,6 +16,9 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as ts from 'typescript';
+import { processSyncErr } from '../lib/utils/functions/ProcessWrite';
+import * as qEd from './autofixes/QuasiEditor';
+import type { BaseTypeScriptLinter } from './BaseTypeScriptLinter';
 import type { CommandLineOptions } from './CommandLineOptions';
 import { InteropTypescriptLinter } from './InteropTypescriptLinter';
 import type { LinterConfig } from './LinterConfig';
@@ -23,24 +26,24 @@ import type { LinterOptions } from './LinterOptions';
 import type { LintRunResult } from './LintRunResult';
 import { Logger } from './Logger';
 import type { ProblemInfo } from './ProblemInfo';
-import { TypeScriptLinter } from './TypeScriptLinter';
+import { ProjectStatistics } from './statistics/ProjectStatistics';
+import { generateMigrationStatisicsReport } from './statistics/scan/ProblemStatisticsCommonFunction';
+import type { TimeRecorder } from './statistics/scan/TimeRecorder';
+import type { createProgramCallback } from './ts-compiler/Compiler';
+import { compileLintOptions } from './ts-compiler/Compiler';
 import { getTscDiagnostics } from './ts-diagnostics/GetTscDiagnostics';
 import { transformTscDiagnostics } from './ts-diagnostics/TransformTscDiagnostics';
+import { TypeScriptLinter } from './TypeScriptLinter';
 import {
   ARKTS_IGNORE_DIRS_NO_OH_MODULES,
   ARKTS_IGNORE_DIRS_OH_MODULES,
   ARKTS_IGNORE_FILES
 } from './utils/consts/ArktsIgnorePaths';
+import { EXTNAME_JS, EXTNAME_TS } from './utils/consts/ExtensionName';
 import { USE_STATIC } from './utils/consts/InteropAPI';
-import { EXTNAME_TS, EXTNAME_JS } from './utils/consts/ExtensionName';
+import { LibraryTypeCallDiagnosticChecker } from './utils/functions/LibraryTypeCallDiagnosticChecker';
 import { mergeArrayMaps } from './utils/functions/MergeArrayMaps';
 import { clearPathHelperCache, pathContainsDirectory } from './utils/functions/PathHelper';
-import { LibraryTypeCallDiagnosticChecker } from './utils/functions/LibraryTypeCallDiagnosticChecker';
-import type { createProgramCallback } from './ts-compiler/Compiler';
-import { compileLintOptions } from './ts-compiler/Compiler';
-import * as qEd from './autofixes/QuasiEditor';
-import { ProjectStatistics } from './statistics/ProjectStatistics';
-import type { BaseTypeScriptLinter } from './BaseTypeScriptLinter';
 
 function prepareInputFilesList(cmdOptions: CommandLineOptions): string[] {
   let inputFiles = cmdOptions.inputFiles.map((x) => {
@@ -76,6 +79,7 @@ function prepareInputFilesList(cmdOptions: CommandLineOptions): string[] {
 
 export function lint(
   config: LinterConfig,
+  timeRecorder: TimeRecorder,
   etsLoaderPath?: string,
   hcResults?: Map<string, ProblemInfo[]>
 ): LintRunResult {
@@ -83,7 +87,10 @@ export function lint(
     config.cmdOptions.linterOptions.etsLoaderPath = etsLoaderPath;
   }
   const lintResult = lintImpl(config);
-  return config.cmdOptions.linterOptions.migratorMode ? migrate(config, lintResult, hcResults) : lintResult;
+  timeRecorder.endScan();
+  return config.cmdOptions.linterOptions.migratorMode ?
+    migrate(config, lintResult, timeRecorder, hcResults) :
+    lintResult;
 }
 
 function lintImpl(config: LinterConfig): LintRunResult {
@@ -129,6 +136,7 @@ function lintFiles(
 
   TypeScriptLinter.initGlobals();
   InteropTypescriptLinter.initGlobals();
+  let fileCount: number = 0;
 
   for (const srcFile of srcFiles) {
     const linter: BaseTypeScriptLinter = !options.interopCheckMode ?
@@ -138,6 +146,10 @@ function lintFiles(
     const problems = linter.problemsInfos;
     problemsInfos.set(path.normalize(srcFile.fileName), [...problems]);
     projectStats.fileStats.push(linter.fileStats);
+    fileCount = fileCount + 1;
+    if (options.ideInteractive) {
+      processSyncErr(`{"content":"${srcFile.fileName}","messageType":1,"indicator":${fileCount / srcFiles.length}}\n`);
+    }
   }
 
   return {
@@ -150,8 +162,10 @@ function lintFiles(
 function migrate(
   initialConfig: LinterConfig,
   initialLintResult: LintRunResult,
+  timeRecorder: TimeRecorder,
   hcResults?: Map<string, ProblemInfo[]>
 ): LintRunResult {
+  timeRecorder.startMigration();
   let linterConfig = initialConfig;
   const { cmdOptions } = initialConfig;
   const updatedSourceTexts: Map<string, string> = new Map();
@@ -182,6 +196,9 @@ function migrate(
     fs.writeFileSync(writeFileName, newText);
   });
 
+  timeRecorder.endMigration();
+  generateMigrationStatisicsReport(lintResult, timeRecorder, cmdOptions.outputFilePath);
+
   if (cmdOptions.linterOptions.ideInteractive) {
     lintResult.problemsInfos = problemsInfosBeforeMigrate;
   }
@@ -209,16 +226,9 @@ function fix(
 ): boolean {
   const program = linterConfig.tscCompiledProgram.getProgram();
   let appliedFix = false;
-  const mergedProblems = lintResult.problemsInfos;
-  if (hcResults !== undefined) {
-    for (const [filePath, problems] of hcResults) {
-      if (mergedProblems.has(filePath)) {
-        mergedProblems.get(filePath)!.push(...problems);
-      } else {
-        mergedProblems.set(filePath, problems);
-      }
-    }
-  }
+  // Apply homecheck fixes first to avoid them being skipped due to conflict with linter autofixes
+  let mergedProblems: Map<string, ProblemInfo[]> = hcResults ?? new Map();
+  mergedProblems = mergeArrayMaps(mergedProblems, lintResult.problemsInfos);
   mergedProblems.forEach((problemInfos, fileName) => {
     const srcFile = program.getSourceFile(fileName);
     if (!srcFile) {
@@ -231,7 +241,8 @@ function fix(
       linterConfig.cmdOptions.linterOptions.arkts2 &&
       linterConfig.cmdOptions.inputFiles.includes(fileName) &&
       !hasUseStaticDirective(srcFile) &&
-      linterConfig.cmdOptions.linterOptions.ideInteractive;
+      linterConfig.cmdOptions.linterOptions.ideInteractive &&
+      !qEd.QuasiEditor.hasAnyAutofixes(problemInfos);
     // If nothing to fix or don't need to add 'use static', then skip file
     if (!qEd.QuasiEditor.hasAnyAutofixes(problemInfos) && !needToAddUseStatic) {
       return;
@@ -244,7 +255,9 @@ function fix(
       linterConfig.cmdOptions.outputFilePath
     );
     updatedSourceTexts.set(fileName, qe.fix(problemInfos, needToAddUseStatic));
-    appliedFix = true;
+    if (!needToAddUseStatic) {
+      appliedFix = true;
+    }
   });
 
   return appliedFix;

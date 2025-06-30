@@ -15,7 +15,15 @@
 
 import { PropRef } from '@kit.ArkUI';
 
-import { Component, State, Column, Text, Row, Blank, Button } from '@kit.ArkUI';
+import {
+  Component,
+  State,
+  Column,
+  Text,
+  Row,
+  Blank,
+  Button,
+} from '@kit.ArkUI';
 
 interface ChildComponentOptions {
   count: number;

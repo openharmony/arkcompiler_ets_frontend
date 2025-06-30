@@ -33,7 +33,7 @@
                 {
                     "start": 656,
                     "end": 656,
-                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('./interop_equality_judgment_js');\nlet a = GeneratedImportVar_1.getPropertyByName('a');\nlet b = GeneratedImportVar_1.getPropertyByName('b');\n",
+                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('./interop_equality_judgment_js');\nlet a = GeneratedImportVar_1.getProperty('a');\nlet b = GeneratedImportVar_1.getProperty('b');\n",
                     "line": 16,
                     "column": 1,
                     "endLine": 16,

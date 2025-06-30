@@ -65,26 +65,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 27,
-            "column": 1,
-            "endLine": 27,
-            "endColumn": 14,
-            "problem": "InteropCallReflect",
-            "suggest": "",
-            "rule": "Reflect API usage is not allowed in interop calls when an \"Object\" parameter receives a class instance (arkts-interop-d2s-static-reflect-on-dynamic-instance)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 29,
-            "column": 1,
-            "endLine": 29,
-            "endColumn": 14,
-            "problem": "InteropCallReflect",
-            "suggest": "",
-            "rule": "Reflect API usage is not allowed in interop calls when an \"Object\" parameter receives a class instance (arkts-interop-d2s-static-reflect-on-dynamic-instance)",
-            "severity": "ERROR"
-        },
-        {
             "line": 29,
             "column": 1,
             "endLine": 29,
@@ -165,16 +145,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 41,
-            "column": 1,
-            "endLine": 41,
-            "endColumn": 33,
-            "problem": "InteropCallReflect",
-            "suggest": "",
-            "rule": "Reflect API usage is not allowed in interop calls when an \"Object\" parameter receives a class instance (arkts-interop-d2s-static-reflect-on-dynamic-instance)",
-            "severity": "ERROR"
-        },
-        {
             "line": 42,
             "column": 1,
             "endLine": 42,
@@ -199,16 +169,6 @@
             "column": 1,
             "endLine": 44,
             "endColumn": 32,
-            "problem": "InteropCallReflect",
-            "suggest": "",
-            "rule": "Reflect API usage is not allowed in interop calls when an \"Object\" parameter receives a class instance (arkts-interop-d2s-static-reflect-on-dynamic-instance)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 46,
-            "column": 1,
-            "endLine": 46,
-            "endColumn": 22,
             "problem": "InteropCallReflect",
             "suggest": "",
             "rule": "Reflect API usage is not allowed in interop calls when an \"Object\" parameter receives a class instance (arkts-interop-d2s-static-reflect-on-dynamic-instance)",
@@ -265,16 +225,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 51,
-            "column": 1,
-            "endLine": 51,
-            "endColumn": 31,
-            "problem": "InteropCallReflect",
-            "suggest": "",
-            "rule": "Reflect API usage is not allowed in interop calls when an \"Object\" parameter receives a class instance (arkts-interop-d2s-static-reflect-on-dynamic-instance)",
-            "severity": "ERROR"
-        },
-        {
             "line": 52,
             "column": 1,
             "endLine": 52,
@@ -299,16 +249,6 @@
             "column": 1,
             "endLine": 54,
             "endColumn": 30,
-            "problem": "InteropCallReflect",
-            "suggest": "",
-            "rule": "Reflect API usage is not allowed in interop calls when an \"Object\" parameter receives a class instance (arkts-interop-d2s-static-reflect-on-dynamic-instance)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 56,
-            "column": 1,
-            "endLine": 56,
-            "endColumn": 27,
             "problem": "InteropCallReflect",
             "suggest": "",
             "rule": "Reflect API usage is not allowed in interop calls when an \"Object\" parameter receives a class instance (arkts-interop-d2s-static-reflect-on-dynamic-instance)",

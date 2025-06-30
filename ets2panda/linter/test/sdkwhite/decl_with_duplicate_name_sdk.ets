@@ -14,15 +14,11 @@
  */
 'use static'
 
-import { TextStyle } from './sdk/declarations/styled_string'
-import { HyperlinkAttribute, HyperlinkInterface } from './sdk/declarations/hyperlink'
-
 @Entry
 @Component
 struct Index {
   fontStyleAttr1: TextStyle = new TextStyle({fontColor: Color.Blue}); // Error(2)
   fontStyleAttr2: TextStyle; // Error
-
   @State styleList: Array<TextStyle> = new Array(); // Error
   aboutToAppear() {
     for (let i = 15; i < 50; i++)
@@ -47,14 +43,26 @@ class TextStyleDemo2 extends TextStyle { // Error
   }
 }
 
-let hyperlinkAttr1: HyperlinkAttribute = HyperlinkInterface;
-let hyperlinkAttr2: HyperlinkAttribute = HyperlinkInterface.color('');
+let hyperlinkAttr1: HyperlinkAttribute = HyperlinkInterface; // Error
+let hyperlinkAttr2: HyperlinkAttribute = HyperlinkInterface.color(''); // Error
 class HyperlinkTest {
-  prop1: HyperlinkAttribute = HyperlinkInterface;
-  prop2: HyperlinkAttribute = HyperlinkInterface.color('');
+  prop1: HyperlinkAttribute = HyperlinkInterface; // Error
+  prop2: HyperlinkAttribute = HyperlinkInterface.color(''); // Error
 }
 let hyperlinkAttr3: HyperlinkAttribute;
-hyperlinkAttr3 = HyperlinkInterface;
-function func(x = HyperlinkInterface) {
+hyperlinkAttr3 = HyperlinkInterface;  // Error
+function func(x = HyperlinkInterface) { // Error
 
+}
+
+class A {
+  onBackPress: Function;
+  TextStyle: Function;
+  constructor(onBackPress: Function, TextStyle: Function) {
+    this.onBackPress = onBackPress; // no Error
+    this.TextStyle = TextStyle; // no Error
+  }
+}
+function tt(a: A) {
+  a.onBackPress();
 }
