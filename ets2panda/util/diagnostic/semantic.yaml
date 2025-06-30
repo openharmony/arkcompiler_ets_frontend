@@ -1563,3 +1563,7 @@ semantic:
 - name: METHOD_ASSIGNMENT
   id: 394
   message: "Class methods cannot be overwritten."
+
+- name: INVALID_LAMBDA_PARAMETER
+  id: 395
+  message: "Invalid lambda parameter. Expected: 'identifier(: type)?', 'identifier?(: type)?' or '...identifier(: type)?'."
