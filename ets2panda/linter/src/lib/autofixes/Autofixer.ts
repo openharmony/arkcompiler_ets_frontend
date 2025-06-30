@@ -3340,9 +3340,10 @@ export class Autofixer {
     const initializer = node.initializer;
     const name = node.name;
     const sym = this.typeChecker.getSymbolAtLocation(name);
-    if (!sym) {
+    if (!sym || !initializer) {
       return undefined;
     }
+    ts.setCommentRange(initializer, { pos: -1, end: -1 });
 
     const type = this.typeChecker.getTypeOfSymbolAtLocation(sym, name);
     const typeText = this.typeChecker.typeToString(type);
@@ -4657,7 +4658,7 @@ export class Autofixer {
     void this;
     const expr = callExpr.expression;
     const hasOptionalChain = !!callExpr.questionDotToken;
-    
+
     const replacementText = hasOptionalChain
         ? `${expr.getText()}${callExpr.questionDotToken.getText()}unsafeCall`
         : `${expr.getText()}.unsafeCall`;

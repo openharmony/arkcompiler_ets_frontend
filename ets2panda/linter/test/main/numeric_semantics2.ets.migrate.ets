@@ -16,9 +16,7 @@
 namespace NumericSemanticsReport {
     const a: number = 11.0 // NOT OK
     const b: number = 12.0 // NOT OK
- // NOT OK
     const c: number = 13.0 // NOT OK
- // NOT OK
     const d: number = 14.0
     const e: number = 15.0 // NOT OK
     console.log('' + 1.0/2.0) // NOT OK
@@ -72,7 +70,7 @@ namespace NumericSemanticsOther {
 
 namespace BeCareful {
     `${1.0/2.0}`
-    
+
 }
 
 namespace NoDiffInArk1_1To1_2 {
@@ -86,7 +84,6 @@ namespace NoDiffInArk1_1To1_2 {
 
     // Automatically delete decimal parts during bitwise operations
     let e: number = 15.0 // NOT OK
- // NOT OK
     let e1: number = e & 3.0; // NOT OK
     let e2: number = e | 3.0; // NOT OK
 }
