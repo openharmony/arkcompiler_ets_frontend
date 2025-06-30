@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
+import { applyStyles } from '@kit.ArkUI';
+
 import { CommonMethod, Color, Component, Column, Text, BuilderParam, Require, Button } from '@kit.ArkUI';
 
 const mycolor: string = "#ffff00"

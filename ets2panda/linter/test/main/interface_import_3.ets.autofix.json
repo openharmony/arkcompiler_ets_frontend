@@ -44,7 +44,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n} from '@kit.ArkUI';",
                     "line": 30,
                     "column": 2,
                     "endLine": 30,
@@ -65,7 +65,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n} from '@kit.ArkUI';",
                     "line": 30,
                     "column": 2,
                     "endLine": 30,

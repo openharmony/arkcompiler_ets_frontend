@@ -13,7 +13,13 @@
  * limitations under the License.
  */
 
-import { Entry, Component, State, Row, Text } from '@kit.ArkUI';
+import {
+  Entry,
+  Component,
+  State,
+  Row,
+  Text,
+} from '@kit.ArkUI';
 
 class User {
   name: string = "Jack"

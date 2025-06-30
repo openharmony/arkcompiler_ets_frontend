@@ -13,7 +13,23 @@
  * limitations under the License.
  */
 
-import { Component, State, Row, Slider, $$, Checkbox, Blank, Text, Entry, ComponentV2, Local, Column, Button, Param, Event } from '@kit.ArkUI';
+import {
+  Component,
+  State,
+  Row,
+  Slider,
+  $$,
+  Checkbox,
+  Blank,
+  Text,
+  Entry,
+  ComponentV2,
+  Local,
+  Column,
+  Button,
+  Param,
+  Event,
+} from '@kit.ArkUI';
 
 import { MyCard } from './'
 

@@ -24,7 +24,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, State, Row, Text } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  State,\n  Row,\n  Text,\n} from '@kit.ArkUI';",
                     "line": 29,
                     "column": 7,
                     "endLine": 29,
@@ -45,7 +45,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, State, Row, Text } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  State,\n  Row,\n  Text,\n} from '@kit.ArkUI';",
                     "line": 29,
                     "column": 7,
                     "endLine": 29,
@@ -66,7 +66,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, State, Row, Text } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  State,\n  Row,\n  Text,\n} from '@kit.ArkUI';",
                     "line": 29,
                     "column": 7,
                     "endLine": 29,
@@ -87,7 +87,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, State, Row, Text } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  State,\n  Row,\n  Text,\n} from '@kit.ArkUI';",
                     "line": 29,
                     "column": 7,
                     "endLine": 29,
@@ -108,7 +108,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, State, Row, Text } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  State,\n  Row,\n  Text,\n} from '@kit.ArkUI';",
                     "line": 29,
                     "column": 7,
                     "endLine": 29,
@@ -129,7 +129,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, State, Row, Text } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  State,\n  Row,\n  Text,\n} from '@kit.ArkUI';",
                     "line": 29,
                     "column": 7,
                     "endLine": 29,
@@ -150,7 +150,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, State, Row, Text } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  State,\n  Row,\n  Text,\n} from '@kit.ArkUI';",
                     "line": 29,
                     "column": 7,
                     "endLine": 29,

@@ -39,6 +39,7 @@ export const REFLECT_PROPERTIES = [
   'isExtensible',
   'preventExtensions'
 ];
+
 export const OBJECT_PROPERTIES = [
   'get',
   'set',
@@ -66,10 +67,8 @@ export const REFLECT_LITERAL = 'Reflect';
 export const NONE = 'none';
 export type ForbidenAPICheckResult = 'Object' | 'Reflect' | 'none';
 export const LOAD = 'load';
-export const GET_PROPERTY_BY_NAME = 'getPropertyByName';
-export const SET_PROPERTY_BY_NAME = 'setPropertyByName';
-export const GET_PROPERTY_BY_INDEX = 'getPropertyByIndex';
-export const SET_PROPERTY_BY_INDEX = 'setPropertyByIndex';
+export const GET_PROPERTY = 'getProperty';
+export const SET_PROPERTY = 'setProperty';
 export const TO_NUMBER = 'toNumber';
 
 export enum InteropType {

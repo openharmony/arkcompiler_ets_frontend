@@ -14,22 +14,22 @@
  */
 
 let GeneratedImportVar_2 = ESValue.load('./interop_import_js_index_js');
-let foo = GeneratedImportVar_2.getPropertyByName('foo');
+let foo = GeneratedImportVar_2.getProperty('foo');
 let GeneratedImportVar_1 = ESValue.load('./interop_import_js_rules_js');
-let ff3 = GeneratedImportVar_1.getPropertyByName('ff3');
+let ff3 = GeneratedImportVar_1.getProperty('ff3');
 
-let arr = foo.getPropertyByName("arr")
-arr.getPropertyByIndex(1.0)
-arr.setPropertyByIndex(3.0, ESValue.wrap(4.0))
+let arr = foo.getProperty("arr")
+arr.getProperty(1.0)
+arr.setProperty(3.0, ESValue.wrap(4.0))
 
-let arr1 = ff3.getPropertyByName("arr")
-let len: number = arr1.getPropertyByName("length") as number
-for (let i: number = 0.0; i < arr1.getPropertyByName("length"); ++i) {
-    console.log(arr1.getPropertyByIndex(i).toNumber()+'');  //error
-    let x = arr1.getPropertyByIndex(i).toNumber()  //error
-    arr1.setPropertyByIndex(i, ESValue.wrap(0.0 //error
+let arr1 = ff3.getProperty("arr")
+let len: number = arr1.getProperty("length") as number
+for (let i: number = 0.0; i < arr1.getProperty("length"); ++i) {
+    console.log(arr1.getProperty(i).toNumber()+'');  //error
+    let x = arr1.getProperty(i).toNumber()  //error
+    arr1.setProperty(i, ESValue.wrap(0.0 //error
 ))  //error
-    console.log(arr1.getPropertyByIndex(i).toNumber()+'');  //error
+    console.log(arr1.getProperty(i).toNumber()+'');  //error
 }
 
 for (let element of arr1) {  //error

@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 let GeneratedImportVar_1 = ESValue.load('./call_object_methods_js');
-let foo = GeneratedImportVar_1.getPropertyByName('foo');
+let foo = GeneratedImportVar_1.getProperty('foo');
 
 
 foo.invokeMethod("bar", ESValue.wrap(123.0))

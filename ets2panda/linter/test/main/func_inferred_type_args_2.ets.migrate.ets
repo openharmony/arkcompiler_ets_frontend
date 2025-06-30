@@ -13,7 +13,11 @@
  * limitations under the License.
  */
 
-import { Observed, Track, CommonAttribute } from '@kit.ArkUI';
+import {
+  Observed,
+  Track,
+  CommonAttribute,
+} from '@kit.ArkUI';
 
 import { AttributeUpdater } from '@kit.ArkUI';
 
@@ -97,3 +101,7 @@ class A <T,U = B>{
   }
 }
 new A<C>(new C())
+let a: Array<string> | undefined = new Array<string>();
+let aa: Array<string> | Set<string> | undefined = new Array<string>();
+let b: Array<string> | Array<number> | undefined = new Array();
+let test: string[] = new Array<string>();

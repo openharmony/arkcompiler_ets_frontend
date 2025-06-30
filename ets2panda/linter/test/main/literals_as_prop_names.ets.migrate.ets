@@ -13,7 +13,10 @@
  * limitations under the License.
  */
 
-import { Component, State } from '@kit.ArkUI';
+import {
+  Component,
+  State,
+} from '@kit.ArkUI';
  
 import { ExportLitAsPropName } from './ignore_files/good';
 

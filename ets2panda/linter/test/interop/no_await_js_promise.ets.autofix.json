@@ -33,7 +33,7 @@
                 {
                     "start": 693,
                     "end": 693,
-                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('./no_await_js_promise_export');\nlet p = GeneratedImportVar_1.getPropertyByName('p');\nlet foo = GeneratedImportVar_1.getPropertyByName('foo');\nlet pFuncCall = GeneratedImportVar_1.getPropertyByName('pFuncCall');\nlet arrowFunc = GeneratedImportVar_1.getPropertyByName('arrowFunc');\nlet pArrowCall = GeneratedImportVar_1.getPropertyByName('pArrowCall');\n",
+                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('./no_await_js_promise_export');\nlet p = GeneratedImportVar_1.getProperty('p');\nlet foo = GeneratedImportVar_1.getProperty('foo');\nlet pFuncCall = GeneratedImportVar_1.getProperty('pFuncCall');\nlet arrowFunc = GeneratedImportVar_1.getProperty('arrowFunc');\nlet pArrowCall = GeneratedImportVar_1.getProperty('pArrowCall');\n",
                     "line": 16,
                     "column": 1,
                     "endLine": 16,

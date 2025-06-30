@@ -17,3 +17,4 @@ export { worker } from '../oh_modules/@ohos.worker';
 export { collections } from '../oh_modules/@arkts.collections';
 export { utils } from '../oh_modules/@arkts.utils';
 export { taskpool } from '../oh_modules/@ohos.taskpool';
+export { ArkTSUtils } from '../oh_modules/@arkts.utils';

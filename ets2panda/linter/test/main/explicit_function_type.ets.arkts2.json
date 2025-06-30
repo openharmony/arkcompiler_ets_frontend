@@ -343,6 +343,16 @@
             "suggest": "",
             "rule": "Array bound not checked. (arkts-runtime-array-check)",
             "severity": "ERROR"
+        },
+        {
+            "line": 178,
+            "column": 3,
+            "endLine": 178,
+            "endColumn": 24,
+            "problem": "ExplicitFunctionType",
+            "suggest": "",
+            "rule": "The function type should be explicit (arkts-no-ts-like-function-call)",
+            "severity": "ERROR"
         }
     ]
 }

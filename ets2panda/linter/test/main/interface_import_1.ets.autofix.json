@@ -150,7 +150,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, State, Column, Button, Text, Row, TextAttribute, ColumnAttribute, AnimatableExtend, $$, ImageFit } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  State,\n  Column,\n  Button,\n  Text,\n  Row,\n  TextAttribute,\n  ColumnAttribute,\n  AnimatableExtend,\n  $$,\n  ImageFit,\n} from '@kit.ArkUI';",
                     "line": 86,
                     "column": 36,
                     "endLine": 86,
@@ -171,7 +171,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, State, Column, Button, Text, Row, TextAttribute, ColumnAttribute, AnimatableExtend, $$, ImageFit } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  State,\n  Column,\n  Button,\n  Text,\n  Row,\n  TextAttribute,\n  ColumnAttribute,\n  AnimatableExtend,\n  $$,\n  ImageFit,\n} from '@kit.ArkUI';",
                     "line": 86,
                     "column": 36,
                     "endLine": 86,
@@ -192,7 +192,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, State, Column, Button, Text, Row, TextAttribute, ColumnAttribute, AnimatableExtend, $$, ImageFit } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  State,\n  Column,\n  Button,\n  Text,\n  Row,\n  TextAttribute,\n  ColumnAttribute,\n  AnimatableExtend,\n  $$,\n  ImageFit,\n} from '@kit.ArkUI';",
                     "line": 86,
                     "column": 36,
                     "endLine": 86,
@@ -213,7 +213,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, State, Column, Button, Text, Row, TextAttribute, ColumnAttribute, AnimatableExtend, $$, ImageFit } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  State,\n  Column,\n  Button,\n  Text,\n  Row,\n  TextAttribute,\n  ColumnAttribute,\n  AnimatableExtend,\n  $$,\n  ImageFit,\n} from '@kit.ArkUI';",
                     "line": 86,
                     "column": 36,
                     "endLine": 86,
@@ -234,7 +234,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, State, Column, Button, Text, Row, TextAttribute, ColumnAttribute, AnimatableExtend, $$, ImageFit } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  State,\n  Column,\n  Button,\n  Text,\n  Row,\n  TextAttribute,\n  ColumnAttribute,\n  AnimatableExtend,\n  $$,\n  ImageFit,\n} from '@kit.ArkUI';",
                     "line": 86,
                     "column": 36,
                     "endLine": 86,
@@ -255,7 +255,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, State, Column, Button, Text, Row, TextAttribute, ColumnAttribute, AnimatableExtend, $$, ImageFit } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  State,\n  Column,\n  Button,\n  Text,\n  Row,\n  TextAttribute,\n  ColumnAttribute,\n  AnimatableExtend,\n  $$,\n  ImageFit,\n} from '@kit.ArkUI';",
                     "line": 86,
                     "column": 36,
                     "endLine": 86,
@@ -276,7 +276,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, State, Column, Button, Text, Row, TextAttribute, ColumnAttribute, AnimatableExtend, $$, ImageFit } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  State,\n  Column,\n  Button,\n  Text,\n  Row,\n  TextAttribute,\n  ColumnAttribute,\n  AnimatableExtend,\n  $$,\n  ImageFit,\n} from '@kit.ArkUI';",
                     "line": 86,
                     "column": 36,
                     "endLine": 86,
@@ -297,7 +297,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, State, Column, Button, Text, Row, TextAttribute, ColumnAttribute, AnimatableExtend, $$, ImageFit } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  State,\n  Column,\n  Button,\n  Text,\n  Row,\n  TextAttribute,\n  ColumnAttribute,\n  AnimatableExtend,\n  $$,\n  ImageFit,\n} from '@kit.ArkUI';",
                     "line": 86,
                     "column": 36,
                     "endLine": 86,
@@ -318,7 +318,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, State, Column, Button, Text, Row, TextAttribute, ColumnAttribute, AnimatableExtend, $$, ImageFit } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  State,\n  Column,\n  Button,\n  Text,\n  Row,\n  TextAttribute,\n  ColumnAttribute,\n  AnimatableExtend,\n  $$,\n  ImageFit,\n} from '@kit.ArkUI';",
                     "line": 86,
                     "column": 36,
                     "endLine": 86,
@@ -339,7 +339,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, State, Column, Button, Text, Row, TextAttribute, ColumnAttribute, AnimatableExtend, $$, ImageFit } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  State,\n  Column,\n  Button,\n  Text,\n  Row,\n  TextAttribute,\n  ColumnAttribute,\n  AnimatableExtend,\n  $$,\n  ImageFit,\n} from '@kit.ArkUI';",
                     "line": 86,
                     "column": 36,
                     "endLine": 86,
@@ -360,7 +360,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, State, Column, Button, Text, Row, TextAttribute, ColumnAttribute, AnimatableExtend, $$, ImageFit } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  State,\n  Column,\n  Button,\n  Text,\n  Row,\n  TextAttribute,\n  ColumnAttribute,\n  AnimatableExtend,\n  $$,\n  ImageFit,\n} from '@kit.ArkUI';",
                     "line": 86,
                     "column": 36,
                     "endLine": 86,
@@ -381,7 +381,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, State, Column, Button, Text, Row, TextAttribute, ColumnAttribute, AnimatableExtend, $$, ImageFit } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  State,\n  Column,\n  Button,\n  Text,\n  Row,\n  TextAttribute,\n  ColumnAttribute,\n  AnimatableExtend,\n  $$,\n  ImageFit,\n} from '@kit.ArkUI';",
                     "line": 86,
                     "column": 36,
                     "endLine": 86,
@@ -402,7 +402,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, State, Column, Button, Text, Row, TextAttribute, ColumnAttribute, AnimatableExtend, $$, ImageFit } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  State,\n  Column,\n  Button,\n  Text,\n  Row,\n  TextAttribute,\n  ColumnAttribute,\n  AnimatableExtend,\n  $$,\n  ImageFit,\n} from '@kit.ArkUI';",
                     "line": 86,
                     "column": 36,
                     "endLine": 86,
@@ -423,7 +423,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, State, Column, Button, Text, Row, TextAttribute, ColumnAttribute, AnimatableExtend, $$, ImageFit } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  State,\n  Column,\n  Button,\n  Text,\n  Row,\n  TextAttribute,\n  ColumnAttribute,\n  AnimatableExtend,\n  $$,\n  ImageFit,\n} from '@kit.ArkUI';",
                     "line": 86,
                     "column": 36,
                     "endLine": 86,
@@ -444,7 +444,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, State, Column, Button, Text, Row, TextAttribute, ColumnAttribute, AnimatableExtend, $$, ImageFit } from '@kit.ArkUI';",
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  State,\n  Column,\n  Button,\n  Text,\n  Row,\n  TextAttribute,\n  ColumnAttribute,\n  AnimatableExtend,\n  $$,\n  ImageFit,\n} from '@kit.ArkUI';",
                     "line": 86,
                     "column": 36,
                     "endLine": 86,

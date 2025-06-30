@@ -33,7 +33,7 @@
                 {
                     "start": 650,
                     "end": 650,
-                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('./interop_property_num_js');\nlet foo = GeneratedImportVar_1.getPropertyByName('foo');\n",
+                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('./interop_property_num_js');\nlet foo = GeneratedImportVar_1.getProperty('foo');\n",
                     "line": 16,
                     "column": 1,
                     "endLine": 16,
@@ -54,7 +54,7 @@
                 {
                     "start": 653,
                     "end": 660,
-                    "replacementText": "foo.getPropertyByName(\"num\").toNumber()",
+                    "replacementText": "foo.getProperty(\"num\").toNumber()",
                     "line": 18,
                     "column": 1,
                     "endLine": 18,
@@ -75,7 +75,7 @@
                 {
                     "start": 653,
                     "end": 660,
-                    "replacementText": "foo.getPropertyByName(\"num\")",
+                    "replacementText": "foo.getProperty(\"num\")",
                     "line": 18,
                     "column": 2,
                     "endLine": 18,
@@ -96,7 +96,7 @@
                 {
                     "start": 663,
                     "end": 670,
-                    "replacementText": "foo.getPropertyByName(\"num\").toNumber()",
+                    "replacementText": "foo.getProperty(\"num\").toNumber()",
                     "line": 19,
                     "column": 1,
                     "endLine": 19,
@@ -117,7 +117,7 @@
                 {
                     "start": 663,
                     "end": 670,
-                    "replacementText": "foo.getPropertyByName(\"num\")",
+                    "replacementText": "foo.getProperty(\"num\")",
                     "line": 19,
                     "column": 2,
                     "endLine": 19,
@@ -138,7 +138,7 @@
                 {
                     "start": 673,
                     "end": 680,
-                    "replacementText": "foo.getPropertyByName(\"num\").toNumber()",
+                    "replacementText": "foo.getProperty(\"num\").toNumber()",
                     "line": 20,
                     "column": 1,
                     "endLine": 20,
@@ -159,7 +159,7 @@
                 {
                     "start": 673,
                     "end": 680,
-                    "replacementText": "foo.getPropertyByName(\"num\")",
+                    "replacementText": "foo.getProperty(\"num\")",
                     "line": 20,
                     "column": 2,
                     "endLine": 20,
@@ -180,7 +180,7 @@
                 {
                     "start": 683,
                     "end": 690,
-                    "replacementText": "foo.getPropertyByName(\"num\").toNumber()",
+                    "replacementText": "foo.getProperty(\"num\").toNumber()",
                     "line": 21,
                     "column": 1,
                     "endLine": 21,
@@ -201,7 +201,7 @@
                 {
                     "start": 683,
                     "end": 690,
-                    "replacementText": "foo.getPropertyByName(\"num\")",
+                    "replacementText": "foo.getProperty(\"num\")",
                     "line": 21,
                     "column": 2,
                     "endLine": 21,
@@ -222,7 +222,7 @@
                 {
                     "start": 693,
                     "end": 702,
-                    "replacementText": "(foo.getPropertyByName(\"num\").toNumber())",
+                    "replacementText": "(foo.getProperty(\"num\").toNumber())",
                     "line": 22,
                     "column": 1,
                     "endLine": 22,
@@ -243,7 +243,7 @@
                 {
                     "start": 694,
                     "end": 701,
-                    "replacementText": "foo.getPropertyByName(\"num\")",
+                    "replacementText": "foo.getProperty(\"num\")",
                     "line": 22,
                     "column": 3,
                     "endLine": 22,
@@ -264,7 +264,7 @@
                 {
                     "start": 705,
                     "end": 714,
-                    "replacementText": "(foo.getPropertyByName(\"num\").toNumber())",
+                    "replacementText": "(foo.getProperty(\"num\").toNumber())",
                     "line": 23,
                     "column": 1,
                     "endLine": 23,
@@ -285,7 +285,7 @@
                 {
                     "start": 706,
                     "end": 713,
-                    "replacementText": "foo.getPropertyByName(\"num\")",
+                    "replacementText": "foo.getProperty(\"num\")",
                     "line": 23,
                     "column": 3,
                     "endLine": 23,
@@ -306,7 +306,7 @@
                 {
                     "start": 717,
                     "end": 726,
-                    "replacementText": "(foo.getPropertyByName(\"num\").toNumber())",
+                    "replacementText": "(foo.getProperty(\"num\").toNumber())",
                     "line": 24,
                     "column": 1,
                     "endLine": 24,
@@ -327,7 +327,7 @@
                 {
                     "start": 718,
                     "end": 725,
-                    "replacementText": "foo.getPropertyByName(\"num\")",
+                    "replacementText": "foo.getProperty(\"num\")",
                     "line": 24,
                     "column": 3,
                     "endLine": 24,
@@ -348,7 +348,7 @@
                 {
                     "start": 729,
                     "end": 738,
-                    "replacementText": "(foo.getPropertyByName(\"num\").toNumber())",
+                    "replacementText": "(foo.getProperty(\"num\").toNumber())",
                     "line": 25,
                     "column": 1,
                     "endLine": 25,
@@ -369,7 +369,7 @@
                 {
                     "start": 730,
                     "end": 737,
-                    "replacementText": "foo.getPropertyByName(\"num\")",
+                    "replacementText": "foo.getProperty(\"num\")",
                     "line": 25,
                     "column": 3,
                     "endLine": 25,

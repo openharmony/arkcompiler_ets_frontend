@@ -33,6 +33,7 @@ import { IssueReport } from '../../model/Defects';
 import { ArkClass, ClassCategory } from 'arkanalyzer/lib/core/model/ArkClass';
 import { Language } from 'arkanalyzer/lib/core/model/ArkFile';
 import { getLanguageStr, getLineAndColumn } from './Utils';
+import { ArkThisRef } from 'arkanalyzer';
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'InteropS2DObjectLiteralCheck');
 const gMetaData: BaseMetaData = {
@@ -105,6 +106,11 @@ export class InteropS2DObjectLiteralCheck implements BaseChecker {
     }
 
     private checkAssignWithObjectLiteral(stmt: ArkAssignStmt, target: ArkMethod): void {
+        // this = thisRef 赋值语句需要跳过，否则该class一定会被扫描一遍，此次扫描多余，且可能会产生行号为-1的错误issue
+        // 若此class有问题，会在真正使用到此class的源码处进行告警，无需查找this ref语句
+        if (stmt.getRightOp() instanceof ArkThisRef) {
+            return;
+        }
         const leftOpType = stmt.getLeftOp().getType();
         if (!(leftOpType instanceof ClassType)) {
             return;

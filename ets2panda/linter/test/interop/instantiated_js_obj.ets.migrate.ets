@@ -14,8 +14,8 @@
  */
 
 let GeneratedImportVar_1 = ESValue.load('./instantiated_js_obj_js');
-let Foo = GeneratedImportVar_1.getPropertyByName('Foo');
-let Foo1 = GeneratedImportVar_1.getPropertyByName('Foo1');
+let Foo = GeneratedImportVar_1.getProperty('Foo');
+let Foo1 = GeneratedImportVar_1.getProperty('Foo1');
 
 class A {
     num: number = 1.0;

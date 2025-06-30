@@ -43,7 +43,7 @@
                 {
                     "start": 1092,
                     "end": 1092,
-                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('./interop_import_js_rules_js');\nlet foo = GeneratedImportVar_1.getPropertyByName('foo');\n",
+                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('./interop_import_js_rules_js');\nlet foo = GeneratedImportVar_1.getProperty('foo');\n",
                     "line": 17,
                     "column": 1,
                     "endLine": 17,
@@ -83,7 +83,7 @@
                 {
                     "start": 1092,
                     "end": 1092,
-                    "replacementText": "let GeneratedImportVar_2 = ESValue.load('./interop_import_js_rules_js');\nlet ff1 = GeneratedImportVar_2.getPropertyByName('ff1');\nlet ff2 = GeneratedImportVar_2.getPropertyByName('ff2');\n",
+                    "replacementText": "let GeneratedImportVar_2 = ESValue.load('./interop_import_js_rules_js');\nlet ff1 = GeneratedImportVar_2.getProperty('ff1');\nlet ff2 = GeneratedImportVar_2.getProperty('ff2');\n",
                     "line": 18,
                     "column": 1,
                     "endLine": 18,
@@ -123,7 +123,7 @@
                 {
                     "start": 1092,
                     "end": 1092,
-                    "replacementText": "let GeneratedImportVar_3 = ESValue.load('./interop_import_js_rules_js');\nlet A = GeneratedImportVar_3.getPropertyByName('A');\n",
+                    "replacementText": "let GeneratedImportVar_3 = ESValue.load('./interop_import_js_rules_js');\nlet A = GeneratedImportVar_3.getProperty('A');\n",
                     "line": 20,
                     "column": 1,
                     "endLine": 20,
@@ -163,7 +163,7 @@
                 {
                     "start": 1092,
                     "end": 1092,
-                    "replacementText": "let GeneratedImportVar_4 = ESValue.load('./interop_import_js_rules_js');\nlet C = GeneratedImportVar_4.getPropertyByName('C');\n",
+                    "replacementText": "let GeneratedImportVar_4 = ESValue.load('./interop_import_js_rules_js');\nlet C = GeneratedImportVar_4.getProperty('C');\n",
                     "line": 21,
                     "column": 1,
                     "endLine": 21,
@@ -203,7 +203,7 @@
                 {
                     "start": 1092,
                     "end": 1092,
-                    "replacementText": "let GeneratedImportVar_5 = ESValue.load('./interop_import_js_rules_js');\nlet ff3 = GeneratedImportVar_5.getPropertyByName('ff3');\n",
+                    "replacementText": "let GeneratedImportVar_5 = ESValue.load('./interop_import_js_rules_js');\nlet ff3 = GeneratedImportVar_5.getProperty('ff3');\n",
                     "line": 23,
                     "column": 1,
                     "endLine": 23,
@@ -243,7 +243,7 @@
                 {
                     "start": 1092,
                     "end": 1092,
-                    "replacementText": "let GeneratedImportVar_6 = ESValue.load('./interop_import_js_rules_js');\nlet ff4 = GeneratedImportVar_6.getPropertyByName('ff4');\n",
+                    "replacementText": "let GeneratedImportVar_6 = ESValue.load('./interop_import_js_rules_js');\nlet ff4 = GeneratedImportVar_6.getProperty('ff4');\n",
                     "line": 25,
                     "column": 1,
                     "endLine": 25,
@@ -283,7 +283,7 @@
                 {
                     "start": 1092,
                     "end": 1092,
-                    "replacementText": "let GeneratedImportVar_7 = ESValue.load('./interop_import_js_rules_js');\nlet handle = GeneratedImportVar_7.getPropertyByName('handle');\n",
+                    "replacementText": "let GeneratedImportVar_7 = ESValue.load('./interop_import_js_rules_js');\nlet handle = GeneratedImportVar_7.getProperty('handle');\n",
                     "line": 27,
                     "column": 1,
                     "endLine": 27,
@@ -323,7 +323,7 @@
                 {
                     "start": 1092,
                     "end": 1092,
-                    "replacementText": "let GeneratedImportVar_8 = ESValue.load('./interop_import_js_rules_js');\nlet expand = GeneratedImportVar_8.getPropertyByName('expand');\n",
+                    "replacementText": "let GeneratedImportVar_8 = ESValue.load('./interop_import_js_rules_js');\nlet expand = GeneratedImportVar_8.getProperty('expand');\n",
                     "line": 29,
                     "column": 1,
                     "endLine": 29,
@@ -363,7 +363,7 @@
                 {
                     "start": 1092,
                     "end": 1092,
-                    "replacementText": "let GeneratedImportVar_9 = ESValue.load('./interop_import_js_rules_js');\nlet orange = GeneratedImportVar_9.getPropertyByName('orange');\n",
+                    "replacementText": "let GeneratedImportVar_9 = ESValue.load('./interop_import_js_rules_js');\nlet orange = GeneratedImportVar_9.getProperty('orange');\n",
                     "line": 30,
                     "column": 1,
                     "endLine": 30,
@@ -384,7 +384,7 @@
                 {
                     "start": 1098,
                     "end": 1108,
-                    "replacementText": "foo.getPropertyByName(\"isGood\")",
+                    "replacementText": "foo.getProperty(\"isGood\")",
                     "line": 32,
                     "column": 5,
                     "endLine": 32,
@@ -403,7 +403,7 @@
             "problem": "InteropJsObjectConditionJudgment",
             "autofix": [
                 {
-                    "replacementText": "foo.getPropertyByName('isGood').toBoolean()",
+                    "replacementText": "foo.getProperty('isGood').toBoolean()",
                     "start": 1098,
                     "end": 1108,
                     "line": 32,
@@ -426,7 +426,7 @@
                 {
                     "start": 1118,
                     "end": 1124,
-                    "replacementText": "ff1.getPropertyByName(\"f1\").toNumber()",
+                    "replacementText": "ff1.getProperty(\"f1\").toNumber()",
                     "line": 34,
                     "column": 5,
                     "endLine": 34,
@@ -447,7 +447,7 @@
                 {
                     "start": 1118,
                     "end": 1124,
-                    "replacementText": "ff1.getPropertyByName(\"f1\")",
+                    "replacementText": "ff1.getProperty(\"f1\")",
                     "line": 34,
                     "column": 5,
                     "endLine": 34,
@@ -466,7 +466,7 @@
             "problem": "InteropJsObjectConditionJudgment",
             "autofix": [
                 {
-                    "replacementText": "ff1.getPropertyByName('f1').toNumber()",
+                    "replacementText": "ff1.getProperty('f1').toNumber()",
                     "start": 1118,
                     "end": 1124,
                     "line": 34,
@@ -561,7 +561,7 @@
                 {
                     "start": 1344,
                     "end": 1351,
-                    "replacementText": "ff3.getPropertyByName(\"arr\")",
+                    "replacementText": "ff3.getProperty(\"arr\")",
                     "line": 50,
                     "column": 11,
                     "endLine": 50,
@@ -582,7 +582,7 @@
                 {
                     "start": 1362,
                     "end": 1372,
-                    "replacementText": "arr.getPropertyByName(\"length\")",
+                    "replacementText": "arr.getProperty(\"length\")",
                     "line": 51,
                     "column": 11,
                     "endLine": 51,
@@ -653,7 +653,7 @@
             "problem": "InteropJsObjectTraverseJsInstance",
             "autofix": [
                 {
-                    "replacementText": "arr.getPropertyByIndex(i).toNumber()",
+                    "replacementText": "arr.getProperty(i).toNumber()",
                     "start": 1425,
                     "end": 1431,
                     "line": 53,
@@ -676,7 +676,7 @@
                 {
                     "start": 1425,
                     "end": 1431,
-                    "replacementText": "arr.getPropertyByIndex(i)",
+                    "replacementText": "arr.getProperty(i)",
                     "line": 53,
                     "column": 11,
                     "endLine": 53,
@@ -705,7 +705,7 @@
             "problem": "InteropJsObjectTraverseJsInstance",
             "autofix": [
                 {
-                    "replacementText": "arr.setPropertyByIndex(i, ESValue.wrap(0))",
+                    "replacementText": "arr.setProperty(i, ESValue.wrap(0))",
                     "start": 1434,
                     "end": 1444,
                     "line": 54,
@@ -728,7 +728,7 @@
                 {
                     "start": 1434,
                     "end": 1444,
-                    "replacementText": "arr.setPropertyByIndex(i, ESValue.wrap(0))",
+                    "replacementText": "arr.setProperty(i, ESValue.wrap(0))",
                     "line": 54,
                     "column": 3,
                     "endLine": 54,
@@ -1072,7 +1072,7 @@
                 {
                     "start": 1831,
                     "end": 1850,
-                    "replacementText": "orange.getPropertyByName(\"isVegetable1\")",
+                    "replacementText": "orange.getProperty(\"isVegetable1\")",
                     "line": 84,
                     "column": 5,
                     "endLine": 84,

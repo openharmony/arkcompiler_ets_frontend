@@ -15,20 +15,21 @@
 
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import type { Autofix } from '../lib/autofixes/Autofixer';
 import type { CommandLineOptions } from '../lib/CommandLineOptions';
 import type { LinterConfig } from '../lib/LinterConfig';
 import { lint } from '../lib/LinterRunner';
+import type { LintRunResult } from '../lib/LintRunResult';
 import { Logger } from '../lib/Logger';
+import { TimeRecorder } from '../lib/statistics/scan/TimeRecorder';
 import { compileLintOptions } from '../lib/ts-compiler/Compiler';
+import { DIFF_EXT, RESULTS_DIR, TAB } from './Consts';
+import type { CreateLintTestOptions } from './TestFactory';
 import type { TestModeProperties } from './TestMode';
 import { TestMode } from './TestMode';
-import { transformProblemInfos } from './TestUtil';
 import type { TestProblemInfo, TestResult } from './TestResult';
 import { validateTestResult } from './TestResult';
-import type { LintRunResult } from '../lib/LintRunResult';
-import { DIFF_EXT, RESULTS_DIR, TAB } from './Consts';
-import type { Autofix } from '../lib/autofixes/Autofixer';
-import type { CreateLintTestOptions } from './TestFactory';
+import { transformProblemInfos } from './TestUtil';
 
 export class LintTest {
   readonly testDir: string;
@@ -47,7 +48,8 @@ export class LintTest {
     Logger.info(`Running test ${this.testFile} (${TestMode[this.testModeProps.mode]} mode)`);
 
     const linterConfig = this.compile();
-    const linterResult = lint(linterConfig);
+    const timeRecorder = new TimeRecorder();
+    const linterResult = lint(linterConfig, timeRecorder);
     return this.validate(linterResult);
   }
 

@@ -45,13 +45,13 @@
             "severity": "ERROR"
         },
         {
-            "line": 27,
-            "column": 1,
-            "endLine": 27,
-            "endColumn": 14,
-            "problem": "InteropCallObjectParam",
+            "line": 30,
+            "column": 11,
+            "endLine": 30,
+            "endColumn": 33,
+            "problem": "AnyType",
             "suggest": "",
-            "rule": "Class type is not compatible with \"Object\" parameter in interop call (arkts-interop-d2s-static-object-on-dynamic-instance)",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
             "severity": "ERROR"
         }
     ]

@@ -13,5 +13,116 @@
         "See the License for the specific language governing permissions and",
         "limitations under the License."
     ],
-    "result": []
+    "result": [
+        {
+            "line": 76,
+            "column": 7,
+            "endLine": 76,
+            "endColumn": 69,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 158,
+            "column": 7,
+            "endLine": 158,
+            "endColumn": 58,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 195,
+            "column": 52,
+            "endLine": 195,
+            "endColumn": 55,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 245,
+            "column": 54,
+            "endLine": 245,
+            "endColumn": 57,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 282,
+            "column": 7,
+            "endLine": 282,
+            "endColumn": 57,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 303,
+            "column": 7,
+            "endLine": 303,
+            "endColumn": 60,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 355,
+            "column": 7,
+            "endLine": 355,
+            "endColumn": 61,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 182,
+            "column": 3,
+            "endLine": 182,
+            "endColumn": 13,
+            "problem": "StrictDiagnostic",
+            "suggest": "Property 'myProperty' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property 'myProperty' has no initializer and is not definitely assigned in the constructor.",
+            "severity": "ERROR"
+        },
+        {
+            "line": 202,
+            "column": 11,
+            "endLine": 202,
+            "endColumn": 16,
+            "problem": "StrictDiagnostic",
+            "suggest": "Property '_name' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property '_name' has no initializer and is not definitely assigned in the constructor.",
+            "severity": "ERROR"
+        },
+        {
+            "line": 214,
+            "column": 11,
+            "endLine": 214,
+            "endColumn": 15,
+            "problem": "StrictDiagnostic",
+            "suggest": "Property '_age' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property '_age' has no initializer and is not definitely assigned in the constructor.",
+            "severity": "ERROR"
+        },
+        {
+            "line": 232,
+            "column": 5,
+            "endLine": 232,
+            "endColumn": 15,
+            "problem": "StrictDiagnostic",
+            "suggest": "Property 'myProperty' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property 'myProperty' has no initializer and is not definitely assigned in the constructor.",
+            "severity": "ERROR"
+        }
+    ]
 }
