@@ -17,7 +17,7 @@ function byte_test(): void {
   let byte_: byte = 42;
   let Byte_: Byte = new Byte(42 as byte);
 
-  { 
+  {
     // Casting to primitive types
     let byte_byte   = byte_.toByte();
     let byte_short  = byte_.toShort();
@@ -34,8 +34,8 @@ function byte_test(): void {
     let Byte_float  = Byte_.toFloat();
     let Byte_double = Byte_.toDouble();
   }
-  
-  { 
+
+  {
     //  Casting to reference type
     let byte_Byte   = byte_ as Byte;
     let Byte_Byte   = Byte_ as Byte;
@@ -47,7 +47,7 @@ function short_test(): void {
   let short_: short = 42;
   let Short_: Short = new Short(42 as short);
 
-  { 
+  {
     // Casting to primitive types
     let short_byte   = short_.toByte();
     let short_short  = short_.toShort();
@@ -63,8 +63,8 @@ function short_test(): void {
     let Short_float  = Short_.toFloat();
     let Short_double = Short_.toDouble();
   }
-  
-  { 
+
+  {
     //  Casting to reference type
     let short_Short   = short_ as Short;
     let Short_Short   = Short_ as Short;
@@ -76,7 +76,7 @@ function char_test(): void {
   let char_: char = 42;
   let Char_: Char = new Char(42 as char);
 
-  { 
+  {
     // Casting to primitive types
     let char_byte   = char_.toByte();
     let char_short  = char_.toShort();
@@ -92,8 +92,8 @@ function char_test(): void {
     let Char_float  = Char_.toFloat();
     let Char_double = Char_.toDouble();
   }
-  
-  { 
+
+  {
     //  Casting to reference type
     let char_Char   = char_ as Char;
     let Char_Char   = Char_ as Char;
@@ -105,7 +105,7 @@ function int_test(): void {
   let int_: int = 42;
   let Int_: Int = new Int(42 as int);
 
-  { 
+  {
     // Casting to primitive types
     let int_byte    = int_.toByte();
     let int_short   = int_.toShort();
@@ -120,8 +120,8 @@ function int_test(): void {
     let Int_float   = Int_.toFloat();
     let Int_double  = Int_.toDouble();
   }
-  
-  { 
+
+  {
     //  Casting to reference type
     let int_Int     = int_ as Int;
     let Int_Int     = Int_ as Int;
@@ -133,7 +133,7 @@ function long_test(): void {
   let long_: long = 42;
   let Long_: Long = new Long(42 as long);
 
-  { 
+  {
     // Casting to primitive types
     let long_byte   = long_.toByte();
     let long_short  = long_.toShort();
@@ -147,8 +147,8 @@ function long_test(): void {
     let Long_float  = Long_.toFloat();
     let Long_double = Long_.toDouble();
   }
-  
-  { 
+
+  {
     //  Casting to reference type
     let long_Long   = long_ as Long;
     let Long_Long   = Long_ as Long;
@@ -160,11 +160,10 @@ function float_test(): void {
   let float_: float = 42;
   let Float_: Float = new Float(42 as float);
 
-  { 
+  {
     // Casting to primitive types
     let float_byte   = float_.toByte();
     let float_short  = float_.toShort();
-    let float_char   = float_.toChar();
     let float_int    = float_.toInt();
     let float_long   = float_.toLong();
     let float_float  = float_.toFloat();
@@ -173,8 +172,8 @@ function float_test(): void {
     let Float_float  = Float_.toFloat();
     let Float_double = Float_.toDouble();
   }
-  
-  { 
+
+  {
     //  Casting to reference type
     let float_Float   = float_ as Float;
     let Float_Float   = Float_ as Float;
@@ -186,11 +185,10 @@ function double_test(): void {
   let double_: double = 42;
   let Double_: Double = new Double(42 as double);
 
-  { 
+  {
     // Casting to primitive types
     let double_byte   = double_.toByte();
     let double_short  = double_.toShort();
-    let double_char   = double_.toChar();
     let double_int    = double_.toInt();
     let double_long   = double_.toLong();
     let double_float  = double_.toFloat();
@@ -198,8 +196,8 @@ function double_test(): void {
 
     let Double_double = Double_.toDouble();
   }
-  
-  { 
+
+  {
     //  Casting to reference type
     let double_Double   = double_ as Double;
     let Double_Double   = Double_ as Double;

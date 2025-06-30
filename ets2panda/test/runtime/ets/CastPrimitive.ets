@@ -19,7 +19,6 @@ function main(): void {
   arktest.assertEQ(Double.toLong(a), 2147483649)
   arktest.assertEQ(Double.toInt(a), 2147483647  )  // 2^31 - 1 == MAX_INT == 0xFFFFFFFF
   arktest.assertEQ(Double.toShort(a), -1         ) // 0xFFFF
-  arktest.assertEQ(Double.toChar(a), c'\uFFFF')
   arktest.assertEQ(Double.toByte(a), -1           )// 0xFF
 
   a = -2147483649.0                 // 2^31 + 1
@@ -27,7 +26,6 @@ function main(): void {
   arktest.assertEQ(Double.toLong(a), -2147483649)
   arktest.assertEQ(Double.toInt(a), -2147483648)   // -2^31 == MIN_INT == 0x10000000
   arktest.assertEQ(Double.toShort(a), 0)
-  arktest.assertEQ(Double.toChar(a), c'\u0000')
   arktest.assertEQ(Double.toByte(a), 0)
 
   let b : float = 70000.9921875f;
@@ -35,7 +33,6 @@ function main(): void {
   arktest.assertEQ(Float.toLong(b), 70000  )         // rounded, 70000 == 0x11170
   arktest.assertEQ(Float.toInt(b), 70000)
   arktest.assertEQ(Float.toShort(b), 4464)           // 4464 == 0x1170
-  arktest.assertEQ(Float.toChar(b), c'\u1170')
   arktest.assertEQ(Float.toByte(b), 112)             // 112 == 0x70
 
   let c : long = 1193046;              // 1193046 == 0x123456
@@ -82,12 +79,10 @@ function main(): void {
   arktest.assertEQ(i, false)
 
   arktest.assertEQ(Double.toByte(4294967296.0), -1)
-  arktest.assertEQ(Double.toChar(4294967296.0), c'\uFFFF')
   arktest.assertEQ(Double.toShort(4294967296.0), -1)
   arktest.assertEQ(Double.toInt(4294967296.0), Int.MAX_VALUE)
   arktest.assertEQ(Double.toLong(4294967296.0), 4294967296)
   arktest.assertEQ(Double.toByte(-4294967296.0), 0)
-  arktest.assertEQ(Double.toChar(-4294967296.0), c'\u0000')
   arktest.assertEQ(Double.toShort(-4294967296.0), 0)
   arktest.assertEQ(Double.toInt(-4294967296.0), Int.MIN_VALUE)
   arktest.assertEQ(Double.toLong(-4294967296.0), -4294967296)

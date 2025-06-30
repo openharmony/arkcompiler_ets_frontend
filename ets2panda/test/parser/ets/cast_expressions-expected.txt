@@ -11836,134 +11836,16 @@
                               "type": "VariableDeclarator",
                               "id": {
                                 "type": "Identifier",
-                                "name": "float_char",
-                                "decorators": [],
-                                "loc": {
-                                  "start": {
-                                    "line": 167,
-                                    "column": 9,
-                                    "program": "cast_expressions.ets"
-                                  },
-                                  "end": {
-                                    "line": 167,
-                                    "column": 19,
-                                    "program": "cast_expressions.ets"
-                                  }
-                                }
-                              },
-                              "init": {
-                                "type": "CallExpression",
-                                "callee": {
-                                  "type": "MemberExpression",
-                                  "object": {
-                                    "type": "Identifier",
-                                    "name": "float_",
-                                    "decorators": [],
-                                    "loc": {
-                                      "start": {
-                                        "line": 167,
-                                        "column": 24,
-                                        "program": "cast_expressions.ets"
-                                      },
-                                      "end": {
-                                        "line": 167,
-                                        "column": 30,
-                                        "program": "cast_expressions.ets"
-                                      }
-                                    }
-                                  },
-                                  "property": {
-                                    "type": "Identifier",
-                                    "name": "toChar",
-                                    "decorators": [],
-                                    "loc": {
-                                      "start": {
-                                        "line": 167,
-                                        "column": 31,
-                                        "program": "cast_expressions.ets"
-                                      },
-                                      "end": {
-                                        "line": 167,
-                                        "column": 37,
-                                        "program": "cast_expressions.ets"
-                                      }
-                                    }
-                                  },
-                                  "computed": false,
-                                  "optional": false,
-                                  "loc": {
-                                    "start": {
-                                      "line": 167,
-                                      "column": 24,
-                                      "program": "cast_expressions.ets"
-                                    },
-                                    "end": {
-                                      "line": 167,
-                                      "column": 37,
-                                      "program": "cast_expressions.ets"
-                                    }
-                                  }
-                                },
-                                "arguments": [],
-                                "optional": false,
-                                "loc": {
-                                  "start": {
-                                    "line": 167,
-                                    "column": 24,
-                                    "program": "cast_expressions.ets"
-                                  },
-                                  "end": {
-                                    "line": 167,
-                                    "column": 39,
-                                    "program": "cast_expressions.ets"
-                                  }
-                                }
-                              },
-                              "loc": {
-                                "start": {
-                                  "line": 167,
-                                  "column": 9,
-                                  "program": "cast_expressions.ets"
-                                },
-                                "end": {
-                                  "line": 167,
-                                  "column": 39,
-                                  "program": "cast_expressions.ets"
-                                }
-                              }
-                            }
-                          ],
-                          "kind": "let",
-                          "loc": {
-                            "start": {
-                              "line": 167,
-                              "column": 5,
-                              "program": "cast_expressions.ets"
-                            },
-                            "end": {
-                              "line": 167,
-                              "column": 40,
-                              "program": "cast_expressions.ets"
-                            }
-                          }
-                        },
-                        {
-                          "type": "VariableDeclaration",
-                          "declarations": [
-                            {
-                              "type": "VariableDeclarator",
-                              "id": {
-                                "type": "Identifier",
                                 "name": "float_int",
                                 "decorators": [],
                                 "loc": {
                                   "start": {
-                                    "line": 168,
+                                    "line": 167,
                                     "column": 9,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 168,
+                                    "line": 167,
                                     "column": 18,
                                     "program": "cast_expressions.ets"
                                   }
@@ -11979,12 +11861,12 @@
                                     "decorators": [],
                                     "loc": {
                                       "start": {
-                                        "line": 168,
+                                        "line": 167,
                                         "column": 24,
                                         "program": "cast_expressions.ets"
                                       },
                                       "end": {
-                                        "line": 168,
+                                        "line": 167,
                                         "column": 30,
                                         "program": "cast_expressions.ets"
                                       }
@@ -11996,12 +11878,12 @@
                                     "decorators": [],
                                     "loc": {
                                       "start": {
-                                        "line": 168,
+                                        "line": 167,
                                         "column": 31,
                                         "program": "cast_expressions.ets"
                                       },
                                       "end": {
-                                        "line": 168,
+                                        "line": 167,
                                         "column": 36,
                                         "program": "cast_expressions.ets"
                                       }
@@ -12011,12 +11893,12 @@
                                   "optional": false,
                                   "loc": {
                                     "start": {
-                                      "line": 168,
+                                      "line": 167,
                                       "column": 24,
                                       "program": "cast_expressions.ets"
                                     },
                                     "end": {
-                                      "line": 168,
+                                      "line": 167,
                                       "column": 36,
                                       "program": "cast_expressions.ets"
                                     }
@@ -12026,12 +11908,12 @@
                                 "optional": false,
                                 "loc": {
                                   "start": {
-                                    "line": 168,
+                                    "line": 167,
                                     "column": 24,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 168,
+                                    "line": 167,
                                     "column": 38,
                                     "program": "cast_expressions.ets"
                                   }
@@ -12039,12 +11921,12 @@
                               },
                               "loc": {
                                 "start": {
-                                  "line": 168,
+                                  "line": 167,
                                   "column": 9,
                                   "program": "cast_expressions.ets"
                                 },
                                 "end": {
-                                  "line": 168,
+                                  "line": 167,
                                   "column": 38,
                                   "program": "cast_expressions.ets"
                                 }
@@ -12054,12 +11936,12 @@
                           "kind": "let",
                           "loc": {
                             "start": {
-                              "line": 168,
+                              "line": 167,
                               "column": 5,
                               "program": "cast_expressions.ets"
                             },
                             "end": {
-                              "line": 168,
+                              "line": 167,
                               "column": 39,
                               "program": "cast_expressions.ets"
                             }
@@ -12076,12 +11958,12 @@
                                 "decorators": [],
                                 "loc": {
                                   "start": {
-                                    "line": 169,
+                                    "line": 168,
                                     "column": 9,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 169,
+                                    "line": 168,
                                     "column": 19,
                                     "program": "cast_expressions.ets"
                                   }
@@ -12097,12 +11979,12 @@
                                     "decorators": [],
                                     "loc": {
                                       "start": {
-                                        "line": 169,
+                                        "line": 168,
                                         "column": 24,
                                         "program": "cast_expressions.ets"
                                       },
                                       "end": {
-                                        "line": 169,
+                                        "line": 168,
                                         "column": 30,
                                         "program": "cast_expressions.ets"
                                       }
@@ -12114,12 +11996,12 @@
                                     "decorators": [],
                                     "loc": {
                                       "start": {
-                                        "line": 169,
+                                        "line": 168,
                                         "column": 31,
                                         "program": "cast_expressions.ets"
                                       },
                                       "end": {
-                                        "line": 169,
+                                        "line": 168,
                                         "column": 37,
                                         "program": "cast_expressions.ets"
                                       }
@@ -12129,12 +12011,12 @@
                                   "optional": false,
                                   "loc": {
                                     "start": {
-                                      "line": 169,
+                                      "line": 168,
                                       "column": 24,
                                       "program": "cast_expressions.ets"
                                     },
                                     "end": {
-                                      "line": 169,
+                                      "line": 168,
                                       "column": 37,
                                       "program": "cast_expressions.ets"
                                     }
@@ -12144,12 +12026,12 @@
                                 "optional": false,
                                 "loc": {
                                   "start": {
-                                    "line": 169,
+                                    "line": 168,
                                     "column": 24,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 169,
+                                    "line": 168,
                                     "column": 39,
                                     "program": "cast_expressions.ets"
                                   }
@@ -12157,12 +12039,12 @@
                               },
                               "loc": {
                                 "start": {
-                                  "line": 169,
+                                  "line": 168,
                                   "column": 9,
                                   "program": "cast_expressions.ets"
                                 },
                                 "end": {
-                                  "line": 169,
+                                  "line": 168,
                                   "column": 39,
                                   "program": "cast_expressions.ets"
                                 }
@@ -12172,12 +12054,12 @@
                           "kind": "let",
                           "loc": {
                             "start": {
-                              "line": 169,
+                              "line": 168,
                               "column": 5,
                               "program": "cast_expressions.ets"
                             },
                             "end": {
-                              "line": 169,
+                              "line": 168,
                               "column": 40,
                               "program": "cast_expressions.ets"
                             }
@@ -12194,12 +12076,12 @@
                                 "decorators": [],
                                 "loc": {
                                   "start": {
-                                    "line": 170,
+                                    "line": 169,
                                     "column": 9,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 170,
+                                    "line": 169,
                                     "column": 20,
                                     "program": "cast_expressions.ets"
                                   }
@@ -12215,12 +12097,12 @@
                                     "decorators": [],
                                     "loc": {
                                       "start": {
-                                        "line": 170,
+                                        "line": 169,
                                         "column": 24,
                                         "program": "cast_expressions.ets"
                                       },
                                       "end": {
-                                        "line": 170,
+                                        "line": 169,
                                         "column": 30,
                                         "program": "cast_expressions.ets"
                                       }
@@ -12232,12 +12114,12 @@
                                     "decorators": [],
                                     "loc": {
                                       "start": {
-                                        "line": 170,
+                                        "line": 169,
                                         "column": 31,
                                         "program": "cast_expressions.ets"
                                       },
                                       "end": {
-                                        "line": 170,
+                                        "line": 169,
                                         "column": 38,
                                         "program": "cast_expressions.ets"
                                       }
@@ -12247,12 +12129,12 @@
                                   "optional": false,
                                   "loc": {
                                     "start": {
-                                      "line": 170,
+                                      "line": 169,
                                       "column": 24,
                                       "program": "cast_expressions.ets"
                                     },
                                     "end": {
-                                      "line": 170,
+                                      "line": 169,
                                       "column": 38,
                                       "program": "cast_expressions.ets"
                                     }
@@ -12262,12 +12144,12 @@
                                 "optional": false,
                                 "loc": {
                                   "start": {
-                                    "line": 170,
+                                    "line": 169,
                                     "column": 24,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 170,
+                                    "line": 169,
                                     "column": 40,
                                     "program": "cast_expressions.ets"
                                   }
@@ -12275,12 +12157,12 @@
                               },
                               "loc": {
                                 "start": {
-                                  "line": 170,
+                                  "line": 169,
                                   "column": 9,
                                   "program": "cast_expressions.ets"
                                 },
                                 "end": {
-                                  "line": 170,
+                                  "line": 169,
                                   "column": 40,
                                   "program": "cast_expressions.ets"
                                 }
@@ -12290,12 +12172,12 @@
                           "kind": "let",
                           "loc": {
                             "start": {
-                              "line": 170,
+                              "line": 169,
                               "column": 5,
                               "program": "cast_expressions.ets"
                             },
                             "end": {
-                              "line": 170,
+                              "line": 169,
                               "column": 41,
                               "program": "cast_expressions.ets"
                             }
@@ -12312,12 +12194,12 @@
                                 "decorators": [],
                                 "loc": {
                                   "start": {
-                                    "line": 171,
+                                    "line": 170,
                                     "column": 9,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 171,
+                                    "line": 170,
                                     "column": 21,
                                     "program": "cast_expressions.ets"
                                   }
@@ -12333,12 +12215,12 @@
                                     "decorators": [],
                                     "loc": {
                                       "start": {
-                                        "line": 171,
+                                        "line": 170,
                                         "column": 24,
                                         "program": "cast_expressions.ets"
                                       },
                                       "end": {
-                                        "line": 171,
+                                        "line": 170,
                                         "column": 30,
                                         "program": "cast_expressions.ets"
                                       }
@@ -12350,12 +12232,12 @@
                                     "decorators": [],
                                     "loc": {
                                       "start": {
-                                        "line": 171,
+                                        "line": 170,
                                         "column": 31,
                                         "program": "cast_expressions.ets"
                                       },
                                       "end": {
-                                        "line": 171,
+                                        "line": 170,
                                         "column": 39,
                                         "program": "cast_expressions.ets"
                                       }
@@ -12365,12 +12247,12 @@
                                   "optional": false,
                                   "loc": {
                                     "start": {
-                                      "line": 171,
+                                      "line": 170,
                                       "column": 24,
                                       "program": "cast_expressions.ets"
                                     },
                                     "end": {
-                                      "line": 171,
+                                      "line": 170,
                                       "column": 39,
                                       "program": "cast_expressions.ets"
                                     }
@@ -12380,12 +12262,12 @@
                                 "optional": false,
                                 "loc": {
                                   "start": {
-                                    "line": 171,
+                                    "line": 170,
                                     "column": 24,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 171,
+                                    "line": 170,
                                     "column": 41,
                                     "program": "cast_expressions.ets"
                                   }
@@ -12393,12 +12275,12 @@
                               },
                               "loc": {
                                 "start": {
-                                  "line": 171,
+                                  "line": 170,
                                   "column": 9,
                                   "program": "cast_expressions.ets"
                                 },
                                 "end": {
-                                  "line": 171,
+                                  "line": 170,
                                   "column": 41,
                                   "program": "cast_expressions.ets"
                                 }
@@ -12408,12 +12290,12 @@
                           "kind": "let",
                           "loc": {
                             "start": {
-                              "line": 171,
+                              "line": 170,
                               "column": 5,
                               "program": "cast_expressions.ets"
                             },
                             "end": {
-                              "line": 171,
+                              "line": 170,
                               "column": 42,
                               "program": "cast_expressions.ets"
                             }
@@ -12430,12 +12312,12 @@
                                 "decorators": [],
                                 "loc": {
                                   "start": {
-                                    "line": 173,
+                                    "line": 172,
                                     "column": 9,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 173,
+                                    "line": 172,
                                     "column": 20,
                                     "program": "cast_expressions.ets"
                                   }
@@ -12451,12 +12333,12 @@
                                     "decorators": [],
                                     "loc": {
                                       "start": {
-                                        "line": 173,
+                                        "line": 172,
                                         "column": 24,
                                         "program": "cast_expressions.ets"
                                       },
                                       "end": {
-                                        "line": 173,
+                                        "line": 172,
                                         "column": 30,
                                         "program": "cast_expressions.ets"
                                       }
@@ -12468,12 +12350,12 @@
                                     "decorators": [],
                                     "loc": {
                                       "start": {
-                                        "line": 173,
+                                        "line": 172,
                                         "column": 31,
                                         "program": "cast_expressions.ets"
                                       },
                                       "end": {
-                                        "line": 173,
+                                        "line": 172,
                                         "column": 38,
                                         "program": "cast_expressions.ets"
                                       }
@@ -12483,12 +12365,12 @@
                                   "optional": false,
                                   "loc": {
                                     "start": {
-                                      "line": 173,
+                                      "line": 172,
                                       "column": 24,
                                       "program": "cast_expressions.ets"
                                     },
                                     "end": {
-                                      "line": 173,
+                                      "line": 172,
                                       "column": 38,
                                       "program": "cast_expressions.ets"
                                     }
@@ -12498,12 +12380,12 @@
                                 "optional": false,
                                 "loc": {
                                   "start": {
-                                    "line": 173,
+                                    "line": 172,
                                     "column": 24,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 173,
+                                    "line": 172,
                                     "column": 40,
                                     "program": "cast_expressions.ets"
                                   }
@@ -12511,12 +12393,12 @@
                               },
                               "loc": {
                                 "start": {
-                                  "line": 173,
+                                  "line": 172,
                                   "column": 9,
                                   "program": "cast_expressions.ets"
                                 },
                                 "end": {
-                                  "line": 173,
+                                  "line": 172,
                                   "column": 40,
                                   "program": "cast_expressions.ets"
                                 }
@@ -12526,12 +12408,12 @@
                           "kind": "let",
                           "loc": {
                             "start": {
-                              "line": 173,
+                              "line": 172,
                               "column": 5,
                               "program": "cast_expressions.ets"
                             },
                             "end": {
-                              "line": 173,
+                              "line": 172,
                               "column": 41,
                               "program": "cast_expressions.ets"
                             }
@@ -12548,12 +12430,12 @@
                                 "decorators": [],
                                 "loc": {
                                   "start": {
-                                    "line": 174,
+                                    "line": 173,
                                     "column": 9,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 174,
+                                    "line": 173,
                                     "column": 21,
                                     "program": "cast_expressions.ets"
                                   }
@@ -12569,12 +12451,12 @@
                                     "decorators": [],
                                     "loc": {
                                       "start": {
-                                        "line": 174,
+                                        "line": 173,
                                         "column": 24,
                                         "program": "cast_expressions.ets"
                                       },
                                       "end": {
-                                        "line": 174,
+                                        "line": 173,
                                         "column": 30,
                                         "program": "cast_expressions.ets"
                                       }
@@ -12586,12 +12468,12 @@
                                     "decorators": [],
                                     "loc": {
                                       "start": {
-                                        "line": 174,
+                                        "line": 173,
                                         "column": 31,
                                         "program": "cast_expressions.ets"
                                       },
                                       "end": {
-                                        "line": 174,
+                                        "line": 173,
                                         "column": 39,
                                         "program": "cast_expressions.ets"
                                       }
@@ -12601,12 +12483,12 @@
                                   "optional": false,
                                   "loc": {
                                     "start": {
-                                      "line": 174,
+                                      "line": 173,
                                       "column": 24,
                                       "program": "cast_expressions.ets"
                                     },
                                     "end": {
-                                      "line": 174,
+                                      "line": 173,
                                       "column": 39,
                                       "program": "cast_expressions.ets"
                                     }
@@ -12616,12 +12498,12 @@
                                 "optional": false,
                                 "loc": {
                                   "start": {
-                                    "line": 174,
+                                    "line": 173,
                                     "column": 24,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 174,
+                                    "line": 173,
                                     "column": 41,
                                     "program": "cast_expressions.ets"
                                   }
@@ -12629,12 +12511,12 @@
                               },
                               "loc": {
                                 "start": {
-                                  "line": 174,
+                                  "line": 173,
                                   "column": 9,
                                   "program": "cast_expressions.ets"
                                 },
                                 "end": {
-                                  "line": 174,
+                                  "line": 173,
                                   "column": 41,
                                   "program": "cast_expressions.ets"
                                 }
@@ -12644,12 +12526,12 @@
                           "kind": "let",
                           "loc": {
                             "start": {
-                              "line": 174,
+                              "line": 173,
                               "column": 5,
                               "program": "cast_expressions.ets"
                             },
                             "end": {
-                              "line": 174,
+                              "line": 173,
                               "column": 42,
                               "program": "cast_expressions.ets"
                             }
@@ -12663,7 +12545,7 @@
                           "program": "cast_expressions.ets"
                         },
                         "end": {
-                          "line": 175,
+                          "line": 174,
                           "column": 4,
                           "program": "cast_expressions.ets"
                         }
@@ -12683,12 +12565,12 @@
                                 "decorators": [],
                                 "loc": {
                                   "start": {
-                                    "line": 179,
+                                    "line": 178,
                                     "column": 9,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 179,
+                                    "line": 178,
                                     "column": 20,
                                     "program": "cast_expressions.ets"
                                   }
@@ -12702,12 +12584,12 @@
                                   "decorators": [],
                                   "loc": {
                                     "start": {
-                                      "line": 179,
+                                      "line": 178,
                                       "column": 25,
                                       "program": "cast_expressions.ets"
                                     },
                                     "end": {
-                                      "line": 179,
+                                      "line": 178,
                                       "column": 31,
                                       "program": "cast_expressions.ets"
                                     }
@@ -12723,12 +12605,12 @@
                                       "decorators": [],
                                       "loc": {
                                         "start": {
-                                          "line": 179,
+                                          "line": 178,
                                           "column": 35,
                                           "program": "cast_expressions.ets"
                                         },
                                         "end": {
-                                          "line": 179,
+                                          "line": 178,
                                           "column": 40,
                                           "program": "cast_expressions.ets"
                                         }
@@ -12736,12 +12618,12 @@
                                     },
                                     "loc": {
                                       "start": {
-                                        "line": 179,
+                                        "line": 178,
                                         "column": 35,
                                         "program": "cast_expressions.ets"
                                       },
                                       "end": {
-                                        "line": 179,
+                                        "line": 178,
                                         "column": 41,
                                         "program": "cast_expressions.ets"
                                       }
@@ -12749,12 +12631,12 @@
                                   },
                                   "loc": {
                                     "start": {
-                                      "line": 179,
+                                      "line": 178,
                                       "column": 35,
                                       "program": "cast_expressions.ets"
                                     },
                                     "end": {
-                                      "line": 179,
+                                      "line": 178,
                                       "column": 41,
                                       "program": "cast_expressions.ets"
                                     }
@@ -12762,12 +12644,12 @@
                                 },
                                 "loc": {
                                   "start": {
-                                    "line": 179,
+                                    "line": 178,
                                     "column": 25,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 179,
+                                    "line": 178,
                                     "column": 31,
                                     "program": "cast_expressions.ets"
                                   }
@@ -12775,12 +12657,12 @@
                               },
                               "loc": {
                                 "start": {
-                                  "line": 179,
+                                  "line": 178,
                                   "column": 9,
                                   "program": "cast_expressions.ets"
                                 },
                                 "end": {
-                                  "line": 179,
+                                  "line": 178,
                                   "column": 31,
                                   "program": "cast_expressions.ets"
                                 }
@@ -12790,12 +12672,12 @@
                           "kind": "let",
                           "loc": {
                             "start": {
-                              "line": 179,
+                              "line": 178,
                               "column": 5,
                               "program": "cast_expressions.ets"
                             },
                             "end": {
-                              "line": 179,
+                              "line": 178,
                               "column": 41,
                               "program": "cast_expressions.ets"
                             }
@@ -12812,12 +12694,12 @@
                                 "decorators": [],
                                 "loc": {
                                   "start": {
-                                    "line": 180,
+                                    "line": 179,
                                     "column": 9,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 180,
+                                    "line": 179,
                                     "column": 20,
                                     "program": "cast_expressions.ets"
                                   }
@@ -12831,12 +12713,12 @@
                                   "decorators": [],
                                   "loc": {
                                     "start": {
-                                      "line": 180,
+                                      "line": 179,
                                       "column": 25,
                                       "program": "cast_expressions.ets"
                                     },
                                     "end": {
-                                      "line": 180,
+                                      "line": 179,
                                       "column": 31,
                                       "program": "cast_expressions.ets"
                                     }
@@ -12852,12 +12734,12 @@
                                       "decorators": [],
                                       "loc": {
                                         "start": {
-                                          "line": 180,
+                                          "line": 179,
                                           "column": 35,
                                           "program": "cast_expressions.ets"
                                         },
                                         "end": {
-                                          "line": 180,
+                                          "line": 179,
                                           "column": 40,
                                           "program": "cast_expressions.ets"
                                         }
@@ -12865,12 +12747,12 @@
                                     },
                                     "loc": {
                                       "start": {
-                                        "line": 180,
+                                        "line": 179,
                                         "column": 35,
                                         "program": "cast_expressions.ets"
                                       },
                                       "end": {
-                                        "line": 180,
+                                        "line": 179,
                                         "column": 41,
                                         "program": "cast_expressions.ets"
                                       }
@@ -12878,12 +12760,12 @@
                                   },
                                   "loc": {
                                     "start": {
-                                      "line": 180,
+                                      "line": 179,
                                       "column": 35,
                                       "program": "cast_expressions.ets"
                                     },
                                     "end": {
-                                      "line": 180,
+                                      "line": 179,
                                       "column": 41,
                                       "program": "cast_expressions.ets"
                                     }
@@ -12891,12 +12773,12 @@
                                 },
                                 "loc": {
                                   "start": {
-                                    "line": 180,
+                                    "line": 179,
                                     "column": 25,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 180,
+                                    "line": 179,
                                     "column": 31,
                                     "program": "cast_expressions.ets"
                                   }
@@ -12904,12 +12786,12 @@
                               },
                               "loc": {
                                 "start": {
-                                  "line": 180,
+                                  "line": 179,
                                   "column": 9,
                                   "program": "cast_expressions.ets"
                                 },
                                 "end": {
-                                  "line": 180,
+                                  "line": 179,
                                   "column": 31,
                                   "program": "cast_expressions.ets"
                                 }
@@ -12919,12 +12801,12 @@
                           "kind": "let",
                           "loc": {
                             "start": {
-                              "line": 180,
+                              "line": 179,
                               "column": 5,
                               "program": "cast_expressions.ets"
                             },
                             "end": {
-                              "line": 180,
+                              "line": 179,
                               "column": 41,
                               "program": "cast_expressions.ets"
                             }
@@ -12941,12 +12823,12 @@
                                 "decorators": [],
                                 "loc": {
                                   "start": {
-                                    "line": 181,
+                                    "line": 180,
                                     "column": 9,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 181,
+                                    "line": 180,
                                     "column": 21,
                                     "program": "cast_expressions.ets"
                                   }
@@ -12960,12 +12842,12 @@
                                   "decorators": [],
                                   "loc": {
                                     "start": {
-                                      "line": 181,
+                                      "line": 180,
                                       "column": 25,
                                       "program": "cast_expressions.ets"
                                     },
                                     "end": {
-                                      "line": 181,
+                                      "line": 180,
                                       "column": 31,
                                       "program": "cast_expressions.ets"
                                     }
@@ -12981,12 +12863,12 @@
                                       "decorators": [],
                                       "loc": {
                                         "start": {
-                                          "line": 181,
+                                          "line": 180,
                                           "column": 35,
                                           "program": "cast_expressions.ets"
                                         },
                                         "end": {
-                                          "line": 181,
+                                          "line": 180,
                                           "column": 41,
                                           "program": "cast_expressions.ets"
                                         }
@@ -12994,12 +12876,12 @@
                                     },
                                     "loc": {
                                       "start": {
-                                        "line": 181,
+                                        "line": 180,
                                         "column": 35,
                                         "program": "cast_expressions.ets"
                                       },
                                       "end": {
-                                        "line": 181,
+                                        "line": 180,
                                         "column": 42,
                                         "program": "cast_expressions.ets"
                                       }
@@ -13007,12 +12889,12 @@
                                   },
                                   "loc": {
                                     "start": {
-                                      "line": 181,
+                                      "line": 180,
                                       "column": 35,
                                       "program": "cast_expressions.ets"
                                     },
                                     "end": {
-                                      "line": 181,
+                                      "line": 180,
                                       "column": 42,
                                       "program": "cast_expressions.ets"
                                     }
@@ -13020,12 +12902,12 @@
                                 },
                                 "loc": {
                                   "start": {
-                                    "line": 181,
+                                    "line": 180,
                                     "column": 25,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 181,
+                                    "line": 180,
                                     "column": 31,
                                     "program": "cast_expressions.ets"
                                   }
@@ -13033,12 +12915,12 @@
                               },
                               "loc": {
                                 "start": {
-                                  "line": 181,
+                                  "line": 180,
                                   "column": 9,
                                   "program": "cast_expressions.ets"
                                 },
                                 "end": {
-                                  "line": 181,
+                                  "line": 180,
                                   "column": 31,
                                   "program": "cast_expressions.ets"
                                 }
@@ -13048,12 +12930,12 @@
                           "kind": "let",
                           "loc": {
                             "start": {
-                              "line": 181,
+                              "line": 180,
                               "column": 5,
                               "program": "cast_expressions.ets"
                             },
                             "end": {
-                              "line": 181,
+                              "line": 180,
                               "column": 42,
                               "program": "cast_expressions.ets"
                             }
@@ -13062,12 +12944,12 @@
                       ],
                       "loc": {
                         "start": {
-                          "line": 177,
+                          "line": 176,
                           "column": 3,
                           "program": "cast_expressions.ets"
                         },
                         "end": {
-                          "line": 182,
+                          "line": 181,
                           "column": 4,
                           "program": "cast_expressions.ets"
                         }
@@ -13081,7 +12963,7 @@
                       "program": "cast_expressions.ets"
                     },
                     "end": {
-                      "line": 183,
+                      "line": 182,
                       "column": 2,
                       "program": "cast_expressions.ets"
                     }
@@ -13094,7 +12976,7 @@
                     "program": "cast_expressions.ets"
                   },
                   "end": {
-                    "line": 183,
+                    "line": 182,
                     "column": 2,
                     "program": "cast_expressions.ets"
                   }
@@ -13107,7 +12989,7 @@
                   "program": "cast_expressions.ets"
                 },
                 "end": {
-                  "line": 183,
+                  "line": 182,
                   "column": 2,
                   "program": "cast_expressions.ets"
                 }
@@ -13122,7 +13004,7 @@
                 "program": "cast_expressions.ets"
               },
               "end": {
-                "line": 183,
+                "line": 182,
                 "column": 2,
                 "program": "cast_expressions.ets"
               }
@@ -13136,12 +13018,12 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 185,
+                  "line": 184,
                   "column": 10,
                   "program": "cast_expressions.ets"
                 },
                 "end": {
-                  "line": 185,
+                  "line": 184,
                   "column": 21,
                   "program": "cast_expressions.ets"
                 }
@@ -13162,12 +13044,12 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 185,
+                      "line": 184,
                       "column": 10,
                       "program": "cast_expressions.ets"
                     },
                     "end": {
-                      "line": 185,
+                      "line": 184,
                       "column": 21,
                       "program": "cast_expressions.ets"
                     }
@@ -13181,12 +13063,12 @@
                   "type": "ETSPrimitiveType",
                   "loc": {
                     "start": {
-                      "line": 185,
+                      "line": 184,
                       "column": 25,
                       "program": "cast_expressions.ets"
                     },
                     "end": {
-                      "line": 185,
+                      "line": 184,
                       "column": 29,
                       "program": "cast_expressions.ets"
                     }
@@ -13207,12 +13089,12 @@
                               "type": "ETSPrimitiveType",
                               "loc": {
                                 "start": {
-                                  "line": 186,
+                                  "line": 185,
                                   "column": 16,
                                   "program": "cast_expressions.ets"
                                 },
                                 "end": {
-                                  "line": 186,
+                                  "line": 185,
                                   "column": 22,
                                   "program": "cast_expressions.ets"
                                 }
@@ -13221,12 +13103,12 @@
                             "decorators": [],
                             "loc": {
                               "start": {
-                                "line": 186,
+                                "line": 185,
                                 "column": 7,
                                 "program": "cast_expressions.ets"
                               },
                               "end": {
-                                "line": 186,
+                                "line": 185,
                                 "column": 14,
                                 "program": "cast_expressions.ets"
                               }
@@ -13237,12 +13119,12 @@
                             "value": 42,
                             "loc": {
                               "start": {
-                                "line": 186,
+                                "line": 185,
                                 "column": 25,
                                 "program": "cast_expressions.ets"
                               },
                               "end": {
-                                "line": 186,
+                                "line": 185,
                                 "column": 27,
                                 "program": "cast_expressions.ets"
                               }
@@ -13250,12 +13132,12 @@
                           },
                           "loc": {
                             "start": {
-                              "line": 186,
+                              "line": 185,
                               "column": 7,
                               "program": "cast_expressions.ets"
                             },
                             "end": {
-                              "line": 186,
+                              "line": 185,
                               "column": 27,
                               "program": "cast_expressions.ets"
                             }
@@ -13265,12 +13147,12 @@
                       "kind": "let",
                       "loc": {
                         "start": {
-                          "line": 186,
+                          "line": 185,
                           "column": 3,
                           "program": "cast_expressions.ets"
                         },
                         "end": {
-                          "line": 186,
+                          "line": 185,
                           "column": 28,
                           "program": "cast_expressions.ets"
                         }
@@ -13294,12 +13176,12 @@
                                   "decorators": [],
                                   "loc": {
                                     "start": {
-                                      "line": 187,
+                                      "line": 186,
                                       "column": 16,
                                       "program": "cast_expressions.ets"
                                     },
                                     "end": {
-                                      "line": 187,
+                                      "line": 186,
                                       "column": 22,
                                       "program": "cast_expressions.ets"
                                     }
@@ -13307,12 +13189,12 @@
                                 },
                                 "loc": {
                                   "start": {
-                                    "line": 187,
+                                    "line": 186,
                                     "column": 16,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 187,
+                                    "line": 186,
                                     "column": 24,
                                     "program": "cast_expressions.ets"
                                   }
@@ -13320,12 +13202,12 @@
                               },
                               "loc": {
                                 "start": {
-                                  "line": 187,
+                                  "line": 186,
                                   "column": 16,
                                   "program": "cast_expressions.ets"
                                 },
                                 "end": {
-                                  "line": 187,
+                                  "line": 186,
                                   "column": 24,
                                   "program": "cast_expressions.ets"
                                 }
@@ -13334,12 +13216,12 @@
                             "decorators": [],
                             "loc": {
                               "start": {
-                                "line": 187,
+                                "line": 186,
                                 "column": 7,
                                 "program": "cast_expressions.ets"
                               },
                               "end": {
-                                "line": 187,
+                                "line": 186,
                                 "column": 14,
                                 "program": "cast_expressions.ets"
                               }
@@ -13357,12 +13239,12 @@
                                   "decorators": [],
                                   "loc": {
                                     "start": {
-                                      "line": 187,
+                                      "line": 186,
                                       "column": 29,
                                       "program": "cast_expressions.ets"
                                     },
                                     "end": {
-                                      "line": 187,
+                                      "line": 186,
                                       "column": 35,
                                       "program": "cast_expressions.ets"
                                     }
@@ -13370,12 +13252,12 @@
                                 },
                                 "loc": {
                                   "start": {
-                                    "line": 187,
+                                    "line": 186,
                                     "column": 29,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 187,
+                                    "line": 186,
                                     "column": 36,
                                     "program": "cast_expressions.ets"
                                   }
@@ -13383,12 +13265,12 @@
                               },
                               "loc": {
                                 "start": {
-                                  "line": 187,
+                                  "line": 186,
                                   "column": 29,
                                   "program": "cast_expressions.ets"
                                 },
                                 "end": {
-                                  "line": 187,
+                                  "line": 186,
                                   "column": 36,
                                   "program": "cast_expressions.ets"
                                 }
@@ -13402,12 +13284,12 @@
                                   "value": 42,
                                   "loc": {
                                     "start": {
-                                      "line": 187,
+                                      "line": 186,
                                       "column": 36,
                                       "program": "cast_expressions.ets"
                                     },
                                     "end": {
-                                      "line": 187,
+                                      "line": 186,
                                       "column": 38,
                                       "program": "cast_expressions.ets"
                                     }
@@ -13417,12 +13299,12 @@
                                   "type": "ETSPrimitiveType",
                                   "loc": {
                                     "start": {
-                                      "line": 187,
+                                      "line": 186,
                                       "column": 42,
                                       "program": "cast_expressions.ets"
                                     },
                                     "end": {
-                                      "line": 187,
+                                      "line": 186,
                                       "column": 48,
                                       "program": "cast_expressions.ets"
                                     }
@@ -13430,12 +13312,12 @@
                                 },
                                 "loc": {
                                   "start": {
-                                    "line": 187,
+                                    "line": 186,
                                     "column": 36,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 187,
+                                    "line": 186,
                                     "column": 38,
                                     "program": "cast_expressions.ets"
                                   }
@@ -13444,12 +13326,12 @@
                             ],
                             "loc": {
                               "start": {
-                                "line": 187,
+                                "line": 186,
                                 "column": 25,
                                 "program": "cast_expressions.ets"
                               },
                               "end": {
-                                "line": 187,
+                                "line": 186,
                                 "column": 50,
                                 "program": "cast_expressions.ets"
                               }
@@ -13457,12 +13339,12 @@
                           },
                           "loc": {
                             "start": {
-                              "line": 187,
+                              "line": 186,
                               "column": 7,
                               "program": "cast_expressions.ets"
                             },
                             "end": {
-                              "line": 187,
+                              "line": 186,
                               "column": 50,
                               "program": "cast_expressions.ets"
                             }
@@ -13472,12 +13354,12 @@
                       "kind": "let",
                       "loc": {
                         "start": {
-                          "line": 187,
+                          "line": 186,
                           "column": 3,
                           "program": "cast_expressions.ets"
                         },
                         "end": {
-                          "line": 187,
+                          "line": 186,
                           "column": 50,
                           "program": "cast_expressions.ets"
                         }
@@ -13497,12 +13379,12 @@
                                 "decorators": [],
                                 "loc": {
                                   "start": {
-                                    "line": 191,
+                                    "line": 190,
                                     "column": 9,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 191,
+                                    "line": 190,
                                     "column": 20,
                                     "program": "cast_expressions.ets"
                                   }
@@ -13518,12 +13400,12 @@
                                     "decorators": [],
                                     "loc": {
                                       "start": {
-                                        "line": 191,
+                                        "line": 190,
                                         "column": 25,
                                         "program": "cast_expressions.ets"
                                       },
                                       "end": {
-                                        "line": 191,
+                                        "line": 190,
                                         "column": 32,
                                         "program": "cast_expressions.ets"
                                       }
@@ -13535,12 +13417,12 @@
                                     "decorators": [],
                                     "loc": {
                                       "start": {
-                                        "line": 191,
+                                        "line": 190,
                                         "column": 33,
                                         "program": "cast_expressions.ets"
                                       },
                                       "end": {
-                                        "line": 191,
+                                        "line": 190,
                                         "column": 39,
                                         "program": "cast_expressions.ets"
                                       }
@@ -13550,12 +13432,12 @@
                                   "optional": false,
                                   "loc": {
                                     "start": {
-                                      "line": 191,
+                                      "line": 190,
                                       "column": 25,
                                       "program": "cast_expressions.ets"
                                     },
                                     "end": {
-                                      "line": 191,
+                                      "line": 190,
                                       "column": 39,
                                       "program": "cast_expressions.ets"
                                     }
@@ -13565,12 +13447,12 @@
                                 "optional": false,
                                 "loc": {
                                   "start": {
-                                    "line": 191,
+                                    "line": 190,
                                     "column": 25,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 191,
+                                    "line": 190,
                                     "column": 41,
                                     "program": "cast_expressions.ets"
                                   }
@@ -13578,12 +13460,12 @@
                               },
                               "loc": {
                                 "start": {
-                                  "line": 191,
+                                  "line": 190,
                                   "column": 9,
                                   "program": "cast_expressions.ets"
                                 },
                                 "end": {
-                                  "line": 191,
+                                  "line": 190,
                                   "column": 41,
                                   "program": "cast_expressions.ets"
                                 }
@@ -13593,12 +13475,12 @@
                           "kind": "let",
                           "loc": {
                             "start": {
-                              "line": 191,
+                              "line": 190,
                               "column": 5,
                               "program": "cast_expressions.ets"
                             },
                             "end": {
-                              "line": 191,
+                              "line": 190,
                               "column": 42,
                               "program": "cast_expressions.ets"
                             }
@@ -13615,12 +13497,12 @@
                                 "decorators": [],
                                 "loc": {
                                   "start": {
-                                    "line": 192,
+                                    "line": 191,
                                     "column": 9,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 192,
+                                    "line": 191,
                                     "column": 21,
                                     "program": "cast_expressions.ets"
                                   }
@@ -13636,12 +13518,12 @@
                                     "decorators": [],
                                     "loc": {
                                       "start": {
-                                        "line": 192,
+                                        "line": 191,
                                         "column": 25,
                                         "program": "cast_expressions.ets"
                                       },
                                       "end": {
-                                        "line": 192,
+                                        "line": 191,
                                         "column": 32,
                                         "program": "cast_expressions.ets"
                                       }
@@ -13653,12 +13535,12 @@
                                     "decorators": [],
                                     "loc": {
                                       "start": {
-                                        "line": 192,
+                                        "line": 191,
                                         "column": 33,
                                         "program": "cast_expressions.ets"
                                       },
                                       "end": {
-                                        "line": 192,
+                                        "line": 191,
                                         "column": 40,
                                         "program": "cast_expressions.ets"
                                       }
@@ -13668,12 +13550,12 @@
                                   "optional": false,
                                   "loc": {
                                     "start": {
-                                      "line": 192,
+                                      "line": 191,
                                       "column": 25,
                                       "program": "cast_expressions.ets"
                                     },
                                     "end": {
-                                      "line": 192,
+                                      "line": 191,
                                       "column": 40,
                                       "program": "cast_expressions.ets"
                                     }
@@ -13683,12 +13565,12 @@
                                 "optional": false,
                                 "loc": {
                                   "start": {
-                                    "line": 192,
+                                    "line": 191,
                                     "column": 25,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 192,
+                                    "line": 191,
                                     "column": 42,
                                     "program": "cast_expressions.ets"
                                   }
@@ -13696,12 +13578,12 @@
                               },
                               "loc": {
                                 "start": {
-                                  "line": 192,
+                                  "line": 191,
                                   "column": 9,
                                   "program": "cast_expressions.ets"
                                 },
                                 "end": {
-                                  "line": 192,
+                                  "line": 191,
                                   "column": 42,
                                   "program": "cast_expressions.ets"
                                 }
@@ -13711,131 +13593,13 @@
                           "kind": "let",
                           "loc": {
                             "start": {
-                              "line": 192,
+                              "line": 191,
                               "column": 5,
                               "program": "cast_expressions.ets"
                             },
                             "end": {
-                              "line": 192,
+                              "line": 191,
                               "column": 43,
-                              "program": "cast_expressions.ets"
-                            }
-                          }
-                        },
-                        {
-                          "type": "VariableDeclaration",
-                          "declarations": [
-                            {
-                              "type": "VariableDeclarator",
-                              "id": {
-                                "type": "Identifier",
-                                "name": "double_char",
-                                "decorators": [],
-                                "loc": {
-                                  "start": {
-                                    "line": 193,
-                                    "column": 9,
-                                    "program": "cast_expressions.ets"
-                                  },
-                                  "end": {
-                                    "line": 193,
-                                    "column": 20,
-                                    "program": "cast_expressions.ets"
-                                  }
-                                }
-                              },
-                              "init": {
-                                "type": "CallExpression",
-                                "callee": {
-                                  "type": "MemberExpression",
-                                  "object": {
-                                    "type": "Identifier",
-                                    "name": "double_",
-                                    "decorators": [],
-                                    "loc": {
-                                      "start": {
-                                        "line": 193,
-                                        "column": 25,
-                                        "program": "cast_expressions.ets"
-                                      },
-                                      "end": {
-                                        "line": 193,
-                                        "column": 32,
-                                        "program": "cast_expressions.ets"
-                                      }
-                                    }
-                                  },
-                                  "property": {
-                                    "type": "Identifier",
-                                    "name": "toChar",
-                                    "decorators": [],
-                                    "loc": {
-                                      "start": {
-                                        "line": 193,
-                                        "column": 33,
-                                        "program": "cast_expressions.ets"
-                                      },
-                                      "end": {
-                                        "line": 193,
-                                        "column": 39,
-                                        "program": "cast_expressions.ets"
-                                      }
-                                    }
-                                  },
-                                  "computed": false,
-                                  "optional": false,
-                                  "loc": {
-                                    "start": {
-                                      "line": 193,
-                                      "column": 25,
-                                      "program": "cast_expressions.ets"
-                                    },
-                                    "end": {
-                                      "line": 193,
-                                      "column": 39,
-                                      "program": "cast_expressions.ets"
-                                    }
-                                  }
-                                },
-                                "arguments": [],
-                                "optional": false,
-                                "loc": {
-                                  "start": {
-                                    "line": 193,
-                                    "column": 25,
-                                    "program": "cast_expressions.ets"
-                                  },
-                                  "end": {
-                                    "line": 193,
-                                    "column": 41,
-                                    "program": "cast_expressions.ets"
-                                  }
-                                }
-                              },
-                              "loc": {
-                                "start": {
-                                  "line": 193,
-                                  "column": 9,
-                                  "program": "cast_expressions.ets"
-                                },
-                                "end": {
-                                  "line": 193,
-                                  "column": 41,
-                                  "program": "cast_expressions.ets"
-                                }
-                              }
-                            }
-                          ],
-                          "kind": "let",
-                          "loc": {
-                            "start": {
-                              "line": 193,
-                              "column": 5,
-                              "program": "cast_expressions.ets"
-                            },
-                            "end": {
-                              "line": 193,
-                              "column": 42,
                               "program": "cast_expressions.ets"
                             }
                           }
@@ -13851,12 +13615,12 @@
                                 "decorators": [],
                                 "loc": {
                                   "start": {
-                                    "line": 194,
+                                    "line": 192,
                                     "column": 9,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 194,
+                                    "line": 192,
                                     "column": 19,
                                     "program": "cast_expressions.ets"
                                   }
@@ -13872,12 +13636,12 @@
                                     "decorators": [],
                                     "loc": {
                                       "start": {
-                                        "line": 194,
+                                        "line": 192,
                                         "column": 25,
                                         "program": "cast_expressions.ets"
                                       },
                                       "end": {
-                                        "line": 194,
+                                        "line": 192,
                                         "column": 32,
                                         "program": "cast_expressions.ets"
                                       }
@@ -13889,12 +13653,12 @@
                                     "decorators": [],
                                     "loc": {
                                       "start": {
-                                        "line": 194,
+                                        "line": 192,
                                         "column": 33,
                                         "program": "cast_expressions.ets"
                                       },
                                       "end": {
-                                        "line": 194,
+                                        "line": 192,
                                         "column": 38,
                                         "program": "cast_expressions.ets"
                                       }
@@ -13904,12 +13668,12 @@
                                   "optional": false,
                                   "loc": {
                                     "start": {
-                                      "line": 194,
+                                      "line": 192,
                                       "column": 25,
                                       "program": "cast_expressions.ets"
                                     },
                                     "end": {
-                                      "line": 194,
+                                      "line": 192,
                                       "column": 38,
                                       "program": "cast_expressions.ets"
                                     }
@@ -13919,12 +13683,12 @@
                                 "optional": false,
                                 "loc": {
                                   "start": {
-                                    "line": 194,
+                                    "line": 192,
                                     "column": 25,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 194,
+                                    "line": 192,
                                     "column": 40,
                                     "program": "cast_expressions.ets"
                                   }
@@ -13932,12 +13696,12 @@
                               },
                               "loc": {
                                 "start": {
-                                  "line": 194,
+                                  "line": 192,
                                   "column": 9,
                                   "program": "cast_expressions.ets"
                                 },
                                 "end": {
-                                  "line": 194,
+                                  "line": 192,
                                   "column": 40,
                                   "program": "cast_expressions.ets"
                                 }
@@ -13947,12 +13711,12 @@
                           "kind": "let",
                           "loc": {
                             "start": {
-                              "line": 194,
+                              "line": 192,
                               "column": 5,
                               "program": "cast_expressions.ets"
                             },
                             "end": {
-                              "line": 194,
+                              "line": 192,
                               "column": 41,
                               "program": "cast_expressions.ets"
                             }
@@ -13969,12 +13733,12 @@
                                 "decorators": [],
                                 "loc": {
                                   "start": {
-                                    "line": 195,
+                                    "line": 193,
                                     "column": 9,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 195,
+                                    "line": 193,
                                     "column": 20,
                                     "program": "cast_expressions.ets"
                                   }
@@ -13990,12 +13754,12 @@
                                     "decorators": [],
                                     "loc": {
                                       "start": {
-                                        "line": 195,
+                                        "line": 193,
                                         "column": 25,
                                         "program": "cast_expressions.ets"
                                       },
                                       "end": {
-                                        "line": 195,
+                                        "line": 193,
                                         "column": 32,
                                         "program": "cast_expressions.ets"
                                       }
@@ -14007,12 +13771,12 @@
                                     "decorators": [],
                                     "loc": {
                                       "start": {
-                                        "line": 195,
+                                        "line": 193,
                                         "column": 33,
                                         "program": "cast_expressions.ets"
                                       },
                                       "end": {
-                                        "line": 195,
+                                        "line": 193,
                                         "column": 39,
                                         "program": "cast_expressions.ets"
                                       }
@@ -14022,12 +13786,12 @@
                                   "optional": false,
                                   "loc": {
                                     "start": {
-                                      "line": 195,
+                                      "line": 193,
                                       "column": 25,
                                       "program": "cast_expressions.ets"
                                     },
                                     "end": {
-                                      "line": 195,
+                                      "line": 193,
                                       "column": 39,
                                       "program": "cast_expressions.ets"
                                     }
@@ -14037,12 +13801,12 @@
                                 "optional": false,
                                 "loc": {
                                   "start": {
-                                    "line": 195,
+                                    "line": 193,
                                     "column": 25,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 195,
+                                    "line": 193,
                                     "column": 41,
                                     "program": "cast_expressions.ets"
                                   }
@@ -14050,12 +13814,12 @@
                               },
                               "loc": {
                                 "start": {
-                                  "line": 195,
+                                  "line": 193,
                                   "column": 9,
                                   "program": "cast_expressions.ets"
                                 },
                                 "end": {
-                                  "line": 195,
+                                  "line": 193,
                                   "column": 41,
                                   "program": "cast_expressions.ets"
                                 }
@@ -14065,12 +13829,12 @@
                           "kind": "let",
                           "loc": {
                             "start": {
-                              "line": 195,
+                              "line": 193,
                               "column": 5,
                               "program": "cast_expressions.ets"
                             },
                             "end": {
-                              "line": 195,
+                              "line": 193,
                               "column": 42,
                               "program": "cast_expressions.ets"
                             }
@@ -14087,12 +13851,12 @@
                                 "decorators": [],
                                 "loc": {
                                   "start": {
-                                    "line": 196,
+                                    "line": 194,
                                     "column": 9,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 196,
+                                    "line": 194,
                                     "column": 21,
                                     "program": "cast_expressions.ets"
                                   }
@@ -14108,12 +13872,12 @@
                                     "decorators": [],
                                     "loc": {
                                       "start": {
-                                        "line": 196,
+                                        "line": 194,
                                         "column": 25,
                                         "program": "cast_expressions.ets"
                                       },
                                       "end": {
-                                        "line": 196,
+                                        "line": 194,
                                         "column": 32,
                                         "program": "cast_expressions.ets"
                                       }
@@ -14125,12 +13889,12 @@
                                     "decorators": [],
                                     "loc": {
                                       "start": {
-                                        "line": 196,
+                                        "line": 194,
                                         "column": 33,
                                         "program": "cast_expressions.ets"
                                       },
                                       "end": {
-                                        "line": 196,
+                                        "line": 194,
                                         "column": 40,
                                         "program": "cast_expressions.ets"
                                       }
@@ -14140,12 +13904,12 @@
                                   "optional": false,
                                   "loc": {
                                     "start": {
-                                      "line": 196,
+                                      "line": 194,
                                       "column": 25,
                                       "program": "cast_expressions.ets"
                                     },
                                     "end": {
-                                      "line": 196,
+                                      "line": 194,
                                       "column": 40,
                                       "program": "cast_expressions.ets"
                                     }
@@ -14155,12 +13919,12 @@
                                 "optional": false,
                                 "loc": {
                                   "start": {
-                                    "line": 196,
+                                    "line": 194,
                                     "column": 25,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 196,
+                                    "line": 194,
                                     "column": 42,
                                     "program": "cast_expressions.ets"
                                   }
@@ -14168,12 +13932,12 @@
                               },
                               "loc": {
                                 "start": {
-                                  "line": 196,
+                                  "line": 194,
                                   "column": 9,
                                   "program": "cast_expressions.ets"
                                 },
                                 "end": {
-                                  "line": 196,
+                                  "line": 194,
                                   "column": 42,
                                   "program": "cast_expressions.ets"
                                 }
@@ -14183,12 +13947,12 @@
                           "kind": "let",
                           "loc": {
                             "start": {
-                              "line": 196,
+                              "line": 194,
                               "column": 5,
                               "program": "cast_expressions.ets"
                             },
                             "end": {
-                              "line": 196,
+                              "line": 194,
                               "column": 43,
                               "program": "cast_expressions.ets"
                             }
@@ -14205,12 +13969,12 @@
                                 "decorators": [],
                                 "loc": {
                                   "start": {
-                                    "line": 197,
+                                    "line": 195,
                                     "column": 9,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 197,
+                                    "line": 195,
                                     "column": 22,
                                     "program": "cast_expressions.ets"
                                   }
@@ -14226,12 +13990,12 @@
                                     "decorators": [],
                                     "loc": {
                                       "start": {
-                                        "line": 197,
+                                        "line": 195,
                                         "column": 25,
                                         "program": "cast_expressions.ets"
                                       },
                                       "end": {
-                                        "line": 197,
+                                        "line": 195,
                                         "column": 32,
                                         "program": "cast_expressions.ets"
                                       }
@@ -14243,12 +14007,12 @@
                                     "decorators": [],
                                     "loc": {
                                       "start": {
-                                        "line": 197,
+                                        "line": 195,
                                         "column": 33,
                                         "program": "cast_expressions.ets"
                                       },
                                       "end": {
-                                        "line": 197,
+                                        "line": 195,
                                         "column": 41,
                                         "program": "cast_expressions.ets"
                                       }
@@ -14258,12 +14022,12 @@
                                   "optional": false,
                                   "loc": {
                                     "start": {
-                                      "line": 197,
+                                      "line": 195,
                                       "column": 25,
                                       "program": "cast_expressions.ets"
                                     },
                                     "end": {
-                                      "line": 197,
+                                      "line": 195,
                                       "column": 41,
                                       "program": "cast_expressions.ets"
                                     }
@@ -14273,12 +14037,12 @@
                                 "optional": false,
                                 "loc": {
                                   "start": {
-                                    "line": 197,
+                                    "line": 195,
                                     "column": 25,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 197,
+                                    "line": 195,
                                     "column": 43,
                                     "program": "cast_expressions.ets"
                                   }
@@ -14286,12 +14050,12 @@
                               },
                               "loc": {
                                 "start": {
-                                  "line": 197,
+                                  "line": 195,
                                   "column": 9,
                                   "program": "cast_expressions.ets"
                                 },
                                 "end": {
-                                  "line": 197,
+                                  "line": 195,
                                   "column": 43,
                                   "program": "cast_expressions.ets"
                                 }
@@ -14301,12 +14065,12 @@
                           "kind": "let",
                           "loc": {
                             "start": {
-                              "line": 197,
+                              "line": 195,
                               "column": 5,
                               "program": "cast_expressions.ets"
                             },
                             "end": {
-                              "line": 197,
+                              "line": 195,
                               "column": 44,
                               "program": "cast_expressions.ets"
                             }
@@ -14323,12 +14087,12 @@
                                 "decorators": [],
                                 "loc": {
                                   "start": {
-                                    "line": 199,
+                                    "line": 197,
                                     "column": 9,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 199,
+                                    "line": 197,
                                     "column": 22,
                                     "program": "cast_expressions.ets"
                                   }
@@ -14344,12 +14108,12 @@
                                     "decorators": [],
                                     "loc": {
                                       "start": {
-                                        "line": 199,
+                                        "line": 197,
                                         "column": 25,
                                         "program": "cast_expressions.ets"
                                       },
                                       "end": {
-                                        "line": 199,
+                                        "line": 197,
                                         "column": 32,
                                         "program": "cast_expressions.ets"
                                       }
@@ -14361,12 +14125,12 @@
                                     "decorators": [],
                                     "loc": {
                                       "start": {
-                                        "line": 199,
+                                        "line": 197,
                                         "column": 33,
                                         "program": "cast_expressions.ets"
                                       },
                                       "end": {
-                                        "line": 199,
+                                        "line": 197,
                                         "column": 41,
                                         "program": "cast_expressions.ets"
                                       }
@@ -14376,12 +14140,12 @@
                                   "optional": false,
                                   "loc": {
                                     "start": {
-                                      "line": 199,
+                                      "line": 197,
                                       "column": 25,
                                       "program": "cast_expressions.ets"
                                     },
                                     "end": {
-                                      "line": 199,
+                                      "line": 197,
                                       "column": 41,
                                       "program": "cast_expressions.ets"
                                     }
@@ -14391,12 +14155,12 @@
                                 "optional": false,
                                 "loc": {
                                   "start": {
-                                    "line": 199,
+                                    "line": 197,
                                     "column": 25,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 199,
+                                    "line": 197,
                                     "column": 43,
                                     "program": "cast_expressions.ets"
                                   }
@@ -14404,12 +14168,12 @@
                               },
                               "loc": {
                                 "start": {
-                                  "line": 199,
+                                  "line": 197,
                                   "column": 9,
                                   "program": "cast_expressions.ets"
                                 },
                                 "end": {
-                                  "line": 199,
+                                  "line": 197,
                                   "column": 43,
                                   "program": "cast_expressions.ets"
                                 }
@@ -14419,12 +14183,12 @@
                           "kind": "let",
                           "loc": {
                             "start": {
-                              "line": 199,
+                              "line": 197,
                               "column": 5,
                               "program": "cast_expressions.ets"
                             },
                             "end": {
-                              "line": 199,
+                              "line": 197,
                               "column": 44,
                               "program": "cast_expressions.ets"
                             }
@@ -14433,12 +14197,12 @@
                       ],
                       "loc": {
                         "start": {
-                          "line": 189,
+                          "line": 188,
                           "column": 3,
                           "program": "cast_expressions.ets"
                         },
                         "end": {
-                          "line": 200,
+                          "line": 198,
                           "column": 4,
                           "program": "cast_expressions.ets"
                         }
@@ -14458,12 +14222,12 @@
                                 "decorators": [],
                                 "loc": {
                                   "start": {
-                                    "line": 204,
+                                    "line": 202,
                                     "column": 9,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 204,
+                                    "line": 202,
                                     "column": 22,
                                     "program": "cast_expressions.ets"
                                   }
@@ -14477,12 +14241,12 @@
                                   "decorators": [],
                                   "loc": {
                                     "start": {
-                                      "line": 204,
+                                      "line": 202,
                                       "column": 27,
                                       "program": "cast_expressions.ets"
                                     },
                                     "end": {
-                                      "line": 204,
+                                      "line": 202,
                                       "column": 34,
                                       "program": "cast_expressions.ets"
                                     }
@@ -14498,12 +14262,12 @@
                                       "decorators": [],
                                       "loc": {
                                         "start": {
-                                          "line": 204,
+                                          "line": 202,
                                           "column": 38,
                                           "program": "cast_expressions.ets"
                                         },
                                         "end": {
-                                          "line": 204,
+                                          "line": 202,
                                           "column": 44,
                                           "program": "cast_expressions.ets"
                                         }
@@ -14511,12 +14275,12 @@
                                     },
                                     "loc": {
                                       "start": {
-                                        "line": 204,
+                                        "line": 202,
                                         "column": 38,
                                         "program": "cast_expressions.ets"
                                       },
                                       "end": {
-                                        "line": 204,
+                                        "line": 202,
                                         "column": 45,
                                         "program": "cast_expressions.ets"
                                       }
@@ -14524,12 +14288,12 @@
                                   },
                                   "loc": {
                                     "start": {
-                                      "line": 204,
+                                      "line": 202,
                                       "column": 38,
                                       "program": "cast_expressions.ets"
                                     },
                                     "end": {
-                                      "line": 204,
+                                      "line": 202,
                                       "column": 45,
                                       "program": "cast_expressions.ets"
                                     }
@@ -14537,12 +14301,12 @@
                                 },
                                 "loc": {
                                   "start": {
-                                    "line": 204,
+                                    "line": 202,
                                     "column": 27,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 204,
+                                    "line": 202,
                                     "column": 34,
                                     "program": "cast_expressions.ets"
                                   }
@@ -14550,12 +14314,12 @@
                               },
                               "loc": {
                                 "start": {
-                                  "line": 204,
+                                  "line": 202,
                                   "column": 9,
                                   "program": "cast_expressions.ets"
                                 },
                                 "end": {
-                                  "line": 204,
+                                  "line": 202,
                                   "column": 34,
                                   "program": "cast_expressions.ets"
                                 }
@@ -14565,12 +14329,12 @@
                           "kind": "let",
                           "loc": {
                             "start": {
-                              "line": 204,
+                              "line": 202,
                               "column": 5,
                               "program": "cast_expressions.ets"
                             },
                             "end": {
-                              "line": 204,
+                              "line": 202,
                               "column": 45,
                               "program": "cast_expressions.ets"
                             }
@@ -14587,12 +14351,12 @@
                                 "decorators": [],
                                 "loc": {
                                   "start": {
-                                    "line": 205,
+                                    "line": 203,
                                     "column": 9,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 205,
+                                    "line": 203,
                                     "column": 22,
                                     "program": "cast_expressions.ets"
                                   }
@@ -14606,12 +14370,12 @@
                                   "decorators": [],
                                   "loc": {
                                     "start": {
-                                      "line": 205,
+                                      "line": 203,
                                       "column": 27,
                                       "program": "cast_expressions.ets"
                                     },
                                     "end": {
-                                      "line": 205,
+                                      "line": 203,
                                       "column": 34,
                                       "program": "cast_expressions.ets"
                                     }
@@ -14627,12 +14391,12 @@
                                       "decorators": [],
                                       "loc": {
                                         "start": {
-                                          "line": 205,
+                                          "line": 203,
                                           "column": 38,
                                           "program": "cast_expressions.ets"
                                         },
                                         "end": {
-                                          "line": 205,
+                                          "line": 203,
                                           "column": 44,
                                           "program": "cast_expressions.ets"
                                         }
@@ -14640,12 +14404,12 @@
                                     },
                                     "loc": {
                                       "start": {
-                                        "line": 205,
+                                        "line": 203,
                                         "column": 38,
                                         "program": "cast_expressions.ets"
                                       },
                                       "end": {
-                                        "line": 205,
+                                        "line": 203,
                                         "column": 45,
                                         "program": "cast_expressions.ets"
                                       }
@@ -14653,12 +14417,12 @@
                                   },
                                   "loc": {
                                     "start": {
-                                      "line": 205,
+                                      "line": 203,
                                       "column": 38,
                                       "program": "cast_expressions.ets"
                                     },
                                     "end": {
-                                      "line": 205,
+                                      "line": 203,
                                       "column": 45,
                                       "program": "cast_expressions.ets"
                                     }
@@ -14666,12 +14430,12 @@
                                 },
                                 "loc": {
                                   "start": {
-                                    "line": 205,
+                                    "line": 203,
                                     "column": 27,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 205,
+                                    "line": 203,
                                     "column": 34,
                                     "program": "cast_expressions.ets"
                                   }
@@ -14679,12 +14443,12 @@
                               },
                               "loc": {
                                 "start": {
-                                  "line": 205,
+                                  "line": 203,
                                   "column": 9,
                                   "program": "cast_expressions.ets"
                                 },
                                 "end": {
-                                  "line": 205,
+                                  "line": 203,
                                   "column": 34,
                                   "program": "cast_expressions.ets"
                                 }
@@ -14694,12 +14458,12 @@
                           "kind": "let",
                           "loc": {
                             "start": {
-                              "line": 205,
+                              "line": 203,
                               "column": 5,
                               "program": "cast_expressions.ets"
                             },
                             "end": {
-                              "line": 205,
+                              "line": 203,
                               "column": 45,
                               "program": "cast_expressions.ets"
                             }
@@ -14716,12 +14480,12 @@
                                 "decorators": [],
                                 "loc": {
                                   "start": {
-                                    "line": 206,
+                                    "line": 204,
                                     "column": 9,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 206,
+                                    "line": 204,
                                     "column": 22,
                                     "program": "cast_expressions.ets"
                                   }
@@ -14735,12 +14499,12 @@
                                   "decorators": [],
                                   "loc": {
                                     "start": {
-                                      "line": 206,
+                                      "line": 204,
                                       "column": 27,
                                       "program": "cast_expressions.ets"
                                     },
                                     "end": {
-                                      "line": 206,
+                                      "line": 204,
                                       "column": 34,
                                       "program": "cast_expressions.ets"
                                     }
@@ -14756,12 +14520,12 @@
                                       "decorators": [],
                                       "loc": {
                                         "start": {
-                                          "line": 206,
+                                          "line": 204,
                                           "column": 38,
                                           "program": "cast_expressions.ets"
                                         },
                                         "end": {
-                                          "line": 206,
+                                          "line": 204,
                                           "column": 44,
                                           "program": "cast_expressions.ets"
                                         }
@@ -14769,12 +14533,12 @@
                                     },
                                     "loc": {
                                       "start": {
-                                        "line": 206,
+                                        "line": 204,
                                         "column": 38,
                                         "program": "cast_expressions.ets"
                                       },
                                       "end": {
-                                        "line": 206,
+                                        "line": 204,
                                         "column": 45,
                                         "program": "cast_expressions.ets"
                                       }
@@ -14782,12 +14546,12 @@
                                   },
                                   "loc": {
                                     "start": {
-                                      "line": 206,
+                                      "line": 204,
                                       "column": 38,
                                       "program": "cast_expressions.ets"
                                     },
                                     "end": {
-                                      "line": 206,
+                                      "line": 204,
                                       "column": 45,
                                       "program": "cast_expressions.ets"
                                     }
@@ -14795,12 +14559,12 @@
                                 },
                                 "loc": {
                                   "start": {
-                                    "line": 206,
+                                    "line": 204,
                                     "column": 27,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 206,
+                                    "line": 204,
                                     "column": 34,
                                     "program": "cast_expressions.ets"
                                   }
@@ -14808,12 +14572,12 @@
                               },
                               "loc": {
                                 "start": {
-                                  "line": 206,
+                                  "line": 204,
                                   "column": 9,
                                   "program": "cast_expressions.ets"
                                 },
                                 "end": {
-                                  "line": 206,
+                                  "line": 204,
                                   "column": 34,
                                   "program": "cast_expressions.ets"
                                 }
@@ -14823,12 +14587,12 @@
                           "kind": "let",
                           "loc": {
                             "start": {
-                              "line": 206,
+                              "line": 204,
                               "column": 5,
                               "program": "cast_expressions.ets"
                             },
                             "end": {
-                              "line": 206,
+                              "line": 204,
                               "column": 45,
                               "program": "cast_expressions.ets"
                             }
@@ -14837,12 +14601,12 @@
                       ],
                       "loc": {
                         "start": {
-                          "line": 202,
+                          "line": 200,
                           "column": 3,
                           "program": "cast_expressions.ets"
                         },
                         "end": {
-                          "line": 207,
+                          "line": 205,
                           "column": 4,
                           "program": "cast_expressions.ets"
                         }
@@ -14851,12 +14615,12 @@
                   ],
                   "loc": {
                     "start": {
-                      "line": 185,
+                      "line": 184,
                       "column": 30,
                       "program": "cast_expressions.ets"
                     },
                     "end": {
-                      "line": 208,
+                      "line": 206,
                       "column": 2,
                       "program": "cast_expressions.ets"
                     }
@@ -14864,12 +14628,12 @@
                 },
                 "loc": {
                   "start": {
-                    "line": 185,
+                    "line": 184,
                     "column": 10,
                     "program": "cast_expressions.ets"
                   },
                   "end": {
-                    "line": 208,
+                    "line": 206,
                     "column": 2,
                     "program": "cast_expressions.ets"
                   }
@@ -14877,12 +14641,12 @@
               },
               "loc": {
                 "start": {
-                  "line": 185,
+                  "line": 184,
                   "column": 10,
                   "program": "cast_expressions.ets"
                 },
                 "end": {
-                  "line": 208,
+                  "line": 206,
                   "column": 2,
                   "program": "cast_expressions.ets"
                 }
@@ -14892,12 +14656,12 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 185,
+                "line": 184,
                 "column": 1,
                 "program": "cast_expressions.ets"
               },
               "end": {
-                "line": 208,
+                "line": 206,
                 "column": 2,
                 "program": "cast_expressions.ets"
               }
@@ -14911,12 +14675,12 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 210,
+                  "line": 208,
                   "column": 10,
                   "program": "cast_expressions.ets"
                 },
                 "end": {
-                  "line": 210,
+                  "line": 208,
                   "column": 22,
                   "program": "cast_expressions.ets"
                 }
@@ -14937,12 +14701,12 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 210,
+                      "line": 208,
                       "column": 10,
                       "program": "cast_expressions.ets"
                     },
                     "end": {
-                      "line": 210,
+                      "line": 208,
                       "column": 22,
                       "program": "cast_expressions.ets"
                     }
@@ -14956,12 +14720,12 @@
                   "type": "ETSPrimitiveType",
                   "loc": {
                     "start": {
-                      "line": 210,
+                      "line": 208,
                       "column": 26,
                       "program": "cast_expressions.ets"
                     },
                     "end": {
-                      "line": 210,
+                      "line": 208,
                       "column": 30,
                       "program": "cast_expressions.ets"
                     }
@@ -14982,12 +14746,12 @@
                               "type": "ETSPrimitiveType",
                               "loc": {
                                 "start": {
-                                  "line": 211,
+                                  "line": 209,
                                   "column": 17,
                                   "program": "cast_expressions.ets"
                                 },
                                 "end": {
-                                  "line": 211,
+                                  "line": 209,
                                   "column": 24,
                                   "program": "cast_expressions.ets"
                                 }
@@ -14996,12 +14760,12 @@
                             "decorators": [],
                             "loc": {
                               "start": {
-                                "line": 211,
+                                "line": 209,
                                 "column": 7,
                                 "program": "cast_expressions.ets"
                               },
                               "end": {
-                                "line": 211,
+                                "line": 209,
                                 "column": 15,
                                 "program": "cast_expressions.ets"
                               }
@@ -15012,12 +14776,12 @@
                             "value": true,
                             "loc": {
                               "start": {
-                                "line": 211,
+                                "line": 209,
                                 "column": 27,
                                 "program": "cast_expressions.ets"
                               },
                               "end": {
-                                "line": 211,
+                                "line": 209,
                                 "column": 31,
                                 "program": "cast_expressions.ets"
                               }
@@ -15025,12 +14789,12 @@
                           },
                           "loc": {
                             "start": {
-                              "line": 211,
+                              "line": 209,
                               "column": 7,
                               "program": "cast_expressions.ets"
                             },
                             "end": {
-                              "line": 211,
+                              "line": 209,
                               "column": 31,
                               "program": "cast_expressions.ets"
                             }
@@ -15040,12 +14804,12 @@
                       "kind": "let",
                       "loc": {
                         "start": {
-                          "line": 211,
+                          "line": 209,
                           "column": 3,
                           "program": "cast_expressions.ets"
                         },
                         "end": {
-                          "line": 211,
+                          "line": 209,
                           "column": 32,
                           "program": "cast_expressions.ets"
                         }
@@ -15069,12 +14833,12 @@
                                   "decorators": [],
                                   "loc": {
                                     "start": {
-                                      "line": 212,
+                                      "line": 210,
                                       "column": 17,
                                       "program": "cast_expressions.ets"
                                     },
                                     "end": {
-                                      "line": 212,
+                                      "line": 210,
                                       "column": 24,
                                       "program": "cast_expressions.ets"
                                     }
@@ -15082,12 +14846,12 @@
                                 },
                                 "loc": {
                                   "start": {
-                                    "line": 212,
+                                    "line": 210,
                                     "column": 17,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 212,
+                                    "line": 210,
                                     "column": 26,
                                     "program": "cast_expressions.ets"
                                   }
@@ -15095,12 +14859,12 @@
                               },
                               "loc": {
                                 "start": {
-                                  "line": 212,
+                                  "line": 210,
                                   "column": 17,
                                   "program": "cast_expressions.ets"
                                 },
                                 "end": {
-                                  "line": 212,
+                                  "line": 210,
                                   "column": 26,
                                   "program": "cast_expressions.ets"
                                 }
@@ -15109,12 +14873,12 @@
                             "decorators": [],
                             "loc": {
                               "start": {
-                                "line": 212,
+                                "line": 210,
                                 "column": 7,
                                 "program": "cast_expressions.ets"
                               },
                               "end": {
-                                "line": 212,
+                                "line": 210,
                                 "column": 15,
                                 "program": "cast_expressions.ets"
                               }
@@ -15132,12 +14896,12 @@
                                   "decorators": [],
                                   "loc": {
                                     "start": {
-                                      "line": 212,
+                                      "line": 210,
                                       "column": 31,
                                       "program": "cast_expressions.ets"
                                     },
                                     "end": {
-                                      "line": 212,
+                                      "line": 210,
                                       "column": 38,
                                       "program": "cast_expressions.ets"
                                     }
@@ -15145,12 +14909,12 @@
                                 },
                                 "loc": {
                                   "start": {
-                                    "line": 212,
+                                    "line": 210,
                                     "column": 31,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 212,
+                                    "line": 210,
                                     "column": 39,
                                     "program": "cast_expressions.ets"
                                   }
@@ -15158,12 +14922,12 @@
                               },
                               "loc": {
                                 "start": {
-                                  "line": 212,
+                                  "line": 210,
                                   "column": 31,
                                   "program": "cast_expressions.ets"
                                 },
                                 "end": {
-                                  "line": 212,
+                                  "line": 210,
                                   "column": 39,
                                   "program": "cast_expressions.ets"
                                 }
@@ -15175,12 +14939,12 @@
                                 "value": true,
                                 "loc": {
                                   "start": {
-                                    "line": 212,
+                                    "line": 210,
                                     "column": 39,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 212,
+                                    "line": 210,
                                     "column": 43,
                                     "program": "cast_expressions.ets"
                                   }
@@ -15189,12 +14953,12 @@
                             ],
                             "loc": {
                               "start": {
-                                "line": 212,
+                                "line": 210,
                                 "column": 27,
                                 "program": "cast_expressions.ets"
                               },
                               "end": {
-                                "line": 212,
+                                "line": 210,
                                 "column": 45,
                                 "program": "cast_expressions.ets"
                               }
@@ -15202,12 +14966,12 @@
                           },
                           "loc": {
                             "start": {
-                              "line": 212,
+                              "line": 210,
                               "column": 7,
                               "program": "cast_expressions.ets"
                             },
                             "end": {
-                              "line": 212,
+                              "line": 210,
                               "column": 45,
                               "program": "cast_expressions.ets"
                             }
@@ -15217,12 +14981,12 @@
                       "kind": "let",
                       "loc": {
                         "start": {
-                          "line": 212,
+                          "line": 210,
                           "column": 3,
                           "program": "cast_expressions.ets"
                         },
                         "end": {
-                          "line": 212,
+                          "line": 210,
                           "column": 45,
                           "program": "cast_expressions.ets"
                         }
@@ -15242,12 +15006,12 @@
                                 "decorators": [],
                                 "loc": {
                                   "start": {
-                                    "line": 216,
+                                    "line": 214,
                                     "column": 9,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 216,
+                                    "line": 214,
                                     "column": 24,
                                     "program": "cast_expressions.ets"
                                   }
@@ -15261,12 +15025,12 @@
                                   "decorators": [],
                                   "loc": {
                                     "start": {
-                                      "line": 216,
+                                      "line": 214,
                                       "column": 27,
                                       "program": "cast_expressions.ets"
                                     },
                                     "end": {
-                                      "line": 216,
+                                      "line": 214,
                                       "column": 35,
                                       "program": "cast_expressions.ets"
                                     }
@@ -15276,12 +15040,12 @@
                                   "type": "ETSPrimitiveType",
                                   "loc": {
                                     "start": {
-                                      "line": 216,
+                                      "line": 214,
                                       "column": 39,
                                       "program": "cast_expressions.ets"
                                     },
                                     "end": {
-                                      "line": 216,
+                                      "line": 214,
                                       "column": 46,
                                       "program": "cast_expressions.ets"
                                     }
@@ -15289,12 +15053,12 @@
                                 },
                                 "loc": {
                                   "start": {
-                                    "line": 216,
+                                    "line": 214,
                                     "column": 27,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 216,
+                                    "line": 214,
                                     "column": 35,
                                     "program": "cast_expressions.ets"
                                   }
@@ -15302,12 +15066,12 @@
                               },
                               "loc": {
                                 "start": {
-                                  "line": 216,
+                                  "line": 214,
                                   "column": 9,
                                   "program": "cast_expressions.ets"
                                 },
                                 "end": {
-                                  "line": 216,
+                                  "line": 214,
                                   "column": 35,
                                   "program": "cast_expressions.ets"
                                 }
@@ -15317,12 +15081,12 @@
                           "kind": "let",
                           "loc": {
                             "start": {
-                              "line": 216,
+                              "line": 214,
                               "column": 5,
                               "program": "cast_expressions.ets"
                             },
                             "end": {
-                              "line": 216,
+                              "line": 214,
                               "column": 47,
                               "program": "cast_expressions.ets"
                             }
@@ -15339,12 +15103,12 @@
                                 "decorators": [],
                                 "loc": {
                                   "start": {
-                                    "line": 217,
+                                    "line": 215,
                                     "column": 9,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 217,
+                                    "line": 215,
                                     "column": 24,
                                     "program": "cast_expressions.ets"
                                   }
@@ -15358,12 +15122,12 @@
                                   "decorators": [],
                                   "loc": {
                                     "start": {
-                                      "line": 217,
+                                      "line": 215,
                                       "column": 27,
                                       "program": "cast_expressions.ets"
                                     },
                                     "end": {
-                                      "line": 217,
+                                      "line": 215,
                                       "column": 35,
                                       "program": "cast_expressions.ets"
                                     }
@@ -15373,12 +15137,12 @@
                                   "type": "ETSPrimitiveType",
                                   "loc": {
                                     "start": {
-                                      "line": 217,
+                                      "line": 215,
                                       "column": 39,
                                       "program": "cast_expressions.ets"
                                     },
                                     "end": {
-                                      "line": 217,
+                                      "line": 215,
                                       "column": 46,
                                       "program": "cast_expressions.ets"
                                     }
@@ -15386,12 +15150,12 @@
                                 },
                                 "loc": {
                                   "start": {
-                                    "line": 217,
+                                    "line": 215,
                                     "column": 27,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 217,
+                                    "line": 215,
                                     "column": 35,
                                     "program": "cast_expressions.ets"
                                   }
@@ -15399,12 +15163,12 @@
                               },
                               "loc": {
                                 "start": {
-                                  "line": 217,
+                                  "line": 215,
                                   "column": 9,
                                   "program": "cast_expressions.ets"
                                 },
                                 "end": {
-                                  "line": 217,
+                                  "line": 215,
                                   "column": 35,
                                   "program": "cast_expressions.ets"
                                 }
@@ -15414,12 +15178,12 @@
                           "kind": "let",
                           "loc": {
                             "start": {
-                              "line": 217,
+                              "line": 215,
                               "column": 5,
                               "program": "cast_expressions.ets"
                             },
                             "end": {
-                              "line": 217,
+                              "line": 215,
                               "column": 47,
                               "program": "cast_expressions.ets"
                             }
@@ -15428,12 +15192,12 @@
                       ],
                       "loc": {
                         "start": {
-                          "line": 214,
+                          "line": 212,
                           "column": 3,
                           "program": "cast_expressions.ets"
                         },
                         "end": {
-                          "line": 218,
+                          "line": 216,
                           "column": 4,
                           "program": "cast_expressions.ets"
                         }
@@ -15453,12 +15217,12 @@
                                 "decorators": [],
                                 "loc": {
                                   "start": {
-                                    "line": 222,
+                                    "line": 220,
                                     "column": 9,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 222,
+                                    "line": 220,
                                     "column": 24,
                                     "program": "cast_expressions.ets"
                                   }
@@ -15472,12 +15236,12 @@
                                   "decorators": [],
                                   "loc": {
                                     "start": {
-                                      "line": 222,
+                                      "line": 220,
                                       "column": 27,
                                       "program": "cast_expressions.ets"
                                     },
                                     "end": {
-                                      "line": 222,
+                                      "line": 220,
                                       "column": 35,
                                       "program": "cast_expressions.ets"
                                     }
@@ -15493,12 +15257,12 @@
                                       "decorators": [],
                                       "loc": {
                                         "start": {
-                                          "line": 222,
+                                          "line": 220,
                                           "column": 39,
                                           "program": "cast_expressions.ets"
                                         },
                                         "end": {
-                                          "line": 222,
+                                          "line": 220,
                                           "column": 46,
                                           "program": "cast_expressions.ets"
                                         }
@@ -15506,12 +15270,12 @@
                                     },
                                     "loc": {
                                       "start": {
-                                        "line": 222,
+                                        "line": 220,
                                         "column": 39,
                                         "program": "cast_expressions.ets"
                                       },
                                       "end": {
-                                        "line": 222,
+                                        "line": 220,
                                         "column": 47,
                                         "program": "cast_expressions.ets"
                                       }
@@ -15519,12 +15283,12 @@
                                   },
                                   "loc": {
                                     "start": {
-                                      "line": 222,
+                                      "line": 220,
                                       "column": 39,
                                       "program": "cast_expressions.ets"
                                     },
                                     "end": {
-                                      "line": 222,
+                                      "line": 220,
                                       "column": 47,
                                       "program": "cast_expressions.ets"
                                     }
@@ -15532,12 +15296,12 @@
                                 },
                                 "loc": {
                                   "start": {
-                                    "line": 222,
+                                    "line": 220,
                                     "column": 27,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 222,
+                                    "line": 220,
                                     "column": 35,
                                     "program": "cast_expressions.ets"
                                   }
@@ -15545,12 +15309,12 @@
                               },
                               "loc": {
                                 "start": {
-                                  "line": 222,
+                                  "line": 220,
                                   "column": 9,
                                   "program": "cast_expressions.ets"
                                 },
                                 "end": {
-                                  "line": 222,
+                                  "line": 220,
                                   "column": 35,
                                   "program": "cast_expressions.ets"
                                 }
@@ -15560,12 +15324,12 @@
                           "kind": "let",
                           "loc": {
                             "start": {
-                              "line": 222,
+                              "line": 220,
                               "column": 5,
                               "program": "cast_expressions.ets"
                             },
                             "end": {
-                              "line": 222,
+                              "line": 220,
                               "column": 47,
                               "program": "cast_expressions.ets"
                             }
@@ -15582,12 +15346,12 @@
                                 "decorators": [],
                                 "loc": {
                                   "start": {
-                                    "line": 223,
+                                    "line": 221,
                                     "column": 9,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 223,
+                                    "line": 221,
                                     "column": 24,
                                     "program": "cast_expressions.ets"
                                   }
@@ -15601,12 +15365,12 @@
                                   "decorators": [],
                                   "loc": {
                                     "start": {
-                                      "line": 223,
+                                      "line": 221,
                                       "column": 27,
                                       "program": "cast_expressions.ets"
                                     },
                                     "end": {
-                                      "line": 223,
+                                      "line": 221,
                                       "column": 35,
                                       "program": "cast_expressions.ets"
                                     }
@@ -15622,12 +15386,12 @@
                                       "decorators": [],
                                       "loc": {
                                         "start": {
-                                          "line": 223,
+                                          "line": 221,
                                           "column": 39,
                                           "program": "cast_expressions.ets"
                                         },
                                         "end": {
-                                          "line": 223,
+                                          "line": 221,
                                           "column": 46,
                                           "program": "cast_expressions.ets"
                                         }
@@ -15635,12 +15399,12 @@
                                     },
                                     "loc": {
                                       "start": {
-                                        "line": 223,
+                                        "line": 221,
                                         "column": 39,
                                         "program": "cast_expressions.ets"
                                       },
                                       "end": {
-                                        "line": 223,
+                                        "line": 221,
                                         "column": 47,
                                         "program": "cast_expressions.ets"
                                       }
@@ -15648,12 +15412,12 @@
                                   },
                                   "loc": {
                                     "start": {
-                                      "line": 223,
+                                      "line": 221,
                                       "column": 39,
                                       "program": "cast_expressions.ets"
                                     },
                                     "end": {
-                                      "line": 223,
+                                      "line": 221,
                                       "column": 47,
                                       "program": "cast_expressions.ets"
                                     }
@@ -15661,12 +15425,12 @@
                                 },
                                 "loc": {
                                   "start": {
-                                    "line": 223,
+                                    "line": 221,
                                     "column": 27,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 223,
+                                    "line": 221,
                                     "column": 35,
                                     "program": "cast_expressions.ets"
                                   }
@@ -15674,12 +15438,12 @@
                               },
                               "loc": {
                                 "start": {
-                                  "line": 223,
+                                  "line": 221,
                                   "column": 9,
                                   "program": "cast_expressions.ets"
                                 },
                                 "end": {
-                                  "line": 223,
+                                  "line": 221,
                                   "column": 35,
                                   "program": "cast_expressions.ets"
                                 }
@@ -15689,12 +15453,12 @@
                           "kind": "let",
                           "loc": {
                             "start": {
-                              "line": 223,
+                              "line": 221,
                               "column": 5,
                               "program": "cast_expressions.ets"
                             },
                             "end": {
-                              "line": 223,
+                              "line": 221,
                               "column": 47,
                               "program": "cast_expressions.ets"
                             }
@@ -15711,12 +15475,12 @@
                                 "decorators": [],
                                 "loc": {
                                   "start": {
-                                    "line": 224,
+                                    "line": 222,
                                     "column": 9,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 224,
+                                    "line": 222,
                                     "column": 23,
                                     "program": "cast_expressions.ets"
                                   }
@@ -15730,12 +15494,12 @@
                                   "decorators": [],
                                   "loc": {
                                     "start": {
-                                      "line": 224,
+                                      "line": 222,
                                       "column": 27,
                                       "program": "cast_expressions.ets"
                                     },
                                     "end": {
-                                      "line": 224,
+                                      "line": 222,
                                       "column": 35,
                                       "program": "cast_expressions.ets"
                                     }
@@ -15751,12 +15515,12 @@
                                       "decorators": [],
                                       "loc": {
                                         "start": {
-                                          "line": 224,
+                                          "line": 222,
                                           "column": 39,
                                           "program": "cast_expressions.ets"
                                         },
                                         "end": {
-                                          "line": 224,
+                                          "line": 222,
                                           "column": 45,
                                           "program": "cast_expressions.ets"
                                         }
@@ -15764,12 +15528,12 @@
                                     },
                                     "loc": {
                                       "start": {
-                                        "line": 224,
+                                        "line": 222,
                                         "column": 39,
                                         "program": "cast_expressions.ets"
                                       },
                                       "end": {
-                                        "line": 224,
+                                        "line": 222,
                                         "column": 46,
                                         "program": "cast_expressions.ets"
                                       }
@@ -15777,12 +15541,12 @@
                                   },
                                   "loc": {
                                     "start": {
-                                      "line": 224,
+                                      "line": 222,
                                       "column": 39,
                                       "program": "cast_expressions.ets"
                                     },
                                     "end": {
-                                      "line": 224,
+                                      "line": 222,
                                       "column": 46,
                                       "program": "cast_expressions.ets"
                                     }
@@ -15790,12 +15554,12 @@
                                 },
                                 "loc": {
                                   "start": {
-                                    "line": 224,
+                                    "line": 222,
                                     "column": 27,
                                     "program": "cast_expressions.ets"
                                   },
                                   "end": {
-                                    "line": 224,
+                                    "line": 222,
                                     "column": 35,
                                     "program": "cast_expressions.ets"
                                   }
@@ -15803,12 +15567,12 @@
                               },
                               "loc": {
                                 "start": {
-                                  "line": 224,
+                                  "line": 222,
                                   "column": 9,
                                   "program": "cast_expressions.ets"
                                 },
                                 "end": {
-                                  "line": 224,
+                                  "line": 222,
                                   "column": 35,
                                   "program": "cast_expressions.ets"
                                 }
@@ -15818,12 +15582,12 @@
                           "kind": "let",
                           "loc": {
                             "start": {
-                              "line": 224,
+                              "line": 222,
                               "column": 5,
                               "program": "cast_expressions.ets"
                             },
                             "end": {
-                              "line": 224,
+                              "line": 222,
                               "column": 46,
                               "program": "cast_expressions.ets"
                             }
@@ -15832,12 +15596,12 @@
                       ],
                       "loc": {
                         "start": {
-                          "line": 220,
+                          "line": 218,
                           "column": 3,
                           "program": "cast_expressions.ets"
                         },
                         "end": {
-                          "line": 225,
+                          "line": 223,
                           "column": 4,
                           "program": "cast_expressions.ets"
                         }
@@ -15846,12 +15610,12 @@
                   ],
                   "loc": {
                     "start": {
-                      "line": 210,
+                      "line": 208,
                       "column": 31,
                       "program": "cast_expressions.ets"
                     },
                     "end": {
-                      "line": 226,
+                      "line": 224,
                       "column": 2,
                       "program": "cast_expressions.ets"
                     }
@@ -15859,12 +15623,12 @@
                 },
                 "loc": {
                   "start": {
-                    "line": 210,
+                    "line": 208,
                     "column": 10,
                     "program": "cast_expressions.ets"
                   },
                   "end": {
-                    "line": 226,
+                    "line": 224,
                     "column": 2,
                     "program": "cast_expressions.ets"
                   }
@@ -15872,12 +15636,12 @@
               },
               "loc": {
                 "start": {
-                  "line": 210,
+                  "line": 208,
                   "column": 10,
                   "program": "cast_expressions.ets"
                 },
                 "end": {
-                  "line": 226,
+                  "line": 224,
                   "column": 2,
                   "program": "cast_expressions.ets"
                 }
@@ -15887,12 +15651,12 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 210,
+                "line": 208,
                 "column": 1,
                 "program": "cast_expressions.ets"
               },
               "end": {
-                "line": 226,
+                "line": 224,
                 "column": 2,
                 "program": "cast_expressions.ets"
               }
@@ -15933,7 +15697,7 @@
       "program": "cast_expressions.ets"
     },
     "end": {
-      "line": 227,
+      "line": 225,
       "column": 1,
       "program": "cast_expressions.ets"
     }
