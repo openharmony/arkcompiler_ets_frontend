@@ -692,6 +692,12 @@ void ETSBinder::ImportAllForeignBindings(ir::AstNode *const specifier,
                 InsertForeignBinding(specifier, import, bindingName, var);
             }
 
+            // redeclaration for builtin type,
+            // need to erase the redeclaration one and make sure the builtin types initialized successfully.
+            if (var->HasFlag(varbinder::VariableFlags::BUILTIN_TYPE)) {
+                TopScope()->CorrectForeignBinding(bindingName, var, variable);
+            }
+
             ThrowRedeclarationError(import->Source()->Start(), var, variable, bindingName);
         }
     }
