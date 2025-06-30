@@ -105,6 +105,7 @@ static void CreateDummyVariable(ETSBinder *varBinder, ir::Identifier *ident)
 
 void ETSBinder::LookupTypeReference(ir::Identifier *ident, bool allowDynamicNamespaces)
 {
+    ES2PANDA_ASSERT(ident != nullptr);
     if (ident->Variable() != nullptr && ident->Variable()->Declaration()->Node() == ident) {
         return;
     }
@@ -258,6 +259,7 @@ void ETSBinder::LookupIdentReference(ir::Identifier *ident)
     if (res.level != 0) {
         ES2PANDA_ASSERT(res.variable != nullptr);
 
+        ES2PANDA_ASSERT(GetScope()->EnclosingVariableScope() != nullptr);
         auto *outerFunction = GetScope()->EnclosingVariableScope()->Node();
 
         if ((!outerFunction->IsScriptFunction() || !outerFunction->AsScriptFunction()->IsArrow()) &&
@@ -361,6 +363,7 @@ void ETSBinder::ResolveInterfaceDeclaration(ir::TSInterfaceDeclaration *decl)
 
         ResolveReference(stmt);
 
+        ES2PANDA_ASSERT(stmt->AsClassProperty()->Id() != nullptr);
         auto fieldVar =
             ResolvePropertyReference(stmt->AsClassProperty(), decl->Scope()->AsClassScope())
                 ->FindLocal(stmt->AsClassProperty()->Id()->Name(), varbinder::ResolveBindingOptions::BINDINGS);
@@ -394,6 +397,7 @@ void ETSBinder::BuildMethodDefinition(ir::MethodDefinition *methodDef)
         methodDef->BaseOverloadMethod()->GetTopStatement() != methodDef->GetTopStatement()) {
         return;
     }
+    ES2PANDA_ASSERT(methodDef->Function() != nullptr);
     if (methodDef->Function()->TypeParams() != nullptr) {
         auto scopeCtx = LexicalScope<LocalScope>::Enter(this, methodDef->Function()->TypeParams()->Scope());
         ResolveReferences(methodDef->Function()->TypeParams());
@@ -451,6 +455,7 @@ void ETSBinder::ResolveMethodDefinition(ir::MethodDefinition *methodDef)
     }
 
     auto *thisParam = AddMandatoryParam(MANDATORY_PARAM_THIS);
+    ES2PANDA_ASSERT(thisParam != nullptr);
     thisParam->Declaration()->BindNode(thisParam_);
 }
 
@@ -510,6 +515,7 @@ void ETSBinder::BuildClassDefinitionImpl(ir::ClassDefinition *classDef)
         auto *const prop = stmt->AsClassProperty();
 
         auto fieldScope = ResolvePropertyReference(prop, classDef->Scope()->AsClassScope());
+        ES2PANDA_ASSERT(prop->Id() != nullptr);
         auto fieldName = prop->Id()->Name();
         if (auto fieldVar = fieldScope->FindLocal(fieldName, varbinder::ResolveBindingOptions::BINDINGS);
             fieldVar != nullptr) {
@@ -544,6 +550,7 @@ void ETSBinder::AddFunctionThisParam(ir::ScriptFunction *func)
 {
     auto paramScopeCtx = LexicalScope<FunctionParamScope>::Enter(this, func->Scope()->ParamScope());
     auto *thisParam = AddMandatoryParam(MANDATORY_PARAM_THIS);
+    ES2PANDA_ASSERT(thisParam != nullptr);
     thisParam->Declaration()->BindNode(thisParam_);
 }
 
@@ -555,7 +562,7 @@ void ETSBinder::AddDynamicImport(ir::ETSImportDeclaration *import)
 
 void ETSBinder::BuildProxyMethod(ir::ScriptFunction *func, const util::StringView &containingClassName, bool isExternal)
 {
-    ES2PANDA_ASSERT(!containingClassName.Empty());
+    ES2PANDA_ASSERT(!containingClassName.Empty() && func != nullptr);
     func->Scope()->BindName(containingClassName);
 
     if (!func->IsAsyncFunc() && !isExternal) {
@@ -641,6 +648,7 @@ void AddOverloadFlag(ArenaAllocator *allocator, bool isStdLib, varbinder::Variab
         return;
     }
 
+    ES2PANDA_ASSERT(method->Function() != nullptr);
     if (!method->Overloads().empty() && !method->HasOverload(currentNode)) {
         method->AddOverload(currentNode);
         currentNode->Function()->Id()->SetVariable(importedVar);
@@ -1514,6 +1522,7 @@ void ETSBinder::ValidateReexportDeclaration(ir::ETSReExportDeclaration *decl)
 bool ETSBinder::ImportGlobalPropertiesForNotDefaultedExports(varbinder::Variable *var, const util::StringView &name,
                                                              const ir::ClassElement *classElement)
 {
+    ES2PANDA_ASSERT(var != nullptr);
     if (var->Declaration()->Node()->IsDefaultExported()) {
         return false;
     }
@@ -1554,7 +1563,7 @@ void ETSBinder::ImportGlobalProperties(const ir::ClassDefinition *const classDef
             continue;
         }
 
-        ES2PANDA_ASSERT(classElement->IsStatic());
+        ES2PANDA_ASSERT(classElement->IsStatic() && classElement->Id() != nullptr);
         const auto &name = classElement->Id()->Name();
         auto *const var = scopeCtx.GetScope()->FindLocal(name, ResolveBindingOptions::ALL);
         ES2PANDA_ASSERT(var != nullptr);

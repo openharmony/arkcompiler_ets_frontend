@@ -303,6 +303,7 @@ void Options::InitializeWarnings()
             {"subset_aware", {ETSWarnings::SUBSET_AWARE_FIRST, ETSWarnings::SUBSET_AWARE_LAST}},
             {"subset_unaware", {ETSWarnings::SUBSET_UNAWARE_FIRST, ETSWarnings::SUBSET_UNAWARE_LAST}}};
         const auto setWarningRange = [&warningSet, v](size_t first, size_t last) {
+            ES2PANDA_ASSERT(last < ETSWarnings::COUNT);
             for (size_t i = first; i <= last; i++) {
                 warningSet[i] = v;
             }

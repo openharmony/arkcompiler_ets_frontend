@@ -298,7 +298,7 @@ public:
 
     bool IsDevirtualizedSignature(const checker::Signature *signature)
     {
-        ES2PANDA_ASSERT(!signature->HasSignatureFlag(checker::SignatureFlags::STATIC));
+        ES2PANDA_ASSERT(signature != nullptr && !signature->HasSignatureFlag(checker::SignatureFlags::STATIC));
         return signature->HasSignatureFlag(checker::SignatureFlags::FINAL | checker::SignatureFlags::PRIVATE |
                                            checker::SignatureFlags::CONSTRUCTOR);
     }
@@ -435,6 +435,7 @@ public:
         if (isEtsPrimitive) {
             // NOTE: SzD. LoadStaticProperty if ETS stdlib has static TYPE constants otherwise fallback to LdaType
         } else {
+            ES2PANDA_ASSERT(GetAccumulatorType() != nullptr);
             auto classRef = GetAccumulatorType()->AsETSObjectType()->AssemblerName();
             Sa().Emit<LdaType>(node, classRef);
         }
