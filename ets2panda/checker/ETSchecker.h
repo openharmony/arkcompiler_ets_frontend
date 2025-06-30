@@ -893,6 +893,7 @@ public:
     ir::MethodDefinition *CreateClassMethod(std::string_view name, ir::ScriptFunctionFlags funcFlags,
                                             ir::ModifierFlags modifierFlags, const MethodBuilder &builder);
     ir::ClassDeclaration *BuildClass(util::StringView name, const ClassBuilder &builder);
+    const varbinder::Variable *GetTargetRef(const ir::MemberExpression *memberExpr);
 
     void LogUnresolvedReferenceError(ir::Identifier *ident);
     void WrongContextErrorClassifyByType(ir::Identifier *ident);
@@ -1006,7 +1007,6 @@ private:
     std::tuple<bool, bool> IsResolvedAndValue(const ir::Expression *expr, Type *type) const;
     PropertySearchFlags GetSearchFlags(const ir::MemberExpression *memberExpr, const varbinder::Variable *targetRef);
     PropertySearchFlags GetInitialSearchFlags(const ir::MemberExpression *memberExpr);
-    const varbinder::Variable *GetTargetRef(const ir::MemberExpression *memberExpr);
     Type *GetTypeOfSetterGetter([[maybe_unused]] varbinder::Variable *var);
     ETSFunctionType *CreateSyntheticTypeFromOverload(varbinder::Variable *const var);
     void IterateInVariableContext([[maybe_unused]] varbinder::Variable *const var);
