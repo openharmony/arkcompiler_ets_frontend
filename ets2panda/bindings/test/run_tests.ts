@@ -292,11 +292,11 @@ function compareResults(testName: string, index: string, actual: unknown, expect
   return compareResultsHelper(name, normalizeData(actual), expected);
 }
 
-function runTests(testDir: string, lsp: Lsp) {
+function runTests(lsp: Lsp): boolean {
   console.log('Running tests...');
   if (!testCases) {
     console.error('Failed to load test cases');
-    return;
+    return false;
   }
 
   let failedList: string[] = [];
@@ -344,7 +344,30 @@ function runTests(testDir: string, lsp: Lsp) {
     failedList.forEach((failedCase) => {
       console.log(`- ${failedCase}`);
     });
+    return false;
+  } else {
+    return true;
   }
+}
+
+function run(lsp: Lsp) {
+  const res = runTests(lsp);
+  if (!res) {
+    console.error('Tests failed without AST cache');
+    process.exit(1);
+  }
+  console.log('Finished test without ast cache');
+}
+
+async function runWithAstCache(lsp: Lsp, modules: ModuleDescriptor[]): Promise<void> {
+  await lsp.initAstCache();
+  lsp.update(modules);
+  const res = runTests(lsp);
+  if (!res) {
+    console.error('Tests failed with AST cache');
+    process.exit(1);
+  }
+  console.log('Finished test with ast cache');
 }
 
 if (require.main === module) {
@@ -364,9 +387,21 @@ if (require.main === module) {
   };
 
   const modules = getModules(pathConfig.projectPath);
-
-  const lsp = new Lsp(pathConfig, undefined, modules);
-
   process.env.BINDINGS_PATH = path.join(pathConfig.buildSdkPath, 'build-tools', 'bindings');
-  runTests(testDir, lsp);
+  process.env.PANDA_LIB_PATH = path.join(pathConfig.buildSdkPath, 'build-tools', 'ets2panda', 'lib');
+  process.env.PANDA_BIN_PATH = path.join(pathConfig.buildSdkPath, 'build-tools', 'ets2panda', 'bin');
+  const lsp = new Lsp(pathConfig, undefined, modules);
+  run(lsp);
+
+  // for generate ast cache
+  const entry_module = [
+    {
+      arktsversion: '1.2',
+      name: 'entry',
+      moduleType: 'har',
+      srcPath: path.join(pathConfig.projectPath, 'entry')
+    }
+  ];
+  const lsp_1 = new Lsp(pathConfig, undefined, entry_module);
+  runWithAstCache(lsp_1, modules).then(() => {});
 }
