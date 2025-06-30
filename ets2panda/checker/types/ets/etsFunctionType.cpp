@@ -168,7 +168,7 @@ static Signature *EnhanceSignatureSubstitution(TypeRelation *relation, Signature
     auto const enhance = [checker, sub, substitution](Type *param, Type *arg) {
         return checker->EnhanceSubstitutionForType(sub->GetSignatureInfo()->typeParams, param, arg, substitution);
     };
-    for (size_t ix = 0; ix < super->MinArgCount(); ix++) {
+    for (size_t ix = 0; ix < sub->ArgCount(); ix++) {
         if (!enhance(sub->GetSignatureInfo()->params[ix]->TsType(), super->GetSignatureInfo()->params[ix]->TsType())) {
             return nullptr;
         }
