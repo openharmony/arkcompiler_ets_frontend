@@ -354,8 +354,8 @@ void FunctionEmitter::GenScopeVariableInfo(pandasm::Function *func, const varbin
     if (iter == lastIter || *iter == scope->ScopeEnd()) {
         return;
     }
-    uint32_t count = iter - instructions.begin();
-    uint32_t start = count;
+    size_t count = iter - instructions.begin();
+    size_t start = count;
 
     auto checkNodeIsValid = [](const ir::AstNode *node) { return node != nullptr && node != FIRST_NODE_OF_FUNCTION; };
     // NOTE(dslynko, #19090): need to track start location for each local variable

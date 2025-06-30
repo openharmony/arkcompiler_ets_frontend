@@ -43,6 +43,7 @@ ObjectExpression::ObjectExpression([[maybe_unused]] Tag const tag, ObjectExpress
 ObjectExpression *ObjectExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     auto *const clone = allocator->New<ObjectExpression>(Tag {}, *this, allocator);
+    ES2PANDA_ASSERT(clone != nullptr);
     if (parent != nullptr) {
         clone->SetParent(parent);
     }
@@ -336,6 +337,7 @@ checker::Type *ObjectExpression::CheckPattern(checker::TSChecker *checker)
 
         varbinder::LocalVariable *patternVar = varbinder::Scope::CreateVar(
             checker->Allocator(), prop->Key()->AsIdentifier()->Name(), varbinder::VariableFlags::PROPERTY, *it);
+        ES2PANDA_ASSERT(patternVar != nullptr);
         patternVar->SetTsType(patternParamType);
 
         if (isOptional) {

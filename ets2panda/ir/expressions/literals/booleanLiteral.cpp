@@ -61,6 +61,7 @@ checker::VerifiedType BooleanLiteral::Check([[maybe_unused]] checker::ETSChecker
 BooleanLiteral *BooleanLiteral::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     auto *const clone = allocator->New<BooleanLiteral>(boolean_);
+    ES2PANDA_ASSERT(clone != nullptr);
     if (parent != nullptr) {
         clone->SetParent(parent);
     }

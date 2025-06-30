@@ -56,6 +56,7 @@ ArenaVector<ir::Statement *> ArrayLiteralLowering::GenerateDefaultCallToConstruc
         ss << "@@I8[@@I9] = new @@T10() }";
         newStmts.emplace_back(arraySymbol->Clone(Allocator(), nullptr));
         newStmts.emplace_back(indexSymbol->Clone(Allocator(), nullptr));
+        ES2PANDA_ASSERT(typeNode != nullptr);
         newStmts.emplace_back(typeNode->Clone(Allocator(), nullptr));
     } else {
         ArenaVector<ir::Statement *> emptyStatement(Allocator()->Adapter());
@@ -100,6 +101,7 @@ ir::AstNode *ArrayLiteralLowering::TryTransformLiteralArrayToRefArray(ir::ArrayE
 
     auto *parent = literalArray->Parent();
     auto *loweringResult = parser_->CreateFormattedExpression(ss.str(), newStmts);
+    ES2PANDA_ASSERT(loweringResult != nullptr);
     loweringResult->SetRange(literalArray->Range());
     loweringResult->SetParent(parent);
 

@@ -64,6 +64,7 @@ std::size_t ScriptFunction::FormalParamsLength() const noexcept
 void ScriptFunction::SetIdent(Identifier *id) noexcept
 {
     id_ = id;
+    ES2PANDA_ASSERT(id_ != nullptr);
     id_->SetParent(this);
 }
 
@@ -89,6 +90,7 @@ ScriptFunction *ScriptFunction::Clone(ArenaAllocator *allocator, AstNode *parent
                                                   : nullptr,
                 HasReceiver()},
             funcFlags_, flags_, lang_});
+    ES2PANDA_ASSERT(res != nullptr);
     res->SetParent(parent);
     res->SetAnnotations(std::move(annotationUsages));
     return res;

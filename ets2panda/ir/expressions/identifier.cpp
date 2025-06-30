@@ -62,6 +62,7 @@ void Identifier::SetName(const util::StringView &newName) noexcept
 Identifier *Identifier::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     auto *const clone = allocator->New<Identifier>(Tag {}, *this, allocator);
+    ES2PANDA_ASSERT(clone != nullptr);
 
     clone->SetTsType(TsType());
     if (parent != nullptr) {
@@ -75,6 +76,7 @@ Identifier *Identifier::Clone(ArenaAllocator *const allocator, AstNode *const pa
 Identifier *Identifier::CloneReference(ArenaAllocator *const allocator, AstNode *const parent)
 {
     auto *const clone = Clone(allocator, parent);
+    ES2PANDA_ASSERT(clone != nullptr);
     if (clone->IsReference(ScriptExtension::ETS)) {
         clone->SetTsTypeAnnotation(nullptr);
     }

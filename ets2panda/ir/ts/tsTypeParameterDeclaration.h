@@ -58,6 +58,7 @@ public:
 
     void AddParam(TSTypeParameter *param)
     {
+        ES2PANDA_ASSERT(param != nullptr);
         if (requiredParams_ == params_.size() && param->DefaultType() == nullptr) {
             requiredParams_++;
         }

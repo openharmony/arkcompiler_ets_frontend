@@ -154,7 +154,7 @@ public:
 
     void AddOverload(MethodDefinition *const overload)
     {
-        ES2PANDA_ASSERT(overload != nullptr);
+        ES2PANDA_ASSERT(overload != nullptr && overload->Function() != nullptr);
         overloads_.emplace_back(overload);
         overload->Function()->AddFlag((ir::ScriptFunctionFlags::OVERLOAD));
         overload->SetBaseOverloadMethod(this);

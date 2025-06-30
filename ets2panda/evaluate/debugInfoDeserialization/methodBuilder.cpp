@@ -171,6 +171,7 @@ ir::AstNode *MethodBuilder::CreateIrConstructor(ir::Identifier *id, ir::BlockSta
     if constexpr (IS_STATIC) {
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         auto *staticBlock = checker_->AllocNode<ir::ClassStaticBlock>(funcExpr, allocator);
+        ES2PANDA_ASSERT(staticBlock != nullptr);
         staticBlock->AddModifier(ir::ModifierFlags::STATIC);
         return staticBlock;
     }
@@ -184,6 +185,7 @@ ir::MethodDefinition *MethodBuilder::CreateIrMethod(ir::Identifier *id, ir::Bloc
 {
     auto *allocator = checker_->Allocator();
     auto *funcExpr = CreateFunctionExpression(id, body, ir::ScriptFunctionFlags::METHOD);
+    ES2PANDA_ASSERT(funcExpr != nullptr);
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *method = checker_->AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::METHOD,
                                                              funcExpr->Function()->Id()->Clone(allocator, nullptr),
@@ -200,6 +202,7 @@ ir::FunctionExpression *MethodBuilder::CreateFunctionExpression(ir::Identifier *
     auto *func = checker_->AllocNode<ir::ScriptFunction>(
         checker_->Allocator(),
         ir::ScriptFunction::ScriptFunctionData {body, std::move(funcSignature), scriptFuncFlags, modifierFlags_});
+    ES2PANDA_ASSERT(func != nullptr);
 
     func->SetIdent(id);
     func->SetReturnTypeAnnotation(returnType_);

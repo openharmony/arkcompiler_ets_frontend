@@ -96,7 +96,7 @@ public:
         }
     }
 
-    ~ASTVerifier()
+    ~ASTVerifier() noexcept
     {
         if (!suppressed_) {
             if (Options().IsAstVerifierAfterPhases()) {

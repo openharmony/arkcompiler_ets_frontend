@@ -63,6 +63,7 @@ checker::VerifiedType TemplateElement::Check(checker::ETSChecker *checker)
 TemplateElement *TemplateElement::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     auto *const clone = allocator->New<TemplateElement>(raw_, cooked_);
+    ES2PANDA_ASSERT(clone != nullptr);
     if (parent != nullptr) {
         clone->SetParent(parent);
     }
