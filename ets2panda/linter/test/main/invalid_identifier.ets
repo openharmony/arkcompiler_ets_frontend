@@ -219,3 +219,8 @@ namespace quarantine {
       int: int
   }
 }
+class StringBuilder {
+}
+
+class Map {
+}

@@ -865,6 +865,26 @@
             "severity": "ERROR"
         },
         {
+            "line": 222,
+            "column": 7,
+            "endLine": 222,
+            "endColumn": 20,
+            "problem": "InvalidIdentifier",
+            "suggest": "",
+            "rule": "This keyword cannot be used as identifiers (arkts-invalid-identifier)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 225,
+            "column": 7,
+            "endLine": 225,
+            "endColumn": 10,
+            "problem": "InvalidIdentifier",
+            "suggest": "",
+            "rule": "This keyword cannot be used as identifiers (arkts-invalid-identifier)",
+            "severity": "ERROR"
+        },
+        {
             "line": 172,
             "column": 2,
             "endLine": 172,

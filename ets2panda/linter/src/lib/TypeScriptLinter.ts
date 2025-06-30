@@ -130,7 +130,8 @@ import {
   USE_CONCURRENT,
   ESLIB_SHAREDMEMORY_FILENAME,
   ESLIB_SHAREDARRAYBUFFER,
-  TASKPOOL_MODULES
+  TASKPOOL_MODULES,
+  SYSTEM_MODULES
 } from './utils/consts/ConcurrentAPI';
 import {
   DEPRECATED_TASKPOOL_METHOD_SETCLONELIST,
@@ -7093,7 +7094,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
     const checkIdentifier = (identifier: ts.Identifier | undefined): void => {
       const text = identifier && ts.isIdentifier(identifier) ? identifier.text : '';
-      if (identifier && text && INVALID_IDENTIFIER_KEYWORDS.includes(text)) {
+      if (identifier && text && INVALID_IDENTIFIER_KEYWORDS.includes(text) && !this.checkImportSymbol(identifier)) {
         this.incrementCounters(identifier, FaultID.InvalidIdentifier);
       }
     };
@@ -7111,6 +7112,21 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     } else {
       checkIdentifier(decl.name as ts.Identifier);
     }
+  }
+
+  private checkImportSymbol(identifier: ts.Identifier): boolean {
+    let symbol = this.tsUtils.trueSymbolAtLocation(identifier);
+    if (symbol && 'unknown' === symbol.name) {
+      symbol = this.tsTypeChecker.getSymbolAtLocation(identifier);
+    }
+    let res = false;
+    const cb = (): void => {
+      res = true;
+    };
+    if (symbol) {
+      this.checkSymbolAndExecute(symbol, identifier.text, SYSTEM_MODULES, cb);
+    }
+    return res;
   }
 
   private handleHeritageClause(node: ts.HeritageClause): void {
@@ -7288,8 +7304,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         return;
       }
 
-      const sourceFile = decl.getSourceFile();
-      const fileName = path.basename(sourceFile.fileName);
+      const fileName = TypeScriptLinter.getFileName(decl);
 
       if (
         modules.some((moduleName) => {
