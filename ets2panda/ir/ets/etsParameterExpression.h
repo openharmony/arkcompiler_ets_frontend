@@ -49,6 +49,7 @@ public:
     void SetIdent(Identifier *ident) noexcept
     {
         ident_ = ident;
+        ES2PANDA_ASSERT(ident_);
         ident_->SetParent(this);
     }
 

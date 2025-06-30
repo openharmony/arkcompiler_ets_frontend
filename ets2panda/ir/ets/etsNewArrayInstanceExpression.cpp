@@ -84,6 +84,7 @@ ETSNewArrayInstanceExpression *ETSNewArrayInstanceExpression::Clone(ArenaAllocat
     auto *const typeRef = typeReference_ != nullptr ? typeReference_->Clone(allocator, nullptr) : nullptr;
     auto *const dimension = dimension_ != nullptr ? dimension_->Clone(allocator, nullptr)->AsExpression() : nullptr;
     auto *const clone = allocator->New<ETSNewArrayInstanceExpression>(typeRef, dimension);
+    ES2PANDA_ASSERT(clone);
 
     if (typeRef != nullptr) {
         typeRef->SetParent(clone);

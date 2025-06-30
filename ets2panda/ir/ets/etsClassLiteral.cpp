@@ -72,6 +72,7 @@ ETSClassLiteral *ETSClassLiteral::Clone(ArenaAllocator *const allocator, AstNode
         expr->SetParent(clone);
     }
     if (parent != nullptr) {
+        ES2PANDA_ASSERT(clone);
         clone->SetParent(parent);
     }
 

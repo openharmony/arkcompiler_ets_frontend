@@ -247,6 +247,7 @@ ETSParameterExpression *ETSParameterExpression::Clone(ArenaAllocator *const allo
         initializer->SetParent(clone);
     }
 
+    ES2PANDA_ASSERT(clone);
     if (parent != nullptr) {
         clone->SetParent(parent);
     }

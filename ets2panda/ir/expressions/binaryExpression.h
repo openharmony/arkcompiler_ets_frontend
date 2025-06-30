@@ -113,6 +113,7 @@ public:
     void SetLeft(Expression *expr) noexcept
     {
         left_ = expr;
+        ES2PANDA_ASSERT(left_);
         left_->SetParent(this);
         SetStart(left_->Start());
     }
@@ -120,6 +121,7 @@ public:
     void SetRight(Expression *expr) noexcept
     {
         right_ = expr;
+        ES2PANDA_ASSERT(right_);
         right_->SetParent(this);
         SetEnd(right_->End());
     }

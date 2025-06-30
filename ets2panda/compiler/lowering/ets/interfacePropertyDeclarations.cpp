@@ -191,6 +191,7 @@ static void AddOverload(ir::MethodDefinition *method, ir::MethodDefinition *over
 {
     method->AddOverload(overload);
     overload->SetParent(method);
+    ES2PANDA_ASSERT(overload->Function());
     overload->Function()->AddFlag(ir::ScriptFunctionFlags::OVERLOAD);
     overload->Function()->Id()->SetVariable(variable);
 }
