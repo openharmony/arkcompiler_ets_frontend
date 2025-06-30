@@ -105,3 +105,13 @@ let a: Array<string> | undefined = new Array<string>();
 let aa: Array<string> | Set<string> | undefined = new Array<string>();
 let b: Array<string> | Array<number> | undefined = new Array();
 let test: string[] = new Array<string>();
+
+class A {
+  test(key: string): Promise<string> {
+    if (key == undefined || key.length == 0.0) {
+      return new Promise<string>((resolve, reject) => {
+        reject("empty key");});
+    } else {
+    }
+  }
+}

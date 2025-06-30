@@ -631,9 +631,9 @@
             "problem": "GenericCallNoTypeArgs",
             "autofix": [
                 {
-                    "start": 2264,
-                    "end": 2275,
-                    "replacementText": "new Array<string>()",
+                    "start": 2273,
+                    "end": 2273,
+                    "replacementText": "<string>",
                     "line": 83,
                     "column": 5,
                     "endLine": 83,
@@ -728,6 +728,27 @@
             "severity": "ERROR"
         },
         {
+            "line": 105,
+            "column": 14,
+            "endLine": 106,
+            "endColumn": 31,
+            "problem": "GenericCallNoTypeArgs",
+            "autofix": [
+                {
+                    "start": 2880,
+                    "end": 2880,
+                    "replacementText": "<string>",
+                    "line": 105,
+                    "column": 14,
+                    "endLine": 106,
+                    "endColumn": 31
+                }
+            ],
+            "suggest": "",
+            "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
+            "severity": "ERROR"
+        },
+        {
             "line": 84,
             "column": 2,
             "endLine": 84,
@@ -809,6 +830,16 @@
             ],
             "suggest": "",
             "rule": "The ArkUI interface \"CommonAttribute\" should be imported before it is used (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 103,
+            "column": 22,
+            "endLine": 103,
+            "endColumn": 37,
+            "problem": "StrictDiagnostic",
+            "suggest": "Function lacks ending return statement and return type does not include 'undefined'.",
+            "rule": "Function lacks ending return statement and return type does not include 'undefined'.",
             "severity": "ERROR"
         }
     ]
