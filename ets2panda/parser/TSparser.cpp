@@ -734,6 +734,7 @@ ir::TSTypeParameter *TSParser::ParseMappedTypeParameter()
     lexer::SourcePosition startLoc = Lexer()->GetToken().Start();
 
     auto *paramName = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
+    ES2PANDA_ASSERT(paramName != nullptr);
     paramName->SetRange({Lexer()->GetToken().Start(), Lexer()->GetToken().End()});
 
     Lexer()->NextToken();
@@ -891,6 +892,7 @@ ir::TypeNode *TSParser::ParseTypeLiteralOrMappedType(ir::TypeNode *typeAnnotatio
     Lexer()->NextToken();
 
     auto *literalType = AllocNode<ir::TSTypeLiteral>(std::move(members), Allocator());
+    ES2PANDA_ASSERT(literalType != nullptr);
     auto *typeVar = varbinder::Scope::CreateVar(Allocator(), "__type", varbinder::VariableFlags::TYPE, literalType);
     literalType->SetVariable(typeVar);
     literalType->SetRange({bodyStart, bodyEnd});
@@ -1998,6 +2000,7 @@ std::tuple<bool, bool, bool> TSParser::ParseComputedClassFieldOrIndexSignature(i
     if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT &&
         Lexer()->Lookahead() == lexer::LEX_CHAR_COLON) {
         auto id = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
+        ES2PANDA_ASSERT(id != nullptr);
         id->SetRange(Lexer()->GetToken().Loc());
 
         Lexer()->NextToken();  // eat param

@@ -193,6 +193,7 @@ ir::TSTypeAssertion *TypedParser::ParseTypeAssertion()
     Lexer()->NextToken();  // eat '>'
     ir::Expression *expression = ParseExpression();
     auto *typeAssertion = AllocNode<ir::TSTypeAssertion>(typeAnnotation, expression);
+    ES2PANDA_ASSERT(typeAssertion != nullptr);
     typeAssertion->SetRange({start, Lexer()->GetToken().End()});
 
     return typeAssertion;
@@ -299,6 +300,7 @@ ir::TSModuleDeclaration *TypedParser::ParseAmbientExternalModuleDeclaration(cons
 
     auto *moduleDecl = AllocNode<ir::TSModuleDeclaration>(Allocator(), name, body,
                                                           ir::TSModuleDeclaration::ConstructorFlags {isGlobal, true});
+    ES2PANDA_ASSERT(moduleDecl != nullptr);
     moduleDecl->SetRange({startLoc, Lexer()->GetToken().End()});
 
     return moduleDecl;
@@ -311,6 +313,7 @@ ir::TSModuleDeclaration *TypedParser::ParseModuleOrNamespaceDeclaration(const le
     }
 
     auto *identNode = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
+    ES2PANDA_ASSERT(identNode != nullptr);
     identNode->SetRange(Lexer()->GetToken().Loc());
 
     Lexer()->NextToken();
@@ -343,6 +346,7 @@ ir::TSModuleBlock *TypedParser::ParseTsModuleBlock()
     auto statements = ParseStatementList();
 
     auto *blockNode = AllocNode<ir::TSModuleBlock>(std::move(statements));
+    ES2PANDA_ASSERT(blockNode != nullptr);
     blockNode->SetRange({startLoc, Lexer()->GetToken().End()});
 
     ExpectToken(lexer::TokenType::PUNCTUATOR_RIGHT_BRACE);
@@ -419,6 +423,7 @@ ir::TypeNode *TypedParser::ParseInterfaceExtendsElement()
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
         TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
         typeParamInst = ParseTypeParameterInstantiation(&options);
+        ES2PANDA_ASSERT(typeParamInst != nullptr);
         heritageEnd = typeParamInst->End();
     }
 
@@ -435,7 +440,9 @@ ArenaVector<ir::TSInterfaceHeritage *> TypedParser::ParseInterfaceExtendsClause(
 
     while (true) {
         auto *typeReference = ParseInterfaceExtendsElement();
+        ES2PANDA_ASSERT(typeReference != nullptr);
         auto *heritage = AllocNode<ir::TSInterfaceHeritage>(typeReference);
+        ES2PANDA_ASSERT(heritage != nullptr);
         heritage->SetRange(typeReference->Range());
         extends.push_back(heritage);
 
@@ -495,6 +502,7 @@ ir::Statement *TypedParser::ParseInterfaceDeclaration(bool isStatic)
         Allocator(), std::move(extends),
         ir::TSInterfaceDeclaration::ConstructorData {id, typeParamDecl, body, isStatic, isExternal,
                                                      GetContext().GetLanguage()});
+    ES2PANDA_ASSERT(interfaceDecl != nullptr);
     interfaceDecl->SetRange({interfaceStart, Lexer()->GetToken().End()});
 
     Lexer()->NextToken();
@@ -693,6 +701,7 @@ ir::TSEnumDeclaration *TypedParser::ParseEnumMembers(ir::Identifier *key, const 
 
     auto *enumDeclaration = AllocNode<ir::TSEnumDeclaration>(Allocator(), key, std::move(members),
                                                              ir::TSEnumDeclaration::ConstructorFlags {isConst});
+    ES2PANDA_ASSERT(enumDeclaration != nullptr);
     enumDeclaration->SetRange({enumStart, endLoc});
 
     return enumDeclaration;
@@ -729,7 +738,7 @@ ir::TSTypeParameter *TypedParser::ParseTypeParameter(TypeAnnotationParsingOption
 
     const auto &ident = Lexer()->GetToken().Ident();
     auto *paramIdent = AllocNode<ir::Identifier>(ident, Allocator());
-
+    ES2PANDA_ASSERT(paramIdent != nullptr);
     paramIdent->SetRange({Lexer()->GetToken().Start(), Lexer()->GetToken().End()});
 
     Lexer()->NextToken();
@@ -888,6 +897,7 @@ ArenaVector<ir::TSClassImplements *> TypedParser::ParseClassImplementClause()
         lexer::SourcePosition implStart = Lexer()->GetToken().Start();
         auto [expr, implTypeParams] = ParseClassImplementsElement();
         auto *impl = AllocNode<ir::TSClassImplements>(expr, implTypeParams);
+        ES2PANDA_ASSERT(impl != nullptr);
         impl->SetRange({implStart, Lexer()->GetToken().End()});
         implements.push_back(impl);
 
@@ -973,6 +983,7 @@ ir::ClassDefinition *TypedParser::ParseClassDefinition(ir::ClassDefinitionModifi
     auto *classDefinition =
         AllocNode<ir::ClassDefinition>(identNode, typeParamDecl, superTypeParams, std::move(implements), ctor,
                                        superClass, std::move(properties), modifiers, flags, GetContext().GetLanguage());
+    ES2PANDA_ASSERT(classDefinition != nullptr);
     classDefinition->SetInternalName(privateBinding.View());
 
     classDefinition->SetRange(bodyRange);
@@ -1006,7 +1017,7 @@ ir::AstNode *TypedParser::ParseProperty(const ArenaVector<ir::AstNode *> &proper
 
         property =
             AllocNode<ir::TSIndexSignature>(propName, typeAnnotation, desc.modifiers & ir::ModifierFlags::READONLY);
-
+        ES2PANDA_ASSERT(property != nullptr);
         property->SetRange({property->AsTSIndexSignature()->Param()->Start(),
                             property->AsTSIndexSignature()->TypeAnnotation()->End()});
     } else {
@@ -1017,7 +1028,7 @@ ir::AstNode *TypedParser::ParseProperty(const ArenaVector<ir::AstNode *> &proper
             if (desc.isPrivateIdent) {
                 LogError(diagnostic::DECORATORS_INVALID);
             }
-
+            ES2PANDA_ASSERT(property != nullptr);
             property->AddDecorators(std::move(desc.decorators));
         }
     }
@@ -1203,6 +1214,7 @@ ir::Expression *TypedParser::ParseQualifiedName(ExpressionParseFlags flags)
             break;
         case lexer::TokenType::LITERAL_IDENT:
             expr = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
+            ES2PANDA_ASSERT(expr != nullptr);
             expr->SetRange(Lexer()->GetToken().Loc());
             Lexer()->NextToken();
             break;
@@ -1260,6 +1272,7 @@ ir::Expression *TypedParser::ParseQualifiedReference(ir::Expression *typeName, E
         propName->SetRange(Lexer()->GetToken().Loc());
 
         typeName = AllocNode<ir::TSQualifiedName>(typeName, propName, Allocator());
+        ES2PANDA_ASSERT(typeName != nullptr);
         typeName->SetRange({typeName->AsTSQualifiedName()->Left()->Start(), Lexer()->GetToken().End()});
 
         if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT) {

@@ -108,6 +108,7 @@ static ir::OpaqueTypeNode *FindIterValueType(checker::ETSObjectType *type, Arena
                                    checker::PropertySearchFlags::SEARCH_INSTANCE_METHOD |
                                        checker::PropertySearchFlags::SEARCH_IN_INTERFACES |
                                        checker::PropertySearchFlags::SEARCH_IN_BASE);
+    ES2PANDA_ASSERT(itor != nullptr);
     auto const &sigs = itor->TsType()->AsETSFunctionType()->CallSignatures();
     checker::ETSObjectType *itorReturnType = nullptr;
     for (auto &sig : sigs) {
@@ -170,6 +171,7 @@ ir::Statement *ObjectIteratorLowering::ProcessObjectIterator(public_lib::Context
     auto *const loweringResult = parser->CreateFormattedStatement(
         whileStatement, iterIdent, forOfStatement->Right(), nextIdent, iterIdent->Clone(allocator, nullptr),
         nextIdent->Clone(allocator, nullptr), loopVariableIdent, nextIdent->Clone(allocator, nullptr), typeNode);
+    ES2PANDA_ASSERT(loweringResult != nullptr);
     loweringResult->SetParent(forOfStatement->Parent());
     loweringResult->SetRange(forOfStatement->Range());
 

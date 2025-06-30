@@ -209,6 +209,7 @@ ir::ArrayExpression *CreateArrayExpression(public_lib::Context *ctx, const Arena
     ArenaVector<ir::Expression *> elements(ctx->Allocator()->Adapter());
 
     auto *arrayExpr = ctx->AllocNode<ir::ArrayExpression>(std::move(elementsInit), ctx->Allocator());
+    ES2PANDA_ASSERT(arrayExpr != nullptr);
     for (auto tupleElementAnno : newRestParams) {
         auto &tupleElementName = tupleElementAnno->AsETSParameterExpression()->Ident()->AsIdentifier()->Name();
         ir::Expression *arg = ctx->AllocNode<ir::Identifier>(tupleElementName, allocator);
@@ -262,6 +263,7 @@ ir::ScriptFunction *CreateNewScriptFunction(public_lib::Context *ctx, ir::Script
         allocator, ir::ScriptFunction::ScriptFunctionData {
                        body, ir::FunctionSignature(newParamDeclaration, std::move(newParams), newReturnTypeAnno),
                        scriptFunc->Flags()});
+    ES2PANDA_ASSERT(newScriptFunc != nullptr);
     newScriptFunc->AddModifier(scriptFunc->AsScriptFunction()->Modifiers());
 
     ArenaVector<ir::AnnotationUsage *> annotationUsages {allocator->Adapter()};
@@ -284,6 +286,7 @@ ir::VariableDeclaration *CreateNewVariableDeclaration(public_lib::Context *ctx, 
 
     util::StringView tupleIdentName = restParam->Ident()->Name();
     auto *newId = ctx->AllocNode<ir::Identifier>(tupleIdentName, allocator);
+    ES2PANDA_ASSERT(newId != nullptr);
     ir::TypeNode *typeAnnotation = restParam->TypeAnnotation()->Clone(allocator, newId);
     newId->SetTsTypeAnnotation(typeAnnotation);
     newTuple->SetParent(typeAnnotation);
@@ -322,6 +325,7 @@ ir::MethodDefinition *CreateNewMethodDefinition(public_lib::Context *ctx, ir::Me
     auto *const methodDef =
         ctx->AllocNode<ir::MethodDefinition>(definition->AsMethodDefinition()->Kind(), methodKey, function,
                                              definition->AsMethodDefinition()->Modifiers(), allocator, false);
+    ES2PANDA_ASSERT(methodDef != nullptr);
     methodDef->SetParent(definition->Parent());
 
     return methodDef;

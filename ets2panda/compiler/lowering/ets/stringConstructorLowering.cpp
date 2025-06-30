@@ -72,6 +72,7 @@ ir::Expression *ReplaceStringConstructor(public_lib::Context *const ctx,
         if (argType->IsETSNullType() || argType->IsETSUndefinedType()) {
             auto *literal = argType->IsETSNullType() ? ctx->AllocNode<ir::StringLiteral>("null")
                                                      : ctx->AllocNode<ir::StringLiteral>("undefined");
+            ES2PANDA_ASSERT(literal != nullptr);
             literal->SetParent(newClassInstExpr->Parent());
 
             // Run checker
