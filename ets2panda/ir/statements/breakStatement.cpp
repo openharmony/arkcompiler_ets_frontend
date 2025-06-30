@@ -79,6 +79,7 @@ BreakStatement *BreakStatement::Clone(ArenaAllocator *const allocator, AstNode *
 {
     auto *const ident = ident_ != nullptr ? ident_->Clone(allocator, nullptr) : nullptr;
     auto *const clone = util::NodeAllocator::ForceSetParent<BreakStatement>(allocator, ident);
+    ES2PANDA_ASSERT(clone != nullptr);
 
     if (parent != nullptr) {
         clone->SetParent(parent);

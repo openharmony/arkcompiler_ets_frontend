@@ -100,6 +100,7 @@ static void AllowRequiredTypeInstantiation(const ir::Expression *const loweringR
 static bool CheckReadonlyAndUpdateCtorArgs(const ir::Identifier *key, ir::Expression *value,
                                            std::map<util::StringView, ir::Expression *> &ctorArgumentsMap)
 {
+    ES2PANDA_ASSERT(key != nullptr);
     auto varType = (key->Variable() != nullptr) ? key->Variable()->TsType() : nullptr;
     if (varType == nullptr || varType->HasTypeFlag(checker::TypeFlag::SETTER)) {
         return false;
@@ -162,6 +163,18 @@ static void SetInstanceArguments(ArenaVector<ir::Statement *> &statements, Arena
     instance->SetArguments(std::move(ctorArguments));
 }
 
+static void GenerateArgsForAnonymousClassType(const checker::ETSObjectType *classType, const bool &isAnonymous,
+                                              std::map<util::StringView, ir::Expression *> &ctorArgumentsMap)
+{
+    if (isAnonymous) {
+        checker::Signature *sig = classType->ConstructSignatures().front();
+        for (auto param : sig->Params()) {
+            ES2PANDA_ASSERT(param->Declaration() != nullptr);
+            ctorArgumentsMap.emplace(param->Declaration()->Name(), nullptr);
+        }
+    }
+}
+
 static void GenerateNewStatements(public_lib::Context *ctx, ir::ObjectExpression *objExpr, std::stringstream &ss,
                                   std::vector<ir::AstNode *> &newStmts,
                                   std::deque<ir::BlockExpression *> &nestedBlckExprs,
@@ -186,13 +199,7 @@ static void GenerateNewStatements(public_lib::Context *ctx, ir::ObjectExpression
     bool isAnonymous = IsAnonymousClassType(classType);
 
     std::map<util::StringView, ir::Expression *> ctorArgumentsMap;
-    if (isAnonymous) {
-        checker::Signature *sig = classType->ConstructSignatures().front();
-        for (auto param : sig->Params()) {
-            ES2PANDA_ASSERT(param->Declaration() != nullptr);
-            ctorArgumentsMap.emplace(param->Declaration()->Name(), nullptr);
-        }
-    }
+    GenerateArgsForAnonymousClassType(classType, isAnonymous, ctorArgumentsMap);
 
     for (auto *propExpr : objExpr->Properties()) {
         //  Skip possibly invalid properties:
@@ -218,7 +225,7 @@ static void GenerateNewStatements(public_lib::Context *ctx, ir::ObjectExpression
         if (isAnonymous && CheckReadonlyAndUpdateCtorArgs(keyIdent, value, ctorArgumentsMap)) {
             continue;
         }
-
+        ES2PANDA_ASSERT(genSymIdent != nullptr);
         ss << "@@I" << addNode(genSymIdent->Clone(allocator, nullptr)) << ".@@I" << addNode(keyIdent);
 
         if (value->IsBlockExpression()) {
@@ -269,7 +276,7 @@ static ir::AstNode *HandleObjectLiteralLowering(public_lib::Context *ctx, ir::Ob
     GenerateNewStatements(ctx, objExpr, ss, newStmts, nestedBlckExprs, ctorArguments);
 
     auto *loweringResult = parser->CreateFormattedExpression(ss.str(), newStmts);
-
+    ES2PANDA_ASSERT(loweringResult != nullptr);
     SetInstanceArguments(loweringResult->AsBlockExpression()->Statements(), ctorArguments);
 
     loweringResult->SetParent(objExpr->Parent());

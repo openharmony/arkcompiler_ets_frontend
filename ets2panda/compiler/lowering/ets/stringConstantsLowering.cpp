@@ -30,6 +30,7 @@ static ir::AstNode *FoldConcat(public_lib::Context *ctx, ir::BinaryExpression *c
     auto const resStr = util::UString(lhs->Str().Mutf8() + rhs->Str().Mutf8(), ctx->allocator).View();
 
     auto resNode = util::NodeAllocator::Alloc<ir::StringLiteral>(ctx->allocator, resStr);
+    ES2PANDA_ASSERT(resNode != nullptr);
     resNode->SetParent(concat->Parent());
     resNode->SetRange({lhs->Range().start, rhs->Range().end});
     return resNode;

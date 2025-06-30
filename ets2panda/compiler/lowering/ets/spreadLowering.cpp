@@ -58,6 +58,7 @@ ir::Identifier *CreateNewArrayLengthStatement(public_lib::Context *ctx, ir::Arra
     auto *const allocator = ctx->allocator;
     auto *const parser = ctx->parser->AsETSParser();
     ir::Identifier *newArrayLengthId = Gensym(allocator);
+    ES2PANDA_ASSERT(newArrayLengthId != nullptr);
     std::vector<ir::AstNode *> nodesWaitingInsert {newArrayLengthId->Clone(allocator, nullptr)};
     size_t argumentCount = 1;
     std::stringstream lengthString;
@@ -108,6 +109,7 @@ static ir::Identifier *CreateNewArrayDeclareStatement(public_lib::Context *ctx, 
         newArrayDeclareStr << "let @@I1: FixedArray<@@T2> = new (@@T3)[@@I4];" << std::endl;
     }
 
+    ES2PANDA_ASSERT(newArrayLengthId != nullptr);
     ir::Statement *newArrayDeclareSt = parser->CreateFormattedStatement(
         newArrayDeclareStr.str(), newArrayId->Clone(allocator, nullptr), arrayElementType, arrayElementType,
         newArrayLengthId->Clone(allocator, nullptr));
@@ -167,6 +169,7 @@ static ir::Identifier *CreateNewTupleDeclareStatement(public_lib::Context *ctx, 
     auto *const allocator = ctx->allocator;
     auto *const parser = ctx->parser->AsETSParser();
     ir::Identifier *newTupleId = Gensym(allocator);
+    ES2PANDA_ASSERT(newTupleId != nullptr);
     checker::ETSTupleType *tupleType = array->TsType()->AsETSTupleType();
 
     std::stringstream newArrayDeclareStr;
@@ -197,6 +200,7 @@ static ir::Statement *CreateElementsAssignStatementBySpreadArr(public_lib::Conte
     elementsAssignStr << "@@I7++;";
     elementsAssignStr << "}";
 
+    ES2PANDA_ASSERT(spreadArrIterator != nullptr);
     ir::Statement *elementsAssignStatement = parser->CreateFormattedStatement(
         elementsAssignStr.str(), spreadArrIterator->Clone(allocator, nullptr), spId->Clone(allocator, nullptr),
         newArrayId->Clone(allocator, nullptr), newArrayIndexId->Clone(allocator, nullptr),
@@ -329,6 +333,7 @@ static ir::BlockExpression *CreateLoweredExpressionForArray(public_lib::Context 
     ir::Identifier *newArrayLengthId = CreateNewArrayLengthStatement(ctx, array, spreadArrayIds, statements);
 
     ir::Identifier *newArrayId = CreateNewArrayDeclareStatement(ctx, array, statements, newArrayLengthId);
+    ES2PANDA_ASSERT(newArrayId != nullptr);
     ir::Identifier *newArrayIndexId = Gensym(allocator);
     statements.emplace_back(
         parser->CreateFormattedStatement("let @@I1 = 0", newArrayIndexId->Clone(allocator, nullptr)));
@@ -351,7 +356,7 @@ static ir::BlockExpression *CreateLoweredExpressionForTuple(public_lib::Context 
 
     ArenaVector<ir::Statement *> statements(allocator->Adapter());
     ir::Identifier *newTupleId = CreateNewTupleDeclareStatement(ctx, array, statements);
-
+    ES2PANDA_ASSERT(newTupleId != nullptr);
     statements.emplace_back(parser->CreateFormattedStatement("@@I1;", newTupleId->Clone(allocator, nullptr)));
     return checker->AllocNode<ir::BlockExpression>(std::move(statements));
 }
