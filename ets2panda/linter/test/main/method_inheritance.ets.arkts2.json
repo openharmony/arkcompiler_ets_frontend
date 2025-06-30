@@ -293,6 +293,36 @@
             "suggest": "",
             "rule": "Overridden method parameters and return types must respect type inheritance principles (arkts-method-inherit-rule)",
             "severity": "ERROR"
+        },
+        {
+            "line": 266,
+            "column": 9,
+            "endLine": 266,
+            "endColumn": 12,
+            "problem": "MethodInheritRule",
+            "suggest": "",
+            "rule": "Overridden method parameters and return types must respect type inheritance principles (arkts-method-inherit-rule)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 271,
+            "column": 9,
+            "endLine": 271,
+            "endColumn": 12,
+            "problem": "MethodInheritRule",
+            "suggest": "",
+            "rule": "Overridden method parameters and return types must respect type inheritance principles (arkts-method-inherit-rule)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 281,
+            "column": 10,
+            "endLine": 281,
+            "endColumn": 17,
+            "problem": "MethodInheritRule",
+            "suggest": "",
+            "rule": "Overridden method parameters and return types must respect type inheritance principles (arkts-method-inherit-rule)",
+            "severity": "ERROR"
         }
     ]
 }

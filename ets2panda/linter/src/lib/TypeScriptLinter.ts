@@ -3543,32 +3543,28 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     derivedMethod: ts.MethodDeclaration,
     baseMethod: ts.MethodDeclaration | ts.MethodSignature
   ): void {
-    if (
-      this.IsVoidTypeOnActualReturnType(baseMethod) &&
-      derivedMethod.type &&
-      !this.IsVoidTypeOnActualReturnType(derivedMethod)
-    ) {
+    const baseMethodType = this.getActualReturnType(baseMethod);
+    const derivedMethodType = this.getActualReturnType(derivedMethod);
+    const baseMethodTypeIsVoid = baseMethodType && TsUtils.isVoidType(baseMethodType) || !baseMethod.type;
+    const derivedMethodTypeIsVoid = derivedMethodType && TsUtils.isVoidType(derivedMethodType);
+    if (baseMethodTypeIsVoid && derivedMethod.type && !derivedMethodTypeIsVoid) {
       this.incrementCounters(derivedMethod.type, FaultID.MethodInheritRule);
       return;
     }
 
-    if (!baseMethod.type || !derivedMethod.type) {
+    if (!baseMethodType || !derivedMethodType || baseMethodTypeIsVoid && derivedMethodTypeIsVoid) {
+      return;
+    }
+    if (this.isDerivedTypeAssignable(derivedMethodType, baseMethodType)) {
       return;
     }
 
-    const baseReturnType = this.tsTypeChecker.getTypeAtLocation(baseMethod.type);
-    const derivedReturnType = this.tsTypeChecker.getTypeAtLocation(derivedMethod.type);
-
-    if (this.isDerivedTypeAssignable(derivedReturnType, baseReturnType)) {
-      return;
-    }
-
-    if (!this.isTypeAssignable(derivedReturnType, baseReturnType)) {
-      this.incrementCounters(derivedMethod.type, FaultID.MethodInheritRule);
+    if (!this.isTypeAssignable(derivedMethodType, baseMethodType)) {
+      this.incrementCounters(derivedMethod.type ? derivedMethod.type : derivedMethod.name, FaultID.MethodInheritRule);
     }
   }
 
-  private IsVoidTypeOnActualReturnType(method: ts.MethodDeclaration | ts.MethodSignature): boolean | undefined {
+  private getActualReturnType(method: ts.MethodDeclaration | ts.MethodSignature): ts.Type | undefined {
     let type: ts.Type | undefined;
     if (method.type) {
       type = this.tsTypeChecker.getTypeAtLocation(method.type);
@@ -3578,7 +3574,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         type = this.tsTypeChecker.getReturnTypeOfSignature(signature);
       }
     }
-    return type && TsUtils.isVoidType(type);
+    return type;
   }
 
   /**
