@@ -13,6 +13,8 @@
  * limitations under the License.
 */
 
+import { BusinessError } from '@ohos.base';
+
 try {
   throw new Error();
 } catch(e) {
@@ -23,4 +25,10 @@ try {
 try {
   throw new Error();
 } catch(e) {
+}
+
+try {
+  let that = 123;
+} catch (err: BusinessError) {
+  console.log(err.toString());
 }
