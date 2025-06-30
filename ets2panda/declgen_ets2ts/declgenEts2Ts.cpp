@@ -202,7 +202,11 @@ void TSDeclGen::ProcessClassMethodDependencies(const ir::MethodDefinition *metho
     if (!methodDef->IsExported() && !methodDef->IsExportedType() && !methodDef->IsDefaultExported()) {
         return;
     }
-    auto sig = methodDef->Function()->Signature();
+    auto methDefFunc = methodDef->Function();
+    if (methDefFunc == nullptr) {
+        return;
+    }
+    auto sig = methDefFunc->Signature();
     GenSeparated(
         sig->Params(), [this](varbinder::LocalVariable *param) { AddSuperType(param->TsType()); }, "");
 
@@ -539,7 +543,8 @@ const checker::Signature *TSDeclGen::GetFuncSignature(const checker::ETSFunction
         return etsFunctionType->ArrowSignature();
     }
     if (methodDef != nullptr) {
-        return methodDef->Function()->Signature();
+        auto methDefFunc = methodDef->Function();
+        return methDefFunc != nullptr ? methDefFunc->Signature() : nullptr;
     }
     if (etsFunctionType->CallSignatures().size() != 1) {
         const auto loc = methodDef != nullptr ? methodDef->Start() : lexer::SourcePosition();
@@ -736,7 +741,11 @@ std::vector<UnionType *> TSDeclGen::FilterUnionTypes(const ArenaVector<UnionType
                 filteredTypes.push_back(originType);
                 continue;
             }
-            typeStr = originType->GetType(checker_)->ToString();
+            auto type = originType->GetType(checker_);
+            if (type == nullptr) {
+                continue;
+            }
+            typeStr = type->ToString();
             typeStr[0] = std::toupper(typeStr[0]);
         }
         if (stringTypes_.count(typeStr) != 0U) {
@@ -958,6 +967,9 @@ std::string TSDeclGen::RemoveModuleExtensionName(const std::string &filepath)
 template <class T>
 void TSDeclGen::GenAnnotations(const T *node)
 {
+    if (node == nullptr) {
+        return;
+    }
     GenSeparated(
         node->Annotations(),
         [this](ir::AnnotationUsage *anno) {
@@ -982,7 +994,8 @@ void TSDeclGen::GenAnnotationProperties(const ir::AnnotationUsage *anno)
     }
 
     const auto &properties = anno->Properties();
-    if (properties.size() == 1 &&
+    if (properties.size() == 1 && properties.at(0)->IsClassProperty() &&
+        properties.at(0)->AsClassProperty()->Id() != nullptr &&
         properties.at(0)->AsClassProperty()->Id()->Name() == compiler::Signatures::ANNOTATION_KEY_VALUE) {
         OutDts("(");
         if (properties.at(0)->AsClassProperty()->Value() != nullptr) {
@@ -1283,7 +1296,7 @@ void TSDeclGen::ProcessTypeAnnotationType(const ir::TypeNode *typeAnnotation, co
         OutDts("void");
         return;
     }
-    if (typeAnnotation->IsETSStringLiteralType()) {
+    if (typeAnnotation->IsETSStringLiteralType() && aliasedType != nullptr) {
         importSet_.insert(aliasedType->ToString());
         OutDts(aliasedType->ToString());
         return;
@@ -1350,6 +1363,9 @@ void TSDeclGen::ProcessTSArrayType(const ir::TSArrayType *tsArrayType)
 {
     auto *elementType = tsArrayType->ElementType();
     auto *elementCheckerType = const_cast<ir::TypeNode *>(elementType)->GetType(checker_);
+    if (elementCheckerType == nullptr) {
+        return;
+    }
     bool needParentheses = !elementType->IsETSTypeReference() && elementCheckerType->IsETSUnionType();
     OutDts(needParentheses ? "(" : "");
     ProcessTypeAnnotationType(elementType, elementCheckerType);
@@ -1869,8 +1885,9 @@ bool TSDeclGen::GenMethodDeclarationPrefix(const ir::MethodDefinition *methodDef
             !ShouldEmitDeclarationSymbol(methodIdent) && !methodDef->IsConstructor()) {
             return true;
         }
-        if (!methodDef->Function()->Annotations().empty()) {
-            GenAnnotations(methodDef->Function());
+        auto methDefFunc = methodDef->Function();
+        if (methDefFunc != nullptr && !methDefFunc->Annotations().empty()) {
+            GenAnnotations(methDefFunc);
         }
         ProcessIndent();
         GenModifier(methodDef);
@@ -1951,7 +1968,8 @@ void TSDeclGen::ProcessClassPropertyType(const ir::ClassProperty *classProp)
         ProcessTypeAnnotationType(classProp->TypeAnnotation(), classProp->TsType());
         return;
     }
-    if (value->IsArrowFunctionExpression() && value->AsArrowFunctionExpression()->Function() != nullptr &&
+    if (value != nullptr && value->IsArrowFunctionExpression() &&
+        value->AsArrowFunctionExpression()->Function() != nullptr &&
         value->AsArrowFunctionExpression()->Function()->TypeParams() != nullptr) {
         GenTypeParameters(value->AsArrowFunctionExpression()->Function()->TypeParams());
     }
@@ -2071,7 +2089,7 @@ void TSDeclGen::GenGlobalVarDeclaration(const ir::ClassProperty *globalVar)
 
 bool WriteToFile(const std::string &path, const std::string &content, checker::ETSChecker *checker)
 {
-    std::ofstream outStream(path);
+    std::ofstream outStream(path);  // ark::os::GetAbsolutePath(*pathValue)
     if (outStream.fail()) {
         checker->DiagnosticEngine().LogDiagnostic(diagnostic::OPEN_FAILED, util::DiagnosticMessageParams {path});
         return false;
