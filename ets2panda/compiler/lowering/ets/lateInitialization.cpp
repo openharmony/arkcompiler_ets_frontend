@@ -36,6 +36,7 @@ ir::ClassProperty *TransformerClassProperty(public_lib::Context *ctx, ir::ClassP
 
     auto annotationType = checker->CreateETSUnionType({property->TsType(), checker->GlobalETSUndefinedType()});
     auto typeAnnotation = allocator->New<ir::OpaqueTypeNode>(annotationType, allocator);
+    ES2PANDA_ASSERT(typeAnnotation);
     typeAnnotation->SetParent(property);
     typeAnnotation->SetTsType(annotationType);
     property->SetTypeAnnotation(typeAnnotation);
@@ -76,6 +77,7 @@ static ir::AstNode *TransformerMemberExpression(ir::MemberExpression *memberExpr
     blockStatements.push_back(parser->CreateFormattedStatement(ss.str(), name));
     blockStatements.push_back(parser->CreateFormattedStatement("@@I1 as @@T2", name, typeNode));
     auto *res = util::NodeAllocator::ForceSetParent<ir::BlockExpression>(allocator, std::move(blockStatements));
+    ES2PANDA_ASSERT(res);
     res->SetParent(parent);
     Recheck(ctx->phaseManager, varbinder, checker, res);
 

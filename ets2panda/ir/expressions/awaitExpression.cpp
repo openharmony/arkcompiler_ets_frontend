@@ -74,6 +74,7 @@ AwaitExpression *AwaitExpression::Clone(ArenaAllocator *const allocator, AstNode
 {
     auto *const argument = argument_ != nullptr ? argument_->Clone(allocator, nullptr)->AsExpression() : nullptr;
     auto *const clone = allocator->New<AwaitExpression>(argument);
+    ES2PANDA_ASSERT(clone);
 
     if (argument != nullptr) {
         argument->SetParent(clone);

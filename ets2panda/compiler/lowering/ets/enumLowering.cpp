@@ -39,6 +39,7 @@ namespace {
 [[nodiscard]] ir::Identifier *MakeParamRefIdent(public_lib::Context *ctx, ir::ETSParameterExpression *paramExpr)
 {
     auto *const refIdent = ctx->AllocNode<ir::Identifier>(paramExpr->Ident()->Name(), ctx->Allocator());
+    ES2PANDA_ASSERT(refIdent);
     refIdent->SetRange(paramExpr->Ident()->Range());
     refIdent->SetVariable(paramExpr->Ident()->Variable());
     return refIdent;
@@ -418,13 +419,17 @@ void EnumLoweringPhase::ProcessEnumClassDeclaration(ir::TSEnumDeclaration *const
     auto *ident = enumClassDecl->Definition()->Ident();
     if (flags.isLocal) {
         auto *scope = NearestScope(enumDecl->Parent());
+        ES2PANDA_ASSERT(scope);
         auto localCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(varbinder_, scope);
+        ES2PANDA_ASSERT(scope);
         scope->EraseBinding(ident->Name());
         InitScopesPhaseETS::RunExternalNode(enumClassDecl, varbinder_);
         var = varbinder_->GetScope()->FindLocal(ident->Name(), varbinder::ResolveBindingOptions::ALL);
     } else if (flags.isTopLevel) {
         auto *scope = program_->GlobalClassScope();
+        ES2PANDA_ASSERT(scope);
         auto localCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(varbinder_, scope);
+        ES2PANDA_ASSERT(scope);
         scope->StaticDeclScope()->EraseBinding(ident->Name());
         InitScopesPhaseETS::RunExternalNode(enumClassDecl, varbinder_);
         var = varbinder_->GetScope()->FindLocal(ident->Name(), varbinder::ResolveBindingOptions::ALL);
@@ -796,11 +801,13 @@ ir::VariableDeclaration *CreateForLoopInitVariableDeclaration(public_lib::Contex
     static_assert(EnumLoweringPhase::ORDINAL_TYPE == ir::PrimitiveType::INT);
     auto *const init = ctx->AllocNode<ir::NumberLiteral>(lexer::Number((int32_t)0));
     auto *const decl = ctx->AllocNode<ir::VariableDeclarator>(ir::VariableDeclaratorFlag::LET, loopIdentifier, init);
+    ES2PANDA_ASSERT(loopIdentifier);
     loopIdentifier->SetParent(decl);
     ArenaVector<ir::VariableDeclarator *> decls(ctx->Allocator()->Adapter());
     decls.push_back(decl);
     auto *const declaration = ctx->AllocNode<ir::VariableDeclaration>(
         ir::VariableDeclaration::VariableDeclarationKind::LET, ctx->Allocator(), std::move(decls));
+    ES2PANDA_ASSERT(decl);
     decl->SetParent(declaration);
     return declaration;
 }

@@ -93,6 +93,7 @@ static ir::MethodDefinition *CreateAnonClassFieldGetterSetter(public_lib::Contex
 {
     auto *const parser = ctx->parser->AsETSParser();
     // Field type annotation
+    ES2PANDA_ASSERT(ifaceMethod->Function());
     auto *fieldType = ifaceMethod->Function()->Signature()->ReturnType();
     ES2PANDA_ASSERT(fieldType != nullptr);
 
@@ -103,7 +104,7 @@ static ir::MethodDefinition *CreateAnonClassFieldGetterSetter(public_lib::Contex
         sourceCode << "public set @@I1 (anonParam:@@T2){" << std::endl;
         sourceCode << "this.@@I3 = anonParam" << std::endl;
         sourceCode << "}" << std::endl;
-
+        ES2PANDA_ASSERT(ifaceMethod->Id());
         return parser
             ->CreateFormattedClassMethodDefinition(sourceCode.str(), ifaceMethod->Id()->Name(), fieldType,
                                                    anonClassFieldName)
@@ -133,6 +134,7 @@ static void FillClassBody(public_lib::Context *ctx, ArenaVector<ir::AstNode *> *
         ES2PANDA_ASSERT(it->IsMethodDefinition());
         auto *ifaceMethod = it->AsMethodDefinition();
 
+        ES2PANDA_ASSERT(ifaceMethod->Function());
         if (!ifaceMethod->Function()->IsGetter()) {
             continue;
         }
@@ -203,6 +205,7 @@ static void AnnotateGeneratedAnonClass(checker::ETSChecker *checker, ir::ClassDe
         checker->ProgramAllocNode<ir::Identifier>(Signatures::INTERFACE_OBJ_LITERAL, checker->ProgramAllocator());
     annoId->SetAnnotationUsage();
     auto *annoUsage = checker->ProgramAllocNode<ir::AnnotationUsage>(annoId, checker->ProgramAllocator());
+    ES2PANDA_ASSERT(annoUsage);
     annoUsage->AddModifier(ir::ModifierFlags::ANNOTATION_USAGE);
     annoUsage->SetParent(classDef);
     annoId->SetParent(annoUsage);
@@ -256,6 +259,7 @@ static void GenerateAnonClassTypeFromInterface(public_lib::Context *ctx, ir::TSI
     // Class implements
     auto *classImplements = ctx->AllocNode<ir::TSClassImplements>(
         ctx->AllocNode<ir::OpaqueTypeNode>(ifaceNode->TsType(), ctx->Allocator()));
+    ES2PANDA_ASSERT(classImplements);
     classImplements->SetParent(classDef);
     classDef->EmplaceImplements(classImplements);
     classType->RemoveObjectFlag(checker::ETSObjectFlags::RESOLVED_INTERFACES);
@@ -336,6 +340,7 @@ static checker::Type *ProcessDeclNode(checker::ETSChecker *checker, checker::ETS
                 continue;
             }
 
+            ES2PANDA_ASSERT(it->AsMethodDefinition()->Id());
             checker->LogError(diagnostic::ABSTRACT_METH_IN_ABSTRACT_CLASS, {it->AsMethodDefinition()->Id()->Name()},
                               objExpr->Start());
             return checker->GlobalTypeError();
@@ -390,6 +395,7 @@ static bool CheckInterfaceShouldGenerateAnonClass(ir::TSInterfaceDeclaration *in
         }
         ES2PANDA_ASSERT(it->IsMethodDefinition());
         auto methodDef = it->AsMethodDefinition();
+        ES2PANDA_ASSERT(methodDef->Function());
         if (!methodDef->Function()->IsGetter() && !methodDef->Function()->IsSetter()) {
             return false;
         }

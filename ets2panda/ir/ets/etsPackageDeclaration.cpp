@@ -69,6 +69,7 @@ ETSPackageDeclaration *ETSPackageDeclaration::Clone(ArenaAllocator *const alloca
 {
     auto const name = name_ != nullptr ? name_->Clone(allocator, nullptr)->AsExpression() : nullptr;
     auto *const clone = allocator->New<ETSPackageDeclaration>(name);
+    ES2PANDA_ASSERT(clone);
 
     if (name != nullptr) {
         name->SetParent(clone);

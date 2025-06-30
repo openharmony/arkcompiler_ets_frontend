@@ -115,6 +115,7 @@ ETSNewMultiDimArrayInstanceExpression *ETSNewMultiDimArrayInstanceExpression::Cl
                                                                                     AstNode *const parent)
 {
     auto *const clone = allocator->New<ETSNewMultiDimArrayInstanceExpression>(*this, allocator);
+    ES2PANDA_ASSERT(clone);
     if (parent != nullptr) {
         clone->SetParent(parent);
     }

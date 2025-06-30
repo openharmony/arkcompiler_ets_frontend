@@ -69,6 +69,7 @@ ETSNonNullishTypeNode *ETSNonNullishTypeNode::Clone(ArenaAllocator *allocator, A
 {
     TypeNode *typeNode = typeNode_->Clone(allocator, nullptr);
     ETSNonNullishTypeNode *clone = allocator->New<ir::ETSNonNullishTypeNode>(typeNode, allocator);
+    ES2PANDA_ASSERT(clone);
     clone->SetParent(parent);
     clone->typeNode_->SetParent(clone);
     return clone;
