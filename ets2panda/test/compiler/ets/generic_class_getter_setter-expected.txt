@@ -420,7 +420,7 @@
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 13,
+                    "column": 5,
                     "program": "generic_class_getter_setter.ets"
                   },
                   "end": {
@@ -435,7 +435,7 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 13,
+                "column": 5,
                 "program": "generic_class_getter_setter.ets"
               },
               "end": {
