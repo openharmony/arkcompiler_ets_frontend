@@ -184,6 +184,7 @@ export enum FaultID {
   InteropJSFunctionInvoke,
   LimitedVoidTypeFromSdk,
   EntryAnnotation,
+  SdkAbilityLifecycleMonitor,
   ProvideAnnotation,
   UseSharedDeprecated,
   UseConcurrentDeprecated,

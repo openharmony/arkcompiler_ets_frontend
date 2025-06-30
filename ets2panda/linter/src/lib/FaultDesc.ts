@@ -188,6 +188,8 @@ faultDesc[FaultID.UseSharedDeprecated] = '"use shared" is not supported';
 faultDesc[FaultID.UseConcurrentDeprecated] = '"use concurrent" is not supported';
 faultDesc[FaultID.MethodInheritRule] = 'Method parameters/returns violate inheritance principles';
 faultDesc[FaultID.EntryAnnotation] = '"@Entry" decorator parameter';
+faultDesc[FaultID.SdkAbilityLifecycleMonitor] =
+  'UIAbility of 1.2 needs to be listened by the new StaticAbilityLifecycleCallback';
 faultDesc[FaultID.ProvideAnnotation] = '"@Provide" decorator parameter';
 faultDesc[FaultID.InteropJsObjectInheritance] = 'Interop JS class inheritance';
 faultDesc[FaultID.InteropJsObjectTraverseJsInstance] = 'Interop JS object traverse usage';

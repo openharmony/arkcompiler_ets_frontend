@@ -4499,6 +4499,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
   private handleCallExpression(node: ts.Node): void {
     const tsCallExpr = node as ts.CallExpression;
+    this.checkSdkAbilityLifecycleMonitor(tsCallExpr);
     this.handleStateStyles(tsCallExpr);
     this.handleBuiltinCtorCallSignature(tsCallExpr);
     this.handleSdkConstructorIfaceForCallExpression(tsCallExpr);
@@ -4530,14 +4531,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       const faultId = this.options.arkts2 ? FaultID.EsValueTypeError : FaultID.EsValueType;
       this.incrementCounters(node, faultId);
     }
-    if (
-      !ts.isExpressionStatement(tsCallExpr.parent) &&
-      !ts.isVoidExpression(tsCallExpr.parent) &&
-      !ts.isArrowFunction(tsCallExpr.parent) &&
-      !(ts.isConditionalExpression(tsCallExpr.parent) && ts.isExpressionStatement(tsCallExpr.parent.parent))
-    ) {
-      this.handleLimitedVoidWithCall(tsCallExpr);
-    }
+    this.handleLimitedVoidWithCall(tsCallExpr);
     this.handleAppStorageCallExpression(tsCallExpr);
     this.fixJsImportCallExpression(tsCallExpr);
     this.handleInteropForCallJSExpression(tsCallExpr, calleeSym, callSignature);
@@ -6364,6 +6358,14 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   }
 
   private handleLimitedVoidWithCall(node: ts.CallExpression): void {
+    if (
+      ts.isExpressionStatement(node.parent) ||
+      ts.isVoidExpression(node.parent) ||
+      ts.isArrowFunction(node.parent) ||
+      ts.isConditionalExpression(node.parent) && ts.isExpressionStatement(node.parent.parent)
+    ) {
+      return;
+    }
     if (!this.options.arkts2) {
       return;
     }
@@ -8770,6 +8772,64 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
     const importDeclaration = specifier.parent.parent.parent;
     return TypeScriptLinter.checkModuleSpecifierForTaskPoolDeprecatedUsages(importDeclaration);
+  }
+
+  private checkSdkAbilityLifecycleMonitor(callExpr: ts.CallExpression): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    // Guard: must be a property-access .on
+    if (!this.isOnMethod(callExpr)) {
+      return;
+    }
+
+    // Guard: left side must be applicationContext
+    if (!this.isApplicationContext(callExpr)) {
+      return;
+    }
+
+    // Guard: exactly two arguments
+    const args = callExpr.arguments;
+    if (args.length !== 2) {
+      return;
+    }
+
+    // Guard: first arg must be string literal "abilityLifecycle"
+    const eventArg = args[0];
+    if (!ts.isStringLiteral(eventArg) || eventArg.text !== 'abilityLifecycle') {
+      return;
+    }
+
+    // Guard: second arg must be a variable declared as AbilityLifecycleCallback
+    const cbArg = args[1];
+    if (!ts.isIdentifier(cbArg)) {
+      return;
+    }
+    const varSym = this.tsUtils.trueSymbolAtLocation(cbArg);
+    const decl = varSym?.declarations?.find(ts.isVariableDeclaration);
+    if (
+      !decl?.type ||
+      !ts.isTypeReferenceNode(decl.type) ||
+      decl.type.typeName.getText() !== 'AbilityLifecycleCallback'
+    ) {
+      return;
+    }
+
+    // Report the legacy callback usage
+    this.incrementCounters(callExpr, FaultID.SdkAbilityLifecycleMonitor);
+  }
+
+  private isOnMethod(node: ts.CallExpression): boolean {
+    void this;
+    const expr = node.expression;
+    return ts.isPropertyAccessExpression(expr) && expr.name.text === 'on';
+  }
+
+  private isApplicationContext(node: ts.CallExpression): boolean {
+    void this;
+    const left = (node.expression as ts.PropertyAccessExpression).expression;
+    return ts.isIdentifier(left) && left.text === 'applicationContext';
   }
 
   private handleForOfJsArray(node: ts.ForOfStatement): void {
