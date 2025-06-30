@@ -36,8 +36,8 @@ let array: number[] = [1.0, 2.0, 3.0]
 const index_1: number = 1.3;
 let index_2: number = 1.3;
 let index_3: number = 1.0;
-array[index_1 as int];
-array[index_2 as int];
+array[index_1];
+array[index_2];
 array[index_3 as int];
 let index_4: int = 2.0
 array[index_4];

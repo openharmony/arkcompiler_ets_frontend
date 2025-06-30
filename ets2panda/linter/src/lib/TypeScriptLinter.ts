@@ -4122,7 +4122,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         this.incrementCounters(argExpr, FaultID.ArrayIndexExprType, autofix);
       }
     } else if (this.tsTypeChecker.typeToString(argType) === 'number') {
-      if (this.isArrayIndexValidNumber(argExpr)) {
+      if (this.isArrayIndexValidNumber(argExpr) || this.hasNonIntegerInitializer(argExpr)) {
         return;
       }
       const autofix = this.autofixer?.fixArrayIndexExprType(argExpr);
@@ -4134,6 +4134,27 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (ts.isConditionalExpression(argExpr)) {
       this.incrementCounters(argExpr, FaultID.ArrayIndexExprType);
     }
+  }
+
+  /**
+   * Returns true if the identifier’s initializer is a non-integer numeric literal (e.g. 1.3, 2.5).
+   */
+  private hasNonIntegerInitializer(argExpr: ts.Expression): boolean {
+    if (!ts.isIdentifier(argExpr)) {
+      return false;
+    }
+    const declNode = this.tsUtils.getDeclarationNode(argExpr);
+    if (
+      declNode &&
+      ts.isVariableDeclaration(declNode) &&
+      declNode.initializer &&
+      ts.isNumericLiteral(declNode.initializer)
+    ) {
+      const raw = declNode.initializer.getText();
+      const num = Number(raw);
+      return !Number.isInteger(num);
+    }
+    return false;
   }
 
   private checkNumericArgumentDeclaration(argExpr: ts.Expression): void {

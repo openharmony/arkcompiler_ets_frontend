@@ -26,22 +26,22 @@
     },
     {
       "line": 19,
-      "column": 14,
-      "endLine": 19,
-      "endColumn": 21,
-      "problem": "ConstructorIfaceFromSdk",
-      "suggest": "",
-      "rule": "Construct signatures are not supported in interfaces.(sdk-ctor-signatures-iface)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 19,
       "column": 10,
       "endLine": 21,
       "endColumn": 5,
       "problem": "GenericCallNoTypeArgs",
       "suggest": "",
       "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 20,
+      "column": 25,
+      "endLine": 20,
+      "endColumn": 27,
+      "problem": "NoTsLikeSmartType",
+      "suggest": "",
+      "rule": "Smart type differences (arkts-no-ts-like-smart-type)",
       "severity": "ERROR"
     },
     {
@@ -96,22 +96,22 @@
     },
     {
       "line": 32,
-      "column": 14,
-      "endLine": 32,
-      "endColumn": 21,
-      "problem": "ConstructorIfaceFromSdk",
-      "suggest": "",
-      "rule": "Construct signatures are not supported in interfaces.(sdk-ctor-signatures-iface)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 32,
       "column": 10,
       "endLine": 34,
       "endColumn": 5,
       "problem": "GenericCallNoTypeArgs",
       "suggest": "",
       "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 33,
+      "column": 25,
+      "endLine": 33,
+      "endColumn": 27,
+      "problem": "NoTsLikeSmartType",
+      "suggest": "",
+      "rule": "Smart type differences (arkts-no-ts-like-smart-type)",
       "severity": "ERROR"
     },
     {
