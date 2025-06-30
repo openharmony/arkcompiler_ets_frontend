@@ -166,6 +166,7 @@ static int Run(Span<const char *const> args)
     auto diagnosticEngine = util::DiagnosticEngine();
     auto options = std::make_unique<util::Options>(args[0], diagnosticEngine);
     if (!options->Parse(args)) {
+        diagnosticEngine.FlushDiagnostic();
         return 1;
     }
     diagnosticEngine.SetWError(options->IsEtsWarningsWerror());
@@ -176,6 +177,7 @@ static int Run(Span<const char *const> args)
 
     auto pluginsOpt = InitializePlugins(options->GetPlugins(), diagnosticEngine);
     if (!pluginsOpt.has_value()) {
+        diagnosticEngine.FlushDiagnostic();
         return 1;
     }
 
@@ -183,6 +185,7 @@ static int Run(Span<const char *const> args)
     if (options->IsListPhases()) {
         std::cerr << "Available phases:" << std::endl;
         std::cerr << compiler.GetPhasesList();
+        diagnosticEngine.FlushDiagnostic();
         return 1;
     }
 
@@ -206,6 +209,7 @@ static int Run(Span<const char *const> args)
     if (options->IsDumpPerfMetrics()) {
         util::DumpPerfMetrics();
     }
+    diagnosticEngine.FlushDiagnostic();
     return res;
 }
 }  // namespace ark::es2panda::aot
