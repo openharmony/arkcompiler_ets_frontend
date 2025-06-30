@@ -8883,27 +8883,18 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
     const namedImports = namedBindings && ts.isNamedImports(namedBindings) ? namedBindings.elements : [];
 
-    const defaultIsForbidden = defaultImport && expectedImports.includes(defaultImport.getText());
+    const FORBIDDEN_DEFAULT_IMPORT_MODULES = Object.keys(MODULE_IMPORTS).filter((name) => {
+      return name !== '@kit.ArkTS';
+    });
+
+    const defaultIsForbidden = defaultImport && FORBIDDEN_DEFAULT_IMPORT_MODULES.includes(moduleName);
     const forbiddenNamed = namedImports.filter((spec) => {
       const name = spec.propertyName ? spec.propertyName.getText() : spec.name.getText();
       return expectedImports.includes(name);
     });
 
-    if (
-      TypeScriptLinter.shouldRemoveWholeImport(
-        defaultIsForbidden,
-        forbiddenNamed.length,
-        namedImports.length,
-        defaultImport
-      )
-    ) {
-      const autofix = this.autofixer?.removeNode(importDeclaration);
-      this.incrementCounters(importDeclaration, FaultID.LimitedStdLibNoImportConcurrency, autofix);
-      return;
-    }
-
     if (defaultIsForbidden) {
-      const autofix = this.autofixer?.removeDefaultImport(importDeclaration, defaultImport);
+      const autofix = this.autofixer?.removeDefaultImport(importDeclaration, defaultImport, expectedImports[0]);
       this.incrementCounters(defaultImport, FaultID.LimitedStdLibNoImportConcurrency, autofix);
     }
 
@@ -8911,19 +8902,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       const autofix = this.autofixer?.removeImportSpecifier(spec, importDeclaration);
       this.incrementCounters(spec, FaultID.LimitedStdLibNoImportConcurrency, autofix);
     }
-  }
-
-  private static shouldRemoveWholeImport(
-    defaultIsForbidden: boolean | undefined,
-    forbiddenNamedCount: number,
-    namedImportsCount: number,
-    defaultImport: ts.Identifier | undefined
-  ): boolean {
-    return (
-      defaultIsForbidden && forbiddenNamedCount === namedImportsCount ||
-      defaultIsForbidden && namedImportsCount === 0 ||
-      !defaultImport && forbiddenNamedCount === namedImportsCount && namedImportsCount > 0
-    );
   }
 
   /**
