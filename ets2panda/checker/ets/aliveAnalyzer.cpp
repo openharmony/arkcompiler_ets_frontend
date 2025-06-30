@@ -246,15 +246,19 @@ void AliveAnalyzer::AnalyzeMethodDef(const ir::MethodDefinition *methodDef)
 
     auto isPromiseVoid = false;
 
-    if (returnType->IsETSAsyncFuncReturnType()) {
-        const auto *asAsync = returnType->AsETSAsyncFuncReturnType();
-        isPromiseVoid = asAsync->GetPromiseTypeArg() == checker_->GlobalETSUndefinedType();
+    if (returnType->IsETSObjectType() &&
+        returnType->AsETSObjectType()->AssemblerName() == compiler::Signatures::BUILTIN_PROMISE) {
+        const auto *asAsync = returnType->AsETSObjectType();
+        isPromiseVoid = asAsync->TypeArguments().front() == checker_->GlobalETSUndefinedType() ||
+                        asAsync->TypeArguments().front() == checker_->GlobalVoidType();
     }
 
-    if (status_ == LivenessStatus::ALIVE && !isVoid && !isPromiseVoid && !util::Helpers::IsAsyncMethod(methodDef)) {
+    if (status_ == LivenessStatus::ALIVE && !isVoid && !isPromiseVoid) {
         if (!methodDef->Function()->HasReturnStatement()) {
-            checker_->LogError(diagnostic::MISSING_RETURN_STMT, {}, func->Start());
-            ClearPendingExits();
+            if (!util::Helpers::IsAsyncMethod(methodDef)) {
+                checker_->LogError(diagnostic::MISSING_RETURN_STMT, {}, func->Start());
+                ClearPendingExits();
+            }
             return;
         }
 
