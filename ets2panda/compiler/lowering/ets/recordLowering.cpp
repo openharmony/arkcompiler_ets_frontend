@@ -16,6 +16,7 @@
 #include "recordLowering.h"
 
 #include "checker/ETSchecker.h"
+#include "checker/types/ets/etsAsyncFuncReturnType.h"
 
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "compiler/lowering/util.h"
@@ -155,6 +156,9 @@ ir::Statement *RecordLowering::CreateStatement(const std::string &src, ir::Expre
 ir::Expression *RecordLowering::UpdateObjectExpression(ir::ObjectExpression *expr, public_lib::Context *ctx)
 {
     auto checker = ctx->checker->AsETSChecker();
+    if (expr->PreferredType()->IsETSAsyncFuncReturnType()) {
+        expr->SetPreferredType(expr->PreferredType()->AsETSAsyncFuncReturnType()->GetPromiseTypeArg());
+    }
 
     if (!expr->PreferredType()->IsETSObjectType()) {
         // Unexpected preferred type
