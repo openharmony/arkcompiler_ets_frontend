@@ -95,6 +95,7 @@ ir::Decorator *ASParser::ParseDecorator()
 
     auto *expr = ParseLeftHandSideExpression();
     auto *decorator = AllocNode<ir::Decorator>(expr);
+    ES2PANDA_ASSERT(decorator != nullptr);
     decorator->SetRange({start, expr->End()});
     return decorator;
 }
@@ -124,6 +125,7 @@ ir::TSTypeAliasDeclaration *ASParser::ParseTypeAliasDeclaration()
     const util::StringView &ident = Lexer()->GetToken().Ident();
 
     auto *id = AllocNode<ir::Identifier>(ident, Allocator());
+    ES2PANDA_ASSERT(id != nullptr);
     id->SetRange(Lexer()->GetToken().Loc());
     Lexer()->NextToken();
 
@@ -343,6 +345,7 @@ std::tuple<ir::AnnotatedExpression *, bool> ASParser::ParsePatternElementToken(E
         }
         case lexer::TokenType::LITERAL_IDENT: {
             returnNode = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
+            ES2PANDA_ASSERT(returnNode != nullptr);
             returnNode->SetRange(Lexer()->GetToken().Loc());
             Lexer()->NextToken();
 
@@ -430,6 +433,7 @@ ir::Expression *ASParser::ParsePropertyDefinition([[maybe_unused]] ExpressionPar
         key = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
     }
 
+    ES2PANDA_ASSERT(key != nullptr);
     key->SetRange(Lexer()->GetToken().Loc());
 
     Lexer()->NextToken();
@@ -446,6 +450,7 @@ ir::Expression *ASParser::ParsePropertyDefinition([[maybe_unused]] ExpressionPar
     }
 
     auto *property = AllocNode<ir::Property>(key, value);
+    ES2PANDA_ASSERT(property != nullptr);
     property->SetRange({key->Start(), value->End()});
     return property;
 }
@@ -570,6 +575,7 @@ ir::TypeNode *ASParser::ParseParenthesizedOrFunctionType(bool throwError)
 ir::TypeNode *ASParser::ParseTypeAnnotationLiteralIdentHelper(ir::TypeNode *type, TypeAnnotationParsingOptions *options)
 {
     auto *typeName = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
+    ES2PANDA_ASSERT(typeName != nullptr);
     typeName->SetRange(Lexer()->GetToken().Loc());
     type = AllocNode<ir::NamedType>(typeName, Allocator());
     type->SetRange(Lexer()->GetToken().Loc());
@@ -584,6 +590,7 @@ ir::TypeNode *ASParser::ParseTypeAnnotationLiteralIdentHelper(ir::TypeNode *type
         }
 
         typeName = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
+        ES2PANDA_ASSERT(typeName != nullptr);
         typeName->SetRange(Lexer()->GetToken().Loc());
         auto *next = AllocNode<ir::NamedType>(typeName, Allocator());
         current->SetRange(Lexer()->GetToken().Loc());
@@ -646,6 +653,7 @@ ir::TypeNode *ASParser::ParseTypeAnnotationTokens(ir::TypeNode *type, bool throw
     }
 
     auto *typeName = AllocNode<ir::Identifier>(name, Allocator());
+    ES2PANDA_ASSERT(typeName != nullptr);
     typeName->SetRange(Lexer()->GetToken().Loc());
     type = AllocNode<ir::NamedType>(typeName, Allocator());
     type->SetRange(Lexer()->GetToken().Loc());
@@ -717,6 +725,7 @@ ir::TypeNode *ASParser::ParseTypeAnnotationTokenLeftSquareBracket(ir::TypeNode *
 
         util::StringView name = "Array";
         auto *typeName = AllocNode<ir::Identifier>(name, Allocator());
+        ES2PANDA_ASSERT(typeName != nullptr);
         typeName->SetRange(Lexer()->GetToken().Loc());
 
         ArenaVector<ir::TypeNode *> params(Allocator()->Adapter());
@@ -768,6 +777,7 @@ bool ASParser::ParsePotentialNonNullExpression(ir::Expression **returnExpression
     }
 
     *returnExpression = AllocNode<ir::TSNonNullExpression>(*returnExpression);
+    ES2PANDA_ASSERT(*returnExpression != nullptr);
     // NOLINTNEXTLINE(clang-analyzer-core.CallAndMessage)
     (*returnExpression)->SetRange({startLoc, Lexer()->GetToken().End()});
     Lexer()->NextToken();
@@ -815,6 +825,7 @@ bool ASParser::ParsePotentialGenericFunctionCall(ir::Expression *primaryExpr, ir
         lexer::SourcePosition endLoc = propertyNode->End();
 
         *returnExpression = AllocNode<ir::TaggedTemplateExpression>(*returnExpression, propertyNode, typeParams);
+        ES2PANDA_ASSERT(returnExpression != nullptr);
         // NOLINTNEXTLINE(clang-analyzer-core.CallAndMessage)
         (*returnExpression)->SetRange({startLoc, endLoc});
         return false;
@@ -846,6 +857,7 @@ ir::Expression *ASParser::ParsePotentialAsExpression(ir::Expression *primaryExpr
 ir::Identifier *ASParser::ParsePrimaryExpressionIdent([[maybe_unused]] ExpressionParseFlags flags)
 {
     auto *identNode = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
+    ES2PANDA_ASSERT(identNode != nullptr);
     identNode->SetRange(Lexer()->GetToken().Loc());
 
     Lexer()->NextToken();
@@ -866,6 +878,7 @@ bool ASParser::ValidateArrowFunctionRestParameter([[maybe_unused]] ir::SpreadEle
     return true;
 }
 
+// CC-OFFNXT(huge_method[C++], G.FUN.01-CPP) solid logic
 ArenaVector<ir::TSInterfaceHeritage *> ASParser::ParseInterfaceExtendsClause()
 {
     Lexer()->NextToken();  // eat extends keyword
@@ -877,6 +890,7 @@ ArenaVector<ir::TSInterfaceHeritage *> ASParser::ParseInterfaceExtendsClause()
     const lexer::SourcePosition &heritageStart = Lexer()->GetToken().Start();
     lexer::SourcePosition heritageEnd = Lexer()->GetToken().End();
     auto *extendsName = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
+    ES2PANDA_ASSERT(extendsName != nullptr);
     extendsName->SetRange(Lexer()->GetToken().Loc());
     auto *extendsClause = AllocNode<ir::NamedType>(extendsName, Allocator());
     extendsClause->SetRange(Lexer()->GetToken().Loc());
@@ -943,6 +957,7 @@ ir::TSIndexSignature *ASParser::ParseIndexSignature(const lexer::SourcePosition 
     }
 
     auto *key = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
+    ES2PANDA_ASSERT(key != nullptr);
     key->SetRange(Lexer()->GetToken().Loc());
 
     Lexer()->NextToken();  // eat key
@@ -992,12 +1007,14 @@ std::tuple<ir::Expression *, bool> ASParser::ParseInterfacePropertyKey()
         case lexer::TokenType::LITERAL_IDENT: {
             const util::StringView &ident = Lexer()->GetToken().Ident();
             key = AllocNode<ir::Identifier>(ident, Allocator());
+            ES2PANDA_ASSERT(key != nullptr);
             key->SetRange(Lexer()->GetToken().Loc());
             break;
         }
         case lexer::TokenType::LITERAL_STRING: {
             const util::StringView &string = Lexer()->GetToken().String();
             key = AllocNode<ir::StringLiteral>(string);
+            ES2PANDA_ASSERT(key != nullptr);
             key->SetRange(Lexer()->GetToken().Loc());
             break;
         }
@@ -1008,6 +1025,7 @@ std::tuple<ir::Expression *, bool> ASParser::ParseInterfacePropertyKey()
                 key = AllocNode<ir::NumberLiteral>(Lexer()->GetToken().GetNumber());
             }
 
+            ES2PANDA_ASSERT(key != nullptr);
             key->SetRange(Lexer()->GetToken().Loc());
             break;
         }
@@ -1103,6 +1121,7 @@ ArenaVector<ir::TSClassImplements *> ASParser::ParseClassImplementClause()
         auto *implementsName = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
         implementsName->SetRange(Lexer()->GetToken().Loc());
         auto *implementsClause = AllocNode<ir::NamedType>(implementsName, Allocator());
+        ES2PANDA_ASSERT(implementsClause != nullptr);
         implementsClause->SetRange(Lexer()->GetToken().Loc());
         Lexer()->NextToken();
 
@@ -1281,6 +1300,7 @@ std::tuple<bool, bool, bool> ASParser::ParseComputedClassFieldOrIndexSignature(i
         }
 
         auto id = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
+        ES2PANDA_ASSERT(id != nullptr);
         id->SetRange(Lexer()->GetToken().Loc());
 
         Lexer()->NextToken();  // eat param
@@ -1346,6 +1366,7 @@ std::tuple<bool, ir::BlockStatement *, lexer::SourcePosition, bool> ASParser::Pa
         ThrowSyntaxError("An implementation cannot be declared in ambient contexts.");
     } else {
         body = ParseBlockStatement();
+        ES2PANDA_ASSERT(body != nullptr);
         endLoc = body->End();
     }
 
@@ -1358,6 +1379,7 @@ ir::AstNode *ASParser::ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> *s
     Lexer()->NextToken();  // eat local name
 
     auto *specifier = AllocNode<ir::ImportDefaultSpecifier>(local);
+    ES2PANDA_ASSERT(specifier != nullptr);
     specifier->SetRange(specifier->Local()->Range());
     specifiers->push_back(specifier);
 
@@ -1503,6 +1525,7 @@ ir::Statement *ASParser::ParseConstStatement(StatementParsingFlags flags)
     }
 
     auto *variableDecl = ParseVariableDeclaration(VariableParsingFlags::CONST | VariableParsingFlags::NO_SKIP_VAR_KIND);
+    ES2PANDA_ASSERT(variableDecl != nullptr);
     variableDecl->SetStart(constVarStar);
     ConsumeSemicolon(variableDecl);
 
@@ -1519,6 +1542,7 @@ ir::AnnotatedExpression *ASParser::ParseVariableDeclaratorKey(VariableParsingFla
 
     const util::StringView &identStr = Lexer()->GetToken().Ident();
     auto init = AllocNode<ir::Identifier>(identStr, Allocator());
+    ES2PANDA_ASSERT(init != nullptr);
     init->SetRange(Lexer()->GetToken().Loc());
     Lexer()->NextToken();
 
@@ -1592,6 +1616,7 @@ ir::ExportDefaultDeclaration *ASParser::ParseExportDefaultDeclaration(const lexe
 
     lexer::SourcePosition endLoc = declNode->End();
     auto *exportDeclaration = AllocNode<ir::ExportDefaultDeclaration>(declNode, isExportEquals);
+    ES2PANDA_ASSERT(exportDeclaration != nullptr);
     exportDeclaration->SetRange({startLoc, endLoc});
 
     if (eatSemicolon) {
@@ -1666,6 +1691,7 @@ ir::Statement *ASParser::ParseNamedExportDeclaration(const lexer::SourcePosition
 
     ArenaVector<ir::ExportSpecifier *> specifiers(Allocator()->Adapter());
     auto *exportDeclaration = AllocNode<ir::ExportNamedDeclaration>(Allocator(), decl, std::move(specifiers));
+    ES2PANDA_ASSERT(exportDeclaration != nullptr);
     exportDeclaration->SetRange({startLoc, decl->End()});
 
     return exportDeclaration;
@@ -1712,6 +1738,7 @@ ir::Statement *ASParser::ParseImportDeclaration([[maybe_unused]] StatementParsin
 
     lexer::SourcePosition endLoc = source->End();
     auto *importDeclaration = AllocNode<ir::ImportDeclaration>(source, std::move(specifiers));
+    ES2PANDA_ASSERT(importDeclaration != nullptr);
     importDeclaration->SetRange({startLoc, endLoc});
 
     ConsumeSemicolon(importDeclaration);

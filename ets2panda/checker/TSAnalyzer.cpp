@@ -107,6 +107,7 @@ checker::Type *TSAnalyzer::Check(ir::TSMethodSignature *node) const
     }
 
     returnType->Check(checker);
+    ES2PANDA_ASSERT(callSignature != nullptr);
     callSignature->SetReturnType(returnType->GetType(checker));
 
     return nullptr;
@@ -787,6 +788,7 @@ void TSAnalyzer::CheckNonComputed(checker::ObjectDescriptor *desc, ir::Expressio
 
     auto *memberVar = varbinder::Scope::CreateVar(checker->Allocator(), propName, flags, it);
 
+    ES2PANDA_ASSERT(memberVar != nullptr);
     if (inConstContext) {
         memberVar->AddFlag(varbinder::VariableFlags::READONLY);
     } else {
@@ -1342,6 +1344,7 @@ static void CheckSimpleVariableDeclaration(checker::TSChecker *checker, ir::Vari
             initializerType = checker->GetBaseTypeOfLiteralType(initializerType);
         }
 
+        ES2PANDA_ASSERT(initializerType != nullptr);
         if (initializerType->IsNullType()) {
             checker->ThrowTypeError(
                 {"Cannot infer type for variable '", declarator->Id()->AsIdentifier()->Name(), "'."},
@@ -1729,6 +1732,7 @@ static void AddEnumValueDeclaration(checker::TSChecker *checker, double number, 
 
     if (res == nullptr) {
         auto *decl = checker->Allocator()->New<varbinder::EnumDecl>(memberStr);
+        ES2PANDA_ASSERT(decl != nullptr);
         decl->BindNode(variable->Declaration()->Node());
         enumScope->AddDecl(checker->Allocator(), decl, ScriptExtension::TS);
         res = enumScope->FindLocal(memberStr, varbinder::ResolveBindingOptions::BINDINGS);

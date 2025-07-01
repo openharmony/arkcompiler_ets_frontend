@@ -414,6 +414,7 @@ bool ETSChecker::IsConstantExpression(ir::Expression *expr, Type *type)
 
 Type *ETSChecker::GetNonConstantType(Type *type)
 {
+    ES2PANDA_ASSERT(type != nullptr);
     if (type->IsETSStringType()) {
         return GlobalBuiltinETSStringType();
     }
@@ -471,7 +472,9 @@ Type *ETSChecker::GetTypeOfSetterGetter(varbinder::Variable *const var)
 {
     auto *propType = var->TsType()->AsETSFunctionType();
     if (propType->HasTypeFlag(checker::TypeFlag::GETTER)) {
-        return propType->FindGetter()->ReturnType();
+        auto *getter = propType->FindGetter();
+        ES2PANDA_ASSERT(getter != nullptr);
+        return getter->ReturnType();
     }
 
     return propType->FindSetter()->Params()[0]->TsType();
@@ -511,7 +514,9 @@ void ETSChecker::IterateInVariableContext(varbinder::Variable *const var)
         if (iter->IsMethodDefinition()) {
             auto *methodDef = iter->AsMethodDefinition();
             ES2PANDA_ASSERT(methodDef->TsType());
-            Context().SetContainingSignature(methodDef->Function()->Signature());
+            auto *func = methodDef->Function();
+            ES2PANDA_ASSERT(func != nullptr);
+            Context().SetContainingSignature(func->Signature());
         } else if (iter->IsClassDefinition()) {
             auto *classDef = iter->AsClassDefinition();
             Type *containingClass {};
@@ -666,7 +671,9 @@ Type *ETSChecker::GuaranteedTypeForUncheckedPropertyAccess(varbinder::Variable *
 
     switch (auto node = prop->Declaration()->Node(); node->Type()) {
         case ir::AstNodeType::CLASS_PROPERTY: {
-            auto baseProp = node->AsClassProperty()->Id()->Variable();
+            auto *id = node->AsClassProperty()->Id();
+            ES2PANDA_ASSERT(id != nullptr);
+            auto baseProp = id->Variable();
             if (baseProp == prop) {
                 return nullptr;
             }
@@ -686,6 +693,7 @@ Type *ETSChecker::GuaranteedTypeForUncheckedPropertyAccess(varbinder::Variable *
 // Determine if substituted method cast requires cast from erased type
 Type *ETSChecker::GuaranteedTypeForUncheckedCallReturn(Signature *sig)
 {
+    ES2PANDA_ASSERT(sig != nullptr);
     ES2PANDA_ASSERT(sig->HasFunction());
     if (sig->HasSignatureFlag(SignatureFlags::THIS_RETURN_TYPE)) {
         return sig->ReturnType();
@@ -704,6 +712,7 @@ Type *ETSChecker::ResolveUnionUncheckedType(ArenaVector<checker::Type *> &&appar
         return nullptr;
     }
     auto *unionType = CreateETSUnionType(std::move(apparentTypes));
+    ES2PANDA_ASSERT(unionType != nullptr);
     if (unionType->IsETSUnionType()) {
         checker::Type *typeLUB = unionType->AsETSUnionType()->GetAssemblerLUB();
         return typeLUB;
@@ -808,6 +817,7 @@ Type *ETSChecker::GetTypeFromTypeAliasReference(varbinder::Variable *var)
     typeAliasType = CreateETSTypeAliasType(aliasTypeNode->Id()->Name(), aliasTypeNode);
     if (aliasTypeNode->TypeParams() != nullptr) {
         auto [typeParamTypes, ok] = CreateUnconstrainedTypeParameters(aliasTypeNode->TypeParams());
+        ES2PANDA_ASSERT(typeAliasType != nullptr);
         typeAliasType->AsETSTypeAliasType()->SetTypeArguments(std::move(typeParamTypes));
         if (ok) {
             AssignTypeParameterConstraints(aliasTypeNode->TypeParams());
@@ -962,7 +972,9 @@ void ETSChecker::CheckAmbientAnnotation(ir::AnnotationDeclaration *annoImpl, ir:
 
     for (auto *prop : annoImpl->Properties()) {
         auto *field = prop->AsClassProperty();
-        auto fieldName = field->Id()->Name();
+        auto *id = field->Id();
+        ES2PANDA_ASSERT(id != nullptr);
+        auto fieldName = id->Name();
         auto fieldDeclIter = fieldMap.find(fieldName);
         if (fieldDeclIter == fieldMap.end()) {
             LogError(diagnostic::AMBIENT_ANNOT_IMPL_OF_UNDEFINED_FIELD, {fieldName, annoDecl->GetBaseName()->Name()},
@@ -1237,7 +1249,9 @@ void ETSChecker::CheckMultiplePropertiesAnnotation(ir::AnnotationUsage *st, util
         auto *param = it->AsClassProperty();
         auto result = fieldMap.find(param->Id()->Name());
         if (result == fieldMap.end()) {
-            LogError(diagnostic::ANNOT_PROP_UNDEFINED, {param->Id()->Name(), baseName}, param->Start());
+            auto *id = param->Id();
+            ES2PANDA_ASSERT(id != nullptr);
+            LogError(diagnostic::ANNOT_PROP_UNDEFINED, {id->Name(), baseName}, param->Start());
             continue;
         }
 
@@ -1312,11 +1326,13 @@ Type *ETSChecker::MaybeBoxInRelation(Type *objectType)
 
 Type *ETSChecker::MaybeBoxType(Type *type) const
 {
+    ES2PANDA_ASSERT(type != nullptr);
     return type->IsETSPrimitiveType() ? BoxingConverter::Convert(this, type) : type;
 }
 
 Type *ETSChecker::MaybeUnboxType(Type *type) const
 {
+    ES2PANDA_ASSERT(type != nullptr);
     return type->IsETSUnboxableObject() ? UnboxingConverter::Convert(this, type->AsETSObjectType()) : type;
 }
 
@@ -1476,6 +1492,7 @@ bool ETSChecker::CheckLambdaTypeAnnotation(ir::ETSParameterExpression *param,
     if (!typeAnnotation->IsETSUnionType()) {
         // #22952: infer optional parameter heuristics
         auto nonNullishParam = param->IsOptional() ? GetNonNullishType(parameterType) : parameterType;
+        ES2PANDA_ASSERT(nonNullishParam != nullptr);
         if (!nonNullishParam->IsETSFunctionType()) {
             arrowFuncExpr->Check(this);
             return true;

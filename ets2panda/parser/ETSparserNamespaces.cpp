@@ -60,6 +60,7 @@ ir::Statement *ETSParser::ParseNamespace(ir::ModifierFlags flags)
     }
     auto start = Lexer()->GetToken().Start();
     ir::ETSModule *ns = ParseNamespaceImp(flags);
+    ES2PANDA_ASSERT(ns != nullptr);
     ns->SetRange({start, Lexer()->GetToken().Start()});
     return ns;
 }
@@ -76,6 +77,7 @@ ir::ETSModule *ETSParser::ParseNamespaceImp(ir::ModifierFlags flags)
         auto start = Lexer()->GetToken().Start();
         child = AllocNode<ir::ETSModule>(Allocator(), ArenaVector<ir::Statement *>(Allocator()->Adapter()),
                                          ExpectIdentifier(), ir::ModuleFlag::NAMESPACE, globalProgram_);
+        ES2PANDA_ASSERT(child != nullptr);
         child->SetParent(parent);
         child->SetRange({start, Lexer()->GetToken().Start()});
         child->AddModifier(ir::ModifierFlags::EXPORT);
