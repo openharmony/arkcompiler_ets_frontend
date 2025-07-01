@@ -34,6 +34,7 @@ public:
     virtual ~DiagnosticPrinter() = default;
 
     virtual void Print(const DiagnosticBase &diagnostic) const = 0;
+    virtual void Print(const DiagnosticBase &diagnostic, std::ostream &out) const = 0;
 };
 
 class CLIDiagnosticPrinter : public DiagnosticPrinter {
@@ -44,9 +45,10 @@ public:
     ~CLIDiagnosticPrinter() override = default;
 
     void Print(const DiagnosticBase &diagnostic) const override;
+    void Print(const DiagnosticBase &diagnostic, std::ostream &out) const override;
 };
 
-using DiagnosticStorage = std::vector<std::unique_ptr<DiagnosticBase>>;
+using DiagnosticStorage = std::vector<std::shared_ptr<DiagnosticBase>>;
 
 class DiagnosticEngine {
 public:
@@ -119,6 +121,7 @@ public:
     }
 
     void FlushDiagnostic();
+    std::string PrintAndFlushErrorDiagnostic();
     void SetWError(bool wError)
     {
         wError_ = wError;
@@ -159,6 +162,7 @@ private:
 
     bool IsError(DiagnosticType type) const;
     DiagnosticStorage GetAllDiagnostic();
+    DiagnosticStorage GetErrorDiagnostic();
     void WriteLog(const DiagnosticBase &error);
 
 private:
