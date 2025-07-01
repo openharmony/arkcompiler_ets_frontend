@@ -56,6 +56,6 @@ void Context::MarkGenAbcForExternal(std::unordered_set<std::string> &genAbcList,
     if (genCount != genAbcListAbsolute.size()) {
         diagnosticEngine->LogFatalError(diagnostic::SIMULTANEOUSLY_MARK_FAILED.Message());
     }
-};
+}
 
 }  // namespace ark::es2panda::public_lib
