@@ -3466,12 +3466,12 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         continue;
       }
 
-      const baseMethodDecl = baseMethod.declarations?.find(
-        (d) => {
-          return (ts.isMethodDeclaration(d) || ts.isMethodSignature(d)) &&
-          this.tsTypeChecker.getTypeAtLocation(d.parent) === baseType;
-        }
-      ) as ts.MethodDeclaration | ts.MethodSignature;
+      const baseMethodDecl = baseMethod.declarations?.find((d) => {
+        return (
+          (ts.isMethodDeclaration(d) || ts.isMethodSignature(d)) &&
+          this.tsTypeChecker.getTypeAtLocation(d.parent) === baseType
+        );
+      }) as ts.MethodDeclaration | ts.MethodSignature;
 
       if (!baseMethodDecl) {
         continue;
@@ -5246,18 +5246,19 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
     const resolveParam = executor.parameters[0];
     if (resolveParam?.type) {
-      if (ts.isFunctionTypeNode(resolveParam.type) &&
-        resolveParam.type.parameters.length === 0) {
-        this.incrementCounters(resolveParam.type,FaultID.PromiseVoidNeedResolveArg);
+      if (ts.isFunctionTypeNode(resolveParam.type) && resolveParam.type.parameters.length === 0) {
+        this.incrementCounters(resolveParam.type, FaultID.PromiseVoidNeedResolveArg);
       }
     }
     if (executor.body) {
-      ts.forEachChild(executor.body, node => {
-        if (ts.isCallExpression(node) &&
+      ts.forEachChild(executor.body, (node) => {
+        if (
+          ts.isCallExpression(node) &&
           ts.isIdentifier(node.expression) &&
           node.expression.text === 'resolve' &&
-          node.arguments.length === 0) {
-          this.incrementCounters(node,FaultID.PromiseVoidNeedResolveArg);
+          node.arguments.length === 0
+        ) {
+          this.incrementCounters(node, FaultID.PromiseVoidNeedResolveArg);
         }
       });
     }
@@ -6163,6 +6164,8 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
   private handleExportDeclaration(node: ts.Node): void {
     const exportDecl = node as ts.ExportDeclaration;
+
+    this.handleInvalidIdentifier(exportDecl);
 
     if (this.isExportedEntityDeclaredInJs(exportDecl)) {
       this.incrementCounters(node, FaultID.InteropJsObjectExport);
@@ -7083,18 +7086,17 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       | ts.EnumMember
       | ts.ModuleDeclaration
       | ts.InterfaceDeclaration
+      | ts.ExportDeclaration
   ): void {
     if (!this.options.arkts2) {
       return;
     }
-
     const checkIdentifier = (identifier: ts.Identifier | undefined): void => {
       const text = identifier && ts.isIdentifier(identifier) ? identifier.text : '';
       if (identifier && text && INVALID_IDENTIFIER_KEYWORDS.includes(text) && !this.checkImportSymbol(identifier)) {
         this.incrementCounters(identifier, FaultID.InvalidIdentifier);
       }
     };
-
     if (ts.isImportDeclaration(decl)) {
       const importClause = decl.importClause;
       if (importClause?.namedBindings && ts.isNamedImports(importClause?.namedBindings)) {
@@ -7103,6 +7105,12 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         });
       }
       checkIdentifier(importClause?.name);
+    } else if (ts.isExportDeclaration(decl)) {
+      if (decl.exportClause && ts.isNamedExports(decl.exportClause)) {
+        for (const exportSpecifier of decl.exportClause.elements) {
+          checkIdentifier(exportSpecifier.name);
+        }
+      }
     } else if (isStructDeclaration(decl)) {
       checkIdentifier((decl as ts.StructDeclaration).name);
     } else {
@@ -8110,7 +8118,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       if (matchedApi) {
         this.incrementCounters(errorNode, faultId);
       }
-    } 
+    }
   }
 
   private isIdentifierFromSDK(node: ts.Node): boolean {
@@ -8127,18 +8135,20 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
     let isLocal = false;
     for (const declaration of declarations) {
-      if (ts.isVariableDeclaration(declaration) ||
-          ts.isTypeAliasDeclaration(declaration) ||
-          ts.isClassDeclaration(declaration) ||
-          ts.isInterfaceDeclaration(declaration) ||
-          ts.isFunctionDeclaration(declaration) ||
-          ts.isEnumDeclaration(declaration)) {
+      if (
+        ts.isVariableDeclaration(declaration) ||
+        ts.isTypeAliasDeclaration(declaration) ||
+        ts.isClassDeclaration(declaration) ||
+        ts.isInterfaceDeclaration(declaration) ||
+        ts.isFunctionDeclaration(declaration) ||
+        ts.isEnumDeclaration(declaration)
+      ) {
         isLocal = true;
-        break
+        break;
       }
     }
 
-    if(isLocal) {
+    if (isLocal) {
       return false;
     }
 
@@ -8221,7 +8231,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   private checkCallExpressionForSdkGlobalApi(node: ts.CallExpression): void {
     if (ts.isPropertyAccessExpression(node.expression) && ts.isIdentifier(node.expression.expression)) {
       const expression = node.expression.expression;
-      
+
       this.processApiNodeSdkGlobalApi(expression.text, expression);
     }
   }
@@ -9858,7 +9868,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       this.incrementCounters(tsAsExpr, FaultID.NoTsLikeSmartType);
     }
   }
-  
+
   private handleAssignmentNotsLikeSmartType(tsBinaryExpr: ts.BinaryExpression): void {
     if (!this.options.arkts2) {
       return;
@@ -9875,9 +9885,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
 
     // Handle both regular assignment and 'as' type assertion
-    let right: ts.Expression = ts.isAsExpression(node.right) ? node.right.expression : node.right;
+    const right: ts.Expression = ts.isAsExpression(node.right) ? node.right.expression : node.right;
     if (!ts.isPropertyAccessExpression(right)) {
-        return false;
+      return false;
     }
 
     const propertyName = right.name;
