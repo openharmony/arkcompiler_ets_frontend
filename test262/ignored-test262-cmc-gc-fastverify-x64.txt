@@ -1,0 +1,4 @@
+# Known failure list for test262 - cmc-gc-fastverify-x64
+
+#27177
+test262/data/test_es2021/language/expressions/async-generator/yield-thenable-create-resolving-functions-resolve.js

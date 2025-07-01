@@ -1,3 +1,4 @@
 # Known failures list for jsperf - cmc-gc-release-qemu-int
 
-#26315
+#26559
+Math_abs
