@@ -1765,6 +1765,10 @@ Type *ETSChecker::GetReferencedTypeBase(ir::Expression *name)
     }
 
     ES2PANDA_ASSERT(name->IsIdentifier());
+    if (name->AsIdentifier()->Variable() == nullptr) {
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+        VarBinder()->AsETSBinder()->LookupTypeReference(name->AsIdentifier(), false);
+    }
 
     auto *const var = name->AsIdentifier()->Variable();
     ES2PANDA_ASSERT(var != nullptr);
