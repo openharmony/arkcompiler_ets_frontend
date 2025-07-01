@@ -178,3 +178,7 @@ SysApiWrapper.setTimeout = (handler: Function | string, delay?: number): number 
   (handler as Function)?.unsafeCall();
   return Math.random();
 }
+
+new Function('return 42')();
+
+Function('return 42')();

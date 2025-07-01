@@ -22,7 +22,7 @@ import { Autofixer } from './autofixes/Autofixer';
 import { PROMISE_METHODS, SYMBOL, SYMBOL_CONSTRUCTOR, TsUtils } from './utils/TsUtils';
 import { FUNCTION_HAS_NO_RETURN_ERROR_CODE } from './utils/consts/FunctionHasNoReturnErrorCode';
 import { LIMITED_STANDARD_UTILITY_TYPES } from './utils/consts/LimitedStandardUtilityTypes';
-import { LIKE_FUNCTION } from './utils/consts/LikeFunction';
+import { LIKE_FUNCTION, LIKE_FUNCTION_CONSTRUCTOR } from './utils/consts/LikeFunction';
 import { METHOD_DECLARATION } from './utils/consts/MethodDeclaration';
 import { METHOD_SIGNATURE } from './utils/consts/MethodSignature';
 import { OPTIONAL_METHOD } from './utils/consts/OptionalMethod';
@@ -4485,10 +4485,21 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     const expression = callExpr.expression;
     const type = this.tsTypeChecker.getTypeAtLocation(expression);
     const typeText = this.tsTypeChecker.typeToString(type);
-    if (typeText === LIKE_FUNCTION) {
+
+    if (LIKE_FUNCTION !== typeText) {
+      return;
+    }
+    if (ts.isNewExpression(expression) || ts.isCallExpression(expression)) {
+      const exprIndentifier = expression.expression;
+      const typeExprIndent = this.tsTypeChecker.getTypeAtLocation(exprIndentifier);
+      const typeTextExprIndent = this.tsTypeChecker.typeToString(typeExprIndent);
+      if (typeTextExprIndent === LIKE_FUNCTION_CONSTRUCTOR) {
+        this.incrementCounters(expression, FaultID.ExplicitFunctionType);
+      }
+    } else {
       const autofix = this.autofixer?.fixNoTsLikeFunctionCall(callExpr);
       this.incrementCounters(expression, FaultID.ExplicitFunctionType, autofix);
-    }
+    }     
   }
 
   private handleAppStorageCallExpression(tsCallExpr: ts.CallExpression): void {
