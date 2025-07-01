@@ -1,5 +1,5 @@
 {
-    "result": [
+"result": [
         {
             "line": 17,
             "column": 17,
@@ -258,6 +258,16 @@
             "problem": "ArgumentsObject",
             "suggest": "",
             "rule": "Special arguments object inside functions are not supported (arkts-no-arguments-obj)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 65,
+            "column": 3,
+            "endLine": 65,
+            "endColumn": 12,
+            "problem": "InvalidIdentifier",
+            "suggest": "",
+            "rule": "This keyword cannot be used as identifiers (arkts-invalid-identifier)",
             "severity": "ERROR"
         },
         {

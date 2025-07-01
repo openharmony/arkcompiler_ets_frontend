@@ -210,5 +210,7 @@ export const INVALID_IDENTIFIER_KEYWORDS = [
   'TypedArrays',
   'TypedUArrays',
   'WeakMap',
-  'WeakSet'
+  'WeakSet',
+  'arguments',
+  'eval'
 ];
