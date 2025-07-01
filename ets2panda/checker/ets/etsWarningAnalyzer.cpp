@@ -105,8 +105,10 @@ void ETSWarningAnalyzer::AnalyzeClassMethodForFinalModifier(const ir::MethodDefi
             }
             const util::StringView bodyMethodName =
                 ETSChecker::GetSignatureFromMethodDefinition(bodyPart->AsMethodDefinition())->Function()->Id()->Name();
+            const auto *func = methodDef->Function();
+            ES2PANDA_ASSERT(func != nullptr);
             if (bodyPart->IsOverride() && bodyMethodName != compiler::Signatures::CTOR &&
-                bodyMethodName == methodDef->Function()->Id()->Name()) {
+                bodyMethodName == func->Id()->Name()) {
                 suggestFinal = false;
                 break;
             }
@@ -214,9 +216,9 @@ void ETSWarningAnalyzer::ETSWarningsProhibitTopLevelStatements(const ir::AstNode
             itBody->AsMethodDefinition()->Id()->Name() != compiler::Signatures::INIT_METHOD) {
             continue;
         }
-
-        for (const auto *statement :
-             itBody->AsMethodDefinition()->Function()->Body()->AsBlockStatement()->Statements()) {
+        const auto *func = itBody->AsMethodDefinition()->Function();
+        ES2PANDA_ASSERT(func != nullptr);
+        for (const auto *statement : func->Body()->AsBlockStatement()->Statements()) {
             if (program_->NodeContainsETSNolint(statement, ETSWarnings::ETS_PROHIBIT_TOP_LEVEL_STATEMENTS)) {
                 continue;
             }

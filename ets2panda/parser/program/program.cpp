@@ -32,7 +32,7 @@ Program::Program(ArenaAllocator *allocator, varbinder::VarBinder *varbinder)
       varbinder_(varbinder),
       externalSources_(allocator_->Adapter()),
       directExternalSources_(allocator_->Adapter()),
-      extension_(varbinder->Extension()),
+      extension_(varbinder != nullptr ? varbinder->Extension() : ScriptExtension::INVALID),
       etsnolintCollection_(allocator_->Adapter()),
       cfg_(allocator_->New<compiler::CFG>(allocator_)),
       functionScopes_(allocator_->Adapter())
@@ -98,6 +98,7 @@ void Program::SetPackageInfo(const util::StringView &name, util::ModuleKind kind
 // NOTE(vpukhov): part of ongoing design
 void Program::MaybeTransformToDeclarationModule()
 {
+    ES2PANDA_ASSERT(ast_);
     if (IsPackage() || ast_->Statements().empty()) {
         return;
     }

@@ -149,6 +149,7 @@ ir::Decorator *TSParser::ParseDecorator()
         }
 
         auto *identNode = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
+        ES2PANDA_ASSERT(identNode != nullptr);
         identNode->SetRange(Lexer()->GetToken().Loc());
 
         expr =
@@ -161,6 +162,7 @@ ir::Decorator *TSParser::ParseDecorator()
     }
 
     auto *result = AllocNode<ir::Decorator>(expr);
+    ES2PANDA_ASSERT(result != nullptr);
     result->SetRange({start, expr->End()});
 
     return result;
@@ -199,6 +201,7 @@ ir::TSTypeAliasDeclaration *TSParser::ParseTypeAliasDeclaration()
     const util::StringView &ident = Lexer()->GetToken().Ident();
 
     auto *id = AllocNode<ir::Identifier>(ident, Allocator());
+    ES2PANDA_ASSERT(id != nullptr);
     id->SetRange(Lexer()->GetToken().Loc());
     Lexer()->NextToken();
 
@@ -441,6 +444,7 @@ ir::TypeNode *TSParser::ParseThisType(bool throwError)
     }
 
     auto *returnType = AllocNode<ir::TSThisType>(Allocator());
+    ES2PANDA_ASSERT(returnType != nullptr);
     returnType->SetRange(Lexer()->GetToken().Loc());
 
     Lexer()->NextToken();
@@ -544,6 +548,7 @@ ir::TypeNode *TSParser::ParseTypeOperatorOrTypeReference()
 
         auto *inferType = AllocNode<ir::TSInferType>(typeParam, Allocator());
 
+        ES2PANDA_ASSERT(inferType != nullptr);
         inferType->SetRange({inferStart, Lexer()->GetToken().End()});
 
         return inferType;
@@ -638,6 +643,7 @@ ir::TSTupleType *TSParser::ParseTupleType()
     Lexer()->NextToken();  // eat ']'
 
     auto *tupleType = AllocNode<ir::TSTupleType>(std::move(elements), Allocator());
+    ES2PANDA_ASSERT(tupleType != nullptr);
     tupleType->SetRange({tupleStart, tupleEnd});
     return tupleType;
 }
@@ -858,6 +864,7 @@ ir::TSTypePredicate *TSParser::ParseTypePredicate()
     if (isAsserts && Lexer()->GetToken().KeywordType() != lexer::TokenType::KEYW_IS) {
         endPos = parameterName->End();
         result = AllocNode<ir::TSTypePredicate>(parameterName, typeAnnotation, isAsserts, Allocator());
+        ES2PANDA_ASSERT(result != nullptr);
         result->SetRange({startPos, endPos});
         return result;
     }
@@ -869,7 +876,7 @@ ir::TSTypePredicate *TSParser::ParseTypePredicate()
     endPos = typeAnnotation->End();
 
     result = AllocNode<ir::TSTypePredicate>(parameterName, typeAnnotation, isAsserts, Allocator());
-
+    ES2PANDA_ASSERT(result != nullptr);
     result->SetRange({startPos, endPos});
 
     return result;
@@ -938,6 +945,7 @@ ir::TSArrayType *TSParser::ParseArrayType(ir::TypeNode *elementType)
 
     lexer::SourcePosition startLoc = elementType->Start();
     auto *arrayType = AllocNode<ir::TSArrayType>(elementType, Allocator());
+    ES2PANDA_ASSERT(arrayType != nullptr);
     arrayType->SetRange({startLoc, endLoc});
 
     return arrayType;
@@ -976,6 +984,7 @@ ir::TSUnionType *TSParser::ParseUnionType(ir::TypeNode *type, bool restrictExten
 
     auto *unionType = AllocNode<ir::TSUnionType>(std::move(types), Allocator());
     auto *typeVar = varbinder::Scope::CreateVar(Allocator(), "__type", varbinder::VariableFlags::TYPE, unionType);
+    ES2PANDA_ASSERT(unionType != nullptr);
     unionType->SetVariable(typeVar);
     unionType->SetRange({startLoc, endLoc});
 
@@ -1020,6 +1029,7 @@ ir::TSIntersectionType *TSParser::ParseIntersectionType(ir::Expression *type, bo
     auto *intersectionType = AllocNode<ir::TSIntersectionType>(std::move(types), Allocator());
     auto *typeVar =
         varbinder::Scope::CreateVar(Allocator(), "__type", varbinder::VariableFlags::TYPE, intersectionType);
+    ES2PANDA_ASSERT(intersectionType != nullptr);
     intersectionType->SetVariable(typeVar);
     intersectionType->SetRange({startLoc, endLoc});
 
@@ -1041,6 +1051,7 @@ private:
                     return parser->AllocNode<ir::TSLiteralType>(bigintNode, parser->Allocator());
                 }
                 auto *numberNode = parser->AllocNode<ir::NumberLiteral>(lexer->GetToken().GetNumber());
+                CHECK_NOT_NULL(numberNode);
                 numberNode->SetRange(lexer->GetToken().Loc());
 
                 return parser->AllocNode<ir::TSLiteralType>(numberNode, parser->Allocator());
@@ -1136,6 +1147,7 @@ ir::TypeNode *TSParser::ParseBasicType()
     return typeAnnotation;
 }
 
+// CC-OFFNXT(huge_method[C++], G.FUN.01-CPP) solid logic
 ir::TypeNode *TSParser::ParseParenthesizedOrFunctionType(ir::TypeNode *typeAnnotation, bool throwError)
 {
     if (typeAnnotation != nullptr) {
@@ -1200,6 +1212,7 @@ ir::TypeNode *TSParser::ParseParenthesizedOrFunctionType(ir::TypeNode *typeAnnot
     }
 
     auto *result = AllocNode<ir::TSParenthesizedType>(type, Allocator());
+    ES2PANDA_ASSERT(result != nullptr);
     result->SetRange({typeStart, endLoc});
 
     return result;
@@ -1466,6 +1479,7 @@ bool TSParser::IsNamedFunctionExpression()
 ir::Identifier *TSParser::ParsePrimaryExpressionIdent([[maybe_unused]] ExpressionParseFlags flags)
 {
     auto *identNode = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
+    ES2PANDA_ASSERT(identNode != nullptr);
     identNode->SetRange(Lexer()->GetToken().Loc());
 
     Lexer()->NextToken();
@@ -1508,6 +1522,7 @@ ir::TSSignatureDeclaration *TSParser::ParseSignatureMember(bool isCallSignature)
                                 : ir::TSSignatureDeclaration::TSSignatureDeclarationKind::CONSTRUCT_SIGNATURE;
     auto *signatureMember = AllocNode<ir::TSSignatureDeclaration>(
         kind, ir::FunctionSignature(typeParamDecl, std::move(params), typeAnnotation));
+    ES2PANDA_ASSERT(signatureMember != nullptr);
     signatureMember->SetRange({memberStartLoc, Lexer()->GetToken().End()});
 
     return signatureMember;
@@ -1534,6 +1549,7 @@ ir::TSIndexSignature *TSParser::ParseIndexSignature(const lexer::SourcePosition 
 
     ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT);
     auto *key = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
+    ES2PANDA_ASSERT(key != nullptr);
     key->SetRange(Lexer()->GetToken().Loc());
 
     Lexer()->NextToken();  // eat key
@@ -1581,12 +1597,14 @@ std::tuple<ir::Expression *, bool> TSParser::ParseInterfacePropertyKey()
         case lexer::TokenType::LITERAL_IDENT: {
             const util::StringView &ident = Lexer()->GetToken().Ident();
             key = AllocNode<ir::Identifier>(ident, Allocator());
+            ES2PANDA_ASSERT(key != nullptr);
             key->SetRange(Lexer()->GetToken().Loc());
             break;
         }
         case lexer::TokenType::LITERAL_STRING: {
             const util::StringView &string = Lexer()->GetToken().String();
             key = AllocNode<ir::StringLiteral>(string);
+            ES2PANDA_ASSERT(key != nullptr);
             key->SetRange(Lexer()->GetToken().Loc());
             break;
         }
@@ -1597,6 +1615,7 @@ std::tuple<ir::Expression *, bool> TSParser::ParseInterfacePropertyKey()
                 key = AllocNode<ir::NumberLiteral>(Lexer()->GetToken().GetNumber());
             }
 
+            ES2PANDA_ASSERT(key != nullptr);
             key->SetRange(Lexer()->GetToken().Loc());
             break;
         }
@@ -1905,6 +1924,7 @@ ir::MethodDefinition *TSParser::ParseClassMethod(ClassElementDescriptor *desc,
 
     ir::ScriptFunction *func = ParseFunction(desc->newStatus);
 
+    ES2PANDA_ASSERT(func != nullptr);
     if (func->IsOverload() && !desc->decorators.empty()) {
         ThrowSyntaxError("A decorator can only decorate a method implementation, not an overload.",
                          desc->decorators.front()->Start());
@@ -2089,6 +2109,7 @@ std::tuple<bool, ir::BlockStatement *, lexer::SourcePosition, bool> TSParser::Pa
         ThrowSyntaxError("An implementation cannot be declared in ambient contexts.");
     } else {
         body = ParseBlockStatement();
+        ES2PANDA_ASSERT(body != nullptr);
         endLoc = body->End();
     }
 
@@ -2110,6 +2131,7 @@ ir::AstNode *TSParser::ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> *s
     }
 
     auto *specifier = AllocNode<ir::ImportDefaultSpecifier>(local);
+    ES2PANDA_ASSERT(specifier != nullptr);
     specifier->SetRange(specifier->Local()->Range());
     specifiers->push_back(specifier);
 

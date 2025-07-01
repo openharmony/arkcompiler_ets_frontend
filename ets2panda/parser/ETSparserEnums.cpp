@@ -167,6 +167,7 @@ ir::TSEnumDeclaration *ETSParser::ParseEnumMembers(ir::Identifier *const key, co
     auto *const enumDeclaration = AllocNode<ir::TSEnumDeclaration>(
         Allocator(), key, std::move(members),
         ir::TSEnumDeclaration::ConstructorFlags {isConst, isStatic, InAmbientContext()});
+    ES2PANDA_ASSERT(enumDeclaration != nullptr);
     if (InAmbientContext()) {
         enumDeclaration->AddModifier(ir::ModifierFlags::DECLARE);
     }

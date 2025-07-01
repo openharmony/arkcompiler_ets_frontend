@@ -160,6 +160,7 @@ checker::Type *ETSAnalyzer::Check(ir::ClassStaticBlock *st) const
 static void HandleNativeAndAsyncMethods(ETSChecker *checker, ir::MethodDefinition *node)
 {
     auto *scriptFunc = node->Function();
+    ES2PANDA_ASSERT(scriptFunc != nullptr);
     if (node->IsNative() && !node->IsConstructor() && !scriptFunc->IsSetter()) {
         if (scriptFunc->ReturnTypeAnnotation() == nullptr) {
             checker->LogError(diagnostic::NATIVE_WITHOUT_RETURN, {}, scriptFunc->Start());
@@ -397,6 +398,7 @@ static bool CheckArrayElementType(ETSChecker *checker, T *newArrayInstanceExpr)
     ES2PANDA_ASSERT(newArrayInstanceExpr != nullptr);
 
     checker::Type *elementType = newArrayInstanceExpr->TypeReference()->GetType(checker);
+    ES2PANDA_ASSERT(elementType != nullptr);
     if (elementType->IsETSPrimitiveType()) {
         return true;
     }
@@ -2900,7 +2902,7 @@ checker::Type *ETSAnalyzer::Check(ir::AnnotationUsage *st) const
         return ReturnTypeForStatement(st);
     }
 
-    if (st->Properties().size() == 1 &&
+    if (st->Properties().size() == 1 && st->Properties().at(0)->AsClassProperty()->Id() != nullptr &&
         st->Properties().at(0)->AsClassProperty()->Id()->Name() == compiler::Signatures::ANNOTATION_KEY_VALUE) {
         checker->CheckSinglePropertyAnnotation(st, annoDecl);
         fieldMap.clear();
@@ -3137,6 +3139,7 @@ static bool CheckIsValidReturnTypeAnnotation(ir::ReturnStatement *st, ir::Script
     return true;
 }
 
+// CC-OFFNXT(huge_method[C++], G.FUN.01-CPP) solid logic
 bool ETSAnalyzer::CheckInferredFunctionReturnType(ir::ReturnStatement *st, ir::ScriptFunction *containingFunc,
                                                   checker::Type *&funcReturnType, ir::TypeNode *returnTypeAnnotation,
                                                   ETSChecker *checker) const
@@ -3161,6 +3164,7 @@ bool ETSAnalyzer::CheckInferredFunctionReturnType(ir::ReturnStatement *st, ir::S
 
     // Case when function's return type is defined explicitly:
     if (st->argument_ == nullptr) {
+        ES2PANDA_ASSERT(funcReturnType != nullptr);
         if (!funcReturnType->IsETSVoidType() && funcReturnType != checker->GlobalVoidType() &&
             !funcReturnType->IsETSAsyncFuncReturnType()) {
             checker->LogError(diagnostic::RETURN_WITHOUT_VALUE, {}, st->Start());

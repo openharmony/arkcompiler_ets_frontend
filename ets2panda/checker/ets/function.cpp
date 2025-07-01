@@ -89,6 +89,7 @@ bool ETSChecker::EnhanceSubstitutionForReadonly(const ArenaVector<Type *> &typeP
 bool ETSChecker::EnhanceSubstitutionForType(const ArenaVector<Type *> &typeParams, Type *paramType, Type *argumentType,
                                             Substitution *substitution)
 {
+    ES2PANDA_ASSERT(argumentType != nullptr);
     if (argumentType->IsETSPrimitiveType()) {
         argumentType = MaybeBoxInRelation(argumentType);
     }
@@ -420,6 +421,7 @@ bool ETSChecker::ValidateSignatureRequiredParams(Signature *substitutedSig,
         // #22952: infer optional parameter heuristics
         auto const paramType = GetNonNullishType(substitutedSig->Params()[index]->TsType());
         if (argument->IsObjectExpression()) {
+            ES2PANDA_ASSERT(paramType != nullptr);
             if (paramType->IsETSObjectType()) {
                 // No chance to check the argument at this point
                 continue;
@@ -944,6 +946,7 @@ void ETSChecker::CollectSuitableSignaturesForTypeInference(
 
     for (auto *sig : signatures) {
         auto *sigParamType = GetNonNullishType(sig->Params().at(paramIdx)->TsType());
+        ES2PANDA_ASSERT(sigParamType != nullptr);
         if (!sigParamType->IsETSFunctionType()) {
             continue;
         }
@@ -1237,7 +1240,9 @@ static bool CollectOverload(checker::ETSChecker *checker, ir::MethodDefinition *
         currentFunc->Function()->Id()->SetVariable(currentFunc->Id()->Variable());
         checker->BuildFunctionSignature(currentFunc->Function(), method->IsConstructor());
         if (currentFunc->Function()->Signature() == nullptr) {
-            method->Id()->Variable()->SetTsType(checker->GlobalTypeError());
+            auto *methodId = method->Id();
+            ES2PANDA_ASSERT(methodId != nullptr);
+            methodId->Variable()->SetTsType(checker->GlobalTypeError());
             return false;
         }
         auto *const overloadType = checker->BuildMethodType(currentFunc->Function());
@@ -1277,11 +1282,12 @@ checker::Type *ETSChecker::BuildMethodSignature(ir::MethodDefinition *method)
     if (method->TsType() != nullptr) {
         return method->TsType()->AsETSFunctionType();
     }
-
-    method->Function()->Id()->SetVariable(method->Id()->Variable());
+    auto *methodId = method->Id();
+    ES2PANDA_ASSERT(methodId != nullptr);
+    method->Function()->Id()->SetVariable(methodId->Variable());
     BuildFunctionSignature(method->Function(), method->IsConstructor());
     if (method->Function()->Signature() == nullptr) {
-        return method->Id()->Variable()->SetTsType(GlobalTypeError());
+        return methodId->Variable()->SetTsType(GlobalTypeError());
     }
     auto *funcType = BuildMethodType(method->Function());
     method->InitializeOverloadInfo();
@@ -1295,7 +1301,7 @@ checker::Type *ETSChecker::BuildMethodSignature(ir::MethodDefinition *method)
         LogDiagnostic(diagnostic::FUNCTION_ASM_SIG_COLLISION, {std::string(funcType->Name())}, method->Start());
     }
 
-    return method->Id()->Variable()->SetTsType(funcType);
+    return methodId->Variable()->SetTsType(funcType);
 }
 
 bool ETSChecker::CheckIdenticalOverloads(ETSFunctionType *func, ETSFunctionType *overload,
@@ -1419,6 +1425,7 @@ SignatureInfo *ETSChecker::ComposeSignatureInfo(ir::TSTypeParameterDeclaration *
 
     if (typeParams != nullptr) {
         auto [typeParamTypes, ok] = CreateUnconstrainedTypeParameters(typeParams);
+        ES2PANDA_ASSERT(signatureInfo != nullptr);
         signatureInfo->typeParams = std::move(typeParamTypes);
         if (ok) {
             AssignTypeParameterConstraints(typeParams);
@@ -1476,6 +1483,7 @@ void ETSChecker::ValidateMainSignature(ir::ScriptFunction *func)
 
 void ETSChecker::BuildFunctionSignature(ir::ScriptFunction *func, bool isConstructSig)
 {
+    ES2PANDA_ASSERT(func != nullptr);
     bool isArrow = func->IsArrow();
     auto *nameVar = isArrow ? nullptr : func->Id()->Variable();
     auto funcName = nameVar == nullptr ? util::StringView() : nameVar->Name();
@@ -1522,6 +1530,7 @@ void ETSChecker::BuildFunctionSignature(ir::ScriptFunction *func, bool isConstru
 checker::ETSFunctionType *ETSChecker::BuildMethodType(ir::ScriptFunction *func)
 {
     ES2PANDA_ASSERT(!func->IsArrow());
+    ES2PANDA_ASSERT(func != nullptr);
     auto *nameVar = func->Id()->Variable();
     ETSFunctionType *funcType;
     if (func->IsDynamic()) {
@@ -1545,7 +1554,7 @@ Signature *ETSChecker::CheckEveryAbstractSignatureIsOverridden(ETSFunctionType *
         for (auto sourceSig : source->CallSignatures()) {
             if ((*targetSig)->Function()->Id()->Name() == sourceSig->Function()->Id()->Name() &&
                 Relation()->SignatureIsSupertypeOf(*targetSig, sourceSig)) {
-                target->CallSignatures().erase(targetSig);
+                targetSig = target->CallSignatures().erase(targetSig);
                 isOverridden = true;
                 break;
             }
@@ -1782,6 +1791,7 @@ bool ETSChecker::CheckOverride(Signature *signature, ETSObjectType *site)
 void ETSChecker::CheckOverride(Signature *signature)
 {
     auto *owner = signature->Owner();
+    ES2PANDA_ASSERT(owner != nullptr);
     bool isOverriding = false;
 
     if (!owner->HasObjectFlag(ETSObjectFlags::CLASS | ETSObjectFlags::INTERFACE)) {
@@ -1996,7 +2006,9 @@ std::string ETSChecker::GetAsyncImplName(const util::StringView &name)
 
 std::string ETSChecker::GetAsyncImplName(ir::MethodDefinition *asyncMethod)
 {
-    ir::Identifier *asyncName = asyncMethod->Function()->Id();
+    ir::ScriptFunction *scriptFunc = asyncMethod->Function();
+    CHECK_NOT_NULL(scriptFunc);
+    ir::Identifier *asyncName = scriptFunc->Id();
     ES2PANDA_ASSERT_POS(asyncName != nullptr, asyncMethod->Start());
     return GetAsyncImplName(asyncName->Name());
 }
@@ -2032,6 +2044,7 @@ ir::MethodDefinition *ETSChecker::CreateMethod(const util::StringView &name, ir:
     if (body != nullptr && body->IsBlockStatement()) {
         body->AsBlockStatement()->SetScope(scope);
     }
+    ES2PANDA_ASSERT(scope != nullptr);
     scope->BindNode(func);
     paramScope->BindNode(func);
     scope->BindParamScope(paramScope);
@@ -2064,7 +2077,9 @@ varbinder::FunctionParamScope *ETSChecker::CopyParams(
     for (auto *const it : params) {
         auto *const paramOld = it->AsETSParameterExpression();
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        auto *const paramNew = paramOld->Clone(ProgramAllocator(), paramOld->Parent())->AsETSParameterExpression();
+        auto *typeOld = paramOld->Clone(ProgramAllocator(), paramOld->Parent());
+        ES2PANDA_ASSERT(typeOld != nullptr);
+        auto *const paramNew = typeOld->AsETSParameterExpression();
 
         varbinder::Variable *var = VarBinder()->AddParamDecl(paramNew);
         Type *paramType = paramOld->Variable()->TsType();
@@ -2200,6 +2215,7 @@ ArenaVector<ir::Expression *> ETSChecker::ExtendArgumentsWithFakeLamda(ir::CallE
     ArenaVector<ir::Statement *> statements(ProgramAllocator()->Adapter());
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *body = ProgramAllocNode<ir::BlockStatement>(ProgramAllocator(), std::move(statements));
+    ES2PANDA_ASSERT(body != nullptr);
     body->SetScope(funcScope);
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)

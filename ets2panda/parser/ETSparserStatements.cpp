@@ -191,6 +191,7 @@ ir::Statement *ETSParser::ParseTopLevelDeclStatement(StatementParsingFlags flags
     switch (token.Type()) {
         case lexer::TokenType::KEYW_FUNCTION: {
             result = ParseFunctionDeclaration(false, memberModifiers);
+            ES2PANDA_ASSERT(result != nullptr);
             result->SetStart(startLoc);
             break;
         }
@@ -339,6 +340,7 @@ ir::Statement *ETSParser::ParseTryStatement()
     ArenaVector<std::pair<compiler::LabelPair, const ir::Statement *>> finalizerInsertions(Allocator()->Adapter());
 
     auto *tryStatement = AllocNode<ir::TryStatement>(body, std::move(catchClauses), finalizer, finalizerInsertions);
+    ES2PANDA_ASSERT(tryStatement != nullptr);
     tryStatement->SetRange({startLoc, endLoc});
     ConsumeSemicolon(tryStatement);
 

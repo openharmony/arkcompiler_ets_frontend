@@ -49,6 +49,7 @@ public:
 
         if (other->restVar != nullptr) {
             restVar = other->restVar->Copy(allocator, other->restVar->Declaration());
+            ES2PANDA_ASSERT(restVar != nullptr);
             restVar->SetTsType(other->restVar->TsType());
         }
     }

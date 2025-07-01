@@ -54,7 +54,7 @@ Type *TSChecker::HandleFunctionReturn(ir::ScriptFunction *func)
         if (func->IsArrow() && func->Body()->IsExpression()) {
             ElaborateElementwise(returnType, func->Body()->AsExpression(), func->Body()->Start());
         }
-
+        ES2PANDA_ASSERT(returnType != nullptr);
         if (returnType->IsNeverType()) {
             ThrowTypeError("A function returning 'never' cannot have a reachable end point.",
                            func->ReturnTypeAnnotation()->Start());
@@ -156,6 +156,7 @@ Type *TSChecker::CreateParameterTypeForArrayAssignmentPattern(ir::ArrayExpressio
         util::StringView memberIndex = util::Helpers::ToStringView(Allocator(), index);
         varbinder::LocalVariable *newMember = varbinder::Scope::CreateVar(
             Allocator(), memberIndex, varbinder::VariableFlags::PROPERTY | varbinder::VariableFlags::OPTIONAL, nullptr);
+        ES2PANDA_ASSERT(newMember != nullptr);
         newMember->SetTsType(GlobalAnyType());
         newTuple->AddProperty(newMember);
     }
@@ -193,6 +194,7 @@ Type *TSChecker::CreateParameterTypeForObjectAssignmentPattern(ir::ObjectExpress
         varbinder::LocalVariable *newProp = varbinder::Scope::CreateVar(
             Allocator(), prop->Key()->AsIdentifier()->Name(),
             varbinder::VariableFlags::PROPERTY | varbinder::VariableFlags::OPTIONAL, nullptr);
+        ES2PANDA_ASSERT(newProp != nullptr);
         newProp->SetTsType(GetBaseTypeOfLiteralType(CheckTypeCached(assignmentPattern->Right())));
         newObject->AddProperty(newProp);
     }
@@ -246,6 +248,7 @@ ReturnedVariable TSChecker::CheckFunctionAssignmentPatternParameter(ir::Assignme
     util::UString pn(ss.str(), Allocator());
     varbinder::LocalVariable *patternVar =
         varbinder::Scope::CreateVar(Allocator(), pn.View(), varbinder::VariableFlags::NONE, param);
+    ES2PANDA_ASSERT(patternVar != nullptr);
     patternVar->SetTsType(paramType);
     patternVar->AddFlag(varbinder::VariableFlags::OPTIONAL);
     return {patternVar->AsLocalVariable(), nullptr, true};
@@ -264,6 +267,7 @@ std::tuple<varbinder::LocalVariable *, varbinder::LocalVariable *, bool> TSCheck
     if (typeAnnotation != nullptr) {
         typeAnnotation->Check(this);
         restType = typeAnnotation->GetType(this);
+        ES2PANDA_ASSERT(restType != nullptr);
         if (!restType->IsArrayType()) {
             ThrowTypeError("A rest parameter must be of an array type", param->Start());
         }
@@ -315,6 +319,7 @@ std::tuple<varbinder::LocalVariable *, varbinder::LocalVariable *, bool> TSCheck
         auto destructuringContext =
             ArrayDestructuringContext({this, param->AsArrayPattern(), false, false, param->TypeAnnotation(), nullptr});
         destructuringContext.Start();
+        ES2PANDA_ASSERT(patternVar != nullptr);
         patternVar->SetTsType(destructuringContext.InferredType());
         return {patternVar->AsLocalVariable(), nullptr, false};
     }
@@ -337,6 +342,7 @@ std::tuple<varbinder::LocalVariable *, varbinder::LocalVariable *, bool> TSCheck
         auto destructuringContext = ObjectDestructuringContext(
             {this, param->AsObjectPattern(), false, false, param->TypeAnnotation(), nullptr});
         destructuringContext.Start();
+        ES2PANDA_ASSERT(patternVar != nullptr);
         patternVar->SetTsType(destructuringContext.InferredType());
         return {patternVar->AsLocalVariable(), nullptr, false};
     }
@@ -396,6 +402,7 @@ std::tuple<varbinder::LocalVariable *, varbinder::LocalVariable *, bool> TSCheck
 void TSChecker::CheckFunctionParameterDeclarations(const ArenaVector<ir::Expression *> &params,
                                                    SignatureInfo *signatureInfo)
 {
+    ES2PANDA_ASSERT(signatureInfo != nullptr);
     signatureInfo->restVar = nullptr;
     signatureInfo->minArgCount = 0;
 
@@ -590,6 +597,7 @@ void TSChecker::InferFunctionDeclarationType(const varbinder::FunctionDecl *decl
         }
 
         Signature *overloadSignature = Allocator()->New<checker::Signature>(overloadSignatureInfo, returnType, func);
+        ES2PANDA_ASSERT(descWithOverload != nullptr);
         descWithOverload->callSignatures.push_back(overloadSignature);
     }
 

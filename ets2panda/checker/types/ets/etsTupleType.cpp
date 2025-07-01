@@ -196,6 +196,7 @@ Type *ETSTupleType::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[ma
 {
     auto *const checker = relation->GetChecker()->AsETSChecker();
     auto *const tupleType = allocator->New<ETSTupleType>(checker, GetTupleTypesList());
+    ES2PANDA_ASSERT(tupleType != nullptr);
     tupleType->typeFlags_ = typeFlags_;
     return tupleType;
 }
