@@ -1343,6 +1343,7 @@ std::pair<ir::ModifierFlags, lexer::SourcePosition> ETSParser::ParseMemberModifi
                 Lexer()->Rewind(savedPos);
             }
             memberModifiers |= ir::ModifierFlags::EXPORT;
+            memberModifiers |= ir::ModifierFlags::EXPORT_TYPE;
         } else {
             memberModifiers |= ir::ModifierFlags::EXPORT;
         }
