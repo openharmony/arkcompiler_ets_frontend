@@ -7542,7 +7542,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
 
     const text = stringLiteral.text;
-    const autofix = this.autofixer?.removeNode(stringLiteral);
+    const autofix = this.autofixer?.removeNode(stringLiteral.parent);
 
     if (text === USE_CONCURRENT) {
       this.incrementCounters(stringLiteral, FaultID.UseConcurrentDeprecated, autofix);
