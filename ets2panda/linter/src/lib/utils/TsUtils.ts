@@ -3794,4 +3794,14 @@ export class TsUtils {
     }
     return typeNode.kind === ts.SyntaxKind.VoidKeyword;
   }
+
+  static isStdPromiseType(type: ts.Type): boolean {
+    const sym = type.getSymbol();
+    return !!sym && sym.getName() === 'Promise' && isStdLibrarySymbol(sym);
+  }
+
+  static isStdPromiseLikeType(type: ts.Type): boolean {
+    const sym = type.getSymbol();
+    return !!sym && sym.getName() === 'PromiseLike' && isStdLibrarySymbol(sym);
+  }
 }
