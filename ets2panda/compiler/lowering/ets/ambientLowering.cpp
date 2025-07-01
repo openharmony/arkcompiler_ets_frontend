@@ -82,6 +82,7 @@ ir::MethodDefinition *CreateMethodFunctionDefinition(ir::DummyNode *node, public
 
     methodDefinition->SetParent(node->Parent());
     methodDefinition->AddModifier(ir::ModifierFlags::DECLARE);
+    ES2PANDA_ASSERT(methodDefinition->AsMethodDefinition()->Function() != nullptr);
     methodDefinition->AsMethodDefinition()->Function()->AddModifier(ir::ModifierFlags::DECLARE);
     return methodDefinition->AsMethodDefinition();
 }

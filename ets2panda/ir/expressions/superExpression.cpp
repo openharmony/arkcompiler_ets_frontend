@@ -61,6 +61,7 @@ checker::VerifiedType SuperExpression::Check([[maybe_unused]] checker::ETSChecke
 SuperExpression *SuperExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     auto *const clone = allocator->New<SuperExpression>();
+    ES2PANDA_ASSERT(clone != nullptr);
     if (parent != nullptr) {
         clone->SetParent(parent);
     }

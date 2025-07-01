@@ -61,6 +61,7 @@ checker::VerifiedType BigIntLiteral::Check([[maybe_unused]] checker::ETSChecker 
 BigIntLiteral *BigIntLiteral::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     auto *const clone = allocator->New<BigIntLiteral>(src_);
+    ES2PANDA_ASSERT(clone != nullptr);
     if (parent != nullptr) {
         clone->SetParent(parent);
     }

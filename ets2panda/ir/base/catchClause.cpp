@@ -96,13 +96,20 @@ checker::VerifiedType CatchClause::Check(checker::ETSChecker *checker)
 
 CatchClause::CatchClause(CatchClause const &other, ArenaAllocator *allocator) : TypedStatement(other)
 {
-    param_ = other.param_ == nullptr ? nullptr : other.param_->Clone(allocator, this)->AsExpression();
-    body_ = other.body_ == nullptr ? nullptr : other.body_->Clone(allocator, this)->AsBlockStatement();
+    param_ = nullptr;
+    body_ = nullptr;
+    if (other.param_ != nullptr && other.param_->Clone(allocator, this) != nullptr) {
+        param_ = other.param_->Clone(allocator, this)->AsExpression();
+    }
+    if (other.body_ != nullptr && other.body_->Clone(allocator, this) != nullptr) {
+        body_ = other.body_->Clone(allocator, this)->AsBlockStatement();
+    }
 }
 
 CatchClause *CatchClause::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     auto *const clone = allocator->New<CatchClause>(*this, allocator);
+    ES2PANDA_ASSERT(clone != nullptr);
     if (parent != nullptr) {
         clone->SetParent(parent);
     }

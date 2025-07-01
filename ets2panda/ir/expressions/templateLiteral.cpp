@@ -41,6 +41,7 @@ TemplateLiteral::TemplateLiteral([[maybe_unused]] Tag const tag, TemplateLiteral
 TemplateLiteral *TemplateLiteral::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     auto *const clone = allocator->New<TemplateLiteral>(Tag {}, *this, allocator);
+    ES2PANDA_ASSERT(clone != nullptr);
     if (parent != nullptr) {
         clone->SetParent(parent);
     }
