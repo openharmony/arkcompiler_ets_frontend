@@ -22,3 +22,7 @@ stanford-crypto-pbkdf2
 
 #26559
 crypto
+
+#27247
+OfflineAssembler
+numericalComputation
