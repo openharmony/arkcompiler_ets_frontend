@@ -244,7 +244,19 @@ template <typename From, typename To>
 static ir::AstNode *FloatingPointNumberLiteralCast(const ir::Literal *num, public_lib::Context *context)
 {
     if (sizeof(From) > sizeof(To)) {
-        // Constant narrowing floating point conversion is not permitted
+        // double -> float
+        auto doubleVal = GetVal<double>(num);
+        if (doubleVal < std::numeric_limits<float>::min() || doubleVal > std::numeric_limits<float>::max()) {
+            LogError(context, diagnostic::CONSTANT_VALUE_OUT_OF_RANGE, {}, num->Start());
+            return const_cast<ir::Literal *>(num);
+        }
+
+        auto floatVal = static_cast<float>(doubleVal);
+        if (static_cast<double>(floatVal) == doubleVal) {
+            auto parent = const_cast<ir::Literal *>(num)->Parent();
+            return CreateNumberLiteral(floatVal, parent, num->Range(), context->allocator);
+        }
+
         LogError(context, diagnostic::CONSTANT_FLOATING_POINT_COVERSION, {}, num->Start());
         return const_cast<ir::Literal *>(num);
     }
