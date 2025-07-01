@@ -29,5 +29,5 @@ class Test {
 /* @@? 19:24 Error SyntaxError: Field type annotation expected. */
 /* @@? 19:24 Error SyntaxError: Unexpected token ','. */
 /* @@? 19:26 Error TypeError: Variable 'foo2' has already been declared. */
-/* @@? 19:31 Error SyntaxError: Field type annotation expected. */
+/* @@? 19:30 Error SyntaxError: Field type annotation expected. */
 /* @@? 20:1 Error SyntaxError: Unexpected token '}'. */
