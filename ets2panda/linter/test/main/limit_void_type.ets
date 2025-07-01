@@ -261,3 +261,82 @@ function tryThing(): string | void {
     console.error(e);
   }
 }
+
+class A1 {
+  // test
+  aa?: boolean | void
+
+  test(a: number): boolean | void {
+    if (a > 0) {
+      // will return
+      return;
+    }
+    // will return
+    return;
+  }
+
+  test1(a: number): void | boolean {
+    if (a > 0) {
+      // will return
+      return true;
+    }
+    // will return
+    return;
+  }
+
+  test2(a: number): void | boolean {
+    if (a > 0) {
+      // will return
+      return;
+    }
+  }
+
+  test3(a: number): void | boolean {
+    if (a > 0) {
+      // will return
+      return;
+    }
+    return false;
+  }
+
+  test4(): void | boolean {
+    // will return
+  }
+}
+
+function test(a: number): boolean | void {
+  if (a > 0) {
+    // will return
+    return;
+  }
+  // will return
+  return;
+}
+
+function test1(a: number): void | boolean {
+  if (a > 0) {
+    // will return
+    return true;
+  }
+  // will return
+  return;
+}
+
+function test2(a: number): void | boolean {
+  if (a > 0) {
+    // will return
+    return;
+  }
+}
+
+function test3(a: number): void | boolean {
+  if (a > 0) {
+    // will return
+    return;
+  }
+  return false;
+}
+
+function test4(a: number): void | boolean {
+  // will return
+}
