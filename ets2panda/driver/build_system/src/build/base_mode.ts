@@ -33,7 +33,6 @@ import {
   MERGED_ABC_FILE,
   TS_SUFFIX,
   DEPENDENCY_INPUT_FILE,
-  PROJECT_BUILD_CONFIG_FILE
 } from '../pre_define';
 import {
   changeDeclgenFileExtension,
@@ -63,40 +62,42 @@ import {
 } from '../types';
 import { ArkTSConfigGenerator } from './generate_arktsconfig';
 import { SetupClusterOptions } from '../types';
+
 export abstract class BaseMode {
-  buildConfig: BuildConfig;
-  entryFiles: Set<string>;
-  compileFiles: Map<string, CompileFileInfo>;
-  outputDir: string;
-  cacheDir: string;
-  pandaSdkPath: string;
-  buildSdkPath: string;
-  packageName: string;
-  sourceRoots: string[];
-  moduleRootPath: string;
-  moduleType: string;
-  dependentModuleList: DependentModuleConfig[];
-  moduleInfos: Map<string, ModuleInfo>;
-  mergedAbcFile: string;
-  dependencyJsonFile: string;
-  abcLinkerCmd: string[];
-  dependencyAnalyzerCmd: string[];
-  logger: Logger;
-  isDebug: boolean;
-  enableDeclgenEts2Ts: boolean;
-  declgenV1OutPath: string | undefined;
-  declgenBridgeCodePath: string | undefined;
-  hasMainModule: boolean;
-  abcFiles: Set<string>;
-  hashCache: Record<string, string>;
-  hashCacheFile: string;
-  isCacheFileExists: boolean;
-  dependencyFileMap: DependencyFileConfig | null;
-  isBuildConfigModified: boolean | undefined;
+  public buildConfig: BuildConfig;
+  public entryFiles: Set<string>;
+  public compileFiles: Map<string, CompileFileInfo>;
+  public outputDir: string;
+  public cacheDir: string;
+  public pandaSdkPath: string;
+  public buildSdkPath: string;
+  public packageName: string;
+  public sourceRoots: string[];
+  public moduleRootPath: string;
+  public moduleType: string;
+  public dependentModuleList: DependentModuleConfig[];
+  public moduleInfos: Map<string, ModuleInfo>;
+  public mergedAbcFile: string;
+  public dependencyJsonFile: string;
+  public abcLinkerCmd: string[];
+  public dependencyAnalyzerCmd: string[];
+  public logger: Logger;
+  public isDebug: boolean;
+  public enableDeclgenEts2Ts: boolean;
+  public declgenV1OutPath: string | undefined;
+  public declgenBridgeCodePath: string | undefined;
+  public hasMainModule: boolean;
+  public abcFiles: Set<string>;
+  public hashCacheFile: string;
+  public hashCache: Record<string, string>;
+  public isCacheFileExists: boolean;
+  public dependencyFileMap: DependencyFileConfig | null;
+  public isBuildConfigModified: boolean | undefined;
 
   constructor(buildConfig: BuildConfig) {
     this.buildConfig = buildConfig;
     this.entryFiles = new Set<string>(buildConfig.compileFiles as string[]);
+    this.compileFiles = new Map<string, CompileFileInfo>();
     this.outputDir = buildConfig.loaderOutPath as string;
     this.cacheDir = buildConfig.cachePath as string;
     this.pandaSdkPath = buildConfig.pandaSdkPath as string;
@@ -106,7 +107,16 @@ export abstract class BaseMode {
     this.moduleRootPath = buildConfig.moduleRootPath as string;
     this.moduleType = buildConfig.moduleType as string;
     this.dependentModuleList = buildConfig.dependentModuleList;
+    this.moduleInfos = new Map<string, ModuleInfo>();
+    this.mergedAbcFile = path.resolve(this.outputDir, MERGED_ABC_FILE);
+    this.dependencyJsonFile = path.resolve(this.cacheDir, DEPENDENCY_JSON_FILE);
+    this.abcLinkerCmd = ['"' + this.buildConfig.abcLinkerPath + '"'];
+    this.dependencyAnalyzerCmd = ['"' + this.buildConfig.dependencyAnalyzerPath + '"'];
+    this.logger = Logger.getInstance();
     this.isDebug = buildConfig.buildMode as string === BUILD_MODE.DEBUG;
+    this.enableDeclgenEts2Ts = buildConfig.enableDeclgenEts2Ts as boolean;
+    this.declgenV1OutPath = buildConfig.declgenV1OutPath as string | undefined;
+    this.declgenBridgeCodePath = buildConfig.declgenBridgeCodePath as string | undefined;
     this.hasMainModule = buildConfig.hasMainModule;
     this.abcFiles = new Set<string>();
     this.hashCacheFile = path.join(this.cacheDir, 'hash_cache.json');
@@ -114,37 +124,24 @@ export abstract class BaseMode {
     this.isCacheFileExists = fs.existsSync(this.hashCacheFile);
     this.dependencyFileMap = null;
     this.isBuildConfigModified = buildConfig.isBuildConfigModified as boolean | undefined;
-
-    this.enableDeclgenEts2Ts = buildConfig.enableDeclgenEts2Ts as boolean;
-    this.declgenV1OutPath = buildConfig.declgenV1OutPath as string | undefined;
-    this.declgenBridgeCodePath = buildConfig.declgenBridgeCodePath as string | undefined;
-
-    this.moduleInfos = new Map<string, ModuleInfo>();
-    this.compileFiles = new Map<string, CompileFileInfo>();
-    this.mergedAbcFile = path.resolve(this.outputDir, MERGED_ABC_FILE);
-    this.dependencyJsonFile = path.resolve(this.cacheDir, DEPENDENCY_JSON_FILE);
-    this.abcLinkerCmd = ['"' + this.buildConfig.abcLinkerPath + '"'];
-    this.dependencyAnalyzerCmd = ['"' + this.buildConfig.dependencyAnalyzerPath + '"'];
-
-    this.logger = Logger.getInstance();
   }
 
   public declgen(fileInfo: CompileFileInfo): void {
     const source = fs.readFileSync(fileInfo.filePath, 'utf8');
-    let moduleInfo: ModuleInfo = this.moduleInfos.get(fileInfo.packageName)!;
-    let filePathFromModuleRoot: string = path.relative(moduleInfo.moduleRootPath, fileInfo.filePath);
-    let declEtsOutputPath: string = changeDeclgenFileExtension(
+    const moduleInfo: ModuleInfo = this.moduleInfos.get(fileInfo.packageName)!;
+    const filePathFromModuleRoot: string = path.relative(moduleInfo.moduleRootPath, fileInfo.filePath);
+    const declEtsOutputPath: string = changeDeclgenFileExtension(
       path.join(moduleInfo.declgenV1OutPath as string, moduleInfo.packageName, filePathFromModuleRoot),
       DECL_ETS_SUFFIX
     );
-    let etsOutputPath: string = changeDeclgenFileExtension(
+    const etsOutputPath: string = changeDeclgenFileExtension(
       path.join(moduleInfo.declgenBridgeCodePath as string, moduleInfo.packageName, filePathFromModuleRoot),
       TS_SUFFIX
     );
     ensurePathExists(declEtsOutputPath);
     ensurePathExists(etsOutputPath);
-    let arktsGlobal: ArkTSGlobal = this.buildConfig.arktsGlobal;
-    let arkts: ArkTS = this.buildConfig.arkts;
+    const arktsGlobal: ArkTSGlobal = this.buildConfig.arktsGlobal;
+    const arkts: ArkTS = this.buildConfig.arkts;
     let errorStatus = false;
     try {
       arktsGlobal.filePath = fileInfo.filePath;
@@ -200,7 +197,7 @@ export abstract class BaseMode {
   public compile(fileInfo: CompileFileInfo): void {
     ensurePathExists(fileInfo.abcFilePath);
 
-    let ets2pandaCmd: string[] = [
+    const ets2pandaCmd: string[] = [
       '_',
       '--extension',
       'ets',
@@ -216,8 +213,8 @@ export abstract class BaseMode {
     ets2pandaCmd.push(fileInfo.filePath);
     this.logger.printInfo('ets2pandaCmd: ' + ets2pandaCmd.join(' '));
 
-    let arktsGlobal = this.buildConfig.arktsGlobal;
-    let arkts = this.buildConfig.arkts;
+    const arktsGlobal = this.buildConfig.arktsGlobal;
+    const arkts = this.buildConfig.arkts;
     let errorStatus = false;
     try {
       arktsGlobal.filePath = fileInfo.filePath;
@@ -299,8 +296,8 @@ export abstract class BaseMode {
   }
 
   private getDependentModules(moduleInfo: ModuleInfo): Map<string, ModuleInfo>[] {
-    let dynamicDepModules: Map<string, ModuleInfo> = new Map<string, ModuleInfo>();
-    let staticDepModules: Map<string, ModuleInfo> = new Map<string, ModuleInfo>();
+    const dynamicDepModules: Map<string, ModuleInfo> = new Map<string, ModuleInfo>();
+    const staticDepModules: Map<string, ModuleInfo> = new Map<string, ModuleInfo>();
 
     if (moduleInfo.isMainModule) {
       this.moduleInfos.forEach((module: ModuleInfo, packageName: string) => {
@@ -332,13 +329,13 @@ export abstract class BaseMode {
   }
 
   protected generateArkTSConfigForModules(): void {
-    this.moduleInfos.forEach((moduleInfo: ModuleInfo, moduleRootPath: string) => {
+    this.moduleInfos.forEach((moduleInfo: ModuleInfo, _: string) => {
       ArkTSConfigGenerator.getInstance(this.buildConfig, this.moduleInfos).writeArkTSConfigFile(moduleInfo);
     });
   }
 
   private collectDepModuleInfos(): void {
-    this.moduleInfos.forEach((moduleInfo) => {
+    this.moduleInfos.forEach((moduleInfo: ModuleInfo) => {
       let [dynamicDepModules, staticDepModules] = this.getDependentModules(moduleInfo);
       moduleInfo.dynamicDepModuleInfos = dynamicDepModules;
       moduleInfo.staticDepModuleInfos = staticDepModules;
@@ -353,7 +350,7 @@ export abstract class BaseMode {
       );
       this.logger.printError(logData);
     }
-    let mainModuleInfo: ModuleInfo = this.getMainModuleInfo();
+    const mainModuleInfo: ModuleInfo = this.getMainModuleInfo();
     this.moduleInfos.set(this.packageName, mainModuleInfo);
     this.dependentModuleList.forEach((module: DependentModuleConfig) => {
       if (!module.packageName || !module.modulePath || !module.sourceRoots || !module.entryFile) {
@@ -363,7 +360,7 @@ export abstract class BaseMode {
         );
         this.logger.printError(logData);
       }
-      let moduleInfo: ModuleInfo = {
+      const moduleInfo: ModuleInfo = {
         isMainModule: false,
         packageName: module.packageName,
         moduleRootPath: module.modulePath,
@@ -439,7 +436,7 @@ export abstract class BaseMode {
       if (etsFileLastModified < abcFileLastModified) {
         const currentHash = getFileHash(etsFilePath);
         const cachedHash = this.hashCache[etsFilePath];
-        if (cachedHash && currentHash === cachedHash) {
+        if (cachedHash && cachedHash === currentHash) {
           return false;
         }
       }
@@ -464,7 +461,7 @@ export abstract class BaseMode {
 
     this.entryFiles.forEach((file: string) => {
       let hasModule = false;
-      for (const [packageName, moduleInfo] of this.moduleInfos) {
+      for (const [_, moduleInfo] of this.moduleInfos) {
         if (!file.startsWith(moduleInfo.moduleRootPath)) {
           continue;
         }
@@ -513,7 +510,7 @@ export abstract class BaseMode {
 
     compileFiles.forEach((file: string) => {
       let hasModule = false;
-      for (const [packageName, moduleInfo] of this.moduleInfos) {
+      for (const [_, moduleInfo] of this.moduleInfos) {
         if (!file.startsWith(moduleInfo.moduleRootPath)) {
           continue;
         }
@@ -559,20 +556,20 @@ export abstract class BaseMode {
       return;
     }
     this.entryFiles.forEach((file: string) => {
-      for (const [packageName, moduleInfo] of this.moduleInfos) {
+      for (const [_, moduleInfo] of this.moduleInfos) {
         const relativePath = path.relative(moduleInfo.moduleRootPath, file);
         if (relativePath.startsWith('..') || path.isAbsolute(relativePath)) {
           continue;
         }
-        let filePathFromModuleRoot: string = path.relative(moduleInfo.moduleRootPath, file);
-        let filePathInCache: string = path.join(this.cacheDir, moduleInfo.packageName, filePathFromModuleRoot);
-        let abcFilePath: string = path.resolve(changeFileExtension(filePathInCache, ABC_SUFFIX));
+        const filePathFromModuleRoot: string = path.relative(moduleInfo.moduleRootPath, file);
+        const filePathInCache: string = path.join(this.cacheDir, moduleInfo.packageName, filePathFromModuleRoot);
+        const abcFilePath: string = path.resolve(changeFileExtension(filePathInCache, ABC_SUFFIX));
         this.abcFiles.add(abcFilePath);
         if (!this.isBuildConfigModified && this.shouldSkipFile(file, moduleInfo, filePathFromModuleRoot, abcFilePath)) {
           return;
         }
         this.hashCache[file] = getFileHash(file);
-        let fileInfo: CompileFileInfo = {
+        const fileInfo: CompileFileInfo = {
           filePath: file,
           dependentFiles: [],
           abcFilePath: abcFilePath,
@@ -605,7 +602,7 @@ export abstract class BaseMode {
     this.generateModuleInfos();
 
     const compilePromises: Promise<void>[] = [];
-    this.compileFiles.forEach((fileInfo: CompileFileInfo, file: string) => {
+    this.compileFiles.forEach((fileInfo: CompileFileInfo, _: string) => {
       compilePromises.push(new Promise<void>((resolve) => {
         this.declgen(fileInfo);
         resolve();
@@ -618,7 +615,7 @@ export abstract class BaseMode {
     this.generateModuleInfos();
 
     const compilePromises: Promise<void>[] = [];
-    this.compileFiles.forEach((fileInfo: CompileFileInfo, file: string) => {
+    this.compileFiles.forEach((fileInfo: CompileFileInfo, _: string) => {
       compilePromises.push(new Promise<void>((resolve) => {
         this.compile(fileInfo);
         resolve();
@@ -639,7 +636,7 @@ export abstract class BaseMode {
     if (this.isBuildConfigModified || !this.isCacheFileExists || this.enableDeclgenEts2Ts) {
       return;
     }
-    let dependencyInputFile: string = path.join(this.cacheDir, DEPENDENCY_INPUT_FILE);
+    const dependencyInputFile: string = path.join(this.cacheDir, DEPENDENCY_INPUT_FILE);
     let dependencyInputContent: string = '';
     this.entryFiles.forEach((entryFile: string) => {
       dependencyInputContent += entryFile + os.EOL;
@@ -647,7 +644,7 @@ export abstract class BaseMode {
     fs.writeFileSync(dependencyInputFile, dependencyInputContent);
 
     this.dependencyAnalyzerCmd.push('@' + '"' + dependencyInputFile + '"');
-    for (const [packageName, module] of this.moduleInfos) {
+    for (const [_, module] of this.moduleInfos) {
       if (module.isMainModule) {
           this.dependencyAnalyzerCmd.push('--arktsconfig=' + '"' + module.arktsConfigFile + '"');
           break;
