@@ -25,4 +25,4 @@ class A {
   }
 }
 
-/* @@? 24:16 Error TypeError: Type 'Int' cannot be assigned to type '() => void'  */
+/* @@? 24:5 Error TypeError: Class methods cannot be overwritten.  */
