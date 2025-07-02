@@ -1257,6 +1257,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.checkConstrutorAccess(node as ts.PropertyAccessExpression);
     this.handleTaskPoolDeprecatedUsages(node as ts.PropertyAccessExpression);
     this.handleNoTuplesArraysForPropertyAccessExpression(node as ts.PropertyAccessExpression);
+    this.handleUnsafeOptionalCallComparison(node as ts.PropertyAccessExpression);
     if (ts.isCallExpression(node.parent) && node === node.parent.expression) {
       return;
     }
@@ -1272,14 +1273,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (this.isPrototypePropertyAccess(propertyAccessNode, exprSym, baseExprSym, baseExprType)) {
       this.incrementCounters(propertyAccessNode.name, FaultID.Prototype);
     }
-    if (
-      !this.options.arkts2 &&
-      !!exprSym &&
-      this.tsUtils.isStdSymbolAPI(exprSym) &&
-      !ALLOWED_STD_SYMBOL_API.includes(exprSym.getName())
-    ) {
-      this.incrementCounters(propertyAccessNode, FaultID.SymbolType);
-    }
+    this.checkSymbolAPI(propertyAccessNode, exprSym);
     if (this.options.advancedClassChecks && this.tsUtils.isClassObjectExpression(propertyAccessNode.expression)) {
       this.incrementCounters(propertyAccessNode.expression, FaultID.ClassAsObject);
     }
@@ -1293,6 +1287,17 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.checkFunctionProperty(propertyAccessNode, baseExprSym, baseExprType);
     this.handleSdkForConstructorFuncs(propertyAccessNode);
     this.fixJsImportPropertyAccessExpression(node);
+  }
+
+  private checkSymbolAPI(node: ts.PropertyAccessExpression, exprSym: ts.Symbol | undefined): void {
+    if (
+      !this.options.arkts2 &&
+      !!exprSym &&
+      this.tsUtils.isStdSymbolAPI(exprSym) &&
+      !ALLOWED_STD_SYMBOL_API.includes(exprSym.getName())
+    ) {
+      this.incrementCounters(node, FaultID.SymbolType);
+    }
   }
 
   propertyAccessExpressionForBuiltin(decl: ts.PropertyAccessExpression): void {
@@ -10240,6 +10245,24 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
 
     return false;
+  }
+
+  private handleUnsafeOptionalCallComparison(expr: ts.PropertyAccessExpression): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    const declaration = this.tsUtils.getDeclarationNode(expr.expression);
+    if (!declaration) {
+      return;
+    }
+
+    if (
+      (ts.isParameter(declaration) || ts.isPropertyDeclaration(declaration)) &&
+      !!declaration.questionToken &&
+      !ts.isPropertyAccessChain(expr)
+    ) {
+      this.incrementCounters(expr, FaultID.NoTsLikeSmartType);
+    }
   }
 
   private handleNotsLikeSmartType(classDecl: ts.ClassDeclaration): void {

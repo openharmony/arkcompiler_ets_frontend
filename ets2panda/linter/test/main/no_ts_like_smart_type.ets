@@ -119,3 +119,33 @@ async function taskInfo():Promise<void> {//nopass
     }
   }
 }
+
+class A {
+    f(): number| null {
+        return 1
+    }
+}
+
+class B {
+    a?:A = new A()
+}
+let b = new B()
+if(b.a && b.a.f() !== null){ //Error
+    console.log('23')
+}
+
+if (b.a.f() !== null) { //Error
+  console.log('warn');
+}
+if (b.a?.f() !== null) {
+  console.log('ok');
+}
+function check(obj?: A) {
+  if (obj.f() !== null) { //Error
+    console.log('warn');
+  }
+}
+if ((b.a?.f() ?? 0) > 0) {
+  console.log('ok');
+}
+const val = b.a.f(); //Error
