@@ -57,6 +57,7 @@ util::UString GenName(ArenaAllocator *const allocator)
 
 void SetSourceRangesRecursively(ir::AstNode *node, const lexer::SourceRange &range)
 {
+    ES2PANDA_ASSERT(node != nullptr);
     node->SetRange(range);
     node->IterateRecursively([](ir::AstNode *n) { n->SetRange(n->Parent()->Range()); });
 }
