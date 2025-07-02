@@ -396,7 +396,7 @@ public:
     bool TrailingLambdaTypeInference(Signature *signature, const ArenaVector<ir::Expression *> &arguments);
     bool TypeInference(Signature *signature, const ArenaVector<ir::Expression *> &arguments,
                        TypeRelationFlag flags = TypeRelationFlag::NONE);
-    bool CheckLambdaTypeAnnotation(ir::AstNode *typeAnnotation, ir::ArrowFunctionExpression *arrowFuncExpr,
+    bool CheckLambdaTypeAnnotation(ir::ETSParameterExpression *param, ir::ArrowFunctionExpression *arrowFuncExpr,
                                    Type *parameterType, TypeRelationFlag flags);
     bool CheckLambdaInfer(ir::AstNode *typeAnnotation, ir::ArrowFunctionExpression *arrowFuncExpr,
                           Type *const subParameterType);
