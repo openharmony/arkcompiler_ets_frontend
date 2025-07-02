@@ -4908,7 +4908,7 @@ export class Autofixer {
     const srcFile = node.getSourceFile();
     const typeArgsText = `<${typeNode.typeArguments?.
       map((arg) => {
-        return this.printer.printNode(ts.EmitHint.Unspecified, arg, srcFile);
+        return this.nonCommentPrinter.printNode(ts.EmitHint.Unspecified, arg, srcFile);
       }).
       join(', ')}>`;
     // Insert the type arguments immediately after the constructor name
@@ -4922,7 +4922,7 @@ export class Autofixer {
   ): Autofix[] | undefined {
     const elementTypeNode = arrayTypeNode.elementType;
     const srcFile = node.getSourceFile();
-    const typeArgsText = `<${this.printer.printNode(ts.EmitHint.Unspecified, elementTypeNode, srcFile)}>`;
+    const typeArgsText = `<${this.nonCommentPrinter.printNode(ts.EmitHint.Unspecified, elementTypeNode, srcFile)}>`;
     const insertPos = node.expression.getEnd();
     return [{ start: insertPos, end: insertPos, replacementText: typeArgsText }];
   }
@@ -4941,7 +4941,7 @@ export class Autofixer {
         const srcFile = node.getSourceFile();
         const typeArgsText = `<${matchingType.typeArguments.
           map((arg) => {
-            return this.printer.printNode(ts.EmitHint.Unspecified, arg, srcFile);
+            return this.nonCommentPrinter.printNode(ts.EmitHint.Unspecified, arg, srcFile);
           }).
           join(', ')}>`;
 
@@ -4972,7 +4972,7 @@ export class Autofixer {
     }
     const typeArgsText = `<${typeArgs?.
       map((arg) => {
-        return this.printer.printNode(ts.EmitHint.Unspecified, arg, srcFile);
+        return this.nonCommentPrinter.printNode(ts.EmitHint.Unspecified, arg, srcFile);
       }).
       join(', ')}>`;
     return [{ start: identifier.getEnd(), end: identifier.getEnd(), replacementText: typeArgsText }];

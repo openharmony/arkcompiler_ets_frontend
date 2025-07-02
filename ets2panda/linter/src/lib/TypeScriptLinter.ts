@@ -4425,6 +4425,17 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (!initializer) {
       return;
     }
+    if (ts.isAsExpression(initializer) || ts.isTypeAssertionExpression(initializer)) {
+      const typeNode = ts.isAsExpression(initializer)
+        ? initializer.type
+        : initializer.type;
+
+      if (typeNode.kind === ts.SyntaxKind.NumberKeyword) {
+        this.incrementCounters(enumMember, FaultID.EnumMemberNonConstInit);
+        return;
+      }
+    }
+
     let value;
     if (ts.isNumericLiteral(initializer)) {
       value = parseFloat(initializer.text);
