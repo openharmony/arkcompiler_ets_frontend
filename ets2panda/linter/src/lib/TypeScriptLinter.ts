@@ -3578,23 +3578,64 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   ): void {
     const baseMethodType = this.getActualReturnType(baseMethod);
     const derivedMethodType = this.getActualReturnType(derivedMethod);
-    const baseMethodTypeIsVoid = baseMethodType && TsUtils.isVoidType(baseMethodType) || !baseMethod.type;
-    const derivedMethodTypeIsVoid = derivedMethodType && TsUtils.isVoidType(derivedMethodType);
-    if (baseMethodTypeIsVoid && derivedMethod.type && !derivedMethodTypeIsVoid) {
-      this.incrementCounters(derivedMethod.type, FaultID.MethodInheritRule);
+    const baseMethodTypeIsVoid = TypeScriptLinter.checkMethodTypeIsVoidOrAny(baseMethodType, true);
+    const baseMethodTypeisAny = TypeScriptLinter.checkMethodTypeIsVoidOrAny(baseMethodType, false);
+    const derivedMethodTypeIsVoid = TypeScriptLinter.checkMethodTypeIsVoidOrAny(derivedMethodType, true, true);
+    const baseMethodTypeisAnyWithVoid = TypeScriptLinter.getRelationBaseMethodAndDerivedMethod(
+      baseMethodTypeisAny,
+      derivedMethodTypeIsVoid
+    );
+    const baseMethodTypeisAnyWithPromiseVoid = TypeScriptLinter.getRelationBaseMethodAndDerivedMethod(
+      baseMethodTypeisAny,
+      this.hasPromiseVoidReturn(derivedMethod)
+    );
+    const baseMethodTypeIsVoidWithoutVoid = TypeScriptLinter.getRelationBaseMethodAndDerivedMethod(
+      baseMethodTypeIsVoid,
+      !derivedMethodTypeIsVoid
+    );
+    const baseMethodTypeisAnyWithoutVoid = TypeScriptLinter.getRelationBaseMethodAndDerivedMethod(
+      baseMethodTypeisAny,
+      !derivedMethodTypeIsVoid
+    );
+    const baseMethodTypeIsVoidWithVoid = TypeScriptLinter.getRelationBaseMethodAndDerivedMethod(
+      baseMethodTypeIsVoid,
+      derivedMethodTypeIsVoid
+    );
+    if (baseMethodTypeisAnyWithVoid || baseMethodTypeIsVoidWithoutVoid || baseMethodTypeisAnyWithPromiseVoid) {
+      this.incrementCounters(derivedMethod.type ? derivedMethod.type : derivedMethod.name, FaultID.MethodInheritRule);
       return;
     }
-
-    if (!baseMethodType || !derivedMethodType || baseMethodTypeIsVoid && derivedMethodTypeIsVoid) {
+    const isNoNeedCheck =
+      !baseMethodType || !derivedMethodType || baseMethodTypeisAnyWithoutVoid || baseMethodTypeIsVoidWithVoid;
+    if (isNoNeedCheck) {
       return;
     }
     if (this.isDerivedTypeAssignable(derivedMethodType, baseMethodType)) {
       return;
     }
-
     if (!this.isTypeAssignable(derivedMethodType, baseMethodType)) {
       this.incrementCounters(derivedMethod.type ? derivedMethod.type : derivedMethod.name, FaultID.MethodInheritRule);
     }
+  }
+
+  private static checkMethodTypeIsVoidOrAny(
+    methodType: ts.Type | undefined,
+    isVoidOrAny: boolean,
+    isDerived?: boolean
+  ): boolean | ts.TypeNode | undefined {
+    if (isDerived && isVoidOrAny) {
+      return methodType && TsUtils.isVoidType(methodType);
+    } else if (isVoidOrAny) {
+      return methodType && TsUtils.isVoidType(methodType);
+    }
+    return methodType && TsUtils.isAnyType(methodType);
+  }
+
+  private static getRelationBaseMethodAndDerivedMethod(
+    baseMethodTypeIsVoidOrAny: boolean | ts.TypeNode | undefined,
+    derivedMethodCheckFlag: boolean | ts.TypeNode | undefined
+  ): boolean | ts.TypeNode | undefined {
+    return baseMethodTypeIsVoidOrAny && derivedMethodCheckFlag;
   }
 
   private getActualReturnType(method: ts.MethodDeclaration | ts.MethodSignature): ts.Type | undefined {
