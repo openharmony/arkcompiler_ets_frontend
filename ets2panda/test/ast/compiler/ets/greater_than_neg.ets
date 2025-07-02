@@ -16,9 +16,7 @@
 let a: Array<string>>>=2
 let b: Array<string>>=2
 
-/* @@? 16:21 Error SyntaxError: Unexpected token '>>='.  */
-/* @@? 16:21 Error SyntaxError: Unexpected token '>>='.  */
-/* @@? 17:21 Error SyntaxError: Unexpected token '>='.  */
-/* @@? 17:21 Error SyntaxError: Unexpected token '>='.  */
-/* @@? 17:21 Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type.  */
-
+/* @@? 16:21 Error SyntaxError: Unexpected token '>>='. */
+/* @@? 16:24 Error SyntaxError: Unexpected token '2'. */
+/* @@? 17:21 Error SyntaxError: Unexpected token '>='. */
+/* @@? 17:23 Error SyntaxError: Unexpected token '2'. */

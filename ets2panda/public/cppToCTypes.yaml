@@ -282,7 +282,7 @@ change_types:
             \tsize_t i = 0;\n
             \tfor (auto elem : resultSet) {\n
             \t\tauto toPush = |reverse_template_nested_expression_1_start|(elem)|reverse_template_nested_expression_1_end|;\n
-            \t\tapiRes[i] = reinterpret_cast<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|>(toPush);\n
+            \t\tapiRes[i++] = reinterpret_cast<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|>(toPush);\n
             \t}"
 
   - es2panda_arg:
@@ -328,7 +328,7 @@ change_types:
             \tsize_t i = 0;\n
             \tfor (auto elem : resultSet) {\n
             \t\tauto toPush = |reverse_template_nested_expression_1_start|(elem)|reverse_template_nested_expression_1_end|;\n
-            \t\tapiRes[i] = reinterpret_cast<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|>(toPush);\n
+            \t\tapiRes[i++] = reinterpret_cast<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|>(toPush);\n
             \t}"
 
   - es2panda_arg:
@@ -374,7 +374,7 @@ change_types:
             \tsize_t i = 0;\n
             \tfor (auto elem : resultSet) {\n
             \t\tauto toPush = |reverse_template_nested_expression_1_start|(elem)|reverse_template_nested_expression_1_end|;\n
-            \t\tapiRes[i] = reinterpret_cast<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|>(toPush);\n
+            \t\tapiRes[i++] = reinterpret_cast<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|>(toPush);\n
             \t}"
 
   - es2panda_arg:
@@ -466,7 +466,7 @@ change_types:
             \tsize_t i = 0;\n
             \tfor (auto elem : resultSet) {\n
             \t\tauto toPush = |reverse_template_nested_expression_1_start|(elem)|reverse_template_nested_expression_1_end|;\n
-            \t\tres[i++] = reinterpret_cast<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|>(toPush);\n
+            \t\tapiRes[i++] = reinterpret_cast<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|>(toPush);\n
             \t}"
 
   - es2panda_arg:
@@ -2891,6 +2891,28 @@ change_types:
       name: '|arg_name|'
     cast:
         reverse_cast: ''
+
+  - es2panda_arg:
+      name: '|arg_name|'
+      type:
+        name: JsDocInfo
+      max_ptr_depth: 0
+    new_args:
+    - type:
+        name: es2panda_JsDocInfo
+        ptr_depth: 1
+      namespace: 'ir::'
+      name: '|arg_name|'
+    cast:
+        expression: "\
+          \tir::JsDocInfo |arg_name|ArenaUnorderedMap{reinterpret_cast<Context *>(context)->allocator->Adapter()};\n
+          \tfor (size_t j = 0; j < |arg_name|->len; ++j) {\n
+          \t\t|arg_name|ArenaUnorderedMap.emplace(|arg_name|->strings[j], JsDocRecordToE2p(|arg_name|->jsDocRecords[j]));\n
+          \t}"
+        var_name: '|arg_name|ArenaUnorderedMap'
+        reverse_cast:
+          start: JsDocInfoFromE2p(reinterpret_cast<Context *>(context)->allocator,
+          end: )
 
   - es2panda_arg:
       name: '|arg_name|'

@@ -17,6 +17,7 @@
 #define ES2PANDA_IR_STATEMENT_VARIABLE_DECLARATION_H
 
 #include "ir/annotationAllowed.h"
+#include "ir/jsDocAllowed.h"
 #include "ir/statement.h"
 #include "ir/expressions/identifier.h"
 #include "ir/statements/annotationUsage.h"
@@ -25,7 +26,7 @@
 namespace ark::es2panda::ir {
 class VariableDeclarator;
 
-class VariableDeclaration : public AnnotationAllowed<Statement> {
+class VariableDeclaration : public JsDocAllowed<AnnotationAllowed<Statement>> {
 private:
     struct Tag {};
 
@@ -34,7 +35,7 @@ public:
 
     explicit VariableDeclaration(VariableDeclarationKind kind, ArenaAllocator *allocator,
                                  ArenaVector<VariableDeclarator *> &&declarators)
-        : AnnotationAllowed<Statement>(AstNodeType::VARIABLE_DECLARATION, allocator),
+        : JsDocAllowed<AnnotationAllowed<Statement>>(AstNodeType::VARIABLE_DECLARATION, allocator),
           kind_(kind),
           decorators_(allocator->Adapter()),
           declarators_(std::move(declarators))
@@ -99,7 +100,11 @@ public:
 
     [[nodiscard]] VariableDeclaration *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
+    VariableDeclaration *Construct(ArenaAllocator *allocator) override;
+    void CopyTo(AstNode *other) const override;
+
 private:
+    friend class SizeOfNodeTest;
     VariableDeclarationKind kind_;
     ArenaVector<Decorator *> decorators_;
     ArenaVector<VariableDeclarator *> declarators_;

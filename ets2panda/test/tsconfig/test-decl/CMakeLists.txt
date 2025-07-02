@@ -30,3 +30,6 @@ endfunction()
 
 add_test(resolve-dynamic-paths)
 add_test(check-decl-path)
+add_test(check-export-decl)
+add_test(check-extend-dynamic)
+add_test(typecheck-decl)

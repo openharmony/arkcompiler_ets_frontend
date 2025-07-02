@@ -78,6 +78,7 @@ export class ObservedDecoratorCheck implements BaseChecker {
 
     public check = (arkClass: ArkClass): void => {
         const scene = arkClass.getDeclaringArkFile().getScene();
+        const projectName = arkClass.getDeclaringArkFile().getProjectName();
         for (const field of arkClass.getFields()) {
             if (!field.getDecorators().some(d => DECORATOR_SET.has(d.getKind()))) {
                 continue;
@@ -88,6 +89,10 @@ export class ObservedDecoratorCheck implements BaseChecker {
             let issueClasses: Set<ArkClass> = new Set();
             // ArkAnalyzer此处有问题，若field的类型注解为unclear type，会用右边的替换左边的。
             const fieldType = field.getType();
+            // 此处仅对field为class类型进行检查，包含class和interface，非class类型不在本规则检查范围之内
+            if (!(fieldType instanceof ClassType)) {
+                continue;
+            }
             const initializers = field.getInitializer();
             let canFindAllTargets = true;
 
@@ -121,10 +126,10 @@ export class ObservedDecoratorCheck implements BaseChecker {
                     locals.add(rightOp);
                 } else if (rightOp instanceof ArkNewExpr) {
                     // 此处需要区分field = new cls()和field = {}两种场景，查找完毕需继续遍历stmts以解析条件表达式造成的多赋值场景
-                    canFindAllTargets = canFindAllTargets && this.handleNewExpr(scene, fieldType, rightOp, usedClasses);
+                    canFindAllTargets = canFindAllTargets && this.handleNewExpr(scene, fieldType, rightOp, usedClasses, projectName);
                 } else if (rightOp instanceof AbstractInvokeExpr) {
                     canFindAllTargets =
-                        canFindAllTargets && this.handleInvokeExpr(scene, fieldType, rightOp, usedClasses);
+                        canFindAllTargets && this.handleInvokeExpr(scene, fieldType, rightOp, usedClasses, projectName);
                 } else {
                     // 对应场景为使用条件表达式cond ? 123 : 456赋值时
                     continue;
@@ -160,10 +165,14 @@ export class ObservedDecoratorCheck implements BaseChecker {
     // 此处需要区分field = new cls()和field = {}两种场景
     // 对于field = new cls()场景，需要查找此右边class的所有父class
     // 对于field = {}场景，需要查找左边field类型为class时的所有父class
-    private handleNewExpr(scene: Scene, fieldType: Type, rightOp: ArkNewExpr, targets: Set<ArkClass>): boolean {
+    private handleNewExpr(scene: Scene, fieldType: Type, rightOp: ArkNewExpr, targets: Set<ArkClass>, projectName: string): boolean {
         const target = scene.getClass(rightOp.getClassType().getClassSignature());
         if (target === null) {
             return false;
+        }
+        // class为非本项目的内容时，表示调用到三方库、SDK等内容，不再继续进行查找
+        if (target.getDeclaringArkFile().getProjectName() !== projectName) {
+            return true;
         }
 
         if (!target.isAnonymousClass()) {
@@ -186,6 +195,10 @@ export class ObservedDecoratorCheck implements BaseChecker {
         if (fieldClass === null) {
             return false;
         }
+        // fieldClass为非本项目的内容时，表示调用到三方库、SDK等内容，不再继续进行查找
+        if (fieldClass.getDeclaringArkFile().getProjectName() !== projectName) {
+            return true;
+        }
         if (fieldClass.getCategory() !== ClassCategory.CLASS) {
             return true;
         }
@@ -201,12 +214,17 @@ export class ObservedDecoratorCheck implements BaseChecker {
         scene: Scene,
         fieldType: Type,
         invokeExpr: AbstractInvokeExpr,
-        targets: Set<ArkClass>
+        targets: Set<ArkClass>,
+        projectName: string
     ): boolean {
         let canFindAllTargets = true;
         const callMethod = scene.getMethod(invokeExpr.getMethodSignature());
         if (callMethod === null) {
             return false;
+        }
+        // callMethod为非本项目的内容时，表示调用到三方库、SDK等内容，不再继续进行查找
+        if (callMethod.getDeclaringArkFile().getProjectName() !== projectName) {
+            return true;
         }
         const stmts = callMethod.getBody()?.getCfg().getStmts();
         if (stmts === undefined) {
@@ -266,7 +284,7 @@ export class ObservedDecoratorCheck implements BaseChecker {
         canFindAllTargets: boolean = true
     ): string {
         if (issueClass === null || !canFindAllTargets) {
-            return `can not find all classes, please check this field manually`;
+            return `can not find all classes, please check this field manually (arkui-data-observation)`;
         }
         const fieldLine = field.getOriginPosition().getLineNo();
         const fieldColumn = field.getOriginPosition().getColNo();
@@ -275,10 +293,10 @@ export class ObservedDecoratorCheck implements BaseChecker {
         const issueClassSig = issueClass.getDeclaringArkFile().getFileSignature();
         let res = `but it's not be annotated by @Observed (arkui-data-observation)`;
         if (fileSignatureCompare(fieldFileSig, issueClassSig)) {
-            res = `The class is used by state property in [${fieldLine}, ${fieldColumn}], ` + res;
+            res = `Class ${issueClass.getName()} is used by state property in [${fieldLine}, ${fieldColumn}], ` + res;
         } else {
             const filePath = path.normalize(fieldFileSig.getFileName());
-            res = `The class is used by state property in file ${filePath} [${fieldLine}, ${fieldColumn}], ` + res;
+            res = `Class ${issueClass.getName()} is used by state property in file ${filePath} [${fieldLine}, ${fieldColumn}], ` + res;
         }
         return res;
     }

@@ -70,8 +70,7 @@ void CheckExtensionIsShadowedInCurrentClassOrInterface(checker::ETSChecker *chec
             checker->LogError(diagnostic::EXTENSION_FUNC_NAME_CONFLICT_WITH_METH, {funcType->Name(), objType->Name()},
                               extensionFunc->Body()->Start());
         } else {
-            checker->ReportWarning({"The extension function '", funcType->Name(),
-                                    "' has the same name with non-public method in class ", objType->Name()},
+            checker->LogDiagnostic(diagnostic::EXTENSION_NONPUBLIC_COLLISION, {funcType->Name(), objType->Name()},
                                    extensionFunc->Body()->Start());
         }
         return;
@@ -110,15 +109,15 @@ static void ReplaceThisInExtensionMethod(checker::ETSChecker *checker, ir::Scrip
         auto *const thisTypeAnnotation =
             extensionFunc->Params()[0]->AsETSParameterExpression()->Ident()->TypeAnnotation();
         extensionFunc->Signature()->SetReturnType(thisType);
-        extensionFunc->SetReturnTypeAnnotation(thisTypeAnnotation->Clone(checker->Allocator(), extensionFunc));
+        extensionFunc->SetReturnTypeAnnotation(thisTypeAnnotation->Clone(checker->ProgramAllocator(), extensionFunc));
     }
 
     auto thisVariable = extensionFunc->Params()[0]->Variable();
     extensionFunc->Body()->TransformChildrenRecursively(
         [=](ir::AstNode *ast) {
             if (ast->IsThisExpression()) {
-                auto *thisParam = checker->Allocator()->New<ir::Identifier>(
-                    varbinder::TypedBinder::MANDATORY_PARAM_THIS, checker->Allocator());
+                auto *thisParam = checker->ProgramAllocator()->New<ir::Identifier>(
+                    varbinder::TypedBinder::MANDATORY_PARAM_THIS, checker->ProgramAllocator());
                 thisParam->SetRange(ast->Range());
                 thisParam->SetParent(ast->Parent());
                 thisParam->SetVariable(thisVariable);
@@ -148,8 +147,8 @@ void CheckExtensionMethod(checker::ETSChecker *checker, ir::ScriptFunction *exte
             return;
         }
 
-        checker::SignatureInfo *originalExtensionSigInfo = checker->Allocator()->New<checker::SignatureInfo>(
-            extensionFunc->Signature()->GetSignatureInfo(), checker->Allocator());
+        checker::SignatureInfo *originalExtensionSigInfo = checker->ProgramAllocator()->New<checker::SignatureInfo>(
+            extensionFunc->Signature()->GetSignatureInfo(), checker->ProgramAllocator());
         originalExtensionSigInfo->minArgCount -= 1U;
         originalExtensionSigInfo->params.erase(originalExtensionSigInfo->params.begin());
         checker::Signature *originalExtensionSignature =
@@ -243,16 +242,16 @@ void ComposeAsyncImplFuncReturnType(ETSChecker *checker, ir::ScriptFunction *scr
 {
     auto const promiseType = checker->CreatePromiseOf(checker->MaybeBoxType(scriptFunc->Signature()->ReturnType()));
 
-    auto *objectId =
-        checker->AllocNode<ir::Identifier>(compiler::Signatures::BUILTIN_OBJECT_CLASS, checker->Allocator());
+    auto *objectId = checker->ProgramAllocNode<ir::Identifier>(compiler::Signatures::BUILTIN_OBJECT_CLASS,
+                                                               checker->ProgramAllocator());
     checker->VarBinder()->AsETSBinder()->LookupTypeReference(objectId, false);
-    auto *returnType = checker->AllocNode<ir::ETSTypeReference>(
-        checker->AllocNode<ir::ETSTypeReferencePart>(objectId, nullptr, nullptr, checker->Allocator()),
-        checker->Allocator());
+    auto *returnType = checker->ProgramAllocNode<ir::ETSTypeReference>(
+        checker->ProgramAllocNode<ir::ETSTypeReferencePart>(objectId, nullptr, nullptr, checker->ProgramAllocator()),
+        checker->ProgramAllocator());
     objectId->SetParent(returnType->Part());
     returnType->Part()->SetParent(returnType);
-    returnType->SetTsType(
-        checker->Allocator()->New<ETSAsyncFuncReturnType>(checker->Allocator(), checker->Relation(), promiseType));
+    returnType->SetTsType(checker->ProgramAllocator()->New<ETSAsyncFuncReturnType>(checker->ProgramAllocator(),
+                                                                                   checker->Relation(), promiseType));
     returnType->Check(checker);
     scriptFunc->Signature()->SetReturnType(returnType->TsType());
 }
@@ -405,7 +404,7 @@ checker::Signature *GetMostSpecificSigFromExtensionFuncAndClassMethod(checker::E
     // So we temporarily transfer expr node from `a.foo(...)` to `a.foo(a, ...)`.
     // For allCallSignatures in ClassMethodType, temporarily insert the dummyReceiver into their signatureInfo,
     // otherwise we can't get the most suitable classMethod signature if all the extensionFunction signature mismatched.
-    ArenaVector<Signature *> signatures(checker->Allocator()->Adapter());
+    ArenaVector<Signature *> signatures(checker->ProgramAllocator()->Adapter());
     signatures.insert(signatures.end(), type->ClassMethodType()->CallSignatures().begin(),
                       type->ClassMethodType()->CallSignatures().end());
     signatures.insert(signatures.end(), type->ExtensionMethodType()->CallSignatures().begin(),
@@ -448,7 +447,8 @@ checker::Signature *GetMostSpecificSigFromExtensionFuncAndClassMethod(checker::E
     expr->Arguments().erase(expr->Arguments().begin());
 
     if (signature != nullptr) {
-        if (signature->Owner()->Name() == compiler::Signatures::ETS_GLOBAL) {
+        if (signature->Owner()->GetDeclNode()->IsClassDefinition() &&
+            signature->Owner()->GetDeclNode()->AsClassDefinition()->IsGlobal()) {
             SwitchMethodCallToFunctionCall(checker, expr, signature);
         } else {
             auto *var = type->ClassMethodType()->Variable();
@@ -463,8 +463,8 @@ checker::Signature *ResolveCallForETSExtensionFuncHelperType(checker::ETSExtensi
 {
     ES2PANDA_ASSERT(expr->Callee()->IsMemberExpression());
     auto *calleeObj = expr->Callee()->AsMemberExpression()->Object();
-    bool isCalleeObjETSGlobal =
-        calleeObj->IsIdentifier() && calleeObj->AsIdentifier()->Name() == compiler::Signatures::ETS_GLOBAL;
+    bool isCalleeObjETSGlobal = calleeObj->TsType()->AsETSObjectType()->GetDeclNode()->IsClassDefinition() &&
+                                calleeObj->TsType()->AsETSObjectType()->GetDeclNode()->AsClassDefinition()->IsGlobal();
     // for callExpr `a.foo`, there are 3 situations:
     // 1.`a.foo` is private method call of class A;
     // 2.`a.foo` is extension function of `A`(function with receiver `A`)
@@ -489,16 +489,16 @@ checker::Signature *ResolveCallForETSExtensionFuncHelperType(checker::ETSExtensi
 
 ArenaVector<checker::Signature *> GetUnionTypeSignatures(ETSChecker *checker, checker::ETSUnionType *etsUnionType)
 {
-    ArenaVector<checker::Signature *> callSignatures(checker->Allocator()->Adapter());
+    ArenaVector<checker::Signature *> callSignatures(checker->ProgramAllocator()->Adapter());
 
     for (auto *constituentType : etsUnionType->ConstituentTypes()) {
         if (constituentType->IsETSFunctionType()) {
-            ArenaVector<checker::Signature *> tmpCallSignatures(checker->Allocator()->Adapter());
+            ArenaVector<checker::Signature *> tmpCallSignatures(checker->ProgramAllocator()->Adapter());
             tmpCallSignatures = constituentType->AsETSFunctionType()->CallSignatures();
             callSignatures.insert(callSignatures.end(), tmpCallSignatures.begin(), tmpCallSignatures.end());
         }
         if (constituentType->IsETSUnionType()) {
-            ArenaVector<checker::Signature *> tmpCallSignatures(checker->Allocator()->Adapter());
+            ArenaVector<checker::Signature *> tmpCallSignatures(checker->ProgramAllocator()->Adapter());
             tmpCallSignatures = GetUnionTypeSignatures(checker, constituentType->AsETSUnionType());
             callSignatures.insert(callSignatures.end(), tmpCallSignatures.begin(), tmpCallSignatures.end());
         }
@@ -714,8 +714,9 @@ void InferReturnType(ETSChecker *checker, ir::ScriptFunction *containingFunc, ch
 bool IsArrayExpressionValidInitializerForType(ETSChecker *checker, const Type *const arrayExprPreferredType)
 {
     const auto validForTarget = arrayExprPreferredType == nullptr  // preferred type will be inferred from elements
-                                || arrayExprPreferredType->IsETSArrayType()                    // valid for array type
-                                || arrayExprPreferredType->IsETSTupleType()                    // valid for tuple type
+                                || arrayExprPreferredType->IsETSArrayType()           // valid for fixed array type
+                                || arrayExprPreferredType->IsETSResizableArrayType()  // valid for resizable array type
+                                || arrayExprPreferredType->IsETSTupleType()           // valid for tuple type
                                 || checker->Relation()->IsSupertypeOf(arrayExprPreferredType,  // valid for 'Object'
                                                                       checker->GlobalETSObjectType());
 
@@ -789,6 +790,28 @@ bool CheckReturnTypeNecessity(ir::MethodDefinition *node)
     needReturnType &= !node->IsConstructor();
     needReturnType &= !scriptFunc->IsSetter();
     return needReturnType;
+}
+
+void CheckAllConstPropertyInitialized(checker::ETSChecker *checker, ir::ETSModule *pkg)
+{
+    auto globalDecl = std::find_if(pkg->Statements().begin(), pkg->Statements().end(), [](ir::AstNode *node) {
+        return node->IsClassDeclaration() && node->AsClassDeclaration()->Definition()->IsGlobal();
+    });
+    if (globalDecl == pkg->Statements().end()) {
+        return;
+    }
+
+    auto const &globalClassBody = (*globalDecl)->AsClassDeclaration()->Definition()->AsClassDefinition()->Body();
+    for (auto const *prop : globalClassBody) {
+        if (!prop->IsClassProperty()) {
+            continue;
+        }
+
+        if (prop->AsClassProperty()->Key()->Variable()->HasFlag(varbinder::VariableFlags::INIT_IN_STATIC_BLOCK) &&
+            !prop->AsClassProperty()->Key()->Variable()->HasFlag(varbinder::VariableFlags::INITIALIZED)) {
+            checker->LogError(diagnostic::MISSING_INIT_FOR_CONST_PACKAGE_PROP, {}, prop->Start());
+        }
+    }
 }
 
 }  // namespace ark::es2panda::checker

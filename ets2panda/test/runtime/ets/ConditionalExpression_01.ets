@@ -27,14 +27,14 @@ function main() {
   assertEQ(z2, 4.0)
 
   let x3 = (): int | undefined => { return 5; }();
-  let y3: int = !x3 ? 3.1 : x3;
-  let z3: int = x3 ? x3 : 4.1;
+  let y3: int = !x3 ? Double.toInt(3.1) : x3;
+  let z3: int = x3 ? x3 : Double.toInt(4.1);
   assertEQ(y3, 5)
   assertEQ(z3, 5)
 
   let x4 = (): int | undefined => { return undefined; }();
-  let y4: int = x4 == undefined ? 3.1 : x4;
-  let z4: int = x4 != undefined ? x4 : 4.1;
+  let y4: int = x4 == undefined ? Double.toInt(3.1) : x4;
+  let z4: int = x4 != undefined ? x4 : Double.toInt(4.1);
   assertEQ(y4, 3)
   assertEQ(z4, 4)
 }

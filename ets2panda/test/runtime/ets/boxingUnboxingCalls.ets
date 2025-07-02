@@ -17,10 +17,6 @@ function intParam(a: int): int {
     return 0;
 }
 
-function intParam(a: Int): int {
-    return 1;
-}
-
 function objParam(a: Object): int {
     return 2;
 }
@@ -36,14 +32,10 @@ function retInt(a: Int): int {
 function main(): void {
     let a: int = 1;
     let b: Int = 2;
-    let c: int = intParam(a);
-    assertEQ(c, 0)
-    let d: int = intParam(b);
-    assertEQ(d, 1)
-    let e: Int = intParam(a);
+    let c: Int = intParam(a);
     assertEQ(c, 0)
     let f: Int = intParam(b);
-    assertEQ(d, 1)
+    assertEQ(f, 0)
     let g: int = objParam(a);
     assertEQ(g, 2)
     let h: int = objParam(b);

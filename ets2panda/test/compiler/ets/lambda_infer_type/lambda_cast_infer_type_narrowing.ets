@@ -19,7 +19,7 @@ class A {
 
 class B extends A {
     main () {
-        let a = (a : A) => { return a} as (a : B) => B
-        let expected : (a : B) => B = a
+        let a = (a : A) => { return new B() } as (b : B) => B
+        let expected : (a : B) => A = a
     }
 }

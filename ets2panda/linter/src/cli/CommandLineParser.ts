@@ -13,15 +13,18 @@
  * limitations under the License.
  */
 
-import { Logger } from '../lib/Logger';
-import { logTscDiagnostic } from '../lib/utils/functions/LogTscDiagnostic';
-import type { CommandLineOptions } from '../lib/CommandLineOptions';
-import { ARKTS_IGNORE_DIRS_OH_MODULES } from '../lib/utils/consts/ArktsIgnorePaths';
 import type { OptionValues } from 'commander';
 import { Command, Option } from 'commander';
-import * as ts from 'typescript';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import * as ts from 'typescript';
+import type { CommandLineOptions } from '../lib/CommandLineOptions';
+import { cookBookTag } from '../lib/CookBookMsg';
+import { Logger } from '../lib/Logger';
+import { ARKTS_IGNORE_DIRS_OH_MODULES } from '../lib/utils/consts/ArktsIgnorePaths';
+import { getConfiguredRuleTags, getRulesFromConfig } from '../lib/utils/functions/ConfiguredRulesProcess';
+import { extractRuleTags } from '../lib/utils/functions/CookBookUtils';
+import { logTscDiagnostic } from '../lib/utils/functions/LogTscDiagnostic';
 
 const TS_EXT = '.ts';
 const TSX_EXT = '.tsx';
@@ -124,9 +127,47 @@ function formMigrateOptions(cmdOptions: CommandLineOptions, commanderOpts: Optio
   }
 }
 
+function formIdeInteractive(cmdOptions: CommandLineOptions, commanderOpts: OptionValues): void {
+  if (commanderOpts.ideInteractive) {
+    cmdOptions.linterOptions.ideInteractive = true;
+  }
+  if (commanderOpts.checkTsAndJs) {
+    cmdOptions.linterOptions.checkTsAndJs = true;
+  }
+  if (commanderOpts.onlyArkts2SyntaxRules) {
+    cmdOptions.linterOptions.onlySyntax = true;
+  }
+  if (commanderOpts.autofixCheck) {
+    cmdOptions.linterOptions.autofixCheck = true;
+  }
+}
+
+function formArkts2Options(cmdOptions: CommandLineOptions, commanderOpts: OptionValues): void {
+  if (commanderOpts.arkts2) {
+    cmdOptions.linterOptions.arkts2 = true;
+  }
+  if (commanderOpts.skipLinter) {
+    cmdOptions.skipLinter = true;
+  }
+  if (commanderOpts.homecheck) {
+    cmdOptions.homecheck = true;
+  }
+  if (commanderOpts.outputFilePath) {
+    cmdOptions.outputFilePath = path.normalize(commanderOpts.outputFilePath);
+  }
+  if (commanderOpts.verbose) {
+    cmdOptions.verbose = true;
+  }
+  if (commanderOpts.enableInterop) {
+    cmdOptions.scanWholeProjectInHomecheck = true;
+  }
+}
+
 function formCommandLineOptions(parsedCmd: ParsedCommand): CommandLineOptions {
   const opts: CommandLineOptions = {
-    inputFiles: parsedCmd.args.inputFiles,
+    inputFiles: parsedCmd.args.inputFiles.map((file) => {
+      return path.normalize(file);
+    }),
     linterOptions: {
       useRtLogic: true,
       interopCheckMode: false
@@ -144,6 +185,7 @@ function formCommandLineOptions(parsedCmd: ParsedCommand): CommandLineOptions {
   }
   if (options.projectFolder) {
     doProjectFolderArg(options.projectFolder, opts);
+    opts.linterOptions.projectFolderList = options.projectFolder;
   }
   if (options.project) {
     doProjectArg(options.project, opts);
@@ -151,27 +193,31 @@ function formCommandLineOptions(parsedCmd: ParsedCommand): CommandLineOptions {
   if (options.autofix) {
     opts.linterOptions.enableAutofix = true;
   }
-  if (options.arkts2) {
-    opts.linterOptions.arkts2 = true;
-  }
   if (options.warningsAsErrors) {
     opts.linterOptions.warningsAsErrors = true;
   }
   if (options.useRtLogic !== undefined) {
     opts.linterOptions.useRtLogic = options.useRtLogic;
   }
-  if (options.ideInteractive) {
-    opts.linterOptions.ideInteractive = true;
-  }
-  if (options.checkTsAndJs) {
-    opts.linterOptions.checkTsAndJs = true;
-  }
-  if (options.homecheck) {
-    opts.homecheck = true;
-  }
+  processRuleConfig(opts, options);
+  formIdeInteractive(opts, options);
   formSdkOptions(opts, options);
   formMigrateOptions(opts, options);
+  formArkts2Options(opts, options);
   return opts;
+}
+
+function processRuleConfig(commandLineOptions: CommandLineOptions, options: OptionValues): void {
+  if (options.ruleConfig !== undefined) {
+    const stats = fs.statSync(path.normalize(options.ruleConfig));
+    if (!stats.isFile()) {
+      console.error(`The file at ${options.ruleConfigPath} path does not exist!`);
+    } else {
+      const configuredRulesMap = getRulesFromConfig(options.ruleConfig);
+      const arkTSRulesMap = extractRuleTags(cookBookTag);
+      commandLineOptions.linterOptions.ruleConfigTags = getConfiguredRuleTags(arkTSRulesMap, configuredRulesMap);
+    }
+  }
 }
 
 function createCommand(): Command {
@@ -200,11 +246,18 @@ function createCommand(): Command {
     option('--ide-interactive', 'Migration Helper IDE interactive mode').
     option('-w, --arkts-whole-project-path <path>', 'path to whole project').
     option('--migrate', 'run as ArkTS migrator').
+    option('--skip-linter', 'skip linter rule validation and autofix').
     option('--homecheck', 'added homecheck rule validation').
     option('--no-migration-backup-file', 'Disable the backup files in migration mode').
     option('--migration-max-pass <num>', 'Maximum number of migration passes').
     option('--migration-report', 'Generate migration report').
     option('--check-ts-and-js', 'check ts and js files').
+    option('--only-arkts2-syntax-rules', 'only syntax rules').
+    option('-o, --output-file-path <path>', 'path to store all log and result files').
+    option('--verbose', 'set log level to see debug messages').
+    option('--enable-interop', 'scan whole project to report 1.1 import 1.2').
+    option('--rule-config <path>', 'Path to the rule configuration file').
+    option('--autofix-check', 'confirm whether the user needs automatic repair').
     addOption(new Option('--warnings-as-errors', 'treat warnings as errors').hideHelp(true)).
     addOption(new Option('--no-check-ts-as-source', 'check TS files as third-party libary').hideHelp(true)).
     addOption(new Option('--no-use-rt-logic', 'run linter with SDK logic').hideHelp(true)).

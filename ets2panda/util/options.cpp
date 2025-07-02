@@ -242,6 +242,8 @@ bool Options::Parse(Span<const char *const> args)
         logLevel_ = Logger::LevelFromString(GetLogLevel());
     }
 
+    parseJsdoc_ = WasSetParseJsdoc();
+
     InitCompilerOptions();
 
     return ProcessEtsSpecificOptions();
@@ -338,8 +340,9 @@ bool Options::DetermineExtension()
 #ifdef ENABLE_AFTER_21192
     // NOTE(mkaskov): Enable after #21192
     if (!SourceFileName().empty() && WasSetExtension() && gen::Options::GetExtension() != sourceFileExtension) {
-        diagnosticEngine_.LogWarning({"Not matching extensions! Sourcefile: ", std::string_view(sourceFileExtension),
-                                      ", Manual(used): ", std::string_view(gen::Options::GetExtension())});
+        diagnosticEngine_.LogDiagnostic(
+            diagnostic::EXTENSION_MISMATCH,
+            {std::string_view(sourceFileExtension), std::string_view(gen::Options::GetExtension())});
     }
 #endif  // ENABLE_AFTER_21192
     // Note: the file suffix `.ets` is a valid suffix for compiler, which is equivalent to `.ets`

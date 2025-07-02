@@ -127,7 +127,7 @@ static pandasm::Function GenScriptFunction(const ir::ScriptFunction *scriptFunc,
         if (var->Declaration()->Node() == nullptr || !var->Declaration()->Node()->IsETSParameterExpression()) {
             continue;
         }
-        func.params.back().metadata->SetAnnotations(emitter->GenCustomAnnotations(
+        func.params.back().GetOrCreateMetadata().SetAnnotations(emitter->GenCustomAnnotations(
             var->Declaration()->Node()->AsETSParameterExpression()->Annotations(), var->Name().Mutf8()));
     }
 
@@ -291,7 +291,7 @@ void ETSEmitter::GenAnnotation()
         if (scriptFunc->IsAsyncFunc()) {
             std::vector<pandasm::AnnotationData> annotations;
             annotations.push_back(GenAnnotationAsync(scriptFunc));
-            func.metadata->SetAnnotations(std::move(annotations));
+            func.metadata->AddAnnotations(annotations);
         }
         Program()->AddToFunctionTable(std::move(func));
     }
@@ -436,7 +436,10 @@ void ETSEmitter::GenClassField(const ir::ClassProperty *prop, pandasm::Record &c
     field.name = prop->Id()->Name().Mutf8();
     field.type = PandasmTypeWithRank(prop->TsType());
     field.metadata->SetAccessFlags(TranslateModifierFlags(prop->Modifiers()));
-    field.metadata->SetAnnotations(GenCustomAnnotations(prop->Annotations(), field.name));
+
+    if (!external) {
+        field.metadata->SetAnnotations(GenCustomAnnotations(prop->Annotations(), field.name));
+    }
 
     if (external || prop->IsDeclare()) {
         field.metadata->SetAttribute(Signatures::EXTERNAL);
@@ -526,6 +529,10 @@ std::vector<pandasm::AnnotationData> ETSEmitter::GenAnnotations(const ir::ClassD
     std::vector<pandasm::AnnotationData> annotations;
     const ir::AstNode *parent = classDef->Parent();
     while (parent != nullptr) {
+        if ((classDef->Modifiers() & ir::ClassDefinitionModifiers::FUNCTIONAL_REFERENCE) != 0U) {
+            annotations.emplace_back(GenAnnotationFunctionalReference(classDef));
+            break;
+        }
         if (parent->IsMethodDefinition()) {
             annotations.emplace_back(GenAnnotationEnclosingMethod(parent->AsMethodDefinition()));
             annotations.emplace_back(GenAnnotationInnerClass(classDef, parent));
@@ -752,11 +759,12 @@ LiteralArrayVector ETSEmitter::CreateLiteralArray(std::string &baseName, const i
 
 void ETSEmitter::CreateLiteralArrayProp(const ir::ClassProperty *prop, std::string &baseName, pandasm::Field &field)
 {
+    auto *checker = Context()->checker->AsETSChecker();
     uint8_t rank = 1;
-    auto *elemType = prop->TsType()->AsETSArrayType()->ElementType();
-    while (elemType->IsETSArrayType()) {
+    auto *elemType = checker->GetElementTypeOfArray(prop->TsType());
+    while (elemType->IsETSArrayType() || elemType->IsETSResizableArrayType()) {
         ++rank;
-        elemType = elemType->AsETSArrayType()->ElementType();
+        elemType = checker->GetElementTypeOfArray(elemType);
     }
     if (elemType->IsETSEnumType()) {
         field.type = PandasmTypeWithRank(elemType, rank);
@@ -793,7 +801,7 @@ void ETSEmitter::GenCustomAnnotationProp(const ir::ClassProperty *prop, std::str
         CreateEnumProp(prop, field);
     } else if (type->IsETSPrimitiveType() || type->IsETSStringType()) {
         EmitDefaultFieldValue(field, prop->Value());
-    } else if (type->IsETSArrayType()) {
+    } else if (type->IsETSArrayType() || type->IsETSResizableArrayType()) {
         CreateLiteralArrayProp(prop, baseName, field);
     } else {
         ES2PANDA_UNREACHABLE();
@@ -861,7 +869,7 @@ pandasm::AnnotationElement ETSEmitter::GenCustomAnnotationElement(const ir::Clas
     const auto *type = init->TsType();
     auto typeKind = checker::ETSChecker::TypeKind(type);
     auto propName = prop->Id()->Name().Mutf8();
-    if (type->IsETSArrayType()) {
+    if (type->IsETSArrayType() || type->IsETSResizableArrayType()) {
         return ProcessArrayType(prop, baseName, init);
     }
 
@@ -990,6 +998,18 @@ pandasm::AnnotationData ETSEmitter::GenAnnotationEnclosingMethod(const ir::Metho
             methodDef->Function()->Scope()->InternalName().Mutf8())));
     enclosingMethod.AddElement(std::move(value));
     return enclosingMethod;
+}
+
+pandasm::AnnotationData ETSEmitter::GenAnnotationFunctionalReference(const ir::ClassDefinition *classDef)
+{
+    GenAnnotationRecord(Signatures::ETS_ANNOTATION_FUNCTIONAL_REFERENCE);
+    pandasm::AnnotationData functionalReference(Signatures::ETS_ANNOTATION_FUNCTIONAL_REFERENCE);
+    pandasm::AnnotationElement value(
+        Signatures::ANNOTATION_KEY_VALUE,
+        std::make_unique<pandasm::ScalarValue>(pandasm::ScalarValue::Create<pandasm::Value::Type::METHOD>(
+            const_cast<ir::ClassDefinition *>(classDef)->FunctionalReferenceReferencedMethod().Mutf8())));
+    functionalReference.AddElement(std::move(value));
+    return functionalReference;
 }
 
 pandasm::AnnotationData ETSEmitter::GenAnnotationEnclosingClass(std::string_view className)

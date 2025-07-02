@@ -1,17 +1,17 @@
 {
     "copyright": [
-      "Copyright (c) 2025 Huawei Device Co., Ltd.",
-      "Licensed under the Apache License, Version 2.0 (the 'License');",
-      "you may not use this file except in compliance with the License.",
-      "You may obtain a copy of the License at",
-      "",
-      "http://www.apache.org/licenses/LICENSE-2.0",
-      "",
-      "Unless required by applicable law or agreed to in writing, software",
-      "distributed under the License is distributed on an 'AS IS' BASIS,",
-      "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
-      "See the License for the specific language governing permissions and",
-      "limitations under the License."
+        "Copyright (c) 2025 Huawei Device Co., Ltd.",
+        "Licensed under the Apache License, Version 2.0 (the 'License');",
+        "you may not use this file except in compliance with the License.",
+        "You may obtain a copy of the License at",
+        "",
+        "http://www.apache.org/licenses/LICENSE-2.0",
+        "",
+        "Unless required by applicable law or agreed to in writing, software",
+        "distributed under the License is distributed on an 'AS IS' BASIS,",
+        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+        "See the License for the specific language governing permissions and",
+        "limitations under the License."
     ],
     "result": [
         {
@@ -24,7 +24,11 @@
                 {
                     "start": 668,
                     "end": 681,
-                    "replacementText": "() => { }"
+                    "replacementText": "() => { }",
+                    "line": 16,
+                    "column": 20,
+                    "endLine": 16,
+                    "endColumn": 33
                 }
             ],
             "suggest": "",
@@ -41,11 +45,57 @@
                 {
                     "start": 760,
                     "end": 773,
-                    "replacementText": "() => { }"
+                    "replacementText": "() => { }",
+                    "line": 18,
+                    "column": 10,
+                    "endLine": 18,
+                    "endColumn": 23
                 }
             ],
             "suggest": "",
             "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 21,
+            "column": 29,
+            "endLine": 21,
+            "endColumn": 30,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 881,
+                    "end": 882,
+                    "replacementText": "1.0",
+                    "line": 21,
+                    "column": 29,
+                    "endLine": 21,
+                    "endColumn": 30
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 29,
+            "column": 27,
+            "endLine": 29,
+            "endColumn": 29,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1047,
+                    "end": 1049,
+                    "replacementText": "42.0",
+                    "line": 29,
+                    "column": 27,
+                    "endLine": 29,
+                    "endColumn": 29
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -56,9 +106,13 @@
             "problem": "ExplicitFunctionType",
             "autofix": [
                 {
-                    "replacementText": "fn.unSafeCall",
                     "start": 1572,
-                    "end": 1574
+                    "end": 1574,
+                    "replacementText": "fn.unsafeCall",
+                    "line": 57,
+                    "column": 3,
+                    "endLine": 57,
+                    "endColumn": 5
                 }
             ],
             "suggest": "",
@@ -86,6 +140,27 @@
             "severity": "ERROR"
         },
         {
+            "line": 93,
+            "column": 11,
+            "endLine": 93,
+            "endColumn": 12,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 2073,
+                    "end": 2074,
+                    "replacementText": "2.0",
+                    "line": 93,
+                    "column": 11,
+                    "endLine": 93,
+                    "endColumn": 12
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 118,
             "column": 16,
             "endLine": 118,
@@ -93,6 +168,69 @@
             "problem": "ClassAsObjectError",
             "suggest": "",
             "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 118,
+            "column": 26,
+            "endLine": 118,
+            "endColumn": 27,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 2550,
+                    "end": 2551,
+                    "replacementText": "1.0",
+                    "line": 118,
+                    "column": 26,
+                    "endLine": 118,
+                    "endColumn": 27
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 118,
+            "column": 29,
+            "endLine": 118,
+            "endColumn": 30,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 2553,
+                    "end": 2554,
+                    "replacementText": "2.0",
+                    "line": 118,
+                    "column": 29,
+                    "endLine": 118,
+                    "endColumn": 30
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 118,
+            "column": 32,
+            "endLine": 118,
+            "endColumn": 33,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 2556,
+                    "end": 2557,
+                    "replacementText": "3.0",
+                    "line": 118,
+                    "column": 32,
+                    "endLine": 118,
+                    "endColumn": 33
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -137,6 +275,27 @@
         },
         {
             "line": 128,
+            "column": 31,
+            "endLine": 128,
+            "endColumn": 32,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 2719,
+                    "end": 2720,
+                    "replacementText": "1.0",
+                    "line": 128,
+                    "column": 31,
+                    "endLine": 128,
+                    "endColumn": 32
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 128,
             "column": 33,
             "endLine": 128,
             "endColumn": 37,
@@ -156,6 +315,27 @@
             "severity": "ERROR"
         },
         {
+            "line": 128,
+            "column": 80,
+            "endLine": 128,
+            "endColumn": 81,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 2768,
+                    "end": 2769,
+                    "replacementText": "1.0",
+                    "line": 128,
+                    "column": 80,
+                    "endLine": 128,
+                    "endColumn": 81
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 132,
             "column": 3,
             "endLine": 132,
@@ -166,6 +346,27 @@
             "severity": "ERROR"
         },
         {
+            "line": 133,
+            "column": 10,
+            "endLine": 133,
+            "endColumn": 11,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 2849,
+                    "end": 2850,
+                    "replacementText": "1.0",
+                    "line": 133,
+                    "column": 10,
+                    "endLine": 133,
+                    "endColumn": 11
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 139,
             "column": 3,
             "endLine": 139,
@@ -173,13 +374,38 @@
             "problem": "ExplicitFunctionType",
             "autofix": [
                 {
-                    "replacementText": "callback.unSafeCall",
                     "start": 2921,
-                    "end": 2929
+                    "end": 2929,
+                    "replacementText": "callback.unsafeCall",
+                    "line": 139,
+                    "column": 3,
+                    "endLine": 139,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
             "rule": "The function type should be explicit (arkts-no-ts-like-function-call)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 142,
+            "column": 41,
+            "endLine": 142,
+            "endColumn": 42,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 2995,
+                    "end": 2996,
+                    "replacementText": "1.0",
+                    "line": 142,
+                    "column": 41,
+                    "endLine": 142,
+                    "endColumn": 42
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -220,9 +446,13 @@
             "problem": "ExplicitFunctionType",
             "autofix": [
                 {
-                    "replacementText": "curr.unSafeCall",
                     "start": 3458,
-                    "end": 3462
+                    "end": 3462,
+                    "replacementText": "curr.unsafeCall",
+                    "line": 160,
+                    "column": 62,
+                    "endLine": 160,
+                    "endColumn": 66
                 }
             ],
             "suggest": "",
@@ -237,9 +467,13 @@
             "problem": "ExplicitFunctionType",
             "autofix": [
                 {
-                    "replacementText": "prev.unSafeCall",
                     "start": 3463,
-                    "end": 3467
+                    "end": 3467,
+                    "replacementText": "prev.unsafeCall",
+                    "line": 160,
+                    "column": 67,
+                    "endLine": 160,
+                    "endColumn": 71
                 }
             ],
             "suggest": "",
@@ -254,9 +488,13 @@
             "problem": "ExplicitFunctionType",
             "autofix": [
                 {
-                    "replacementText": "f1.unSafeCall",
                     "start": 3586,
-                    "end": 3588
+                    "end": 3588,
+                    "replacementText": "f1.unsafeCall",
+                    "line": 166,
+                    "column": 1,
+                    "endLine": 166,
+                    "endColumn": 3
                 }
             ],
             "suggest": "",
@@ -271,9 +509,13 @@
             "problem": "ExplicitFunctionType",
             "autofix": [
                 {
-                    "replacementText": "ab3.fn3.unSafeCall",
                     "start": 3656,
-                    "end": 3663
+                    "end": 3663,
+                    "replacementText": "ab3.fn3.unsafeCall",
+                    "line": 172,
+                    "column": 1,
+                    "endLine": 172,
+                    "endColumn": 8
                 }
             ],
             "suggest": "",
@@ -288,9 +530,44 @@
             "problem": "ExplicitFunctionType",
             "autofix": [
                 {
-                    "replacementText": "fn29[1].unSafeCall",
                     "start": 3697,
-                    "end": 3704
+                    "end": 3704,
+                    "replacementText": "fn29[1].unsafeCall",
+                    "line": 175,
+                    "column": 1,
+                    "endLine": 175,
+                    "endColumn": 8
+                }
+            ],
+            "suggest": "",
+            "rule": "The function type should be explicit (arkts-no-ts-like-function-call)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 175,
+            "column": 1,
+            "endLine": 175,
+            "endColumn": 8,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 178,
+            "column": 3,
+            "endLine": 178,
+            "endColumn": 24,
+            "problem": "ExplicitFunctionType",
+            "autofix": [
+                {
+                    "start": 3796,
+                    "end": 3819,
+                    "replacementText": "(handler as Function)?.unsafeCall",
+                    "line": 178,
+                    "column": 3,
+                    "endLine": 178,
+                    "endColumn": 24
                 }
             ],
             "suggest": "",

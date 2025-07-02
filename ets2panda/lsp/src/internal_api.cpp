@@ -27,6 +27,10 @@
 #include "public/es2panda_lib.h"
 #include "public/public.h"
 #include "utils/arena_containers.h"
+#include "formatting/formatting.h"
+#include "code_fix_provider.h"
+#include "get_class_property_info.h"
+#include "code_fixes/code_fix_types.h"
 
 namespace ark::es2panda::lsp {
 
@@ -592,7 +596,13 @@ std::pair<ir::AstNode *, util::StringView> GetDefinitionAtPositionImpl(es2panda_
 {
     std::pair<ir::AstNode *, util::StringView> res;
     auto node = GetTouchingToken(context, pos, false);
-    if (node == nullptr || !node->IsIdentifier()) {
+    if (node == nullptr) {
+        return res;
+    }
+    if (node->IsCallExpression()) {
+        node = node->AsCallExpression()->Callee()->AsIdentifier();
+    }
+    if (!node->IsIdentifier()) {
         return res;
     }
     res = {compiler::DeclarationFromIdentifier(node->AsIdentifier()), node->AsIdentifier()->Name()};
@@ -693,6 +703,74 @@ DocumentHighlights GetSemanticDocumentHighlights(es2panda_Context *context, size
 DocumentHighlights GetDocumentHighlightsImpl(es2panda_Context *context, size_t position)
 {
     return GetSemanticDocumentHighlights(context, position);
+}
+
+std::vector<InstallPackageActionInfo> CreateInstallPackageActionInfos(std::vector<InstallPackageAction> &commands)
+{
+    std::vector<InstallPackageActionInfo> infos;
+    for (const auto &command : commands) {
+        InstallPackageActionInfo info {command.type, command.file, command.packageName};
+        infos.push_back(info);
+    }
+
+    return infos;
+}
+
+CodeFixActionInfo CreateCodeFixActionInfo(CodeFixAction &codeFixAction)
+{
+    auto infos = CreateInstallPackageActionInfos(codeFixAction.commands);
+
+    CodeActionInfo codeActionInfo {codeFixAction.description, codeFixAction.changes, infos};
+
+    return CodeFixActionInfo {codeActionInfo, codeFixAction.fixName, codeFixAction.fixId,
+                              codeFixAction.fixAllDescription};
+}
+
+CombinedCodeActionsInfo CreateCombinedCodeActionsInfo(CombinedCodeActions &combinedCodeActions)
+{
+    auto infos = CreateInstallPackageActionInfos(combinedCodeActions.commands);
+
+    return CombinedCodeActionsInfo {combinedCodeActions.changes, infos};
+}
+
+std::vector<CodeFixActionInfo> GetCodeFixesAtPositionImpl(es2panda_Context *context, size_t startPosition,
+                                                          size_t endPosition, std::vector<int> &errorCodes,
+                                                          CodeFixOptions &codeFixOptions)
+{
+    TextSpan textspan = TextSpan(startPosition, endPosition);
+    std::vector<CodeFixActionInfo> actions;
+    auto formatContext = GetFormatContext(codeFixOptions.options);
+
+    for (auto errorCode : errorCodes) {
+        if (codeFixOptions.token.IsCancellationRequested()) {
+            return actions;
+        }
+
+        TextChangesContext textChangesContext {LanguageServiceHost(), formatContext, codeFixOptions.preferences};
+        CodeFixContextBase codeFixContextBase {textChangesContext, context, codeFixOptions.token};
+        CodeFixContext codeFixContent {codeFixContextBase, errorCode, textspan};
+
+        auto fixes = CodeFixProvider::Instance().GetFixes(codeFixContent);
+        for (auto fix : fixes) {
+            auto codeFixes = CreateCodeFixActionInfo(fix);
+            actions.push_back(codeFixes);
+        }
+    }
+
+    return actions;
+}
+
+CombinedCodeActionsInfo GetCombinedCodeFixImpl(es2panda_Context *context, const std::string &fixId,
+                                               CodeFixOptions &codeFixOptions)
+{
+    auto formatContext = GetFormatContext(codeFixOptions.options);
+    TextChangesContext textChangesContext {LanguageServiceHost(), formatContext, codeFixOptions.preferences};
+    CodeFixContextBase codeFixContextBase {textChangesContext, context, codeFixOptions.token};
+    CodeFixAllContext codeFixAllContent {codeFixContextBase, fixId};
+
+    auto fixes = CodeFixProvider::Instance().GetAllFixes(codeFixAllContent);
+
+    return CreateCombinedCodeActionsInfo(fixes);
 }
 
 }  // namespace ark::es2panda::lsp

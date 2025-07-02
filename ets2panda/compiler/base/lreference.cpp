@@ -69,6 +69,10 @@ LReference::LReferenceBase LReference::CreateBase(CodeGen *cg, const ir::AstNode
         case ir::AstNodeType::TS_NON_NULL_EXPRESSION: {
             return CreateBase(cg, node->AsTSNonNullExpression()->Expr(), isDeclaration);
         }
+        case ir::AstNodeType::ETS_NEW_CLASS_INSTANCE_EXPRESSION: {
+            ES2PANDA_ASSERT(node->AsETSNewClassInstanceExpression()->GetArguments().size() == 1);
+            return CreateBase(cg, node->AsETSNewClassInstanceExpression()->GetArguments()[0], isDeclaration);
+        }
         default: {
             ES2PANDA_UNREACHABLE();
         }
@@ -295,8 +299,11 @@ void ETSLReference::SetValueComputed(const ir::MemberExpression *memberExpr) con
         return;
     }
 
-    ES2PANDA_ASSERT(objectType->IsETSArrayType());
-    etsg_->StoreArrayElement(Node(), baseReg_, propReg_, etsg_->GetVRegType(baseReg_)->AsETSArrayType()->ElementType());
+    ES2PANDA_ASSERT(objectType->IsETSArrayType() || objectType->IsETSResizableArrayType());
+    auto vRegtype = etsg_->GetVRegType(baseReg_);
+    auto *elementType = vRegtype->IsETSArrayType() ? vRegtype->AsETSArrayType()->ElementType()
+                                                   : vRegtype->AsETSResizableArrayType()->ElementType();
+    etsg_->StoreArrayElement(Node(), baseReg_, propReg_, elementType);
 }
 
 void ETSLReference::SetValueGetterSetter(const ir::MemberExpression *memberExpr) const

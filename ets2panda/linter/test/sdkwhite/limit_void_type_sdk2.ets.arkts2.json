@@ -26,16 +26,6 @@
         },
         {
             "line": 18,
-            "column": 3,
-            "endLine": 20,
-            "endColumn": 4,
-            "problem": "LimitedVoidTypeFromSdk",
-            "suggest": "",
-            "rule": "Type \"void\" has no instances.(sdk-limited-void-type)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 18,
             "column": 48,
             "endLine": 18,
             "endColumn": 52,
@@ -98,7 +88,27 @@
             "line": 28,
             "column": 28,
             "endLine": 28,
+            "endColumn": 48,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 28,
+            "column": 28,
+            "endLine": 28,
             "endColumn": 32,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 32,
+            "column": 26,
+            "endLine": 32,
+            "endColumn": 46,
             "problem": "LimitedVoidType",
             "suggest": "",
             "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
@@ -125,6 +135,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 54,
+            "column": 38,
+            "endLine": 54,
+            "endColumn": 41,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 57,
             "column": 10,
             "endLine": 57,
@@ -132,6 +152,16 @@
             "problem": "LimitedVoidTypeFromSdk",
             "suggest": "",
             "rule": "Type \"void\" has no instances.(sdk-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 57,
+            "column": 22,
+            "endLine": 57,
+            "endColumn": 25,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -145,6 +175,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 60,
+            "column": 46,
+            "endLine": 60,
+            "endColumn": 49,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 61,
             "column": 21,
             "endLine": 61,
@@ -155,13 +195,23 @@
             "severity": "ERROR"
         },
         {
+            "line": 61,
+            "column": 31,
+            "endLine": 61,
+            "endColumn": 34,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 44,
             "column": 41,
             "endLine": 44,
             "endColumn": 59,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"DataChangeListener\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -171,7 +221,7 @@
             "endColumn": 61,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"DataChangeListener\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         }
     ]

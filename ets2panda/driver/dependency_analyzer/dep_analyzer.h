@@ -23,9 +23,17 @@
 #include <iostream>
 #include <vector>
 
+struct DepAnalyzerArgs {
+    std::string programName;
+    std::string arktsconfig;
+    std::vector<std::string> fileList;
+};
+
 class DepAnalyzer {
 public:
     int AnalyzeDeps(int argc, const char **argv);
+    int AnalyzeDepsForMultiFiles(const char *exec, std::vector<std::string> &fileList, std::string &arktsconfig);
+    std::string ConvertPath(const std::string &path) const;
     void Dump(std::string &outFilePath);
     void Dump(std::ostream &ostr = std::cout);
 
@@ -34,10 +42,25 @@ public:
         return sourcePaths_;
     }
 
+    std::unordered_map<std::string, std::unordered_set<std::string>> &GetFileDirectDependencies()
+    {
+        return fileDirectDependencies_;
+    }
+
+    std::unordered_map<std::string, std::unordered_set<std::string>> &GetFileDirectDependants()
+    {
+        return fileDirectDependants_;
+    }
+
 private:
     void AddImports(ark::es2panda::parser::ETSParser *parser);
+    bool ShouldSkipFile(const std::string &filePath) const;
+    void MergeFileDeps(ark::es2panda::parser::Program *mainProgram);
 
     std::vector<std::string> sourcePaths_;
+    std::vector<std::string> skipPatterns_;
+    std::unordered_map<std::string, std::unordered_set<std::string>> fileDirectDependencies_;
+    std::unordered_map<std::string, std::unordered_set<std::string>> fileDirectDependants_;
 };
 
 #endif  // ES2PANDA_DEPENDENCY_ANALYZER_H

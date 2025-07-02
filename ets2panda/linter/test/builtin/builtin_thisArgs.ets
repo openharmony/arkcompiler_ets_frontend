@@ -29,3 +29,11 @@ let b = new MyClass(3);
 arr.filter(a.compare, a);
 arr.filter(a.compare);
 arr.filter(a.compare, b);
+
+type T = number | T[];
+let arr: ReadonlyArray<T> = [[1.0, 2.0], 3.0, [4.0, 5.0]];
+arr.flatMap(
+  (value, index, array) => {
+    return value;
+  }
+);

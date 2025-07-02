@@ -15,9 +15,9 @@
     ],
     "result": [
         {
-            "line": 78,
+            "line": 79,
             "column": 3,
-            "endLine": 78,
+            "endLine": 79,
             "endColumn": 16,
             "problem": "LimitedReturnTypeInference",
             "suggest": "",
@@ -25,13 +25,13 @@
             "severity": "ERROR"
         },
         {
-            "line": 97,
+            "line": 109,
             "column": 3,
-            "endLine": 97,
-            "endColumn": 8,
-            "problem": "AnyType",
+            "endLine": 109,
+            "endColumn": 16,
+            "problem": "LimitedReturnTypeInference",
             "suggest": "",
-            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "rule": "Function return type inference is limited (arkts-no-implicit-return-types)",
             "severity": "ERROR"
         }
     ]

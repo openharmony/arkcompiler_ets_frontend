@@ -63,7 +63,7 @@ ir::Expression *CreateMemberOrThisExpression(public_lib::Context *ctx, ir::Expre
     auto *allocator = ctx->allocator;
 
     if (definition->IsConstructor()) {
-        return checker->AllocNode<ir::ThisExpression>();
+        return ctx->AllocNode<ir::ThisExpression>();
     }
 
     auto scriptFunc = funcExpr->AsFunctionExpression()->Function()->AsScriptFunction();
@@ -75,12 +75,12 @@ ir::Expression *CreateMemberOrThisExpression(public_lib::Context *ctx, ir::Expre
         ES2PANDA_ASSERT(parentClass != nullptr);
         ident = parentClass->AsClassDefinition()->Ident()->AsIdentifier()->Clone(allocator, parentClass->Parent());
     } else {
-        ident = checker->AllocNode<ir::ThisExpression>();
+        ident = ctx->AllocNode<ir::ThisExpression>();
     }
 
     auto *newPropertyId = scriptFunc->Id()->Clone(allocator, nullptr);
-    auto *memberExpr = checker->AllocNode<ir::MemberExpression>(
-        ident, newPropertyId, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
+    auto *memberExpr = ctx->AllocNode<ir::MemberExpression>(ident, newPropertyId,
+                                                            ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
 
     return memberExpr;
 }
@@ -118,7 +118,7 @@ ir::CallExpression *CreateNewCallExpression(public_lib::Context *ctx, ir::Expres
     auto *checker = ctx->checker->AsETSChecker();
     auto *allocator = ctx->allocator;
 
-    ArenaVector<ir::Expression *> callArguments({}, checker->Allocator()->Adapter());
+    ArenaVector<ir::Expression *> callArguments({}, allocator->Adapter());
     for (auto arg : funcExpr->AsFunctionExpression()->Function()->AsScriptFunction()->Params()) {
         if (!arg->AsETSParameterExpression()->IsRestParameter()) {
             auto *id = arg->AsETSParameterExpression()->Ident()->Clone(allocator, nullptr);
@@ -126,7 +126,7 @@ ir::CallExpression *CreateNewCallExpression(public_lib::Context *ctx, ir::Expres
             callArguments.push_back(id);
         } else {
             auto spreadElement =
-                checker->AllocNode<ir::SpreadElement>(ir::AstNodeType::SPREAD_ELEMENT, allocator, asExpression);
+                ctx->AllocNode<ir::SpreadElement>(ir::AstNodeType::SPREAD_ELEMENT, allocator, asExpression);
             callArguments.push_back(spreadElement);
         }
     }
@@ -144,8 +144,7 @@ ir::CallExpression *CreateNewCallExpression(public_lib::Context *ctx, ir::Expres
         typeParamInst = CreateTypeParameterInstantiation(ctx, typeParams);
     }
 
-    auto *newCallExpr =
-        checker->AllocNode<ir::CallExpression>(memberExpr, std::move(callArguments), typeParamInst, false);
+    auto *newCallExpr = ctx->AllocNode<ir::CallExpression>(memberExpr, std::move(callArguments), typeParamInst, false);
 
     for (auto *arg : newCallExpr->Arguments()) {
         arg->SetParent(newCallExpr);
@@ -165,7 +164,7 @@ ArenaVector<ir::Expression *> CreateFunctionRestParams(public_lib::Context *ctx,
             for (auto tupleTypeAnno :
                  param->AsETSParameterExpression()->TypeAnnotation()->AsETSTuple()->GetTupleTypeAnnotationsList()) {
                 ir::Identifier *id = Gensym(allocator);
-                auto *newParam = checker->AsETSChecker()->AllocNode<ir::ETSParameterExpression>(id, false, allocator);
+                auto *newParam = ctx->AllocNode<ir::ETSParameterExpression>(id, false, allocator);
                 auto newAnnotation = tupleTypeAnno->Clone(allocator, id);
                 id->SetTsTypeAnnotation(newAnnotation);
                 params.push_back(newParam);
@@ -210,13 +209,13 @@ ir::ArrayExpression *CreateArrayExpression(public_lib::Context *ctx, const Arena
     auto *checker = ctx->checker->AsETSChecker();
     auto *allocator = ctx->allocator;
 
-    ArenaVector<ir::Expression *> elementsInit(checker->Allocator()->Adapter());
-    ArenaVector<ir::Expression *> elements(checker->Allocator()->Adapter());
+    ArenaVector<ir::Expression *> elementsInit(ctx->Allocator()->Adapter());
+    ArenaVector<ir::Expression *> elements(ctx->Allocator()->Adapter());
 
-    auto *arrayExpr = checker->AllocNode<ir::ArrayExpression>(std::move(elementsInit), checker->Allocator());
+    auto *arrayExpr = ctx->AllocNode<ir::ArrayExpression>(std::move(elementsInit), ctx->Allocator());
     for (auto tupleElementAnno : newRestParams) {
         auto &tupleElementName = tupleElementAnno->AsETSParameterExpression()->Ident()->AsIdentifier()->Name();
-        ir::Expression *arg = checker->AllocNode<ir::Identifier>(tupleElementName, allocator);
+        ir::Expression *arg = ctx->AllocNode<ir::Identifier>(tupleElementName, allocator);
         arg->SetParent(arrayExpr);
         elements.push_back(arg);
     }
@@ -257,24 +256,24 @@ ir::ScriptFunction *CreateNewScriptFunction(public_lib::Context *ctx, ir::Script
     auto *allocator = ctx->allocator;
 
     ArenaVector<ir::Statement *> statements(allocator->Adapter());
-    auto *body = checker->AllocNode<ir::BlockStatement>(allocator, std::move(statements));
+    auto *body = ctx->AllocNode<ir::BlockStatement>(allocator, std::move(statements));
     ir::TypeNode *newReturnTypeAnno = nullptr;
     if (scriptFunc->ReturnTypeAnnotation() != nullptr) {
         newReturnTypeAnno = scriptFunc->ReturnTypeAnnotation()->Clone(allocator, nullptr);
     }
     auto *newParamDeclaration = CreateNewParameterDeclaration(ctx, scriptFunc->TypeParams());
 
-    auto *newScriptFunc = checker->AllocNode<ir::ScriptFunction>(
-        checker->Allocator(),
-        ir::ScriptFunction::ScriptFunctionData {
-            body, ir::FunctionSignature(newParamDeclaration, std::move(newParams), newReturnTypeAnno),
-            scriptFunc->Flags()});
+    auto *newScriptFunc = ctx->AllocNode<ir::ScriptFunction>(
+        allocator, ir::ScriptFunction::ScriptFunctionData {
+                       body, ir::FunctionSignature(newParamDeclaration, std::move(newParams), newReturnTypeAnno),
+                       scriptFunc->Flags()});
     newScriptFunc->AddModifier(scriptFunc->AsScriptFunction()->Modifiers());
 
     ArenaVector<ir::AnnotationUsage *> annotationUsages {allocator->Adapter()};
     for (auto *annotationUsage : scriptFunc->Annotations()) {
         annotationUsages.push_back(annotationUsage->Clone(allocator, newScriptFunc)->AsAnnotationUsage());
     }
+    std::cerr << "CreateNewScriptFunction SetAnnotations for newScriptFunc " << newScriptFunc << std::endl;
     newScriptFunc->SetAnnotations(std::move(annotationUsages));
 
     ir::Identifier *newScriptFuncId = scriptFunc->Id()->Clone(allocator, newScriptFunc);
@@ -290,33 +289,30 @@ ir::VariableDeclaration *CreateNewVariableDeclaration(public_lib::Context *ctx, 
     auto *allocator = ctx->allocator;
 
     util::StringView tupleIdentName = restParam->Ident()->Name();
-    auto *newId = checker->AllocNode<ir::Identifier>(tupleIdentName, allocator);
+    auto *newId = ctx->AllocNode<ir::Identifier>(tupleIdentName, allocator);
     ir::TypeNode *typeAnnotation = restParam->TypeAnnotation()->Clone(allocator, newId);
     newId->SetTsTypeAnnotation(typeAnnotation);
     newTuple->SetParent(typeAnnotation);
 
-    auto *const declarator =
-        checker->AllocNode<ir::VariableDeclarator>(ir::VariableDeclaratorFlag::LET, newId, newTuple);
-    ArenaVector<ir::VariableDeclarator *> declarators(checker->Allocator()->Adapter());
+    auto *const declarator = ctx->AllocNode<ir::VariableDeclarator>(ir::VariableDeclaratorFlag::LET, newId, newTuple);
+    ArenaVector<ir::VariableDeclarator *> declarators(ctx->Allocator()->Adapter());
     declarators.push_back(declarator);
 
-    auto *const declaration = checker->AllocNode<ir::VariableDeclaration>(
-        ir::VariableDeclaration::VariableDeclarationKind::LET, checker->Allocator(), std::move(declarators));
+    auto *const declaration = ctx->AllocNode<ir::VariableDeclaration>(
+        ir::VariableDeclaration::VariableDeclarationKind::LET, ctx->Allocator(), std::move(declarators));
     return declaration;
 }
 
 ArenaVector<ir::Statement *> CreateReturnOrExpressionStatement(public_lib::Context *ctx, ir::ScriptFunction *scriptFunc,
                                                                ir::CallExpression *callExpr)
 {
-    auto *checker = ctx->checker->AsETSChecker();
-
-    ArenaVector<ir::Statement *> statements(checker->Allocator()->Adapter());
+    ArenaVector<ir::Statement *> statements(ctx->Allocator()->Adapter());
 
     if (scriptFunc->ReturnTypeAnnotation() != nullptr) {
-        auto returnStatement = checker->AllocNode<ir::ReturnStatement>(callExpr);
+        auto returnStatement = ctx->AllocNode<ir::ReturnStatement>(callExpr);
         statements.insert(statements.end(), returnStatement);
     } else {
-        auto expressionStatement = checker->AllocNode<ir::ExpressionStatement>(callExpr);
+        auto expressionStatement = ctx->AllocNode<ir::ExpressionStatement>(callExpr);
         statements.insert(statements.end(), expressionStatement);
         callExpr->SetParent(expressionStatement);
     }
@@ -331,8 +327,8 @@ ir::MethodDefinition *CreateNewMethodDefinition(public_lib::Context *ctx, ir::Me
 
     auto *methodKey = definition->AsMethodDefinition()->Key()->AsIdentifier()->Clone(allocator, nullptr);
     auto *const methodDef =
-        checker->AllocNode<ir::MethodDefinition>(definition->AsMethodDefinition()->Kind(), methodKey, function,
-                                                 definition->AsMethodDefinition()->Modifiers(), allocator, false);
+        ctx->AllocNode<ir::MethodDefinition>(definition->AsMethodDefinition()->Kind(), methodKey, function,
+                                             definition->AsMethodDefinition()->Modifiers(), allocator, false);
     methodDef->SetParent(definition->Parent());
 
     return methodDef;
@@ -364,7 +360,7 @@ void CreateNewMethod(public_lib::Context *ctx, ir::AstNode *node)
 
             ir::TypeNode *newTypeAnnotation = restParam->TypeAnnotation()->Clone(allocator, nullptr);
 
-            auto *asExpression = checker->AllocNode<ir::TSAsExpression>(newArrayExpr, newTypeAnnotation, false);
+            auto *asExpression = ctx->AllocNode<ir::TSAsExpression>(newArrayExpr, newTypeAnnotation, false);
 
             auto *callExpr = CreateNewCallExpression(ctx, funcExpr, definition, asExpression);
 
@@ -374,7 +370,7 @@ void CreateNewMethod(public_lib::Context *ctx, ir::AstNode *node)
             newScriptFunc->AsScriptFunction()->Body()->AsBlockStatement()->SetStatements(std::move(statements));
 
             // Build new functionExpression
-            auto *function = checker->AllocNode<ir::FunctionExpression>(newScriptFunc);
+            auto *function = ctx->AllocNode<ir::FunctionExpression>(newScriptFunc);
             function->SetParent(funcExpr->Parent());
 
             // Build new methodDefinition

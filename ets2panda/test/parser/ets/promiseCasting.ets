@@ -13,9 +13,14 @@
  * limitations under the License.
  */
 
-let fs: ((p: int) => int)[]
+import {launch} from "std/concurrency"
+import {Job} from "std/core"
 
-function foo(i: int): ((p: int) => int) {
+type Cb = (p: int) => int;
+
+let fs: Cb[] = []
+
+function foo(i: int): Cb {
     return fs[i]
 }
 
@@ -36,12 +41,12 @@ function main() {
     // array of promises
     let ps: Object[] = new Object[10]
     for (let i = 0; i < 10; i++) {
-        ps[i] = launch foo(i)
+        ps[i] = launch<Cb, (i: int) => Cb>(foo, i)
     }
 
     let cnt = 0
     for (let i = 9; i >= 0; i--) {
-        cnt += (await ps[i] as Promise<(p: int) => int>)(i) // <- complains on this line
+        cnt += ((ps[i] as Job<Cb>).Await())(i) // <- complains on this line
     }
     assertEQ(cnt, 90);
 }

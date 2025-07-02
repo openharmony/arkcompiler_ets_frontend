@@ -33,8 +33,7 @@ void EvaluateContext::FindEvaluationMethod(parser::Program *evalMethodProgram)
 
     // Find evaluation class.
     auto evalClassDefIter = std::find_if(topLevelStatements.begin(), topLevelStatements.end(), [](auto *stmt) {
-        return stmt->IsClassDeclaration() &&
-               !stmt->AsClassDeclaration()->Definition()->Ident()->Name().Is(compiler::Signatures::ETS_GLOBAL);
+        return stmt->IsClassDeclaration() && !stmt->AsClassDeclaration()->Definition()->IsGlobal();
     });
     ES2PANDA_ASSERT(evalClassDefIter != topLevelStatements.end());
     auto *methodClass = (*evalClassDefIter)->AsClassDeclaration()->Definition();

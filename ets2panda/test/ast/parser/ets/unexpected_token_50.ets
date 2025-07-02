@@ -21,7 +21,5 @@ let output1 = identity<number>/* @@ label */"hehe"
 
 /* @@? 20:15 Error TypeError: Expected 1 arguments, got 0. */
 /* @@? 20:15 Error TypeError: No matching call signature */
-/* @@? 20:15 Error TypeError: Expected 1 arguments, got 0. */
-/* @@? 20:15 Error TypeError: No matching call signature */
 /* @@? 20:45 Error SyntaxError: Unexpected token, expected '('. */
-/* @@? 28:1 Error SyntaxError: Expected ')', got 'eos'. */
+/* @@? 26:1 Error SyntaxError: Expected ')', got 'end of stream'. */

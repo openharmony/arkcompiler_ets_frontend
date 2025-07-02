@@ -134,6 +134,9 @@ private:
                                                 ir::TSEnumDeclaration const *const enumDecl);
     ArenaAllocator *Allocator();
 
+    template <typename T, typename... Args>
+    T *AllocNode(Args &&...args);
+
 private:
     public_lib::Context *context_ {nullptr};
     checker::ETSChecker *checker_ {nullptr};

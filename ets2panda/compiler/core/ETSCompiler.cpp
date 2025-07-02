@@ -104,39 +104,6 @@ void ETSCompiler::Compile(const ir::ETSFunctionType *node) const
     etsg->LoadAccumulatorPoison(node, node->TsType());
 }
 
-void ETSCompiler::Compile([[maybe_unused]] const ir::ETSLaunchExpression *expr) const
-{
-#ifdef PANDA_WITH_ETS
-    ETSGen *etsg = GetETSGen();
-    compiler::RegScope rs(etsg);
-    compiler::VReg calleeReg = etsg->AllocReg();
-    checker::Signature *signature = expr->expr_->Signature();
-    bool isStatic = signature->HasSignatureFlag(checker::SignatureFlags::STATIC);
-    if (expr->expr_->Callee()->IsIdentifier()) {
-        if (!isStatic) {
-            etsg->LoadThis(expr->expr_);
-            etsg->StoreAccumulator(expr, calleeReg);
-        }
-    } else if (expr->expr_->Callee()->IsMemberExpression()) {
-        if (!isStatic) {
-            expr->expr_->Callee()->AsMemberExpression()->Object()->Compile(etsg);
-            etsg->StoreAccumulator(expr, calleeReg);
-        }
-    } else {
-        expr->expr_->Callee()->Compile(etsg);
-        etsg->StoreAccumulator(expr, calleeReg);
-    }
-
-    if (isStatic) {
-        etsg->LaunchExact(expr, signature, expr->expr_->Arguments());
-    } else {
-        etsg->LaunchVirtual(expr, signature, calleeReg, expr->expr_->Arguments());
-    }
-
-    etsg->SetAccumulatorType(expr->TsType());
-#endif  // PANDA_WITH_ETS
-}
-
 void ETSCompiler::Compile(const ir::ETSNewArrayInstanceExpression *expr) const
 {
     ETSGen *etsg = GetETSGen();
@@ -226,7 +193,8 @@ static void CreateDynamicObject(const ir::AstNode *node, compiler::ETSGen *etsg,
 
 static void ConvertRestArguments(checker::ETSChecker *const checker, const ir::ETSNewClassInstanceExpression *expr)
 {
-    if (expr->GetSignature()->RestVar() != nullptr) {
+    if (expr->GetSignature()->RestVar() != nullptr && (expr->GetSignature()->RestVar()->TsType()->IsETSArrayType() ||
+                                                       expr->GetSignature()->RestVar()->TsType()->IsETSTupleType())) {
         std::size_t const argumentCount = expr->GetArguments().size();
         std::size_t const parameterCount = expr->GetSignature()->Params().size();
         ES2PANDA_ASSERT(argumentCount >= parameterCount);
@@ -277,6 +245,8 @@ static void HandleUnionTypeInForOf(compiler::ETSGen *etsg, checker::Type const *
         if (countReg == nullptr) {
             if (currentType->IsETSArrayType()) {
                 etsg->LoadArrayLength(st, unionReg);
+            } else if (currentType->IsETSResizableArrayType()) {
+                etsg->LoadResizableArrayLength(st);
             } else {
                 etsg->LoadStringLength(st);
             }
@@ -284,6 +254,8 @@ static void HandleUnionTypeInForOf(compiler::ETSGen *etsg, checker::Type const *
             if (currentType->IsETSArrayType()) {
                 etsg->LoadAccumulator(st, *countReg);
                 etsg->LoadArrayElement(st, unionReg);
+            } else if (currentType->IsETSResizableArrayType()) {
+                etsg->LoadResizableArrayElement(st, unionReg, *countReg);
             } else {
                 etsg->LoadStringChar(st, unionReg, *countReg);
                 // NOTE(vpukhov): #20510 use a single unboxing convertor
@@ -681,7 +653,8 @@ void ETSCompiler::Compile(const ir::BinaryExpression *expr) const
 static void ConvertRestArguments(checker::ETSChecker *const checker, const ir::CallExpression *expr,
                                  checker::Signature *signature)
 {
-    if (signature->RestVar() != nullptr) {
+    if (signature->RestVar() != nullptr &&
+        (signature->RestVar()->TsType()->IsETSArrayType() || signature->RestVar()->TsType()->IsETSTupleType())) {
         std::size_t const argumentCount = expr->Arguments().size();
         std::size_t const parameterCount = signature->Params().size();
         ES2PANDA_ASSERT(argumentCount >= parameterCount);
@@ -860,6 +833,7 @@ void ETSCompiler::Compile(const ir::Identifier *expr) const
     ETSGen *etsg = GetETSGen();
 
     auto const *smartType = expr->TsType();
+    ES2PANDA_ASSERT(smartType != nullptr);
     if (smartType->IsETSTypeParameter() || smartType->IsETSPartialTypeParameter() || smartType->IsETSNonNullishType()) {
         smartType = etsg->Checker()->GetApparentType(smartType);
     }
@@ -1283,7 +1257,8 @@ void ETSCompiler::Compile(const ir::ForOfStatement *st) const
     compiler::LocalRegScope declRegScope(etsg, st->Scope()->DeclScope()->InitScope());
 
     checker::Type const *const exprType = st->Right()->TsType();
-    ES2PANDA_ASSERT(exprType->IsETSArrayType() || exprType->IsETSStringType() || exprType->IsETSUnionType());
+    ES2PANDA_ASSERT(exprType->IsETSResizableArrayType() || exprType->IsETSArrayType() || exprType->IsETSStringType() ||
+                    exprType->IsETSUnionType());
 
     st->Right()->Compile(etsg);
     compiler::VReg objReg = etsg->AllocReg();

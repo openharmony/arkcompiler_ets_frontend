@@ -22,7 +22,7 @@ let changeAbleVar = new A();
 changeAbleVar.x=333
 
 function bar(a:Readonly<A>){
-    a.x=111
+    /* @@ label2 */a.x=111
     console.log(a)
 }
 
@@ -30,3 +30,4 @@ bar(changeAbleVar)
 
 
 /* @@@ label Error TypeError: Cannot assign to a readonly variable x  */
+/* @@@ label2 Error TypeError: The 'Readonly' property cannot be reassigned.  */

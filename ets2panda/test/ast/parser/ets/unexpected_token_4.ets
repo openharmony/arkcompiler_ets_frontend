@@ -15,6 +15,6 @@
 
 import {/* @@ label */^} from /* @@ label1 */"./import_tests/modules/module"
 
-/* @@@ label Error SyntaxError: Unexpected token, expected an identifier. */
+/* @@@ label Error SyntaxError: Unexpected token '^'. */
 /* @@? 16:26 Error TypeError: Unresolved reference from */
 /* @@@ label1 Error SyntaxError: Unexpected token './import_tests/modules/module'. */

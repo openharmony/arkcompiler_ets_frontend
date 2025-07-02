@@ -21,5 +21,5 @@ let a : int[] = [1,2,3]
 let b : type_array_alias<string>  = a;
 
 
-/* @@? 21:37 Error TypeError: Type 'int[]' cannot be assigned to type 'Array<Array<String>>|String[]'  */
+/* @@? 21:37 Error TypeError: Type 'Array<Int>' cannot be assigned to type 'Array<Array<String>>|Array<String>'  */
 

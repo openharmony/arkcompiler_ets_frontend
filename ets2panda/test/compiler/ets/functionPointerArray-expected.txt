@@ -444,55 +444,103 @@
                   }
                 ],
                 "returnType": {
-                  "type": "TSArrayType",
-                  "elementType": {
-                    "type": "ETSTypeReference",
-                    "part": {
-                      "type": "ETSTypeReferencePart",
-                      "name": {
-                        "type": "Identifier",
-                        "name": "func_type",
-                        "decorators": [],
-                        "loc": {
-                          "start": {
-                            "line": 20,
-                            "column": 37,
-                            "program": "functionPointerArray.ets"
-                          },
-                          "end": {
-                            "line": 20,
-                            "column": 46,
-                            "program": "functionPointerArray.ets"
-                          }
-                        }
-                      },
+                  "type": "ETSTypeReference",
+                  "part": {
+                    "type": "ETSTypeReferencePart",
+                    "name": {
+                      "type": "Identifier",
+                      "name": "Array",
+                      "decorators": [],
                       "loc": {
                         "start": {
-                          "line": 20,
-                          "column": 37,
+                          "line": 1,
+                          "column": 1,
                           "program": "functionPointerArray.ets"
                         },
                         "end": {
-                          "line": 20,
-                          "column": 47,
+                          "line": 1,
+                          "column": 3,
+                          "program": "functionPointerArray.ets"
+                        }
+                      }
+                    },
+                    "typeParams": {
+                      "type": "TSTypeParameterInstantiation",
+                      "params": [
+                        {
+                          "type": "ETSTypeReference",
+                          "part": {
+                            "type": "ETSTypeReferencePart",
+                            "name": {
+                              "type": "Identifier",
+                              "name": "func_type",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 3,
+                                  "program": "functionPointerArray.ets"
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 3,
+                                  "program": "functionPointerArray.ets"
+                                }
+                              }
+                            },
+                            "loc": {
+                              "start": {
+                                "line": 1,
+                                "column": 3,
+                                "program": "functionPointerArray.ets"
+                              },
+                              "end": {
+                                "line": 1,
+                                "column": 3,
+                                "program": "functionPointerArray.ets"
+                              }
+                            }
+                          },
+                          "loc": {
+                            "start": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "functionPointerArray.ets"
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "functionPointerArray.ets"
+                            }
+                          }
+                        }
+                      ],
+                      "loc": {
+                        "start": {
+                          "line": 1,
+                          "column": 3,
+                          "program": "functionPointerArray.ets"
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 3,
                           "program": "functionPointerArray.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
-                        "line": 20,
-                        "column": 37,
+                        "line": 1,
+                        "column": 1,
                         "program": "functionPointerArray.ets"
                       },
                       "end": {
-                        "line": 20,
-                        "column": 47,
+                        "line": 1,
+                        "column": 3,
                         "program": "functionPointerArray.ets"
                       }
                     }
                   },
-                  "annotations": [],
                   "loc": {
                     "start": {
                       "line": 20,
@@ -689,55 +737,103 @@
                             "type": "Identifier",
                             "name": "arr",
                             "typeAnnotation": {
-                              "type": "TSArrayType",
-                              "elementType": {
-                                "type": "ETSTypeReference",
-                                "part": {
-                                  "type": "ETSTypeReferencePart",
-                                  "name": {
-                                    "type": "Identifier",
-                                    "name": "func_type",
-                                    "decorators": [],
-                                    "loc": {
-                                      "start": {
-                                        "line": 25,
-                                        "column": 12,
-                                        "program": "functionPointerArray.ets"
-                                      },
-                                      "end": {
-                                        "line": 25,
-                                        "column": 21,
-                                        "program": "functionPointerArray.ets"
-                                      }
-                                    }
-                                  },
+                              "type": "ETSTypeReference",
+                              "part": {
+                                "type": "ETSTypeReferencePart",
+                                "name": {
+                                  "type": "Identifier",
+                                  "name": "Array",
+                                  "decorators": [],
                                   "loc": {
                                     "start": {
-                                      "line": 25,
-                                      "column": 12,
+                                      "line": 1,
+                                      "column": 1,
                                       "program": "functionPointerArray.ets"
                                     },
                                     "end": {
-                                      "line": 25,
-                                      "column": 22,
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "functionPointerArray.ets"
+                                    }
+                                  }
+                                },
+                                "typeParams": {
+                                  "type": "TSTypeParameterInstantiation",
+                                  "params": [
+                                    {
+                                      "type": "ETSTypeReference",
+                                      "part": {
+                                        "type": "ETSTypeReferencePart",
+                                        "name": {
+                                          "type": "Identifier",
+                                          "name": "func_type",
+                                          "decorators": [],
+                                          "loc": {
+                                            "start": {
+                                              "line": 1,
+                                              "column": 3,
+                                              "program": "functionPointerArray.ets"
+                                            },
+                                            "end": {
+                                              "line": 1,
+                                              "column": 3,
+                                              "program": "functionPointerArray.ets"
+                                            }
+                                          }
+                                        },
+                                        "loc": {
+                                          "start": {
+                                            "line": 1,
+                                            "column": 3,
+                                            "program": "functionPointerArray.ets"
+                                          },
+                                          "end": {
+                                            "line": 1,
+                                            "column": 3,
+                                            "program": "functionPointerArray.ets"
+                                          }
+                                        }
+                                      },
+                                      "loc": {
+                                        "start": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "functionPointerArray.ets"
+                                        },
+                                        "end": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "functionPointerArray.ets"
+                                        }
+                                      }
+                                    }
+                                  ],
+                                  "loc": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "functionPointerArray.ets"
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 3,
                                       "program": "functionPointerArray.ets"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
-                                    "line": 25,
-                                    "column": 12,
+                                    "line": 1,
+                                    "column": 1,
                                     "program": "functionPointerArray.ets"
                                   },
                                   "end": {
-                                    "line": 25,
-                                    "column": 22,
+                                    "line": 1,
+                                    "column": 3,
                                     "program": "functionPointerArray.ets"
                                   }
                                 }
                               },
-                              "annotations": [],
                               "loc": {
                                 "start": {
                                   "line": 25,
@@ -950,55 +1046,103 @@
                             "type": "Identifier",
                             "name": "array",
                             "typeAnnotation": {
-                              "type": "TSArrayType",
-                              "elementType": {
-                                "type": "ETSTypeReference",
-                                "part": {
-                                  "type": "ETSTypeReferencePart",
-                                  "name": {
-                                    "type": "Identifier",
-                                    "name": "func_type",
-                                    "decorators": [],
-                                    "loc": {
-                                      "start": {
-                                        "line": 28,
-                                        "column": 14,
-                                        "program": "functionPointerArray.ets"
-                                      },
-                                      "end": {
-                                        "line": 28,
-                                        "column": 23,
-                                        "program": "functionPointerArray.ets"
-                                      }
-                                    }
-                                  },
+                              "type": "ETSTypeReference",
+                              "part": {
+                                "type": "ETSTypeReferencePart",
+                                "name": {
+                                  "type": "Identifier",
+                                  "name": "Array",
+                                  "decorators": [],
                                   "loc": {
                                     "start": {
-                                      "line": 28,
-                                      "column": 14,
+                                      "line": 1,
+                                      "column": 1,
                                       "program": "functionPointerArray.ets"
                                     },
                                     "end": {
-                                      "line": 28,
-                                      "column": 24,
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "functionPointerArray.ets"
+                                    }
+                                  }
+                                },
+                                "typeParams": {
+                                  "type": "TSTypeParameterInstantiation",
+                                  "params": [
+                                    {
+                                      "type": "ETSTypeReference",
+                                      "part": {
+                                        "type": "ETSTypeReferencePart",
+                                        "name": {
+                                          "type": "Identifier",
+                                          "name": "func_type",
+                                          "decorators": [],
+                                          "loc": {
+                                            "start": {
+                                              "line": 1,
+                                              "column": 3,
+                                              "program": "functionPointerArray.ets"
+                                            },
+                                            "end": {
+                                              "line": 1,
+                                              "column": 3,
+                                              "program": "functionPointerArray.ets"
+                                            }
+                                          }
+                                        },
+                                        "loc": {
+                                          "start": {
+                                            "line": 1,
+                                            "column": 3,
+                                            "program": "functionPointerArray.ets"
+                                          },
+                                          "end": {
+                                            "line": 1,
+                                            "column": 3,
+                                            "program": "functionPointerArray.ets"
+                                          }
+                                        }
+                                      },
+                                      "loc": {
+                                        "start": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "functionPointerArray.ets"
+                                        },
+                                        "end": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "functionPointerArray.ets"
+                                        }
+                                      }
+                                    }
+                                  ],
+                                  "loc": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "functionPointerArray.ets"
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 3,
                                       "program": "functionPointerArray.ets"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
-                                    "line": 28,
-                                    "column": 14,
+                                    "line": 1,
+                                    "column": 1,
                                     "program": "functionPointerArray.ets"
                                   },
                                   "end": {
-                                    "line": 28,
-                                    "column": 24,
+                                    "line": 1,
+                                    "column": 3,
                                     "program": "functionPointerArray.ets"
                                   }
                                 }
                               },
-                              "annotations": [],
                               "loc": {
                                 "start": {
                                   "line": 28,

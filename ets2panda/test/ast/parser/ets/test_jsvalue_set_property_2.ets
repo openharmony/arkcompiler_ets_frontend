@@ -18,4 +18,4 @@ function fn(): void {
     /* @@ label */v.prop_name = 5.6;
 }
 
-/* @@@ label Warning Warning: Variable 'v' is used before being assigned.  */
+/* @@@ label Error TypeError: Variable 'v' is used before being assigned.  */

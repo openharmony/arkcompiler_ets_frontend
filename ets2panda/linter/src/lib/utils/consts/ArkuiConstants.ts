@@ -25,6 +25,7 @@ export const VALUE_IDENTIFIER = 'value';
 export const INDENT_STEP = 2;
 export const MAKE_OBSERVED = 'makeObserved';
 export const ARKUI_STATE_MANAGEMENT = '@ohos.arkui.StateManagement';
+export const NEW_PROP_DECORATOR_SUFFIX = 'Ref';
 
 export enum CustomDecoratorName {
   Extend = 'Extend',
@@ -33,12 +34,24 @@ export enum CustomDecoratorName {
   AnimatableExtend = 'AnimatableExtend',
   Memo = 'Memo',
   Observed = 'Observed',
-  Layoutable = 'Layoutable'
+  CustomLayout = 'CustomLayout',
+  CustomStyles = 'CustomStyles'
 }
 
 export enum StorageTypeName {
   LocalStorage = 'LocalStorage',
   AppStorage = 'AppStorage'
+}
+
+export enum PropDecoratorName {
+  Prop = 'Prop',
+  StorageProp = 'StorageProp',
+  LocalStorageProp = 'LocalStorageProp'
+}
+
+export enum PropFunctionName {
+  Prop = 'prop',
+  SetAndProp = 'setAndProp'
 }
 
 export const observedDecoratorName: Set<string> = new Set([
@@ -59,12 +72,11 @@ export const skipImportDecoratorName: Set<string> = new Set([
   'Styles',
   'Sendable',
   'Concurrent',
-  'LocalBuilder'
+  'LocalBuilder',
+  'Prop',
+  'StorageProp',
+  'LocalStorageProp'
 ]);
-
-export const deepCopyDecoratorName: Set<string> = new Set(['Prop', 'StorageProp', 'LocalStorageProp']);
-
-export const deepCopyFunctionName: Set<string> = new Set(['prop', 'setAndProp']);
 
 export const customLayoutFunctionName: Set<string> = new Set(['onMeasureSize', 'onPlaceChildren']);
 

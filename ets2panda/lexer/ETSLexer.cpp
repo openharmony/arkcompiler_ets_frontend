@@ -26,7 +26,7 @@ void ETSLexer::NextToken(NextTokenFlags flags)
 
 void ETSLexer::ScanHashMark()
 {
-    LogUnexpectedToken(TokenType::PUNCTUATOR_HASH_MARK);
+    LogError(diagnostic::ERROR_ARKTS_NO_PRIVATE_IDENTIFIERS);
 }
 
 bool ETSLexer::ScanCharLiteral()
@@ -106,17 +106,21 @@ bool ETSLexer::CheckUtf16Compatible(char32_t cp) const
 void ETSLexer::ScanAsteriskPunctuator()
 {
     GetToken().type_ = TokenType::PUNCTUATOR_MULTIPLY;
-
-    switch (Iterator().Peek()) {
-        case LEX_CHAR_EQUALS: {
-            GetToken().type_ = TokenType::PUNCTUATOR_MULTIPLY_EQUAL;
-            Iterator().Forward(1);
-            break;
-        }
-        default: {
-            break;
-        }
+    auto cp = Iterator().Peek();
+    if (cp == LEX_CHAR_EQUALS) {
+        GetToken().type_ = TokenType::PUNCTUATOR_MULTIPLY_EQUAL;
+        Iterator().Forward(1);
+        return;
     }
+
+    Iterator().Backward(1);
+    if (!IsValidJsDocEnd(&cp)) {
+        Iterator().Forward(1);
+        return;
+    }
+    Iterator().Forward(JS_DOC_END_SIZE + 1);
+    GetToken().type_ = TokenType::JS_DOC_END;
+    Pos().NextTokenLine() += 1;
 }
 
 void ETSLexer::ConvertNumber(NumberFlags const flags)

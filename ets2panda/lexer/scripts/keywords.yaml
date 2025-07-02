@@ -337,10 +337,6 @@ keywords:
     token: KEYW_LET
     keyword: [as, js, ets, ts]
 
-  - name: 'launch'
-    token: KEYW_LAUNCH
-    keyword: [ets]
-
   - name: 'long'
     token: KEYW_LONG
     keyword: [ets]

@@ -46,7 +46,6 @@ import { DEFAULT, PROMISE } from './TSConst';
 import { buildGenericType, buildModifiers, buildTypeParameters } from '../model/builder/builderUtils';
 import { ArkValueTransformer } from './ArkValueTransformer';
 import { ImportInfo } from '../model/ArkImport';
-import { TypeInference } from './TypeInference';
 import { AbstractTypeExpr } from '../base/TypeExpr';
 import { buildNormalArkClassFromArkMethod } from '../model/builder/ArkClassBuilder';
 import { ArkClass } from '../model/ArkClass';
@@ -156,6 +155,8 @@ export class ArkIRTransformer {
             stmts = this.expressionInExportToStmts(node.expression);
         } else if (ts.isClassDeclaration(node)) {
             stmts = this.classDeclarationToStmts(node);
+        } else if (ts.isParameter(node)) {
+            stmts = this.parameterPropertyToStmts(node);
         }
 
         this.mapStmtsToTsStmt(stmts, node);
@@ -188,6 +189,44 @@ export class ArkIRTransformer {
         cls.setDeclaringArkFile(this.declaringMethod.getDeclaringArkFile());
         buildNormalArkClassFromArkMethod(node, cls, this.sourceFile, this.declaringMethod);
         return [];
+    }
+
+    // This is only used to add class property assign stmts into constructor when it is with parameter property.
+    private parameterPropertyToStmts(paramNode: ts.ParameterDeclaration): Stmt[] {
+        if (paramNode.modifiers === undefined || !ts.isIdentifier(paramNode.name)) {
+            return [];
+        }
+        const fieldName = paramNode.name.text;
+        const arkClass = this.declaringMethod.getDeclaringArkClass();
+        const fieldSignature = arkClass.getFieldWithName(fieldName)?.getSignature();
+        const paramLocal = Array.from(this.getLocals()).find(local => local.getName() === fieldName);
+        if (fieldSignature === undefined || paramLocal === undefined) {
+            return [];
+        }
+        const leftOp = new ArkInstanceFieldRef(this.getThisLocal(), fieldSignature);
+        const fieldAssignStmt = new ArkAssignStmt(leftOp, paramLocal);
+        fieldAssignStmt.setOperandOriginalPositions([FullPosition.DEFAULT, FullPosition.DEFAULT, FullPosition.DEFAULT]);
+
+        // If the parameter has initializer, the related stmts should be added into class instance init method.
+        const instInitMethodCfg = arkClass.getInstanceInitMethod().getBody()?.getCfg();
+        const instInitStmts = instInitMethodCfg?.getStartingBlock()?.getStmts();
+        if (paramNode.initializer && instInitStmts && instInitMethodCfg) {
+            const {
+                value: instanceInitValue,
+                valueOriginalPositions: instanceInitPositions,
+                stmts: instanceInitStmts,
+            } = this.tsNodeToValueAndStmts(paramNode.initializer);
+            const instanceAssignStmt = new ArkAssignStmt(leftOp, instanceInitValue);
+            instanceAssignStmt.setOperandOriginalPositions([FullPosition.DEFAULT, FullPosition.DEFAULT, ...instanceInitPositions]);
+            const newInstanceInitStmts = [...instanceInitStmts, instanceAssignStmt];
+
+            // All these stmts will be added into instance init method, while that method has completed the building. So all new stmts should set cfg here.
+            newInstanceInitStmts.forEach(stmt => stmt.setCfg(instInitMethodCfg));
+
+            // The last stmt of instance init method is return stmt, so all the initializer stmts should be added before return stmt.
+            instInitStmts.splice(instInitStmts.length - 1, 0, ...newInstanceInitStmts);
+        }
+        return [fieldAssignStmt];
     }
 
     private returnStatementToStmts(returnStatement: ts.ReturnStatement): Stmt[] {
@@ -339,12 +378,6 @@ export class ArkIRTransformer {
         let expr: AliasTypeExpr;
         if (ts.isImportTypeNode(rightOp)) {
             expr = this.resolveImportTypeNode(rightOp);
-            const typeObject = expr.getOriginalObject();
-            if (typeObject instanceof ImportInfo && typeObject.getLazyExportInfo() !== null) {
-                const arkExport = typeObject.getLazyExportInfo()!.getArkExport();
-                rightType = TypeInference.parseArkExport2Type(arkExport) ?? UnknownType.getInstance();
-                aliasType.setOriginalType(rightType);
-            }
         } else if (ts.isTypeQueryNode(rightOp)) {
             const localName = rightOp.exprName.getText(this.sourceFile);
             const originalLocal = Array.from(this.arkValueTransformer.getLocals()).find(local => local.getName() === localName);
@@ -402,8 +435,6 @@ export class ArkIRTransformer {
         importInfo.build(importClauseName, importType, importFrom, LineColPosition.buildFromNode(importTypeNode, this.sourceFile), 0);
         importInfo.setDeclaringArkFile(this.declaringMethod.getDeclaringArkFile());
 
-        // Function getLazyExportInfo will automatically try to infer the export info if it's undefined at the beginning.
-        importInfo.getLazyExportInfo();
         return new AliasTypeExpr(importInfo, importTypeNode.isTypeOf);
     }
 

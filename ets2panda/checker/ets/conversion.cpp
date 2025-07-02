@@ -346,14 +346,12 @@ void String(TypeRelation *const relation, Type *const source)
         auto *const tempInt = relation->GetChecker()->AsETSChecker()->GetGlobalTypesHolder()->GlobalIntType();
         WideningPrimitive(relation, source, tempInt);
         Boxing(relation, tempInt);
-        relation->GetNode()->AddAstNodeFlags(ir::AstNodeFlags::CONVERT_TO_STRING);
         return;
     }
 
     if (source->HasTypeFlag(TypeFlag::ETS_BOOLEAN | TypeFlag::CHAR | TypeFlag::INT | TypeFlag::LONG | TypeFlag::FLOAT |
                             TypeFlag::DOUBLE)) {
         Boxing(relation, source);
-        relation->GetNode()->AddAstNodeFlags(ir::AstNodeFlags::CONVERT_TO_STRING);
         return;
     }
 

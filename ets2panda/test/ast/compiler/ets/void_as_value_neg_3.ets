@@ -18,9 +18,3 @@ function foo<T>(x: T) {}
 foo<void>(void) 
 
 /* @@? 18:11 Error SyntaxError: Unexpected token 'void'. */
-/* @@? 18:11 Error SyntaxError: Unexpected token, expected ',' or ')'. */
-/* @@? 18:11 Error SyntaxError: Unexpected token 'void'. */
-/* @@? 18:11 Error SyntaxError: Unexpected token 'void'. */
-/* @@? 18:11 Error SyntaxError: Unexpected token 'void'. */
-/* @@? 18:15 Error SyntaxError: Unexpected token ')'. */
-/* @@? 18:15 Error SyntaxError: Unexpected token ')'. */

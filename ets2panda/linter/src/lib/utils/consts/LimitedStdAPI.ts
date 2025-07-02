@@ -157,3 +157,6 @@ export const MODULE_IMPORTS: Record<string, string[]> = {
   '@ohos.process': ['process'],
   '@ohos.taskpool': ['taskpool']
 };
+
+export const ARKTSUTILS_MODULES = ['@arkts.utils', '@kit.ArkTS'];
+export const ARKTSUTILS_LOCKS_MEMBER = 'locks';

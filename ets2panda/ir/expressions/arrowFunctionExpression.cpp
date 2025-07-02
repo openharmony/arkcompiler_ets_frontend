@@ -86,7 +86,7 @@ checker::VerifiedType ArrowFunctionExpression::Check(checker::ETSChecker *checke
 }
 
 ArrowFunctionExpression::ArrowFunctionExpression(ArrowFunctionExpression const &other, ArenaAllocator *const allocator)
-    : AnnotationAllowed<Expression>(static_cast<Expression const &>(other), allocator)
+    : JsDocAllowed<AnnotationAllowed<Expression>>(static_cast<Expression const &>(other), allocator)
 {
     func_ = other.func_->Clone(allocator, this)->AsScriptFunction();
 }

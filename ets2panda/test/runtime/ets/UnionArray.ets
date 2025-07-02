@@ -23,19 +23,19 @@ class Item {
 }
 
 function main() {
-    let objectArray = [];
-    let boolArray = [true, false, true];
-    let intArray = [1, 2, 99, 100];
-    let doubleArray = [1, -2, 1.2, 9.9];
-    let stringArray = ["one", "two", "three"];
-    let classArray = [new Item(1), new Item(2), new Item(3)];
-    let unionArray = [true, 9.99, new Item(9), "success"];
+    let objectArray: FixedArray<Object> = [];
+    let boolArray: FixedArray<boolean> = [true, false, true];
+    let intArray: FixedArray<int> = [1, 2, 99, 100];
+    let doubleArray: FixedArray<number> = [1, -2, 1.2, 9.9];
+    let stringArray: FixedArray<string> = ["one", "two", "three"];
+    let classArray: FixedArray<Item> = [new Item(1), new Item(2), new Item(3)];
+    let unionArray: FixedArray<boolean|number|Item|string> = [true, 9.99, new Item(9), "success"];
 
-    assertTrue(objectArray instanceof Object[])
-    assertTrue(boolArray instanceof Boolean[])
-    assertTrue(intArray instanceof number[])
-    assertTrue(doubleArray instanceof number[])
-    assertTrue(stringArray instanceof string[])
-    assertTrue(classArray instanceof Item[])
-    assertTrue(unionArray instanceof (Boolean|Double|Item|String)[])
+    assertTrue(objectArray instanceof FixedArray<Object>)
+    assertTrue(boolArray instanceof FixedArray<boolean>)
+    assertTrue(intArray instanceof FixedArray<int>)
+    assertTrue(doubleArray instanceof FixedArray<number>)
+    assertTrue(stringArray instanceof FixedArray<string>)
+    assertTrue(classArray instanceof FixedArray<Item>)
+    assertTrue(unionArray instanceof (FixedArray<boolean|number|Item|string>))
 }

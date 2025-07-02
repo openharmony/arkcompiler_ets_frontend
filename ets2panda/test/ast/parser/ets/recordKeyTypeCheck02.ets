@@ -19,6 +19,6 @@ function main(){
     let a: Record/* @@ label */<A | double, number> = {
         1: 1,
         2: 2
-    } 
+    }
 }
-/* @@@ label Error TypeError: Type A|Double is not assignable to constraint type Numeric|String  */
+/* @@@ label Error TypeError: Type A|Double is not assignable to constraint type Numeric|String|BaseEnum<Int>|BaseEnum<Long>|BaseEnum<String> */

@@ -27,8 +27,6 @@ std::string GenericBridgesPhase::CreateMethodDefinitionString(ir::ClassDefinitio
 {
     constexpr std::size_t SOURCE_CODE_LENGTH = 128U;
 
-    auto *checker = context_->checker->AsETSChecker();
-
     std::string str1 {};
     str1.reserve(2U * SOURCE_CODE_LENGTH);
 
@@ -54,21 +52,21 @@ std::string GenericBridgesPhase::CreateMethodDefinitionString(ir::ClassDefinitio
         auto const &parameterName = derivedParameter->Name().Utf8();
         str1 += parameterName;
         typeNodes.emplace_back(
-            checker->AllocNode<ir::OpaqueTypeNode>(baseParameters[i]->TsType(), checker->Allocator()));
+            context_->AllocNode<ir::OpaqueTypeNode>(baseParameters[i]->TsType(), context_->Allocator()));
         str1 += ": @@T" + std::to_string(typeNodes.size());
 
         str2 += parameterName;
         typeNodes.emplace_back(
-            checker->AllocNode<ir::OpaqueTypeNode>(derivedParameter->TsType(), checker->Allocator()));
+            context_->AllocNode<ir::OpaqueTypeNode>(derivedParameter->TsType(), context_->Allocator()));
         str2 += " as @@T" + std::to_string(typeNodes.size());
     }
 
-    typeNodes.emplace_back(checker->AllocNode<ir::OpaqueTypeNode>(
-        const_cast<checker::Type *>(derivedFunction->Signature()->ReturnType()), checker->Allocator()));
+    typeNodes.emplace_back(context_->AllocNode<ir::OpaqueTypeNode>(
+        const_cast<checker::Type *>(derivedFunction->Signature()->ReturnType()), context_->Allocator()));
     str1 += "): @@T" + std::to_string(typeNodes.size()) + ' ';
 
-    typeNodes.emplace_back(checker->AllocNode<ir::OpaqueTypeNode>(
-        const_cast<checker::Type *>(classDefinition->TsType()), checker->Allocator()));
+    typeNodes.emplace_back(context_->AllocNode<ir::OpaqueTypeNode>(
+        const_cast<checker::Type *>(classDefinition->TsType()), context_->Allocator()));
     str2 = "{ return (this as @@T" + std::to_string(typeNodes.size()) + str2 + "); }";
 
     str1 += str2;
@@ -166,14 +164,19 @@ void GenericBridgesPhase::ProcessScriptFunction(ir::ClassDefinition const *const
             return;
         }
 
+        if (overrides(signature, baseSignature1) && overrides(baseSignature1, baseSignature2)) {
+            // This derived overload already handles the base union signature.
+            return;
+        }
+
         if (derivedFunction == nullptr && overrides(signature, baseSignature2)) {
-            //  NOTE: we don't care the possible case of mapping several derived function to the same bridge signature.
-            //  Probably sometimes we will process it correctly or issue warning notification here...
+            //  NOTE: we don't care the possible case of mapping several derived function to the same bridge
+            //  signature. Probably sometimes we will process it correctly or issue warning notification here...
             derivedFunction = signature->Function();
         }
     }
 
-    if (derivedFunction != nullptr) {
+    if (derivedFunction != nullptr && derivedFunction != baseFunction) {
         AddGenericBridge(classDefinition, derivedMethod, baseSignature1, derivedFunction);
     }
 }
@@ -216,11 +219,12 @@ void GenericBridgesPhase::CreateGenericBridges(ir::ClassDefinition const *const 
                 continue;
             }
 
-            //  Check if the derived class has any possible overrides of this method
-            auto it = std::find_if(
-                classBody.cbegin(), classBody.end(), [&name = method->Id()->Name()](ir::AstNode const *node) -> bool {
-                    return node->IsMethodDefinition() && node->AsMethodDefinition()->Id()->Name() == name;
-                });
+            // Check if the derived class has any possible overrides of this method
+            auto isOverridePred = [&name = method->Id()->Name()](ir::AstNode const *node) -> bool {
+                return node->IsMethodDefinition() && !node->IsStatic() &&
+                       node->AsMethodDefinition()->Id()->Name() == name;
+            };
+            auto it = std::find_if(classBody.cbegin(), classBody.end(), isOverridePred);
             if (it != classBody.cend()) {
                 MaybeAddGenericBridges(classDefinition, method, (*it)->AsMethodDefinition(), substitutions);
             }

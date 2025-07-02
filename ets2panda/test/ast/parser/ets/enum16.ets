@@ -22,7 +22,5 @@ enum InvalidInitTypeEnum {
 /* @@? 18:13 Error SyntaxError: Unexpected token, expected ',' or '}'. */
 /* @@? 18:13 Error TypeError: Unresolved reference b7 */
 /* @@? 18:15 Error SyntaxError: Unexpected token ','. */
-/* @@? 18:15 Error SyntaxError: Unexpected token ','. */
-/* @@? 18:15 Error SyntaxError: Unexpected token ','. */
 /* @@? 19:3 Error TypeError: Unresolved reference Blue */
 /* @@? 20:1 Error SyntaxError: Unexpected token '}'. */

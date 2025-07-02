@@ -29,12 +29,11 @@ WeakSet [12] = new undefined()
 
 
 /* @@? 16:9 Error TypeError: Type 'null' is not constructible. */
-/* @@? 16:9 Error TypeError: Type 'null' is not constructible. */
 /* @@? 17:1 Error TypeError: Type 'null' is not constructible. */
 /* @@? 18:1 Error TypeError: Type 'undefined' is not constructible. */
 /* @@? 19:1 Error TypeError: Type 'never' is not constructible. */
 /* @@? 20:1 Error TypeError: This expression is not constructible. */
 /* @@? 23:1 Error TypeError: The union type is not constructible. */
+/* @@? 26:1 Error TypeError: Indexed signatures are not allowed. Use arrays instead! */
 /* @@? 26:1 Error TypeError: Class name 'WeakSet' used in the wrong context */
-/* @@? 26:1 Error TypeError: Object type doesn't have proper index access method. */
 /* @@? 26:16 Error TypeError: Type 'undefined' is not constructible. */

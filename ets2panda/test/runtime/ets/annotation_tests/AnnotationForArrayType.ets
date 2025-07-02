@@ -30,7 +30,7 @@ type C = MyClass
 
 
 // annotations for elementType of array
-let array: @Message @Anno FixedArray<FixedArray<Int>>
-let deepArray: @Message FixedArray<FixedArray<FixedArray<FixedArray<FixedArray<Number>>>>>
+let array: @Message @Anno Int[][]
+let deepArray: @Message Number[][][][][]
 
 function main(){}

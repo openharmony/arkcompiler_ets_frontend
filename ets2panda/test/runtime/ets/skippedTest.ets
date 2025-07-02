@@ -20,13 +20,13 @@ function main(): void {
     let c: String = "abc";
     let n2: int = 41;
     let n3: long = 42;
-    let n4: float = 43.43;
+    let n4: float = 43.43f;
     let n5: double = 44.44;
     console.print(str);
     console.println();
     console.print(str.charAt(2));
     console.println();
-    console.print(str.length as int);
+    console.print(Double.toInt(str.length));
     console.println();
     console.print(a.equals(b));
     console.println();

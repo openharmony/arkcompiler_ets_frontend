@@ -51,11 +51,15 @@ void CompileQueue::Schedule(public_lib::Context *context)
 {
     ES2PANDA_ASSERT(jobsCount_ == 0);
     std::unique_lock<std::mutex> lock(m_);
-    const auto &functions = context->parserProgram->VarBinder()->Functions();
+    auto &functions = context->parserProgram->VarBinder()->Functions();
     jobs_ = new CompileJob[functions.size()]();
 
     for (auto *function : functions) {
+        if (function->IsEmitted()) {
+            continue;
+        }
         jobs_[jobsCount_++].SetContext(context, function);  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+        function->SetEmitted();
     }
 
     totalJobsCount_ = jobsCount_;
@@ -123,5 +127,6 @@ void CompileQueue::Wait(const JobsFinishedCb &onFinishedCb)
 
     // CC-OFFNXT(G.VAR.05) false positive
     delete[] jobs_;
+    jobs_ = nullptr;
 }
 }  // namespace ark::es2panda::compiler

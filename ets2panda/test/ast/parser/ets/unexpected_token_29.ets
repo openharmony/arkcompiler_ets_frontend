@@ -20,9 +20,10 @@ function main(): void {
 /*@@ label4 */}
 
 /* @@@ label1 Error SyntaxError: Expected ';', got 'identification literal'. */
-/* @@? 17:40 Error TypeError: Bad operand type, the types of the operands must be numeric type. */
+/* @@@ label1 Error TypeError: Bad operand type, the types of the operands must be numeric type. */
 /* @@@ label2 Error SyntaxError: Unexpected token, expected ';'. */
 /* @@? 17:69 Error TypeError: need to specify target type for class composite */
-/* @@@ label3 Error SyntaxError: Unexpected token, expected ':'. */
-/* @@@ label4 Error SyntaxError: Expected ')', got '}'. */
-/* @@@ label4 Error SyntaxError: Unexpected token '}'. */
+/* @@? 18:30 Error SyntaxError: Unexpected token, expected ':'. */
+/* @@? 20:15 Error SyntaxError: Expected ')', got '}'. */
+/* @@? 20:15 Error SyntaxError: Unexpected token '}'. */
+/* @@? 30:1 Error SyntaxError: Expected '}', got 'end of stream'. */

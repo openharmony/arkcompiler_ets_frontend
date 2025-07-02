@@ -15,5 +15,5 @@
 // Int[1,2,3,4,5]
 let a: number = new Int[1
 
-/* @@? 16:17 Error TypeError: Type 'Int[]' cannot be assigned to type 'double' */
-/* @@? 20:1 Error SyntaxError: Expected ']', got 'eos'. */
+/* @@? 16:17 Error TypeError: Type 'FixedArray<Int>' cannot be assigned to type 'double' */
+/* @@? 20:1 Error SyntaxError: Expected ']', got 'end of stream'. */

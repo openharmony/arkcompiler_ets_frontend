@@ -57,13 +57,13 @@ runtime/ets/newArrayCreationUnionType.ets
 runtime/ets/type_param_in_union.ets
 ast/parser/ets/re_export/import_18.ets
 ast/parser/ets/re_export/import_19.ets
+ast/parser/ets/re_export/import_20.ets
 ast/parser/ets/re_export/re_export_13.ets
 ast/parser/ets/re_export/re_export_14.ets
 ast/parser/ets/re_export/re_export_15.ets
+ast/parser/ets/re_export/re_export_16.ets
 parser/ets/ambient_indexer_1.ets
 parser/ets/ambient_indexer_6.ets
-parser/ets/class_init.ets
-parser/ets/class_static_initializer.ets
 parser/ets/conversions.ets
 parser/ets/declare_namespace.ets
 runtime/ets/namespace_tests/namespace_import_type_test/namespace_export.ets
@@ -99,7 +99,6 @@ parser/ets/labeledSwitchStatement.ets
 parser/ets/labeledWhileStatement.ets
 parser/ets/lambda_import_alias_1-2.ets
 parser/ets/lambda_import_alias_1.ets
-parser/ets/localClassIsPermitted.ets
 parser/ets/promiseCasting.ets
 parser/ets/re_export/diamond/B.ets
 parser/ets/re_export/diamond/B2.ets
@@ -155,7 +154,13 @@ parser/ets/array_creation_expression.ets
 runtime/ets/re_export/export/reexport_elements1.ets
 runtime/ets/re_export/export/reexport_elements2.ets
 runtime/ets/re_export/import.ets
+ast/compiler/ets/package_initializer_warning/P3/P3.ets
+ast/compiler/ets/package_initializer_warning/main_test.ets
 runtime/ets/import_declare_type_alias.ets
+ast/compiler/ets/import_type_without_export.ets
+ast/compiler/ets/type_binding_01.ets
+ast/compiler/ets/type_binding_02.ets
+ast/compiler/ets/external_local_interface.ets
 
 # FailKind.ES2PANDA_FAIL
 runtime/ets/StringFasta.ets

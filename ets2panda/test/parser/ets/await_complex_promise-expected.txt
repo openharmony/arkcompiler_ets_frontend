@@ -814,7 +814,7 @@
                               },
                               "end": {
                                 "line": 17,
-                                "column": 34,
+                                "column": 33,
                                 "program": "await_complex_promise.ets"
                               }
                             }
@@ -827,7 +827,7 @@
                             },
                             "end": {
                               "line": 17,
-                              "column": 34,
+                              "column": 33,
                               "program": "await_complex_promise.ets"
                             }
                           }
@@ -1401,7 +1401,7 @@
                               },
                               "end": {
                                 "line": 21,
-                                "column": 41,
+                                "column": 40,
                                 "program": "await_complex_promise.ets"
                               }
                             }
@@ -1414,7 +1414,7 @@
                             },
                             "end": {
                               "line": 21,
-                              "column": 41,
+                              "column": 40,
                               "program": "await_complex_promise.ets"
                             }
                           }
@@ -2052,7 +2052,7 @@
                               },
                               "end": {
                                 "line": 25,
-                                "column": 41,
+                                "column": 40,
                                 "program": "await_complex_promise.ets"
                               }
                             }
@@ -2065,7 +2065,7 @@
                             },
                             "end": {
                               "line": 25,
-                              "column": 41,
+                              "column": 40,
                               "program": "await_complex_promise.ets"
                             }
                           }
@@ -2575,7 +2575,7 @@
                               },
                               "end": {
                                 "line": 29,
-                                "column": 39,
+                                "column": 38,
                                 "program": "await_complex_promise.ets"
                               }
                             }
@@ -2588,7 +2588,7 @@
                             },
                             "end": {
                               "line": 29,
-                              "column": 39,
+                              "column": 38,
                               "program": "await_complex_promise.ets"
                             }
                           }
@@ -3034,7 +3034,7 @@
                               },
                               "end": {
                                 "line": 34,
-                                "column": 41,
+                                "column": 40,
                                 "program": "await_complex_promise.ets"
                               }
                             }
@@ -3047,7 +3047,7 @@
                             },
                             "end": {
                               "line": 34,
-                              "column": 41,
+                              "column": 40,
                               "program": "await_complex_promise.ets"
                             }
                           }

@@ -1211,6 +1211,11 @@ void Emitter::GenBufferLiterals(ArenaVector<std::pair<int32_t, std::vector<Liter
                 valueLit.value_ = literal->GetMethod().Mutf8();
                 break;
             }
+            case ir::LiteralTag::ETS_IMPLEMENTS: {
+                valueLit.tag_ = panda::panda_file::LiteralTag::ETS_IMPLEMENTS;
+                valueLit.value_ = literal->GetString().Mutf8();
+                break;
+            }
             case ir::LiteralTag::NULL_VALUE: {
                 valueLit.tag_ = panda::panda_file::LiteralTag::NULLVALUE;
                 valueLit.value_ = static_cast<uint8_t>(0);

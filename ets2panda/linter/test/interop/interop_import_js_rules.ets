@@ -27,6 +27,7 @@ import { ff4 } from "./interop_import_js_rules_js"
 import { handle } from "./interop_import_js_rules_js"
 
 import { expand } from "./interop_import_js_rules_js"
+import { orange } from "./interop_import_js_rules_js"
 
 if (foo.isGood) {}
 
@@ -65,3 +66,27 @@ handle(lambda)
 
 class X{a = 1; b= 2; c= 3}
 expand(new X()) // ERROR expand-static
+
+class Y {
+  str: string = 'str';
+  bool: boolean = false;
+}
+
+let testY: Y = {
+  str: "hello",
+  bool: false,
+}
+
+expand(testY);
+expand({x: '1', y: "hello", z: false});
+
+let flag = false;
+if (orange.isVegetable1 === 123) {
+flag = true
+}
+
+for (let element of arr) {
+  if (element == 8) {
+    console.log("hi");
+  }
+}

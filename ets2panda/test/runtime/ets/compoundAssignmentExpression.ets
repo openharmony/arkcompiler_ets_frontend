@@ -14,13 +14,13 @@
  */
 
 function main() {
-    let s: string[] = ["s1", "s2"];
-    let res: int[] = [0, 0, 0, 0, 0];
-    res[0] -= s[1 % 2].length as int;
+    let s: FixedArray<string> = ["s1", "s2"];
+    let res: FixedArray<int> = [0, 0, 0, 0, 0];
+    res[0] -= Double.toInt(s[1 % 2].length);
     res[(res.length - 4) as Int] += 1;
-    res[2 % (res.length as int)] &= s[1].length;
-    res[3 % (res.length as int)] |= s[1 % 2].length as int;
-    res[2 % (res.length as int) + s.length] *= s[1 % 2].length as int;
+    res[2 % (res.length as int)] &= Double.toInt(s[1].length);
+    res[3 % (res.length as int)] |= Double.toInt(s[1 % 2].length);
+    res[2 % (res.length as int) + s.length] *= Double.toInt(s[1 % 2].length);
 
     assertEQ(res[0], -2);
     assertEQ(res[1], 1);

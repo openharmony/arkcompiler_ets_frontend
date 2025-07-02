@@ -264,7 +264,6 @@ std::string ModifiersToString(ir::ModifierFlags flags)
     addModifier(ir::ModifierFlags::GETTER, "getter");
     addModifier(ir::ModifierFlags::SETTER, "setter");
     addModifier(ir::ModifierFlags::DEFAULT_EXPORT, "default_export");
-    addModifier(ir::ModifierFlags::EXPORT_TYPE, "export_type");
     addModifier(ir::ModifierFlags::SUPER_OWNER, "super_owner");
     addModifier(ir::ModifierFlags::ANNOTATION_DECLARATION, "annotation_declaration");
     addModifier(ir::ModifierFlags::ANNOTATION_USAGE, "annotation_usage");
@@ -353,86 +352,6 @@ std::string GetNodeKind(ir::AstNode *node)
         return "class";
     }
     return "";
-}
-
-SymbolDisplayPart CreatePunctuation(std::string punc)
-{
-    return SymbolDisplayPart(std::move(punc), "punctuation");
-}
-
-SymbolDisplayPart CreateKeyword(std::string keyword)
-{
-    return SymbolDisplayPart(std::move(keyword), "keyword");
-}
-
-SymbolDisplayPart CreateSpace()
-{
-    return SymbolDisplayPart(" ", "space");
-}
-
-SymbolDisplayPart CreateText(std::string text)
-{
-    return SymbolDisplayPart(std::move(text), "text");
-}
-
-SymbolDisplayPart CreateClassName(std::string className)
-{
-    return SymbolDisplayPart(std::move(className), "className");
-}
-
-SymbolDisplayPart CreateFunctionName(std::string functionName)
-{
-    return SymbolDisplayPart(std::move(functionName), "functionName");
-}
-
-SymbolDisplayPart CreateTypeName(std::string typeName)
-{
-    return SymbolDisplayPart(std::move(typeName), "typeName");
-}
-
-SymbolDisplayPart CreateEnumName(std::string enumName)
-{
-    return SymbolDisplayPart(std::move(enumName), "enumName");
-}
-
-SymbolDisplayPart CreateEnumMember(std::string enumMember)
-{
-    return SymbolDisplayPart(std::move(enumMember), "enumMember");
-}
-
-SymbolDisplayPart CreateInterface(std::string interface)
-{
-    return SymbolDisplayPart(std::move(interface), "interface");
-}
-
-SymbolDisplayPart CreateTypeParameter(std::string typeParameter)
-{
-    return SymbolDisplayPart(std::move(typeParameter), "typeParameter");
-}
-
-SymbolDisplayPart CreateFunctionParameter(std::string functionParameter)
-{
-    return SymbolDisplayPart(std::move(functionParameter), "functionParameter");
-}
-
-SymbolDisplayPart CreateOperator(std::string oper)
-{
-    return SymbolDisplayPart(std::move(oper), "operator");
-}
-
-SymbolDisplayPart CreateReturnType(std::string returnType)
-{
-    return SymbolDisplayPart(std::move(returnType), "returnType");
-}
-
-SymbolDisplayPart CreateProperty(std::string property)
-{
-    return SymbolDisplayPart(std::move(property), "property");
-}
-
-SymbolDisplayPart CreateNamespace(std::string name)
-{
-    return SymbolDisplayPart(std::move(name), "namespace");
 }
 
 std::string TransDisplayPartsToStr(const std::vector<SymbolDisplayPart> &displayParts)
@@ -645,7 +564,11 @@ std::vector<SymbolDisplayPart> CreateDisplayForClass(ir::AstNode *node)
         displayParts.emplace_back(CreateClassName(GetNameFromClassDeclaration(node)));
     } else {
         // class definition
-        displayParts.emplace_back(CreateKeyword("class"));
+        if (node->AsClassDefinition()->OrigEnumDecl() != nullptr) {
+            displayParts.emplace_back(CreateKeyword("enum"));
+        } else {
+            displayParts.emplace_back(CreateKeyword("class"));
+        }
         displayParts.emplace_back(CreateSpace());
         displayParts.emplace_back(CreateClassName(GetNameFromClassDefinition(node)));
     }

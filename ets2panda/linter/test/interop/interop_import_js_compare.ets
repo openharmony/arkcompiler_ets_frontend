@@ -13,7 +13,6 @@
  * limitations under the License.
  */
  
-'use static'
 
 import {foo, m, n} from "./interop_import_js_compare_js"
 let a = foo.a

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,6 +14,7 @@
  */
 
 #include "stringConstantsLowering.h"
+#include "checker/ETSchecker.h"
 
 namespace ark::es2panda::compiler {
 
@@ -39,13 +40,16 @@ bool StringConstantsLowering::Perform(public_lib::Context *ctx, parser::Program 
     for (auto &[_, ext_programs] : program->ExternalSources()) {
         (void)_;
         for (auto *extProg : ext_programs) {
+            if (program->GetFlag(parser::ProgramFlags::AST_STRING_CONSTANT_LOWERED)) {
+                continue;
+            }
             Perform(ctx, extProg);
+            program->SetFlag(parser::ProgramFlags::AST_STRING_CONSTANT_LOWERED);
         }
     }
 
     program->Ast()->TransformChildrenRecursivelyPostorder(
-        // CC-OFFNXT(G.FMT.14-CPP) project code style
-        [ctx](ir::AstNode *const node) -> ir::AstNode * {
+        [ctx](checker::AstNodePtr const node) -> checker::AstNodePtr {
             if (node->IsBinaryExpression()) {
                 auto const binOp = node->AsBinaryExpression();
                 if (binOp->OperatorType() == lexer::TokenType::PUNCTUATOR_PLUS && binOp->Left()->IsStringLiteral() &&

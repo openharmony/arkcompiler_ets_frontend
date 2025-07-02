@@ -15,9 +15,9 @@
     ],
     "result": [
         {
-            "line": 17,
+            "line": 16,
             "column": 16,
-            "endLine": 17,
+            "endLine": 16,
             "endColumn": 62,
             "problem": "InteropDynamicImport",
             "suggest": "",
@@ -25,9 +25,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 17,
+            "line": 16,
             "column": 22,
-            "endLine": 17,
+            "endLine": 16,
             "endColumn": 62,
             "problem": "DynamicImport",
             "suggest": "",
@@ -35,9 +35,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 18,
+            "line": 17,
             "column": 17,
-            "endLine": 18,
+            "endLine": 17,
             "endColumn": 59,
             "problem": "InteropDynamicImportTs",
             "suggest": "",
@@ -45,9 +45,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 18,
+            "line": 17,
             "column": 23,
-            "endLine": 18,
+            "endLine": 17,
             "endColumn": 59,
             "problem": "DynamicImport",
             "suggest": "",
@@ -55,9 +55,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 19,
+            "line": 18,
             "column": 16,
-            "endLine": 19,
+            "endLine": 18,
             "endColumn": 58,
             "problem": "InteropDynamicImportJs",
             "suggest": "",
@@ -65,9 +65,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 19,
+            "line": 18,
             "column": 22,
-            "endLine": 19,
+            "endLine": 18,
             "endColumn": 58,
             "problem": "DynamicImport",
             "suggest": "",
@@ -75,9 +75,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 22,
+            "line": 21,
             "column": 3,
-            "endLine": 22,
+            "endLine": 21,
             "endColumn": 44,
             "problem": "InteropDynamicImportTs",
             "suggest": "",
@@ -85,9 +85,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 22,
+            "line": 21,
             "column": 3,
-            "endLine": 22,
+            "endLine": 21,
             "endColumn": 39,
             "problem": "DynamicImport",
             "suggest": "",

@@ -14,9 +14,9 @@
  */
 
 function widening_array_test(): void {
-  let ints: Int[] = [new Int()];
-  let objects: Object[] = ints as Object[];
-  let ints2: Int[] = objects as Int[];
+  let ints: FixedArray<Int> = [new Int()];
+  let objects: FixedArray<Object> = ints as FixedArray<Object>;
+  let ints2: FixedArray<Int> = objects as FixedArray<Int>;
 
   let obj = ints2 as Object;
 }

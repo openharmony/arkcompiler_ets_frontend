@@ -20,11 +20,11 @@ import * as Src from "./annotation_src"
     /* @@ label2 */authorAge: number = /* @@ label3 */-35.1
     /* @@ label4 */testBool: boolean = /* @@ label5 */true
     /* @@ label6 */favorColor: Src.Color = /* @@ label7 */Src.Color.RED
-    /* @@ label8 */color: FixedArray<Src.Color> = /* @@ label9 */[/* @@ label10 */Src.Color.GREEN, Src.Color.BLUE]
-    /* @@ label11 */reviewers: FixedArray<string> = /* @@ label12 */["Bob", "Jim", /* @@ label13 */"Tome"]
-    /* @@ label14 */reviewersAge: FixedArray<double> = /* @@ label15 */[/* @@ label16 */11, 12, 32]
-    /* @@ label17 */testBools: FixedArray<boolean> = /* @@ label18 */[/* @@ label19 */true, true, false]
-    mutiArray: FixedArray<FixedArray<number>> = [
+    /* @@ label8 */color: Src.Color[] = /* @@ label9 */[/* @@ label10 */Src.Color.GREEN, Src.Color.BLUE]
+    /* @@ label11 */reviewers: string[] = /* @@ label12 */["Bob", "Jim", /* @@ label13 */"Tome"]
+    /* @@ label14 */reviewersAge: double[] = /* @@ label15 */[/* @@ label16 */11, 12, 32]
+    /* @@ label17 */testBools: boolean[] = /* @@ label18 */[/* @@ label19 */true, true, false]
+    mutiArray: number[][] = [
         [1, 2, 3],
         [4, +5, 6],
         [7, 8, -9]

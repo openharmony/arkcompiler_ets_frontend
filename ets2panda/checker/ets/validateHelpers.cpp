@@ -198,8 +198,8 @@ bool ETSChecker::ValidateAnnotationPropertyType(checker::Type *type)
         return false;
     }
 
-    if (type->IsETSArrayType()) {
-        return ValidateAnnotationPropertyType(type->AsETSArrayType()->ElementType());
+    if (type->IsETSArrayType() || type->IsETSResizableArrayType()) {
+        return ValidateAnnotationPropertyType(MaybeUnboxType(GetElementTypeOfArray(type)));
     }
 
     return type->HasTypeFlag(TypeFlag::ETS_NUMERIC | TypeFlag::ETS_ENUM | TypeFlag::ETS_BOOLEAN) ||
@@ -214,8 +214,10 @@ void ETSChecker::ValidateUnaryOperatorOperand(varbinder::Variable *variable)
 
     if (variable->Declaration()->IsConstDecl() || variable->Declaration()->IsReadonlyDecl()) {
         std::string_view fieldType = variable->Declaration()->IsConstDecl() ? "constant" : "readonly";
-        if (HasStatus(CheckerStatus::IN_CONSTRUCTOR | CheckerStatus::IN_STATIC_BLOCK) &&
-            !variable->HasFlag(varbinder::VariableFlags::EXPLICIT_INIT_REQUIRED)) {
+        if ((HasStatus(CheckerStatus::IN_CONSTRUCTOR | CheckerStatus::IN_STATIC_BLOCK) &&
+             !variable->HasFlag(varbinder::VariableFlags::EXPLICIT_INIT_REQUIRED)) ||
+            (variable->HasFlag(varbinder::VariableFlags::INIT_IN_STATIC_BLOCK) &&
+             variable->HasFlag(varbinder::VariableFlags::INITIALIZED))) {
             std::ignore = TypeError(variable, diagnostic::FIELD_REASSIGNMENT, {fieldType, variable->Name()},
                                     variable->Declaration()->Node()->Start());
             return;
@@ -223,6 +225,10 @@ void ETSChecker::ValidateUnaryOperatorOperand(varbinder::Variable *variable)
         if (!HasStatus(CheckerStatus::IN_CONSTRUCTOR | CheckerStatus::IN_STATIC_BLOCK)) {
             std::ignore = TypeError(variable, diagnostic::FIELD_ASSIGN_TYPE_MISMATCH, {fieldType, variable->Name()},
                                     variable->Declaration()->Node()->Start());
+        }
+
+        if (variable->HasFlag(varbinder::VariableFlags::INIT_IN_STATIC_BLOCK)) {
+            variable->AddFlag(varbinder::VariableFlags::INITIALIZED);
         }
     }
 }

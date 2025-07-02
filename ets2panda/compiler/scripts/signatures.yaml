@@ -30,6 +30,8 @@ defines:
     ref: SET_INDEX_METHOD
   - name: $_iterator
     ref: ITERATOR_METHOD
+  - name: Iterator
+    ref: ITERATOR_CLASS
   - name: 'ambient_indexer'
     ref: AMBIENT_INDEXER
   - name: 'ETSGLOBAL.main:'
@@ -98,6 +100,12 @@ defines:
     comment: Ets record
   - name: ets/annotation/Signature
     ref: ETS_ANNOTATION_SIGNATURE
+    comment: Ets record
+  - name: ets/annotation/Module
+    ref: ETS_ANNOTATION_MODULE
+    comment: Ets record
+  - name: ets/annotation/FunctionalReference
+    ref: ETS_ANNOTATION_FUNCTIONAL_REFERENCE
     comment: Ets record
   - name: ets/annotation/Module
     ref: ETS_ANNOTATION_MODULE
@@ -200,6 +208,19 @@ defines:
     ref: FROM
   - name: 'Numeric'
     ref: NUMERIC
+  - name: 'functions'
+    ref: DEFAULT_ANNO_QUALIFIED_LEFT
+  - name: 'OptionalParametersAnnotation'
+    ref: DEFAULT_ANNO_FOR_FUNC
+  - name: 'minArgCount'
+    ref: MIN_ARGSCOUNT_OF_FUNC
+  - name: 'gensym%%_anonymous_const'
+    ref: EXPORT_DEFAULT_CONSTANT_ANONYMOUSLY
+  - name: 'NamedFunctionObject'
+    ref: NAMED_FUNCTION_OBJECT
+  - name: 'InterfaceObjectLiteral'
+    ref: INTERFACE_OBJ_LITERAL
+    comment: ETS annotation type
 
 packages:
   - name: 'std.core'
@@ -343,6 +364,15 @@ builtins:
   - name: BigInt
     package: PKG_ESCOMPAT
     ref: BUILTIN_BIGINT
+  - name: Array
+    package: PKG_ESCOMPAT
+    ref: BUILTIN_ARRAY
+  - name: Record
+    package: PKG_ESCOMPAT
+    ref: BUILTIN_RECORD
+  - name: Map
+    package: PKG_ESCOMPAT
+    ref: BUILTIN_MAP
   - name: AssertionError
     package: PKG_STD_CORE
     ref: BUILTIN_ASSERTION_ERROR
@@ -703,6 +733,18 @@ signatures:
     params: [PRIMITIVE_INT]
     return_type: PRIMITIVE_CHAR
     ref: BUILTIN_STRING_CHAR_AT
+
+  - callee: BUILTIN_ARRAY
+    method_name: <get>length
+    params: []
+    return_type: PRIMITIVE_DOUBLE
+    ref: BUILTIN_ARRAY_LENGTH
+
+  - callee: BUILTIN_ARRAY
+    method_name: $GET_INDEX_METHOD
+    params: [PRIMITIVE_INT]
+    return_type: BUILTIN_OBJECT
+    ref: BUILTIN_ARRAY_GET_ELEMENT
 
   - callee: BUILTIN_ASSERTION_ERROR
     method_name: $CTOR

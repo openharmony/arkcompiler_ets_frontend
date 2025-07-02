@@ -230,6 +230,8 @@ public:
     void SwapBinaryOpArgs(const ir::AstNode *node, VReg lhs);
     VReg MoveAccToReg(const ir::AstNode *node);
 
+    void LoadResizableArrayLength(const ir::AstNode *node);
+    void LoadResizableArrayElement(const ir::AstNode *node, const VReg arrObj, const VReg arrIndex);
     void LoadArrayLength(const ir::AstNode *node, VReg arrayReg);
     void LoadArrayElement(const ir::AstNode *node, VReg objectReg);
     void StoreArrayElement(const ir::AstNode *node, VReg objectReg, VReg index, const checker::Type *elementType);
@@ -422,26 +424,6 @@ public:
         CallDynamicImpl<CallShort, Call, CallRange>(data, param3, signature, arguments);
     }
 
-#ifdef PANDA_WITH_ETS
-    // The functions below use ETS specific instructions.
-    // Compilation of es2panda fails if ETS plugin is disabled
-    void LaunchExact(const ir::AstNode *node, checker::Signature *signature,
-                     const ArenaVector<ir::Expression *> &arguments)
-    {
-        CallImpl<EtsLaunchShort, EtsLaunch, EtsLaunchRange>(node, signature, arguments);
-    }
-
-    void LaunchVirtual(const ir::AstNode *const node, checker::Signature *const signature, const VReg athis,
-                       const ArenaVector<ir::Expression *> &arguments)
-    {
-        if (IsDevirtualizedSignature(signature)) {
-            CallArgStart<EtsLaunchShort, EtsLaunch, EtsLaunchRange>(node, signature, athis, arguments);
-        } else {
-            CallArgStart<EtsLaunchVirtShort, EtsLaunchVirt, EtsLaunchVirtRange>(node, signature, athis, arguments);
-        }
-    }
-#endif  // PANDA_WITH_ETS
-
     // until a lowering for implicit super is available
     void CallRangeFillUndefined(const ir::AstNode *const node, checker::Signature *const signature, const VReg thisReg);
 
@@ -477,8 +459,7 @@ private:
     void UnaryTilde(const ir::AstNode *node);
 
     util::StringView ToAssemblerType(const es2panda::checker::Type *type) const;
-    void TestIsInstanceConstant(const ir::AstNode *node, Label *ifTrue, VReg srcReg, checker::Type const *target);
-    void TestIsInstanceConstituent(const ir::AstNode *node, std::tuple<Label *, Label *> label, VReg srcReg,
+    void TestIsInstanceConstituent(const ir::AstNode *node, std::tuple<Label *, Label *> label,
                                    checker::Type const *target, bool acceptNull);
     void CheckedReferenceNarrowingObject(const ir::AstNode *node, const checker::Type *target);
 

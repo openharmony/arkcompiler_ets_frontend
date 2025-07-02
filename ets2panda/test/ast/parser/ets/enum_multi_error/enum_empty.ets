@@ -16,7 +16,7 @@
 enum
 
 // Printed two errors about eos, because there are two attempts to read identifiers: name enum and name property
-/* @@@ label Error SyntaxError: Identifier expected, got 'eos'. */
+/* @@@ label Error SyntaxError: Identifier expected, got 'end of stream'. */
 /* @@@ label Error SyntaxError: Unexpected token, expected '{'. */
-/* @@@ label Error SyntaxError: Expected '}', got 'eos'. */
+/* @@@ label Error SyntaxError: Expected '}', got 'end of stream'. */
 /* @@ label */

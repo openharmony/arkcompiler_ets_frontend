@@ -1,6 +1,6 @@
 {
     "copyright": [
-        "Copyright (c) 2025 Huawei Device Co., Ltd.",
+        "Copyright (c) 2023-2024 Huawei Device Co., Ltd.",
         "Licensed under the Apache License, Version 2.0 (the 'License');",
         "you may not use this file except in compliance with the License.",
         "You may obtain a copy of the License at",
@@ -15,9 +15,9 @@
     ],
     "result": [
         {
-            "line": 21,
+            "line": 25,
             "column": 3,
-            "endLine": 21,
+            "endLine": 25,
             "endColumn": 8,
             "problem": "StrictDiagnostic",
             "suggest": "Property 'value' has no initializer and is not definitely assigned in the constructor.",
@@ -25,9 +25,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 31,
+            "line": 35,
             "column": 3,
-            "endLine": 31,
+            "endLine": 35,
             "endColumn": 8,
             "problem": "StrictDiagnostic",
             "suggest": "Property 'value' has no initializer and is not definitely assigned in the constructor.",
@@ -35,9 +35,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 41,
+            "line": 45,
             "column": 3,
-            "endLine": 41,
+            "endLine": 45,
             "endColumn": 8,
             "problem": "StrictDiagnostic",
             "suggest": "Property 'value' has no initializer and is not definitely assigned in the constructor.",

@@ -21,4 +21,5 @@ function /* @@ label */main(i : string[]): void {
     return;
 }
 
-/* @@@ label Error TypeError: Main overload is not enabled  */
+/* @@? 20:24 Error TypeError: Main overload is not enabled */
+/* @@? 20:29 Error TypeError: Only 'FixedArray<string>' type argument is allowed. */

@@ -23,10 +23,8 @@ let b = new B(10);
 
 // Second level import import with both types of error
 /* @@? import_2.ets:17:17 Error TypeError: Type 'int' cannot be assigned to type 'String' */
-/* @@? import_2.ets:20:5 Error SyntaxError: Unexpected token 'not_ok'. */
+/* @@? import_2.ets:20:5 Error SyntaxError: 'var' keyword is not supported. Use 'let' instead. */
 
 // Error in main file based on class from the most distant file
-/* @@? master_file.ets:18:9 Error TypeError: Expected 0 arguments, got 1. */
-/* @@? master_file.ets:18:9 Error TypeError: No matching construct signature for import_2.B(int) */
 /* @@? master_file.ets:18:9 Error TypeError: Expected 0 arguments, got 1. */
 /* @@? master_file.ets:18:9 Error TypeError: No matching construct signature for import_2.B(int) */

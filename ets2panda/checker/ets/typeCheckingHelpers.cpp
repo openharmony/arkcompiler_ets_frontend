@@ -47,6 +47,7 @@
 #include "generated/diagnostic.h"
 
 namespace ark::es2panda::checker {
+
 void ETSChecker::CheckTruthinessOfType(ir::Expression *expr)
 {
     auto const testType = expr->Check(this);
@@ -94,7 +95,7 @@ Type *ETSChecker::GetNonNullishType(Type *type)
         return type;
     }
     if (type->IsETSTypeParameter()) {
-        return Allocator()->New<ETSNonNullishType>(type->AsETSTypeParameter());
+        return ProgramAllocator()->New<ETSNonNullishType>(type->AsETSTypeParameter());
     }
     if (type->IsETSPartialTypeParameter()) {
         return type->AsETSPartialTypeParameter()->GetUnderlying();
@@ -103,7 +104,7 @@ Type *ETSChecker::GetNonNullishType(Type *type)
         return GetGlobalTypesHolder()->GlobalETSNeverType();
     }
 
-    ArenaVector<Type *> copied(Allocator()->Adapter());
+    ArenaVector<Type *> copied(ProgramAllocator()->Adapter());
     for (auto const &t : type->AsETSUnionType()->ConstituentTypes()) {
         if (t->IsETSNullType() || t->IsETSUndefinedType()) {
             continue;
@@ -129,7 +130,7 @@ Type *ETSChecker::RemoveNullType(Type *const type)
     }
 
     ES2PANDA_ASSERT(type->IsETSUnionType());
-    ArenaVector<Type *> copiedTypes(Allocator()->Adapter());
+    ArenaVector<Type *> copiedTypes(ProgramAllocator()->Adapter());
 
     for (auto *constituentType : type->AsETSUnionType()->ConstituentTypes()) {
         if (!constituentType->IsETSNullType()) {
@@ -157,7 +158,7 @@ Type *ETSChecker::RemoveUndefinedType(Type *const type)
     }
 
     ES2PANDA_ASSERT(type->IsETSUnionType());
-    ArenaVector<Type *> copiedTypes(Allocator()->Adapter());
+    ArenaVector<Type *> copiedTypes(ProgramAllocator()->Adapter());
 
     for (auto *constituentType : type->AsETSUnionType()->ConstituentTypes()) {
         if (!constituentType->IsETSUndefinedType()) {
@@ -177,7 +178,7 @@ std::pair<Type *, Type *> ETSChecker::RemoveNullishTypes(Type *type)
 
     if (type->IsETSTypeParameter()) {
         return {GetGlobalTypesHolder()->GlobalETSNullishType(),
-                Allocator()->New<ETSNonNullishType>(type->AsETSTypeParameter())};
+                ProgramAllocator()->New<ETSNonNullishType>(type->AsETSTypeParameter())};
     }
 
     if (type->IsETSUndefinedType() || type->IsETSNullType()) {
@@ -185,16 +186,17 @@ std::pair<Type *, Type *> ETSChecker::RemoveNullishTypes(Type *type)
     }
 
     ES2PANDA_ASSERT(type->IsETSUnionType());
-    ArenaVector<Type *> nullishTypes(Allocator()->Adapter());
-    ArenaVector<Type *> notNullishTypes(Allocator()->Adapter());
+    ArenaVector<Type *> nullishTypes(ProgramAllocator()->Adapter());
+    ArenaVector<Type *> notNullishTypes(ProgramAllocator()->Adapter());
 
     for (auto *constituentType : type->AsETSUnionType()->ConstituentTypes()) {
         if (constituentType->IsETSUndefinedType() || constituentType->IsETSNullType()) {
             nullishTypes.push_back(constituentType);
         } else {
-            notNullishTypes.push_back(!constituentType->IsETSTypeParameter()
-                                          ? constituentType
-                                          : Allocator()->New<ETSNonNullishType>(constituentType->AsETSTypeParameter()));
+            notNullishTypes.push_back(
+                !constituentType->IsETSTypeParameter()
+                    ? constituentType
+                    : ProgramAllocator()->New<ETSNonNullishType>(constituentType->AsETSTypeParameter()));
         }
     }
 
@@ -291,22 +293,23 @@ bool Type::PossiblyETSString() const
 
 static bool IsValueTypedObjectType(ETSObjectType const *t)
 {
-    return t->IsGlobalETSObjectType() || t->HasObjectFlag(ETSObjectFlags::VALUE_TYPED) ||
-           t->HasObjectFlag(ETSObjectFlags::ENUM_OBJECT);
+    ETSObjectFlags flags = ETSObjectFlags::FUNCTIONAL_REFERENCE | ETSObjectFlags::VALUE_TYPED |
+                           ETSObjectFlags::ENUM_OBJECT | ETSObjectFlags::FUNCTIONAL;
+    return t->IsGlobalETSObjectType() || t->HasObjectFlag(flags);
 }
 
 bool Type::PossiblyETSValueTyped() const
 {
-    return MatchConstituentOrConstraint(this, [](const Type *t) {
-        return t->IsETSNullType() || t->IsETSUndefinedType() ||
-               (t->IsETSObjectType() && IsValueTypedObjectType(t->AsETSObjectType()));
-    });
+    return MatchConstituentOrConstraint(this,
+                                        [](const Type *t) { return t->IsETSNullType() || t->IsETSUndefinedType(); }) ||
+           PossiblyETSValueTypedExceptNullish();
 }
 
 bool Type::PossiblyETSValueTypedExceptNullish() const
 {
-    return MatchConstituentOrConstraint(
-        this, [](const Type *t) { return t->IsETSObjectType() && IsValueTypedObjectType(t->AsETSObjectType()); });
+    return MatchConstituentOrConstraint(this, [](const Type *t) {
+        return t->IsETSFunctionType() || (t->IsETSObjectType() && IsValueTypedObjectType(t->AsETSObjectType()));
+    });
 }
 
 bool Type::IsETSArrowType() const
@@ -326,7 +329,8 @@ bool Type::IsETSMethodType() const
         TypeFlag::TYPE_ERROR | TypeFlag::ETS_NULL | TypeFlag::ETS_UNDEFINED | TypeFlag::ETS_OBJECT |
         TypeFlag::ETS_TYPE_PARAMETER | TypeFlag::WILDCARD | TypeFlag::ETS_NONNULLISH |
         TypeFlag::ETS_REQUIRED_TYPE_PARAMETER | TypeFlag::ETS_NEVER | TypeFlag::ETS_UNION | TypeFlag::ETS_ARRAY |
-        TypeFlag::FUNCTION | TypeFlag::ETS_PARTIAL_TYPE_PARAMETER | TypeFlag::ETS_TUPLE | TypeFlag::ETS_ENUM;
+        TypeFlag::FUNCTION | TypeFlag::ETS_PARTIAL_TYPE_PARAMETER | TypeFlag::ETS_TUPLE | TypeFlag::ETS_ENUM |
+        TypeFlag::ETS_READONLY;
 
     // Issues
     if (type->IsETSVoidType()) {  // NOTE(vpukhov): #19701 void refactoring
@@ -348,11 +352,6 @@ bool Type::IsETSPrimitiveType() const
     // Do not modify
     ES2PANDA_ASSERT(!HasTypeFlag(ETS_PRIMITIVE) == IsSaneETSReferenceType(this));
     return HasTypeFlag(ETS_PRIMITIVE);
-}
-
-bool Type::IsETSResizableArrayType() const
-{
-    return IsETSObjectType() && AsETSObjectType()->Name() == compiler::Signatures::ARRAY;
 }
 
 bool Type::IsETSPrimitiveOrEnumType() const
@@ -660,7 +659,7 @@ Type *ETSChecker::ResolveUnionUncheckedType(ArenaVector<checker::Type *> &&appar
 Type *ETSChecker::GuaranteedTypeForUnionFieldAccess(ir::MemberExpression *memberExpression, ETSUnionType *etsUnionType)
 {
     const auto &types = etsUnionType->ConstituentTypes();
-    ArenaVector<checker::Type *> apparentTypes {Allocator()->Adapter()};
+    ArenaVector<checker::Type *> apparentTypes {ProgramAllocator()->Adapter()};
     const auto &propertyName = memberExpression->Property()->AsIdentifier()->Name();
     for (auto *type : types) {
         auto searchFlags = PropertySearchFlags::SEARCH_FIELD | PropertySearchFlags::SEARCH_METHOD |
@@ -762,7 +761,6 @@ Type *ETSChecker::GetTypeFromTypeAliasReference(varbinder::Variable *var)
     aliasTypeNode->Check(this);
     Type *targetType = aliasTypeNode->TypeAnnotation()->GetType(this);
     typeAliasType->AsETSTypeAliasType()->SetTargetType(targetType);
-    typeAliasType->AsETSTypeAliasType()->ApplySubstitution(Relation());
 
     var->SetTsType(targetType);
     return targetType;
@@ -961,6 +959,12 @@ bool ETSChecker::CheckAndLogInvalidThisUsage(const ir::TypeNode *type, const dia
     return false;
 }
 
+bool ETSChecker::IsFixedArray(ir::ETSTypeReferencePart *part)
+{
+    return part->Name()->IsIdentifier() &&
+           part->Name()->AsIdentifier()->Name().Mutf8() == compiler::Signatures::FIXED_ARRAY_TYPE_NAME;
+}
+
 void ETSChecker::ValidateThisUsage(const ir::TypeNode *returnTypeAnnotation)
 {
     if (returnTypeAnnotation->IsETSUnionType()) {
@@ -983,8 +987,9 @@ void ETSChecker::ValidateThisUsage(const ir::TypeNode *returnTypeAnnotation)
         }
         return;
     }
-    if (returnTypeAnnotation->IsTSArrayType()) {
-        auto elementType = returnTypeAnnotation->AsTSArrayType()->ElementType();
+    if (returnTypeAnnotation->IsETSTypeReference() &&
+        IsFixedArray(returnTypeAnnotation->AsETSTypeReference()->Part())) {
+        auto elementType = returnTypeAnnotation->AsETSTypeReference()->Part()->TypeParams()->Params()[0];
         if (CheckAndLogInvalidThisUsage(elementType, diagnostic::NOT_ALLOWED_THIS_IN_ARRAY_TYPE)) {
             return;
         }
@@ -1045,16 +1050,23 @@ void ETSChecker::HandleAnnotationRetention(ir::AnnotationUsage *anno, ir::Annota
     if (anno->Properties().size() != 1) {
         return;
     }
-    auto policyStr = anno->Properties()[0]->AsClassProperty()->Value()->AsStringLiteral()->Str().Mutf8();
-    if (policyStr == compiler::Signatures::SOURCE_POLICY) {
-        annoDecl->SetSourceRetention();
-    } else if (policyStr == compiler::Signatures::BYTECODE_POLICY) {
-        annoDecl->SetBytecodeRetention();
-    } else if (policyStr == compiler::Signatures::RUNTIME_POLICY) {
-        annoDecl->SetRuntimeRetention();
-    } else {
-        LogError(diagnostic::ANNOTATION_POLICY_INVALID, {}, anno->Properties()[0]->Start());
+    const auto value = anno->Properties()[0]->AsClassProperty()->Value();
+    if (value->IsStringLiteral()) {
+        const auto policyStr = value->AsStringLiteral()->Str().Mutf8();
+        if (policyStr == compiler::Signatures::SOURCE_POLICY) {
+            annoDecl->SetSourceRetention();
+            return;
+        }
+        if (policyStr == compiler::Signatures::BYTECODE_POLICY) {
+            annoDecl->SetBytecodeRetention();
+            return;
+        }
+        if (policyStr == compiler::Signatures::RUNTIME_POLICY) {
+            annoDecl->SetRuntimeRetention();
+            return;
+        }
     }
+    LogError(diagnostic::ANNOTATION_POLICY_INVALID, {}, anno->Properties()[0]->Start());
 }
 
 void ETSChecker::CheckStandardAnnotation(ir::AnnotationUsage *anno)
@@ -1098,7 +1110,7 @@ void ETSChecker::CheckSinglePropertyAnnotation(ir::AnnotationUsage *st, ir::Anno
     }
     auto singleField = annoDecl->Properties().at(0)->AsClassProperty();
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto clone = singleField->TypeAnnotation()->Clone(Allocator(), param);
+    auto clone = singleField->TypeAnnotation()->Clone(ProgramAllocator(), param);
     param->SetTypeAnnotation(clone);
     ScopeContext scopeCtx(this, st->Scope());
     param->Check(this);
@@ -1114,7 +1126,7 @@ void ETSChecker::ProcessRequiredFields(ArenaUnorderedMap<util::StringView, ir::C
             continue;
         }
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        auto *clone = entry.second->Clone(checker->Allocator(), st);
+        auto *clone = entry.second->Clone(checker->ProgramAllocator(), st);
         st->AddProperty(clone);
     }
 }
@@ -1130,8 +1142,12 @@ void ETSChecker::CheckMultiplePropertiesAnnotation(ir::AnnotationUsage *st, util
             continue;
         }
 
+        if (result->second == nullptr || result->second->TypeAnnotation() == nullptr) {
+            continue;
+        }
+
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        auto clone = result->second->TypeAnnotation()->Clone(Allocator(), param);
+        auto clone = result->second->TypeAnnotation()->Clone(ProgramAllocator(), param);
         param->SetTypeAnnotation(clone);
         ScopeContext scopeCtx(this, st->Scope());
         param->Check(this);
@@ -1395,7 +1411,7 @@ bool ETSChecker::CheckLambdaAssignable(ir::Expression *param, ir::ScriptFunction
     if (typeAnn == nullptr) {
         return false;
     }
-    if (typeAnn->IsETSTypeReference()) {
+    if (typeAnn->IsETSTypeReference() && !typeAnn->AsETSTypeReference()->TsType()->IsETSArrayType()) {
         typeAnn = DerefETSTypeReference(typeAnn);
     }
 
@@ -1408,7 +1424,7 @@ bool ETSChecker::CheckLambdaAssignable(ir::Expression *param, ir::ScriptFunction
         }
 
         Type *paramType = param->AsETSParameterExpression()->Ident()->TsType();
-        if (paramType->IsETSObjectType() && Relation()->IsSupertypeOf(paramType, GlobalBuiltinFunctionType())) {
+        if (Relation()->IsSupertypeOf(paramType, GlobalBuiltinFunctionType())) {
             lambda->Parent()->Check(this);
             return true;
         }
@@ -1465,7 +1481,7 @@ bool ETSChecker::CheckLambdaTypeAnnotation(ir::AstNode *typeAnnotation,
 
     // Preserve actual lambda types
     ir::ScriptFunction *const lambda = arrowFuncExpr->Function();
-    ArenaVector<ir::TypeNode *> lambdaParamTypes {Allocator()->Adapter()};
+    ArenaVector<ir::TypeNode *> lambdaParamTypes {ProgramAllocator()->Adapter()};
     for (auto *const lambdaParam : lambda->Params()) {
         lambdaParamTypes.emplace_back(lambdaParam->AsETSParameterExpression()->Ident()->TypeAnnotation());
     }
@@ -1502,61 +1518,81 @@ bool ETSChecker::CheckLambdaTypeAnnotation(ir::AstNode *typeAnnotation,
     return false;
 }
 
-bool ETSChecker::TypeInference(Signature *signature, const ArenaVector<ir::Expression *> &arguments,
-                               TypeRelationFlag flags)
+bool ETSChecker::ResolveLambdaArgumentType(Signature *signature, ir::Expression *argument, size_t paramPosition,
+                                           size_t argumentPosition, TypeRelationFlag resolutionFlags)
 {
-    bool invocable = true;
-    auto const argumentCount = arguments.size();
-    auto const commonArity = std::min(signature->ArgCount(), argumentCount);
-
-    for (size_t index = 0U; index < commonArity; ++index) {
-        auto const &argument = arguments[index];
-        if (!argument->IsArrowFunctionExpression()) {
-            continue;
-        }
-
-        if (index == argumentCount - 1 && (flags & TypeRelationFlag::NO_CHECK_TRAILING_LAMBDA) != 0) {
-            continue;
-        }
-
-        auto *const arrowFuncExpr = argument->AsArrowFunctionExpression();
-        ir::ScriptFunction *const lambda = arrowFuncExpr->Function();
-        if (!NeedTypeInference(lambda)) {
-            continue;
-        }
-
-        arrowFuncExpr->SetTsType(nullptr);
-
-        // Note: If the signatures are from lambdas, then they have no `Function`.
-        auto const *const param =
-            signature->GetSignatureInfo()->params[index]->Declaration()->Node()->AsETSParameterExpression();
-        ir::AstNode *typeAnn = param->Ident()->TypeAnnotation();
-        Type *const parameterType = signature->Params()[index]->TsType();
-
-        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        bool rc = CheckLambdaTypeAnnotation(typeAnn, arrowFuncExpr, parameterType, flags);
-        if (!rc && (flags & TypeRelationFlag::NO_THROW) == 0) {
-            Type *const argumentType = arrowFuncExpr->Check(this);
-            LogError(diagnostic::TYPE_MISMATCH_AT_IDX, {argumentType, parameterType, index + 1},
-                     arrowFuncExpr->Start());
-            rc = false;
-        } else if ((lambda->Signature() != nullptr) && !lambda->HasReturnStatement()) {
-            //  Need to check void return type here if there are no return statement(s) in the body.
-            // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-            if (!AssignmentContext(Relation(), AllocNode<ir::Identifier>(Allocator()), GlobalVoidType(),
-                                   lambda->Signature()->ReturnType(), lambda->Start(), std::nullopt,
-                                   checker::TypeRelationFlag::DIRECT_RETURN | checker::TypeRelationFlag::NO_THROW)
-                     .IsAssignable()) {  // CC-OFF(G.FMT.02-CPP) project code style
-                LogError(diagnostic::ARROW_TYPE_MISMATCH, {GlobalVoidType(), lambda->Signature()->ReturnType()},
-                         lambda->Body()->Start());
-                rc = false;
-            }
-        }
-
-        invocable &= rc;
+    if (!argument->IsArrowFunctionExpression()) {
+        return true;
     }
 
-    return invocable;
+    auto arrowFuncExpr = argument->AsArrowFunctionExpression();
+    bool typeValid = true;
+    ir::ScriptFunction *const lambda = arrowFuncExpr->Function();
+    if (!NeedTypeInference(lambda)) {
+        return typeValid;
+    }
+
+    arrowFuncExpr->SetTsType(nullptr);
+    auto const *const param =
+        signature->GetSignatureInfo()->params[paramPosition]->Declaration()->Node()->AsETSParameterExpression();
+    ir::AstNode *typeAnn = param->Ident()->TypeAnnotation();
+    Type *const parameterType = signature->Params()[paramPosition]->TsType();
+
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+    bool rc = CheckLambdaTypeAnnotation(typeAnn, arrowFuncExpr, parameterType, resolutionFlags);
+    if (!rc) {
+        if ((resolutionFlags & TypeRelationFlag::NO_THROW) == 0) {
+            Type *const argumentType = arrowFuncExpr->Check(this);
+            LogError(diagnostic::TYPE_MISMATCH_AT_IDX, {argumentType, parameterType, argumentPosition + 1},
+                     arrowFuncExpr->Start());
+        }
+        rc = false;
+    } else if ((lambda->Signature() != nullptr) && !lambda->HasReturnStatement()) {
+        //  Need to check void return type here if there are no return statement(s) in the body.
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+        if (!AssignmentContext(Relation(), ProgramAllocNode<ir::Identifier>(ProgramAllocator()), GlobalVoidType(),
+                               lambda->Signature()->ReturnType(), lambda->Start(), std::nullopt,
+                               checker::TypeRelationFlag::DIRECT_RETURN | checker::TypeRelationFlag::NO_THROW)
+                 .IsAssignable()) {  // CC-OFF(G.FMT.02-CPP) project code style
+            LogError(diagnostic::ARROW_TYPE_MISMATCH, {GlobalVoidType(), lambda->Signature()->ReturnType()},
+                     lambda->Body()->Start());
+            rc = false;
+        }
+    }
+
+    typeValid &= rc;
+
+    return typeValid;
+}
+
+bool ETSChecker::TrailingLambdaTypeInference(Signature *signature, const ArenaVector<ir::Expression *> &arguments)
+{
+    ES2PANDA_ASSERT(arguments.back()->IsArrowFunctionExpression());
+    const size_t lastParamPos = signature->GetSignatureInfo()->params.size() - 1;
+    const size_t lastArgPos = arguments.size() - 1;
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+    return ResolveLambdaArgumentType(signature, arguments.back(), lastParamPos, lastArgPos, TypeRelationFlag::NONE);
+}
+
+bool ETSChecker::TypeInference(Signature *signature, const ArenaVector<ir::Expression *> &arguments,
+                               TypeRelationFlag inferenceFlags)
+{
+    bool typeConsistent = true;
+    auto const argumentCount = arguments.size();
+    auto const minArity = std::min(signature->ArgCount(), argumentCount);
+
+    for (size_t idx = 0U; idx < minArity; ++idx) {
+        auto const &argument = arguments[idx];
+
+        if (idx == argumentCount - 1 && (inferenceFlags & TypeRelationFlag::NO_CHECK_TRAILING_LAMBDA) != 0) {
+            continue;
+        }
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+        const bool valid = ResolveLambdaArgumentType(signature, argument, idx, idx, inferenceFlags);
+        typeConsistent &= valid;
+    }
+
+    return typeConsistent;
 }
 
 // #22951 requires complete refactoring
@@ -1601,4 +1637,5 @@ void ETSChecker::CheckExceptionClauseType(const std::vector<checker::ETSObjectTy
         }
     }
 }
+
 }  // namespace ark::es2panda::checker

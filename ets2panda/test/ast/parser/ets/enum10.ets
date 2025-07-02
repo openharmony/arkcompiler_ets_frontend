@@ -16,7 +16,7 @@
 enum Color { Red }
 
 function main(): void {
-  let values: Color[] = Color.values();
+  let values: FixedArray<Color> = Color.values();
   // Note(daizihan): values() becomes static method in enum, so no CTE
-  let valuesFail: Color[] = values[0].values();
+  let valuesFail: FixedArray<Color> = values[0].values();
 }

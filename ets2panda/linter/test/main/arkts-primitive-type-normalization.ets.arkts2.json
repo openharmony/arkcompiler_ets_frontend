@@ -21,7 +21,17 @@
             "endColumn": 21,
             "problem": "CreatingPrimitiveTypes",
             "suggest": "",
-            "rule": "ArkTS creating primitive types is not supported (arkts-primitive-type-normalization)",
+            "rule": "Primitive types are normalized with their boxed type (arkts-primitive-type-normalization)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 16,
+            "column": 19,
+            "endLine": 16,
+            "endColumn": 20,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -31,7 +41,17 @@
             "endColumn": 14,
             "problem": "CreatingPrimitiveTypes",
             "suggest": "",
-            "rule": "ArkTS creating primitive types is not supported (arkts-primitive-type-normalization)",
+            "rule": "Primitive types are normalized with their boxed type (arkts-primitive-type-normalization)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 17,
+            "column": 12,
+            "endLine": 17,
+            "endColumn": 13,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -41,7 +61,17 @@
             "endColumn": 31,
             "problem": "CreatingPrimitiveTypes",
             "suggest": "",
-            "rule": "ArkTS creating primitive types is not supported (arkts-primitive-type-normalization)",
+            "rule": "Primitive types are normalized with their boxed type (arkts-primitive-type-normalization)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 17,
+            "column": 29,
+            "endLine": 17,
+            "endColumn": 30,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -51,7 +81,7 @@
             "endColumn": 23,
             "problem": "CreatingPrimitiveTypes",
             "suggest": "",
-            "rule": "ArkTS creating primitive types is not supported (arkts-primitive-type-normalization)",
+            "rule": "Primitive types are normalized with their boxed type (arkts-primitive-type-normalization)",
             "severity": "ERROR"
         },
         {
@@ -61,7 +91,7 @@
             "endColumn": 26,
             "problem": "CreatingPrimitiveTypes",
             "suggest": "",
-            "rule": "ArkTS creating primitive types is not supported (arkts-primitive-type-normalization)",
+            "rule": "Primitive types are normalized with their boxed type (arkts-primitive-type-normalization)",
             "severity": "ERROR"
         },
         {
@@ -71,7 +101,7 @@
             "endColumn": 12,
             "problem": "CreatingPrimitiveTypes",
             "suggest": "",
-            "rule": "ArkTS creating primitive types is not supported (arkts-primitive-type-normalization)",
+            "rule": "Primitive types are normalized with their boxed type (arkts-primitive-type-normalization)",
             "severity": "ERROR"
         },
         {
@@ -81,7 +111,7 @@
             "endColumn": 11,
             "problem": "CreatingPrimitiveTypes",
             "suggest": "",
-            "rule": "ArkTS creating primitive types is not supported (arkts-primitive-type-normalization)",
+            "rule": "Primitive types are normalized with their boxed type (arkts-primitive-type-normalization)",
             "severity": "ERROR"
         },
         {
@@ -91,7 +121,7 @@
             "endColumn": 11,
             "problem": "CreatingPrimitiveTypes",
             "suggest": "",
-            "rule": "ArkTS creating primitive types is not supported (arkts-primitive-type-normalization)",
+            "rule": "Primitive types are normalized with their boxed type (arkts-primitive-type-normalization)",
             "severity": "ERROR"
         }
     ]

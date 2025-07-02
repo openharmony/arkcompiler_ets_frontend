@@ -24,7 +24,11 @@
                 {
                     "start": 676,
                     "end": 689,
-                    "replacementText": "@Builder"
+                    "replacementText": "@Builder",
+                    "line": 21,
+                    "column": 3,
+                    "endLine": 21,
+                    "endColumn": 16
                 }
             ],
             "suggest": "",
@@ -41,11 +45,15 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, State, Row, Text, Column } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  State,\n  Row,\n  Text,\n  Column,\n} from '@kit.ArkUI';",
+                    "line": 29,
+                    "column": 5,
+                    "endLine": 29,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Entry\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -58,11 +66,15 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, State, Row, Text, Column } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  State,\n  Row,\n  Text,\n  Column,\n} from '@kit.ArkUI';",
+                    "line": 29,
+                    "column": 5,
+                    "endLine": 29,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Component\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -75,11 +87,15 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, State, Row, Text, Column } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  State,\n  Row,\n  Text,\n  Column,\n} from '@kit.ArkUI';",
+                    "line": 29,
+                    "column": 5,
+                    "endLine": 29,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"State\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -92,11 +108,15 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, State, Row, Text, Column } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  State,\n  Row,\n  Text,\n  Column,\n} from '@kit.ArkUI';",
+                    "line": 29,
+                    "column": 5,
+                    "endLine": 29,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Row\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -109,11 +129,15 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, State, Row, Text, Column } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  State,\n  Row,\n  Text,\n  Column,\n} from '@kit.ArkUI';",
+                    "line": 29,
+                    "column": 5,
+                    "endLine": 29,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Text\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -126,11 +150,15 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, State, Row, Text, Column } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  State,\n  Row,\n  Text,\n  Column,\n} from '@kit.ArkUI';",
+                    "line": 29,
+                    "column": 5,
+                    "endLine": 29,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Column\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         }
     ]

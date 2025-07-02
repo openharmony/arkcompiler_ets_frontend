@@ -23,12 +23,20 @@ import { Logger } from './logger';
 import { ArkTSConfigGenerator } from './build/generate_arktsconfig';
 import { PluginDriver } from './plugins/plugins_driver';
 import { BuildConfig } from './types';
+import { BuildFrameworkMode } from './build/build_framework_mode';
 
 export async function build(projectConfig: BuildConfig): Promise<void> {
-  Logger.getInstance(projectConfig);
+  let logger: Logger = Logger.getInstance(projectConfig);
   let buildConfig: BuildConfig = processBuildConfig(projectConfig);
 
-  if (projectConfig.enableDeclgenEts2Ts === true) {
+  if (projectConfig.frameworkMode === true) {
+    let buildframeworkMode: BuildFrameworkMode = new BuildFrameworkMode(buildConfig);
+    await buildframeworkMode.run();
+    if (logger.hasErrors()) {
+      clean();
+      process.exit(1);
+    }
+  } else if (projectConfig.enableDeclgenEts2Ts === true) {
     let buildMode: BuildMode = new BuildMode(buildConfig);
     await buildMode.generateDeclaration();
   } else if (projectConfig.buildType === BUILD_TYPE_BUILD) {

@@ -125,8 +125,14 @@ public:
         return parseList_;
     }
 
+    [[nodiscard]] ArenaVector<ParseInfo> &ParseList()
+    {
+        return parseList_;
+    }
+
     util::StringView FormModuleName(const util::Path &path, const lexer::SourcePosition &srcPos);
-    ImportMetadata GatherImportMetadata(const parser::ParserContext &context, ir::StringLiteral *importPath);
+    ImportMetadata GatherImportMetadata(parser::Program *program, ImportFlags importFlags,
+                                        ir::StringLiteral *importPath);
     void AddImplicitPackageImportToParseList(StringView packageDir, const lexer::SourcePosition &srcPos);
 
     // API version for resolving paths. Kept only for API compatibility. Doesn't support 'dynamicPath'.
@@ -170,6 +176,7 @@ private:
     util::DiagnosticEngine &diagnosticEngine_;
     std::string_view pathDelimiter_ {ark::os::file::File::GetPathDelim()};
     mutable const lexer::SourcePosition *srcPos_ {};
+    bool isDynamic_ = false;
 };
 
 }  // namespace ark::es2panda::util

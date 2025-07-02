@@ -62,10 +62,14 @@ void BoxNumberLiteralArguments(ir::CallExpression *callExpr, PhaseManager *phase
 
 bool BoxedTypeLowering::Perform(public_lib::Context *const ctx, parser::Program *const program)
 {
-    for (const auto &[_, ext_programs] : program->ExternalSources()) {
+    for (const auto &[_, extPrograms] : program->ExternalSources()) {
         (void)_;
-        for (auto *const extProg : ext_programs) {
+        for (auto *const extProg : extPrograms) {
+            if (extProg->GetFlag(parser::ProgramFlags::AST_BOXED_TYPE_LOWERED)) {
+                continue;
+            }
             Perform(ctx, extProg);
+            extProg->SetFlag(parser::ProgramFlags::AST_BOXED_TYPE_LOWERED);
         }
     }
 
@@ -74,7 +78,7 @@ bool BoxedTypeLowering::Perform(public_lib::Context *const ctx, parser::Program 
     auto phaseManager = ctx->phaseManager;
     program->Ast()->TransformChildrenRecursively(
         // CC-OFFNXT(G.FMT.14-CPP) project code style
-        [phaseManager, checker, parser](ir::AstNode *ast) -> ir::AstNode * {
+        [phaseManager, checker, parser](checker::AstNodePtr ast) -> checker::AstNodePtr {
             if (!ast->IsCallExpression()) {
                 return ast;
             }

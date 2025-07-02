@@ -49,7 +49,7 @@ function main(): void {
 
     a = -a;
     assertEQ(a, -30.0)
-    assertEQ(a.doubleValue(), -30.0)
+    assertEQ(a.toDouble(), -30.0)
 
     let c = +a;
     assertEQ(c, -30.0)
@@ -64,7 +64,7 @@ function main(): void {
 
     a = -a;
     assertEQ(a, -40)
-    assertEQ(a.intValue(), -40)
+    assertEQ(a.toInt(), -40)
 
     let c = +a;
     assertEQ(c, -40)

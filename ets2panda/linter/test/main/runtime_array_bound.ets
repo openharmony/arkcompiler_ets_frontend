@@ -86,5 +86,87 @@ newIndex = 22;
 
 arr10[newIndex];
 
+let arr = [0, 1, 2, 3, 4, 5]
+for(let i = 0; i < arr.length; i++) {
+arr[i] = arr[i] + 1;
+}
+for(let i = 0; i < arr.length; i++) {
+i = 10;
+arr[i] = arr[i] + 1;
+}
 
+let arr = [0, 1, 2, 3, 4, 5]
+let idx = 2;
+if(idx > 0 && idx < arr.length) {
+arr[idx] = arr[idx] + 1;
+}
+if(idx > 0 && idx < arr.length) {
+idx = 10;
+arr[idx] = arr[idx] + 1;
+}
 
+let arr = [0, 1, 2, 3, 4, 5]
+let idx = 0;
+while(idx > 0 && idx < arr.length) {
+arr[idx] = arr[idx] + 1;
+idx++;
+idx = 10;
+}
+while(idx > 0 && idx < arr.length) {
+idx = 10;
+arr[idx] = arr[idx] + 1;
+}
+
+let arr = [0, 1, 2, 3, 4, 5]
+let idx = 0;
+arr[idx];
+arr[10];
+if (arr.length > 10) {
+arr[10] = 10;
+}
+
+function foo():int{
+return 1;
+}
+
+arr[44/3];
+arr[foo()];
+arr[()=>{return 1}];
+if(arr.length > foo()) {
+arr[foo()];
+}
+if(arr.length > 44/3) {
+arr[4*4/3];
+}
+
+let arr1:number[] = [1, 1.5,45,2]
+
+function foo(i:number):number{
+  return i;
+}
+
+arr1[3*5] = 23;
+arr1[parseInt("16")] = 23;
+arr1[foo(16)] = 23
+
+let arr1:number[] = [1, 1.5,45,2]
+
+arr1[Number.MAX_VALUE] = 23;
+arr1[Number.MAX_SAFE_INTEGER] = 23;
+
+let arr1:number[] = [1, 1.5,45,2]
+function foo(i:number):number{
+  return i;
+}
+arr1[(24)] = 23;
+arr1[+24] = 23;
+enum TE{
+  AA = 12
+}
+arr1[TE.AA] = 12;
+
+let a: string[] = [];
+let b: Array<string> = new Array(a.length);
+for (let i = 0; i < a.length; i++) {
+  b[i];
+}

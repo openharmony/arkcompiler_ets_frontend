@@ -14,7 +14,11 @@
  */
 
 class A {
-    a: int = 1;
+    private _a: int = 1;
+
+    set a(p: int) {
+        this._a = p;
+    }
 }
 
 class B extends A {

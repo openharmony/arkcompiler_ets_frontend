@@ -22,7 +22,7 @@ function foo2<U>(array:Iterable<U|A<U>>){
 }
 
 function main(){
-    let a = new Array<number>(1,2,3)
+    let a = [1,2,3]
     assertEQ(foo1(a), "foo1 should be ok")
     assertEQ(foo2(a), "foo2 should be ok too")
 }

@@ -14,6 +14,6 @@
  */
 
 function main(): void {
-    let nums: int[] = [ 1, 2, 3, 123, 321 ]
+    let nums: FixedArray<int> = [ 1, 2, 3, 123, 321 ]
     forEach(nums, num => console.log(num))
 }

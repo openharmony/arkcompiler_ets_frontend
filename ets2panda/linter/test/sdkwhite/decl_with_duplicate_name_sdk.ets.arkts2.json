@@ -1,278 +1,428 @@
 {
-  "copyright": [
-    "Copyright (c) 2025 Huawei Device Co., Ltd.",
-    "Licensed under the Apache License, Version 2.0 (the 'License');",
-    "you may not use this file except in compliance with the License.",
-    "You may obtain a copy of the License at",
-    "",
-    "http://www.apache.org/licenses/LICENSE-2.0",
-    "",
-    "Unless required by applicable law or agreed to in writing, software",
-    "distributed under the License is distributed on an 'AS IS' BASIS,",
-    "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
-    "See the License for the specific language governing permissions and",
-    "limitations under the License."
-  ],
-  "result": [
-    {
-      "line": 17,
-      "column": 1,
-      "endLine": 17,
-      "endColumn": 61,
-      "problem": "ImportAfterStatement",
-      "suggest": "",
-      "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 18,
-      "column": 1,
-      "endLine": 18,
-      "endColumn": 86,
-      "problem": "ImportAfterStatement",
-      "suggest": "",
-      "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 23,
-      "column": 19,
-      "endLine": 23,
-      "endColumn": 28,
-      "problem": "DuplicateDeclNameFromSdk",
-      "suggest": "",
-      "rule": "API path have changed - please update your imports accordingly (sdk-no-decl-with-duplicate-name)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 23,
-      "column": 35,
-      "endLine": 23,
-      "endColumn": 44,
-      "problem": "DuplicateDeclNameFromSdk",
-      "suggest": "",
-      "rule": "API path have changed - please update your imports accordingly (sdk-no-decl-with-duplicate-name)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 24,
-      "column": 19,
-      "endLine": 24,
-      "endColumn": 28,
-      "problem": "DuplicateDeclNameFromSdk",
-      "suggest": "",
-      "rule": "API path have changed - please update your imports accordingly (sdk-no-decl-with-duplicate-name)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 26,
-      "column": 27,
-      "endLine": 26,
-      "endColumn": 36,
-      "problem": "DuplicateDeclNameFromSdk",
-      "suggest": "",
-      "rule": "API path have changed - please update your imports accordingly (sdk-no-decl-with-duplicate-name)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 26,
-      "column": 40,
-      "endLine": 26,
-      "endColumn": 51,
-      "problem": "GenericCallNoTypeArgs",
-      "suggest": "",
-      "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 28,
-      "column": 14,
-      "endLine": 28,
-      "endColumn": 20,
-      "problem": "NumericSemantics",
-      "suggest": "",
-      "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 29,
-      "column": 31,
-      "endLine": 29,
-      "endColumn": 40,
-      "problem": "DuplicateDeclNameFromSdk",
-      "suggest": "",
-      "rule": "API path have changed - please update your imports accordingly (sdk-no-decl-with-duplicate-name)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 34,
-      "column": 38,
-      "endLine": 34,
-      "endColumn": 47,
-      "problem": "DuplicateDeclNameFromSdk",
-      "suggest": "",
-      "rule": "API path have changed - please update your imports accordingly (sdk-no-decl-with-duplicate-name)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 44,
-      "column": 30,
-      "endLine": 44,
-      "endColumn": 39,
-      "problem": "DuplicateDeclNameFromSdk",
-      "suggest": "",
-      "rule": "API path have changed - please update your imports accordingly (sdk-no-decl-with-duplicate-name)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 50,
-      "column": 42,
-      "endLine": 50,
-      "endColumn": 60,
-      "problem": "DuplicateDeclNameFromSdk",
-      "suggest": "",
-      "rule": "API path have changed - please update your imports accordingly (sdk-no-decl-with-duplicate-name)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 51,
-      "column": 42,
-      "endLine": 51,
-      "endColumn": 60,
-      "problem": "DuplicateDeclNameFromSdk",
-      "suggest": "",
-      "rule": "API path have changed - please update your imports accordingly (sdk-no-decl-with-duplicate-name)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 53,
-      "column": 31,
-      "endLine": 53,
-      "endColumn": 49,
-      "problem": "DuplicateDeclNameFromSdk",
-      "suggest": "",
-      "rule": "API path have changed - please update your imports accordingly (sdk-no-decl-with-duplicate-name)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 54,
-      "column": 31,
-      "endLine": 54,
-      "endColumn": 49,
-      "problem": "DuplicateDeclNameFromSdk",
-      "suggest": "",
-      "rule": "API path have changed - please update your imports accordingly (sdk-no-decl-with-duplicate-name)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 57,
-      "column": 18,
-      "endLine": 57,
-      "endColumn": 36,
-      "problem": "DuplicateDeclNameFromSdk",
-      "suggest": "",
-      "rule": "API path have changed - please update your imports accordingly (sdk-no-decl-with-duplicate-name)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 58,
-      "column": 19,
-      "endLine": 58,
-      "endColumn": 37,
-      "problem": "DuplicateDeclNameFromSdk",
-      "suggest": "",
-      "rule": "API path have changed - please update your imports accordingly (sdk-no-decl-with-duplicate-name)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 20,
-      "column": 2,
-      "endLine": 20,
-      "endColumn": 7,
-      "problem": "UIInterfaceImport",
-      "suggest": "",
-      "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 21,
-      "column": 2,
-      "endLine": 21,
-      "endColumn": 11,
-      "problem": "UIInterfaceImport",
-      "suggest": "",
-      "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 23,
-      "column": 57,
-      "endLine": 23,
-      "endColumn": 62,
-      "problem": "UIInterfaceImport",
-      "suggest": "",
-      "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 26,
-      "column": 4,
-      "endLine": 26,
-      "endColumn": 9,
-      "problem": "UIInterfaceImport",
-      "suggest": "",
-      "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 33,
-      "column": 5,
-      "endLine": 33,
-      "endColumn": 9,
-      "problem": "UIInterfaceImport",
-      "suggest": "",
-      "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 34,
-      "column": 7,
-      "endLine": 34,
-      "endColumn": 14,
-      "problem": "UIInterfaceImport",
-      "suggest": "",
-      "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 35,
-      "column": 9,
-      "endLine": 35,
-      "endColumn": 17,
-      "problem": "UIInterfaceImport",
-      "suggest": "",
-      "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 36,
-      "column": 11,
-      "endLine": 36,
-      "endColumn": 15,
-      "problem": "UIInterfaceImport",
-      "suggest": "",
-      "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 24,
-      "column": 3,
-      "endLine": 24,
-      "endColumn": 17,
-      "problem": "StrictDiagnostic",
-      "suggest": "Property 'fontStyleAttr2' has no initializer and is not definitely assigned in the constructor.",
-      "rule": "Property 'fontStyleAttr2' has no initializer and is not definitely assigned in the constructor.",
-      "severity": "ERROR"
-    }
-  ]
+    "copyright": [
+        "Copyright (c) 2025 Huawei Device Co., Ltd.",
+        "Licensed under the Apache License, Version 2.0 (the 'License');",
+        "you may not use this file except in compliance with the License.",
+        "You may obtain a copy of the License at",
+        "",
+        "http://www.apache.org/licenses/LICENSE-2.0",
+        "",
+        "Unless required by applicable law or agreed to in writing, software",
+        "distributed under the License is distributed on an 'AS IS' BASIS,",
+        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+        "See the License for the specific language governing permissions and",
+        "limitations under the License."
+    ],
+    "result": [
+        {
+            "line": 20,
+            "column": 19,
+            "endLine": 20,
+            "endColumn": 28,
+            "problem": "DuplicateDeclNameFromSdk",
+            "suggest": "",
+            "rule": "API path have changed - please update your imports accordingly (sdk-no-decl-with-duplicate-name)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 35,
+            "endLine": 20,
+            "endColumn": 44,
+            "problem": "DuplicateDeclNameFromSdk",
+            "suggest": "",
+            "rule": "API path have changed - please update your imports accordingly (sdk-no-decl-with-duplicate-name)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 35,
+            "endLine": 20,
+            "endColumn": 44,
+            "problem": "DynamicCtorCall",
+            "suggest": "",
+            "rule": "\"new\" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 21,
+            "column": 19,
+            "endLine": 21,
+            "endColumn": 28,
+            "problem": "DuplicateDeclNameFromSdk",
+            "suggest": "",
+            "rule": "API path have changed - please update your imports accordingly (sdk-no-decl-with-duplicate-name)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 22,
+            "column": 27,
+            "endLine": 22,
+            "endColumn": 36,
+            "problem": "DuplicateDeclNameFromSdk",
+            "suggest": "",
+            "rule": "API path have changed - please update your imports accordingly (sdk-no-decl-with-duplicate-name)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 22,
+            "column": 40,
+            "endLine": 22,
+            "endColumn": 51,
+            "problem": "GenericCallNoTypeArgs",
+            "suggest": "",
+            "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 24,
+            "column": 14,
+            "endLine": 24,
+            "endColumn": 20,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 24,
+            "column": 18,
+            "endLine": 24,
+            "endColumn": 20,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 24,
+            "column": 26,
+            "endLine": 24,
+            "endColumn": 28,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 25,
+            "column": 31,
+            "endLine": 25,
+            "endColumn": 40,
+            "problem": "DuplicateDeclNameFromSdk",
+            "suggest": "",
+            "rule": "API path have changed - please update your imports accordingly (sdk-no-decl-with-duplicate-name)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 25,
+            "column": 31,
+            "endLine": 25,
+            "endColumn": 40,
+            "problem": "DynamicCtorCall",
+            "suggest": "",
+            "rule": "\"new\" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 30,
+            "column": 38,
+            "endLine": 30,
+            "endColumn": 47,
+            "problem": "DuplicateDeclNameFromSdk",
+            "suggest": "",
+            "rule": "API path have changed - please update your imports accordingly (sdk-no-decl-with-duplicate-name)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 40,
+            "column": 30,
+            "endLine": 40,
+            "endColumn": 39,
+            "problem": "DuplicateDeclNameFromSdk",
+            "suggest": "",
+            "rule": "API path have changed - please update your imports accordingly (sdk-no-decl-with-duplicate-name)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 46,
+            "column": 42,
+            "endLine": 46,
+            "endColumn": 60,
+            "problem": "DuplicateDeclNameFromSdk",
+            "suggest": "",
+            "rule": "API path have changed - please update your imports accordingly (sdk-no-decl-with-duplicate-name)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 47,
+            "column": 42,
+            "endLine": 47,
+            "endColumn": 60,
+            "problem": "DuplicateDeclNameFromSdk",
+            "suggest": "",
+            "rule": "API path have changed - please update your imports accordingly (sdk-no-decl-with-duplicate-name)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 49,
+            "column": 31,
+            "endLine": 49,
+            "endColumn": 49,
+            "problem": "DuplicateDeclNameFromSdk",
+            "suggest": "",
+            "rule": "API path have changed - please update your imports accordingly (sdk-no-decl-with-duplicate-name)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 50,
+            "column": 31,
+            "endLine": 50,
+            "endColumn": 49,
+            "problem": "DuplicateDeclNameFromSdk",
+            "suggest": "",
+            "rule": "API path have changed - please update your imports accordingly (sdk-no-decl-with-duplicate-name)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 53,
+            "column": 18,
+            "endLine": 53,
+            "endColumn": 36,
+            "problem": "DuplicateDeclNameFromSdk",
+            "suggest": "",
+            "rule": "API path have changed - please update your imports accordingly (sdk-no-decl-with-duplicate-name)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 54,
+            "column": 15,
+            "endLine": 54,
+            "endColumn": 37,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 54,
+            "column": 19,
+            "endLine": 54,
+            "endColumn": 37,
+            "problem": "DuplicateDeclNameFromSdk",
+            "suggest": "",
+            "rule": "API path have changed - please update your imports accordingly (sdk-no-decl-with-duplicate-name)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 67,
+            "column": 3,
+            "endLine": 67,
+            "endColumn": 16,
+            "problem": "ExplicitFunctionType",
+            "suggest": "",
+            "rule": "The function type should be explicit (arkts-no-ts-like-function-call)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 17,
+            "column": 2,
+            "endLine": 17,
+            "endColumn": 7,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "The ArkUI interface \"Entry\" should be imported before it is used (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 18,
+            "column": 2,
+            "endLine": 18,
+            "endColumn": 11,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "The ArkUI interface \"Component\" should be imported before it is used (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 19,
+            "endLine": 20,
+            "endColumn": 28,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "The ArkUI interface \"TextStyle\" should be imported before it is used (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 35,
+            "endLine": 20,
+            "endColumn": 44,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "The ArkUI interface \"TextStyle\" should be imported before it is used (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 57,
+            "endLine": 20,
+            "endColumn": 62,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "The ArkUI interface \"Color\" should be imported before it is used (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 21,
+            "column": 19,
+            "endLine": 21,
+            "endColumn": 28,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "The ArkUI interface \"TextStyle\" should be imported before it is used (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 22,
+            "column": 4,
+            "endLine": 22,
+            "endColumn": 9,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "The ArkUI interface \"State\" should be imported before it is used (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 22,
+            "column": 27,
+            "endLine": 22,
+            "endColumn": 36,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "The ArkUI interface \"TextStyle\" should be imported before it is used (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 25,
+            "column": 31,
+            "endLine": 25,
+            "endColumn": 40,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "The ArkUI interface \"TextStyle\" should be imported before it is used (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 29,
+            "column": 5,
+            "endLine": 29,
+            "endColumn": 9,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "The ArkUI interface \"List\" should be imported before it is used (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 30,
+            "column": 7,
+            "endLine": 30,
+            "endColumn": 14,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "The ArkUI interface \"ForEach\" should be imported before it is used (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 30,
+            "column": 38,
+            "endLine": 30,
+            "endColumn": 47,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "The ArkUI interface \"TextStyle\" should be imported before it is used (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 31,
+            "column": 9,
+            "endLine": 31,
+            "endColumn": 17,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "The ArkUI interface \"ListItem\" should be imported before it is used (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 32,
+            "column": 11,
+            "endLine": 32,
+            "endColumn": 15,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "The ArkUI interface \"Text\" should be imported before it is used (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 40,
+            "column": 30,
+            "endLine": 40,
+            "endColumn": 39,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "The ArkUI interface \"TextStyle\" should be imported before it is used (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 46,
+            "column": 21,
+            "endLine": 46,
+            "endColumn": 39,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "The ArkUI interface \"HyperlinkAttribute\" should be imported before it is used (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 47,
+            "column": 21,
+            "endLine": 47,
+            "endColumn": 39,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "The ArkUI interface \"HyperlinkAttribute\" should be imported before it is used (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 49,
+            "column": 10,
+            "endLine": 49,
+            "endColumn": 28,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "The ArkUI interface \"HyperlinkAttribute\" should be imported before it is used (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 50,
+            "column": 10,
+            "endLine": 50,
+            "endColumn": 28,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "The ArkUI interface \"HyperlinkAttribute\" should be imported before it is used (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 52,
+            "column": 21,
+            "endLine": 52,
+            "endColumn": 39,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "The ArkUI interface \"HyperlinkAttribute\" should be imported before it is used (arkui-modular-interface)",
+            "severity": "ERROR"
+        }
+    ]
 }

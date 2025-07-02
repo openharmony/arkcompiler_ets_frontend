@@ -20,6 +20,7 @@ import {
 } from '../logger';
 import { BuildConfig } from '../types';
 import { ErrorCode } from '../error_code';
+import { FileManager } from './FileManager';
 
 export enum PluginHook {
   NEW = 'afterNew',
@@ -69,11 +70,13 @@ class PluginContext {
   private ast: object | undefined;
   private program: object | undefined;
   private projectConfig: object | undefined;
+  private fileManager: FileManager | undefined;
 
   constructor() {
     this.ast = undefined;
     this.program = undefined;
     this.projectConfig = undefined;
+    this.fileManager = undefined;
   }
 
   public setArkTSAst(ast: object): void {
@@ -107,6 +110,17 @@ class PluginContext {
 
   public getProjectConfig(): object | undefined {
     return this.projectConfig;
+  }
+
+  public setFileManager(projectConfig: BuildConfig):void{
+    if(!this.fileManager){
+      FileManager.init(projectConfig);
+      this.fileManager = FileManager.getInstance();
+    }
+  }
+
+  public getFileManager():FileManager| undefined{
+    return this.fileManager;
   }
 }
 
@@ -173,6 +187,7 @@ export class PluginDriver {
     });
 
     this.context.setProjectConfig(projectConfig);
+    this.context.setFileManager(projectConfig);
   }
 
   private getPlugins(hook: PluginHook) : PluginExecutor[] | undefined {

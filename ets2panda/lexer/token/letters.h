@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -82,14 +82,22 @@ inline constexpr char32_t LEX_CHAR_UPPERCASE_X = 0x58; /* X */
 inline constexpr char32_t LEX_CHAR_UPPERCASE_Y = 0x59; /* Y */
 inline constexpr char32_t LEX_CHAR_UPPERCASE_Z = 0x5A; /* Y */
 
-inline constexpr char32_t LEX_CHAR_BS = 0x08;           /* backspace */
-inline constexpr char32_t LEX_CHAR_TAB = 0x09;          /* character tabulation */
-inline constexpr char32_t LEX_CHAR_VT = 0x0B;           /* liner tabulation */
-inline constexpr char32_t LEX_CHAR_FF = 0x0C;           /* form feed */
-inline constexpr char32_t LEX_CHAR_SP = 0x20;           /* space */
-inline constexpr char32_t LEX_CHAR_NBSP = 0xA0;         /* no-break space */
-inline constexpr char32_t LEX_CHAR_ZWNBSP = 0xFEFF;     /* zero width no-break space */
-inline constexpr char32_t LEX_CHAR_MVS = 0x180e;        /* MONGOLIAN VOWEL SEPARATOR (U+180E) */
+inline constexpr char32_t LEX_CHAR_BS = 0x08;        /* backspace */
+inline constexpr char32_t LEX_CHAR_TAB = 0x09;       /* character tabulation */
+inline constexpr char32_t LEX_CHAR_VT = 0x0B;        /* liner tabulation */
+inline constexpr char32_t LEX_CHAR_FF = 0x0C;        /* form feed */
+inline constexpr char32_t LEX_CHAR_SP = 0x20;        /* space */
+inline constexpr char32_t LEX_CHAR_NBSP = 0xA0;      /* no-break space */
+inline constexpr char32_t LEX_CHAR_ZWNBSP = 0xFEFF;  /* zero width no-break space */
+inline constexpr char32_t LEX_CHAR_MVS = 0x180e;     /* MONGOLIAN VOWEL SEPARATOR (U+180E) */
+inline constexpr char32_t LEX_CHAR_NEXT_LINE = 0x85; /* next line */
+inline constexpr char32_t LEX_CHAR_OGHAM = 0x1680;   /* ogham */
+inline constexpr char32_t LEX_CHAR_ENQUAD = 0X2000;
+inline constexpr char32_t LEX_CHAR_ZERO_WIDTH_SP = 0x200B;
+inline constexpr char32_t LEX_CHAR_NARROW_NO_BREAK_SP = 0x202F;
+inline constexpr char32_t LEX_CHAR_MATHEMATICAL_SP = 0x205F;
+inline constexpr char32_t LEX_CHAR_IDEOGRAPHIC_SP = 0x3000;
+
 inline constexpr char32_t LEX_CHAR_DOUBLE_QUOTE = 0x22; /* " */
 inline constexpr char32_t LEX_CHAR_DOLLAR_SIGN = 0x24;  /* $ */
 inline constexpr char32_t LEX_CHAR_SINGLE_QUOTE = 0x27; /* ' */
@@ -148,6 +156,13 @@ inline constexpr char32_t LEX_UTF8_EXTRA_BYTE_MASK = 0xC0;
 inline constexpr char32_t LEX_CHAR_EOS = 0xFFFF;
 inline constexpr char32_t UNICODE_CODE_POINT_MAX = 0x10FFFF;
 inline constexpr char32_t UNICODE_INVALID_CP = UINT32_MAX;
+
+inline constexpr size_t JS_DOC_START_SIZE = 3;
+inline constexpr size_t JS_DOC_END_SIZE = 2;
+// NOLINTBEGIN(modernize-avoid-c-arrays)
+inline constexpr char32_t JS_DOC_START_LEX[JS_DOC_START_SIZE] = {LEX_CHAR_ASTERISK, LEX_CHAR_ASTERISK, LEX_CHAR_LF};
+inline constexpr char32_t JS_DOC_END_LEX[JS_DOC_END_SIZE] = {LEX_CHAR_SLASH, LEX_CHAR_LF};
+// NOLINTEND(modernize-avoid-c-arrays)
 }  // namespace ark::es2panda::lexer
 
 #endif

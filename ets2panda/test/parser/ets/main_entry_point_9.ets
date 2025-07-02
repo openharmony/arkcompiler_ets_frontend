@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-type TTT = String[];
+type TTT = FixedArray<String>;
 
 function main(i : TTT): void {
     return;

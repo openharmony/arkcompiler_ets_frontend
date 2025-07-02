@@ -337,12 +337,10 @@ ir::AstNode *GetNonAssignedNameOfDeclaration(ir::AstNode *node)
         return node->AsIdentifier();
     }
     if (node->Type() == ir::AstNodeType::CALL_EXPRESSION || node->Type() == ir::AstNodeType::BINARY_EXPRESSION) {
-        if (node->AsBinaryExpression()->IsExportedType() || node->AsBinaryExpression()->IsTSThisType() ||
-            node->AsBinaryExpression()->IsProperty()) {
+        if (node->AsBinaryExpression()->IsTSThisType() || node->AsBinaryExpression()->IsProperty()) {
             return node->AsBinaryExpression();
         }
-        if (node->AsCallExpression()->IsExportedType() || node->AsCallExpression()->IsTSThisType() ||
-            node->AsCallExpression()->IsProperty()) {
+        if (node->AsCallExpression()->IsTSThisType() || node->AsCallExpression()->IsProperty()) {
             return node->AsCallExpression();
         }
         return nullptr;

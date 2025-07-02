@@ -81,8 +81,8 @@ npm install
 projectName：需要检测工程的名字
 projectPath：需要检测工程的路径
 logPath：日志输出路径
-ohosSdkPath：ohossdk路径，比如DevEco Studio安装目录下的sdk\default\openharmony\ets
-hmsSdkPath：hmssdk路径，比如DevEco Studio安装目录下的sdk\default\hms\ets
+ohosSdkPath：ohossdk路径，比如DevEco Studio安装目录下的sdk\default\openharmony\ets，请使用绝对路径
+hmsSdkPath：hmssdk路径，比如DevEco Studio安装目录下的sdk\default\hms\ets，请使用绝对路径
 checkPath：解析指定的文件
 sdkVersion：sdk版本
 fix：是否修复
@@ -121,6 +121,7 @@ sdksThirdParty：sdk三方库，name：库名称，path:库路径，moduleName�
 
 字段说明：
 
+参考：https://developer.huawei.com/consumer/cn/doc/harmonyos-guides-V14/ide-code-linter-V14#section1782903483817
 ```
 files：待检测文件类型
 ignore：过滤文件

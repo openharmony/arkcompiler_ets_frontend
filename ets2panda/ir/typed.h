@@ -63,7 +63,15 @@ protected:
     // NOTE: when cloning node its type is not copied but removed empty so that it can be re-checked further.
     Typed(Typed const &other) : T(static_cast<T const &>(other)) {}
 
+    void CopyTo(AstNode *other) const override
+    {
+        auto otherImpl = static_cast<Typed<T> *>(other);
+        otherImpl->tsType_ = tsType_;
+        T::CopyTo(other);
+    }
+
 private:
+    friend class SizeOfNodeTest;
     checker::Type *tsType_ {};
 };
 
@@ -74,6 +82,11 @@ public:
 
     NO_COPY_OPERATOR(TypedAstNode);
     NO_MOVE_SEMANTIC(TypedAstNode);
+
+    void CopyTo(AstNode *other) const override
+    {
+        Typed<AstNode>::CopyTo(other);
+    };
 
 protected:
     explicit TypedAstNode(AstNodeType const type) : Typed<AstNode>(type) {}
@@ -111,6 +124,11 @@ public:
     NO_COPY_OPERATOR(TypedStatement);
     NO_MOVE_SEMANTIC(TypedStatement);
 
+    void CopyTo(AstNode *other) const override
+    {
+        Typed<Statement>::CopyTo(other);
+    };
+
 protected:
     explicit TypedStatement(AstNodeType type) : Typed<Statement>(type) {};
     explicit TypedStatement(AstNodeType type, ModifierFlags flags) : Typed<Statement>(type, flags) {};
@@ -127,6 +145,11 @@ public:
 
     NO_COPY_OPERATOR(AnnotatedStatement);
     NO_MOVE_SEMANTIC(AnnotatedStatement);
+
+    void CopyTo(AstNode *other) const override
+    {
+        Annotated<Statement>::CopyTo(other);
+    }
 
 protected:
     explicit AnnotatedStatement(AstNodeType type, TypeNode *typeAnnotation) : Annotated<Statement>(type, typeAnnotation)

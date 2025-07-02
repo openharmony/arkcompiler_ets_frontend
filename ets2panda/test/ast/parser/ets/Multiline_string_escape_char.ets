@@ -19,5 +19,4 @@ function main(){
 }
 
 /* @@? 17:15 Error SyntaxError: Invalid character escape sequence. */
-/* @@? 17:15 Error SyntaxError: Invalid character escape sequence. */
 /* @@? 17:15 Error SyntaxError: Invalid Unicode escape. */

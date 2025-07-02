@@ -15,9 +15,9 @@
     ],
     "result": [
         {
-            "line": 16,
+            "line": 17,
             "column": 7,
-            "endLine": 16,
+            "endLine": 17,
             "endColumn": 35,
             "problem": "AnyType",
             "suggest": "",
@@ -25,9 +25,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 20,
+            "line": 21,
             "column": 7,
-            "endLine": 20,
+            "endLine": 21,
             "endColumn": 33,
             "problem": "AnyType",
             "suggest": "",
@@ -35,9 +35,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 20,
+            "line": 21,
             "column": 7,
-            "endLine": 20,
+            "endLine": 21,
             "endColumn": 33,
             "problem": "AnyType",
             "suggest": "",
@@ -45,9 +45,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 25,
+            "line": 26,
             "column": 3,
-            "endLine": 25,
+            "endLine": 26,
             "endColumn": 37,
             "problem": "AnyType",
             "suggest": "",
@@ -55,9 +55,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 25,
+            "line": 26,
             "column": 3,
-            "endLine": 25,
+            "endLine": 26,
             "endColumn": 37,
             "problem": "AnyType",
             "suggest": "",
@@ -65,9 +65,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 32,
+            "line": 33,
             "column": 7,
-            "endLine": 32,
+            "endLine": 33,
             "endColumn": 35,
             "problem": "UnknownType",
             "suggest": "",
@@ -75,9 +75,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 32,
+            "line": 33,
             "column": 22,
-            "endLine": 32,
+            "endLine": 33,
             "endColumn": 35,
             "problem": "GenericCallNoTypeArgs",
             "suggest": "",
@@ -85,9 +85,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 51,
+            "line": 52,
             "column": 10,
-            "endLine": 51,
+            "endLine": 52,
             "endColumn": 19,
             "problem": "GenericCallNoTypeArgs",
             "suggest": "",
@@ -95,9 +95,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 55,
+            "line": 56,
             "column": 10,
-            "endLine": 55,
+            "endLine": 56,
             "endColumn": 19,
             "problem": "GenericCallNoTypeArgs",
             "suggest": "",
@@ -105,9 +105,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 68,
+            "line": 69,
             "column": 12,
-            "endLine": 68,
+            "endLine": 69,
             "endColumn": 21,
             "problem": "GenericCallNoTypeArgs",
             "suggest": "",
@@ -115,9 +115,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 72,
+            "line": 73,
             "column": 12,
-            "endLine": 72,
+            "endLine": 73,
             "endColumn": 21,
             "problem": "GenericCallNoTypeArgs",
             "suggest": "",

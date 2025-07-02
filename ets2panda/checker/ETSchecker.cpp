@@ -33,6 +33,42 @@
 
 namespace ark::es2panda::checker {
 
+ETSChecker::ETSChecker(util::DiagnosticEngine &diagnosticEngine)
+    // NOLINTNEXTLINE(readability-redundant-member-init)
+    : Checker(diagnosticEngine),
+      arrayTypes_(Allocator()->Adapter()),
+      pendingConstraintCheckRecords_(Allocator()->Adapter()),
+      globalArraySignatures_(Allocator()->Adapter()),
+      dynamicIntrinsics_ {DynamicCallIntrinsicsMap {Allocator()->Adapter()},
+                          DynamicCallIntrinsicsMap {Allocator()->Adapter()}},
+      dynamicClasses_ {DynamicClassIntrinsicsMap(Allocator()->Adapter()),
+                       DynamicClassIntrinsicsMap(Allocator()->Adapter())},
+      dynamicLambdaSignatureCache_(Allocator()->Adapter()),
+      functionalInterfaceCache_(Allocator()->Adapter()),
+      apparentTypes_(Allocator()->Adapter()),
+      dynamicCallNames_ {{DynamicCallNamesMap(Allocator()->Adapter()), DynamicCallNamesMap(Allocator()->Adapter())}},
+      overloadSigContainer_(Allocator()->Adapter())
+{
+}
+
+ETSChecker::ETSChecker(util::DiagnosticEngine &diagnosticEngine, ArenaAllocator *programAllocator)
+    // NOLINTNEXTLINE(readability-redundant-member-init)
+    : Checker(diagnosticEngine, programAllocator),
+      arrayTypes_(Allocator()->Adapter()),
+      pendingConstraintCheckRecords_(Allocator()->Adapter()),
+      globalArraySignatures_(Allocator()->Adapter()),
+      dynamicIntrinsics_ {DynamicCallIntrinsicsMap {Allocator()->Adapter()},
+                          DynamicCallIntrinsicsMap {Allocator()->Adapter()}},
+      dynamicClasses_ {DynamicClassIntrinsicsMap(Allocator()->Adapter()),
+                       DynamicClassIntrinsicsMap(Allocator()->Adapter())},
+      dynamicLambdaSignatureCache_(Allocator()->Adapter()),
+      functionalInterfaceCache_(Allocator()->Adapter()),
+      apparentTypes_(Allocator()->Adapter()),
+      dynamicCallNames_ {{DynamicCallNamesMap(Allocator()->Adapter()), DynamicCallNamesMap(Allocator()->Adapter())}},
+      overloadSigContainer_(Allocator()->Adapter())
+{
+}
+
 static util::StringView InitBuiltin(ETSChecker *checker, std::string_view signature)
 {
     const auto varMap = checker->VarBinder()->TopScope()->Bindings();
@@ -40,13 +76,15 @@ static util::StringView InitBuiltin(ETSChecker *checker, std::string_view signat
     ES2PANDA_ASSERT(iterator != varMap.end());
     auto *var = iterator->second;
     Type *type {nullptr};
-    if (var->Declaration()->Node()->IsClassDefinition()) {
-        type = checker->BuildBasicClassProperties(var->Declaration()->Node()->AsClassDefinition());
-    } else {
-        ES2PANDA_ASSERT(var->Declaration()->Node()->IsTSInterfaceDeclaration());
-        type = checker->BuildBasicInterfaceProperties(var->Declaration()->Node()->AsTSInterfaceDeclaration());
+    if (var->HasFlag(varbinder::VariableFlags::BUILTIN_TYPE)) {
+        if (var->Declaration()->Node()->IsClassDefinition()) {
+            type = checker->BuildBasicClassProperties(var->Declaration()->Node()->AsClassDefinition());
+        } else {
+            ES2PANDA_ASSERT(var->Declaration()->Node()->IsTSInterfaceDeclaration());
+            type = checker->BuildBasicInterfaceProperties(var->Declaration()->Node()->AsTSInterfaceDeclaration());
+        }
+        checker->GetGlobalTypesHolder()->InitializeBuiltin(iterator->first, type);
     }
-    checker->GetGlobalTypesHolder()->InitializeBuiltin(iterator->first, type);
     return iterator->first;
 }
 
@@ -284,9 +322,6 @@ bool ETSChecker::StartChecker(varbinder::VarBinder *varbinder, const util::Optio
         debugInfoPlugin_->PostCheck();
     }
 
-    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    BuildDynamicImportClass();
-
 #ifndef NDEBUG
     for (auto *func : varbinder->Functions()) {
         ES2PANDA_ASSERT(!func->Node()->AsScriptFunction()->Scope()->Name().Empty());
@@ -319,19 +354,28 @@ void ETSChecker::SetDebugInfoPlugin(evaluate::ScopedDebugInfoPlugin *debugInfo)
 
 void ETSChecker::CheckProgram(parser::Program *program, bool runAnalysis)
 {
+    if (program->IsASTChecked()) {
+        return;
+    }
+
     auto *savedProgram = Program();
     SetProgram(program);
 
     for (auto &[_, extPrograms] : program->ExternalSources()) {
         (void)_;
         for (auto *extProg : extPrograms) {
+            if (extProg->IsASTChecked()) {
+                continue;
+            }
             checker::SavedCheckerContext savedContext(this, Context().Status(), Context().ContainingClass());
             AddStatus(checker::CheckerStatus::IN_EXTERNAL);
             CheckProgram(extProg, VarBinder()->IsGenStdLib());
+            extProg->SetFlag(parser::ProgramFlags::AST_CHECK_PROCESSED);
         }
     }
 
     ES2PANDA_ASSERT(Program()->Ast()->IsProgram());
+
     Program()->Ast()->Check(this);
 
     if (runAnalysis && !IsAnyError()) {
@@ -379,9 +423,19 @@ Type *ETSChecker::GlobalByteType() const
     return GetGlobalTypesHolder()->GlobalByteType();
 }
 
+Type *ETSChecker::GlobalByteBuiltinType() const
+{
+    return GetGlobalTypesHolder()->GlobalByteBuiltinType();
+}
+
 Type *ETSChecker::GlobalShortType() const
 {
     return GetGlobalTypesHolder()->GlobalShortType();
+}
+
+Type *ETSChecker::GlobalShortBuiltinType() const
+{
+    return GetGlobalTypesHolder()->GlobalShortBuiltinType();
 }
 
 Type *ETSChecker::GlobalIntType() const
@@ -389,9 +443,19 @@ Type *ETSChecker::GlobalIntType() const
     return GetGlobalTypesHolder()->GlobalIntType();
 }
 
+Type *ETSChecker::GlobalIntBuiltinType() const
+{
+    return GetGlobalTypesHolder()->GlobalIntegerBuiltinType();
+}
+
 Type *ETSChecker::GlobalLongType() const
 {
     return GetGlobalTypesHolder()->GlobalLongType();
+}
+
+Type *ETSChecker::GlobalLongBuiltinType() const
+{
+    return GetGlobalTypesHolder()->GlobalLongBuiltinType();
 }
 
 Type *ETSChecker::GlobalFloatType() const
@@ -399,19 +463,38 @@ Type *ETSChecker::GlobalFloatType() const
     return GetGlobalTypesHolder()->GlobalFloatType();
 }
 
+Type *ETSChecker::GlobalFloatBuiltinType() const
+{
+    return GetGlobalTypesHolder()->GlobalFloatBuiltinType();
+}
+
 Type *ETSChecker::GlobalDoubleType() const
 {
     return GetGlobalTypesHolder()->GlobalDoubleType();
+}
+
+Type *ETSChecker::GlobalDoubleBuiltinType() const
+{
+    return GetGlobalTypesHolder()->GlobalDoubleBuiltinType();
 }
 
 Type *ETSChecker::GlobalCharType() const
 {
     return GetGlobalTypesHolder()->GlobalCharType();
 }
+Type *ETSChecker::GlobalCharBuiltinType() const
+{
+    return GetGlobalTypesHolder()->GlobalCharBuiltinType();
+}
 
 Type *ETSChecker::GlobalETSBooleanType() const
 {
     return GetGlobalTypesHolder()->GlobalETSBooleanType();
+}
+
+Type *ETSChecker::GlobalETSBooleanBuiltinType() const
+{
+    return GetGlobalTypesHolder()->GlobalETSBooleanBuiltinType();
 }
 
 Type *ETSChecker::GlobalVoidType() const
@@ -464,6 +547,11 @@ ETSUnionType *ETSChecker::GlobalETSNullishObjectType() const
 {
     auto *ret = (GetGlobalTypesHolder()->*&GlobalTypesHolder::GlobalETSNullishObjectType)();
     return ret != nullptr ? ret->AsETSUnionType() : nullptr;
+}
+
+ETSObjectType *ETSChecker::GlobalBuiltinETSResizableArrayType() const
+{
+    return AsETSObjectType(&GlobalTypesHolder::GlobalArrayBuiltinType);
 }
 
 ETSObjectType *ETSChecker::GlobalBuiltinETSStringType() const

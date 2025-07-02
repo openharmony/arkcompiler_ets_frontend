@@ -131,8 +131,8 @@ set (HEADERS_TO_BE_PARSED
     ${ES2PANDA_ROOT}/checker/types/ts/typeReference.h
     ${ES2PANDA_ROOT}/ir/expressions/memberExpression.h
     ${ES2PANDA_ROOT}/checker/types/ets/etsExtensionFuncHelperType.h
+    ${ES2PANDA_ROOT}/ir/ets/etsNonNullishTypeNode.h
     ${ES2PANDA_ROOT}/ir/ets/etsNullishTypes.h
-    ${ES2PANDA_ROOT}/ir/ets/etsLaunchExpression.h
     ${ES2PANDA_ROOT}/ir/expressions/awaitExpression.h
     ${ES2PANDA_ROOT}/ir/ets/etsFunctionType.h
     ${ES2PANDA_ROOT}/checker/types/ets/etsArrayType.h
@@ -267,6 +267,7 @@ set (HEADERS_TO_BE_PARSED
     ${ES2PANDA_ROOT}/ir/statements/annotationDeclaration.h
     ${ES2PANDA_ROOT}/ir/statements/annotationUsage.h
     ${ES2PANDA_ROOT}/ir/annotationAllowed.h
+    ${ES2PANDA_ROOT}/ir/jsDocAllowed.h
     ${ES2PANDA_ROOT}/ir/base/scriptFunctionSignature.h
     ${ES2PANDA_ROOT}/ir/expressions/yieldExpression.h
     ${ES2PANDA_ROOT}/ir/ets/etsNewMultiDimArrayInstanceExpression.h
@@ -302,6 +303,7 @@ set (ES2PANDA_API_GENERATED
     ${LIBGEN_DIR}/gen/headers/varbinder/variableFlags.yaml
     ${LIBGEN_DIR}/gen/headers/ir/typed.yaml
     ${LIBGEN_DIR}/gen/headers/ir/annotationAllowed.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/jsDocAllowed.yaml
     ${LIBGEN_DIR}/gen/headers/es2panda.yaml
     ${LIBGEN_DIR}/gen/headers/ir/statements/labelledStatement.yaml
     ${LIBGEN_DIR}/gen/headers/checker/types/ts/unknownType.yaml
@@ -435,7 +437,6 @@ set (ES2PANDA_API_GENERATED
     ${LIBGEN_DIR}/gen/headers/ir/statements/annotationDeclaration.yaml
     ${LIBGEN_DIR}/gen/headers/ir/statements/annotationUsage.yaml
     ${LIBGEN_DIR}/gen/headers/ir/statements/emptyStatement.yaml
-    ${LIBGEN_DIR}/gen/headers/ir/ets/etsLaunchExpression.yaml
     ${LIBGEN_DIR}/gen/headers/ir/statements/whileStatement.yaml
     ${LIBGEN_DIR}/gen/headers/ir/base/scriptFunctionSignature.yaml
     ${LIBGEN_DIR}/gen/headers/checker/types/ts/numberLiteralType.yaml

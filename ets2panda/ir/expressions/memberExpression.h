@@ -252,7 +252,6 @@ private:
 
     bool CheckArrayIndexValue(checker::ETSChecker *checker) const;
     checker::Type *CheckIndexAccessMethod(checker::ETSChecker *checker);
-
     checker::Type *ResolveReturnTypeFromSignature(checker::ETSChecker *checker, bool isSetter,
                                                   ArenaVector<ir::Expression *> &arguments,
                                                   ArenaVector<checker::Signature *> &signatures,

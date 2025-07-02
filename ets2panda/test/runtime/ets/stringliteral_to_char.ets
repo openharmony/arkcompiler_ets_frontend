@@ -14,7 +14,7 @@
  */
 
 function foo() : Char {
-    return 'c'
+    return c'c'
 }
 
 function foo1(a: Char) : Char {
@@ -26,11 +26,11 @@ function foo2() : Char {
 }
 
 function main() {
-    let c : Char = 'c';
+    let c : Char = c'c';
     let val : Char = foo()
     assertEQ(val, c)
 
-    let val1 : Char = foo1("c")
+    let val1 : Char = foo1("c"[0])
     assertEQ(val1, c)
 
     let val2 : Char = foo2()

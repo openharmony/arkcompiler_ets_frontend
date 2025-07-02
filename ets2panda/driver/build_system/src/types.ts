@@ -25,6 +25,47 @@ export interface BuildBaseConfig {
   arkts: ArkTS;
   arktsGlobal: ArkTSGlobal;
   maxWorkers?: number;
+  isBuildConfigModified?: boolean;
+}
+
+export interface ArkTSGlobal {
+  filePath: string;
+  config: object;
+  compilerContext: {
+    program: object;
+    peer: object
+  };
+  es2panda: {
+    _DestroyContext: Function;
+    _SetUpSoPath: Function;
+  }
+}
+
+export interface ArkTS {
+  Config: {
+    create: Function;
+  };
+  Context: {
+    createFromString: Function;
+  };
+  EtsScript: {
+    fromContext: Function;
+  };
+  proceedToState: Function;
+  generateTsDeclarationsFromContext: Function;
+  destroyConfig: Function;
+  Es2pandaContextState: typeof Es2pandaContextState;
+}
+
+export enum Es2pandaContextState {
+    ES2PANDA_STATE_NEW = 0,
+    ES2PANDA_STATE_PARSED = 1,
+    ES2PANDA_STATE_BOUND = 2,
+    ES2PANDA_STATE_CHECKED = 3,
+    ES2PANDA_STATE_LOWERED = 4,
+    ES2PANDA_STATE_ASM_GENERATED = 5,
+    ES2PANDA_STATE_BIN_GENERATED = 6,
+    ES2PANDA_STATE_ERROR = 7
 }
 
 export interface ArkTSGlobal {
@@ -82,6 +123,28 @@ export interface PathConfig {
   pandaStdlibPath?: string; // path to panda sdk stdlib, for local test
   externalApiPaths: string[];
   abcLinkerPath?: string;
+  dependencyAnalyzerPath?: string;
+}
+
+/**
+ * Configuration for framework mode compilation using generate_static_abc gni.
+ * 
+ * In framework mode, the compiler generates static ABC files from framework SDK ETS files.
+ * This mode requires additional arktsconfig.json parameters for proper operation.
+ */
+export interface FrameworkConfig {
+  /**
+   * Enables or disables framework compilation mode.
+   * When enabled (true), activates special processing rules for framework-level
+   * compilation, including different output locations and packaging requirements.
+   */
+  frameworkMode?: boolean;
+  
+  /**
+   * Determines whether an empty package name should be used.
+   * Must be set to true when compiling framework components without a package name.
+   */
+  useEmptyPackage?: boolean;
 }
 
 export interface DeclgenConfig {
@@ -108,7 +171,7 @@ export interface DependentModuleConfig {
   declgenBridgeCodePath?: string;
 }
 
-export interface BuildConfig extends BuildBaseConfig, DeclgenConfig, LoggerConfig, ModuleConfig, PathConfig {
+export interface BuildConfig extends BuildBaseConfig, DeclgenConfig, LoggerConfig, ModuleConfig, PathConfig, FrameworkConfig {
   plugins: PluginsConfig;
   compileFiles: string[];
   dependentModuleList: DependentModuleConfig[];
@@ -139,6 +202,8 @@ export interface ModuleInfo {
   dynamicDepModuleInfos: Map<string, ModuleInfo>;
   language?: string;
   declFilesPath?: string;
+  frameworkMode?: boolean;
+  useEmptyPackage?: boolean;
 }
 
 export type SetupClusterOptions = {
@@ -146,3 +211,12 @@ export type SetupClusterOptions = {
   execPath?: string;
   execArgs?: string[];
 };
+
+export interface DependencyFileConfig {
+  dependants: {
+    [filePath: string]: string[];
+  };
+  dependencies: {
+    [filePath: string]: string[];
+  }
+}

@@ -19,6 +19,7 @@
 #include "checker/ETSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
+#include "utils/arena_containers.h"
 
 namespace ark::es2panda::ir {
 void VariableDeclaration::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
@@ -129,7 +130,8 @@ void VariableDeclaration::Dump(ir::SrcDumper *dumper) const
 
 VariableDeclaration::VariableDeclaration([[maybe_unused]] Tag const tag, VariableDeclaration const &other,
                                          ArenaAllocator *const allocator)
-    : AnnotationAllowed<Statement>(static_cast<AnnotationAllowed<Statement> const &>(other)),
+    : JsDocAllowed<AnnotationAllowed<Statement>>(static_cast<JsDocAllowed<AnnotationAllowed<Statement>> const &>(other),
+                                                 allocator),
       kind_(other.kind_),
       decorators_(allocator->Adapter()),
       declarators_(allocator->Adapter())
@@ -174,4 +176,22 @@ checker::VerifiedType VariableDeclaration::Check([[maybe_unused]] checker::ETSCh
 {
     return {this, checker->GetAnalyzer()->Check(this)};
 }
+
+VariableDeclaration *VariableDeclaration::Construct(ArenaAllocator *allocator)
+{
+    ArenaVector<VariableDeclarator *> declarators(allocator->Adapter());
+    return allocator->New<VariableDeclaration>(VariableDeclarationKind::LET, allocator, std::move(declarators));
+}
+
+void VariableDeclaration::CopyTo(AstNode *other) const
+{
+    auto otherImpl = other->AsVariableDeclaration();
+
+    otherImpl->kind_ = kind_;
+    otherImpl->decorators_ = decorators_;
+    otherImpl->declarators_ = declarators_;
+
+    JsDocAllowed<AnnotationAllowed<Statement>>::CopyTo(other);
+}
+
 }  // namespace ark::es2panda::ir

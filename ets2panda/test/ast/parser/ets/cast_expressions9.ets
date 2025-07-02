@@ -16,7 +16,7 @@
 function main(): void {
   let int_a: int[][] = [[1],[2],[3]];
   let int_a2: int[][] = int_a as int[][];
-  let long_a: long[][] = /* @@ label */int_a as long[][];
+  let long_a: long[][] = int_a as long[][];
 }
 
-/* @@@ label Error TypeError: Cannot cast type 'int[][]' to 'long[][]'  */
+/* @@? 19:26 Error TypeError: Cannot cast type 'Array<Array<Int>>' to 'Array<Array<Long>>' */

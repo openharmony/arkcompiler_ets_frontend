@@ -27,13 +27,11 @@ class A{
 function foo<T>(){}
 foo<@Anno T>()
 
-/* @@? 17:27 Error SyntaxError: Annotations are not allowed on this type of declaration.  */
-/* @@? 17:52 Error SyntaxError: Annotations are not allowed on this type of declaration.  */
-/* @@? 22:17 Error SyntaxError: Annotations are not allowed on this type of declaration.  */
-/* @@? 22:17 Error SyntaxError: Annotations are not allowed on this type of declaration.  */
-/* @@? 23:22 Error SyntaxError: Annotations are not allowed on this type of declaration.  */
-/* @@? 28:11 Error SyntaxError: Annotations are not allowed on this type of declaration.  */
-/* @@? 28:11 Error SyntaxError: Annotations are not allowed on this type of declaration.  */
-/* @@? 28:11 Error TypeError: Cannot find type 'T'. */
+/* @@? 17:27 Error SyntaxError: Annotations are not allowed on this type of declaration. */
+/* @@? 17:52 Error SyntaxError: Annotations are not allowed on this type of declaration. */
+/* @@? 22:17 Error SyntaxError: Annotations are not allowed on this type of declaration. */
 /* @@? 22:17 Error TypeError: Cannot find type 'T'. */
+/* @@? 23:22 Error SyntaxError: Annotations are not allowed on this type of declaration. */
 /* @@? 23:22 Error TypeError: Cannot find type 'T'. */
+/* @@? 28:11 Error SyntaxError: Annotations are not allowed on this type of declaration. */
+/* @@? 28:11 Error TypeError: Cannot find type 'T'. */

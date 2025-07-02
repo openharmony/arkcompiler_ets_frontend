@@ -16,8 +16,5 @@
 let negative%%_ = 1
 
 /* @@? 16:13 Error SyntaxError: Variable must be initialized or it's type must be declared. */
-/* @@? 16:13 Error SyntaxError: Variable must be initialized or it's type must be declared. */
 /* @@? 16:13 Error SyntaxError: Unexpected token '%'. */
-/* @@? 16:13 Error SyntaxError: Unexpected token '%'. */
-/* @@? 16:14 Error SyntaxError: Unexpected token '%'. */
 /* @@? 16:15 Error TypeError: Unresolved reference _ */

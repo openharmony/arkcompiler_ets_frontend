@@ -20,14 +20,12 @@
     console.log("h")
 }
 
-/* @@? 16:15 Error SyntaxError: A try statement should contain either finally clause or at least one catch clause. */
-/* @@? 17:16 Error SyntaxError: Expected '{', got 'identification literal'. */
-/* @@? 17:39 Error SyntaxError: Unexpected token, expected ',' or ')'. */
-/* @@? 17:39 Error SyntaxError: Unexpected token ':'. */
-/* @@? 17:39 Error SyntaxError: Unexpected token ':'. */
-/* @@? 17:39 Error SyntaxError: Unexpected token ':'. */
-/* @@? 17:61 Error SyntaxError: Unexpected token ')'. */
-/* @@? 17:61 Error SyntaxError: Unexpected token ')'. */
-/* @@? 17:61 Error SyntaxError: Unexpected token ')'. */
-/* @@? 19:26 Error SyntaxError: Unexpected token '{'. */
-/* @@? 34:1 Error SyntaxError: Expected '}', got 'eos'. */
+/* @@@ label Error SyntaxError: A try statement should contain either finally clause or at least one catch clause. */
+/* @@@ label1 Error SyntaxError: Expected '{', got 'identification literal'. */
+/* @@@ label2 Error SyntaxError: Unexpected token, expected ',' or ')'. */
+/* @@@ label2 Error SyntaxError: Unexpected token ':'. */
+/* @@? 17:41 Error SyntaxError: Unexpected token 'Error'. */
+/* @@@ label3 Error SyntaxError: Unexpected token ')'. */
+/* @@? 17:63 Error SyntaxError: Unexpected token '{'. */
+/* @@@ label4 Error SyntaxError: Unexpected token '{'. */
+/* @@? 32:1 Error SyntaxError: Expected '}', got 'end of stream'. */

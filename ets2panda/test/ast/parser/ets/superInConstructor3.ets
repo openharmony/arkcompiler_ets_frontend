@@ -14,10 +14,14 @@
  */
 
 class A {
-    public x: int;
+    private _x: int;
+
+    get x(): int{
+        return this._x;
+    }
 
     public constructor() {
-        this.x = 1;
+        this._x = 1;
     }
 
     public constructor(arg: boolean) {

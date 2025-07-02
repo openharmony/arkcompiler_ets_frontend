@@ -50,6 +50,8 @@ public:
 
     [[nodiscard]] TypeNode *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
+    void CopyTo(AstNode *other) const override;
+
 protected:
     explicit TypeNode(AstNodeType const type, ArenaAllocator *const allocator)
         : AnnotationAllowed<Expression>(type, allocator)

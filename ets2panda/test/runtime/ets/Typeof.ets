@@ -48,7 +48,7 @@ function main() {
   let x05: long
   let x06: float
   let x07: double
-  let x08: bigint
+  let x08: bigint = 123456789n
   assertEQ(typeof x00, "boolean")
   assertEQ(typeof x01, "number")
   assertEQ(typeof x02, "number")
@@ -59,15 +59,15 @@ function main() {
   assertEQ(typeof x07, "number")
   assertEQ(typeof x08, "bigint")
 
-  let x000: Boolean
-  let x001: Byte
-  let x002: Char
-  let x003: Short
-  let x004: Int
-  let x005: Long
-  let x006: Float
-  let x007: Double
-  let x008: BigInt
+  let x000: Boolean = new Boolean()
+  let x001: Byte = new Byte()
+  let x002: Char = new Char()
+  let x003: Short = new Short()
+  let x004: Int = new Int()
+  let x005: Long = new Long()
+  let x006: Float = new Float()
+  let x007: Double = new Double()
+  let x008: BigInt = new BigInt()
   assertEQ(typeof x000, "boolean")
   assertEQ(typeof x001, "number")
   assertEQ(typeof x002, "number")
@@ -134,7 +134,7 @@ function main() {
   assertEQ(typeof o8, "function")
 
   let e0 = Color.Red
-  let e1: Color
+  let e1: Color = Color.Green
   assertEQ(typeof e0, "number")
   assertEQ(typeof e1, "number")
 

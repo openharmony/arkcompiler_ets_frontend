@@ -66,8 +66,6 @@ public:
           baseOverloadMethod_(nullptr),
           asyncPairMethod_(nullptr)
     {
-        ES2PANDA_ASSERT(key_ != nullptr);
-        ES2PANDA_ASSERT(value != nullptr);
     }
 
     // NOTE (csabahurton): these friend relationships can be removed once there are getters for private fields
@@ -203,10 +201,19 @@ public:
 
     void CleanUp() override;
 
+protected:
+    MethodDefinition *Construct(ArenaAllocator *allocator) override;
+    void CopyTo(AstNode *other) const override;
+
 private:
     void DumpPrefix(ir::SrcDumper *dumper) const;
     void ResetOverloads();
+    void DumpModifierPrefix(ir::SrcDumper *dumper) const;
+    bool DumpNamespaceForDeclGen(ir::SrcDumper *dumper) const;
+    void DumpPrefixForDeclGen(ir::SrcDumper *dumper) const;
+    bool FilterForDeclGen(ir::SrcDumper *dumper) const;
 
+    friend class SizeOfNodeTest;
     bool isDefault_ = false;
     MethodDefinitionKind kind_;
     // Overloads are stored like in an 1:N fashion.

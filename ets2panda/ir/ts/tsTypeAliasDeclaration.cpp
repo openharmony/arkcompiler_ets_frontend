@@ -94,13 +94,37 @@ void TSTypeAliasDeclaration::Dump(ir::AstDumper *dumper) const
                  {"typeParameters", AstDumper::Optional(typeParams_)}});
 }
 
+bool TSTypeAliasDeclaration::RegisterUnexportedForDeclGen(ir::SrcDumper *dumper) const
+{
+    if (!dumper->IsDeclgen()) {
+        return false;
+    }
+
+    if (dumper->IsIndirectDepPhase()) {
+        return false;
+    }
+
+    if (id_->Parent()->IsExported() || id_->Parent()->IsDefaultExported()) {
+        return false;
+    }
+
+    auto name = id_->Name().Mutf8();
+    dumper->AddNode(name, this);
+    return true;
+}
+
 void TSTypeAliasDeclaration::Dump(ir::SrcDumper *dumper) const
 {
     ES2PANDA_ASSERT(id_);
+    if (RegisterUnexportedForDeclGen(dumper)) {
+        return;
+    }
     for (auto *anno : Annotations()) {
         anno->Dump(dumper);
     }
-
+    if (id_->Parent()->IsExported()) {
+        dumper->Add("export ");
+    }
     dumper->Add("type ");
     id_->Dump(dumper);
     if (typeParams_ != nullptr) {
@@ -136,6 +160,24 @@ checker::Type *TSTypeAliasDeclaration::Check([[maybe_unused]] checker::TSChecker
 checker::VerifiedType TSTypeAliasDeclaration::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
     return {this, checker->GetAnalyzer()->Check(this)};
+}
+
+TSTypeAliasDeclaration *TSTypeAliasDeclaration::Construct(ArenaAllocator *allocator)
+{
+    return allocator->New<TSTypeAliasDeclaration>(allocator, nullptr, nullptr, nullptr);
+}
+
+void TSTypeAliasDeclaration::CopyTo(AstNode *other) const
+{
+    auto otherImpl = other->AsTSTypeAliasDeclaration();
+
+    otherImpl->decorators_ = decorators_;
+    otherImpl->annotations_ = annotations_;
+    otherImpl->id_ = id_;
+    otherImpl->typeParams_ = typeParams_;
+    otherImpl->typeParamTypes_ = typeParamTypes_;
+
+    JsDocAllowed<AnnotatedStatement>::CopyTo(other);
 }
 
 }  // namespace ark::es2panda::ir

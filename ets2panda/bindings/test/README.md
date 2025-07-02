@@ -3,7 +3,7 @@
 ```Bash
 cd /path/to/bindings
 
-### check environment, replace the path base on your machine
+### check environment
 # if you are using Linux shell
 bash test/prepare.sh
 # or if you are using Windows shell
@@ -24,6 +24,8 @@ powershell -f test/prepare.ps1 --restore
 
 ### testcase directory structure
 .
+├── cases.ts
+├── run_tests.ts
 ├── expected
 │   ├── exampleFuncName.json
 └── testcases
@@ -37,10 +39,10 @@ powershell -f test/prepare.ps1 --restore
     └── exampleFuncName
         └── exampleFuncName1.ets
 
-case.json:
-```json
+case.ts:
+```typescript
 {
-   "testName": {
+   testName: {
       "expectedFilePath": "/path/to/expected.json",
       "1": [ "param1", "param2" ], // lsp will call lsp.testName(param1, param2)
       "2": [ "param1", "param2" ]
@@ -49,14 +51,14 @@ case.json:
 ```
 
 #### How to add a new test case?
-1. add exampleFuncName2.ets file in `testcases/exampleFuncName`
-2. add parameters in `testcases/cases.json`
-3. add expected result in `expected/exampleFuncName.json`
+1. add exampleFuncName2.ets file in `testcases/exampleFuncName` directory
+2. add parameters in `cases.ts` file
+3. add expected result in `expected/exampleFuncName.json` file
 
 #### How to add a new test function?
-1. add exampleFuncName2 directory in `testcases`
-2. add exampleFuncName2 field in `testcases/cases.json`
-3. add exampleFuncName2.json in `expected`
+1. add exampleFuncName2 directory in `testcases` directory
+2. add exampleFuncName2 field in `cases.ts` file
+3. add exampleFuncName2.json in `expected` directory
 4. add a new test case according to the above steps
 
 ⚠️⚠️⚠️

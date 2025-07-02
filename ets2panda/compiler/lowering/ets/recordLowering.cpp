@@ -16,6 +16,7 @@
 #include "recordLowering.h"
 
 #include "checker/ETSchecker.h"
+#include "checker/types/ets/etsAsyncFuncReturnType.h"
 
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "compiler/lowering/util.h"
@@ -155,6 +156,9 @@ ir::Statement *RecordLowering::CreateStatement(const std::string &src, ir::Expre
 ir::Expression *RecordLowering::UpdateObjectExpression(ir::ObjectExpression *expr, public_lib::Context *ctx)
 {
     auto checker = ctx->checker->AsETSChecker();
+    if (expr->PreferredType()->IsETSAsyncFuncReturnType()) {
+        expr->SetPreferredType(expr->PreferredType()->AsETSAsyncFuncReturnType()->GetPromiseTypeArg());
+    }
 
     if (!expr->PreferredType()->IsETSObjectType()) {
         // Unexpected preferred type
@@ -164,7 +168,7 @@ ir::Expression *RecordLowering::UpdateObjectExpression(ir::ObjectExpression *exp
     ES2PANDA_ASSERT(expr->TsType() != nullptr);
     std::stringstream ss;
     expr->TsType()->ToAssemblerType(ss);
-    if (!(ss.str() == "escompat.Record" || ss.str() == "escompat.Map")) {
+    if (!(ss.str() == compiler::Signatures::BUILTIN_RECORD || ss.str() == compiler::Signatures::BUILTIN_MAP)) {
         // Only update object expressions for Map/Record types
         return expr;
     }
@@ -207,10 +211,9 @@ ir::Expression *RecordLowering::CreateBlockExpression(ir::ObjectExpression *expr
      * ...
      * map
      */
-    auto checker = ctx->checker->AsETSChecker();
 
     // Initialize map with provided type arguments
-    auto *ident = Gensym(checker->Allocator());
+    auto *ident = Gensym(ctx->Allocator());
     std::stringstream ss;
     expr->TsType()->ToAssemblerType(ss);
 
@@ -218,7 +221,7 @@ ir::Expression *RecordLowering::CreateBlockExpression(ir::ObjectExpression *expr
     auto &properties = expr->Properties();
     // currently we only have Map and Record in this if branch
     std::string containerType;
-    if (ss.str() == "escompat.Map") {
+    if (ss.str() == compiler::Signatures::BUILTIN_MAP) {
         containerType = "Map";
     } else {
         containerType = "Record";
@@ -239,7 +242,7 @@ ir::Expression *RecordLowering::CreateBlockExpression(ir::ObjectExpression *expr
     statements.push_back(CreateStatement("@@I1", ident->Clone(ctx->allocator, nullptr), nullptr, nullptr, ctx));
 
     // Create Block Expression
-    auto block = checker->AllocNode<ir::BlockExpression>(std::move(statements));
+    auto block = ctx->AllocNode<ir::BlockExpression>(std::move(statements));
     return block;
 }
 

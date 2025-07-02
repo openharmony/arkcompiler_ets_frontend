@@ -65,6 +65,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 54,
+            "column": 3,
+            "endLine": 54,
+            "endColumn": 10,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
             "line": 57,
             "column": 13,
             "endLine": 57,
@@ -665,6 +675,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 319,
+            "column": 15,
+            "endLine": 319,
+            "endColumn": 16,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 329,
             "column": 10,
             "endLine": 329,
@@ -975,6 +995,26 @@
             "severity": "ERROR"
         },
         {
+            "line": 480,
+            "column": 1,
+            "endLine": 480,
+            "endColumn": 10,
+            "problem": "LimitedStdLibNoSendableDecorator",
+            "suggest": "",
+            "rule": "Usage of standard library is restricted(arkts-limited-stdlib-no-sendable-decorator)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 485,
+            "column": 1,
+            "endLine": 485,
+            "endColumn": 10,
+            "problem": "LimitedStdLibNoSendableDecorator",
+            "suggest": "",
+            "rule": "Usage of standard library is restricted(arkts-limited-stdlib-no-sendable-decorator)",
+            "severity": "ERROR"
+        },
+        {
             "line": 502,
             "column": 7,
             "endLine": 502,
@@ -1195,6 +1235,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 574,
+            "column": 44,
+            "endLine": 574,
+            "endColumn": 49,
+            "problem": "NoTsLikeSmartType",
+            "suggest": "",
+            "rule": "Smart type differences (arkts-no-ts-like-smart-type)",
+            "severity": "ERROR"
+        },
+        {
             "line": 575,
             "column": 44,
             "endLine": 575,
@@ -1202,6 +1252,36 @@
             "problem": "StructuralIdentity",
             "suggest": "",
             "rule": "Structural typing is not supported (arkts-no-structural-typing)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 575,
+            "column": 44,
+            "endLine": 575,
+            "endColumn": 49,
+            "problem": "NoTsLikeSmartType",
+            "suggest": "",
+            "rule": "Smart type differences (arkts-no-ts-like-smart-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 576,
+            "column": 38,
+            "endLine": 576,
+            "endColumn": 43,
+            "problem": "NoTsLikeSmartType",
+            "suggest": "",
+            "rule": "Smart type differences (arkts-no-ts-like-smart-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 577,
+            "column": 38,
+            "endLine": 577,
+            "endColumn": 43,
+            "problem": "NoTsLikeSmartType",
+            "suggest": "",
+            "rule": "Smart type differences (arkts-no-ts-like-smart-type)",
             "severity": "ERROR"
         },
         {
@@ -1215,6 +1295,26 @@
             "severity": "ERROR"
         },
         {
+            "line": 578,
+            "column": 38,
+            "endLine": 578,
+            "endColumn": 43,
+            "problem": "NoTsLikeSmartType",
+            "suggest": "",
+            "rule": "Smart type differences (arkts-no-ts-like-smart-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 579,
+            "column": 44,
+            "endLine": 579,
+            "endColumn": 49,
+            "problem": "NoTsLikeSmartType",
+            "suggest": "",
+            "rule": "Smart type differences (arkts-no-ts-like-smart-type)",
+            "severity": "ERROR"
+        },
+        {
             "line": 580,
             "column": 44,
             "endLine": 580,
@@ -1222,6 +1322,16 @@
             "problem": "StructuralIdentity",
             "suggest": "",
             "rule": "Structural typing is not supported (arkts-no-structural-typing)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 580,
+            "column": 44,
+            "endLine": 580,
+            "endColumn": 49,
+            "problem": "NoTsLikeSmartType",
+            "suggest": "",
+            "rule": "Smart type differences (arkts-no-ts-like-smart-type)",
             "severity": "ERROR"
         },
         {
@@ -1282,6 +1392,26 @@
             "problem": "StructuralIdentity",
             "suggest": "",
             "rule": "Structural typing is not supported (arkts-no-structural-typing)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 609,
+            "column": 15,
+            "endLine": 609,
+            "endColumn": 16,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 612,
+            "column": 15,
+            "endLine": 612,
+            "endColumn": 16,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -1542,6 +1672,16 @@
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
             "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 691,
+            "column": 10,
+            "endLine": 691,
+            "endColumn": 12,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         }
     ]

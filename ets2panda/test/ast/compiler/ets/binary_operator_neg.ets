@@ -16,6 +16,6 @@
 /* @@ label1 */@@/@
 
 /* @@@ label1 Error SyntaxError: Unexpected token '@@'.  */
-/* @@? 21:93 Error SyntaxError: Identifier expected, got 'eos'.  */
-/* @@? 21:93 Error SyntaxError: Unexpected token 'eos'.  */
+/* @@? 21:93 Error SyntaxError: Identifier expected, got 'end of stream'.  */
+/* @@? 21:93 Error SyntaxError: Unexpected token 'end of stream'.  */
 /* @@? 21:93 Error SyntaxError: Annotations are not allowed on this type of declaration.  */

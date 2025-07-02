@@ -18,6 +18,7 @@
 
 #include "ir/statement.h"
 #include "ir/typed.h"
+#include "ir/jsDocAllowed.h"
 #include "ir/statements/annotationUsage.h"
 
 namespace ark::es2panda::varbinder {
@@ -28,11 +29,11 @@ namespace ark::es2panda::ir {
 class Identifier;
 class TSTypeParameterDeclaration;
 
-class TSTypeAliasDeclaration : public AnnotatedStatement {
+class TSTypeAliasDeclaration : public JsDocAllowed<AnnotatedStatement> {
 public:
     explicit TSTypeAliasDeclaration(ArenaAllocator *allocator, Identifier *id, TSTypeParameterDeclaration *typeParams,
                                     TypeNode *typeAnnotation)
-        : AnnotatedStatement(AstNodeType::TS_TYPE_ALIAS_DECLARATION, typeAnnotation),
+        : JsDocAllowed<AnnotatedStatement>(AstNodeType::TS_TYPE_ALIAS_DECLARATION, typeAnnotation, allocator),
           decorators_(allocator->Adapter()),
           annotations_(allocator->Adapter()),
           id_(id),
@@ -42,7 +43,7 @@ public:
     }
 
     explicit TSTypeAliasDeclaration(ArenaAllocator *allocator, Identifier *id)
-        : AnnotatedStatement(AstNodeType::TS_TYPE_ALIAS_DECLARATION),
+        : JsDocAllowed<AnnotatedStatement>(allocator, AstNodeType::TS_TYPE_ALIAS_DECLARATION),
           decorators_(allocator->Adapter()),
           annotations_(allocator->Adapter()),
           id_(id),
@@ -139,7 +140,12 @@ public:
         typeParamTypes_.clear();
     }
 
+    TSTypeAliasDeclaration *Construct(ArenaAllocator *allocator) override;
+    void CopyTo(AstNode *other) const override;
+
 private:
+    bool RegisterUnexportedForDeclGen(ir::SrcDumper *dumper) const;
+    friend class SizeOfNodeTest;
     ArenaVector<Decorator *> decorators_;
     ArenaVector<AnnotationUsage *> annotations_;
     Identifier *id_;

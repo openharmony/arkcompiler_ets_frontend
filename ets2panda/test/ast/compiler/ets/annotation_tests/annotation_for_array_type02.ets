@@ -17,8 +17,8 @@
 }
 
 // annotataions for different dimensions of array
-let a: FixedArray<Int> @Anno []
+let a: Int[] @Anno []
 
-/* @@? 20:24 Error SyntaxError: Unexpected token '@'. */
-/* @@? 20:30 Error SyntaxError: Annotations are not allowed on this type of declaration. */
-/* @@? 20:30 Error TypeError: Can't resolve array type */
+/* @@? 20:14 Error SyntaxError: Unexpected token '@'. */
+/* @@? 20:20 Error SyntaxError: Annotations are not allowed on this type of declaration. */
+/* @@? 20:20 Error TypeError: Can't resolve array type */

@@ -24,7 +24,6 @@ let func3: (f: (a: number, b: string) => number[]): number[] => (a: number, b: b
 
 
 /* @@? 19:8 Error TypeError: 'void' used as type annotation. */
-/* @@? 19:8 Error TypeError: 'void' used as type annotation. */
 /* @@? 22:51 Error SyntaxError: Unexpected token, expected '=>'. */
 /* @@? 22:51 Error SyntaxError: Unexpected token, expected '('. */
 /* @@? 22:51 Error SyntaxError: Invalid Type. */

@@ -22,4 +22,4 @@ function main() {
     console.log(/* @@ label */a["a"])
 }
 
-/* @@@ label Error TypeError: Object type doesn't have proper index access method.  */
+/* @@@ label Error TypeError: Indexed signatures are not allowed. Use arrays instead!  */

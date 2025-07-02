@@ -1,0 +1,225 @@
+{
+    "copyright": [
+        "Copyright (c) 2025 Huawei Device Co., Ltd.",
+        "Licensed under the Apache License, Version 2.0 (the 'License');",
+        "you may not use this file except in compliance with the License.",
+        "You may obtain a copy of the License at",
+        "",
+        "http://www.apache.org/licenses/LICENSE-2.0",
+        "",
+        "Unless required by applicable law or agreed to in writing, software",
+        "distributed under the License is distributed on an 'AS IS' BASIS,",
+        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+        "See the License for the specific language governing permissions and",
+        "limitations under the License."
+    ],
+    "result": [
+        {
+            "line": 19,
+            "column": 3,
+            "endLine": 23,
+            "endColumn": 4,
+            "problem": "StylesDecoratorNotSupported",
+            "autofix": [
+                {
+                    "start": 641,
+                    "end": 730,
+                    "replacementText": "private cardStyle1: CustomStyles = (instance: CommonMethod): void => {\n    instance.backgroundColor('#ffffff');\n    instance.borderRadius(8);\n  };",
+                    "line": 19,
+                    "column": 3,
+                    "endLine": 23,
+                    "endColumn": 4
+                },
+                {
+                    "start": 870,
+                    "end": 882,
+                    "replacementText": "applyStyles(this.cardStyle1)",
+                    "line": 19,
+                    "column": 3,
+                    "endLine": 23,
+                    "endColumn": 4
+                }
+            ],
+            "suggest": "",
+            "rule": "\"@Styles\" decorator is not supported (arkui-no-styles-decorator)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 22,
+            "column": 19,
+            "endLine": 22,
+            "endColumn": 20,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 724,
+                    "end": 725,
+                    "replacementText": "8.0",
+                    "line": 22,
+                    "column": 19,
+                    "endLine": 22,
+                    "endColumn": 20
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 25,
+            "column": 3,
+            "endLine": 29,
+            "endColumn": 4,
+            "problem": "StylesDecoratorNotSupported",
+            "autofix": [
+                {
+                    "start": 734,
+                    "end": 822,
+                    "replacementText": "public cardStyle2: CustomStyles = (instance: CommonMethod): void => {\n    instance.backgroundColor('#ffffff');\n    instance.borderRadius(8);\n  };",
+                    "line": 25,
+                    "column": 3,
+                    "endLine": 29,
+                    "endColumn": 4
+                },
+                {
+                    "start": 894,
+                    "end": 906,
+                    "replacementText": "applyStyles(this.cardStyle2)",
+                    "line": 25,
+                    "column": 3,
+                    "endLine": 29,
+                    "endColumn": 4
+                }
+            ],
+            "suggest": "",
+            "rule": "\"@Styles\" decorator is not supported (arkui-no-styles-decorator)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 28,
+            "column": 19,
+            "endLine": 28,
+            "endColumn": 20,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 816,
+                    "end": 817,
+                    "replacementText": "8.0",
+                    "line": 28,
+                    "column": 19,
+                    "endLine": 28,
+                    "endColumn": 20
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 16,
+            "column": 2,
+            "endLine": 16,
+            "endColumn": 7,
+            "problem": "UIInterfaceImport",
+            "autofix": [
+                {
+                    "start": 603,
+                    "end": 603,
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  CommonMethod,\n  Column,\n  Text,\n  Color,\n} from '@kit.ArkUI';",
+                    "line": 36,
+                    "column": 22,
+                    "endLine": 36,
+                    "endColumn": 27
+                }
+            ],
+            "suggest": "",
+            "rule": "The ArkUI interface \"Entry\" should be imported before it is used (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 17,
+            "column": 2,
+            "endLine": 17,
+            "endColumn": 11,
+            "problem": "UIInterfaceImport",
+            "autofix": [
+                {
+                    "start": 603,
+                    "end": 603,
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  CommonMethod,\n  Column,\n  Text,\n  Color,\n} from '@kit.ArkUI';",
+                    "line": 36,
+                    "column": 22,
+                    "endLine": 36,
+                    "endColumn": 27
+                }
+            ],
+            "suggest": "",
+            "rule": "The ArkUI interface \"Component\" should be imported before it is used (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 32,
+            "column": 5,
+            "endLine": 32,
+            "endColumn": 11,
+            "problem": "UIInterfaceImport",
+            "autofix": [
+                {
+                    "start": 603,
+                    "end": 603,
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  CommonMethod,\n  Column,\n  Text,\n  Color,\n} from '@kit.ArkUI';",
+                    "line": 36,
+                    "column": 22,
+                    "endLine": 36,
+                    "endColumn": 27
+                }
+            ],
+            "suggest": "",
+            "rule": "The ArkUI interface \"Column\" should be imported before it is used (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 33,
+            "column": 7,
+            "endLine": 33,
+            "endColumn": 11,
+            "problem": "UIInterfaceImport",
+            "autofix": [
+                {
+                    "start": 603,
+                    "end": 603,
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  CommonMethod,\n  Column,\n  Text,\n  Color,\n} from '@kit.ArkUI';",
+                    "line": 36,
+                    "column": 22,
+                    "endLine": 36,
+                    "endColumn": 27
+                }
+            ],
+            "suggest": "",
+            "rule": "The ArkUI interface \"Text\" should be imported before it is used (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 36,
+            "column": 22,
+            "endLine": 36,
+            "endColumn": 27,
+            "problem": "UIInterfaceImport",
+            "autofix": [
+                {
+                    "start": 603,
+                    "end": 603,
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  CommonMethod,\n  Column,\n  Text,\n  Color,\n} from '@kit.ArkUI';",
+                    "line": 36,
+                    "column": 22,
+                    "endLine": 36,
+                    "endColumn": 27
+                }
+            ],
+            "suggest": "",
+            "rule": "The ArkUI interface \"Color\" should be imported before it is used (arkui-modular-interface)",
+            "severity": "ERROR"
+        }
+    ]
+}

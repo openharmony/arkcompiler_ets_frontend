@@ -247,8 +247,8 @@
         }
       },
       {
-        "message": "Unexpected token ')'.",
-        "source": "*ERROR_LITERAL*",
+        "message": "Unexpected token '{'.",
+        "source": "{\n  return ((a) + (b));\n}",
         "range": {
           "start": {
             "line": 16,

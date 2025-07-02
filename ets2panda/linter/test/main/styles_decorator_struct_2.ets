@@ -13,13 +13,15 @@
  * limitations under the License.
  */
 
+import { CustomStyles, applyStyles } from '@kit.ArkUI';
+
 import { Component, CommonMethod, Column, Text, Color, BuilderParam, Require, Button, CustomBuilder } from '@kit.ArkUI';
 
 @Component
 struct MyCard1 {
-  cardStyle1 = (instance: CommonMethod): void => {
+  cardStyle1: CustomStyles = (instance: CommonMethod): void => {
     instance.backgroundColor('#ffffff');
-    instance.borderRadius(8);
+    instance.borderRadius(8.0);
   };
 
   build() {
@@ -33,7 +35,7 @@ struct MyCard1 {
 
 @Component
 struct MyCard2 {
-  cardStyle2 = (instance: CommonMethod): void => {
+  cardStyle2: CustomStyles = (instance: CommonMethod): void => {
     instance.border({
         color: this.getColor(),
         width: this.getWidth()
@@ -46,7 +48,7 @@ struct MyCard2 {
   }
   
   private getWidth(): number {
-    return 10
+    return 10.0
   }
 
   build() {
@@ -64,11 +66,11 @@ struct MyButton {
   @Require
   content: () => void;
 
-  NormalStyles = (instance: CommonMethod): void => {
+  NormalStyles: CustomStyles = (instance: CommonMethod): void => {
     instance.backgroundColor(Color.Red);
   };
 
-  PressedStyles = (instance: CommonMethod): void => {
+  PressedStyles: CustomStyles = (instance: CommonMethod): void => {
     instance.backgroundColor(Color.Green);
   };
 
@@ -100,7 +102,7 @@ struct imageTest {
   private previewUri: string | undefined;
   private DragBuilder: CustomBuilder | undefined;
 
-  imageStyle = (instance: CommonMethod): void => {
+  imageStyle: CustomStyles = (instance: CommonMethod): void => {
     instance.draggable(this.isShowLongPressMenu() && this.isPC());
     instance.onDragStart(() => {
         console.info(TAG, 'onDragStart');

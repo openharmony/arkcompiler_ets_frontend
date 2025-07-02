@@ -19,5 +19,4 @@ interface Document {
 }
 /* @@@ label Error TypeError: Cannot find type 'HTMLDivElement'. */
 /* @@? 18:35 Error TypeError: Cannot find type 'HTMLSpanElement'. */
-/* @@? 18:35 Error TypeError: Cannot find type 'HTMLSpanElement'. */
 /* @@? 18:3 Error TypeError: Function createElement with this assembly signature already declared. */

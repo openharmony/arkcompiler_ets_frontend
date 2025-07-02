@@ -13,7 +13,10 @@
  * limitations under the License.
  */
 
-import { Component, State } from '@kit.ArkUI';
+import {
+  Component,
+  State,
+} from '@kit.ArkUI';
  
 import { ExportLitAsPropName } from './ignore_files/good';
 
@@ -32,7 +35,7 @@ class LiteralAsPropertyName {
 const litAsPropName: LiteralAsPropertyName = {
   one: "1",
   __2: 'two',
-  Two: 2,
+  Two: 2.0,
 };
 
 console.log(litAsPropName.one);
@@ -48,7 +51,7 @@ class LiteralAsPropertyName_fix {
 const litAsPropName_fix: LiteralAsPropertyName_fix = {
   one: "1111111111",
   _2: 'two',
-  Two: 2,
+  Two: 2.0,
 };
 
 console.log("Fixed listAsPropName:");
@@ -56,7 +59,7 @@ console.log(litAsPropName_fix.one);
 console.log(litAsPropName_fix._2);
 console.log(litAsPropName_fix.Two);
 
-let x = {"name": 20, 2: 30}
+let x = {"name": 20.0, 2: 30.0}
 
 console.log(x["name"]);
 console.log(x[2]);
@@ -70,7 +73,7 @@ interface GeneratedObjectLiteralInterface_1 {
     name: number;
     _2: number;
 }
-let x_fix: GeneratedObjectLiteralInterface_1 = {name: 20, _2: 20};
+let x_fix: GeneratedObjectLiteralInterface_1 = {name: 20.0, _2: 20.0};
 
 console.log("Fixed x object literal:");
 console.log(x_fix.name);
@@ -84,10 +87,10 @@ interface litAsPropNameIface {
 const int: litAsPropNameIface = {
   one: '12321',
   ___2: 'weqwewq',
-  __2: 123
+  __2: 123.0
 };
 
-const imp: ExportLitAsPropName = { 1: 234 };
+const imp: ExportLitAsPropName = { 1: 234.0 };
 
 LiteralAsPropertyNameEnum['One']
 
@@ -95,27 +98,27 @@ LiteralAsPropertyNameEnum.PrivateTwo;
 
 {
   const enum Direction {
-   __empty = 1,
+   __empty = 1.0,
   }
 }
 
 const enum Direction16 {
-  ___x5c = 1,
-  __x5c = 1,
+  ___x5c = 1.0,
+  __x5c = 1.0,
 }
 
 const enum Direction17 {
-  ___x5c = 1,
-  __x5c = 1,
+  ___x5c = 1.0,
+  __x5c = 1.0,
 }
 let case17: number = Direction17.___x5c
 let case172: number = Direction17.__x5c
 
 const enum Direction11 {
-__x21x21 = 1,
+__x21x21 = 1.0,
 }
 const enum Direction23 {
-aaa = 1,
+aaa = 1.0,
 }
 // ArkUI
 @Component
@@ -125,3 +128,32 @@ private case11 = Direction11.__x21x21
 build() {
 }
 }
+
+
+class A{
+ public age:number = 1.0; 
+}
+
+let a:A = { age: 30.0}  
+
+
+class B {
+  public age: number = 1.0 // error in arkts2
+}
+
+let obj11: Record<string, number> = {
+  ['value']: 1.0, // Error in arkts 2.0
+  'value2': 1.0 // ok
+}
+
+class CompPropClass {
+  ['CompProp'] = 1.0; // Error in arkts 2.0
+  [2.0] = 'CompProp2'; // Error in arkts 2.0
+  [LiteralAsPropertyNameEnum.One] = 3.0; // Error in arkts 2.0
+}
+
+let compPropObj = {
+  ['CompProp']: 1.0, // Error in arkts 2.0
+  [2.0]: 'CompProp2', // Error in arkts 2.0
+  [LiteralAsPropertyNameEnum.One]: 3.0 // Error in arkts 2.0
+};

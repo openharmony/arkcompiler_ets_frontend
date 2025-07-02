@@ -312,55 +312,103 @@
                             "type": "Identifier",
                             "name": "x",
                             "typeAnnotation": {
-                              "type": "TSArrayType",
-                              "elementType": {
-                                "type": "ETSTypeReference",
-                                "part": {
-                                  "type": "ETSTypeReferencePart",
-                                  "name": {
-                                    "type": "Identifier",
-                                    "name": "Double",
-                                    "decorators": [],
-                                    "loc": {
-                                      "start": {
-                                        "line": 17,
-                                        "column": 13,
-                                        "program": "array_expression_implicit_cast_assignment.ets"
-                                      },
-                                      "end": {
-                                        "line": 17,
-                                        "column": 19,
-                                        "program": "array_expression_implicit_cast_assignment.ets"
-                                      }
-                                    }
-                                  },
+                              "type": "ETSTypeReference",
+                              "part": {
+                                "type": "ETSTypeReferencePart",
+                                "name": {
+                                  "type": "Identifier",
+                                  "name": "Array",
+                                  "decorators": [],
                                   "loc": {
                                     "start": {
-                                      "line": 17,
-                                      "column": 13,
+                                      "line": 1,
+                                      "column": 1,
                                       "program": "array_expression_implicit_cast_assignment.ets"
                                     },
                                     "end": {
-                                      "line": 17,
-                                      "column": 20,
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "array_expression_implicit_cast_assignment.ets"
+                                    }
+                                  }
+                                },
+                                "typeParams": {
+                                  "type": "TSTypeParameterInstantiation",
+                                  "params": [
+                                    {
+                                      "type": "ETSTypeReference",
+                                      "part": {
+                                        "type": "ETSTypeReferencePart",
+                                        "name": {
+                                          "type": "Identifier",
+                                          "name": "Double",
+                                          "decorators": [],
+                                          "loc": {
+                                            "start": {
+                                              "line": 1,
+                                              "column": 3,
+                                              "program": "array_expression_implicit_cast_assignment.ets"
+                                            },
+                                            "end": {
+                                              "line": 1,
+                                              "column": 3,
+                                              "program": "array_expression_implicit_cast_assignment.ets"
+                                            }
+                                          }
+                                        },
+                                        "loc": {
+                                          "start": {
+                                            "line": 1,
+                                            "column": 3,
+                                            "program": "array_expression_implicit_cast_assignment.ets"
+                                          },
+                                          "end": {
+                                            "line": 1,
+                                            "column": 3,
+                                            "program": "array_expression_implicit_cast_assignment.ets"
+                                          }
+                                        }
+                                      },
+                                      "loc": {
+                                        "start": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "array_expression_implicit_cast_assignment.ets"
+                                        },
+                                        "end": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "array_expression_implicit_cast_assignment.ets"
+                                        }
+                                      }
+                                    }
+                                  ],
+                                  "loc": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "array_expression_implicit_cast_assignment.ets"
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 3,
                                       "program": "array_expression_implicit_cast_assignment.ets"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
-                                    "line": 17,
-                                    "column": 13,
+                                    "line": 1,
+                                    "column": 1,
                                     "program": "array_expression_implicit_cast_assignment.ets"
                                   },
                                   "end": {
-                                    "line": 17,
-                                    "column": 20,
+                                    "line": 1,
+                                    "column": 3,
                                     "program": "array_expression_implicit_cast_assignment.ets"
                                   }
                                 }
                               },
-                              "annotations": [],
                               "loc": {
                                 "start": {
                                   "line": 17,

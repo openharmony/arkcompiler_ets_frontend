@@ -21,4 +21,4 @@ import(import /* @@ label */)
 
 /* @@@ label Error SyntaxError: Expected '(', got ')'. */
 /* @@@ label Error SyntaxError: Unexpected token ')'. */
-/* @@? 25:1 Error SyntaxError: Expected ')', got 'eos'. */
+/* @@? 25:1 Error SyntaxError: Expected ')', got 'end of stream'. */

@@ -44,29 +44,29 @@ function Process-Directory {
     param (
         [string] $directory
     )
-    
+
     if (-not (Test-Path -Path $directory -PathType Container)) {
         Write-Host "Directory $directory does not exist. Skipping."
         return
     }
-    
+
     Write-Host "Processing directory: $directory"
-    
+
     $jsonFiles = Get-ChildItem -Path $directory -Filter "*.json" -File -Recurse
-    
+
     foreach ($file in $jsonFiles) {
         Write-Host "Processing file: $($file.FullName)"
         $content = Get-Content -Path $file.FullName -Raw
 
         $scriptDirJson = $ScriptDir -replace '\\', '/'
-        
+
         if ($RestoreMode -eq 1) {
             $newContent = $content -replace [regex]::Escape($scriptDirJson), $OldPath
         }
         else {
             $newContent = $content -replace [regex]::Escape($OldPath), $scriptDirJson
         }
-        
+
         Set-Content -Path $file.FullName -Value $newContent -NoNewline
     }
 }
@@ -76,6 +76,7 @@ Process-Directory -directory $TestcasesDir
 if ($RestoreMode -eq 1) {
     if (Test-Path -Path "$ScriptDir\..\ets2panda") {
         Remove-Item -Path "$ScriptDir\..\ets2panda" -Recurse -Force
+        Write-Host "Removed '$ScriptDir\..\ets2panda' directory."
     }
     Write-Host "Path restoration completed."
 }

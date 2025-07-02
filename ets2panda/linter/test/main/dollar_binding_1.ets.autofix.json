@@ -1,19 +1,61 @@
 {
     "copyright": [
-      "Copyright (c) 2025 Huawei Device Co., Ltd.",
-      "Licensed under the Apache License, Version 2.0 (the 'License');",
-      "you may not use this file except in compliance with the License.",
-      "You may obtain a copy of the License at",
-      "",
-      "http://www.apache.org/licenses/LICENSE-2.0",
-      "",
-      "Unless required by applicable law or agreed to in writing, software",
-      "distributed under the License is distributed on an 'AS IS' BASIS,",
-      "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
-      "See the License for the specific language governing permissions and",
-      "limitations under the License."
+        "Copyright (c) 2025 Huawei Device Co., Ltd.",
+        "Licensed under the Apache License, Version 2.0 (the 'License');",
+        "you may not use this file except in compliance with the License.",
+        "You may obtain a copy of the License at",
+        "",
+        "http://www.apache.org/licenses/LICENSE-2.0",
+        "",
+        "Unless required by applicable law or agreed to in writing, software",
+        "distributed under the License is distributed on an 'AS IS' BASIS,",
+        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+        "See the License for the specific language governing permissions and",
+        "limitations under the License."
     ],
     "result": [
+        {
+            "line": 18,
+            "column": 26,
+            "endLine": 18,
+            "endColumn": 27,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 662,
+                    "end": 663,
+                    "replacementText": "0.0",
+                    "line": 18,
+                    "column": 26,
+                    "endLine": 18,
+                    "endColumn": 27
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 19,
+            "column": 23,
+            "endLine": 19,
+            "endColumn": 24,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 686,
+                    "end": 687,
+                    "replacementText": "0.0",
+                    "line": 19,
+                    "column": 23,
+                    "endLine": 19,
+                    "endColumn": 24
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
         {
             "line": 24,
             "column": 9,
@@ -24,7 +66,11 @@
                 {
                     "start": 749,
                     "end": 755,
-                    "replacementText": "this.count"
+                    "replacementText": "this.count",
+                    "line": 24,
+                    "column": 9,
+                    "endLine": 24,
+                    "endColumn": 22
                 }
             ],
             "suggest": "",
@@ -41,7 +87,11 @@
                 {
                     "start": 798,
                     "end": 801,
-                    "replacementText": "this.$$"
+                    "replacementText": "this.$$",
+                    "line": 27,
+                    "column": 9,
+                    "endLine": 27,
+                    "endColumn": 19
                 }
             ],
             "suggest": "",
@@ -58,11 +108,15 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Column, Link, Row, Text } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport {\n  Component,\n  State,\n  Column,\n  Link,\n  Row,\n  Text,\n} from '@kit.ArkUI';",
+                    "line": 39,
+                    "column": 7,
+                    "endLine": 39,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Component\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -75,11 +129,15 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Column, Link, Row, Text } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport {\n  Component,\n  State,\n  Column,\n  Link,\n  Row,\n  Text,\n} from '@kit.ArkUI';",
+                    "line": 39,
+                    "column": 7,
+                    "endLine": 39,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"State\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -92,11 +150,15 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Column, Link, Row, Text } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport {\n  Component,\n  State,\n  Column,\n  Link,\n  Row,\n  Text,\n} from '@kit.ArkUI';",
+                    "line": 39,
+                    "column": 7,
+                    "endLine": 39,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"State\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -109,11 +171,15 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Column, Link, Row, Text } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport {\n  Component,\n  State,\n  Column,\n  Link,\n  Row,\n  Text,\n} from '@kit.ArkUI';",
+                    "line": 39,
+                    "column": 7,
+                    "endLine": 39,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Column\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -126,11 +192,15 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Column, Link, Row, Text } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport {\n  Component,\n  State,\n  Column,\n  Link,\n  Row,\n  Text,\n} from '@kit.ArkUI';",
+                    "line": 39,
+                    "column": 7,
+                    "endLine": 39,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Component\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -143,11 +213,15 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Column, Link, Row, Text } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport {\n  Component,\n  State,\n  Column,\n  Link,\n  Row,\n  Text,\n} from '@kit.ArkUI';",
+                    "line": 39,
+                    "column": 7,
+                    "endLine": 39,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Link\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -160,11 +234,15 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Column, Link, Row, Text } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport {\n  Component,\n  State,\n  Column,\n  Link,\n  Row,\n  Text,\n} from '@kit.ArkUI';",
+                    "line": 39,
+                    "column": 7,
+                    "endLine": 39,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Row\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -177,11 +255,15 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Column, Link, Row, Text } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport {\n  Component,\n  State,\n  Column,\n  Link,\n  Row,\n  Text,\n} from '@kit.ArkUI';",
+                    "line": 39,
+                    "column": 7,
+                    "endLine": 39,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Text\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         }
     ]

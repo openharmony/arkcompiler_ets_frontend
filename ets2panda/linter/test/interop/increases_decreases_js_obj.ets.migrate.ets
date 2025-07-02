@@ -12,12 +12,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use static'
-let GeneratedImportVar_1 = ESObject.load('./increases_decreases_js_obj_js');
-let foo = GeneratedImportVar_1.getPropertyByName('foo');
+let GeneratedImportVar_1 = ESValue.load('./increases_decreases_js_obj_js');
+let foo = GeneratedImportVar_1.getProperty('foo');
 
-let a: number =0
-a = foo.getPropertyByName("num")++
-a = ++foo.getPropertyByName("num")
-a = foo.getPropertyByName("num")--
-a = --foo.getPropertyByName("num")
+let a: number =0.0
+a = foo.getProperty("num").toNumber()
+foo.setProperty(num, a + 1.0)
+a = a + 1.0
+
+a = foo.getProperty("num").toNumber()
+a = a + 1.0
+foo.setProperty(num, a)
+
+a = foo.getProperty("num").toNumber()
+foo.setProperty(num, a - 1.0)
+a = a - 1.0
+
+a = foo.getProperty("num").toNumber()
+a = a - 1.0
+foo.setProperty(num, a)
+
+
+let tmp_1 = foo.getProperty("num").toNumber()
+foo.setProperty(num, tmp_1 + 1.0)
+tmp_1 = tmp_1 + 1.0
+
+let tmp_2 = foo.getProperty("num").toNumber()
+tmp_2 = tmp_2 + 1.0
+foo.setProperty(num, tmp_2)
+
+let tmp_3 = foo.getProperty("num").toNumber()
+foo.setProperty(num, tmp_3 - 1.0)
+tmp_3 = tmp_3 - 1.0
+
+let tmp_4 = foo.getProperty("num").toNumber()
+tmp_4 = tmp_4 - 1.0
+foo.setProperty(num, tmp_4)
+

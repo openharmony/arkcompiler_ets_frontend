@@ -15,31 +15,29 @@
     ],
     "result": [
         {
-            "line": 16,
+            "line": 15,
             "column": 1,
-            "endLine": 16,
-            "endColumn": 52,
-            "problem": "ImportAfterStatement",
-            "suggest": "",
-            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 16,
-            "column": 1,
-            "endLine": 16,
+            "endLine": 15,
             "endColumn": 52,
             "problem": "InterOpImportJs",
             "autofix": [
                 {
-                    "start": 617,
-                    "end": 668,
-                    "replacementText": ""
+                    "start": 604,
+                    "end": 655,
+                    "replacementText": "",
+                    "line": 15,
+                    "column": 1,
+                    "endLine": 15,
+                    "endColumn": 52
                 },
                 {
-                    "start": 668,
-                    "end": 668,
-                    "replacementText": "let GeneratedImportVar_1 = ESObject.load('./increases_decreases_js_obj_js');\nlet foo = GeneratedImportVar_1.getPropertyByName('foo');\n"
+                    "start": 655,
+                    "end": 655,
+                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('./increases_decreases_js_obj_js');\nlet foo = GeneratedImportVar_1.getProperty('foo');\n",
+                    "line": 15,
+                    "column": 1,
+                    "endLine": 15,
+                    "endColumn": 52
                 }
             ],
             "suggest": "",
@@ -47,26 +45,62 @@
             "severity": "ERROR"
         },
         {
-            "line": 18,
+            "line": 16,
+            "column": 16,
+            "endLine": 16,
+            "endColumn": 17,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 671,
+                    "end": 672,
+                    "replacementText": "0.0",
+                    "line": 16,
+                    "column": 16,
+                    "endLine": 16,
+                    "endColumn": 17
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 17,
             "column": 5,
-            "endLine": 18,
+            "endLine": 17,
             "endColumn": 14,
             "problem": "InteropIncrementDecrement",
+            "autofix": [
+                {
+                    "replacementText": "a = foo.getProperty(\"num\").toNumber()\nfoo.setProperty(num, a + 1)\na = a + 1\n",
+                    "start": 673,
+                    "end": 686,
+                    "line": 17,
+                    "column": 5,
+                    "endLine": 17,
+                    "endColumn": 14
+                }
+            ],
             "suggest": "",
             "rule": "Interop objects can't be incremented or decremented (arkts-interop-js2s-self-addtion-reduction)",
             "severity": "ERROR"
         },
         {
-            "line": 18,
+            "line": 17,
             "column": 5,
-            "endLine": 18,
+            "endLine": 17,
             "endColumn": 12,
             "problem": "InteropObjectProperty",
             "autofix": [
                 {
-                    "start": 690,
-                    "end": 697,
-                    "replacementText": "foo.getPropertyByName(\"num\")"
+                    "start": 677,
+                    "end": 684,
+                    "replacementText": "foo.getProperty(\"num\")",
+                    "line": 17,
+                    "column": 5,
+                    "endLine": 17,
+                    "endColumn": 12
                 }
             ],
             "suggest": "",
@@ -77,50 +111,38 @@
             "line": 18,
             "column": 5,
             "endLine": 18,
-            "endColumn": 12,
-            "problem": "InteropJsObjectUsage",
+            "endColumn": 14,
+            "problem": "InteropIncrementDecrement",
             "autofix": [
                 {
-                    "replacementText": "foo.getPropertyByName('num').toNumber()",
-                    "start": 690,
-                    "end": 697
+                    "replacementText": "a = foo.getProperty(\"num\").toNumber()\na = a + 1\nfoo.setProperty(num, a)\n",
+                    "start": 687,
+                    "end": 700,
+                    "line": 18,
+                    "column": 5,
+                    "endLine": 18,
+                    "endColumn": 14
                 }
             ],
             "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "rule": "Interop objects can't be incremented or decremented (arkts-interop-js2s-self-addtion-reduction)",
             "severity": "ERROR"
         },
         {
             "line": 18,
-            "column": 5,
+            "column": 7,
             "endLine": 18,
-            "endColumn": 12,
-            "problem": "BinaryOperations",
-            "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 19,
-            "column": 5,
-            "endLine": 19,
-            "endColumn": 14,
-            "problem": "InteropIncrementDecrement",
-            "suggest": "",
-            "rule": "Interop objects can't be incremented or decremented (arkts-interop-js2s-self-addtion-reduction)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 19,
-            "column": 7,
-            "endLine": 19,
             "endColumn": 14,
             "problem": "InteropObjectProperty",
             "autofix": [
                 {
-                    "start": 706,
-                    "end": 713,
-                    "replacementText": "foo.getPropertyByName(\"num\")"
+                    "start": 693,
+                    "end": 700,
+                    "replacementText": "foo.getProperty(\"num\")",
+                    "line": 18,
+                    "column": 7,
+                    "endLine": 18,
+                    "endColumn": 14
                 }
             ],
             "suggest": "",
@@ -129,52 +151,40 @@
         },
         {
             "line": 19,
-            "column": 7,
-            "endLine": 19,
-            "endColumn": 14,
-            "problem": "InteropJsObjectUsage",
-            "autofix": [
-                {
-                    "replacementText": "foo.getPropertyByName('num').toNumber()",
-                    "start": 706,
-                    "end": 713
-                }
-            ],
-            "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 19,
-            "column": 7,
-            "endLine": 19,
-            "endColumn": 14,
-            "problem": "BinaryOperations",
-            "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 20,
             "column": 5,
-            "endLine": 20,
+            "endLine": 19,
             "endColumn": 14,
             "problem": "InteropIncrementDecrement",
+            "autofix": [
+                {
+                    "replacementText": "a = foo.getProperty(\"num\").toNumber()\nfoo.setProperty(num, a - 1)\na = a - 1\n",
+                    "start": 701,
+                    "end": 714,
+                    "line": 19,
+                    "column": 5,
+                    "endLine": 19,
+                    "endColumn": 14
+                }
+            ],
             "suggest": "",
             "rule": "Interop objects can't be incremented or decremented (arkts-interop-js2s-self-addtion-reduction)",
             "severity": "ERROR"
         },
         {
-            "line": 20,
+            "line": 19,
             "column": 5,
-            "endLine": 20,
+            "endLine": 19,
             "endColumn": 12,
             "problem": "InteropObjectProperty",
             "autofix": [
                 {
-                    "start": 718,
-                    "end": 725,
-                    "replacementText": "foo.getPropertyByName(\"num\")"
+                    "start": 705,
+                    "end": 712,
+                    "replacementText": "foo.getProperty(\"num\")",
+                    "line": 19,
+                    "column": 5,
+                    "endLine": 19,
+                    "endColumn": 12
                 }
             ],
             "suggest": "",
@@ -185,50 +195,38 @@
             "line": 20,
             "column": 5,
             "endLine": 20,
-            "endColumn": 12,
-            "problem": "InteropJsObjectUsage",
-            "autofix": [
-                {
-                    "replacementText": "foo.getPropertyByName('num').toNumber()",
-                    "start": 718,
-                    "end": 725
-                }
-            ],
-            "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 20,
-            "column": 5,
-            "endLine": 20,
-            "endColumn": 12,
-            "problem": "BinaryOperations",
-            "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 21,
-            "column": 5,
-            "endLine": 21,
             "endColumn": 14,
             "problem": "InteropIncrementDecrement",
+            "autofix": [
+                {
+                    "replacementText": "a = foo.getProperty(\"num\").toNumber()\na = a - 1\nfoo.setProperty(num, a)\n",
+                    "start": 715,
+                    "end": 728,
+                    "line": 20,
+                    "column": 5,
+                    "endLine": 20,
+                    "endColumn": 14
+                }
+            ],
             "suggest": "",
             "rule": "Interop objects can't be incremented or decremented (arkts-interop-js2s-self-addtion-reduction)",
             "severity": "ERROR"
         },
         {
-            "line": 21,
+            "line": 20,
             "column": 7,
-            "endLine": 21,
+            "endLine": 20,
             "endColumn": 14,
             "problem": "InteropObjectProperty",
             "autofix": [
                 {
-                    "start": 734,
-                    "end": 741,
-                    "replacementText": "foo.getPropertyByName(\"num\")"
+                    "start": 721,
+                    "end": 728,
+                    "replacementText": "foo.getProperty(\"num\")",
+                    "line": 20,
+                    "column": 7,
+                    "endLine": 20,
+                    "endColumn": 14
                 }
             ],
             "suggest": "",
@@ -236,30 +234,171 @@
             "severity": "ERROR"
         },
         {
-            "line": 21,
-            "column": 7,
-            "endLine": 21,
-            "endColumn": 14,
-            "problem": "InteropJsObjectUsage",
+            "line": 22,
+            "column": 1,
+            "endLine": 22,
+            "endColumn": 10,
+            "problem": "InteropIncrementDecrement",
             "autofix": [
                 {
-                    "replacementText": "foo.getPropertyByName('num').toNumber()",
-                    "start": 734,
-                    "end": 741
+                    "replacementText": "let tmp_1 = foo.getProperty(\"num\").toNumber()\nfoo.setProperty(num, tmp_1 + 1)\ntmp_1 = tmp_1 + 1\n",
+                    "start": 730,
+                    "end": 739,
+                    "line": 22,
+                    "column": 1,
+                    "endLine": 22,
+                    "endColumn": 10
                 }
             ],
             "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "rule": "Interop objects can't be incremented or decremented (arkts-interop-js2s-self-addtion-reduction)",
             "severity": "ERROR"
         },
         {
-            "line": 21,
-            "column": 7,
-            "endLine": 21,
-            "endColumn": 14,
-            "problem": "BinaryOperations",
+            "line": 22,
+            "column": 1,
+            "endLine": 22,
+            "endColumn": 8,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 730,
+                    "end": 737,
+                    "replacementText": "foo.getProperty(\"num\")",
+                    "line": 22,
+                    "column": 1,
+                    "endLine": 22,
+                    "endColumn": 8
+                }
+            ],
             "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 23,
+            "column": 1,
+            "endLine": 23,
+            "endColumn": 10,
+            "problem": "InteropIncrementDecrement",
+            "autofix": [
+                {
+                    "replacementText": "let tmp_2 = foo.getProperty(\"num\").toNumber()\ntmp_2 = tmp_2 + 1\nfoo.setProperty(num, tmp_2)\n",
+                    "start": 740,
+                    "end": 749,
+                    "line": 23,
+                    "column": 1,
+                    "endLine": 23,
+                    "endColumn": 10
+                }
+            ],
+            "suggest": "",
+            "rule": "Interop objects can't be incremented or decremented (arkts-interop-js2s-self-addtion-reduction)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 23,
+            "column": 3,
+            "endLine": 23,
+            "endColumn": 10,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 742,
+                    "end": 749,
+                    "replacementText": "foo.getProperty(\"num\")",
+                    "line": 23,
+                    "column": 3,
+                    "endLine": 23,
+                    "endColumn": 10
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 24,
+            "column": 1,
+            "endLine": 24,
+            "endColumn": 10,
+            "problem": "InteropIncrementDecrement",
+            "autofix": [
+                {
+                    "replacementText": "let tmp_3 = foo.getProperty(\"num\").toNumber()\nfoo.setProperty(num, tmp_3 - 1)\ntmp_3 = tmp_3 - 1\n",
+                    "start": 750,
+                    "end": 759,
+                    "line": 24,
+                    "column": 1,
+                    "endLine": 24,
+                    "endColumn": 10
+                }
+            ],
+            "suggest": "",
+            "rule": "Interop objects can't be incremented or decremented (arkts-interop-js2s-self-addtion-reduction)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 24,
+            "column": 1,
+            "endLine": 24,
+            "endColumn": 8,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 750,
+                    "end": 757,
+                    "replacementText": "foo.getProperty(\"num\")",
+                    "line": 24,
+                    "column": 1,
+                    "endLine": 24,
+                    "endColumn": 8
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 25,
+            "column": 1,
+            "endLine": 25,
+            "endColumn": 10,
+            "problem": "InteropIncrementDecrement",
+            "autofix": [
+                {
+                    "replacementText": "let tmp_4 = foo.getProperty(\"num\").toNumber()\ntmp_4 = tmp_4 - 1\nfoo.setProperty(num, tmp_4)\n",
+                    "start": 760,
+                    "end": 769,
+                    "line": 25,
+                    "column": 1,
+                    "endLine": 25,
+                    "endColumn": 10
+                }
+            ],
+            "suggest": "",
+            "rule": "Interop objects can't be incremented or decremented (arkts-interop-js2s-self-addtion-reduction)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 25,
+            "column": 3,
+            "endLine": 25,
+            "endColumn": 10,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 762,
+                    "end": 769,
+                    "replacementText": "foo.getProperty(\"num\")",
+                    "line": 25,
+                    "column": 3,
+                    "endLine": 25,
+                    "endColumn": 10
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
             "severity": "ERROR"
         }
     ]

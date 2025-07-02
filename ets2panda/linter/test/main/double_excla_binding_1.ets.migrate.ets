@@ -13,13 +13,29 @@
  * limitations under the License.
  */
 
-import { Component, State, Row, Slider, $$, Checkbox, Blank, Text, Entry, ComponentV2, Local, Column, Button, Param, Event } from '@kit.ArkUI';
+import {
+  Component,
+  State,
+  Row,
+  Slider,
+  $$,
+  Checkbox,
+  Blank,
+  Text,
+  Entry,
+  ComponentV2,
+  Local,
+  Column,
+  Button,
+  Param,
+  Event,
+} from '@kit.ArkUI';
 
 import { MyCard } from './'
 
 @Component
 struct MyComponent1 {
-  @State value: number = 0
+  @State value: number = 0.0
 
   build() {
     Row() {
@@ -45,7 +61,7 @@ struct Test {
 
 @Component
 struct MyComponent2 {
-  @State value: number = 0;
+  @State value: number = 0.0;
   build() {
     Row() {
       Slider({
@@ -57,7 +73,7 @@ struct MyComponent2 {
 
 @Component
 struct MyComponent3 {
-  @State value: number = 0;
+  @State value: number = 0.0;
   build() {
     Row() {
       Slider({
@@ -69,7 +85,7 @@ struct MyComponent3 {
 
 @Component
 struct MyComponent4 {
-  @State value: number = 0;
+  @State value: number = 0.0;
   build() {
     Row() {
       Slider({
@@ -82,7 +98,7 @@ struct MyComponent4 {
 @Entry
 @ComponentV2
 struct Index {
-  @Local value: number = 0;
+  @Local value: number = 0.0;
   @Local str: string = '';
 
   build() {
@@ -110,14 +126,14 @@ struct Index {
 
 @ComponentV2
 struct Star {
-  @Param value: number = 0;
+  @Param value: number = 0.0;
   @Event $value: (val: number) => void = (val: number) => {};
 
   build() {
     Column() {
       Text(`${this.value}`)
       Button(`change value `).onClick(() => {
-        this.$value(10);
+        this.$value(10.0);
       })
     }
   }

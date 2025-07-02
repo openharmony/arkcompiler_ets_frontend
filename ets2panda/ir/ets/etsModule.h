@@ -18,6 +18,7 @@
 
 #include "ir/statements/blockStatement.h"
 #include "ir/annotationAllowed.h"
+#include "ir/jsDocAllowed.h"
 #include "ir/expressions/identifier.h"
 #include "ir/srcDump.h"
 
@@ -43,11 +44,11 @@ struct enumbitops::IsAllowedType<ark::es2panda::ir::ModuleFlag> : std::true_type
 
 namespace ark::es2panda::ir {
 
-class ETSModule : public AnnotationAllowed<BlockStatement> {
+class ETSModule : public JsDocAllowed<AnnotationAllowed<BlockStatement>> {
 public:
     explicit ETSModule(ArenaAllocator *allocator, ArenaVector<Statement *> &&statementList, Identifier *ident,
                        ModuleFlag flag, parser::Program *program)
-        : AnnotationAllowed<BlockStatement>(allocator, std::move(statementList)),
+        : JsDocAllowed<AnnotationAllowed<BlockStatement>>(allocator, std::move(statementList)),
           ident_(ident),
           flag_(flag),
           program_(program)
@@ -101,7 +102,11 @@ public:
         v->Accept(this);
     }
 
+    ETSModule *Construct(ArenaAllocator *allocator) override;
+    void CopyTo(AstNode *other) const override;
+
 private:
+    friend class SizeOfNodeTest;
     Identifier *ident_;
     ModuleFlag flag_;
     parser::Program *program_;

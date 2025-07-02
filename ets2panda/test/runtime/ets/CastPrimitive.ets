@@ -30,7 +30,7 @@ function main(): void {
   assertEQ(a as char, c'\u0000')
   assertEQ(a as byte, 0)
 
-  let b : float = 70000.9921875;
+  let b : float = 70000.9921875f;
   assertEQ(b as double, 70000.9921875)
   assertEQ(b as long, 70000  )         // rounded, 70000 == 0x11170
   assertEQ(b as int, 70000)

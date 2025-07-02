@@ -17,6 +17,8 @@
 
 #include "generated/keywords.h"
 
+#include <public/public.h>
+
 namespace ark::es2panda::lexer {
 LexerPosition::LexerPosition(const util::StringView &source) : iterator_(source) {}
 
@@ -134,6 +136,12 @@ void Lexer::ForwardToken(TokenType type, size_t offset)
     SkipWhiteSpaces();
 }
 
+void Lexer::ForwardToken(TokenType type)
+{
+    pos_.token_.type_ = type;
+    pos_.iterator_.Forward(1);
+}
+
 void Lexer::Rewind(const LexerPosition &pos)
 {
     pos_ = pos;
@@ -142,6 +150,11 @@ void Lexer::Rewind(const LexerPosition &pos)
 char32_t Lexer::Lookahead()
 {
     return Iterator().Peek();
+}
+
+size_t Lexer::GetIndex()
+{
+    return Iterator().Index();
 }
 
 util::StringView Lexer::SourceView(const util::StringView::Iterator &begin, const util::StringView::Iterator &end) const
@@ -964,17 +977,20 @@ void Lexer::ScanMinusPunctuator()
 void Lexer::ScanSlashPunctuator()
 {
     GetToken().type_ = TokenType::PUNCTUATOR_DIVIDE;
-
-    switch (Iterator().Peek()) {
-        case LEX_CHAR_EQUALS: {
-            GetToken().type_ = TokenType::PUNCTUATOR_DIVIDE_EQUAL;
-            Iterator().Forward(1);
-            break;
-        }
-        default: {
-            break;
-        }
+    auto cp = Iterator().Peek();
+    if (cp == LEX_CHAR_EQUALS) {
+        GetToken().type_ = TokenType::PUNCTUATOR_DIVIDE_EQUAL;
+        Iterator().Forward(1);
     }
+
+    Iterator().Backward(1);
+    if (!IsValidJsDocStart(&cp)) {
+        Iterator().Forward(1);
+        return;
+    }
+    Iterator().Forward(JS_DOC_START_SIZE + 1);
+    GetToken().type_ = TokenType::JS_DOC_START;
+    pos_.nextTokenLine_ += 1;
 }
 
 void Lexer::ScanDotPunctuator(KeywordsUtil &kwu)
@@ -1277,6 +1293,45 @@ bool Lexer::SkipWhiteSpacesHelperSlash(char32_t *cp)
     return false;
 }
 
+bool Lexer::IsEnableParseJsdoc() const
+{
+    return parserContext_->IsEnableJsdocParse();
+}
+
+bool Lexer::IsValidJsDocStart(char32_t *cp)
+{
+    if (!IsEnableParseJsdoc()) {
+        return false;
+    }
+
+    for (size_t idx = 0; idx < JS_DOC_START_SIZE; ++idx) {
+        Iterator().Forward(1);
+        *cp = Iterator().Peek();
+        if (*cp != JS_DOC_START_LEX[idx]) {
+            Iterator().Backward(idx + 1);
+            return false;
+        }
+    }
+
+    Iterator().Backward(JS_DOC_START_SIZE);
+    return true;
+}
+
+bool Lexer::IsValidJsDocEnd(char32_t *cp)
+{
+    for (size_t idx = 0; idx < JS_DOC_END_SIZE; ++idx) {
+        Iterator().Forward(1);
+        *cp = Iterator().Peek();
+        if (*cp != JS_DOC_END_LEX[idx]) {
+            Iterator().Backward(idx + 1);
+            return false;
+        }
+    }
+
+    Iterator().Backward(JS_DOC_END_SIZE);
+    return true;
+}
+
 bool Lexer::SkipWhiteSpacesHelperDefault(const char32_t &cp)
 {
     if (cp < LEX_ASCII_MAX_BITS) {
@@ -1285,17 +1340,27 @@ bool Lexer::SkipWhiteSpacesHelperDefault(const char32_t &cp)
 
     size_t cpSize {};
 
-    switch (Iterator().PeekCp(&cpSize)) {
+    char32_t ch = Iterator().PeekCp(&cpSize);
+    switch (ch) {
         case LEX_CHAR_LS:
         case LEX_CHAR_PS:
             pos_.nextTokenLine_++;
             [[fallthrough]];
         case LEX_CHAR_NBSP:
         case LEX_CHAR_ZWNBSP:
+        case LEX_CHAR_OGHAM:
+        case LEX_CHAR_NARROW_NO_BREAK_SP:
+        case LEX_CHAR_MATHEMATICAL_SP:
+        case LEX_CHAR_IDEOGRAPHIC_SP:
             Iterator().Forward(cpSize);
             return true;
         default:
-            return false;
+            if (ch >= LEX_CHAR_ENQUAD && ch <= LEX_CHAR_ZERO_WIDTH_SP) {
+                Iterator().Forward(cpSize);
+                return true;
+            } else {
+                return false;
+            }
     }
 }
 
@@ -1321,9 +1386,14 @@ void Lexer::SkipWhiteSpaces()
             case LEX_CHAR_FF:
             case LEX_CHAR_SP:
             case LEX_CHAR_TAB:
+            case LEX_CHAR_NEXT_LINE:
                 Iterator().Forward(1);
                 continue;
             case LEX_CHAR_SLASH:
+                if ((GetContext()->Status() & parser::ParserStatus::ALLOW_JS_DOC_START) != 0 &&
+                    IsValidJsDocStart(&cp)) {
+                    return;
+                }
                 if (!SkipWhiteSpacesHelperSlash(&cp)) {
                     return;
                 }
@@ -1713,6 +1783,15 @@ void Lexer::FinalizeTokenHelper(util::UString *str, const size_t &startPos, size
         GetToken().src_ = str->View();
     } else {
         GetToken().src_ = SourceView(startPos, Iterator().Index());
+    }
+}
+
+void Lexer::FinalizeJsDocInfoHelper(util::UString *str, const size_t &startPos, size_t escapeEnd)
+{
+    if ((GetToken().flags_ & TokenFlags::HAS_ESCAPE) != 0U) {
+        str->Append(SourceView(escapeEnd, Iterator().Index()));
+    } else {
+        str->Append(SourceView(startPos, Iterator().Index()));
     }
 }
 

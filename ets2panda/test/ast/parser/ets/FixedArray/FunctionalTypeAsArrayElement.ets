@@ -19,4 +19,4 @@ function main(){
     ]
 }
 
-/* @@? 17:48 Error TypeError: Expected type for array literal should be an array type, got () => int[] */
+/* @@? 17:48 Error TypeError: Expected type for array literal should be an array type, got () => FixedArray<int> */

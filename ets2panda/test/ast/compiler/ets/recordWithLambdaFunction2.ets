@@ -20,7 +20,9 @@ function main(): void {
         2: (param: Number):string => { return "1" },
     }
 
-    handlerMap[/* @@ label */2] = 1
+    handlerMap[2] = 1
 }
 
-/* @@@ label Error TypeError: Cannot find index access method with the required signature.  */
+/* @@? 23:5 Error TypeError: No matching indexing signature for $_set(int, int) */
+/* @@? 23:16 Error TypeError: Cannot find index access method with the required signature. */
+/* @@? 23:21 Error TypeError: Type 'int' is not compatible with type '(param: Double) => String' at index 2 */

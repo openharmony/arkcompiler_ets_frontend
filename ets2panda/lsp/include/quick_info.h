@@ -19,6 +19,7 @@
 #include "ir/astNode.h"
 #include "public/es2panda_lib.h"
 #include "api.h"
+#include "types.h"
 
 namespace ark::es2panda::lsp {
 
@@ -39,7 +40,14 @@ std::vector<SymbolDisplayPart> CreateDisplayForMethodDefinition(ir::AstNode *nod
 std::vector<SymbolDisplayPart> CreateDisplayForClassProperty(ir::AstNode *node, const std::string &kindModifier);
 std::vector<SymbolDisplayPart> CreateDisplayForETSParameterExpression(ir::AstNode *node);
 QuickInfo GetQuickInfoAtPositionImpl(es2panda_Context *context, size_t position, std::string fileName);
+std::string GetNameForTypeReference(const ir::TypeNode *typeReference);
 std::string GetNameForTypeNode(const ir::TypeNode *typeAnnotation);
+std::vector<SymbolDisplayPart> CreateDisplayForImportDeclaration(ir::AstNode *node);
+ir::AstNode *GetEnumMemberByName(ir::AstNode *node, const util::StringView &name);
+std::string ModifiersToString(ir::ModifierFlags flags);
+std::string GetKindModifiers(ir::AstNode *node);
+bool IsClass(ir::AstNode *node);
+ir::AstNode *GetContainerNode(ir::AstNode *node);
 
 }  // namespace ark::es2panda::lsp
 

@@ -110,6 +110,9 @@ private:
 
     ir::AstNode *UnfoldConstIdentifiers(ir::AstNode *constantNode);
 
+    void IsInitByConstant(ir::AstNode *node);
+    void TryFoldInitializerOfPackage(ir::ClassDefinition *globalClass);
+
     public_lib::Context *context_ {nullptr};
     parser::Program *program_ {nullptr};
     varbinder::ETSBinder *varbinder_ {nullptr};

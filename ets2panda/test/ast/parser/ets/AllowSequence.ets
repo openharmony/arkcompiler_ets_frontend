@@ -24,5 +24,3 @@ function main(): void {
 /* @@? 19:17 Error SyntaxError: Unexpected token, expected ')'. */
 /* @@? 19:19 Error SyntaxError: Unexpected token 'x'. */
 /* @@? 19:22 Error SyntaxError: Unexpected token ')'. */
-/* @@? 19:22 Error SyntaxError: Unexpected token ')'. */
-/* @@? 19:22 Error SyntaxError: Unexpected token ')'. */

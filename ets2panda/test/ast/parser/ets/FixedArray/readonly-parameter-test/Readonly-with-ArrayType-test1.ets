@@ -19,5 +19,5 @@ function foo (p: FixedArray<int>) {
 let x: Readonly<FixedArray<int>> = []
 /* @@ label */foo(/* @@ label1 */x)
 
-/* @@? 20:15 Error TypeError: No matching call signature for foo(readonly int[]) */
-/* @@? 20:34 Error TypeError: Type 'readonly int[]' is not compatible with type 'int[]' at index 1 */
+/* @@? 20:15 Error TypeError: No matching call signature for foo(readonly FixedArray<int>) */
+/* @@? 20:34 Error TypeError: Type 'readonly FixedArray<int>' is not compatible with type 'FixedArray<int>' at index 1 */

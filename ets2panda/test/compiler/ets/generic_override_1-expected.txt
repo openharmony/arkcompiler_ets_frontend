@@ -931,6 +931,158 @@
                     }
                   }
                 },
+                "annotations": [
+                  {
+                    "expr_": {
+                      "type": "ETSTypeReference",
+                      "part": {
+                        "type": "ETSTypeReferencePart",
+                        "name": {
+                          "type": "TSQualifiedName",
+                          "left": {
+                            "type": "Identifier",
+                            "name": "functions",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 21,
+                                "column": 8,
+                                "program": "generic_override_1.ets"
+                              },
+                              "end": {
+                                "line": 22,
+                                "column": 2,
+                                "program": "generic_override_1.ets"
+                              }
+                            }
+                          },
+                          "right": {
+                            "type": "Identifier",
+                            "name": "OptionalParametersAnnotation",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 21,
+                                "column": 8,
+                                "program": "generic_override_1.ets"
+                              },
+                              "end": {
+                                "line": 22,
+                                "column": 2,
+                                "program": "generic_override_1.ets"
+                              }
+                            }
+                          },
+                          "loc": {
+                            "start": {
+                              "line": 21,
+                              "column": 8,
+                              "program": "generic_override_1.ets"
+                            },
+                            "end": {
+                              "line": 22,
+                              "column": 2,
+                              "program": "generic_override_1.ets"
+                            }
+                          }
+                        },
+                        "loc": {
+                          "start": {
+                            "line": 21,
+                            "column": 8,
+                            "program": "generic_override_1.ets"
+                          },
+                          "end": {
+                            "line": 22,
+                            "column": 2,
+                            "program": "generic_override_1.ets"
+                          }
+                        }
+                      },
+                      "loc": {
+                        "start": {
+                          "line": 21,
+                          "column": 8,
+                          "program": "generic_override_1.ets"
+                        },
+                        "end": {
+                          "line": 22,
+                          "column": 2,
+                          "program": "generic_override_1.ets"
+                        }
+                      }
+                    },
+                    "properties": [
+                      {
+                        "type": "ClassProperty",
+                        "key": {
+                          "type": "Identifier",
+                          "name": "minArgCount",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 21,
+                              "column": 8,
+                              "program": "generic_override_1.ets"
+                            },
+                            "end": {
+                              "line": 22,
+                              "column": 2,
+                              "program": "generic_override_1.ets"
+                            }
+                          }
+                        },
+                        "value": {
+                          "type": "NumberLiteral",
+                          "value": 0,
+                          "loc": {
+                            "start": {
+                              "line": 21,
+                              "column": 8,
+                              "program": "generic_override_1.ets"
+                            },
+                            "end": {
+                              "line": 22,
+                              "column": 2,
+                              "program": "generic_override_1.ets"
+                            }
+                          }
+                        },
+                        "static": false,
+                        "readonly": false,
+                        "declare": false,
+                        "optional": false,
+                        "computed": false,
+                        "definite": false,
+                        "decorators": [],
+                        "loc": {
+                          "start": {
+                            "line": 21,
+                            "column": 8,
+                            "program": "generic_override_1.ets"
+                          },
+                          "end": {
+                            "line": 22,
+                            "column": 2,
+                            "program": "generic_override_1.ets"
+                          }
+                        }
+                      }
+                    ],
+                    "loc": {
+                      "start": {
+                        "line": 21,
+                        "column": 8,
+                        "program": "generic_override_1.ets"
+                      },
+                      "end": {
+                        "line": 22,
+                        "column": 2,
+                        "program": "generic_override_1.ets"
+                      }
+                    }
+                  }
+                ],
                 "loc": {
                   "start": {
                     "line": 21,
@@ -1856,6 +2008,158 @@
                     }
                   }
                 },
+                "annotations": [
+                  {
+                    "expr_": {
+                      "type": "ETSTypeReference",
+                      "part": {
+                        "type": "ETSTypeReferencePart",
+                        "name": {
+                          "type": "TSQualifiedName",
+                          "left": {
+                            "type": "Identifier",
+                            "name": "functions",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 27,
+                                "column": 8,
+                                "program": "generic_override_1.ets"
+                              },
+                              "end": {
+                                "line": 29,
+                                "column": 6,
+                                "program": "generic_override_1.ets"
+                              }
+                            }
+                          },
+                          "right": {
+                            "type": "Identifier",
+                            "name": "OptionalParametersAnnotation",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 27,
+                                "column": 8,
+                                "program": "generic_override_1.ets"
+                              },
+                              "end": {
+                                "line": 29,
+                                "column": 6,
+                                "program": "generic_override_1.ets"
+                              }
+                            }
+                          },
+                          "loc": {
+                            "start": {
+                              "line": 27,
+                              "column": 8,
+                              "program": "generic_override_1.ets"
+                            },
+                            "end": {
+                              "line": 29,
+                              "column": 6,
+                              "program": "generic_override_1.ets"
+                            }
+                          }
+                        },
+                        "loc": {
+                          "start": {
+                            "line": 27,
+                            "column": 8,
+                            "program": "generic_override_1.ets"
+                          },
+                          "end": {
+                            "line": 29,
+                            "column": 6,
+                            "program": "generic_override_1.ets"
+                          }
+                        }
+                      },
+                      "loc": {
+                        "start": {
+                          "line": 27,
+                          "column": 8,
+                          "program": "generic_override_1.ets"
+                        },
+                        "end": {
+                          "line": 29,
+                          "column": 6,
+                          "program": "generic_override_1.ets"
+                        }
+                      }
+                    },
+                    "properties": [
+                      {
+                        "type": "ClassProperty",
+                        "key": {
+                          "type": "Identifier",
+                          "name": "minArgCount",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 27,
+                              "column": 8,
+                              "program": "generic_override_1.ets"
+                            },
+                            "end": {
+                              "line": 29,
+                              "column": 6,
+                              "program": "generic_override_1.ets"
+                            }
+                          }
+                        },
+                        "value": {
+                          "type": "NumberLiteral",
+                          "value": 0,
+                          "loc": {
+                            "start": {
+                              "line": 27,
+                              "column": 8,
+                              "program": "generic_override_1.ets"
+                            },
+                            "end": {
+                              "line": 29,
+                              "column": 6,
+                              "program": "generic_override_1.ets"
+                            }
+                          }
+                        },
+                        "static": false,
+                        "readonly": false,
+                        "declare": false,
+                        "optional": false,
+                        "computed": false,
+                        "definite": false,
+                        "decorators": [],
+                        "loc": {
+                          "start": {
+                            "line": 27,
+                            "column": 8,
+                            "program": "generic_override_1.ets"
+                          },
+                          "end": {
+                            "line": 29,
+                            "column": 6,
+                            "program": "generic_override_1.ets"
+                          }
+                        }
+                      }
+                    ],
+                    "loc": {
+                      "start": {
+                        "line": 27,
+                        "column": 8,
+                        "program": "generic_override_1.ets"
+                      },
+                      "end": {
+                        "line": 29,
+                        "column": 6,
+                        "program": "generic_override_1.ets"
+                      }
+                    }
+                  }
+                ],
                 "loc": {
                   "start": {
                     "line": 27,

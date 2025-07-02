@@ -17,20 +17,14 @@
 let a: [number, FixedArray<...number>, number] = [1, 2, 3];
 
 /* @@? 17:17 Error TypeError: FixedArray<T> must have only one type parameter. */
-/* @@? 17:28 Error SyntaxError: Unexpected token, expected '>'. */
-/* @@? 17:28 Error SyntaxError: Unexpected token '>'. */
-/* @@? 17:28 Error SyntaxError: Unexpected token '>'. */
-/* @@? 17:28 Error SyntaxError: Unexpected token, expected ',' or ']'. */
 /* @@? 17:28 Error SyntaxError: Invalid Type. */
-/* @@? 17:28 Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type. */
-/* @@? 17:28 Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type. */
+/* @@? 17:28 Error SyntaxError: Unexpected token, expected '>'. */
+/* @@? 17:28 Error SyntaxError: Unexpected token, expected ',' or ']'. */
+/* @@? 17:28 Error SyntaxError: Unexpected token '>'. */
+/* @@? 17:31 Error SyntaxError: Unexpected token 'number'. */
 /* @@? 17:31 Error TypeError: Type name 'number' used in the wrong context */
+/* @@? 17:31 Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type. */
 /* @@? 17:38 Error SyntaxError: Unexpected token ','. */
-/* @@? 17:38 Error SyntaxError: Unexpected token ','. */
-/* @@? 17:38 Error SyntaxError: Unexpected token ','. */
-/* @@? 17:38 Error SyntaxError: Unexpected token ','. */
+/* @@? 17:40 Error SyntaxError: Unexpected token 'number'. */
 /* @@? 17:40 Error TypeError: Type name 'number' used in the wrong context */
 /* @@? 17:46 Error SyntaxError: Unexpected token ']'. */
-/* @@? 17:46 Error SyntaxError: Unexpected token ']'. */
-/* @@? 17:46 Error SyntaxError: Unexpected token ']'. */
-/* @@? 17:48 Error SyntaxError: Unexpected token '='. */

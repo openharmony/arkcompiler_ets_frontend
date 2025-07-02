@@ -21,6 +21,7 @@
 #include "internal_api.h"
 
 namespace ark::es2panda::lsp {
+bool CheckNodeKindForBraceMatching(ark::es2panda::ir::AstNode *node);
 std::vector<TextSpan> GetBraceMatchingAtPosition(es2panda_Context *context, size_t position);
 
 }  // namespace ark::es2panda::lsp

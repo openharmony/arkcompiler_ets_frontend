@@ -26,5 +26,4 @@ foo(1.1)
 
 
 /* @@? 17:1 Warning Warning: Function foo with this assembly signature already declared. */
-/* @@? 23:1 Warning Warning: Detect duplicate signatures, use 'foo(..._: (Object|null|undefined)[]): void' to replace */
-/* @@? 23:5 Warning Warning: Variable 'b' is used before being assigned. */
+/* @@? 23:5 Error TypeError: Variable 'b' is used before being assigned. */

@@ -24,3 +24,4 @@ namespace C{
 }
 
 /* @@@ label1 Error SyntaxError: Unexpected token '}'. */
+/* @@? 28:1 Error SyntaxError: Unexpected token. */

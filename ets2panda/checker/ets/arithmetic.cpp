@@ -1141,10 +1141,6 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperator(ir::Expression *left,
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     checker::Type *rightType = right->Check(this);
 
-    if (rightType == nullptr) {
-        rightType = right->Check(this);
-    }
-
     if (right->IsTypeNode()) {
         rightType = right->AsTypeNode()->GetType(this);
     }

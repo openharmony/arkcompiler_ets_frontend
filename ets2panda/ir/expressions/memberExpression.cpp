@@ -20,6 +20,7 @@
 #include "checker/types/ets/etsTupleType.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
+#include "util/diagnostic.h"
 
 namespace ark::es2panda::ir {
 MemberExpression::MemberExpression([[maybe_unused]] Tag const tag, MemberExpression const &other,
@@ -246,9 +247,43 @@ checker::Type *MemberExpression::CheckUnionMember(checker::ETSChecker *checker, 
     return commonPropType;
 }
 
+static checker::Type *AdjustRecordReturnType(checker::Type *type, checker::Type *objType)
+{
+    auto *recordKeyType = objType->AsETSObjectType()->TypeArguments()[0];
+    auto *recordValueType = objType->AsETSObjectType()->TypeArguments()[1];
+
+    auto const isStringLiteralOrConstantUnion = [](checker::Type *recordKey) {
+        if (recordKey->IsETSStringType() && recordKey->IsConstantType()) {
+            return true;
+        }
+        if (!recordKey->IsETSUnionType()) {
+            return false;
+        }
+        auto constituentTypes = recordKey->AsETSUnionType()->ConstituentTypes();
+        return std::all_of(constituentTypes.begin(), constituentTypes.end(),
+                           [](auto *it) { return it->IsETSStringType() && it->IsConstantType(); });
+    };
+    if (isStringLiteralOrConstantUnion(recordKeyType)) {
+        if (type->IsETSUnionType()) {
+            return recordValueType;
+        }
+
+        if (type->IsETSFunctionType() && type->AsETSFunctionType()->Name().Is(compiler::Signatures::GET_INDEX_METHOD)) {
+            type->AsETSFunctionType()->CallSignatures()[0]->SetReturnType(recordValueType);
+        }
+    }
+
+    return type;
+}
+
 checker::Type *MemberExpression::AdjustType(checker::ETSChecker *checker, checker::Type *type)
 {
     auto *const objType = checker->GetApparentType(Object()->TsType());
+    if (type != nullptr && objType->IsETSObjectType() &&
+        objType->ToAssemblerName().str() == compiler::Signatures::BUILTIN_RECORD) {
+        type = AdjustRecordReturnType(type, objType);
+    }
+
     if (PropVar() != nullptr) {  // access erased property type
         uncheckedType_ = checker->GuaranteedTypeForUncheckedPropertyAccess(PropVar());
     } else if (IsComputed() && objType->IsETSArrayType()) {  // access erased array or tuple type
@@ -397,11 +432,11 @@ checker::Type *MemberExpression::CheckIndexAccessMethod(checker::ETSChecker *che
         isSetter ? compiler::Signatures::SET_INDEX_METHOD : compiler::Signatures::GET_INDEX_METHOD;
     auto *const method = objType_->GetProperty(methodName, searchFlag);
     if (method == nullptr || !method->HasFlag(varbinder::VariableFlags::METHOD)) {
-        checker->LogError(diagnostic::NO_INDEX_ACCESS_METHOD, {}, Start());
+        checker->LogError(diagnostic::ERROR_ARKTS_NO_PROPERTIES_BY_INDEX, {}, Start());
         return nullptr;
     }
 
-    ArenaVector<Expression *> arguments {checker->Allocator()->Adapter()};
+    ArenaVector<Expression *> arguments {checker->ProgramAllocator()->Adapter()};
     arguments.emplace_back(property_);
     if (isSetter) {
         //  Temporary change the parent of right assignment node to check if correct "$_set" function presents.
@@ -410,37 +445,9 @@ checker::Type *MemberExpression::CheckIndexAccessMethod(checker::ETSChecker *che
         value->SetParent(this);
         arguments.emplace_back(value);
     }
-
     auto &signatures = checker->GetTypeOfVariable(method)->AsETSFunctionType()->CallSignatures();
-    checker::Signature *signature = checker->ValidateSignatures(signatures, nullptr, arguments, Start(), "indexing",
-                                                                checker::TypeRelationFlag::NO_THROW);
-    if (signature == nullptr) {
-        if (isSetter) {
-            Parent()->AsAssignmentExpression()->Right()->SetParent(Parent());
-        }
-        checker->LogError(diagnostic::MISSING_INDEX_ACCESSOR_WITH_SIG, {}, Property()->Start());
-        return nullptr;
-    }
-    checker->ValidateSignatureAccessibility(objType_, signature, Start(), {{diagnostic::INVISIBLE_INDEX_ACCESSOR, {}}});
 
-    ES2PANDA_ASSERT(signature->Function() != nullptr);
-
-    if (isSetter) {
-        if (checker->IsClassStaticMethod(objType_, signature)) {
-            checker->LogError(diagnostic::PROP_IS_STATIC, {methodName, objType_->Name()}, Property()->Start());
-        }
-        // Restore the right assignment node's parent to keep AST invariant valid.
-        Parent()->AsAssignmentExpression()->Right()->SetParent(Parent());
-        return signature->Params()[1]->TsType();
-    }
-
-    // #24301: requires enum refactoring
-    if (!signature->Owner()->IsETSEnumType() && checker->IsClassStaticMethod(objType_, signature)) {
-        checker->LogError(diagnostic::PROP_IS_STATIC, {methodName, objType_->Name()}, Property()->Start());
-        return nullptr;
-    }
-
-    return signature->ReturnType();
+    return ResolveReturnTypeFromSignature(checker, isSetter, arguments, signatures, methodName);
 }
 
 checker::Type *MemberExpression::GetTypeOfTupleElement(checker::ETSChecker *checker, checker::Type *baseType)

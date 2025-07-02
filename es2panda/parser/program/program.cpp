@@ -48,7 +48,7 @@ Program::Program(Program &&other)
       targetApiVersion_(other.targetApiVersion_),
       useDefineSemantic_(other.useDefineSemantic_),
       isShared_(other.isShared_),
-      enableAnnotations_(other.enableAnnotations_),
+      enableEtsImplements_(other.enableEtsImplements_),
       targetApiSubVersion_(other.targetApiSubVersion_),
       moduleRecordFieldName_(other.moduleRecordFieldName_),
       sourceLang_(other.sourceLang_)
@@ -79,7 +79,7 @@ Program &Program::operator=(Program &&other)
     targetApiVersion_ = other.targetApiVersion_;
     useDefineSemantic_ = other.useDefineSemantic_;
     isShared_ = other.isShared_;
-    enableAnnotations_ = other.enableAnnotations_;
+    enableEtsImplements_ = other.enableEtsImplements_;
     targetApiSubVersion_ = other.targetApiSubVersion_;
     moduleRecordFieldName_ = other.moduleRecordFieldName_;
     sourceLang_ = other.sourceLang_;

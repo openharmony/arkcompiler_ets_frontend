@@ -30,4 +30,9 @@ TypeNode *TypeNode::Clone(ArenaAllocator *const allocator, AstNode *const parent
     return this;
 }
 
+void TypeNode::CopyTo(AstNode *other) const
+{
+    AnnotationAllowed<Expression>::CopyTo(other);
+}
+
 }  // namespace ark::es2panda::ir

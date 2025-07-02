@@ -644,9 +644,10 @@ ast/parser/ets/illegal_continue_statement.ets
 ast/parser/ets/minus_sign_as_index_1.ets
 ast/parser/ets/export_after_statement.ets
 ast/parser/ets/unreachable_fuzz_error.ets
-ast/parser/ets/unreachable_fuzz_error.ets
 ast/parser/ets/interface_parser_error_1.ets
 ast/parser/ets/interface_parser_error_2.ets
+ast/parser/ets/overloaded_method_as_value_neg.ets
+ast/parser/ets/lambda_function_index_access_neg.ets
 ast/compiler/ets/union_string_literals_5.ets
 ast/compiler/ets/annotation_tests/annotation_for_type_parameter01.ets
 ast/compiler/ets/readonlyType_4.ets
@@ -1479,3 +1480,5 @@ runtime/ets/objectLiteral.ets
 runtime/ets/objectLiteralInterfaceType.ets
 runtime/ets/objectLiteral_abstract_class_object.ets
 runtime/ets/rest_object_literal.ets
+ast/parser/ets/while_with_empty_body.ets
+ast/parser/ets/de_while_with_empty_body.ets

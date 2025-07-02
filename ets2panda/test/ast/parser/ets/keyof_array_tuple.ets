@@ -33,9 +33,17 @@ function main():void{
   let x6:Array<"abcd"|keyofA|number|A> = /* @@ label6 */new Array<"abcd"|keyofA|number|A>("abcd","other field","foo",123,a);
 }
 
-/* @@@ label1 Error TypeError: Array element at index 1 with type '"field2"' is not compatible with the target array element type '"abcd"|Double|A|"foo"|"field1"'  */
-/* @@@ label2 Error TypeError: Array element at index 1 with type '"other field"' is not compatible with the target array element type '"abcd"|Double|A|"foo"|"field1"'  */
-/* @@@ label3 Error TypeError: Array initializer's type is not assignable to tuple type at index: 1  */
-/* @@@ label4 Error TypeError: Array initializer's type is not assignable to tuple type at index: 1  */
-/* @@@ label5 Error TypeError: No matching construct signature for escompat.Array("abcd", "field2", "foo", int, A)  */
-/* @@@ label6 Error TypeError: No matching construct signature for escompat.Array("abcd", "other field", "foo", int, A)  */
+/* @@? 26:62 Error TypeError: Array element at index 1 with type '"field2"' is not compatible with the target array element type '"abcd"|Double|A|"foo"|"field1"' */
+/* @@? 27:62 Error TypeError: Array element at index 1 with type '"other field"' is not compatible with the target array element type '"abcd"|Double|A|"foo"|"field1"' */
+/* @@? 29:60 Error TypeError: Array initializer's type is not assignable to tuple type at index: 1 */
+/* @@? 30:60 Error TypeError: Array initializer's type is not assignable to tuple type at index: 1 */
+/* @@? 32:57 Error TypeError: Expected 1 arguments, got 5. */
+/* @@? 32:57 Error TypeError: Expected 2 arguments, got 5. */
+/* @@? 32:57 Error TypeError: Expected 0 arguments, got 5. */
+/* @@? 32:57 Error TypeError: No matching construct signature for escompat.Array("abcd", "field2", "foo", int, A) */
+/* @@? 32:98 Error TypeError: Type '"field2"' is not compatible with rest parameter type '"abcd"|Double|A|"foo"|"field1"' at index 2 */
+/* @@? 33:57 Error TypeError: Expected 1 arguments, got 5. */
+/* @@? 33:57 Error TypeError: Expected 2 arguments, got 5. */
+/* @@? 33:57 Error TypeError: Expected 0 arguments, got 5. */
+/* @@? 33:57 Error TypeError: No matching construct signature for escompat.Array("abcd", "other field", "foo", int, A) */
+/* @@? 33:98 Error TypeError: Type '"other field"' is not compatible with rest parameter type '"abcd"|Double|A|"foo"|"field1"' at index 2 */

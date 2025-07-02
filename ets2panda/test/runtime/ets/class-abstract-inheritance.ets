@@ -15,15 +15,23 @@
 
 abstract class A {
     str: string = "A"
+
+    getA():string {
+        return this.str;
+    }
 }
 
 abstract class B extends A {
+    getB():string {
+        return this.str;
+    }
+
     public get_str(): string {
         return this.str;
     }
 
     public get_super_str(): string {
-        return super.str;
+        return super.getA();
     }
 }
 
@@ -37,7 +45,7 @@ abstract class C extends B {
     }
 
     public override get_super_str(): string {
-        return super.str;
+        return super.getB();
     }
 }
 

@@ -32,7 +32,7 @@ Signature *Signature::Substitute(TypeRelation *relation, const Substitution *sub
         return this;
     }
     auto *checker = relation->GetChecker()->AsETSChecker();
-    auto *allocator = checker->Allocator();
+    auto *allocator = checker->ProgramAllocator();
     bool anyChange = false;
     SignatureInfo *newSigInfo = allocator->New<SignatureInfo>(allocator);
 
@@ -287,7 +287,7 @@ void Signature::AssignmentTarget([[maybe_unused]] TypeRelation *relation, [[mayb
 
 Signature *Signature::ToArrowSignature(ETSChecker *checker)
 {
-    auto *allocator = checker->Allocator();
+    auto *allocator = checker->ProgramAllocator();
     auto *sigInfo = allocator->New<SignatureInfo>(signatureInfo_, allocator);
     for (auto param : sigInfo->params) {
         param->SetTsType(checker->MaybeBoxType(param->TsType()));

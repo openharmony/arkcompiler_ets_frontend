@@ -22,5 +22,3 @@ let a = new C(12,)
 /* @@@ label1 Error SyntaxError: Unexpected token ','.  */
 /* @@? 20:9 Error TypeError: Expected 0 arguments, got 1. */
 /* @@? 20:9 Error TypeError: No matching construct signature for trailing_comma_2.C(int) */
-/* @@? 20:9 Error TypeError: Expected 0 arguments, got 1. */
-/* @@? 20:9 Error TypeError: No matching construct signature for trailing_comma_2.C(int) */

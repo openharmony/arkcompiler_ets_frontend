@@ -14,6 +14,7 @@
  */
 
 #include "tsEnumDeclaration.h"
+#include <cstddef>
 
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
@@ -21,6 +22,7 @@
 #include "util/helpers.h"
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
+#include "utils/arena_containers.h"
 
 namespace ark::es2panda::ir {
 void TSEnumDeclaration::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
@@ -68,11 +70,38 @@ void TSEnumDeclaration::Dump(ir::AstDumper *dumper) const
                  {"declare", IsDeclare()}});
 }
 
+bool TSEnumDeclaration::RegisterUnexportedForDeclGen(ir::SrcDumper *dumper) const
+{
+    if (!dumper->IsDeclgen()) {
+        return false;
+    }
+
+    if (dumper->IsIndirectDepPhase()) {
+        return false;
+    }
+
+    if (key_->Parent()->IsDefaultExported() || key_->Parent()->IsExported()) {
+        return false;
+    }
+
+    auto name = key_->AsIdentifier()->Name().Mutf8();
+    dumper->AddNode(name, this);
+    return true;
+}
+
 void TSEnumDeclaration::Dump(ir::SrcDumper *dumper) const
 {
     ES2PANDA_ASSERT(isConst_ == false);
     ES2PANDA_ASSERT(key_ != nullptr);
-    if (IsDeclare()) {
+    if (RegisterUnexportedForDeclGen(dumper)) {
+        return;
+    }
+    if (key_->Parent()->IsExported() && dumper->IsDeclgen()) {
+        dumper->Add("export ");
+    } else if (key_->Parent()->IsDefaultExported() && dumper->IsDeclgen()) {
+        dumper->Add("export default ");
+    }
+    if (IsDeclare() || dumper->IsDeclgen()) {
         dumper->Add("declare ");
     }
     dumper->Add("enum ");
@@ -136,4 +165,27 @@ checker::VerifiedType TSEnumDeclaration::Check(checker::ETSChecker *const checke
 {
     return {this, checker->GetAnalyzer()->Check(this)};
 }
+
+TSEnumDeclaration *TSEnumDeclaration::Construct(ArenaAllocator *allocator)
+{
+    ArenaVector<AstNode *> members(allocator->Adapter());
+    return allocator->New<TSEnumDeclaration>(allocator, nullptr, std::move(members),
+                                             ConstructorFlags {false, false, false});
+}
+
+void TSEnumDeclaration::CopyTo(AstNode *other) const
+{
+    auto otherImpl = other->AsTSEnumDeclaration();
+
+    otherImpl->scope_ = scope_;
+    otherImpl->decorators_ = decorators_;
+    otherImpl->key_ = key_;
+    otherImpl->members_ = members_;
+    otherImpl->internalName_ = internalName_;
+    otherImpl->boxedClass_ = boxedClass_;
+    otherImpl->isConst_ = isConst_;
+
+    TypedStatement::CopyTo(other);
+}
+
 }  // namespace ark::es2panda::ir

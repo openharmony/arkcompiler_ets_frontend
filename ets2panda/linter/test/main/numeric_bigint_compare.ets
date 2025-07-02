@@ -32,3 +32,52 @@ n1 - n2
 n1 * n2
 n1 / n2
 n1 % n2
+
+function parFunPar(params: boolean) {}
+parFunPar(1n > 1.0);
+parFunPar(1n < 1.0);
+parFunPar(1n >= 1.0);
+parFunPar(1n <= 1.0);
+parFunPar(1n == 1.0);
+
+function parFunReturn() : boolean {
+  return 1n > 1.0;
+}
+function parFunReturn1() : boolean {
+  return 1n < 1.0;
+}
+function parFunReturn2() : boolean {
+  return 1n >= 1.0;
+}
+function parFunReturn3() : boolean {
+  return 1n <= 1.0;
+}
+function parFunReturn4() : boolean {
+  return 1n == 1.0;
+}
+
+if (1n > 1.0) {
+    console.log('1n > 1.0');
+}
+if (1n < 1.0) {
+    console.log('1n < 1.0');
+}
+if (1n >= 1.0) {
+    console.log('1n >= 1.0');
+}
+if (1n <= 1.0) {
+    console.log('1n <= 1.0');
+}
+if (1n == 1.0) {
+    console.log('1n == 1.0');
+}
+
+let compareA6:boolean = true;
+compareA6 = 2n > 1.0 && 1n > 1.5 || 2n >= 2.0;
+
+const condition = true
+compareA6 = ((1n > 1.0) ? (1n < 1.0) : (1n >= 1.0));
+compareA6 = ((1n <= 1.0) ? (1n == 1.0) : (1n > 1.5));
+function comparePar2() {
+  return 5n > 5.0 || 5n < 5.0 || 5n >= 5.0 || 5n <= 5.0 || 5n == 5.0;
+}

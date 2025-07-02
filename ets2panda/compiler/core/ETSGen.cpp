@@ -781,39 +781,16 @@ void ETSGen::IsInstanceDynamic(const ir::BinaryExpression *const node, const VRe
     SetAccumulatorType(Checker()->GlobalETSBooleanType());
 }
 
-void ETSGen::TestIsInstanceConstant(const ir::AstNode *node, Label *ifTrue, VReg srcReg, checker::Type const *target)
-{
-    if (!target->IsConstantType()) {
-        return;
-    }
-    RegScope rs(this);
-    VReg rhs = AllocReg();
-    auto ifNotEquals = AllocLabel();
-
-    LoadAccumulator(node, srcReg);
-    LoadConstantObject(node->AsExpression(), target);
-    StoreAccumulator(node, rhs);
-    EmitEtsEquals(node, srcReg, rhs);
-    BranchIfFalse(node, ifNotEquals);
-    BranchIfTrue(node, ifTrue);
-    SetLabel(node, ifNotEquals);
-    SetAccumulatorType(nullptr);
-}
-
 // Implemented on top of the runtime type system, do not relax checks, do not introduce new types
-void ETSGen::TestIsInstanceConstituent(const ir::AstNode *const node, std::tuple<Label *, Label *> label, VReg srcReg,
+void ETSGen::TestIsInstanceConstituent(const ir::AstNode *const node, std::tuple<Label *, Label *> label,
                                        checker::Type const *target, bool acceptNull)
 {
     ES2PANDA_ASSERT(!target->IsETSDynamicType());
     auto [ifTrue, ifFalse] = label;
 
-    if (target->IsConstantType()) {
-        TestIsInstanceConstant(node, ifTrue, srcReg, target);
-        return;
-    }
-
     switch (checker::ETSChecker::ETSType(target)) {
         case checker::TypeFlag::ETS_UNDEFINED:
+        case checker::TypeFlag::ETS_VOID:
             BranchIfUndefined(node, ifTrue);
             break;
         case checker::TypeFlag::ETS_NULL:
@@ -860,7 +837,7 @@ void ETSGen::BranchIfIsInstance(const ir::AstNode *const node, const VReg srcReg
         LoadAccumulator(n, srcReg);
         // #21835: type-alias in ApparentType
         t = t->IsETSTypeAliasType() ? t->AsETSTypeAliasType()->GetTargetType() : t;
-        TestIsInstanceConstituent(n, std::tie(ifTrue, ifFalse), srcReg, t, acceptNull);
+        TestIsInstanceConstituent(n, std::tie(ifTrue, ifFalse), t, acceptNull);
     };
 
     if (target->IsETSUnionType()) {
@@ -1140,12 +1117,6 @@ void ETSGen::ApplyConversion(const ir::AstNode *node, const checker::Type *targe
     const bool hasUnboxingflags = (node->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::UNBOXING_FLAG) != 0U;
     if (hasBoxingflags && !hasUnboxingflags) {
         ApplyBoxingConversion(node);
-
-        if (node->HasAstNodeFlags(ir::AstNodeFlags::CONVERT_TO_STRING)) {
-            CastToString(node);
-            node->RemoveAstNodeFlags(ir::AstNodeFlags::CONVERT_TO_STRING);
-        }
-
         return;
     }
 
@@ -1224,6 +1195,10 @@ void ETSGen::ApplyCastToBoxingFlags(const ir::AstNode *node, const ir::BoxingUnb
         }
         case ir::BoxingUnboxingFlags::BOX_TO_INT: {
             CastToInt(node);
+            break;
+        }
+        case ir::BoxingUnboxingFlags::BOX_TO_BYTE: {
+            CastToByte(node);
             break;
         }
         default: {
@@ -1788,15 +1763,9 @@ void ETSGen::CastToString(const ir::AstNode *const node)
     if (sourceType->IsETSStringType()) {
         return;
     }
-    if (sourceType->IsETSCharType()) {
-        Ra().Emit<CallVirtAccShort, 0>(node, Signatures::BUILTIN_OBJECT_TO_STRING, dummyReg_, 0);
-        return;
-    }
-    if (sourceType->IsETSPrimitiveType()) {
-        EmitBoxingConversion(node);
-    } else {
-        ES2PANDA_ASSERT(sourceType->IsETSReferenceType());
-    }
+
+    ES2PANDA_ASSERT(sourceType->IsETSReferenceType());
+
     // caller must ensure parameter is not null
     Ra().Emit<CallVirtAccShort, 0>(node, Signatures::BUILTIN_OBJECT_TO_STRING, dummyReg_, 0);
     SetAccumulatorType(Checker()->GetGlobalTypesHolder()->GlobalETSStringBuiltinType());
@@ -3073,6 +3042,21 @@ void ETSGen::NewArray(const ir::AstNode *const node, const VReg arr, const VReg 
 
     Ra().Emit<Newarr>(node, arr, dim, util::StringView(*res.first));
     SetVRegType(arr, arrType);
+}
+
+void ETSGen::LoadResizableArrayLength(const ir::AstNode *node)
+{
+    Ra().Emit<CallAccShort, 0>(node, Signatures::BUILTIN_ARRAY_LENGTH, dummyReg_, 0);
+    Sa().Emit<F64toi32>(node);
+    SetAccumulatorType(Checker()->GlobalIntType());
+}
+
+void ETSGen::LoadResizableArrayElement(const ir::AstNode *node, const VReg arrObj, const VReg arrIndex)
+{
+    auto *vRegType = GetVRegType(arrObj);
+    auto *elementType = vRegType->AsETSResizableArrayType()->ElementType();
+    Ra().Emit<CallVirtShort>(node, Signatures::BUILTIN_ARRAY_GET_ELEMENT, arrObj, arrIndex);
+    SetAccumulatorType(elementType);
 }
 
 void ETSGen::LoadArrayLength(const ir::AstNode *node, VReg arrayReg)

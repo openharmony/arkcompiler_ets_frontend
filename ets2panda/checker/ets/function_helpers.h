@@ -140,14 +140,13 @@ static const Substitution *BuildImplicitSubstitutionForArguments(ETSChecker *che
                 return nullptr;
             }
         }
-
-        if (substitution->size() != sigParams.size() &&
-            (signature->Function()->ReturnTypeAnnotation() == nullptr ||
-             !checker->EnhanceSubstitutionForType(sigInfo->typeParams,
-                                                  signature->Function()->ReturnTypeAnnotation()->TsType(),
-                                                  signature->ReturnType(), substitution))) {
-            return nullptr;
-        }
+    }
+    if (substitution->size() != sigParams.size() &&
+        (signature->Function()->ReturnTypeAnnotation() == nullptr ||
+         !checker->EnhanceSubstitutionForType(sigInfo->typeParams,
+                                              signature->Function()->ReturnTypeAnnotation()->TsType(),
+                                              signature->ReturnType(), substitution))) {
+        return nullptr;
     }
 
     return substitution;

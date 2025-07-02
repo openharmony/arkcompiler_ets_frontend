@@ -15,31 +15,29 @@
     ],
     "result": [
         {
-            "line": 16,
+            "line": 15,
             "column": 1,
-            "endLine": 16,
-            "endColumn": 47,
-            "problem": "ImportAfterStatement",
-            "suggest": "",
-            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 16,
-            "column": 1,
-            "endLine": 16,
+            "endLine": 15,
             "endColumn": 47,
             "problem": "InterOpImportJs",
             "autofix": [
                 {
-                    "start": 617,
-                    "end": 663,
-                    "replacementText": ""
+                    "start": 604,
+                    "end": 650,
+                    "replacementText": "",
+                    "line": 15,
+                    "column": 1,
+                    "endLine": 15,
+                    "endColumn": 47
                 },
                 {
-                    "start": 663,
-                    "end": 663,
-                    "replacementText": "let GeneratedImportVar_1 = ESObject.load('./call_object_methods_js');\nlet foo = GeneratedImportVar_1.getPropertyByName('foo');\n"
+                    "start": 650,
+                    "end": 650,
+                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('./call_object_methods_js');\nlet foo = GeneratedImportVar_1.getProperty('foo');\n",
+                    "line": 15,
+                    "column": 1,
+                    "endLine": 15,
+                    "endColumn": 47
                 }
             ],
             "suggest": "",
@@ -47,23 +45,45 @@
             "severity": "ERROR"
         },
         {
-            "line": 18,
+            "line": 17,
             "column": 1,
-            "endLine": 18,
+            "endLine": 17,
             "endColumn": 13,
-            "problem": "InteropJsObjectCallStaticFunc",
+            "problem": "InteropCallObjectMethods",
+            "autofix": [
+                {
+                    "start": 652,
+                    "end": 664,
+                    "replacementText": "foo.invokeMethod(\"bar\", ESValue.wrap(123))",
+                    "line": 17,
+                    "column": 1,
+                    "endLine": 17,
+                    "endColumn": 13
+                }
+            ],
             "suggest": "",
-            "rule": "Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-call-static-function)",
+            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-interop-js2s-call-js-method)",
             "severity": "ERROR"
         },
         {
-            "line": 18,
-            "column": 1,
-            "endLine": 18,
-            "endColumn": 13,
-            "problem": "InteropCallObjectMethods",
+            "line": 17,
+            "column": 9,
+            "endLine": 17,
+            "endColumn": 12,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 660,
+                    "end": 663,
+                    "replacementText": "123.0",
+                    "line": 17,
+                    "column": 9,
+                    "endLine": 17,
+                    "endColumn": 12
+                }
+            ],
             "suggest": "",
-            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-interop-js2s-call-js-method)",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         }
     ]

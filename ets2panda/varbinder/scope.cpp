@@ -641,7 +641,7 @@ Scope::InsertResult GlobalScope::InsertImpl(const util::StringView &name, Variab
         ES2PANDA_ASSERT(var->Declaration()->Name().Utf8().find(compiler::Signatures::ETS_GLOBAL) == std::string::npos);
         const auto *const node = var->Declaration()->Node();
 
-        if (!(node->IsExported() || node->IsDefaultExported() || node->IsExportedType())) {
+        if (!(node->IsExported() || node->IsDefaultExported())) {
             return Scope::InsertResult {Bindings().end(), false};
         }
     }
@@ -866,6 +866,10 @@ Variable *ClassScope::FindLocal(const util::StringView &name, ResolveBindingOpti
 
 void ClassScope::SetBindingProps(Decl *newDecl, BindingProps *props, bool isStatic)
 {
+    if (newDecl->IsImportDecl()) {
+        return;
+    }
+
     switch (newDecl->Type()) {
         case DeclType::CONST:
             [[fallthrough]];
@@ -960,11 +964,15 @@ Variable *ClassScope::AddBinding(ArenaAllocator *allocator, [[maybe_unused]] Var
         return nullptr;
     }
 
-    if (auto node = newDecl->Node();
-        node->IsStatement() &&
-        (node->AsStatement()->IsMethodDefinition() || node->IsClassProperty() || node->IsClassStaticBlock()) &&
-        node->AsStatement()->AsClassElement()->Value() != nullptr) {
-        props.SetFlagsType(VariableFlags::INITIALIZED);
+    if (auto node = newDecl->Node(); node->IsStatement() && (node->AsStatement()->IsMethodDefinition() ||
+                                                             node->IsClassProperty() || node->IsClassStaticBlock())) {
+        if (node->AsStatement()->AsClassElement()->Value() != nullptr) {
+            props.SetFlagsType(VariableFlags::INITIALIZED);
+        }
+
+        if (node->IsClassProperty() && node->AsClassProperty()->NeedInitInStaticBlock()) {
+            props.SetFlagsType(VariableFlags::INIT_IN_STATIC_BLOCK);
+        }
     }
 
     var->SetScope(this);

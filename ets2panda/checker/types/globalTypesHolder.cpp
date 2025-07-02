@@ -63,6 +63,7 @@ void GlobalTypesHolder::AddETSEscompatLayer()
     builtinNameMappings_.emplace("NullPointerError", GlobalTypeId::ETS_NULL_POINTER_ERROR_BUILTIN);
     builtinNameMappings_.emplace("UncaughtExceptionError", GlobalTypeId::ETS_UNCAUGHT_EXCEPTION_ERROR_BUILTIN);
     builtinNameMappings_.emplace("Map", GlobalTypeId::ETS_MAP_BUILTIN);
+    builtinNameMappings_.emplace("Record", GlobalTypeId::ETS_RECORD_BUILTIN);
     builtinNameMappings_.emplace("RegExp", GlobalTypeId::ETS_REGEXP_BUILTIN);
     builtinNameMappings_.emplace("Set", GlobalTypeId::ETS_SET_BUILTIN);
 }
@@ -485,6 +486,11 @@ Type *GlobalTypesHolder::GlobalLongBuiltinType()
 Type *GlobalTypesHolder::GlobalMapBuiltinType()
 {
     return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_MAP_BUILTIN));
+}
+
+Type *GlobalTypesHolder::GlobalRecordBuiltinType()
+{
+    return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_RECORD_BUILTIN));
 }
 
 Type *GlobalTypesHolder::GlobalErrorBuiltinType()

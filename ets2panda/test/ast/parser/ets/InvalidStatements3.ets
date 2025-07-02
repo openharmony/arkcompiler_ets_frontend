@@ -44,19 +44,21 @@ for (let i = 1 in [0, 1, 2]) {}
 /* @@? 18:9 Error TypeError: Argument must be an instance of 'Exception' or 'Error' */
 /* @@? 18:12 Error TypeError: Cannot find type 'exception'. */
 /* @@? 19:1 Error SyntaxError: Expected '{', got '}'. */
-/* @@? 19:1 Error SyntaxError: Expected '{', got '}'. */
 /* @@? 22:5 Error SyntaxError: Expected '{', got 'let'. */
 /* @@? 23:11 Error SyntaxError: Expected '{', got '('. */
+/* @@? 23:11 Error TypeError: Unresolved reference x */
 /* @@? 27:7 Error SyntaxError: Expected '(', got '{'. */
 /* @@? 27:7 Error TypeError: need to specify target type for class composite */
 /* @@? 29:1 Error SyntaxError: Expected ')', got 'while'. */
 /* @@? 29:7 Error SyntaxError: Expected '(', got 'identification literal'. */
+/* @@? 29:7 Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type. */
 /* @@? 29:13 Error SyntaxError: Expected ')', got '{'. */
 /* @@? 31:9 Error SyntaxError: Unexpected token 'let'. */
-/* @@? 31:9 Error SyntaxError: Unexpected token 'let'. */
+/* @@? 31:13 Error SyntaxError: Unexpected token 'x'. */
 /* @@? 34:5 Error SyntaxError: Illegal 'use strict' directive in function with non-simple parameter list. */
-/* @@? 38:5 Error SyntaxError: Annotation declaration can not have access modifier. */
 /* @@? 38:5 Error SyntaxError: Unexpected token 'private'. */
+/* @@? 38:5 Error SyntaxError: Annotation declaration can not have access modifier. */
+/* @@? 38:13 Error SyntaxError: Unexpected token '@'. */
 /* @@? 38:14 Error TypeError: Cannot find type 'annotate'. */
 /* @@? 42:16 Error SyntaxError: for-in loop variable declaration may not have an initializer. */
 /* @@? 42:16 Error SyntaxError: Unexpected token 'in'. */

@@ -765,7 +765,7 @@
                           },
                           "end": {
                             "line": 24,
-                            "column": 24,
+                            "column": 23,
                             "program": "asyncfunc_lambda_main.ets"
                           }
                         }

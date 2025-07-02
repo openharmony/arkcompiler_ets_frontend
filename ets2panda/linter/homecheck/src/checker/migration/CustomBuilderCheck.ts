@@ -23,19 +23,14 @@ import {
     AliasType,
     AbstractInvokeExpr,
     Value,
-    ArkFile,
     AstTreeUtils,
     ts,
-    FunctionType,
-    ArkClass,
-    ANONYMOUS_METHOD_PREFIX,
-    ArkInvokeStmt,
 } from 'arkanalyzer';
 import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
 import { BaseChecker, BaseMetaData } from '../BaseChecker';
 import { Rule, Defects, MatcherTypes, MatcherCallback, MethodMatcher } from '../../Index';
 import { IssueReport } from '../../model/Defects';
-import { FixInfo, RuleFix } from '../../model/Fix';
+import { RuleFix } from '../../model/Fix';
 import { FixPosition, FixUtils } from '../../utils/common/FixUtils';
 import { WarnInfo } from '../../utils/common/Utils';
 
@@ -79,51 +74,8 @@ export class CustomBuilderCheck implements BaseChecker {
             if (usage) {
                 this.addIssueReport(usage.getDeclaringStmt()!, usage);
             }
-
-            // 场景2：函数调用包在箭头函数中赋值给CustomBuilder类型的对象
-            if (stmt instanceof ArkAssignStmt) {
-                const arrowMethod = this.findPotentialArrowFunction(stmt, target.getDeclaringArkClass());
-                if (arrowMethod !== null && this.isCallToBuilderWrapWithArrow(arrowMethod)) {
-                    this.addIssueReport(stmt, stmt.getRightOp());
-                }
-            }
         }
     };
-
-    // 只有当赋值语句leftOp为CustomBuilder类型时，若rightOp是匿名箭头函数，则返回该箭头函数
-    private findPotentialArrowFunction(stmt: Stmt, arkClass: ArkClass): ArkMethod | null {
-        if (!(stmt instanceof ArkAssignStmt) || !this.isCustomBuilderTy(stmt.getLeftOp().getType())) {
-            return null;
-        }
-
-        const rightOpType = stmt.getRightOp().getType();
-        if (!(rightOpType instanceof FunctionType)) {
-            return null;
-        }
-
-        const methodName = rightOpType.getMethodSignature().getMethodSubSignature().getMethodName();
-        const method = arkClass.getMethodWithName(methodName);
-        if (method === null || !method.isAnonymousMethod()) {
-            return null;
-        }
-        return method;
-    }
-
-    private isCallToBuilderWrapWithArrow(arrowMethod: ArkMethod): boolean {
-        const scene = arrowMethod.getDeclaringArkFile().getScene();
-        const stmts = arrowMethod.getBody()?.getCfg().getStmts() ?? [];
-        for (const stmt of stmts) {
-            if (!(stmt instanceof ArkInvokeStmt)) {
-                continue;
-            }
-            const invokeExpr = stmt.getInvokeExpr();
-            const method = scene.getMethod(invokeExpr.getMethodSignature());
-            if (method && method.hasBuilderDecorator()) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     private isCallToBuilder(stmt: Stmt, scene: Scene): Local | undefined {
         if (!(stmt instanceof ArkAssignStmt)) {
@@ -149,14 +101,17 @@ export class CustomBuilderCheck implements BaseChecker {
     }
 
     private isPassToCustomBuilder(stmt: Stmt, locals: Set<Local>): Local | undefined {
+        let res: Local | undefined = undefined;
         if (stmt instanceof ArkAssignStmt) {
-            if (!this.isCustomBuilderTy(stmt.getLeftOp().getType())) {
-                return undefined;
+            if (this.isCustomBuilderTy(stmt.getLeftOp().getType())) {
+                const rightOp = stmt.getRightOp();
+                if (rightOp instanceof Local && locals.has(rightOp)) {
+                    res = rightOp;
+                }
             }
-            const rightOp = stmt.getRightOp();
-            if (rightOp instanceof Local && locals.has(rightOp)) {
-                return rightOp;
-            }
+        }
+        if (res !== undefined) {
+            return res;
         }
         const invokeExpr = stmt.getInvokeExpr();
         if (invokeExpr) {
@@ -208,7 +163,7 @@ export class CustomBuilderCheck implements BaseChecker {
     }
 
     private getLineAndColumn(stmt: Stmt, operand: Value): WarnInfo {
-        const arkFile = stmt.getCfg()?.getDeclaringMethod().getDeclaringArkFile();
+        const arkFile = stmt.getCfg().getDeclaringMethod().getDeclaringArkFile();
         const originPosition = stmt.getOperandOriginalPosition(operand);
         if (arkFile && originPosition) {
             const originPath = arkFile.getFilePath();
@@ -229,7 +184,7 @@ export class CustomBuilderCheck implements BaseChecker {
             fixPosition.endLine = endPosition.line;
             fixPosition.endCol = endPosition.col;
         }
-        const arkFile = stmt.getCfg()?.getDeclaringMethod().getDeclaringArkFile();
+        const arkFile = stmt.getCfg().getDeclaringMethod().getDeclaringArkFile();
         const sourceFile = AstTreeUtils.getASTNode(arkFile.getName(), arkFile.getCode());
         const range = FixUtils.getRangeWithAst(sourceFile, fixPosition);
         ruleFix.range = range;

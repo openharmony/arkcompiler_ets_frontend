@@ -28,4 +28,3 @@ function main() {
 
 /* @@? 20:58 Warning Warning: Reading the value of the property inside its getter may lead to an endless loop.  */
 /* @@? 21:52 Warning Warning: Assigning new value to the property inside its setter may lead to an endless loop.  */
-/* @@? 21:52 Warning Warning: Assigning new value to the property inside its setter may lead to an endless loop.  */

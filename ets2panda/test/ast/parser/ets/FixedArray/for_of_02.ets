@@ -32,4 +32,4 @@ function main(): void {
   }
 }
 
-/* @@@ label Error TypeError: Source element type 'double' is not assignable to the loop iterator type 'float'.  */
+/* @@? 30:17 Error TypeError: Source element type 'Double' is not assignable to the loop iterator type 'float'. */

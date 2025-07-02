@@ -19,7 +19,5 @@ function main(): void {
     s.toString()
     let a: int [] = [1, 2]
     let b = s ?? a;
-    /* @@ label */b.toString();
+    b.toString();
 }
-
-/* @@@ label Error TypeError: Type String|int[] is illegal in union member expression.  */

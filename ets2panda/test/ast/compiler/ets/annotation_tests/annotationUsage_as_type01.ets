@@ -19,4 +19,3 @@
 let a = new MyAnno()
 
 /* @@? 19:13 Error TypeError: Annotations cannot be used as a type.  */
-/* @@? 19:13 Error TypeError: Annotations cannot be used as a type.  */

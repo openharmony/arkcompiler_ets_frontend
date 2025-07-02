@@ -54,7 +54,7 @@ public:
     void Iterate(const NodeTraverser &cb) const override;
 
     void Dump(ir::AstDumper *dumper) const override;
-    void Dump([[maybe_unused]] ir::SrcDumper *dumper) const override {};
+    void Dump(ir::SrcDumper *dumper) const override;
 
     void Compile(compiler::PandaGen * /*pg*/) const override {}
 
@@ -72,7 +72,12 @@ public:
         v->Accept(this);
     }
 
+protected:
+    AstNode *Construct(ArenaAllocator *allocator) override;
+    void CopyTo(AstNode *other) const override;
+
 private:
+    friend class SizeOfNodeTest;
     // NOTE(rsipka): this should use a singular name
     ETSImportDeclaration *etsImportDeclarations_;
     ArenaVector<util::StringView> userPaths_;

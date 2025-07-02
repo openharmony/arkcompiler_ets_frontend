@@ -13,10 +13,9 @@
  * limitations under the License.
  */
 
-'use static'
-let GeneratedImportVar_1 = ESObject.load('./interop_equality_judgment_js');
-let a = GeneratedImportVar_1.getPropertyByName('a');
-let b = GeneratedImportVar_1.getPropertyByName('b');
+let GeneratedImportVar_1 = ESValue.load('./interop_equality_judgment_js');
+let a = GeneratedImportVar_1.getProperty('a');
+let b = GeneratedImportVar_1.getProperty('b');
 
 a.areEqual(b)
 !a.areEqual(b)

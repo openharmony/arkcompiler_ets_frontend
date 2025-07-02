@@ -27,13 +27,13 @@ function main(): void {
     let locVar: mytype = new A();
     assertEQ(locVar.aMemb, 5)
     assertEQ(globVar1, 7)
-    // NOTE (mmartin): Enable this assert, when correct initialization order of global variables is well defined for packages
-    // assertEQ(globVar2, 7)
+    assertEQ(globVar2, 7)
 }
 
-// NOTE (mmartin): Merge these when correct initialization order of global variables is well defined for packages
 let globVar2: number;
-globVar2 = globVar1;
+static {
+    globVar2 = globVar1;
+}
 
 function func2(a0: number): void {
     assertEQ(a0, 6)

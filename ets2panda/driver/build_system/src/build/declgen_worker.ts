@@ -15,8 +15,7 @@
 
 import { CompileFileInfo, ModuleInfo } from '../types';
 import { BuildConfig } from '../types';
-import { LogData, LogDataFactory, Logger } from '../logger';
-import { ErrorCode } from '../error_code';
+import { Logger } from '../logger';
 import * as fs from 'fs';
 import * as path from 'path';
 import { changeFileExtension, ensurePathExists } from '../utils';
@@ -102,18 +101,13 @@ process.on('message', (message: {
     } catch (error) {
       errorStatus = true;
       if (error instanceof Error) {
-        const logData: LogData = LogDataFactory.newInstance(
-          ErrorCode.BUILDSYSTEM_DECLGEN_FAIL,
-          'Generate declaration files failed in worker.',
-          error.message
-        );
-        logger.printError(logData);
+        process.send({
+          success: false,
+          isDeclFile: true,
+          filePath: fileInfo.filePath,
+          error: 'Generate declaration files failed.\n' + error.message
+        });
       }
-      process.send({
-        success: false,
-        filePath: fileInfo.filePath,
-        error: 'Generate declaration files failed in worker.'
-      });
     } finally {
       if (!errorStatus) {
         // when error occur,wrapper will destroy context.

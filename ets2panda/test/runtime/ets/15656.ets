@@ -19,5 +19,5 @@ function foo(lmb: (i: number) => number): number {
 }
 
 function main(): int {
-    return foo((i:number): number => { return i }) as int
+    return Double.toInt(foo((i:number): number => { return i }))
 }

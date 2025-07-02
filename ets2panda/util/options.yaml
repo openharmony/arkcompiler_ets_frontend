@@ -74,6 +74,11 @@ options:
   default: false
   description: Print names of files that are part of compilation
 
+- name: parse-jsdoc
+  type: bool
+  default: false
+  description: Enable the ability to parse jsdoc
+
 # Compiler
 - name: dump-assembly
   type: bool
@@ -165,6 +170,22 @@ options:
     default: []
     description: Paths to evaluation mode (.abc) files, must be accessible
     delimiter: ":"
+
+- name: generate-decl
+  description: Input static file and generate static declaration files
+  sub_options:
+  - name: enabled
+    type: bool
+    default: false
+    description: Whether to enable static declaration file generation
+  - name: path
+    type: std::string
+    default: ""
+    description: Output path for generated static declaration files
+  - name: enable-isolated
+    type: bool
+    default: false
+    description: Whether to enable isolated declaration file generation
 
 - name: thread
   type: int
@@ -352,3 +373,8 @@ options:
   type: arg_list_t
   default: []
   description: Bytecode optimizer's compiler arguments
+
+- name: perm-arena
+  type: bool
+  default: true
+  description: Place AST trees in permanent arena

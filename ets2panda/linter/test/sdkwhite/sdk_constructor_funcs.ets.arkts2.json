@@ -15,20 +15,200 @@
     ],
     "result": [
         {
-            "line": 20,
-            "column": 5,
-            "endLine": 20,
-            "endColumn": 32,
+            "line": 18,
+            "column": 3,
+            "endLine": 18,
+            "endColumn": 49,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 18,
+            "column": 15,
+            "endLine": 18,
+            "endColumn": 42,
             "problem": "DynamicCtorCall",
             "suggest": "",
             "rule": "\"new\" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)",
             "severity": "ERROR"
         },
         {
-            "line": 20,
-            "column": 19,
-            "endLine": 20,
-            "endColumn": 32,
+            "line": 18,
+            "column": 29,
+            "endLine": 18,
+            "endColumn": 42,
+            "problem": "ConstructorTypesDeprecated",
+            "suggest": "",
+            "rule": "Constructor types are not supported - use lambda functions instead. (sdk-constructor-funcs)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 19,
+            "column": 3,
+            "endLine": 19,
+            "endColumn": 10,
+            "problem": "LimitedReturnTypeInference",
+            "suggest": "",
+            "rule": "Function return type inference is limited (arkts-no-implicit-return-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 23,
+            "column": 8,
+            "endLine": 23,
+            "endColumn": 58,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 23,
+            "column": 25,
+            "endLine": 23,
+            "endColumn": 52,
+            "problem": "DynamicCtorCall",
+            "suggest": "",
+            "rule": "\"new\" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 23,
+            "column": 39,
+            "endLine": 23,
+            "endColumn": 52,
+            "problem": "ConstructorTypesDeprecated",
+            "suggest": "",
+            "rule": "Constructor types are not supported - use lambda functions instead. (sdk-constructor-funcs)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 24,
+            "column": 48,
+            "endLine": 24,
+            "endColumn": 61,
+            "problem": "ConstructorTypesDeprecated",
+            "suggest": "",
+            "rule": "Constructor types are not supported - use lambda functions instead. (sdk-constructor-funcs)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 25,
+            "column": 3,
+            "endLine": 25,
+            "endColumn": 49,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 25,
+            "column": 15,
+            "endLine": 25,
+            "endColumn": 42,
+            "problem": "DynamicCtorCall",
+            "suggest": "",
+            "rule": "\"new\" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 25,
+            "column": 29,
+            "endLine": 25,
+            "endColumn": 42,
+            "problem": "ConstructorTypesDeprecated",
+            "suggest": "",
+            "rule": "Constructor types are not supported - use lambda functions instead. (sdk-constructor-funcs)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 26,
+            "column": 27,
+            "endLine": 26,
+            "endColumn": 40,
+            "problem": "ConstructorTypesDeprecated",
+            "suggest": "",
+            "rule": "Constructor types are not supported - use lambda functions instead. (sdk-constructor-funcs)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 29,
+            "column": 33,
+            "endLine": 29,
+            "endColumn": 46,
+            "problem": "ConstructorTypesDeprecated",
+            "suggest": "",
+            "rule": "Constructor types are not supported - use lambda functions instead. (sdk-constructor-funcs)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 30,
+            "column": 16,
+            "endLine": 30,
+            "endColumn": 43,
+            "problem": "DynamicCtorCall",
+            "suggest": "",
+            "rule": "\"new\" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 30,
+            "column": 30,
+            "endLine": 30,
+            "endColumn": 43,
+            "problem": "ConstructorTypesDeprecated",
+            "suggest": "",
+            "rule": "Constructor types are not supported - use lambda functions instead. (sdk-constructor-funcs)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 31,
+            "column": 16,
+            "endLine": 31,
+            "endColumn": 43,
+            "problem": "DynamicCtorCall",
+            "suggest": "",
+            "rule": "\"new\" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 31,
+            "column": 30,
+            "endLine": 31,
+            "endColumn": 43,
+            "problem": "ConstructorTypesDeprecated",
+            "suggest": "",
+            "rule": "Constructor types are not supported - use lambda functions instead. (sdk-constructor-funcs)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 38,
+            "column": 48,
+            "endLine": 38,
+            "endColumn": 61,
+            "problem": "ConstructorTypesDeprecated",
+            "suggest": "",
+            "rule": "Constructor types are not supported - use lambda functions instead. (sdk-constructor-funcs)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 39,
+            "column": 23,
+            "endLine": 39,
+            "endColumn": 50,
+            "problem": "DynamicCtorCall",
+            "suggest": "",
+            "rule": "\"new\" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 39,
+            "column": 37,
+            "endLine": 39,
+            "endColumn": 50,
             "problem": "ConstructorTypesDeprecated",
             "suggest": "",
             "rule": "Constructor types are not supported - use lambda functions instead. (sdk-constructor-funcs)",

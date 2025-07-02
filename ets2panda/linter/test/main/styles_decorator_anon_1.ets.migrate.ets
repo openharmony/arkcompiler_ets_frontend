@@ -13,7 +13,15 @@
  * limitations under the License.
  */
 
-import { Entry, Component, BuilderParam, Require, Button, CommonMethod, Color } from '@kit.ArkUI';
+import {
+  Entry,
+  Component,
+  BuilderParam,
+  Require,
+  Button,
+  CommonMethod,
+  Color,
+} from '@kit.ArkUI';
 
 @Entry
 @Component
@@ -29,13 +37,13 @@ struct TestStateStyle {
     .stateStyles({
       normal: (instance: CommonMethod): void => {
           instance.backgroundColor("#00ffff");
-          instance.borderWidth(8);
+          instance.borderWidth(8.0);
       },
       pressed: (instance: CommonMethod): void => {
           instance.backgroundColor(Color.Red);
           instance.backgroundImagePosition({
-              x: 0,
-              y: 0
+              x: 0.0,
+              y: 0.0
           });
           instance.backgroundColor("#ffff00");
       }

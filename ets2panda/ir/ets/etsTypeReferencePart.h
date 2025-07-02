@@ -76,11 +76,15 @@ public:
 
     [[nodiscard]] ETSTypeReferencePart *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
+    ETSTypeReferencePart *Construct(ArenaAllocator *allocator) override;
+    void CopyTo(AstNode *other) const override;
+
 private:
     checker::Type *HandlePartialType(checker::ETSChecker *const checker, const Identifier *const ident);
     checker::Type *HandleInternalTypes(checker::ETSChecker *checker);
     checker::Type *HandleFixedArrayType(checker::ETSChecker *const checker);
 
+    friend class SizeOfNodeTest;
     ir::Expression *name_;
     ir::TSTypeParameterInstantiation *typeParams_ {};
     ir::ETSTypeReferencePart *prev_ {};

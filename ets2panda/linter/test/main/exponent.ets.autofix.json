@@ -24,7 +24,11 @@
                 {
                     "start": 609,
                     "end": 628,
-                    "replacementText": "kk: number = Math.pow(6, 3)"
+                    "replacementText": "kk: number = Math.pow(6, 3)",
+                    "line": 16,
+                    "column": 5,
+                    "endLine": 16,
+                    "endColumn": 24
                 }
             ],
             "suggest": "",
@@ -42,6 +46,48 @@
             "severity": "ERROR"
         },
         {
+            "line": 16,
+            "column": 19,
+            "endLine": 16,
+            "endColumn": 20,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 623,
+                    "end": 624,
+                    "replacementText": "6.0",
+                    "line": 16,
+                    "column": 19,
+                    "endLine": 16,
+                    "endColumn": 20
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 16,
+            "column": 22,
+            "endLine": 16,
+            "endColumn": 23,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 626,
+                    "end": 627,
+                    "replacementText": "3.0",
+                    "line": 16,
+                    "column": 22,
+                    "endLine": 16,
+                    "endColumn": 23
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 19,
             "column": 5,
             "endLine": 19,
@@ -51,7 +97,32 @@
                 {
                     "start": 652,
                     "end": 662,
-                    "replacementText": "k: number = 5 ** 2"
+                    "replacementText": "k: number = 5 ** 2",
+                    "line": 19,
+                    "column": 5,
+                    "endLine": 19,
+                    "endColumn": 15
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 19,
+            "column": 9,
+            "endLine": 19,
+            "endColumn": 10,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 656,
+                    "end": 657,
+                    "replacementText": "5.0",
+                    "line": 19,
+                    "column": 9,
+                    "endLine": 19,
+                    "endColumn": 10
                 }
             ],
             "suggest": "",
@@ -68,11 +139,36 @@
                 {
                     "replacementText": "Math.pow(5, 2)",
                     "start": 656,
-                    "end": 662
+                    "end": 662,
+                    "line": 19,
+                    "column": 11,
+                    "endLine": 19,
+                    "endColumn": 13
                 }
             ],
             "suggest": "",
             "rule": "exponent opartions \"**\" and \"**=\" are disabled (arkts-no-exponent-op)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 19,
+            "column": 14,
+            "endLine": 19,
+            "endColumn": 15,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 661,
+                    "end": 662,
+                    "replacementText": "2.0",
+                    "line": 19,
+                    "column": 14,
+                    "endLine": 19,
+                    "endColumn": 15
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -85,11 +181,36 @@
                 {
                     "replacementText": "k = Math.pow(k, 2)",
                     "start": 681,
-                    "end": 688
+                    "end": 688,
+                    "line": 22,
+                    "column": 3,
+                    "endLine": 22,
+                    "endColumn": 6
                 }
             ],
             "suggest": "",
             "rule": "exponent opartions \"**\" and \"**=\" are disabled (arkts-no-exponent-op)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 22,
+            "column": 7,
+            "endLine": 22,
+            "endColumn": 8,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 687,
+                    "end": 688,
+                    "replacementText": "2.0",
+                    "line": 22,
+                    "column": 7,
+                    "endLine": 22,
+                    "endColumn": 8
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -100,6 +221,27 @@
             "problem": "MathPow",
             "suggest": "",
             "rule": "function \"Math.pow()\" behavior for ArkTS differs from Typescript version (arkts-math-pow-standard-diff)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 25,
+            "column": 15,
+            "endLine": 25,
+            "endColumn": 16,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 720,
+                    "end": 722,
+                    "replacementText": "-1.0",
+                    "line": 25,
+                    "column": 15,
+                    "endLine": 25,
+                    "endColumn": 16
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         }
     ]

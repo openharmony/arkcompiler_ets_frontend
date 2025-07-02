@@ -13,14 +13,14 @@
  * limitations under the License.
  */
 
-#ifndef ES2PANDA_COMPILER_CORE_AST_VERIFIER_INVARIANTS_EVERYCHILDHASVALIDPARENT_H
-#define ES2PANDA_COMPILER_CORE_AST_VERIFIER_INVARIANTS_EVERYCHILDHASVALIDPARENT_H
+#ifndef ES2PANDA_COMPILER_CORE_AST_VERIFIER_INVARIANTS_SEQUENCEEXPRESSIONHASLASTTYPE_H
+#define ES2PANDA_COMPILER_CORE_AST_VERIFIER_INVARIANTS_SEQUENCEEXPRESSIONHASLASTTYPE_H
 
-#include "ast_verifier/invariantBase.h"
+#include "../invariantBase.h"
 
 namespace ark::es2panda::compiler::ast_verifier {
 
-class EveryChildHasValidParent : public InvariantBase<VerifierInvariants::EVERY_CHILD_HAS_VALID_PARENT> {
+class SequenceExpressionHasLastType : public InvariantBase<VerifierInvariants::SEQUENCE_EXPRESSION_HAS_LAST_TYPE> {
 public:
     using Base::Base;
     [[nodiscard]] CheckResult operator()(const ir::AstNode *ast);
@@ -28,4 +28,4 @@ public:
 
 }  // namespace ark::es2panda::compiler::ast_verifier
 
-#endif  // ES2PANDA_COMPILER_CORE_AST_VERIFIER_INVARIANTS_EVERYCHILDHASVALIDPARENT_H
+#endif  // ES2PANDA_COMPILER_CORE_AST_VERIFIER_INVARIANTS_SEQUENCEEXPRESSIONHASLASTTYPE_H

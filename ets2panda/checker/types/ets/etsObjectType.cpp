@@ -199,8 +199,33 @@ varbinder::LocalVariable *ETSObjectType::CreateSyntheticVarFromEverySignature(co
 
 ETSFunctionType *ETSObjectType::CreateMethodTypeForProp(const util::StringView &name) const
 {
-    ES2PANDA_ASSERT(GetRelation() != nullptr);
-    return GetRelation()->GetChecker()->AsETSChecker()->CreateETSMethodType(name, {{}, Allocator()->Adapter()});
+    ES2PANDA_ASSERT(GetRelation() != nullptr && GetRelation()->GetChecker() != nullptr);
+    auto *checker = GetRelation()->GetChecker()->AsETSChecker();
+    return checker->CreateETSMethodType(name, {{}, Allocator()->Adapter()});
+}
+
+static void AddSignature(std::vector<Signature *> &signatures, PropertySearchFlags flags, ETSChecker *checker,
+                         varbinder::LocalVariable *found)
+{
+    for (auto *it : found->TsType()->AsETSFunctionType()->CallSignatures()) {
+        if (std::find(signatures.begin(), signatures.end(), it) != signatures.end()) {
+            continue;
+        }
+        if (((flags & PropertySearchFlags::IGNORE_ABSTRACT) != 0) && it->HasSignatureFlag(SignatureFlags::ABSTRACT)) {
+            continue;
+        }
+        if (std::any_of(signatures.begin(), signatures.end(), [&it, &checker](auto sig) {
+                return checker->AreOverrideCompatible(sig, it) &&
+                       it->Owner()->HasObjectFlag(ETSObjectFlags::INTERFACE) &&
+                       (checker->Relation()->IsSupertypeOf(it->Owner(), sig->Owner()) ||
+                        !sig->Owner()->HasObjectFlag(ETSObjectFlags::INTERFACE));
+            })) {
+            continue;
+        }
+        // Issue: #18720
+        // NOLINTNEXTLINE(clang-analyzer-core.CallAndMessage)
+        signatures.emplace_back(it);
+    }
 }
 
 static void AddSignature(std::vector<Signature *> &signatures, PropertySearchFlags flags, ETSChecker *checker,
@@ -975,7 +1000,7 @@ static varbinder::LocalVariable *CopyPropertyWithTypeArguments(varbinder::LocalV
     auto *const checker = relation->GetChecker()->AsETSChecker();
     auto *const varType = ETSChecker::IsVariableGetterSetter(prop) ? prop->TsType() : checker->GetTypeOfVariable(prop);
     auto *const copiedPropType = SubstituteVariableType(relation, substitution, varType);
-    auto *const copiedProp = prop->Copy(checker->Allocator(), prop->Declaration());
+    auto *const copiedProp = prop->Copy(checker->ProgramAllocator(), prop->Declaration());
     // NOTE: some situation copiedPropType we get here are types cached in Checker,
     // uncontrolled SetVariable will pollute the cache.
     if (copiedPropType->Variable() == prop || copiedPropType->Variable() == nullptr) {
@@ -1088,7 +1113,7 @@ ETSObjectType *ETSObjectType::Substitute(TypeRelation *relation, const Substitut
     auto *const checker = relation->GetChecker()->AsETSChecker();
     auto *base = GetOriginalBaseType();
 
-    ArenaVector<Type *> newTypeArgs {checker->Allocator()->Adapter()};
+    ArenaVector<Type *> newTypeArgs {Allocator()->Adapter()};
     const bool anyChange = SubstituteTypeArgs(relation, newTypeArgs, substitution);
     // Lambda types can capture type params in their bodies, normal classes cannot.
     // NOTE: gogabr. determine precise conditions where we do not need to copy.

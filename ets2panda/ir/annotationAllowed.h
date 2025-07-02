@@ -92,7 +92,15 @@ protected:
     {
     }
 
+    void CopyTo(AstNode *other) const override
+    {
+        auto otherImpl = static_cast<AnnotationAllowed<T> *>(other);
+        otherImpl->annotations_ = annotations_;
+        T::CopyTo(other);
+    }
+
 private:
+    friend class SizeOfNodeTest;
     ArenaVector<AnnotationUsage *> annotations_;
 };
 }  // namespace ark::es2panda::ir

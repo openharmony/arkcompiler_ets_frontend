@@ -16,34 +16,6 @@
 function main() : void {
     let caught_counter = 0;
 
-    try {
-        let result : int = 1 / 0;
-    } catch (error: ArithmeticError) {
-        caught_counter++;
-    }
-    assertEQ(caught_counter, 1)
-
-    try {
-        let result : long = 1 / 0;
-    } catch (error: ArithmeticError) {
-        caught_counter++;
-    }
-    assertEQ(caught_counter, 2)
-
-    try {
-        let result : int = 1 % 0;
-    } catch (error: ArithmeticError) {
-        caught_counter++;
-    }
-    assertEQ(caught_counter, 3)
-
-    try {
-        let result : long = 1 % 0;
-    } catch (error: ArithmeticError) {
-        caught_counter++;
-    }
-    assertEQ(caught_counter, 4)
-
     let INT_ONE : int = 1;
     let INT_ZERO : int = 0;
     let LONG_ONE : long = 1;
@@ -54,28 +26,28 @@ function main() : void {
     } catch (error: ArithmeticError) {
         caught_counter++;
     }
-    assertEQ(caught_counter, 5)
+    assertEQ(caught_counter, 1)
 
     try {
         let result : long = LONG_ONE / LONG_ZERO;
     } catch (error: ArithmeticError) {
         caught_counter++;
     }
-    assertEQ(caught_counter, 6)
+    assertEQ(caught_counter, 2)
 
     try {
         let result : int = INT_ONE % INT_ZERO;
     } catch (error: ArithmeticError) {
         caught_counter++;
     }
-    assertEQ(caught_counter, 7)
+    assertEQ(caught_counter, 3)
 
     try {
         let result : long = LONG_ONE % LONG_ZERO;
     } catch (error: ArithmeticError) {
         caught_counter++;
     }
-    assertEQ(caught_counter, 8)
+    assertEQ(caught_counter, 4)
 
     let DOUBLE_ONE : double = 1.0;
     let DOUBLE_ZERO : double = 0.0;

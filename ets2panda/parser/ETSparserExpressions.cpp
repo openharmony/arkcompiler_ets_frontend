@@ -31,24 +31,6 @@ class FunctionContext;
 
 using namespace std::literals::string_literals;
 
-ir::Expression *ETSParser::ParseLaunchExpression(ExpressionParseFlags flags)
-{
-    lexer::SourcePosition start = Lexer()->GetToken().Start();
-    Lexer()->NextToken();  // eat launch
-
-    lexer::SourcePosition exprStart = Lexer()->GetToken().Start();
-    ir::Expression *expr = ParseLeftHandSideExpression(flags);
-    if (!expr->IsCallExpression()) {
-        LogError(diagnostic::ONLY_CALL_AFTER_LAUNCH, {}, exprStart);
-        return AllocBrokenExpression(exprStart);
-    }
-    auto call = expr->AsCallExpression();
-    auto *launchExpression = AllocNode<ir::ETSLaunchExpression>(call);
-    launchExpression->SetRange({start, call->End()});
-
-    return launchExpression;
-}
-
 static std::string GetArgumentsSourceView(lexer::Lexer *lexer, const util::StringView::Iterator &lexerPos)
 {
     std::string value = lexer->SourceView(lexerPos.Index(), lexer->Save().Iterator().Index()).Mutf8();
@@ -162,11 +144,9 @@ ir::Expression *ETSParser::ParseUnaryOrPrefixUpdateExpression(ExpressionParseFla
         case lexer::TokenType::PUNCTUATOR_PLUS:
         case lexer::TokenType::PUNCTUATOR_TILDE:
         case lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK:
-        case lexer::TokenType::KEYW_TYPEOF: {
+        case lexer::TokenType::KEYW_TYPEOF:
+        case lexer::TokenType::KEYW_AWAIT: {
             break;
-        }
-        case lexer::TokenType::KEYW_LAUNCH: {
-            return ParseLaunchExpression(flags);
         }
         default: {
             return ParseLeftHandSideExpression(flags);
@@ -178,6 +158,12 @@ ir::Expression *ETSParser::ParseUnaryOrPrefixUpdateExpression(ExpressionParseFla
     Lexer()->NextToken(tokenFlags);
 
     ir::Expression *argument = ResolveArgumentUnaryExpr(flags);
+    if (operatorType == lexer::TokenType::KEYW_AWAIT) {
+        auto *awaitExpr = AllocNode<ir::AwaitExpression>(argument);
+        awaitExpr->SetRange({start, argument->End()});
+        return awaitExpr;
+    }
+
     if (argument == nullptr) {
         return nullptr;
     }
@@ -234,6 +220,16 @@ ir::Expression *ETSParser::ParsePropertyDefinition(ExpressionParseFlags flags)
     return returnProperty;
 }
 
+bool CheckNextTokenOfTypeof(const lexer::Token &token)
+{
+    bool pretendTypeof = token.KeywordType() == lexer::TokenType::KEYW_TYPEOF;
+    bool pretendIdent = token.IsLiteral();
+    bool pretendOperator = token.IsUpdate();
+    bool pretendUnary = token.IsUnary();
+    bool pretendPuctuator = token.IsTsParamToken(token.Type());
+    return (pretendTypeof || pretendIdent || pretendOperator || pretendUnary || pretendPuctuator);
+}
+
 // NOLINTNEXTLINE(google-default-arguments)
 ir::Expression *ETSParser::ParseDefaultPrimaryExpression(ExpressionParseFlags flags)
 {
@@ -265,7 +261,12 @@ ir::Expression *ETSParser::ParseDefaultPrimaryExpression(ExpressionParseFlags fl
 
     Lexer()->NextToken();
     bool pretendArrow = Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_ARROW;
+    bool checkNextTokenOfTypeof = CheckNextTokenOfTypeof(Lexer()->GetToken());
     Lexer()->Rewind(savedPos);
+
+    if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_TYPEOF && checkNextTokenOfTypeof) {
+        return ParseUnaryOrPrefixUpdateExpression();
+    }
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT) {
         if (pretendArrow) {
@@ -274,8 +275,9 @@ ir::Expression *ETSParser::ParseDefaultPrimaryExpression(ExpressionParseFlags fl
         return ParsePrimaryExpressionIdent(flags);
     }
 
-    const auto &tokenNow = Lexer()->GetToken();
+    const auto tokenNow = Lexer()->GetToken();
     LogUnexpectedToken(tokenNow);
+    Lexer()->NextToken();  // eat an unexpected token
     return AllocBrokenExpression(tokenNow.Loc());
 }
 

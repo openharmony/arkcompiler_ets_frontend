@@ -113,13 +113,12 @@ export function buildArkMethodFromArkClass(
         mtd.setImplementationSignature(methodSignature);
         mtd.setLine(line + 1);
         mtd.setColumn(character + 1);
+        let bodyBuilder = new BodyBuilder(mtd.getSignature(), methodNode, mtd, sourceFile);
+        mtd.setBodyBuilder(bodyBuilder);
     } else {
         mtd.setDeclareSignatures(methodSignature);
         mtd.setDeclareLinesAndCols([line + 1], [character + 1]);
     }
-
-    let bodyBuilder = new BodyBuilder(mtd.getSignature(), methodNode, mtd, sourceFile);
-    mtd.setBodyBuilder(bodyBuilder);
 
     if (mtd.hasBuilderDecorator()) {
         mtd.setViewTree(buildViewTree(mtd));
@@ -430,10 +429,11 @@ export function addInitInConstructor(constructor: ArkMethod): void {
     if (!thisLocal) {
         return;
     }
-    const blocks = constructor.getCfg()?.getBlocks();
-    if (!blocks) {
+    const cfg = constructor.getCfg();
+    if (cfg === undefined) {
         return;
     }
+    const blocks = cfg.getBlocks();
     const firstBlockStmts = [...blocks][0].getStmts();
     let index = 0;
     for (let i = 0; i < firstBlockStmts.length; i++) {
@@ -454,6 +454,7 @@ export function addInitInConstructor(constructor: ArkMethod): void {
     const initInvokeStmt = new ArkInvokeStmt(
         new ArkInstanceInvokeExpr(thisLocal, constructor.getDeclaringArkClass().getInstanceInitMethod().getSignature(), [])
     );
+    initInvokeStmt.setCfg(cfg);
     firstBlockStmts.splice(index, 0, initInvokeStmt);
 }
 

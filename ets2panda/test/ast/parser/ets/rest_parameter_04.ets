@@ -18,6 +18,6 @@ function hehe(...items: number[]/* @@ label */: void /* @@ label1 */{
 }
 
 /* @@? 16:10 Error TypeError: Only abstract or native methods can't have body. */
-/* @@? 16:47 Error SyntaxError: Rest parameter must be the last formal parameter. */
+/* @@@ label Error SyntaxError: Rest parameter must be the last formal parameter. */
 /* @@? 16:49 Error SyntaxError: Unexpected token 'void'. */
-/* @@? 16:49 Error SyntaxError: Unexpected token 'void'. */
+/* @@@ label1 Error SyntaxError: Unexpected token '{'. */

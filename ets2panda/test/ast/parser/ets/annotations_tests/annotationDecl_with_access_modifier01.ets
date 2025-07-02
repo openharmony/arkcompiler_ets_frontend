@@ -18,3 +18,4 @@ public @interface MyAnno {
 
 /* @@? 15:1 Error SyntaxError: Annotation declaration can not have access modifier. */
 /* @@? 15:1 Error SyntaxError: Unexpected token 'public'. */
+/* @@? 15:8 Error SyntaxError: Unexpected token '@'. */

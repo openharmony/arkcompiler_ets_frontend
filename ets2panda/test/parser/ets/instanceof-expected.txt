@@ -536,23 +536,71 @@
                             }
                           },
                           "right": {
-                            "type": "TSArrayType",
-                            "elementType": {
-                              "type": "ETSPrimitiveType",
+                            "type": "ETSTypeReference",
+                            "part": {
+                              "type": "ETSTypeReferencePart",
+                              "name": {
+                                "type": "Identifier",
+                                "name": "Array",
+                                "decorators": [],
+                                "loc": {
+                                  "start": {
+                                    "line": 1,
+                                    "column": 1,
+                                    "program": "instanceof.ets"
+                                  },
+                                  "end": {
+                                    "line": 1,
+                                    "column": 3,
+                                    "program": "instanceof.ets"
+                                  }
+                                }
+                              },
+                              "typeParams": {
+                                "type": "TSTypeParameterInstantiation",
+                                "params": [
+                                  {
+                                    "type": "ETSPrimitiveType",
+                                    "loc": {
+                                      "start": {
+                                        "line": 1,
+                                        "column": 3,
+                                        "program": "instanceof.ets"
+                                      },
+                                      "end": {
+                                        "line": 1,
+                                        "column": 3,
+                                        "program": "instanceof.ets"
+                                      }
+                                    }
+                                  }
+                                ],
+                                "loc": {
+                                  "start": {
+                                    "line": 1,
+                                    "column": 3,
+                                    "program": "instanceof.ets"
+                                  },
+                                  "end": {
+                                    "line": 1,
+                                    "column": 3,
+                                    "program": "instanceof.ets"
+                                  }
+                                }
+                              },
                               "loc": {
                                 "start": {
-                                  "line": 19,
-                                  "column": 27,
+                                  "line": 1,
+                                  "column": 1,
                                   "program": "instanceof.ets"
                                 },
                                 "end": {
-                                  "line": 19,
-                                  "column": 30,
+                                  "line": 1,
+                                  "column": 3,
                                   "program": "instanceof.ets"
                                 }
                               }
                             },
-                            "annotations": [],
                             "loc": {
                               "start": {
                                 "line": 19,
@@ -650,55 +698,103 @@
                               }
                             },
                             "right": {
-                              "type": "TSArrayType",
-                              "elementType": {
-                                "type": "ETSTypeReference",
-                                "part": {
-                                  "type": "ETSTypeReferencePart",
-                                  "name": {
-                                    "type": "Identifier",
-                                    "name": "Double",
-                                    "decorators": [],
-                                    "loc": {
-                                      "start": {
-                                        "line": 21,
-                                        "column": 27,
-                                        "program": "instanceof.ets"
-                                      },
-                                      "end": {
-                                        "line": 21,
-                                        "column": 33,
-                                        "program": "instanceof.ets"
-                                      }
-                                    }
-                                  },
+                              "type": "ETSTypeReference",
+                              "part": {
+                                "type": "ETSTypeReferencePart",
+                                "name": {
+                                  "type": "Identifier",
+                                  "name": "Array",
+                                  "decorators": [],
                                   "loc": {
                                     "start": {
-                                      "line": 21,
-                                      "column": 27,
+                                      "line": 1,
+                                      "column": 1,
                                       "program": "instanceof.ets"
                                     },
                                     "end": {
-                                      "line": 21,
-                                      "column": 34,
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "instanceof.ets"
+                                    }
+                                  }
+                                },
+                                "typeParams": {
+                                  "type": "TSTypeParameterInstantiation",
+                                  "params": [
+                                    {
+                                      "type": "ETSTypeReference",
+                                      "part": {
+                                        "type": "ETSTypeReferencePart",
+                                        "name": {
+                                          "type": "Identifier",
+                                          "name": "Double",
+                                          "decorators": [],
+                                          "loc": {
+                                            "start": {
+                                              "line": 1,
+                                              "column": 3,
+                                              "program": "instanceof.ets"
+                                            },
+                                            "end": {
+                                              "line": 1,
+                                              "column": 3,
+                                              "program": "instanceof.ets"
+                                            }
+                                          }
+                                        },
+                                        "loc": {
+                                          "start": {
+                                            "line": 1,
+                                            "column": 3,
+                                            "program": "instanceof.ets"
+                                          },
+                                          "end": {
+                                            "line": 1,
+                                            "column": 3,
+                                            "program": "instanceof.ets"
+                                          }
+                                        }
+                                      },
+                                      "loc": {
+                                        "start": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "instanceof.ets"
+                                        },
+                                        "end": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "instanceof.ets"
+                                        }
+                                      }
+                                    }
+                                  ],
+                                  "loc": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "instanceof.ets"
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 3,
                                       "program": "instanceof.ets"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
-                                    "line": 21,
-                                    "column": 27,
+                                    "line": 1,
+                                    "column": 1,
                                     "program": "instanceof.ets"
                                   },
                                   "end": {
-                                    "line": 21,
-                                    "column": 34,
+                                    "line": 1,
+                                    "column": 3,
                                     "program": "instanceof.ets"
                                   }
                                 }
                               },
-                              "annotations": [],
                               "loc": {
                                 "start": {
                                   "line": 21,
@@ -956,3 +1052,4 @@
     }
   }
 }
+Warning: Type parameter is erased from type 'Array' when used in instanceof expression. [instanceof.ets:1:1]

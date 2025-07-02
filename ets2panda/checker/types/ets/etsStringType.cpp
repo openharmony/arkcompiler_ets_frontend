@@ -40,17 +40,7 @@ void ETSStringType::Identical(TypeRelation *relation, Type *other)
 
 bool ETSStringType::AssignmentSource(TypeRelation *relation, Type *target)
 {
-    auto node = relation->GetNode();
-    if ((relation->InAssignmentContext() || relation->ApplyStringToChar()) && IsConvertibleTo(target)) {
-        node->AddBoxingUnboxingFlags(ir::BoxingUnboxingFlags::UNBOX_TO_CHAR);
-        if (target->IsETSObjectType()) {
-            node->AddBoxingUnboxingFlags(ir::BoxingUnboxingFlags::BOX_TO_CHAR);
-        }
-        relation->Result(true);
-    } else {
-        relation->Result(target->IsETSStringType() && AreStringTypesAssignable(this, target));
-    }
-
+    relation->Result(target->IsETSStringType() && AreStringTypesAssignable(this, target));
     return relation->IsTrue();
 }
 
@@ -83,16 +73,6 @@ void ETSStringType::IsSubtypeOf(TypeRelation *relation, Type *source)
     }
     auto *const checker = relation->GetChecker()->AsETSChecker();
     relation->IsSupertypeOf(source, checker->GlobalBuiltinETSStringType());
-}
-
-bool ETSStringType::IsConvertibleTo(Type const *to) const
-{
-    const bool targetIsChar =
-        to->IsCharType() ||
-        // ETSObjectType is used in arrow function expression call.
-        (to->IsETSObjectType() && to->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::BUILTIN_CHAR));
-
-    return targetIsChar && IsConstantType() && value_.IsConvertibleToChar();
 }
 
 }  // namespace ark::es2panda::checker

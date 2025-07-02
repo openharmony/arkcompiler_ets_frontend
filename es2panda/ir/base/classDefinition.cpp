@@ -212,6 +212,11 @@ int32_t ClassDefinition::CreateClassPublicBuffer(compiler::PandaGen *pg, util::B
         util::UString fieldTypeLitId(fieldTypeIdxStr, pg->Allocator());
         buf->Add(pg->Allocator()->New<TaggedLiteral>(LiteralTag::LITERALARRAY, fieldTypeLitId.View()));
     }
+
+    if (IsImplementFromEts()) {
+        buf->Add(pg->Allocator()->New<TaggedLiteral>(LiteralTag::ETS_IMPLEMENTS, etsImplementsMessage_));
+    }
+
     return pg->AddLiteralBuffer(buf);
 }
 

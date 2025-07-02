@@ -23,7 +23,7 @@
 namespace ark::es2panda::checker {
 ArenaAllocator *TypeRelation::Allocator()
 {
-    return checker_->Allocator();
+    return checker_->ProgramAllocator();
 }
 
 RelationResult TypeRelation::CacheLookup(const Type *source, const Type *target, const RelationHolder &holder,

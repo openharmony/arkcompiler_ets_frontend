@@ -27,8 +27,4 @@ flags: [dynamic-ast]
 /* @@? 20:34 Error TypeError: Type name 'number' used in the wrong context */
 /* @@? 21:23 Error SyntaxError: Unexpected token, expected ']'. */
 /* @@? 21:23 Error SyntaxError: Unexpected token ']'. */
-/* @@? 21:23 Error SyntaxError: Unexpected token ']'. */
-/* @@? 21:23 Error SyntaxError: Unexpected token ']'. */
-/* @@? 21:23 Error SyntaxError: Unexpected token ']'. */
-/* @@? 21:26 Error SyntaxError: Unexpected token ']'. */
 /* @@? 21:26 Error SyntaxError: Unexpected token ']'. */

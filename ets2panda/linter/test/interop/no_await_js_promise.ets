@@ -12,7 +12,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use static'
 
 import { p, foo, pFuncCall, arrowFunc, pArrowCall } from "./no_await_js_promise_export";
 

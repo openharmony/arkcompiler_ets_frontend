@@ -49,6 +49,11 @@ void EmptyStatement::Compile(compiler::ETSGen *etsg) const
     etsg->GetAstCompiler()->Compile(this);
 }
 
+bool EmptyStatement::IsBrokenStatement()
+{
+    return isBrokenStatement_;
+}
+
 checker::Type *EmptyStatement::Check(checker::TSChecker *checker)
 {
     return checker->GetAnalyzer()->Check(this);
@@ -61,7 +66,7 @@ checker::VerifiedType EmptyStatement::Check(checker::ETSChecker *checker)
 
 [[nodiscard]] EmptyStatement *EmptyStatement::Clone(ArenaAllocator *allocator, AstNode *parent)
 {
-    EmptyStatement *stmt = allocator->New<EmptyStatement>();
+    EmptyStatement *stmt = allocator->New<EmptyStatement>(IsBrokenStatement());
     if (stmt != nullptr) {
         stmt->SetParent(parent);
         stmt->SetRange(Range());

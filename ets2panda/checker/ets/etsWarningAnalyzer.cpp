@@ -421,23 +421,17 @@ void ETSWarningAnalyzer::ETSWarningImplicitBoxingUnboxing(const ir::AstNode *nod
     node->Iterate([&](auto *childNode) { ETSWarningImplicitBoxingUnboxing(childNode); });
 }
 
-void ETSWarningAnalyzer::LogWarning(const std::string &message, const lexer::SourcePosition &position)
-{
-    diagnosticEngine_.LogWarning(message, position);
-}
-
 void ETSWarningAnalyzer::LogWarning(const diagnostic::DiagnosticKind &diagnostic,
                                     const lexer::SourcePosition &position) const
 {
-    util::DiagnosticMessageParams diagnosticParams;
-    this->LogWarning(diagnostic, diagnosticParams, position);
+    this->LogWarning(diagnostic, {}, position);
 }
 
 void ETSWarningAnalyzer::LogWarning(const diagnostic::DiagnosticKind &diagnostic,
-                                    util::DiagnosticMessageParams &diagnosticParams,
+                                    const util::DiagnosticMessageParams &diagnosticParams,
                                     const lexer::SourcePosition &position) const
 {
-    diagnosticEngine_.LogWarning(diagnostic, std::move(diagnosticParams), position);
+    diagnosticEngine_.LogDiagnostic(diagnostic, diagnosticParams, position);
 }
 
 }  // namespace ark::es2panda::checker

@@ -65,6 +65,7 @@ ir::AstNode *GetTouchingToken(es2panda_Context *context, size_t pos, bool flagFi
 References GetFileReferencesImpl(es2panda_Context *referenceFileContext, char const *searchFileName,
                                  bool isPackageModule);
 ir::AstNode *FindPrecedingToken(const size_t pos, const ir::AstNode *startNode, ArenaAllocator *allocator);
+ir::AstNode *GetIdentifierFromSuper(ir::AstNode *super);
 ir::AstNode *GetOriginalNode(ir::AstNode *astNode);
 checker::VerifiedType GetTypeOfSymbolAtLocation(checker::ETSChecker *checker, ir::AstNode *astNode);
 FileDiagnostic CreateDiagnosticForNode(es2panda_AstNode *node, Diagnostic diagnostic,
@@ -82,10 +83,16 @@ DocumentHighlights GetDocumentHighlightsImpl(es2panda_Context *context, size_t p
 void GetReferenceLocationAtPositionImpl(FileNodeInfo fileNodeInfo, es2panda_Context *referenceFileContext,
                                         ReferenceLocationList *list);
 void RemoveFromFiles(std::vector<std::string> &files, const std::vector<std::string> &autoGenerateFolders);
+ir::AstNode *FindRightToken(const size_t pos, const ArenaVector<ir::AstNode *> &nodes);
 std::string GetOwnerId(ir::AstNode *node);
 std::string GetIdentifierName(ir::AstNode *node);
 bool NodeHasTokens(const ir::AstNode *node);
 void FindAllChild(const ir::AstNode *ast, const ir::NodePredicate &cb, ArenaVector<ir::AstNode *> &results);
+std::vector<CodeFixActionInfo> GetCodeFixesAtPositionImpl(es2panda_Context *context, size_t startPosition,
+                                                          size_t endPosition, std::vector<int> &errorCodes,
+                                                          CodeFixOptions &codeFixOptions);
+CombinedCodeActionsInfo GetCombinedCodeFixImpl(es2panda_Context *context, const std::string &fixId,
+                                               CodeFixOptions &codeFixOptions);
 
 }  // namespace ark::es2panda::lsp
 

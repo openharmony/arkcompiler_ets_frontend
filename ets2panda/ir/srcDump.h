@@ -23,12 +23,26 @@
 
 #include <sstream>
 #include <variant>
+#include <future>
 
 namespace ark::es2panda::ir {
+
+// Forward declarations
+class ClassDefinition;
+class TSTypeAliasDeclaration;
+class ClassProperty;
+class TSInterfaceDeclaration;
+class TSEnumDeclaration;
+
+using NodeVariant =
+    std::variant<std::monostate, const ark::es2panda::ir::ClassDefinition *,
+                 const ark::es2panda::ir::TSTypeAliasDeclaration *, const ark::es2panda::ir::ClassProperty *,
+                 const ark::es2panda::ir::TSInterfaceDeclaration *, const ark::es2panda::ir::TSEnumDeclaration *>;
 
 class SrcDumper {
 public:
     explicit SrcDumper(const ir::AstNode *node);
+    explicit SrcDumper(const ir::AstNode *node, bool isDeclgen, bool isIsolatedDeclgen = false);
 
     void Add(const std::string &str);
     void Add(int32_t i);
@@ -45,9 +59,50 @@ public:
     void DecrIndent();
     void Endl(size_t num = 1);
 
+    bool IsDeclgen() const;
+    bool IsIsolatedDeclgen() const
+    {
+        return isIsolatedDeclgen_;
+    }
+    void DumpVariant(NodeVariant &node);
+    void DumpNode(const std::string &key);
+
+    template <typename T>
+    void DumpNodeIfPointer(T *value);
+
+    template <typename T>
+    void AddNode(const std::string &key, T *value)
+    {
+        unExportNode_[key] = NodeVariant(value);
+    }
+
+    void RemoveNode(const std::string &key)
+    {
+        unExportNode_.erase(key);
+    }
+
+    bool IsIndirectDepPhase() const
+    {
+        return isIndirectDepPhase_;
+    }
+
+    template <typename T>
+    void PushTask(T &&task)
+    {
+        taskQueue_.emplace(std::forward<T>(task));
+    }
+
+    void Run();
+
 private:
     std::stringstream ss_;
     std::string indent_;
+    bool isDeclgen_ = false;
+    bool isIsolatedDeclgen_ = false;
+    bool isIndirectDepPhase_ = false;
+    std::unordered_map<std::string, NodeVariant> unExportNode_;
+
+    std::queue<std::function<void()>> taskQueue_;
 };
 }  // namespace ark::es2panda::ir
 

@@ -45,17 +45,17 @@ class GlobalDeclTransformer : public ir::visitor::CustomAstVisitor {
 
 public:
     struct ResultT {
-        explicit ResultT(ArenaAllocator *alloc) : classProperties(alloc->Adapter()), initializers(alloc->Adapter())
+        explicit ResultT(ArenaAllocator *alloc)
+            : classProperties(alloc->Adapter()), immediateInit(alloc->Adapter()), initializerBlocks(alloc->Adapter())
         {
-            // Note: first for immediate initializer, second for initializer block.
-            initializers.emplace_back(alloc->Adapter());
-            initializers.emplace_back(alloc->Adapter());
         }
 
         // NOLINTNEXTLINE(misc-non-private-member-variables-in-classes)
         ArenaVector<ir::Statement *> classProperties;
         // NOLINTNEXTLINE(misc-non-private-member-variables-in-classes)
-        ArenaVector<ArenaVector<ir::Statement *>> initializers;
+        ArenaVector<ir::Statement *> immediateInit;
+        // NOLINTNEXTLINE(misc-non-private-member-variables-in-classes)
+        ArenaVector<ArenaVector<ir::Statement *>> initializerBlocks;
     };
 
     explicit GlobalDeclTransformer(ArenaAllocator *allocator, ir::Statement const *currentModule,

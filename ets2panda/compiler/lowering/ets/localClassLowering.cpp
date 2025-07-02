@@ -25,11 +25,11 @@ std::string_view LocalClassConstructionPhase::Name() const
     return "LocalClassConstructionPhase";
 }
 
-static ir::ClassProperty *CreateCapturedField(checker::ETSChecker *checker, const varbinder::Variable *capturedVar,
+static ir::ClassProperty *CreateCapturedField(public_lib::Context *ctx, const varbinder::Variable *capturedVar,
                                               varbinder::ClassScope *scope, size_t &idx)
 {
-    auto *allocator = checker->Allocator();
-    auto *varBinder = checker->VarBinder();
+    auto *allocator = ctx->Allocator();
+    auto *varBinder = ctx->checker->AsETSChecker()->VarBinder();
 
     // Enter the lambda class instance field scope, every property will be bound to the lambda instance itself
     auto fieldCtx = varbinder::LexicalScope<varbinder::LocalScope>::Enter(varBinder, scope->InstanceFieldScope());
@@ -57,13 +57,13 @@ static ir::ClassProperty *CreateCapturedField(checker::ETSChecker *checker, cons
     return field;
 }
 
-static ir::Statement *CreateCtorFieldInit(checker::ETSChecker *checker, util::StringView name, varbinder::Variable *var)
+static ir::Statement *CreateCtorFieldInit(public_lib::Context *ctx, util::StringView name, varbinder::Variable *var)
 {
     // Create synthetic field initializers for the local class fields
     // The node structure is the following: this.field0 = field0, where the left hand side refers to the local
     // classes field, and the right hand side is refers to the constructors parameter
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *allocator = checker->Allocator();
+    auto *allocator = ctx->Allocator();
 
     auto *thisExpr = allocator->New<ir::ThisExpression>();
     auto *fieldAccessExpr = allocator->New<ir::Identifier>(name, allocator);
@@ -82,13 +82,12 @@ void LocalClassConstructionPhase::CreateClassPropertiesForCapturedVariables(
     ArenaMap<varbinder::Variable *, varbinder::Variable *> &variableMap,
     ArenaMap<varbinder::Variable *, ir::ClassProperty *> &propertyMap)
 {
-    checker::ETSChecker *const checker = ctx->checker->AsETSChecker();
     size_t idx = 0;
     ArenaVector<ir::AstNode *> properties(ctx->allocator->Adapter());
     for (auto var : capturedVars) {
         ES2PANDA_ASSERT(classDef->Scope()->Type() == varbinder::ScopeType::CLASS);
         auto *property =
-            CreateCapturedField(checker, var, reinterpret_cast<varbinder::ClassScope *>(classDef->Scope()), idx);
+            CreateCapturedField(ctx, var, reinterpret_cast<varbinder::ClassScope *>(classDef->Scope()), idx);
         LOG(DEBUG, ES2PANDA) << "  - Creating property (" << property->Id()->Name()
                              << ") for captured variable: " << var->Name();
         properties.push_back(property);
@@ -100,10 +99,11 @@ void LocalClassConstructionPhase::CreateClassPropertiesForCapturedVariables(
     classDef->AddProperties(std::move(properties));
 }
 
-ir::ETSParameterExpression *LocalClassConstructionPhase::CreateParam(checker::ETSChecker *const checker,
+ir::ETSParameterExpression *LocalClassConstructionPhase::CreateParam(public_lib::Context *ctx,
                                                                      varbinder::FunctionParamScope *scope,
                                                                      util::StringView name, checker::Type *type)
 {
+    auto *checker = ctx->checker->AsETSChecker();
     auto newParam = checker->AddParam(name, nullptr);
     newParam->SetTsType(type);
     newParam->Ident()->SetTsType(type);
@@ -122,7 +122,6 @@ void LocalClassConstructionPhase::ModifyConstructorParameters(
 
 {
     auto *classType = classDef->TsType()->AsETSObjectType();
-    checker::ETSChecker *const checker = ctx->checker->AsETSChecker();
 
     for (auto *signature : classType->ConstructSignatures()) {
         LOG(DEBUG, ES2PANDA) << "  - Modifying Constructor: " << signature->InternalName();
@@ -133,7 +132,7 @@ void LocalClassConstructionPhase::ModifyConstructorParameters(
 
         ES2PANDA_ASSERT(signature == constructor->Signature());
         for (auto var : capturedVars) {
-            auto *newParam = CreateParam(checker, constructor->Scope()->ParamScope(), var->Name(), var->TsType());
+            auto *newParam = CreateParam(ctx, constructor->Scope()->ParamScope(), var->Name(), var->TsType());
             newParam->SetParent(constructor);
             // NOTE(psiket) : Moving the parameter after the 'this'. Should modify the AddParam
             // to be able to insert after the this.
@@ -147,14 +146,15 @@ void LocalClassConstructionPhase::ModifyConstructorParameters(
             sigParams.insert(sigParams.begin(), newParam->Ident()->Variable()->AsLocalVariable());
             parameterMap[var] = newParam->Ident()->Variable()->AsLocalVariable();
         }
-        reinterpret_cast<varbinder::ETSBinder *>(checker->VarBinder())->BuildFunctionName(constructor);
+        reinterpret_cast<varbinder::ETSBinder *>(ctx->checker->AsETSChecker()->VarBinder())
+            ->BuildFunctionName(constructor);
         LOG(DEBUG, ES2PANDA) << "    Transformed Constructor: " << signature->InternalName();
 
         auto *body = constructor->Body();
         ArenaVector<ir::Statement *> initStatements(ctx->allocator->Adapter());
         for (auto var : capturedVars) {
             auto *propertyVar = variableMap[var];
-            auto *initStatement = CreateCtorFieldInit(checker, propertyVar->Name(), propertyVar);
+            auto *initStatement = CreateCtorFieldInit(ctx, propertyVar->Name(), propertyVar);
             auto *fieldInit = initStatement->AsExpressionStatement()->GetExpression()->AsAssignmentExpression();
             auto *ctorParamVar = parameterMap[var];
             auto *fieldVar = variableMap[var];
@@ -199,7 +199,13 @@ void LocalClassConstructionPhase::RemapReferencesFromCapturedVariablesToClassPro
         if (it->IsMethodDefinition() && !it->AsMethodDefinition()->IsConstructor()) {
             LOG(DEBUG, ES2PANDA) << "  - Rebinding variable rerferences in: "
                                  << it->AsMethodDefinition()->Id()->Name().Mutf8().c_str();
-            it->AsMethodDefinition()->Function()->Body()->IterateRecursively(remapCapturedVariables);
+            if (it->AsMethodDefinition()->Function()->Body() == nullptr &&
+                it->AsMethodDefinition()->AsyncPairMethod() != nullptr) {
+                it->AsMethodDefinition()->AsyncPairMethod()->Function()->Body()->IterateRecursively(
+                    remapCapturedVariables);
+            } else {
+                it->AsMethodDefinition()->Function()->Body()->IterateRecursively(remapCapturedVariables);
+            }
         }
     }
     // Since the constructor with zero parameter is not listed in the class_def body the constructors
@@ -246,8 +252,8 @@ bool LocalClassConstructionPhase::PerformForModule(public_lib::Context *ctx, par
     });
 
     // Alter the instantiations
-    auto handleLocalClassInstantiation = [ctx, checker, &capturedVarsMap](ir::ClassDefinition *classDef,
-                                                                          ir::ETSNewClassInstanceExpression *newExpr) {
+    auto handleLocalClassInstantiation = [ctx, &capturedVarsMap](ir::ClassDefinition *classDef,
+                                                                 ir::ETSNewClassInstanceExpression *newExpr) {
         LOG(DEBUG, ES2PANDA) << "Instantiating local class: " << classDef->Ident()->Name();
         auto capturedVarsIt = capturedVarsMap.find(classDef);
         ES2PANDA_ASSERT(capturedVarsIt != capturedVarsMap.cend());
@@ -255,7 +261,7 @@ bool LocalClassConstructionPhase::PerformForModule(public_lib::Context *ctx, par
         for (auto *var : capturedVars) {
             LOG(DEBUG, ES2PANDA) << "  - Extending constructor argument with captured variable: " << var->Name();
 
-            auto *param = checker->AllocNode<ir::Identifier>(var->Name(), ctx->allocator);
+            auto *param = ctx->AllocNode<ir::Identifier>(var->Name(), ctx->allocator);
             param->SetVariable(var);
             param->SetIgnoreBox();
             param->SetTsType(param->Variable()->TsType());

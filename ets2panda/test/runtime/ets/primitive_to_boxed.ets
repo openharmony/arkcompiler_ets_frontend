@@ -26,7 +26,7 @@ function fooShort() : Short {
 }
 
 function fooChar() : Char {
-    return "c";
+    return c'c';
 }
 
 
@@ -66,7 +66,7 @@ function main() {
     let val2 : Short = fooShort()
     assertEQ(val2, c2)
 
-    let c3 : Char = 'c';
+    let c3 : Char = c'c';
     let val3 : Char = fooChar()
     assertEQ(val3, c3)
 
@@ -82,7 +82,7 @@ function main() {
     let val6 : Float = fooFloat()
     assertEQ(val6, c6)
 
-    
+
     let c7 : Double = 1;
     let val7 : Double = fooDouble()
     assertEQ(val7, c7)

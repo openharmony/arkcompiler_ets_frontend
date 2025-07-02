@@ -36,4 +36,4 @@ class /* @@ label4 */{/* @@ label5 */}
 /* @@? 28:22 Error SyntaxError: Identifier expected, got 'number literal'. */
 /* @@? 30:22 Error SyntaxError: Identifier expected, got '{'. */
 /* @@? 30:38 Error SyntaxError: Expected '{', got '}'. */
-/* @@? 40:1 Error SyntaxError: Expected '}', got 'eos'. */
+/* @@? 40:1 Error SyntaxError: Expected '}', got 'end of stream'. */

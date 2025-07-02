@@ -803,8 +803,7 @@ bool Helpers::ReadFileToBuffer(const std::string &file, std::stringstream &ss)
     return true;
 }
 
-void Helpers::ScanDirectives(ir::ScriptFunction *func, const lexer::LineIndex &lineIndex, bool enableSendableClass,
-                             bool enableSendableFunc)
+void Helpers::ScanDirectives(ir::ScriptFunction *func, const DirectiveScanConfig &scanConfig)
 {
     auto *body = func->Body();
     if (!body || body->IsExpression()) {
@@ -829,32 +828,36 @@ void Helpers::ScanDirectives(ir::ScriptFunction *func, const lexer::LineIndex &l
             return;
         }
 
-        keepScan = SetFuncFlagsForDirectives(expr->AsStringLiteral(), func, lineIndex, enableSendableClass,
-                                             enableSendableFunc);
+        keepScan = SetFuncFlagsForDirectives(expr->AsStringLiteral(), func, scanConfig);
     }
 
     return;
 }
 
 bool Helpers::SetFuncFlagsForDirectives(const ir::StringLiteral *strLit, ir::ScriptFunction *func,
-                                        const lexer::LineIndex &lineIndex, bool enableSendableClass,
-                                        bool enableSendableFunc)
+                                        const DirectiveScanConfig &scanConfig)
 {
     if (strLit->Str().Is(USE_CONCURRENT)) {
-        util::Concurrent::SetConcurrent(func, strLit, lineIndex);
+        util::Concurrent::SetConcurrent(func, strLit, scanConfig.lineIndex);
         return true;
     }
 
     if (strLit->Str().Is(USE_SENDABLE)) {
         if (func->IsConstructor()) {
-            if (enableSendableClass) {
+            if (scanConfig.enableSendableClass) {
                 auto *classDef = const_cast<ir::ClassDefinition*>(GetClassDefiniton(func));
                 classDef->SetSendable();
             }
-        } else if (enableSendableFunc) {
+        } else if (scanConfig.enableSendableFunc) {
             func->AddFlag(ir::ScriptFunctionFlags::SENDABLE);
         }
         return true;
+    }
+
+    if (scanConfig.enableEtsImplements && func->IsConstructor() && strLit->Str().StartsWith(IMPLEMENTS_STATIC)) {
+        auto *classDef = const_cast<ir::ClassDefinition*>(GetClassDefiniton(func));
+        classDef->SetImplementFromEts();
+        classDef->SetEtsImplementsMessage(strLit->Str().Substr(IMPLEMENTS_STATIC.size(), strLit->Str().Length()));
     }
 
     return false;

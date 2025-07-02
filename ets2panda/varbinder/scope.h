@@ -573,6 +573,16 @@ public:
         return internalName_;
     }
 
+    void SetEmitted()
+    {
+        emitted_ = true;
+    }
+
+    bool IsEmitted() const
+    {
+        return emitted_;
+    }
+
     Variable *AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
                          [[maybe_unused]] ScriptExtension extension) override;
     Variable *InsertBindingIfAbsentInScope(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
@@ -581,6 +591,7 @@ public:
 private:
     util::StringView name_ {};
     util::StringView internalName_ {};
+    bool emitted_ {false};
 };
 
 class ClassScope : public LocalScope {

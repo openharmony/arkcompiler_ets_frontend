@@ -339,36 +339,18 @@ public:
         return false;
     }
 
-    [[nodiscard]] bool IsReadonly() const noexcept
-    {
-        return (flags_ & ModifierFlags::READONLY) != 0;
-    }
+    [[nodiscard]] bool IsReadonly() const noexcept;
 
     // NOTE: For readonly parameter type
-    [[nodiscard]] bool IsReadonlyType() const noexcept
-    {
-        return (flags_ & ModifierFlags::READONLY_PARAMETER) != 0;
-    }
+    [[nodiscard]] bool IsReadonlyType() const noexcept;
 
-    [[nodiscard]] bool IsOptionalDeclaration() const noexcept
-    {
-        return (flags_ & ModifierFlags::OPTIONAL) != 0;
-    }
+    [[nodiscard]] bool IsOptionalDeclaration() const noexcept;
 
-    [[nodiscard]] bool IsDefinite() const noexcept
-    {
-        return (flags_ & ModifierFlags::DEFINITE) != 0;
-    }
+    [[nodiscard]] bool IsDefinite() const noexcept;
 
-    [[nodiscard]] bool IsConstructor() const noexcept
-    {
-        return (flags_ & ModifierFlags::CONSTRUCTOR) != 0;
-    }
+    [[nodiscard]] bool IsConstructor() const noexcept;
 
-    [[nodiscard]] bool IsOverride() const noexcept
-    {
-        return (flags_ & ModifierFlags::OVERRIDE) != 0;
-    }
+    [[nodiscard]] bool IsOverride() const noexcept;
 
     void SetOverride() noexcept
     {
@@ -541,6 +523,8 @@ public:
 
     std::string DumpJSON() const;
     std::string DumpEtsSrc() const;
+    std::string DumpDecl() const;
+    std::string IsolatedDumpDecl() const;
 
     virtual void Dump(ir::AstDumper *dumper) const = 0;
     virtual void Dump(ir::SrcDumper *dumper) const = 0;
@@ -566,14 +550,21 @@ public:
 
     virtual void CleanUp();
 
+    AstNode *ShallowClone(ArenaAllocator *allocator);
+
 protected:
     AstNode(AstNode const &other);
+
+    virtual AstNode *Construct([[maybe_unused]] ArenaAllocator *allocator);
+
+    virtual void CopyTo(AstNode *other) const;
 
     void SetType(AstNodeType const type) noexcept
     {
         type_ = type;
     }
 
+    friend class SizeOfNodeTest;
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
     AstNode *parent_ {};
     lexer::SourceRange range_ {};
@@ -611,6 +602,15 @@ public:
         typeAnnotation_ = typeAnnotation;
     }
 
+    void CopyTo(AstNode *other) const override
+    {
+        auto otherImpl = reinterpret_cast<Annotated<T> *>(other);
+
+        otherImpl->typeAnnotation_ = typeAnnotation_;
+
+        T::CopyTo(other);
+    }
+
 protected:
     explicit Annotated(AstNodeType const type, TypeNode *const typeAnnotation)
         : T(type), typeAnnotation_(typeAnnotation)
@@ -622,6 +622,7 @@ protected:
     Annotated(Annotated const &other) : T(static_cast<T const &>(other)) {}
 
 private:
+    friend class SizeOfNodeTest;
     TypeNode *typeAnnotation_ {};
 };
 

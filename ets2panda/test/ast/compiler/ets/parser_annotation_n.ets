@@ -16,4 +16,4 @@
 @interface /* @@ label1 */�
 
 /* @@@ label1 Error SyntaxError: Unexpected token, expected an identifier. */
-/* @@? 20:1 Error SyntaxError: Expected '{', got 'eos'.  */
+/* @@? 20:1 Error SyntaxError: Expected '{', got 'end of stream'.  */

@@ -18,6 +18,7 @@
 
 #include "checker/checkerContext.h"
 #include "checker/SemanticAnalyzer.h"
+#include "checker/types/globalTypesHolder.h"
 #include "util/diagnosticEngine.h"
 
 namespace ark::es2panda::util {
@@ -62,7 +63,7 @@ using ArgRange = std::pair<uint32_t, uint32_t>;
 
 class Checker {
 public:
-    explicit Checker(util::DiagnosticEngine &diagnosticEngine);
+    explicit Checker(util::DiagnosticEngine &diagnosticEngine, ArenaAllocator *programAllocator = nullptr);
     virtual ~Checker() = default;
 
     NO_COPY_SEMANTIC(Checker);
@@ -103,9 +104,19 @@ public:
         return relation_;
     }
 
+    void InitGlobalTypes()
+    {
+        globalTypes_ = ProgramAllocator()->New<GlobalTypesHolder>(ProgramAllocator());
+    }
+
     [[nodiscard]] GlobalTypesHolder *GetGlobalTypesHolder() const noexcept
     {
         return globalTypes_;
+    }
+
+    void SetGlobalTypes(GlobalTypesHolder *globalTypes) noexcept
+    {
+        globalTypes_ = globalTypes;
     }
 
     [[nodiscard]] RelationHolder &IdenticalResults() noexcept
@@ -171,8 +182,13 @@ public:
                   const lexer::SourcePosition &pos);
     void LogError(const diagnostic::DiagnosticKind &diagnostic, const lexer::SourcePosition &pos);
     void LogTypeError(std::string_view message, const lexer::SourcePosition &pos);
-    void Warning(std::string_view message, const lexer::SourcePosition &pos) const;
-    void ReportWarning(const util::DiagnosticMessageParams &list, const lexer::SourcePosition &pos);
+    void LogTypeError(const util::DiagnosticMessageParams &list, const lexer::SourcePosition &pos);
+    void LogDiagnostic(const diagnostic::DiagnosticKind &kind, const util::DiagnosticMessageParams &list,
+                       const lexer::SourcePosition &pos);
+    void LogDiagnostic(const diagnostic::DiagnosticKind &kind, const lexer::SourcePosition &pos)
+    {
+        LogDiagnostic(kind, {}, pos);
+    }
 
     bool IsTypeIdenticalTo(Type *source, Type *target);
     bool IsTypeIdenticalTo(Type *source, Type *target, const diagnostic::DiagnosticKind &diagKind,
@@ -216,14 +232,20 @@ public:
 
     virtual void CleanUp();
 
+    [[nodiscard]] ArenaAllocator *ProgramAllocator()
+    {
+        return programAllocator_ == nullptr ? &allocator_ : programAllocator_;
+    }
+
 protected:
     parser::Program *Program() const;
     void SetProgram(parser::Program *program);
 
 private:
     ArenaAllocator allocator_;
+    ArenaAllocator *programAllocator_ {nullptr};
     CheckerContext context_;
-    GlobalTypesHolder *globalTypes_;
+    GlobalTypesHolder *globalTypes_ {nullptr};
     TypeRelation *relation_;
     SemanticAnalyzer *analyzer_ {};
     varbinder::VarBinder *varbinder_ {};

@@ -1,0 +1,18 @@
+{
+  "1": [
+    {
+      "text": "param1",
+      "number": 716,
+      "kind": 1,
+      "whitespaceBefore": false,
+      "whitespaceAfter": true
+    },
+    {
+      "text": "param2",
+      "number": 720,
+      "kind": 1,
+      "whitespaceBefore": false,
+      "whitespaceAfter": true
+    }
+  ]
+}

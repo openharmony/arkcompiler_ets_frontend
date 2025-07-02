@@ -15,33 +15,13 @@
   ],
   "result": [
     {
-      "line": 17,
-      "column": 1,
-      "endLine": 17,
-      "endColumn": 61,
-      "problem": "ImportAfterStatement",
+      "line": 54,
+      "column": 15,
+      "endLine": 54,
+      "endColumn": 37,
+      "problem": "AnyType",
       "suggest": "",
-      "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 18,
-      "column": 1,
-      "endLine": 18,
-      "endColumn": 86,
-      "problem": "ImportAfterStatement",
-      "suggest": "",
-      "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 24,
-      "column": 3,
-      "endLine": 24,
-      "endColumn": 17,
-      "problem": "StrictDiagnostic",
-      "suggest": "Property 'fontStyleAttr2' has no initializer and is not definitely assigned in the constructor.",
-      "rule": "Property 'fontStyleAttr2' has no initializer and is not definitely assigned in the constructor.",
+      "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
       "severity": "ERROR"
     }
   ]

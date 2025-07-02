@@ -13,6 +13,6 @@
  * limitations under the License.
  */
 
-function main(i : string[]): void {
+function main(i : FixedArray<string>): void {
     return;
 }
