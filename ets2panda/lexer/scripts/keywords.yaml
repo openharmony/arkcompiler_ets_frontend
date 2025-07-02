@@ -454,10 +454,6 @@ keywords:
     token: KEYW_READONLY
     keyword_like: [as, ts, ets]
 
-  - name: 'rethrows'
-    token: KEYW_RETHROWS
-    keyword_like: [ets]
-
   - name: 'return'
     token: KEYW_RETURN
     keyword: [as, js, ets, ts]
@@ -518,10 +514,6 @@ keywords:
   - name: 'throw'
     token: KEYW_THROW
     keyword: [js, ets, ts, as]
-
-  - name: 'throws'
-    token: KEYW_THROWS
-    keyword_like: [ets]
 
   - name: 'true'
     token: LITERAL_TRUE

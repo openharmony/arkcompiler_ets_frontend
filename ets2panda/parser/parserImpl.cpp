@@ -976,10 +976,8 @@ FunctionSignature ParserImpl::ParseFunctionSignature(ParserStatus status)
         LogError(diagnostic::EXTENSION_ACCESSOR_RECEIVER);
     }
 
-    ir::ScriptFunctionFlags throwMarker = ParseFunctionThrowMarker(true);
-
     auto res = ir::FunctionSignature(typeParamDecl, std::move(params), returnTypeAnnotation, hasReceiver);
-    return {std::move(res), throwMarker};
+    return {std::move(res), ir::ScriptFunctionFlags::NONE};
 }
 
 ir::ScriptFunction *ParserImpl::ParseFunction(ParserStatus newStatus)

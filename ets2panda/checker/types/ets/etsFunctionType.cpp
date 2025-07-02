@@ -197,13 +197,6 @@ static Signature *EnhanceSignatureSubstitution(TypeRelation *relation, Signature
     return sub->Substitute(relation, &substitution);
 }
 
-static uint8_t SignatureThrowKindToOrder(Signature *sig)
-{
-    return sig->HasSignatureFlag(SignatureFlags::THROWS)     ? 0U
-           : sig->HasSignatureFlag(SignatureFlags::RETHROWS) ? 1U
-                                                             : 2U;
-}
-
 static bool SignatureIsSupertypeOf(TypeRelation *relation, Signature *super, Signature *sub)
 {
     if (super->MinArgCount() < sub->MinArgCount()) {
@@ -230,7 +223,7 @@ static bool SignatureIsSupertypeOf(TypeRelation *relation, Signature *super, Sig
     if (!relation->IsSupertypeOf(super->ReturnType(), sub->ReturnType())) {
         return false;
     }
-    return SignatureThrowKindToOrder(super) <= SignatureThrowKindToOrder(sub);
+    return true;
 }
 
 static ETSFunctionType *CoerceToArrowType(TypeRelation *relation, Type *type)
