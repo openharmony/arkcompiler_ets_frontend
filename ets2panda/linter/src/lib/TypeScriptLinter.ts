@@ -5424,6 +5424,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleObjectLiteralAssignmentToClass(tsAsExpr);
     this.handleArrayTypeImmutable(tsAsExpr, exprType, targetType);
     this.handleNotsLikeSmartTypeOnAsExpression(tsAsExpr);
+    this.handleLimitedVoidTypeOnAsExpression(tsAsExpr);
   }
 
   private handleAsExprStructuralTyping(asExpr: ts.AsExpression, targetType: ts.Type, exprType: ts.Type): void {
@@ -6479,6 +6480,16 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     const typeNode = node.type;
     if (typeNode && TsUtils.typeContainsVoid(typeNode)) {
       this.incrementCounters(typeNode, FaultID.LimitedVoidType);
+    }
+  }
+
+  private handleLimitedVoidTypeOnAsExpression(node: ts.AsExpression): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    const targetType = this.tsTypeChecker.getTypeAtLocation(node.type);
+    if (TsUtils.isVoidType(targetType)) {
+      this.incrementCounters(node.type, FaultID.LimitedVoidType);
     }
   }
 
