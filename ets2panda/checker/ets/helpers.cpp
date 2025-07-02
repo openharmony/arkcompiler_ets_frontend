@@ -562,8 +562,11 @@ checker::Type *ETSChecker::CheckArrayElements(ir::ArrayExpression *init)
     }
 
     if (elementTypes.empty()) {
-        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        return ProgramAllocator()->New<ETSArrayType>(GlobalETSObjectType());
+        if (init->PreferredType() != nullptr) {
+            return init->PreferredType();
+        }
+        LogError(diagnostic::UNRESOLVABLE_ARRAY, {}, init->Start());
+        return GetGlobalTypesHolder()->GlobalTypeError();
     }
     auto const isNumericLiteral = [this](checker::Type *&ct) {
         auto const rc =
