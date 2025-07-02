@@ -3710,17 +3710,16 @@ export class Autofixer {
       });
 
       if (items.length > 1) {
-        const formattedList = items
-          .map((item) => {
+        const formattedList = items.
+          map((item) => {
             return `  ${item.trim()},`;
-          })
-          .join('\n');
+          }).
+          join('\n');
         return `{\n${formattedList}\n}`;
       }
       return `{${importList}}`;
     });
   }
-
 
   fixStylesDecoratorGlobal(
     funcDecl: ts.FunctionDeclaration,
@@ -4728,17 +4727,17 @@ export class Autofixer {
     const expr = callExpr.expression;
     const hasOptionalChain = !!callExpr.questionDotToken;
 
-    const replacementText = hasOptionalChain
-        ? `${expr.getText()}${callExpr.questionDotToken.getText()}unsafeCall`
-        : `${expr.getText()}.unsafeCall`;
+    const replacementText = hasOptionalChain ?
+      `${expr.getText()}${callExpr.questionDotToken.getText()}unsafeCall` :
+      `${expr.getText()}.unsafeCall`;
 
-    return [{
+    return [
+      {
         start: expr.getStart(),
-        end: hasOptionalChain
-            ? callExpr.questionDotToken.getEnd()
-            : expr.getEnd(),
+        end: hasOptionalChain ? callExpr.questionDotToken.getEnd() : expr.getEnd(),
         replacementText
-    }];
+      }
+    ];
   }
 
   private static createBuiltInTypeInitializer(type: ts.TypeReferenceNode): ts.Expression | undefined {
@@ -4917,7 +4916,10 @@ export class Autofixer {
     return [{ start: insertPos, end: insertPos, replacementText: typeArgsText }];
   }
 
-  private fixGenericCallNoTypeArgsForArrayType(node: ts.NewExpression, arrayTypeNode: ts.ArrayTypeNode): Autofix[] | undefined {
+  private fixGenericCallNoTypeArgsForArrayType(
+    node: ts.NewExpression,
+    arrayTypeNode: ts.ArrayTypeNode
+  ): Autofix[] | undefined {
     const elementTypeNode = arrayTypeNode.elementType;
     const srcFile = node.getSourceFile();
     const typeArgsText = `<${this.printer.printNode(ts.EmitHint.Unspecified, elementTypeNode, srcFile)}>`;
@@ -4925,7 +4927,10 @@ export class Autofixer {
     return [{ start: insertPos, end: insertPos, replacementText: typeArgsText }];
   }
 
-  private fixGenericCallNoTypeArgsForUnionType(node: ts.NewExpression, unionType: ts.UnionTypeNode): Autofix[] | undefined {
+  private fixGenericCallNoTypeArgsForUnionType(
+    node: ts.NewExpression,
+    unionType: ts.UnionTypeNode
+  ): Autofix[] | undefined {
     const matchingTypes = unionType.types.filter((type) => {
       return ts.isTypeReferenceNode(type) && type.typeName.getText() === node.expression.getText();
     }) as ts.TypeReferenceNode[];

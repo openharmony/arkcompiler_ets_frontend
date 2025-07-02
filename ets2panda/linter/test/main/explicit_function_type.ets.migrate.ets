@@ -75,8 +75,8 @@ class I24 {
   constructor(par: Function, par1?: string) {}
 }
 class I24_1 extends I24 {
-  constructor() {
-    super(Function)
+  constructor(par: Function) {
+    super(par)
   }
 }
 

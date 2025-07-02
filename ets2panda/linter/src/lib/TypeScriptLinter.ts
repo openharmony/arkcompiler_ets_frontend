@@ -160,6 +160,9 @@ import { ERROR_PROP_LIST } from './utils/consts/ErrorProp';
 import { D_ETS, D_TS } from './utils/consts/TsSuffix';
 import { arkTsBuiltInTypeName } from './utils/consts/ArkuiImportList';
 import { ERROR_TASKPOOL_PROP_LIST } from './utils/consts/ErrorProp';
+import type { BaseClassConstructorInfo, ConstructorParameter, ExtendedIdentifierInfo } from './utils/consts/Types';
+import { ExtendedIdentifierType } from './utils/consts/Types';
+import { STRING_ERROR_LITERAL } from './utils/consts/Literals';
 
 export class TypeScriptLinter extends BaseTypeScriptLinter {
   supportedStdCallApiChecker: SupportedStdCallApiChecker;
@@ -8929,7 +8932,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
    * @param node The HeritageClause node (extends clause) to analyze.
    */
   private handleMissingSuperCallInExtendedClass(node: ts.HeritageClause): void {
-    if (!this.options.arkts2 || !this.useStatic) {
+    if (!this.options.arkts2) {
       return;
     }
 
@@ -8938,78 +8941,249 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
 
-    // Get the parent class declaration (what the child class extends)
-    const parentClass = this.getParentClassDeclaration(node);
-    if (!parentClass) {
+    if (!ts.isClassDeclaration(node.parent)) {
       return;
     }
-
-    // If parent class has a parameterless constructor (or no constructor at all), child is fine
-    if (TypeScriptLinter.parentHasParameterlessConstructor(parentClass)) {
-      return;
-    }
-
-    // The child class node (the one extending)
-    const childClass = node.parent;
-    if (!ts.isClassDeclaration(childClass)) {
-      return;
-    }
-
-    // Look for child class constructor
-    const childConstructor = childClass.members.find(ts.isConstructorDeclaration);
 
     /*
-     * If child has no constructor → error (super() cannot be called)
-     * If child constructor exists but does not contain super() → error
+     * Get the parent class declaration (what the child class extends)
+     * This could be a stdlib error type
      */
-    if (!childConstructor?.body || !TypeScriptLinter.childHasSuperCall(childConstructor)) {
-      this.incrementCounters(node, FaultID.MissingSuperCall);
+    const identInfo = this.getExtendedIdentifiersInfo(node);
+    if (identInfo.type === ExtendedIdentifierType.UNKNOWN) {
+      // if it's unknown return
+      return;
+    }
+
+    if (identInfo.type === ExtendedIdentifierType.ERROR) {
+      this.handleErrorClassExtend(node.parent);
+      // handled error case return
+      return;
+    }
+
+    if (identInfo.type === ExtendedIdentifierType.CLASS) {
+      // If it's class, get the constructor's parameters and match against it.
+      const extendedClassInfo = this.extractExtendedClassConstructorInfo(identInfo.decl);
+      if (!extendedClassInfo) {
+        return;
+      }
+
+      this.handleExtendCustomClass(node.parent, extendedClassInfo);
     }
   }
 
-  /**
-   * Retrieves the parent class declaration node from an extends heritage clause.
-   */
-  private getParentClassDeclaration(node: ts.HeritageClause): ts.ClassDeclaration | undefined {
-    const parentExpr = node.types[0]?.expression;
-    if (!parentExpr) {
+  private handleExtendCustomClass(
+    classDecl: ts.ClassDeclaration,
+    extendedClassInfo: Set<ConstructorParameter[]>
+  ): void {
+    const superCall = TypeScriptLinter.checkIfSuperCallExists(classDecl);
+    if (!superCall) {
+      this.incrementCounters(classDecl, FaultID.MissingSuperCall);
+      return;
+    }
+
+    outer: for (const ctorParams of extendedClassInfo) {
+      const matches: boolean[] = [];
+      if (superCall.arguments.length > ctorParams.length) {
+        continue;
+      }
+
+      for (const [idx, param] of ctorParams.entries()) {
+        const argument = superCall.arguments[idx];
+        if (!param.isOptional && !argument) {
+          matches[idx] = false;
+          continue outer;
+        }
+
+        if (!argument && param.isOptional) {
+          matches[idx] = true;
+          continue;
+        }
+        if (argument !== undefined) {
+          matches[idx] = this.checkIfArgumentAndParamMatches(param, argument);
+          if (!matches[idx]) {
+            continue outer;
+          }
+        }
+      }
+
+      if (
+        matches.some((val) => {
+          return !val;
+        })
+      ) {
+        continue;
+      }
+      return;
+    }
+
+    this.incrementCounters(classDecl, FaultID.MissingSuperCall);
+  }
+
+  private checkIfArgumentAndParamMatches(param: ConstructorParameter, argument: ts.Expression): boolean {
+    const typeNode = this.tsTypeChecker.getTypeAtLocation(argument);
+    const typeString = this.tsTypeChecker.typeToString(typeNode);
+
+    if (param.type.includes(STRINGLITERAL_STRING) && argument.kind === ts.SyntaxKind.StringLiteral) {
+      return true;
+    }
+    if (param.type.includes(NUMBER_LITERAL) && argument.kind === ts.SyntaxKind.NumericLiteral) {
+      return true;
+    }
+
+    if (
+      param.type.includes('boolean') &&
+      (argument.kind === ts.SyntaxKind.FalseKeyword || argument.kind === ts.SyntaxKind.TrueKeyword)
+    ) {
+      return true;
+    }
+
+    if (param.type === typeString) {
+      return true;
+    }
+
+    return false;
+  }
+
+  private handleErrorClassExtend(classDecl: ts.ClassDeclaration): void {
+    // if it's Error, the super method should be called with no arguments or a single string argument
+    const superCall = TypeScriptLinter.checkIfSuperCallExists(classDecl);
+    if (!superCall) {
+      this.incrementCounters(classDecl, FaultID.MissingSuperCall);
+      return;
+    }
+
+    if (superCall.arguments.length > 1) {
+
+      /*
+       * STD Error Type have two constructors
+       * either empty constructor which is just "Error" message
+       * or the message you provide, so if it's more than one argument provided,
+       * this should be raised as an issue
+       */
+      this.incrementCounters(classDecl, FaultID.MissingSuperCall);
+      return;
+    }
+
+    if (superCall.arguments.length === 1) {
+      const argument = superCall.arguments[0];
+      const typeNode = this.tsTypeChecker.getTypeAtLocation(argument);
+      const typeString = this.tsTypeChecker.typeToString(typeNode);
+
+      if (typeString === 'string' || ts.isStringLiteral(argument) || ts.isNumericLiteral(argument)) {
+        return;
+      }
+      this.incrementCounters(classDecl, FaultID.MissingSuperCall);
+    }
+  }
+
+  private static checkIfSuperCallExists(classDecl: ts.ClassDeclaration): ts.CallExpression | undefined {
+    // check if current class has constructor
+    const constructor = TypeScriptLinter.getConstructorOfClass(classDecl);
+    if (!constructor) {
       return undefined;
     }
-    const parentSymbol = this.tsUtils.trueSymbolAtLocation(parentExpr);
-    return parentSymbol?.declarations?.find(ts.isClassDeclaration);
+    const superCallExpr = TypeScriptLinter.getSuperCallExpr(constructor);
+    if (!superCallExpr) {
+      return undefined;
+    }
+
+    return superCallExpr;
   }
 
   /**
-   * Determines if a parent class has a parameterless constructor.
-   * If it has no constructor at all, that counts as parameterless.
+   * Extracts the type of the Identifier node from an extends heritage clause.
    */
-  private static parentHasParameterlessConstructor(parentClass: ts.ClassDeclaration): boolean {
-    const constructors = parentClass.members.filter(ts.isConstructorDeclaration);
-    return (
-      constructors.length === 0 ||
-      constructors.some((ctor) => {
-        return ctor.parameters.length === 0;
-      })
-    );
-  }
-
-  private static childHasSuperCall(constructor: ts.ConstructorDeclaration): boolean {
-    let superCalled = false;
-
-    if (!constructor.body) {
-      return false;
+  private getExtendedIdentifiersInfo(node: ts.HeritageClause): ExtendedIdentifierInfo {
+    const extendedIdentifier = node.types[0]?.expression;
+    if (!extendedIdentifier) {
+      return { type: ExtendedIdentifierType.UNKNOWN };
     }
 
-    ts.forEachChild(constructor.body, (stmt) => {
-      if (
-        ts.isExpressionStatement(stmt) &&
-        ts.isCallExpression(stmt.expression) &&
-        stmt.expression.expression.kind === ts.SyntaxKind.SuperKeyword
-      ) {
-        superCalled = true;
+    const symbol = this.tsUtils.trueSymbolAtLocation(extendedIdentifier);
+    if (!symbol) {
+      return { type: ExtendedIdentifierType.UNKNOWN };
+    }
+
+    if (symbol.getName().includes(STRING_ERROR_LITERAL)) {
+      const declaration = this.tsUtils.getDeclarationNode(extendedIdentifier);
+      if (!declaration) {
+        return { type: ExtendedIdentifierType.ERROR };
       }
-    });
-    return superCalled;
+
+      if (declaration.getSourceFile().fileName !== this.sourceFile.fileName) {
+        return { type: ExtendedIdentifierType.ERROR };
+      }
+    }
+
+    const classDecl = symbol?.declarations?.find(ts.isClassDeclaration);
+    if (!classDecl) {
+      return { type: ExtendedIdentifierType.UNKNOWN };
+    }
+
+    return { type: ExtendedIdentifierType.CLASS, decl: classDecl };
+  }
+
+  private extractExtendedClassConstructorInfo(extendedClass: ts.ClassDeclaration): BaseClassConstructorInfo {
+    const constructors = extendedClass.members.filter(ts.isConstructorDeclaration);
+    if (constructors.length === 0) {
+      return undefined;
+    }
+
+    const allConstructorInformation: BaseClassConstructorInfo = new Set();
+    for (const ctor of constructors) {
+      const allParams: ConstructorParameter[] = [];
+      const parameters = ctor.parameters;
+      for (const param of parameters) {
+        const ident = param.name;
+        const name = ident.getText();
+        const type = this.tsTypeChecker.getTypeAtLocation(ident);
+        const typeString = this.tsTypeChecker.typeToString(type);
+        const isOptional = !!param.questionToken;
+        const info = { name, type: typeString, isOptional };
+
+        allParams.push(info);
+      }
+      allConstructorInformation.add(allParams);
+    }
+
+    return allConstructorInformation;
+  }
+
+  private static getConstructorOfClass(classDecl: ts.ClassDeclaration): ts.ConstructorDeclaration | undefined {
+    if (classDecl.members.length === 0) {
+      return undefined;
+    }
+
+    for (const member of classDecl.members) {
+      if (!ts.isConstructorDeclaration(member)) {
+        continue;
+      }
+      return member;
+    }
+    return undefined;
+  }
+
+  private static getSuperCallExpr(constructor: ts.ConstructorDeclaration): ts.CallExpression | undefined {
+    if (!constructor.body) {
+      return undefined;
+    }
+
+    for (const stmt of constructor.body.statements) {
+      if (!ts.isExpressionStatement(stmt)) {
+        continue;
+      }
+      const callExpr = stmt.expression;
+      if (!ts.isCallExpression(callExpr)) {
+        continue;
+      }
+      if (callExpr.expression.kind !== ts.SyntaxKind.SuperKeyword) {
+        continue;
+      }
+
+      return callExpr;
+    }
+    return undefined;
   }
 
   private handleInterOpImportJs(importDecl: ts.ImportDeclaration): void {

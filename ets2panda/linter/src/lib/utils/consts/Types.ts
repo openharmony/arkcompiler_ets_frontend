@@ -12,9 +12,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import type { ClassDeclaration } from 'typescript';
 
-export const AVERAGE_LINE_FOR_REPAIRE_RULE_COEFFICIENT = 3;
+export enum ExtendedIdentifierType {
+  UNKNOWN,
+  CLASS,
+  ERROR
+}
 
-export const TEST_DEBUG_WORKLOAD_COEFFICIENT = 1.2;
+export type ExtendedIdentifierInfo =
+  | {
+    type: ExtendedIdentifierType.UNKNOWN | ExtendedIdentifierType.ERROR;
+  }
+  | { type: ExtendedIdentifierType.CLASS; decl: ClassDeclaration };
 
-export const NPAI_REPAIRE_WORKLOADA_COEFFICIEN = 0.2;
+export type ConstructorParameter = {
+  name: string;
+  isOptional: boolean;
+  type: string;
+};
+
+export type ParameterName = string;
+
+export type BaseClassConstructorInfo = Set<ConstructorParameter[]> | undefined;
