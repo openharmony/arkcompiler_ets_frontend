@@ -11,20 +11,64 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-ets2panda_add_gtest(lsp_api_test_1 CPP_SOURCES
+ets2panda_add_gtest(lsp_get_definition_at_position_test CPP_SOURCES
     get_definition_at_position_test.cpp
+)
+
+ets2panda_add_gtest(lsp_get_file_references_test CPP_SOURCES
     get_file_references_test.cpp
+)
+
+ets2panda_add_gtest(lsp_get_references_at_position_test CPP_SOURCES
     get_references_at_position_test.cpp
+)
+
+ets2panda_add_gtest(lsp_document_highlights_test CPP_SOURCES
     document_highlights.cpp
 )
 
-ets2panda_add_gtest(lsp_api_test CPP_SOURCES
-    lsp_api_test.cpp
+ets2panda_add_gtest(lsp_diagnostic_test CPP_SOURCES
+    diagnostic_test.cpp
+)
+
+ets2panda_add_gtest(lsp_cancellation_token_test CPP_SOURCES
     cancellation_token_test.cpp
+)
+
+ets2panda_add_gtest(lsp_get_span_of_enclosing_comment_test CPP_SOURCES
     get_span_of_enclosing_comment_test.cpp
+)
+
+ets2panda_add_gtest(lsp_user_preferences_test CPP_SOURCES
     user_preferences.cpp
+)
+
+ets2panda_add_gtest(lsp_keyword_completion_data_test CPP_SOURCES
     keyword_completion_data_test.cpp
+)
+
+ets2panda_add_gtest(lsp_rename_test CPP_SOURCES
     lsp_rename_test.cpp
+)
+
+ets2panda_add_gtest(lsp_get_current_token_value_test CPP_SOURCES
+    get_current_token_value_test.cpp
+)
+
+ets2panda_add_gtest(lsp_get_file_references_impl_test CPP_SOURCES
+    get_file_references_impl_test.cpp
+)
+
+ets2panda_add_gtest(lsp_get_preceding_token_test CPP_SOURCES
+    get_preceding_token_test.cpp
+)
+
+ets2panda_add_gtest(lsp_get_touching_token_test CPP_SOURCES
+    get_touching_token_test.cpp
+)
+
+ets2panda_add_gtest(lsp_get_type_of_symbol_at_location_test CPP_SOURCES
+    get_type_of_symbol_at_location_test.cpp
 )
 
 ets2panda_add_gtest(lsp_quick_info_api_test CPP_SOURCES
