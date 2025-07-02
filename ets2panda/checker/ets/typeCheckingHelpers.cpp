@@ -1389,24 +1389,6 @@ void ETSChecker::CheckUnboxedSourceTypeWithWideningAssignable(TypeRelation *rela
     }
 }
 
-static ir::AstNode *DerefETSTypeReference(ir::AstNode *node)
-{
-    ES2PANDA_ASSERT(node->IsETSTypeReference());
-    do {
-        auto *name = node->AsETSTypeReference()->Part()->GetIdent();
-
-        ES2PANDA_ASSERT(name->IsIdentifier());
-        auto *var = name->AsIdentifier()->Variable();
-        ES2PANDA_ASSERT(var != nullptr);
-        auto *declNode = var->Declaration()->Node();
-        if (!declNode->IsTSTypeAliasDeclaration()) {
-            return declNode;
-        }
-        node = declNode->AsTSTypeAliasDeclaration()->TypeAnnotation();
-    } while (node->IsETSTypeReference());
-    return node;
-}
-
 // #22952: optional arrow leftovers
 bool ETSChecker::CheckLambdaAssignable(ir::Expression *param, ir::ScriptFunction *lambda)
 {
@@ -1416,7 +1398,7 @@ bool ETSChecker::CheckLambdaAssignable(ir::Expression *param, ir::ScriptFunction
         return false;
     }
     if (typeAnn->IsETSTypeReference() && !typeAnn->AsETSTypeReference()->TsType()->IsETSArrayType()) {
-        typeAnn = DerefETSTypeReference(typeAnn);
+        typeAnn = util::Helpers::DerefETSTypeReference(typeAnn);
     }
 
     if (!typeAnn->IsETSFunctionType()) {
@@ -1442,7 +1424,7 @@ bool ETSChecker::CheckLambdaInfer(ir::AstNode *typeAnnotation, ir::ArrowFunction
                                   Type *const subParameterType)
 {
     if (typeAnnotation->IsETSTypeReference()) {
-        typeAnnotation = DerefETSTypeReference(typeAnnotation);
+        typeAnnotation = util::Helpers::DerefETSTypeReference(typeAnnotation);
     }
 
     if (!typeAnnotation->IsETSFunctionType()) {
@@ -1461,7 +1443,10 @@ bool ETSChecker::CheckLambdaTypeAnnotation(ir::ETSParameterExpression *param,
                                            ir::ArrowFunctionExpression *const arrowFuncExpr, Type *const parameterType,
                                            TypeRelationFlag flags)
 {
-    auto *typeAnnotation = param->Ident()->TypeAnnotation();
+    ir::AstNode *typeAnnotation = param->Ident()->TypeAnnotation();
+    if (typeAnnotation->IsETSTypeReference()) {
+        typeAnnotation = util::Helpers::DerefETSTypeReference(typeAnnotation);
+    }
     auto checkInvocable = [&arrowFuncExpr, &parameterType, this](TypeRelationFlag functionFlags) {
         Type *const argumentType = arrowFuncExpr->Check(this);
         functionFlags |= TypeRelationFlag::NO_THROW;

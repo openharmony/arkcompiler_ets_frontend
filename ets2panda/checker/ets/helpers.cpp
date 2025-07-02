@@ -26,6 +26,7 @@
 #include "evaluate/scopedDebugInfoPlugin.h"
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "compiler/lowering/util.h"
+#include "util/helpers.h"
 
 namespace ark::es2panda::checker {
 
@@ -2563,13 +2564,21 @@ std::vector<bool> ETSChecker::FindTypeInferenceArguments(const ArenaVector<ir::E
 // #22952: optional arrow leftovers
 bool ETSChecker::CheckLambdaAssignableUnion(ir::AstNode *typeAnn, ir::ScriptFunction *lambda)
 {
+    bool assignable = false;
     for (auto *type : typeAnn->AsETSUnionType()->Types()) {
         if (type->IsETSFunctionType()) {
-            return lambda->Params().size() == type->AsETSFunctionType()->Params().size();
+            assignable |= lambda->Params().size() == type->AsETSFunctionType()->Params().size();
+            continue;
+        }
+
+        if (type->IsETSTypeReference()) {
+            auto aliasType = util::Helpers::DerefETSTypeReference(type);
+            assignable |= aliasType->IsETSFunctionType() &&
+                          lambda->Params().size() == aliasType->AsETSFunctionType()->Params().size();
         }
     }
 
-    return false;
+    return assignable;
 }
 
 void ETSChecker::InferTypesForLambda(ir::ScriptFunction *lambda, ir::ETSFunctionType *calleeType,
