@@ -75,7 +75,7 @@ const checker::Checker *Program::Checker() const
 
 bool Program::IsGenAbcForExternal() const
 {
-    return VarBinder()->GetContext()->config->options->GetCompilationMode() ==
+    return compiler::GetPhaseManager()->Context()->config->options->GetCompilationMode() ==
                CompilationMode::GEN_ABC_FOR_EXTERNAL_SOURCE &&
            genAbcForExternalSource_;
 }
