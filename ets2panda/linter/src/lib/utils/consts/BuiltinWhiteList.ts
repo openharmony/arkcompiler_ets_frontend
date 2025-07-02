@@ -45,3 +45,10 @@ export const BUILTIN_DISABLE_CALLSIGNATURE = [
   'TypeError',
   'URIError'
 ];
+
+export const BUILTIN_CONSTRUCTORS = [
+  'Boolean',
+  'Number',
+  'Object',
+  'String'
+];

@@ -54,6 +54,8 @@ import {
   TASKPOOL
 } from './utils/consts/SendableAPI';
 import { DEFAULT_COMPATIBLE_SDK_VERSION, DEFAULT_COMPATIBLE_SDK_VERSION_STAGE } from './utils/consts/VersionInfo';
+import { TYPED_ARRAYS } from './utils/consts/TypedArrays';
+import { BUILTIN_CONSTRUCTORS } from './utils/consts/BuiltinWhiteList';
 import { forEachNodeInSubtree } from './utils/functions/ForEachNodeInSubtree';
 import { hasPredecessor } from './utils/functions/HasPredecessor';
 import { isStdLibrarySymbol, isStdLibraryType } from './utils/functions/IsStdLibrary';
@@ -690,20 +692,22 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     const parent = arrayLitNode.parent;
     const arrayLitElements = arrayLitNode.elements;
     const arrayElementIsEmpty = arrayLitElements.length === 0;
-    let emptyContextTypeForArrayLiteral = false;
 
     /*
      * check that array literal consists of inferrable types
      * e.g. there is no element which is untyped object literals
      */
-    const isPromiseEmptyArray = this.checkPromiseEmptyArray(parent, arrayElementIsEmpty);
-    const isEmptyArray = this.options.arkts2 && !arrayLitType && arrayElementIsEmpty;
-    if (isPromiseEmptyArray) {
-      this.incrementCounters(arrayLitNode, FaultID.NosparseArray);
-    } else if (isEmptyArray) {
-      this.incrementCounters(node, FaultID.NosparseArray);
+    const isPromiseCallExpression = TypeScriptLinter.checkPromiseCallExpression(parent);
+    const isTypedArrayOrBuiltInConstructor = TypeScriptLinter.checkTypedArrayOrBuiltInConstructor(parent);
+    if (this.options.arkts2 && arrayElementIsEmpty) {
+      if (!arrayLitType) {
+        this.incrementCounters(node, FaultID.NosparseArray);
+      } else if (isPromiseCallExpression || isTypedArrayOrBuiltInConstructor) {
+        this.incrementCounters(arrayLitNode, FaultID.NosparseArray);
+      }
     }
 
+    let emptyContextTypeForArrayLiteral = false;
     for (const element of arrayLitElements) {
       const elementContextType = this.tsTypeChecker.getContextualType(element);
       if (ts.isObjectLiteralExpression(element)) {
@@ -727,8 +731,18 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
   }
 
-  private checkPromiseEmptyArray(parent: ts.Node, arrayElementIsEmpty: boolean): boolean {
-    if (this.options.arkts2 && ts.isCallExpression(parent) && arrayElementIsEmpty) {
+  private static checkTypedArrayOrBuiltInConstructor(parent: ts.Node): boolean {
+    if (ts.isNewExpression(parent)) {
+      const newExpr = parent as ts.NewExpression;
+      const typeName = newExpr.expression.getText();
+
+      return TYPED_ARRAYS.includes(typeName) || BUILTIN_CONSTRUCTORS.includes(typeName);
+    }
+    return false;
+  }
+
+  private static checkPromiseCallExpression(parent: ts.Node): boolean {
+    if (ts.isCallExpression(parent)) {
       const callExpr = parent;
       const methodName = TypeScriptLinter.getPromiseMethodName(callExpr.expression);
       if (methodName && PROMISE_METHODS.has(methodName)) {
