@@ -130,7 +130,7 @@ __attribute__((unused)) es2panda_variantDoubleCharArrayBool EnumMemberResultToEs
     // NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
     // NOLINTBEGIN(cppcoreguidelines-pro-bounds-pointer-arithmetic, readability-simplify-subscript-expr)
     es2panda_variantDoubleCharArrayBool es2panda_variant;
-    es2panda_variant.index = variant.index();
+    es2panda_variant.index = static_cast<int>(variant.index());
     switch (es2panda_variant.index) {
         case es2panda_variantIndex::CAPI_DOUBLE:
             es2panda_variant.variant.d = std::get<double>(variant);
