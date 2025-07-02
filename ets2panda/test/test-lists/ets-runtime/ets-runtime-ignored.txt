@@ -120,3 +120,6 @@ Recursive_Parameter_3.ets
 
 # 27159 Recursive type alias with generics
 RecursiveTypeAlias10.ets
+first_match/namespace.ets
+first_match/namespace2.ets
+first_match/namespace3.ets
