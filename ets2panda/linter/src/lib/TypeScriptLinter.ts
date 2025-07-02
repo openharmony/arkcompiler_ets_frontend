@@ -3304,25 +3304,24 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
 
-    const classType = this.tsTypeChecker.getTypeAtLocation(classDecl);
-    const allBaseTypes = this.getAllBaseTypes(classType, classDecl);
+    const isStatic = node.modifiers?.some(mod => {
+      return mod.kind === ts.SyntaxKind.StaticKeyword;
+    }) || false;
+    const classType: ts.Type | undefined = this.getClassType(classDecl, isStatic);
+    const allBaseTypes = classType && this.getAllBaseTypes(classType, classDecl, isStatic);
     if (!allBaseTypes || allBaseTypes.length === 0) {
       return;
     }
-
     const methodName = node.name.text;
-
     for (const baseType of allBaseTypes) {
       const baseMethod = baseType.getProperty(methodName);
       if (!baseMethod) {
         continue;
       }
-
+     
       const baseMethodDecl = baseMethod.declarations?.find((d) => {
-        return (
-          (ts.isMethodDeclaration(d) || ts.isMethodSignature(d)) &&
-          this.tsTypeChecker.getTypeAtLocation(d.parent) === baseType
-        );
+        return (ts.isMethodDeclaration(d) || ts.isMethodSignature(d)) && 
+                this.isDeclarationInType(d, baseType, isStatic);
       }) as ts.MethodDeclaration | ts.MethodSignature;
 
       if (!baseMethodDecl) {
@@ -3330,17 +3329,104 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       }
 
       this.checkMethodParameters(node, baseMethodDecl);
-
       this.checkMethodReturnType(node, baseMethodDecl);
 
       break;
     }
   }
 
-  private getAllBaseTypes(type: ts.Type, classDecl: ts.ClassDeclaration): ts.Type[] | undefined {
+  private getClassType( classDecl: ts.ClassDeclaration, isStatic?: boolean): ts.Type | undefined { 
+    let classType: ts.Type;
+
+    if (isStatic) {
+      const classConstructorSymbol = classDecl.symbol;
+      if (!classConstructorSymbol) {
+        return undefined;
+      }
+      classType = this.tsTypeChecker.getTypeOfSymbolAtLocation(classConstructorSymbol, classDecl);
+    } else {
+      classType = this.tsTypeChecker.getTypeAtLocation(classDecl);
+    }
+    return classType;
+  }
+
+  private isDeclarationInType(decl: ts.Declaration, type: ts.Type, isStatic: boolean = false): boolean {
+    const declParent = decl.parent;
+    if (!declParent) {
+      return false;
+    }
+    
+    let declParentType: ts.Type;
+    if (isStatic && ts.isClassDeclaration(declParent)) {
+      if (!declParent.symbol) {
+        return false;
+      }
+      declParentType = this.tsTypeChecker.getTypeOfSymbolAtLocation(declParent.symbol, declParent);
+    } else {
+      declParentType = this.tsTypeChecker.getTypeAtLocation(declParent);
+    }
+    
+    return this.isSameType(declParentType, type);
+  }
+
+  private isSameType(type1: ts.Type, type2: ts.Type): boolean {
+    if (type1.flags & ts.TypeFlags.Any || type2.flags & ts.TypeFlags.Any) {
+      return true;
+    }
+
+    if (type1.flags & ts.TypeFlags.TypeParameter && type2.flags & ts.TypeFlags.TypeParameter) {
+      const constraint1 = (type1 as ts.TypeParameter).getConstraint();
+      const constraint2 = (type2 as ts.TypeParameter).getConstraint();
+      if (constraint1 && constraint2) {
+        return this.isSameType(constraint1, constraint2);
+      }
+    }
+
+    if (!type1.symbol || type1.symbol !== type2.symbol) {
+      return false;
+    }
+    const type1Args = (type1 as ts.TypeReference).typeArguments;
+    const type2Args = (type2 as ts.TypeReference).typeArguments;
+
+    if (type1Args && type2Args && type1Args.length === type2Args.length) {
+      for (let i = 0; i < type1Args.length; i++) {
+        if (!this.isTypeAssignable(type2Args[i], type1Args[i])) {
+          return false;
+        }
+      }
+      return true;
+    }
+    
+    return this.tsTypeChecker.typeToString(type1) === this.tsTypeChecker.typeToString(type2);
+  }
+
+  private getAllBaseTypes(type: ts.Type, classDecl: ts.ClassDeclaration, isStatic?: boolean): ts.Type[] | undefined {
+    if (isStatic) {
+      const baseTypes: ts.Type[] = [];
+      if (!classDecl.heritageClauses) {
+        return baseTypes;
+      }
+      for (const clause of classDecl.heritageClauses) {
+        if (clause.token !== ts.SyntaxKind.ExtendsKeyword) {
+          continue;
+        }
+        for (const typeNode of clause.types) {
+          const baseType = this.tsTypeChecker.getTypeAtLocation(typeNode);
+          baseTypes.push(baseType);
+        }
+      }
+      
+      return baseTypes;
+    }
+
     const baseClasses = type.getBaseTypes() || [];
+    const resolvedBaseClasses = baseClasses.flatMap((baseType) => {
+      const symbol = baseType.getSymbol();
+      return symbol ? [this.tsTypeChecker.getDeclaredTypeOfSymbol(symbol)] : [baseType];
+    });
+
     if (!classDecl.heritageClauses) {
-      return baseClasses;
+      return resolvedBaseClasses;
     }
     const interfaces: ts.Type[] = [];
     for (const clause of classDecl.heritageClauses) {
@@ -3350,13 +3436,17 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       for (const typeNode of clause.types) {
         const interfaceType = this.tsTypeChecker.getTypeAtLocation(typeNode);
         interfaces.push(interfaceType);
-        const parentInterfaces = interfaceType.getBaseTypes();
-        if (parentInterfaces) {
-          interfaces.push(...parentInterfaces);
-        }
+
+        const baseInterfaces = interfaceType.getBaseTypes() || [];
+        baseInterfaces.forEach((baseInterface) => {
+          const symbol = baseInterface.getSymbol();
+          if (symbol) {
+            interfaces.push(this.tsTypeChecker.getDeclaredTypeOfSymbol(symbol));
+          }
+        });
       }
     }
-    return [...baseClasses, ...interfaces];
+    return [...resolvedBaseClasses, ...interfaces];
   }
 
   /**
@@ -3470,15 +3560,29 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     return type;
   }
 
-  /**
-   * Child type should include all types of parent type (be same or wider).
-   * Returns true if every type in baseType is also included in derivedType.
-   */
   private isTypeSameOrWider(baseType: ts.Type, derivedType: ts.Type): boolean {
+    if (derivedType.flags & ts.TypeFlags.Any) {
+      return true;
+    }
+
+    if (baseType.symbol === derivedType.symbol && baseType.symbol) {
+      const baseArgs = (baseType as ts.TypeReference).typeArguments;
+      const derivedArgs = (derivedType as ts.TypeReference).typeArguments;
+
+      if (!baseArgs || !derivedArgs || baseArgs.length !== derivedArgs.length) {
+        return false;
+      }
+      for (let i = 0; i < baseArgs.length; i++) {
+        if (!this.isTypeAssignable(baseArgs[i], derivedArgs[i])) {
+          return false;
+        }
+      }
+      return true;
+    }
+
     const baseTypeSet = new Set(this.flattenUnionTypes(baseType));
     const derivedTypeSet = new Set(this.flattenUnionTypes(derivedType));
 
-    // Check if every type in baseType is also present in derivedType
     for (const typeStr of baseTypeSet) {
       if (!derivedTypeSet.has(typeStr)) {
         if (TypeScriptLinter.areWrapperAndPrimitiveTypesEqual(typeStr, derivedTypeSet)) {
@@ -3487,19 +3591,31 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         return false;
       }
     }
-
     return true;
   }
 
-  // Checks structural assignability between two types.
   private isTypeAssignable(fromType: ts.Type, toType: ts.Type): boolean {
-    if (this.isDerivedTypeAssignable(fromType, toType)) {
+    if (fromType.flags & ts.TypeFlags.Any) {
       return true;
     }
+
+    if (fromType.symbol === toType.symbol && fromType.symbol) {
+      const fromArgs = (fromType as ts.TypeReference).typeArguments;
+      const toArgs = (toType as ts.TypeReference).typeArguments;
+
+      if (fromArgs && toArgs && fromArgs.length === toArgs.length) {
+        for (let i = 0; i < fromArgs.length; i++) {
+          if (!this.isTypeAssignable(fromArgs[i], toArgs[i])) {
+            return false;
+          }
+        }
+        return true;
+      }
+    }
+
     const fromTypes = this.flattenUnionTypes(fromType);
     const toTypes = new Set(this.flattenUnionTypes(toType));
 
-    // All types in `fromTypes` should exist in `toTypes` for assignability.
     return fromTypes.every((typeStr) => {
       if (toTypes.has(typeStr)) {
         return true;

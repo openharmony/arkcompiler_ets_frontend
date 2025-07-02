@@ -25,6 +25,26 @@
             "severity": "ERROR"
         },
         {
+            "line": 79,
+            "column": 11,
+            "endLine": 79,
+            "endColumn": 19,
+            "problem": "ClassAsObjectError",
+            "suggest": "",
+            "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 96,
+            "column": 17,
+            "endLine": 96,
+            "endColumn": 29,
+            "problem": "MethodInheritRule",
+            "suggest": "",
+            "rule": "Overridden method parameters and return types must respect type inheritance principles (arkts-method-inherit-rule)",
+            "severity": "ERROR"
+        },
+        {
             "line": 118,
             "column": 16,
             "endLine": 118,
