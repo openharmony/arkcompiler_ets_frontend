@@ -1423,7 +1423,6 @@ bool ETSChecker::CheckLambdaAssignable(ir::Expression *param, ir::ScriptFunction
         // the surrounding function is made so we can *bypass* the typecheck in the "inference" context,
         // however the body of the function has to be checked in any case
         if (typeAnn->IsETSUnionType()) {
-            lambda->Parent()->Check(this);
             return CheckLambdaAssignableUnion(typeAnn, lambda);
         }
 
@@ -1492,13 +1491,12 @@ bool ETSChecker::CheckLambdaTypeAnnotation(ir::ETSParameterExpression *param,
     }
     auto *const lambdaReturnTypeAnnotation = lambda->ReturnTypeAnnotation();
 
-    Type *const argumentType = arrowFuncExpr->Check(this);
-    if (Relation()->IsSupertypeOf(parameterType, argumentType)) {
-        return true;
+    if (!parameterType->IsETSUnionType() || parameterType->AsETSUnionType()->ConstituentTypes().size() !=
+                                                typeAnnotation->AsETSUnionType()->Types().size()) {
+        Type *const argumentType = arrowFuncExpr->Check(this);
+        return Relation()->IsSupertypeOf(parameterType, argumentType);
     }
 
-    ES2PANDA_ASSERT(parameterType->AsETSUnionType()->ConstituentTypes().size() ==
-                    typeAnnotation->AsETSUnionType()->Types().size());
     const auto typeAnnsOfUnion = typeAnnotation->AsETSUnionType()->Types();
     const auto typeParamOfUnion = parameterType->AsETSUnionType()->ConstituentTypes();
     for (size_t ix = 0; ix < typeAnnsOfUnion.size(); ++ix) {
