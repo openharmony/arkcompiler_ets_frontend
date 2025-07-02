@@ -383,6 +383,11 @@ keywords:
     token: KEYW_NEW
     keyword: [as, js, ets, ts]
 
+  - name: "NonNullable"
+    token: KEYW_NON_NULLABLE
+    keyword_like: [ets]
+    flags: [reserved_type_name, definable_type_name]
+
   - name: 'null'
     token: LITERAL_NULL
     keyword: [as, js, ets, ts]

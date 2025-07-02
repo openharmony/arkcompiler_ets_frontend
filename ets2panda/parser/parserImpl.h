@@ -243,6 +243,7 @@ protected:
 
     void ParseIndexSignature();
     void EatTypeAnnotation();
+    bool ParsePunctuatorGreaterThan(bool throwError = true);
     util::StringView ParseSymbolIteratorIdentifier() const noexcept;
     ir::Identifier *ExpectIdentifier(bool isReference = false, bool isUserDefinedType = false,
                                      TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR);

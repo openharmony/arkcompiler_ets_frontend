@@ -312,12 +312,27 @@ ir::TypeNode *ETSParser::ParsePotentialFunctionalType(TypeAnnotationParsingOptio
     return nullptr;
 }
 
+std::pair<ir::TypeNode *, bool> ETSParser::ParseNonNullableType(TypeAnnotationParsingOptions *options)
+{
+    ES2PANDA_ASSERT(Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_NON_NULLABLE);
+    Lexer()->NextToken();  // eat NonNullable
+
+    ExpectToken(lexer::TokenType::PUNCTUATOR_LESS_THAN, true);
+    auto *const typeAnnotation = ParseTypeAnnotationNoPreferParam(options);
+    ParsePunctuatorGreaterThan();
+    return std::make_pair(AllocNode<ir::ETSNonNullishTypeNode>(typeAnnotation, Allocator()), true);
+}
+
 // CC-OFFNXT(huge_method[C++], G.FUN.01-CPP) solid logic
 // Just to reduce the size of ParseTypeAnnotation(...) method
 std::pair<ir::TypeNode *, bool> ETSParser::GetTypeAnnotationFromToken(TypeAnnotationParsingOptions *options)
 {
-    auto tokenType = Lexer()->GetToken().Type();
-    if (IsPrimitiveType(Lexer()->GetToken().KeywordType()) || tokenType == lexer::TokenType::LITERAL_IDENT) {
+    if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_NON_NULLABLE) {
+        return ParseNonNullableType(options);
+    }
+
+    if (IsPrimitiveType(Lexer()->GetToken().KeywordType()) ||
+        Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT) {
         auto typeAnnotation = ParseLiteralIdent(options);
         if (((*options) & TypeAnnotationParsingOptions::POTENTIAL_CLASS_LITERAL) != 0 &&
             (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_CLASS || IsStructKeyword())) {
@@ -326,27 +341,19 @@ std::pair<ir::TypeNode *, bool> ETSParser::GetTypeAnnotationFromToken(TypeAnnota
         return std::make_pair(typeAnnotation, true);
     }
 
-    switch (tokenType) {
+    ir::TypeNode *typeAnnotation;
+    switch (Lexer()->GetToken().Type()) {
         case lexer::TokenType::LITERAL_NULL: {
-            auto typeAnnotation = AllocNode<ir::ETSNullType>(Allocator());
-            ES2PANDA_ASSERT(typeAnnotation != nullptr);
-            typeAnnotation->SetRange(Lexer()->GetToken().Loc());
-            Lexer()->NextToken();
-            return std::make_pair(typeAnnotation, true);
+            typeAnnotation = AllocNode<ir::ETSNullType>(Allocator());
+            break;
         }
         case lexer::TokenType::KEYW_UNDEFINED: {
-            auto typeAnnotation = AllocNode<ir::ETSUndefinedType>(Allocator());
-            ES2PANDA_ASSERT(typeAnnotation != nullptr);
-            typeAnnotation->SetRange(Lexer()->GetToken().Loc());
-            Lexer()->NextToken();
-            return std::make_pair(typeAnnotation, true);
+            typeAnnotation = AllocNode<ir::ETSUndefinedType>(Allocator());
+            break;
         }
         case lexer::TokenType::LITERAL_STRING: {
-            auto typeAnnotation = AllocNode<ir::ETSStringLiteralType>(Lexer()->GetToken().String(), Allocator());
-            ES2PANDA_ASSERT(typeAnnotation != nullptr);
-            typeAnnotation->SetRange(Lexer()->GetToken().Loc());
-            Lexer()->NextToken();
-            return std::make_pair(typeAnnotation, true);
+            typeAnnotation = AllocNode<ir::ETSStringLiteralType>(Lexer()->GetToken().String(), Allocator());
+            break;
         }
         case lexer::TokenType::PUNCTUATOR_BACK_TICK: {
             return std::make_pair(ParseMultilineString(), true);
@@ -367,6 +374,10 @@ std::pair<ir::TypeNode *, bool> ETSParser::GetTypeAnnotationFromToken(TypeAnnota
             return {nullptr, true};
         }
     }
+    ES2PANDA_ASSERT(typeAnnotation != nullptr);
+    typeAnnotation->SetRange(Lexer()->GetToken().Loc());
+    Lexer()->NextToken();
+    return std::make_pair(typeAnnotation, true);
 }
 
 std::pair<ir::TypeNode *, bool> ETSParser::GetTypeAnnotationFromArrowFunction(TypeAnnotationParsingOptions *options)
@@ -500,6 +511,7 @@ ir::TypeNode *ETSParser::ParseTypeAnnotationNoPreferParam(TypeAnnotationParsingO
     if (Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_AT)) {
         annotations = ParseAnnotations(false);
     }
+
     auto startPos = Lexer()->GetToken().Start();
     auto [typeAnnotation, needFurtherProcessing] = GetTypeAnnotationFromToken(options);
 
@@ -509,11 +521,6 @@ ir::TypeNode *ETSParser::ParseTypeAnnotationNoPreferParam(TypeAnnotationParsingO
             return AllocBrokenType({Lexer()->GetToken().Start(), Lexer()->GetToken().End()});
         }
         return nullptr;
-    }
-
-    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK) {
-        typeAnnotation = AllocNode<ir::ETSNonNullishTypeNode>(typeAnnotation, Allocator());
-        Lexer()->NextToken();
     }
 
     if (!needFurtherProcessing) {

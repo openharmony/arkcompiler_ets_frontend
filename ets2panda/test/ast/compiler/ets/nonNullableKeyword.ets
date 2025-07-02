@@ -13,23 +13,17 @@
  * limitations under the License.
  */
 
-class NonNullableGenericParam<T extends NonNullable<(Object | null)>> {
-  foo(a: T):NonNullable<T>{
-    return a;
-  }
+
+class A{
+  NonNullable = 1;
 }
 
-class A{}
-
-type TesterUnionType = Int | A | null | undefined
-type NonNullableTesterUnionType = NonNullable<TesterUnionType>
-
-function main(){
-  let a: NonNullable<TesterUnionType>;
-  a = new A();
-  let b: NonNullable<NonNullable<Object>> = new Object();
+class B{
+  static NonNullable<T>(param:T){}
 }
 
-function foo(param:NonNullable<TesterUnionType>){
-  let a: Object = param
-}
+B.NonNullable<Object>(new Object())
+
+class NonNullable{}
+
+/* @@? 27:7 Error SyntaxError: Cannot be used as user-defined type. */

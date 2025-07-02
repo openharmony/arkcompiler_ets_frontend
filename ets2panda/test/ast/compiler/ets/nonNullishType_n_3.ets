@@ -13,23 +13,13 @@
  * limitations under the License.
  */
 
-class NonNullableGenericParam<T extends NonNullable<(Object | null)>> {
-  foo(a: T):NonNullable<T>{
-    return a;
-  }
-}
-
-class A{}
-
-type TesterUnionType = Int | A | null | undefined
-type NonNullableTesterUnionType = NonNullable<TesterUnionType>
+type unionType = Object | null
 
 function main(){
-  let a: NonNullable<TesterUnionType>;
-  a = new A();
-  let b: NonNullable<NonNullable<Object>> = new Object();
+  let a: NonNullable unionType;
+  a = null;
 }
 
-function foo(param:NonNullable<TesterUnionType>){
-  let a: Object = param
-}
+/* @@? 19:22 Error SyntaxError: Expected '<', got 'identification literal'. */
+/* @@? 19:31 Error SyntaxError: Expected '>', got ';'. */
+/* @@? 20:7 Error TypeError: Type 'null' cannot be assigned to type 'Object' */

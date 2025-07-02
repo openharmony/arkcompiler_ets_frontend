@@ -706,12 +706,7 @@ checker::Type *ETSAnalyzer::Check(ir::ETSNonNullishTypeNode *node) const
         return node->TsType();
     }
     ETSChecker *checker = GetETSChecker();
-    auto type = node->GetTypeNode()->Check(checker);
-    checker::Type *originalType = type->MaybeBaseTypeOfGradualType();
-    if (!originalType->IsETSTypeParameter()) {
-        checker->LogError(diagnostic::ILLEGAL_NON_NULLISH_TYPE, {}, node->GetTypeNode()->Start());
-    }
-    return node->SetTsType(checker->GetNonNullishType(type));
+    return node->SetTsType(checker->GetNonNullishType(node->GetTypeNode()->Check(checker)));
 }
 
 checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::ETSNullType *node) const
