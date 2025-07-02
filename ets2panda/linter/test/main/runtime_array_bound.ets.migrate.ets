@@ -161,7 +161,7 @@ function foo(i:number):number{
 arr1[(24)] = 23.0;
 arr1[+24] = 23.0;
 enum TE{
-  AA = 12.0
+  AA = 12
 }
 arr1[TE.AA] = 12.0;
 

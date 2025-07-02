@@ -10333,6 +10333,10 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (!this.options.arkts2 || !ts.isNumericLiteral(node)) {
       return;
     }
+    if (TypeScriptLinter.isInEnumOrSwitchCase(node)) {
+      this.incrementCounters(node, FaultID.NumericSemantics);
+      return;
+    }
     const isInElementAccessExpression = (node: ts.NumericLiteral): boolean => {
       for (let parent = node.parent; parent; parent = parent.parent) {
         if (ts.isElementAccessExpression(parent)) {
@@ -10352,6 +10356,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (isNoNeedFix) {
       return;
     }
+
     const value = parseFloat(node.text);
     const nodeText = node.getText();
     const hasScientificOrRadixNotation = (/[a-zA-Z]/).test(nodeText);
@@ -10360,6 +10365,37 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       const autofix = this.autofixer?.fixNumericLiteralIntToNumber(node);
       this.incrementCounters(node, FaultID.NumericSemantics, autofix);
     }
+  }
+
+  private static isInEnumOrSwitchCase(node: ts.NumericLiteral): boolean {
+    const text = node.getText();
+    const isStrictInteger = !text.includes('.');
+
+    if (TypeScriptLinter.isInSwitchCase(node) && isStrictInteger) {
+      return true;
+    }
+    if (TypeScriptLinter.isInEnumMember(node)) {
+      return isStrictInteger;
+    }
+    return false;
+  }
+
+  private static isInSwitchCase(node: ts.NumericLiteral): boolean {
+    for (let parent = node.parent; parent; parent = parent.parent) {
+      if (ts.isCaseClause(parent) && ts.isSwitchStatement(parent.parent.parent)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private static isInEnumMember(node: ts.NumericLiteral): boolean {
+    for (let parent = node.parent; parent; parent = parent.parent) {
+      if (ts.isEnumMember(parent)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private checkArrayUsageWithoutBound(accessExpr: ts.ElementAccessExpression): void {

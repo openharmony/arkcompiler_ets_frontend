@@ -1,0 +1,65 @@
+{
+  "problems": {
+    "totalProblems": 25,
+    "arts1.1_Problems": 0,
+    "arts1.2_Problems": 25,
+    "canBeAutoFixedproblemNumbers": 0,
+    "needToManualFixproblemNumbers": 25
+  },
+  "usedTime": {
+    "scanTime": "1339731.90 s",
+    "migrationTime": "1.33 s"
+  },
+  "eachRuleProblemsDetail": [
+    {
+      "rule": "Definite assignment assertions are not supported (arkts-no-definite-assignment)",
+      "problemNumbers": 1,
+      "canBeAutoFixedMumbers": 0
+    },
+    {
+      "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+      "problemNumbers": 1,
+      "canBeAutoFixedMumbers": 0
+    },
+    {
+      "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+      "problemNumbers": 14,
+      "canBeAutoFixedMumbers": 0
+    },
+    {
+      "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+      "problemNumbers": 1,
+      "canBeAutoFixedMumbers": 0
+    },
+    {
+      "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
+      "problemNumbers": 1,
+      "canBeAutoFixedMumbers": 0
+    },
+    {
+      "rule": "This keyword cannot be used as identifiers (arkts-invalid-identifier)",
+      "problemNumbers": 1,
+      "canBeAutoFixedMumbers": 0
+    },
+    {
+      "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+      "problemNumbers": 2,
+      "canBeAutoFixedMumbers": 0
+    },
+    {
+      "rule": "Array bound not checked. (arkts-runtime-array-check)",
+      "problemNumbers": 1,
+      "canBeAutoFixedMumbers": 0
+    },
+    {
+      "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
+      "problemNumbers": 1,
+      "canBeAutoFixedMumbers": 0
+    },
+    {
+      "rule": "\"new\" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)",
+      "problemNumbers": 2,
+      "canBeAutoFixedMumbers": 0
+    }
+  ]
+}

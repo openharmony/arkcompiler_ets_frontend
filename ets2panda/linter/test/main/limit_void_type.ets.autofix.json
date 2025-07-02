@@ -1731,17 +1731,6 @@
             "endLine": 252,
             "endColumn": 11,
             "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 6142,
-                    "end": 6143,
-                    "replacementText": "1.0",
-                    "line": 252,
-                    "column": 10,
-                    "endLine": 252,
-                    "endColumn": 11
-                }
-            ],
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
@@ -1752,17 +1741,6 @@
             "endLine": 253,
             "endColumn": 11,
             "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 6167,
-                    "end": 6168,
-                    "replacementText": "2.0",
-                    "line": 253,
-                    "column": 10,
-                    "endLine": 253,
-                    "endColumn": 11
-                }
-            ],
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"

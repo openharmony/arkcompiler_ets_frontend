@@ -1278,17 +1278,6 @@
             "endLine": 65,
             "endColumn": 9,
             "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 1669,
-                    "end": 1670,
-                    "replacementText": "0.0",
-                    "line": 65,
-                    "column": 8,
-                    "endLine": 65,
-                    "endColumn": 9
-                }
-            ],
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"

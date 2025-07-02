@@ -263,8 +263,8 @@ return undefined;
 
 function getStatus(code: number): string | undefined {
   switch (code) {
-    case 1.0: return "OK";
-    case 2.0: return "Warning";
+    case 1: return "OK";
+    case 2: return "Warning";
   }
 
 return undefined;
