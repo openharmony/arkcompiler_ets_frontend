@@ -5,3 +5,6 @@ test262/data/other_tests/built-ins/RegExp/property-escapes/generated/Script_Exte
 
 #26536
 test262/data/other_tests/language/statements/class/elements/after-same-line-static-async-gen-rs-private-method-alt.js
+
+#27167
+test262/data/other_tests/built-ins/RegExp/property-escapes/generated/Script_-_Tangsa.js
