@@ -4799,83 +4799,6 @@ export class Autofixer {
     return !builtInTypes.has(type.typeName.getText());
   }
 
-  fixLimitedVoidType(
-    node: ts.VariableDeclaration | ts.ParameterDeclaration | ts.PropertyDeclaration
-  ): Autofix[] | undefined {
-    const srcFile = node.getSourceFile();
-    const newType = Autofixer.createNewTypeFromVoid(node.type);
-    const newInit = Autofixer.createNewInitializer(node.initializer, newType);
-
-    const newDecl = Autofixer.createNewDeclaration(node, newType, newInit);
-    if (!newDecl) {
-      return undefined;
-    }
-
-    const replacementText = this.printer.printNode(ts.EmitHint.Unspecified, newDecl, srcFile);
-    return [{ start: node.getStart(), end: node.getEnd(), replacementText }];
-  }
-
-  private static createNewTypeFromVoid(type: ts.TypeNode | undefined): ts.TypeNode {
-    const identUndefined = ts.factory.createIdentifier(UNDEFINED_NAME);
-    if (type && ts.isUnionTypeNode(type)) {
-      const updatedTypes = type.types.map((t) => {
-        return t.kind === ts.SyntaxKind.VoidKeyword ? ts.factory.createTypeReferenceNode(UNDEFINED_NAME) : t;
-      });
-      return ts.factory.createUnionTypeNode(updatedTypes);
-    }
-    return ts.factory.createTypeReferenceNode(identUndefined);
-  }
-
-  private static createNewInitializer(initializer: ts.Expression | undefined, newType: ts.TypeNode): ts.Expression {
-    const identUndefined = ts.factory.createIdentifier(UNDEFINED_NAME);
-    if (!initializer) {
-      return identUndefined;
-    }
-
-    const stmts: ts.Statement[] = [
-      ts.factory.createExpressionStatement(initializer),
-      ts.factory.createReturnStatement(identUndefined)
-    ];
-    const funcBody = ts.factory.createBlock(stmts);
-    const arrowFunc = ts.factory.createArrowFunction(
-      undefined,
-      undefined,
-      [],
-      newType,
-      ts.factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
-      funcBody
-    );
-    return ts.factory.createCallExpression(ts.factory.createParenthesizedExpression(arrowFunc), undefined, undefined);
-  }
-
-  private static createNewDeclaration(
-    node: ts.VariableDeclaration | ts.ParameterDeclaration | ts.PropertyDeclaration,
-    newType: ts.TypeNode,
-    newInit: ts.Expression
-  ): ts.Node | undefined {
-    if (ts.isVariableDeclaration(node)) {
-      return ts.factory.createVariableDeclaration(node.name, node.exclamationToken, newType, newInit);
-    }
-
-    if (ts.isParameter(node)) {
-      return ts.factory.createParameterDeclaration(
-        node.modifiers,
-        node.dotDotDotToken,
-        node.name,
-        node.questionToken,
-        newType,
-        node.initializer ? newInit : undefined
-      );
-    }
-
-    if (ts.isPropertyDeclaration(node)) {
-      const optionalToken = node.questionToken || node.exclamationToken;
-      return ts.factory.createPropertyDeclaration(node.modifiers, node.name, optionalToken, newType, newInit);
-    }
-
-    return undefined;
-  }
-
   /**
    * Fixes function declarations/expressions that return `void` as part of a union.
    * Replaces `void` with `undefined` in the return type,
@@ -4916,9 +4839,10 @@ export class Autofixer {
     }
     if (fn.body) {
       visit(fn.body);
-
-      if (!hasReturn) {
-        if (ts.isBlock(fn.body)) {
+      if (ts.isBlock(fn.body)) {
+        const statements = fn.body.statements;
+        const lastExpr = statements.length > 0 ? statements[statements.length - 1] : undefined;
+        if (hasReturn && lastExpr && !ts.isReturnStatement(lastExpr) || !hasReturn) {
           const lastBrace = fn.body.getEnd() - 1;
           fixes.push({
             start: lastBrace,

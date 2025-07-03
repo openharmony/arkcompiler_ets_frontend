@@ -765,8 +765,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleSdkGlobalApi(tsParam);
     const typeNode = tsParam.type;
     if (this.options.arkts2 && typeNode && TsUtils.typeContainsVoid(typeNode)) {
-      const autofix = this.autofixer?.fixLimitedVoidType(tsParam);
-      this.incrementCounters(typeNode, FaultID.LimitedVoidType, autofix);
+      this.incrementCounters(typeNode, FaultID.LimitedVoidType);
     }
     this.handlePropertyDescriptorInScenarios(tsParam);
   }
@@ -1508,8 +1507,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     const classDecorators = ts.getDecorators(node.parent);
     const propType = node.type?.getText();
     if (this.options.arkts2 && node.type && TsUtils.typeContainsVoid(node.type)) {
-      const autofix = this.autofixer?.fixLimitedVoidType(node);
-      this.incrementCounters(node.type, FaultID.LimitedVoidType, autofix);
+      this.incrementCounters(node.type, FaultID.LimitedVoidType);
     }
     this.filterOutDecoratorsDiagnostics(
       classDecorators,
@@ -6352,8 +6350,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
     const typeNode = node.type;
     if (typeNode && TsUtils.typeContainsVoid(typeNode)) {
-      const autofix = this.autofixer?.fixLimitedVoidType(node);
-      this.incrementCounters(typeNode, FaultID.LimitedVoidType, autofix);
+      this.incrementCounters(typeNode, FaultID.LimitedVoidType);
     }
   }
 
