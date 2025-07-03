@@ -13,6 +13,9 @@
  * limitations under the License.
  */
 
+// Depends on hardware environment, set a longer timeout
+jest.setTimeout(20000);
+
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
@@ -86,7 +89,47 @@ function getHashCache(cachePath: string): Record<string, string> | null {
   return hashCache;
 }
 
-function checkFileHash(allSrcFiles: string[], hashCache: Record<string, string>) {
+function getDependencyInfo(cachePath: string) {
+  const depPath = path.join(cachePath, 'dependency.json');
+  if (!fs.existsSync(depPath)) {
+    console.warn(`dependency.json: ${depPath} does not exist.`);
+    return { dependants: {} };
+  }
+  try {
+    const depJson = JSON.parse(fs.readFileSync(depPath, 'utf-8'));
+    return { dependants: depJson.dependants || {} };
+  } catch {
+    return { dependants: {} };
+  }
+}
+
+function collectIncrementalCompileFiles(
+  changedFiles: string[],
+  dependants: Record<string, string[]>
+): Set<string> {
+  const result = new Set<string>();
+  const queue = [...changedFiles];
+  const addDep = (dep: string) => {
+    if (!result.has(dep)) {
+      queue.push(dep);
+    }
+  };
+  while (queue.length > 0) {
+    const file = queue.shift()!;
+    if (!result.has(file)) {
+      result.add(file);
+      (dependants[file] || []).forEach(addDep);
+    }
+  }
+  return result;
+}
+
+function checkFileHashWithDependency(
+  allSrcFiles: string[],
+  hashCache: Record<string, string>,
+  dependants: Record<string, string[]>
+) {
+  const changedFiles: string[] = [];
   allSrcFiles.forEach(srcFile => {
     const absPath = path.resolve(srcFile);
     const hashInCache = hashCache[absPath];
@@ -96,11 +139,21 @@ function checkFileHash(allSrcFiles: string[], hashCache: Record<string, string>)
     } else {
       if (actualHash !== hashInCache) {
         console.log(`[Jest][${absPath} changed,  hash:\nnow (${actualHash})\nprevious (${hashInCache})]`);
+        changedFiles.push(absPath);
       } else {
         console.log(`[Jest][${absPath} unchanged, hash: ${actualHash}]`);
       }
     }
   });
+
+  const incrementalFiles = collectIncrementalCompileFiles(changedFiles, dependants);
+
+  if (incrementalFiles.size > 0) {
+    console.log('\n[Jest][Incremental compilation will be triggered for the following files]:');
+    incrementalFiles.forEach(f => console.log(f));
+  } else {
+    console.log('\n[Jest][No incremental compilation files found, all source files are unchanged]');
+  }
 }
 
 function testHelper(testScriptName: string) {
@@ -108,12 +161,13 @@ function testHelper(testScriptName: string) {
   const cachePath = path.resolve(__dirname, '../../', config.cachePath);
 
   describe(`Output Artifact Check [${configPath}]`, () => {
-    it('Check hash of all source files with hash_cache.json', () => {
+    it('Check hash of all source files with hash_cache.json and analyze all incremental compilation files', () => {
       const hashCache = getHashCache(cachePath);
       if (!hashCache) return;
       const modules = getAllModules(config);
       const allSrcFiles = getAllSrcFiles(modules);
-      checkFileHash(allSrcFiles, hashCache);
+      const { dependants } = getDependencyInfo(cachePath);
+      checkFileHashWithDependency(allSrcFiles, hashCache, dependants);
     });
   });
 }

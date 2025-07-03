@@ -13,4 +13,6 @@
  * limitations under the License.
  */
 
-export { sub } from './sub'
+import {strB} from 'harB';
+
+export let strA = strB;

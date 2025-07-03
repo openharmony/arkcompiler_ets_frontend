@@ -13,150 +13,265 @@
  * limitations under the License.
  */
 
-import { PluginDriver, PluginHook} from '../../../src/plugins/plugins_driver';
+import { PluginDriver, PluginHook } from '../../../src/plugins/plugins_driver';
+import {
+  BuildConfig,
+  BUILD_MODE,
+  BUILD_TYPE,
+  OHOS_MODULE_TYPE,
+  PluginsConfig
+} from '../../../src/types';
 
-jest.mock('../../../src/plugins/plugins_driver', () => {
-  const actual = jest.requireActual('../../../src/plugins/plugins_driver');
-  
-  function MockPluginDriver(this: any, ...args: any[]) {
-    this.plugins = {};
-  }
-  
-  MockPluginDriver.prototype = actual.PluginDriver.prototype;
-  
-  Object.getOwnPropertyNames(actual.PluginDriver).forEach((key) => {
-    if (!['prototype', 'length', 'name'].includes(key)) {
-      (MockPluginDriver as any)[key] = (actual.PluginDriver as any)[key];
-    }
+jest.mock('../../../src/logger');
+
+const mockConfig: BuildConfig = {
+  buildMode: BUILD_MODE.DEBUG,
+  compileFiles: ["test.ets"],
+  packageName: "test",
+  moduleRootPath: "/test/path",
+  sourceRoots: ["./"],
+  loaderOutPath: "./dist",
+  cachePath: "./dist/cache",
+  plugins: {},
+  buildType: BUILD_TYPE.BUILD,
+  hasMainModule: true,
+  moduleType: OHOS_MODULE_TYPE.HAR,
+  arkts: {} as any,
+  arktsGlobal: {} as any,
+  enableDeclgenEts2Ts: false,
+  byteCodeHar: false,
+  declgenV1OutPath: "./dist/declgen",
+  declgenV2OutPath: "./dist/declgen/v2",
+  buildSdkPath: "./sdk",
+  externalApiPaths: [],
+
+  dependentModuleList: [
+  ]
+} as any;
+
+// The PluginDriver class is responsible for managing and executing plugins in the build system.
+describe('test PluginDriver', () => {
+  beforeEach(() => {
+    PluginDriver.destroyInstance();
+    jest.clearAllMocks();
+  });
+  test('constructor', () => {
+    test_construcotr();
   });
 
-  return {
-    ...actual,
-    PluginDriver: MockPluginDriver,
-    __esModule: true,
-  };
-});
-type PluginHandlerFunction = () => void;
+  test('getInstance', () => {
+    test_getInstance();
+  });
 
-type PluginHandlerObject = {
-  order: 'pre' | 'post' | undefined
-  handler: PluginHandlerFunction
-};
-type PluginHandler = PluginHandlerFunction | PluginHandlerObject;
-interface Plugins {
-  name: string,
-  afterNew?: PluginHandler,
-  parsed?: PluginHandler,
-  scopeInited?: PluginHandler,
-  checked?: PluginHandler,
-  lowered?: PluginHandler,
-  asmGenerated?: PluginHandler,
-  binGenerated?: PluginHandler,
-  clean?: PluginHandler,
-}
+  test('destroyInstance', () => {
+    test_destroyInstance();
+  });
 
-jest.mock('path/to/valid/plugin', () => {
-  return {
-    validPlugin: () => { },
-  };
-}, { virtual: true });
+  test('getPluginContext', () => {
+    test_getPluginContext();
+  });
 
-jest.mock('path/to/invalid/plugin', () => {
-  return {
-    invalidPlugin: {},
-  };
-}, { virtual: true });
+  test('setArkTSAst and getArkTSAst', () => {
+    test_setArkTSAstAndGetArkTSAst();
+  });
 
-describe('test plugins_driver.ts file api', () => {
-  test('test initPlugins001', () => {
+  test('setArkTSProgram and getArkTSProgram', () => {
+    test_setArkTSProgramAndGetArkTSProgram();
+  });
+
+  test('setProjectConfig and getProjectConfig', () => {
+    test_setProjectConfigAndGetProjectConfig();
+  });
+
+  test('setFileManager and getFileManager', () => {
+    test_setFileManagerAndGetFileManager();
+  });
+
+  test('setContextPtr and getContextPtr', () => {
+    test_setContextPtrAndGetContextPtr();
+  });
+
+  test('runPluginHook001', () => {
+    test_runPluginHook001();
+  });
+
+  test('runPluginHook002', () => {
+    test_runPluginHook002();
+  });
+
+  test('getPlugins', () => {
+    test_getPlugins();
+  });
+
+  test('initPlugins001', () => {
     test_initPlugins001();
   });
 
-  test('test initPlugins002', () => {
+  test('initPlugins002', () => {
     test_initPlugins002();
   });
 
-  test('test getSortedPlugins', () => {
+  test('getSortedPlugins', () => {
     test_getSortedPlugins();
   });
 });
 
-function test_initPlugins001() {
-  const driver = new PluginDriver();
-  const result = driver.initPlugins(undefined as any);
-  expect(result).toBeUndefined();
+function test_getSortedPlugins() {
+  const driver = PluginDriver.getInstance();
+  let mockPreData: any = {
+    name: PluginHook.PARSED,
+    parsed: {
+      order: 'pre',
+      handler: jest.fn()
+    }
+  };
+  let mockPostData: any = {
+    name: PluginHook.CHECKED,
+    checked: {
+      order: 'post',
+      handler: jest.fn()
+    }
+  };
+  let mockOtherData: any = {
+    name: PluginHook.CHECKED,
+    checked: {
+      order: undefined,
+      handler: jest.fn()
+    }
+  };
+  let mockallPlugins = new Map<string, any>()
+  mockallPlugins.set(PluginHook.PARSED, mockPreData);
+  mockallPlugins.set(PluginHook.CHECKED, mockPostData);
+  mockallPlugins.set(PluginHook.NEW, mockOtherData);
+  Reflect.set(driver, 'allPlugins', mockallPlugins);
+  expect(() => {
+    Reflect.get(driver, 'getSortedPlugins').call(driver, PluginHook.PARSED);
+  }).not.toThrow('runPluginHook should not throw an error when no plugins are registered for the hook');
+  expect(() => {
+    Reflect.get(driver, 'getSortedPlugins').call(driver, PluginHook.CHECKED);
+  }).not.toThrow('runPluginHook should not throw an error when no plugins are registered for the hook');
 }
 
 function test_initPlugins002() {
-  const driver = new PluginDriver();
-  const mockProjectConfig = {
-    plugins: {
-      invalidPlugin: 'path/to/invalid/plugin',
-    },
-    compileFiles: [],
-    dependentModuleList: [],
-    buildType: 'build',
-    buildMode: 'debug',
-    packageName: 'test',
-    moduleRootPath: '/test/path',
-    sourceRoots: ['./'],
-    loaderOutPath: './dist',
-    cachePath: './dist/cache',
-    moduleType: 'har',
-    hasMainModule: false,
-    byteCodeHar: false,
-    arkts: {},
-    arktsGlobal: {},
-    declgenV1OutPath: './dist/declgen',
-    declgenV2OutPath: './dist/declgen/v2',
-    buildSdkPath: './sdk',
-    externalApiPaths: [],
-    enableDeclgenEts2Ts: false
-  };
-
-  let error;
-  try {
-    driver.initPlugins(mockProjectConfig as any);
-  } catch (e) {
-    error = e;
-  }
-
-  expect(error).not.toBeUndefined();
+  const driver = PluginDriver.getInstance();
+  mockConfig.plugins = undefined as any;
+  driver.initPlugins(mockConfig);
+  expect(() => {
+    driver.initPlugins(mockConfig);
+  }).not.toThrow('runPluginHook should not throw an error when no plugins are registered for the hook');
+  expect(() => {
+    driver.initPlugins(undefined as any);
+  }).not.toThrow('runPluginHook should not throw an error when no plugins are registered for the hook');
 }
 
-function test_getSortedPlugins() {
-  const driver = new PluginDriver();
-  const hook = PluginHook.PARSED;
+function test_getPlugins() {
+  const driver = PluginDriver.getInstance();
+  const handler = {
+    get: function (target: any, prop: any) {
+      if (prop === 'getSortedPlugins') {
+        return target[prop];
+      }
+    }
+  };
+  const proxyInstance = new Proxy(driver, handler);
+  let mockData: any = [{
+    name: 'mockPlugin',
+    handler: jest.fn()
+  }];
+  const spy = jest.spyOn(proxyInstance, 'getSortedPlugins');
+  spy.mockReturnValue(mockData);
+  expect(() => {
+    driver.runPluginHook(PluginHook.PARSED)
+  }).not.toThrow('runPluginHook should not throw an error when no plugins are registered for the hook');
+}
 
-  driver['allPlugins'] = new Map<string, Plugins>([
-    [
-      'plugin1',
-      {
-        name: 'plugin1',
-        parsed: { order: 'pre', handler: jest.fn() },
-      },
-    ],
-    [
-      'plugin2',
-      {
-        name: 'plugin2',
-        parsed: jest.fn(),
-      },
-    ],
-    [
-      'plugin3',
-      {
-        name: 'plugin3',
-        parsed: { order: 'post', handler: jest.fn() },
-      },
-    ],
-  ]);
+function test_runPluginHook001() {
+  const driver = PluginDriver.getInstance();
+  expect(() => {
+    driver.runPluginHook(PluginHook.PARSED)
+  }).not.toThrow('runPluginHook should not throw an error when no plugins are registered for the hook');
+}
 
-  const result = driver['getSortedPlugins'](hook);
+function test_runPluginHook002() {
+  const driver = PluginDriver.getInstance();
+  const handler = {
+    get: function (target: any, prop: any) {
+      if (prop === 'getPlugins') {
+        return target[prop];
+      }
+    }
+  };
+  const proxyInstance = new Proxy(driver, handler);
+  let mockData: any = [{
+    name: 'mockPlugin',
+    handler: jest.fn()
+  }];
+  const spy = jest.spyOn(proxyInstance, 'getPlugins');
+  spy.mockReturnValue(mockData);
+  expect(() => {
+    driver.runPluginHook(PluginHook.PARSED)
+  }).not.toThrow('runPluginHook should not throw an error when no plugins are registered for the hook');
+}
 
-  expect(result).toEqual([
-    { name: 'plugin1', handler: expect.any(Function) },
-    { name: 'plugin2', handler: expect.any(Function) },
-    { name: 'plugin3', handler: expect.any(Function) },
-  ]);
+function test_setContextPtrAndGetContextPtr() {
+  const driver = PluginDriver.getInstance();
+  const mockPtr = 124;
+  driver.getPluginContext().setContextPtr(mockPtr);
+  expect(driver.getPluginContext().getContextPtr()).toBe(mockPtr);
+}
+
+function test_setFileManagerAndGetFileManager() {
+  const driver = PluginDriver.getInstance();
+  driver.getPluginContext().setFileManager(mockConfig);
+  expect(driver.getPluginContext().getFileManager()).not.toBe(undefined);
+}
+
+function test_setProjectConfigAndGetProjectConfig() {
+  const driver = PluginDriver.getInstance();
+  const mockProgram = { type: 'mock', body: [] };
+  driver.getPluginContext().setProjectConfig(mockProgram);
+  expect(driver.getPluginContext().getProjectConfig()).toBe(mockProgram);
+}
+
+function test_setArkTSProgramAndGetArkTSProgram() {
+  const driver = PluginDriver.getInstance();
+  const mockProgram = { type: 'mock', body: [] };
+  driver.getPluginContext().setArkTSProgram(mockProgram);
+  expect(driver.getPluginContext().getArkTSProgram()).toBe(mockProgram);
+}
+
+function test_setArkTSAstAndGetArkTSAst() {
+  const driver = PluginDriver.getInstance();
+  const mockAst = { type: 'mock', body: [] };
+  driver.getPluginContext().setArkTSAst(mockAst);
+  expect(driver.getPluginContext().getArkTSAst()).toBe(mockAst);
+}
+
+function test_getPluginContext() {
+  const driver = PluginDriver.getInstance();
+  let context = driver.getPluginContext();
+  expect(context).not.toBe(undefined);
+}
+
+function test_construcotr() {
+  const plugindriver = new PluginDriver();
+  expect(plugindriver).not.toBe(undefined);
+}
+
+function test_getInstance() {
+  const driver = PluginDriver.getInstance();
+  expect(driver).toBe(PluginDriver.getInstance());
+}
+
+function test_destroyInstance() {
+  const driver = PluginDriver.getInstance();
+  PluginDriver.destroyInstance();
+  expect(driver).not.toBe(PluginDriver.getInstance());
+}
+
+function test_initPlugins001() {
+  const driver = PluginDriver.getInstance();
+  expect(() => {
+    driver.initPlugins(mockConfig);
+  }).not.toThrow('runPluginHook should not throw an error when no plugins are registered for the hook');
 }

@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
-export function add(a: number, b: number) {
-  return a + b
+import {strA} from 'harA'
+
+function main() {
+  console.log(strA)
 }
