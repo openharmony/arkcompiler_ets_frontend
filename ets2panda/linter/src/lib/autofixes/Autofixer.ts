@@ -986,18 +986,34 @@ export class Autofixer {
       return undefined;
     }
 
+    const propertyChain: string[] = [propertyName];
+    let current: ts.Node = node;
+    
+    while (current.parent && ts.isElementAccessExpression(current.parent)) {
+      const parentArg = current.parent.argumentExpression;
+      if (ts.isStringLiteral(parentArg)) {
+        propertyChain.push(parentArg.text); 
+      }
+      current = current.parent;
+    }
     const realObj = asExpr.expression;
     const type = this.typeChecker.getTypeAtLocation(realObj);
-    const property = this.typeChecker.getPropertyOfType(type, propertyName);
-    if (!property) {
-      return undefined;
+
+    let currentType = type;
+    for (const prop of propertyChain) {
+      const property = this.typeChecker.getPropertyOfType(currentType, prop);
+      if (!property) {
+        return undefined;
+      }
+      currentType = this.typeChecker.getTypeOfSymbolAtLocation(property, node);
     }
+    const replacementText = realObj.getText() + '.' + propertyChain.join('.');
 
     return [
       {
-        replacementText: realObj.getText() + '.' + propertyName,
+        replacementText,
         start: node.getStart(),
-        end: node.getEnd()
+        end: current.getEnd()
       }
     ];
   }

@@ -483,6 +483,16 @@
             "suggest": "",
             "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)",
             "severity": "ERROR"
+        },
+        {
+            "line": 208,
+            "column": 1,
+            "endLine": 208,
+            "endColumn": 20,
+            "problem": "PropertyAccessByIndex",
+            "suggest": "",
+            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)",
+            "severity": "ERROR"
         }
     ]
 }
