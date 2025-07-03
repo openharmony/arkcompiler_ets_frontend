@@ -284,6 +284,7 @@ extern "C" void DestroyConfig(es2panda_Config *config)
     }
 
     delete cfg->options;
+    cfg->diagnosticEngine->FlushDiagnostic();
     delete cfg->diagnosticEngine;
     delete cfg;
 }
