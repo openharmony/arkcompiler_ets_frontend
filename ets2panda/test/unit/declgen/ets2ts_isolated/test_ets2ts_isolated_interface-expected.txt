@@ -1,14 +1,10 @@
 export declare interface User {
-    get id(): number;
-    set id(value: number);
-    get name(): string;
-    set name(value: string);
-    get age(): number | undefined;
-    set age(value: number | undefined);
-    get apiUrl(): string;
+    id: number;
+    name: string;
+    age?: number | undefined;
+    readonly apiUrl: string;
 }
 export declare interface Animal {
-    get name(): string;
-    set name(value: string);
+    name: string;
     makeSound(): void;
 }
