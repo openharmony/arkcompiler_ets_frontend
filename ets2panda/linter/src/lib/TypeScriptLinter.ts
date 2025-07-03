@@ -1537,7 +1537,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handlePropertyDeclarationForProp(node);
     this.handleSdkGlobalApi(node);
     this.handleObjectLiteralAssignmentToClass(node);
-    this.handleNumericPublicStatic(node)
+    this.handleNumericPublicStatic(node);
   }
 
   private handleSendableClassProperty(node: ts.PropertyDeclaration): void {
@@ -2080,7 +2080,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleObjectLiteralAssignmentToClass(tsBinaryExpr);
     this.handleAssignmentNotsLikeSmartType(tsBinaryExpr);
   }
-  
+
   private handleNumericPublicStatic(node: ts.PropertyDeclaration): void {
     if (!this.options.arkts2) {
       return;
@@ -2094,8 +2094,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
     if (node.initializer) {
-      if (ts.isBinaryExpression(node.initializer) &&
-        this.isNumericExpression(node.initializer)) {
+      if (ts.isBinaryExpression(node.initializer) && this.isNumericExpression(node.initializer)) {
         const autofix = this.autofixer?.fixNumericPublicStatic(node);
         this.incrementCounters(node, FaultID.NumericSemantics, autofix);
       }
@@ -2109,10 +2108,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (!ts.isBinaryExpression(node)) {
       return false;
     }
-    return (
-      this.isNumericExpression(node.left) &&
-      this.isNumericExpression(node.right)
-    );
+    return this.isNumericExpression(node.left) && this.isNumericExpression(node.right);
   }
 
   private checkInterOpImportJsDataCompare(expr: ts.BinaryExpression): void {
@@ -4291,14 +4287,11 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     const isNumericInitializer = initializer && ts.isNumericLiteral(initializer);
     const initializerNumber = isNumericInitializer ? Number(initializerText) : NaN;
     const isUnsafeNumber = isNumericInitializer && !Number.isInteger(initializerNumber);
+    const containsDot = initializerText.includes('.');
 
-    if (isUnsafeNumber) {
+    if (containsDot || isUnsafeNumber || initializerText === 'undefined') {
       const autofix = this.autofixer?.fixArrayIndexExprType(argExpr);
       this.incrementCounters(argExpr, FaultID.ArrayIndexExprType, autofix);
-    }
-
-    if (initializerText === 'undefined') {
-      this.handleUndefinedInitializer(argExpr, firstDeclaration);
     }
   }
 
@@ -4363,15 +4356,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
 
     return evaluatedValue >= 0;
-  }
-
-  private handleUndefinedInitializer(argExpr: ts.Expression, declaration: ts.VariableDeclaration): void {
-    if (ts.isParameter(declaration)) {
-      const autofix = this.autofixer?.fixArrayIndexExprType(argExpr);
-      this.incrementCounters(argExpr, FaultID.ArrayIndexExprType, autofix);
-    } else {
-      this.incrementCounters(argExpr, FaultID.ArrayIndexExprType);
-    }
   }
 
   private handleEnumMember(node: ts.Node): void {
@@ -10555,7 +10539,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       }
     }
     if (this.isObjectPropertyAccess(accessExpr)) {
-        return true;
+      return true;
     }
 
     return this.isInstanceOfCheck(accessExpr.parent, accessExpr);
@@ -11247,10 +11231,12 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return false;
     }
 
-    if (!ts.isPropertyAccessExpression(condition.left) ||
+    if (
+      !ts.isPropertyAccessExpression(condition.left) ||
       condition.left.name.text !== LENGTH_IDENTIFIER ||
       !ts.isIdentifier(condition.left.expression) ||
-      condition.left.expression.text !== arrayAccessInfo.arrayIdent.text) {
+      condition.left.expression.text !== arrayAccessInfo.arrayIdent.text
+    ) {
       return false;
     }
 

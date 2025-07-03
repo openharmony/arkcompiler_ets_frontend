@@ -165,26 +165,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 164,
-            "column": 8,
-            "endLine": 164,
-            "endColumn": 10,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 166,
-            "column": 1,
-            "endLine": 166,
-            "endColumn": 12,
-            "problem": "RuntimeArrayCheck",
-            "suggest": "",
-            "rule": "Array bound not checked. (arkts-runtime-array-check)",
-            "severity": "ERROR"
-        },
-        {
             "line": 233,
             "column": 1,
             "endLine": 233,
