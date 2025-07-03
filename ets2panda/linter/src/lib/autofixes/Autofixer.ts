@@ -5125,4 +5125,27 @@ export class Autofixer {
     const text = this.printer.printNode(ts.EmitHint.Unspecified, newDecorator, node.getSourceFile());
     return [{ start: node.getStart(), end: node.getEnd(), replacementText: text }];
   }
+
+  fixNumericPublicStatic(node: ts.PropertyDeclaration): Autofix[] | undefined {
+    if (!node?.name || node.type) {
+      return undefined
+    };
+    const typeNode = ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword);
+    const modifiers = ts.getModifiers(node) || [];
+    const updatedProperty = ts.factory.updatePropertyDeclaration(
+      node,
+      modifiers,
+      node.name,
+      node.questionToken,
+      typeNode,
+      node.initializer
+    );
+
+    const newText = this.printer.printNode(ts.EmitHint.Unspecified, updatedProperty, node.getSourceFile());
+    return [{
+      start: node.getStart(),
+      end: node.getEnd(),
+      replacementText: newText
+    }];
+  }
 }
