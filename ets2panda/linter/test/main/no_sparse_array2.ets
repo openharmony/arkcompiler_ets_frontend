@@ -48,3 +48,25 @@ let str1 = new String([]);
 let bool1 = new Boolean([]);
 let num1 = new Number([]);
 let obj1 = new Object([]);
+
+let set1 = new WeakSet<object>();
+set1.has([]);
+set1.add([]);
+set1.delete([]);
+
+let map1 = new WeakMap<object, string>();
+map1.has([]);
+map1.set([], "");
+map1.delete([]);
+map1.get([]);
+
+let set2 = new Set<object>();
+set2.has([]);
+set2.add([]);
+set2.delete([]);
+
+let map2 = new Map<object, string>();
+map2.has([]);
+map2.set([], "");
+map2.delete([]);
+map2.get([]);

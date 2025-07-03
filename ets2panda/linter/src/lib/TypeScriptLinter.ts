@@ -55,7 +55,7 @@ import {
 } from './utils/consts/SendableAPI';
 import { DEFAULT_COMPATIBLE_SDK_VERSION, DEFAULT_COMPATIBLE_SDK_VERSION_STAGE } from './utils/consts/VersionInfo';
 import { TYPED_ARRAYS } from './utils/consts/TypedArrays';
-import { BUILTIN_CONSTRUCTORS } from './utils/consts/BuiltinWhiteList';
+import { BUILTIN_CONSTRUCTORS, COLLECTION_METHODS, COLLECTION_TYPES } from './utils/consts/BuiltinWhiteList';
 import { forEachNodeInSubtree } from './utils/functions/ForEachNodeInSubtree';
 import { hasPredecessor } from './utils/functions/HasPredecessor';
 import { isStdLibrarySymbol, isStdLibraryType } from './utils/functions/IsStdLibrary';
@@ -724,12 +724,12 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
      * check that array literal consists of inferrable types
      * e.g. there is no element which is untyped object literals
      */
-    const isPromiseCallExpression = TypeScriptLinter.checkPromiseCallExpression(parent);
+    const isCallExpression = this.checkMethodCallForSparseArray(parent);
     const isTypedArrayOrBuiltInConstructor = TypeScriptLinter.checkTypedArrayOrBuiltInConstructor(parent);
     if (this.options.arkts2 && arrayElementIsEmpty) {
       if (!arrayLitType) {
         this.incrementCounters(node, FaultID.NosparseArray);
-      } else if (isPromiseCallExpression || isTypedArrayOrBuiltInConstructor) {
+      } else if (isCallExpression || isTypedArrayOrBuiltInConstructor) {
         this.incrementCounters(arrayLitNode, FaultID.NosparseArray);
       }
     }
@@ -759,25 +759,49 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   }
 
   private static checkTypedArrayOrBuiltInConstructor(parent: ts.Node): boolean {
-    if (ts.isNewExpression(parent)) {
-      const newExpr = parent as ts.NewExpression;
-      const typeName = newExpr.expression.getText();
-
-      return TYPED_ARRAYS.includes(typeName) || BUILTIN_CONSTRUCTORS.includes(typeName);
+    if (!ts.isNewExpression(parent)) {
+      return false;
     }
+    const newExpr = parent as ts.NewExpression;
+    const typeName = newExpr.expression.getText();
+
+    return TYPED_ARRAYS.includes(typeName) || BUILTIN_CONSTRUCTORS.includes(typeName);
+  }
+
+  private checkMethodCallForSparseArray(parent: ts.Node): boolean {
+    if (!ts.isCallExpression(parent)) {
+      return false;
+    }
+
+    const callExpr = parent as ts.CallExpression;
+    const promiseMethodName = TypeScriptLinter.getPromiseMethodName(callExpr.expression);
+    if (promiseMethodName && PROMISE_METHODS.has(promiseMethodName)) {
+      return true;
+    }
+
+    const collectionMethodName = this.getCollectionMethodName(callExpr.expression);
+    if (collectionMethodName && COLLECTION_METHODS.has(collectionMethodName)) {
+      return true;
+    }
+
     return false;
   }
 
-  private static checkPromiseCallExpression(parent: ts.Node): boolean {
-    if (ts.isCallExpression(parent)) {
-      const callExpr = parent;
-      const methodName = TypeScriptLinter.getPromiseMethodName(callExpr.expression);
-      if (methodName && PROMISE_METHODS.has(methodName)) {
-        return true;
-      }
-      return false;
+  private getCollectionMethodName(node: ts.Expression): string | undefined {
+    if (!ts.isPropertyAccessExpression(node)) {
+      return undefined;
     }
-    return false;
+
+    const expr = node.expression;
+    if (ts.isIdentifier(expr) || ts.isPropertyAccessExpression(expr)) {
+      const type = this.tsTypeChecker.getTypeAtLocation(expr);
+      const typeName = type.symbol?.getName();
+      if (typeName && COLLECTION_TYPES.has(typeName)) {
+        return node.name.text;
+      }
+    }
+
+    return undefined;
   }
 
   private static getPromiseMethodName(node: ts.Expression): string | undefined {
@@ -3372,6 +3396,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         this.checkMethodReturnType(node, baseMethodDecl);
 
       break;
+      }
     }
   }
 

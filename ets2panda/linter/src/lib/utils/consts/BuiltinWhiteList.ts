@@ -52,3 +52,18 @@ export const BUILTIN_CONSTRUCTORS = [
   'Object',
   'String'
 ];
+
+export const COLLECTION_TYPES = new Set([
+  'Map',
+  'Set',
+  'WeakMap',
+  'WeakSet'
+]);
+
+export const COLLECTION_METHODS = new Set([
+  'add',
+  'delete',
+  'get',
+  'has',
+  'set'
+]);

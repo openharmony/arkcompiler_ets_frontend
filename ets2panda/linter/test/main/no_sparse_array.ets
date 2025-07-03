@@ -77,3 +77,25 @@ function foo5<T extends number>(a: T[]) {
     return;
 }
 foo5<number>([]);
+
+let set1 = new WeakSet<object>();
+set1.has(['1']);
+set1.add(['1']);
+set1.delete(['1']);
+
+let map1 = new WeakMap<object, string>();
+map1.has(['1']);
+map1.set(['1'], "");
+map1.delete(['1']);
+map1.get(['1']);
+
+let set2 = new Set<object>();
+set2.has(['1']);
+set2.add(['1']);
+set2.delete(['1']);
+
+let map2 = new Map<object, string>();
+map2.has(['1']);
+map2.set(['1'], "");
+map2.delete(['1']);
+map2.get(['1']);
