@@ -14,6 +14,7 @@
  */
 
 #include "parserImpl.h"
+#include "forwardDeclForParserImpl.h"
 #include "parserStatusContext.h"
 
 #include "generated/diagnostic.h"
@@ -28,6 +29,7 @@
 #include "ir/expressions/arrayExpression.h"
 #include "ir/expressions/assignmentExpression.h"
 #include "ir/expressions/callExpression.h"
+#include "ir/expressions/dummyNode.h"
 #include "ir/expressions/functionExpression.h"
 #include "ir/expressions/literals/bigIntLiteral.h"
 #include "ir/expressions/literals/numberLiteral.h"
@@ -835,6 +837,15 @@ ParserImpl::ClassBody ParserImpl::ParseClassBody(ir::ClassDefinitionModifiers mo
             }
 
             if (CheckClassElement(property, ctor, properties)) {
+                continue;
+            }
+            auto isIndexer = [](ir::AstNode *node) {
+                return node->IsDummyNode() && node->AsDummyNode()->IsDeclareIndexer();
+            };
+            if (std::any_of(properties.begin(), properties.end(),
+                            [&isIndexer](ir::AstNode *node) { return isIndexer(node); }) &&
+                isIndexer(property)) {
+                LogError(diagnostic::MORE_INDEXER, {}, property->Start());
                 continue;
             }
 
