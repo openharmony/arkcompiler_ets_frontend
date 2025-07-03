@@ -203,9 +203,9 @@ ir::ETSModule *ETSParser::ParseImportsAndReExportOnly(lexer::SourcePosition star
     return etsModule;
 }
 
-bool ETSParser::CheckDupAndReplace(Program *&oldProg, Program *newProg)
+bool ETSParser::CheckDupAndReplace(Program *&oldProg, Program *newProg) const
 {
-    if (!importPathManager_->ArkTSConfig()->UseUrl() && oldProg->FileName() == newProg->FileName() &&
+    if (oldProg->FileName() == newProg->FileName() &&
         oldProg->FileNameWithExtension() != newProg->FileNameWithExtension()) {
         bool oldIsDeclare = oldProg->FileNameWithExtension().Length() > newProg->FileNameWithExtension().Length();
         if (oldIsDeclare) {
@@ -230,7 +230,7 @@ void ETSParser::AddExternalSource(const std::vector<Program *> &programs)
         }
         bool found = false;
         auto &extProgs = extSources.at(name);
-        for (auto prog : extProgs) {
+        for (auto &prog : extProgs) {
             if (prog->SourceFilePath() == newProg->SourceFilePath()) {
                 found = true;
                 break;
@@ -291,7 +291,13 @@ void ETSParser::AddDirectImportsToDirectExternalSources(
     if (GetProgram()->DirectExternalSources().count(name) == 0) {
         GetProgram()->DirectExternalSources().try_emplace(name, Allocator()->Adapter());
     }
-    GetProgram()->DirectExternalSources().at(name).emplace_back(newProg);
+    auto &dirExternal = GetProgram()->DirectExternalSources().at(name);
+    for (auto &prog : dirExternal) {
+        if (CheckDupAndReplace(prog, newProg)) {
+            return;
+        }
+    }
+    dirExternal.emplace_back(newProg);
 }
 
 void ETSParser::ParseParseListElement(const util::ImportPathManager::ParseInfo &parseListElem, util::UString *extSrc,

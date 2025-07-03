@@ -66,10 +66,9 @@ public:
     }
 
     [[nodiscard]] bool IsETSParser() const noexcept override;
-
     void AddDirectImportsToDirectExternalSources(const ArenaVector<util::StringView> &directImportsFromMainSource,
                                                  parser::Program *newProg) const;
-    bool CheckDupAndReplace(Program *&oldProg, Program *newProg);
+    bool CheckDupAndReplace(Program *&oldProg, Program *newProg) const;
     ArenaVector<ir::ETSImportDeclaration *> ParseDefaultSources(std::string_view srcFile, std::string_view importSrc);
 
 public:
