@@ -35,16 +35,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 51,
-            "column": 5,
-            "endLine": 51,
-            "endColumn": 13,
-            "problem": "RuntimeArrayCheck",
-            "suggest": "",
-            "rule": "Array bound not checked. (arkts-runtime-array-check)",
-            "severity": "ERROR"
-        },
-        {
             "line": 59,
             "column": 1,
             "endLine": 59,
@@ -182,6 +172,26 @@
             "problem": "RuntimeArrayCheck",
             "suggest": "",
             "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 233,
+            "column": 1,
+            "endLine": 233,
+            "endColumn": 8,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 276,
+            "column": 7,
+            "endLine": 276,
+            "endColumn": 31,
+            "problem": "PropertyAccessByIndex",
+            "suggest": "",
+            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)",
             "severity": "ERROR"
         }
     ]

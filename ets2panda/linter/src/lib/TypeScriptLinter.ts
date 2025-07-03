@@ -141,7 +141,7 @@ import {
 } from './utils/consts/TaskpoolAPI';
 import { BaseTypeScriptLinter } from './BaseTypeScriptLinter';
 import type { ArrayAccess, UncheckedIdentifier } from './utils/consts/RuntimeCheckAPI';
-import { NUMBER_LITERAL } from './utils/consts/RuntimeCheckAPI';
+import { NUMBER_LITERAL, LENGTH_IDENTIFIER } from './utils/consts/RuntimeCheckAPI';
 import { globalApiAssociatedInfo } from './utils/consts/AssociatedInfo';
 import { ARRAY_API_LIST } from './utils/consts/ArraysAPI';
 import {
@@ -10163,10 +10163,42 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   }
 
   private checkArrayUsageWithoutBound(accessExpr: ts.ElementAccessExpression): void {
-    if (!this.options.arkts2 || !this.useStatic) {
+    if (this.shouldSkipArrayBoundCheck(accessExpr)) {
       return;
     }
 
+    this.performArrayBoundValidation(accessExpr);
+  }
+
+  private shouldSkipArrayBoundCheck(accessExpr: ts.ElementAccessExpression): boolean {
+    if (!this.options.arkts2 || !this.useStatic) {
+      return true;
+    }
+    if (this.isDirectLengthCheckWithNumber(accessExpr)) {
+      return true;
+    }
+    if (
+      this.isInMaxLengthControlledLoop(accessExpr) ||
+      TypeScriptLinter.hasDefaultValueProtection(accessExpr) ||
+      this.isInLengthCheckedBlock(accessExpr)
+    ) {
+      return true;
+    }
+
+    if (ts.isConditionalExpression(accessExpr.parent)) {
+      const conditional = accessExpr.parent;
+      if (this.isLengthCheckCondition(conditional.condition, accessExpr)) {
+        return true;
+      }
+    }
+    if (this.isObjectPropertyAccess(accessExpr)) {
+        return true;
+    }
+
+    return this.isInstanceOfCheck(accessExpr.parent, accessExpr);
+  }
+
+  private performArrayBoundValidation(accessExpr: ts.ElementAccessExpression): void {
     const arrayAccessInfo = this.getArrayAccessInfo(accessExpr);
     if (!arrayAccessInfo) {
       const accessArgument = accessExpr.argumentExpression;
@@ -10181,6 +10213,10 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (!arraySym) {
       return;
     }
+    if (this.isInLoopWithArrayLengthModification(accessExpr, arrayIdent.text)) {
+      this.incrementCounters(accessExpr, FaultID.RuntimeArrayCheck);
+      return;
+    }
 
     const arrayDecl = TypeScriptLinter.findArrayDeclaration(arraySym);
     if (arrayDecl && TypeScriptLinter.isArrayCreatedWithOtherArrayLength(arrayDecl)) {
@@ -10189,12 +10225,19 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
     const indexExpr = accessExpr.argumentExpression;
     const loopVarName = ts.isIdentifier(indexExpr) ? indexExpr.text : undefined;
-
+    if (ts.isPrefixUnaryExpression(indexExpr) && indexExpr.operator === ts.SyntaxKind.PlusPlusToken) {
+      this.incrementCounters(arrayIdent.parent, FaultID.RuntimeArrayCheck);
+      return;
+    }
     const { isInSafeContext, isValidBoundCheck, isVarModifiedBeforeAccess } = this.analyzeSafeContext(
       accessExpr,
       loopVarName,
       arraySym
     );
+
+    if (TypeScriptLinter.isIncrementOrDecrement(indexExpr)) {
+      return;
+    }
 
     if (isInSafeContext) {
       if (!isValidBoundCheck || isVarModifiedBeforeAccess) {
@@ -10203,6 +10246,18 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     } else {
       this.incrementCounters(arrayIdent.parent, FaultID.RuntimeArrayCheck);
     }
+  }
+
+  static isIncrementOrDecrement(expr: ts.Expression): boolean {
+    if (ts.isPostfixUnaryExpression(expr)) {
+      return expr.operator === ts.SyntaxKind.PlusPlusToken || expr.operator === ts.SyntaxKind.MinusMinusToken;
+    }
+
+    if (ts.isPrefixUnaryExpression(expr)) {
+      return expr.operator === ts.SyntaxKind.PlusPlusToken || expr.operator === ts.SyntaxKind.MinusMinusToken;
+    }
+
+    return false;
   }
 
   private analyzeSafeContext(
@@ -10330,28 +10385,53 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   }
 
   private checkBoundCondition(condition: ts.Expression, varName: string, arraySym: ts.Symbol): boolean {
-    if (ts.isBinaryExpression(condition)) {
-      const { left, right, operatorToken } = condition;
+    if (!ts.isBinaryExpression(condition)) {
+      return false;
+    }
+    return this.checkBinaryExpressionBound(condition, varName, arraySym);
+  }
 
-      if (this.checkVarLessThanArrayLength(left, right, operatorToken, varName, arraySym)) {
-        return true;
-      }
+  private checkBinaryExpressionBound(expr: ts.BinaryExpression, varName: string, arraySym: ts.Symbol): boolean {
+    if (this.checkDirectBoundChecks(expr, varName, arraySym)) {
+      return true;
+    }
 
-      if (this.checkArrayLengthGreaterThanVar(left, right, operatorToken, varName, arraySym)) {
-        return true;
-      }
+    if (TypeScriptLinter.checkNumericBoundChecks(expr, varName)) {
+      return true;
+    }
 
-      if (ts.isIdentifier(left) && left.text === varName && ts.isNumericLiteral(right)) {
-        const value = parseFloat(right.text);
-        if (
-          operatorToken.kind === ts.SyntaxKind.GreaterThanEqualsToken && value <= 0 ||
-          operatorToken.kind === ts.SyntaxKind.GreaterThanToken && value < 0
-        ) {
-          return true;
-        }
-      }
+    return (
+      this.checkBoundCondition(expr.left, varName, arraySym) || this.checkBoundCondition(expr.right, varName, arraySym)
+    );
+  }
 
-      return this.checkBoundCondition(left, varName, arraySym) || this.checkBoundCondition(right, varName, arraySym);
+  private checkDirectBoundChecks(expr: ts.BinaryExpression, varName: string, arraySym: ts.Symbol): boolean {
+    const { left, right, operatorToken } = expr;
+
+    if (this.checkVarLessThanArrayLength(left, right, operatorToken, varName, arraySym)) {
+      return true;
+    }
+
+    return this.checkArrayLengthGreaterThanVar(left, right, operatorToken, varName, arraySym);
+  }
+
+  static checkNumericBoundChecks(expr: ts.BinaryExpression, varName: string): boolean {
+    const { left, right, operatorToken } = expr;
+
+    if (ts.isIdentifier(left) && left.text === varName && ts.isNumericLiteral(right)) {
+      const value = parseFloat(right.text);
+      return (
+        operatorToken.kind === ts.SyntaxKind.GreaterThanEqualsToken && value <= 0 ||
+        operatorToken.kind === ts.SyntaxKind.GreaterThanToken && value < 0
+      );
+    }
+
+    if (ts.isPropertyAccessExpression(left) && left.name.text === LENGTH_IDENTIFIER && ts.isNumericLiteral(right)) {
+      const constantValue = parseInt(right.text);
+      return (
+        operatorToken.kind === ts.SyntaxKind.LessThanToken && constantValue > 0 ||
+        operatorToken.kind === ts.SyntaxKind.LessThanEqualsToken && constantValue >= 0
+      );
     }
 
     return false;
@@ -10366,7 +10446,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   ): boolean {
     if (
       ts.isPropertyAccessExpression(left) &&
-      left.name.text === 'length' &&
+      left.name.text === LENGTH_IDENTIFIER &&
       ts.isIdentifier(right) &&
       right.text === varName
     ) {
@@ -10392,7 +10472,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       ts.isIdentifier(left) &&
       left.text === varName &&
       ts.isPropertyAccessExpression(right) &&
-      right.name.text === 'length' &&
+      right.name.text === LENGTH_IDENTIFIER &&
       (operatorToken.kind === ts.SyntaxKind.LessThanToken ||
         operatorToken.kind === ts.SyntaxKind.LessThanEqualsToken) &&
       this.tsUtils.trueSymbolAtLocation(right.expression) === arraySym
@@ -10517,6 +10597,10 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
     const accessArgument = expr.argumentExpression;
 
+    if (this.isInstanceOfCheck(expr.parent, expr)) {
+      return false;
+    }
+
     TypeScriptLinter.isFunctionCall(accessArgument);
 
     const checkNumericType = (node: ts.Node): boolean => {
@@ -10561,7 +10645,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     const newExpr = decl.initializer;
     return (
       newExpr.arguments?.some((arg) => {
-        return ts.isPropertyAccessExpression(arg) && arg.name.text === 'length';
+        return ts.isPropertyAccessExpression(arg) && arg.name.text === LENGTH_IDENTIFIER;
       }) ?? false
     );
   }
@@ -10578,5 +10662,416 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       }
     }
     return undefined;
+  }
+
+  private isInstanceOfCheck(node: ts.Node, accessExpr: ts.ElementAccessExpression): boolean {
+    if (!ts.isBinaryExpression(node)) {
+      return false;
+    }
+
+    if (node.operatorToken.kind === ts.SyntaxKind.AmpersandAmpersandToken) {
+      return this.isInstanceOfCheck(node.right, accessExpr);
+    }
+
+    return (
+      ts.isBinaryExpression(node) &&
+      node.operatorToken.kind === ts.SyntaxKind.InstanceOfKeyword &&
+      node.left === accessExpr
+    );
+  }
+
+  private isLengthCheckCondition(condition: ts.Expression, accessExpr: ts.ElementAccessExpression): boolean {
+    if (!ts.isBinaryExpression(condition)) {
+      return false;
+    }
+
+    const arrayAccessInfo = this.getArrayAccessInfo(accessExpr);
+    if (!arrayAccessInfo) {
+      return false;
+    }
+
+    const { arrayIdent } = arrayAccessInfo;
+    const arraySym = this.tsUtils.trueSymbolAtLocation(arrayIdent);
+    if (!arraySym) {
+      return false;
+    }
+
+    if (
+      ts.isPropertyAccessExpression(condition.left) &&
+      condition.left.name.text === LENGTH_IDENTIFIER &&
+      this.tsUtils.trueSymbolAtLocation(condition.left.expression) === arraySym
+    ) {
+      return true;
+    }
+
+    return false;
+  }
+
+  private isInLengthCheckedBlock(accessExpr: ts.ElementAccessExpression): boolean {
+    let parent: ts.Node | undefined = accessExpr.parent;
+
+    while (parent) {
+      if (ts.isBlock(parent) && ts.isIfStatement(parent.parent)) {
+        const ifStatement = parent.parent;
+        const arrayAccessInfo = this.getArrayAccessInfo(accessExpr);
+
+        if (arrayAccessInfo && this.isArrayLengthCheck(ifStatement.expression, arrayAccessInfo.arrayIdent)) {
+          return true;
+        }
+      }
+
+      parent = parent.parent;
+    }
+
+    return false;
+  }
+
+  private isArrayLengthCheck(condition: ts.Expression, arrayIdent: ts.Identifier): boolean {
+    if (TypeScriptLinter.isAndExpression(condition)) {
+      const binaryExpr = condition as ts.BinaryExpression;
+      return (
+        this.isArrayLengthCheck(binaryExpr.left, arrayIdent) || this.isArrayLengthCheck(binaryExpr.right, arrayIdent)
+      );
+    }
+
+    if (ts.isBinaryExpression(condition)) {
+      return TypeScriptLinter.checkBinaryLengthConditions(condition, arrayIdent);
+    }
+
+    return false;
+  }
+
+  static isAndExpression(condition: ts.Expression): boolean {
+    return ts.isBinaryExpression(condition) && condition.operatorToken.kind === ts.SyntaxKind.AmpersandAmpersandToken;
+  }
+
+  static checkBinaryLengthConditions(condition: ts.BinaryExpression, arrayIdent: ts.Identifier): boolean {
+    if (TypeScriptLinter.checkSimpleArrayCheck(condition, arrayIdent)) {
+      return true;
+    }
+
+    return TypeScriptLinter.checkArrayLengthComparisons(condition, arrayIdent);
+  }
+
+  static checkSimpleArrayCheck(condition: ts.BinaryExpression, arrayIdent: ts.Identifier): boolean {
+    return (
+      ts.isIdentifier(condition.left) &&
+      condition.left.text === arrayIdent.text &&
+      condition.operatorToken.kind === ts.SyntaxKind.AmpersandAmpersandToken
+    );
+  }
+
+  static checkArrayLengthComparisons(condition: ts.BinaryExpression, arrayIdent: ts.Identifier): boolean {
+    const { left, right, operatorToken } = condition;
+
+    if (
+      !ts.isPropertyAccessExpression(left) ||
+      left.expression.getText() !== arrayIdent.text ||
+      left.name.text !== LENGTH_IDENTIFIER ||
+      !ts.isNumericLiteral(right)
+    ) {
+      return false;
+    }
+
+    if (right.text === '0') {
+      return (
+        operatorToken.kind === ts.SyntaxKind.GreaterThanToken ||
+        operatorToken.kind === ts.SyntaxKind.GreaterThanEqualsToken
+      );
+    }
+
+    const constantValue = parseInt(right.text);
+    return (
+      operatorToken.kind === ts.SyntaxKind.LessThanToken && constantValue > 0 ||
+      operatorToken.kind === ts.SyntaxKind.LessThanEqualsToken && constantValue >= 0
+    );
+  }
+
+  private isInMaxLengthControlledLoop(accessExpr: ts.ElementAccessExpression): boolean {
+    const arrayAccessInfo = this.getArrayAccessInfo(accessExpr);
+    if (!arrayAccessInfo) {
+      return false;
+    }
+
+    const accessedArrayName = arrayAccessInfo.arrayIdent.text;
+    return TypeScriptLinter.checkParentLoopForMaxLength(accessExpr, accessedArrayName);
+  }
+
+  static checkParentLoopForMaxLength(node: ts.Node, arrayName: string): boolean {
+    let current: ts.Node | undefined = node;
+
+    while (current) {
+      if (TypeScriptLinter.isValidForStatementWithMaxLength(current, arrayName)) {
+        return true;
+      }
+      current = current.parent;
+    }
+
+    return false;
+  }
+
+  static isValidForStatementWithMaxLength(node: ts.Node, arrayName: string): boolean {
+    if (!ts.isForStatement(node)) {
+      return false;
+    }
+
+    const forStmt = node;
+    if (!forStmt.condition || !ts.isBinaryExpression(forStmt.condition)) {
+      return false;
+    }
+
+    const condition = forStmt.condition;
+    const isValidOperator =
+      condition.operatorToken.kind === ts.SyntaxKind.LessThanToken ||
+      condition.operatorToken.kind === ts.SyntaxKind.LessThanEqualsToken;
+
+    return isValidOperator && TypeScriptLinter.isMathMaxCallWithArrayLength(condition.right, arrayName);
+  }
+
+  static isMathMaxCallWithArrayLength(expr: ts.Expression, arrayName: string): boolean {
+    if (!ts.isCallExpression(expr)) {
+      return false;
+    }
+
+    if (
+      !(
+        ts.isPropertyAccessExpression(expr.expression) &&
+        expr.expression.name.text === 'max' &&
+        ts.isIdentifier(expr.expression.expression) &&
+        expr.expression.expression.text === 'Math'
+      )
+    ) {
+      return false;
+    }
+
+    return (
+      expr.arguments?.some((arg) => {
+        return (
+          ts.isPropertyAccessExpression(arg) &&
+          arg.name.text === LENGTH_IDENTIFIER &&
+          ts.isIdentifier(arg.expression) &&
+          arg.expression.text === arrayName
+        );
+      }) ?? false
+    );
+  }
+
+  static hasDefaultValueProtection(accessExpr: ts.ElementAccessExpression): boolean {
+    if (
+      ts.isBinaryExpression(accessExpr.parent) &&
+      accessExpr.parent.operatorToken.kind === ts.SyntaxKind.BarBarToken
+    ) {
+      const defaultValue = accessExpr.parent.right;
+      return ts.isNumericLiteral(defaultValue) || ts.isIdentifier(defaultValue) && defaultValue.text === 'undefined';
+    }
+    return false;
+  }
+
+  private isDirectLengthCheckWithNumber(accessExpr: ts.ElementAccessExpression): boolean {
+    if (!ts.isBlock(accessExpr.parent.parent) || !ts.isIfStatement(accessExpr.parent.parent.parent)) {
+      return false;
+    }
+
+    const ifStatement = accessExpr.parent.parent.parent as ts.IfStatement;
+
+    if (!ts.isBinaryExpression(ifStatement.expression)) {
+      return false;
+    }
+
+    const condition = ifStatement.expression;
+    const arrayAccessInfo = this.getArrayAccessInfo(accessExpr);
+    if (!arrayAccessInfo) {
+      return false;
+    }
+
+    if (!ts.isPropertyAccessExpression(condition.left) ||
+      condition.left.name.text !== LENGTH_IDENTIFIER ||
+      !ts.isIdentifier(condition.left.expression) ||
+      condition.left.expression.text !== arrayAccessInfo.arrayIdent.text) {
+      return false;
+    }
+
+    if (!ts.isNumericLiteral(condition.right)) {
+      return false;
+    }
+
+    if (!ts.isNumericLiteral(accessExpr.argumentExpression)) {
+      return false;
+    }
+
+    const conditionNumber = parseFloat(condition.right.text);
+    const accessNumber = parseFloat(accessExpr.argumentExpression.text);
+
+    switch (condition.operatorToken.kind) {
+      case ts.SyntaxKind.GreaterThanToken:
+        return accessNumber <= conditionNumber;
+      case ts.SyntaxKind.GreaterThanEqualsToken:
+        return accessNumber < conditionNumber;
+      default:
+        return false;
+    }
+  }
+
+  private isInLoopWithArrayLengthModification(accessExpr: ts.ElementAccessExpression, arrayName: string): boolean {
+    let current: ts.Node | undefined = accessExpr;
+    let inLoop = false;
+
+    while (current) {
+      if (ts.isForStatement(current) || ts.isWhileStatement(current) || ts.isDoStatement(current)) {
+        inLoop = true;
+        break;
+      }
+      current = current.parent;
+    }
+
+    if (!inLoop) {
+      return false;
+    }
+
+    return this.checkArrayLengthModifiedBeforeAccess(accessExpr, arrayName);
+  }
+
+  private checkArrayLengthModifiedBeforeAccess(accessExpr: ts.ElementAccessExpression, arrayName: string): boolean {
+    const container = TypeScriptLinter.findContainingBlock(accessExpr);
+    if (!container) {
+      return false;
+    }
+
+    const state = { foundModification: false, foundAccess: false };
+    this.checkForArrayModificationBeforeAccess(container, accessExpr, arrayName, state);
+    return state.foundModification;
+  }
+
+  private checkForArrayModificationBeforeAccess(
+    node: ts.Node,
+    accessExpr: ts.ElementAccessExpression,
+    arrayName: string,
+    state: { foundModification: boolean; foundAccess: boolean }
+  ): void {
+    if (node === accessExpr) {
+      state.foundAccess = true;
+      return;
+    }
+
+    if (state.foundAccess || state.foundModification) {
+      return;
+    }
+
+    if (TypeScriptLinter.isArrayModification(node, arrayName)) {
+      state.foundModification = true;
+      return;
+    }
+
+    ts.forEachChild(node, (child) => {
+      this.checkForArrayModificationBeforeAccess(child, accessExpr, arrayName, state);
+    });
+  }
+
+  static isArrayModification(node: ts.Node, arrayName: string): boolean {
+    return (
+      TypeScriptLinter.isArrayModificationCall(node, arrayName) || TypeScriptLinter.isLengthAssignment(node, arrayName)
+    );
+  }
+
+  static isArrayModificationCall(node: ts.Node, arrayName: string): boolean {
+    if (!ts.isCallExpression(node)) {
+      return false;
+    }
+    const expr = node.expression;
+    return (
+      ts.isPropertyAccessExpression(expr) &&
+      ts.isIdentifier(expr.expression) &&
+      expr.expression.text === arrayName &&
+      ['pop', 'shift', 'splice'].includes(expr.name.text)
+    );
+  }
+
+  static isLengthAssignment(node: ts.Node, arrayName: string): boolean {
+    if (!ts.isBinaryExpression(node) || node.operatorToken.kind !== ts.SyntaxKind.EqualsToken) {
+      return false;
+    }
+    return (
+      ts.isPropertyAccessExpression(node.left) &&
+      node.left.name.text === LENGTH_IDENTIFIER &&
+      ts.isIdentifier(node.left.expression) &&
+      node.left.expression.text === arrayName
+    );
+  }
+
+  static findContainingBlock(node: ts.Node): ts.Block | undefined {
+    let current: ts.Node | undefined = node;
+    while (current) {
+      if (ts.isBlock(current)) {
+        return current;
+      }
+      current = current.parent;
+    }
+    return undefined;
+  }
+
+  private isObjectPropertyAccess(accessExpr: ts.ElementAccessExpression): boolean {
+    if (this.isObjectAccess(accessExpr)) {
+      return true;
+    }
+
+    let current: ts.Node = accessExpr.expression;
+    while (current) {
+      if (ts.isElementAccessExpression(current)) {
+        if (this.isObjectAccess(current)) {
+          return true;
+        }
+        current = current.expression;
+      } else if (ts.isPropertyAccessExpression(current)) {
+        return true;
+      } else {
+        break;
+      }
+    }
+
+    return false;
+  }
+
+  private isObjectAccess(accessExpr: ts.ElementAccessExpression): boolean {
+    const baseType = this.tsTypeChecker.getTypeAtLocation(accessExpr.expression);
+
+    const isObjectType = (baseType.flags & ts.TypeFlags.Object) !== 0;
+    if (!isObjectType) {
+      return false;
+    }
+
+    const indexType = this.tsTypeChecker.getTypeAtLocation(accessExpr.argumentExpression);
+    const isStringIndex =
+      (indexType.flags & ts.TypeFlags.StringLike) !== 0 || (indexType.flags & ts.TypeFlags.StringLiteral) !== 0;
+
+    if (isStringIndex) {
+      return true;
+    }
+
+    const symbol = this.tsUtils.trueSymbolAtLocation(accessExpr.expression);
+    if (!symbol) {
+      return false;
+    }
+
+    const declarations = symbol.getDeclarations();
+    if (!declarations) {
+      return false;
+    }
+
+    for (const decl of declarations) {
+      if (!ts.isParameter(decl) && !ts.isVariableDeclaration(decl)) {
+        continue;
+      }
+
+      const typeNode = decl.type;
+      if (!typeNode || !ts.isTypeReferenceNode(typeNode)) {
+        continue;
+      }
+
+      if (ts.isIdentifier(typeNode.typeName) && typeNode.typeName.text === 'Record') {
+        return true;
+      }
+    }
+
+    return false;
   }
 }
