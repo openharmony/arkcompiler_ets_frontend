@@ -203,6 +203,26 @@
             "suggest": "",
             "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)",
             "severity": "ERROR"
+        },
+        {
+            "line": 287,
+            "column": 5,
+            "endLine": 287,
+            "endColumn": 42,
+            "problem": "ArrayTypeImmutable",
+            "suggest": "",
+            "rule": "Array type is immutable in ArkTS1.2 (arkts-array-type-immutable)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 294,
+            "column": 5,
+            "endLine": 294,
+            "endColumn": 42,
+            "problem": "ArrayTypeImmutable",
+            "suggest": "",
+            "rule": "Array type is immutable in ArkTS1.2 (arkts-array-type-immutable)",
+            "severity": "ERROR"
         }
     ]
 }

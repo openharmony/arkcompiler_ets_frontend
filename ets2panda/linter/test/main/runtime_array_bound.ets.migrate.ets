@@ -281,3 +281,17 @@ function test7(config: Record<string, object>, name: string) {
 function getValue(): string {
   return '';
 }
+
+const arr: Record<string, string> = {};
+let keys: string[] = Object.keys(arr);
+let values: string[] = Object.values(arr);
+for (let i: number = 0.0; i < keys.length; i++) {
+  values[i as int];
+}
+
+const arr: Map<string, string> = new Map<string, string>();
+let keys: string[] = Object.keys(arr);
+let values: string[] = Object.values(arr);
+for (let i: number = 0.0; i < keys.length; i++) {
+  values[i as int];
+}

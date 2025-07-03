@@ -10564,7 +10564,8 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (
       this.isInMaxLengthControlledLoop(accessExpr) ||
       TypeScriptLinter.hasDefaultValueProtection(accessExpr) ||
-      this.isInLengthCheckedBlock(accessExpr)
+      this.isInLengthCheckedBlock(accessExpr) ||
+      this.isInStandardLengthControlledLoop(accessExpr)
     ) {
       return true;
     }
@@ -11459,6 +11460,103 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
 
     return false;
+  }
+
+  private isInStandardLengthControlledLoop(accessExpr: ts.ElementAccessExpression): boolean {
+    const arrayAccessInfo = this.getArrayAccessInfo(accessExpr);
+    if (!arrayAccessInfo) {
+      return false;
+    }
+    let parent: ts.Node | undefined = accessExpr;
+    while (parent && !ts.isForStatement(parent)) {
+      parent = parent.parent;
+    }
+    if (!parent) {
+      return false
+    };
+
+    const forStmt = parent;
+
+    if (!forStmt.condition || !ts.isBinaryExpression(forStmt.condition)) {
+      return false;
+    }
+
+    const condition = forStmt.condition;
+    const isStandardLoop = (
+      (condition.operatorToken.kind === ts.SyntaxKind.LessThanToken ||
+        condition.operatorToken.kind === ts.SyntaxKind.LessThanEqualsToken) &&
+      ts.isPropertyAccessExpression(condition.right) &&
+      condition.right.name.text === LENGTH_IDENTIFIER
+    );
+
+    if (!isStandardLoop) {
+      return false;
+    }
+
+    return !this.hasDangerousArrayOperationsInForLoop(forStmt, arrayAccessInfo.arrayIdent.text);
+  }
+
+  private hasDangerousArrayOperationsInForLoop(forStmt: ts.ForStatement, arrayName: string): boolean {
+    if (this.checkArrayModifications(forStmt.statement, arrayName)) {
+      return true;
+    }
+
+    if (forStmt.initializer && ts.isVariableDeclarationList(forStmt.initializer)) {
+      const indexVar = forStmt.initializer.declarations[0]?.name.getText();
+      if (indexVar && this.checkIndexModifications(forStmt.statement, indexVar)) {
+        return true;
+      }
+    }
+
+    if (this.checkOutOfBoundAccess(forStmt.statement, arrayName)) {
+      return true;
+    }
+
+    return false;
+  }
+  private checkArrayModifications(node: ts.Node, arrayName: string): boolean {
+    let hasModification = false;
+    ts.forEachChild(node, child => {
+      if (TypeScriptLinter.isArrayModification(child, arrayName)) {
+        hasModification = true;
+      }
+      if (!hasModification) {
+        hasModification = this.checkArrayModifications(child, arrayName);
+      }
+    });
+    return hasModification;
+  }
+
+  private checkIndexModifications(node: ts.Node, indexVar: string): boolean {
+    let hasModification = false;
+    ts.forEachChild(node, child => {
+      if (ts.isBinaryExpression(child) &&
+        child.operatorToken.kind === ts.SyntaxKind.EqualsToken &&
+        ts.isIdentifier(child.left) &&
+        child.left.text === indexVar) {
+        hasModification = true;
+      }
+      if (!hasModification) {
+        hasModification = this.checkIndexModifications(child, indexVar);
+      }
+    });
+    return hasModification;
+  }
+
+  private checkOutOfBoundAccess(node: ts.Node, arrayName: string): boolean {
+    let hasOutOfBound = false;
+    ts.forEachChild(node, child => {
+      if (ts.isElementAccessExpression(child) &&
+        ts.isIdentifier(child.expression) &&
+        child.expression.text === arrayName &&
+        ts.isNumericLiteral(child.argumentExpression)) {
+        hasOutOfBound = true;
+      }
+      if (!hasOutOfBound) {
+        hasOutOfBound = this.checkOutOfBoundAccess(child, arrayName);
+      }
+    });
+    return hasOutOfBound;
   }
 
   private handleCallExpressionForRepeat(node: ts.CallExpression): void {
