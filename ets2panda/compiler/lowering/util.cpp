@@ -166,6 +166,7 @@ static bool IsGeneratedDynamicClass(ir::AstNode const *ast)
 static void ClearHelper(parser::Program *prog)
 {
     ResetGlobalClass(prog);
+    prog->ClearASTCheckedStatus();
     // #24256 Should be removed when code refactoring on checker is done and no ast node allocated in checker.
     auto &stmts = prog->Ast()->Statements();
     // clang-format off

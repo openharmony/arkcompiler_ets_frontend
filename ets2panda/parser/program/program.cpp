@@ -134,6 +134,11 @@ bool Program::GetFlag(ProgramFlags flag) const
     return (programFlags_ & flag) != 0U;
 }
 
+void Program::ClearASTCheckedStatus()
+{
+    programFlags_ &= ~ProgramFlags::AST_CHECKED;
+}
+
 void Program::SetASTChecked()
 {
     programFlags_ |= ProgramFlags::AST_CHECKED;
