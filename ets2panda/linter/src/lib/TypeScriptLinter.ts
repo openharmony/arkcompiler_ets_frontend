@@ -7329,7 +7329,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
 
-    if (this.shouldSkipIdentifier(identifier)) {
+    if (!this.isInterfaceImportNeeded(identifier)) {
       return;
     }
 
@@ -7341,49 +7341,51 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.interfacesNeedToAlarm.push(identifier);
   }
 
-  private shouldSkipIdentifier(identifier: ts.Identifier): boolean {
-    const name = identifier.getText();
-    if (!arkuiImportList.has(name)) {
-      return true;
-    }
-
-    if (skipImportDecoratorName.has(name)) {
-      return true;
-    }
-
-    const targetPropertyAccess = TypeScriptLinter.findTargetPropertyAccess(identifier.parent);
-    if (targetPropertyAccess) {
-      const expr = targetPropertyAccess.expression;
-      if (this.isDeclarationInSameFile(expr)) {
-        return true;
-      }
-    }
-
-    const parent = identifier.parent;
-    const wrappedSkipComponents = new Set<string>([CustomDecoratorName.AnimatableExtend, CustomDecoratorName.Extend]);
-    if (ts.isCallExpression(parent)) {
-      const expr = parent.expression;
-      if (wrappedSkipComponents.has(expr.getText()) && name !== CustomDecoratorName.AnimatableExtend) {
-        return true;
-      }
-    }
-
-    if (this.isDeclarationInSameFile(identifier)) {
-      return true;
-    }
-
-    return this.interfacesAlreadyImported.has(name);
+  private isInterfaceImportNeeded(identifier: ts.Identifier): boolean {
+    return (
+      arkuiImportList.has(identifier.getText()) &&
+      !skipImportDecoratorName.has(identifier.getText()) &&
+      !this.interfacesAlreadyImported.has(identifier.getText()) &&
+      !this.isParentAlreadyImported(identifier.parent) &&
+      !this.isDeclarationInSameFile(identifier) &&
+      !TypeScriptLinter.isWrappedByExtendDecorator(identifier)
+    );
   }
 
-  private static findTargetPropertyAccess(node: ts.Node): ts.PropertyAccessExpression | undefined {
-    while (ts.isPropertyAccessExpression(node)) {
-      const expr = node.expression;
-      if (!ts.isPropertyAccessExpression(expr)) {
-        return node;
+  private static isWrappedByExtendDecorator(node: ts.Identifier): boolean {
+    const wrappedSkipComponents = new Set<string>([CustomDecoratorName.AnimatableExtend, CustomDecoratorName.Extend]);
+    if (ts.isCallExpression(node.parent)) {
+      const expr = node.parent.expression;
+      if (wrappedSkipComponents.has(expr.getText()) && node.getText() !== CustomDecoratorName.AnimatableExtend) {
+        return true;
       }
-      node = expr;
     }
-    return undefined;
+    return false;
+  }
+
+  private isParentAlreadyImported(node: ts.Node): boolean {
+    let identifier: ts.Identifier | undefined;
+
+    while (
+      ts.isPropertyAccessExpression(node) ||
+      ts.isParenthesizedExpression(node) ||
+      ts.isCallExpression(node) ||
+      ts.isQualifiedName(node)
+    ) {
+      const nextNode = ts.isQualifiedName(node) ? node.left : node.expression;
+      if (!nextNode) {
+        break;
+      }
+
+      if (ts.isIdentifier(nextNode)) {
+        identifier = nextNode;
+        break;
+      }
+
+      node = nextNode;
+    }
+
+    return identifier !== undefined && this.isDeclarationInSameFile(identifier);
   }
 
   private isDeclarationInSameFile(node: ts.Node): boolean {
