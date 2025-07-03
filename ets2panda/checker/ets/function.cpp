@@ -1435,17 +1435,21 @@ SignatureInfo *ETSChecker::ComposeSignatureInfo(ir::TSTypeParameterDeclaration *
 
     if (!params.empty()) {
         if (auto param = params.back()->AsETSParameterExpression(); param->IsRestParameter()) {
-            if (param->TypeAnnotation() == nullptr) {  // #23134
-                ES2PANDA_ASSERT(IsAnyError());
+            checker::Type *restParamType = nullptr;
+            if (param->TypeAnnotation() != nullptr) {
+                restParamType = param->RestParameter()->TypeAnnotation()->GetType(this);
+            } else if (param->Ident()->TsType() != nullptr) {
+                restParamType = param->Ident()->TsType();
+            } else {
+                ES2PANDA_ASSERT(IsAnyError());  // #23134
                 return nullptr;
             }
-            auto restParamType = param->RestParameter()->TypeAnnotation()->GetType(this);
             if (!restParamType->IsETSTupleType() && !restParamType->IsETSArrayType() &&
                 !restParamType->IsETSResizableArrayType()) {
                 LogError(diagnostic::ONLY_ARRAY_OR_TUPLE_FOR_REST, {}, param->Start());
                 return nullptr;
             }
-            signatureInfo->restVar = SetupSignatureParameter(param, param->TypeAnnotation()->GetType(this));
+            signatureInfo->restVar = SetupSignatureParameter(param, restParamType);
             ES2PANDA_ASSERT(signatureInfo->restVar != nullptr);
         }
     }
