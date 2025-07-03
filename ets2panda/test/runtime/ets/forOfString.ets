@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 - 2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,23 +13,13 @@
  * limitations under the License.
  */
 
-let a: FixedArray<int> = [1, 2, 3];
+function main() {
+    let str = '\ud801\udc28\ud801\udc28';
+    let expected = '𐐨';
 
-function forins(): string {
-  for (let i: string of "abcdef") {
-      return i;
-  }
-  return '*';
+    // for-of string type should call string's iterator in std library
+    for(const s of str) {
+        arktest.assertTrue(s instanceof string);
+        arktest.assertEQ(s, expected);
+    }
 }
-
-function main(): void {
-  let res = 0;
-  for (let v: double of a) {
-    res += v;
-  }
-  /* @@ label */for (let v: float of [4.1, 5.4, 6.0]) {
-    res += v;
-  }
-}
-
-/* @@@ label Error TypeError: Source element type 'Double' is not assignable to the loop iterator type 'Float'.  */
