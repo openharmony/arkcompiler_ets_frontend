@@ -15,22 +15,17 @@
 
 #ifndef ES2PANDA_LSP_CHANGE_TRACKER_H
 #define ES2PANDA_LSP_CHANGE_TRACKER_H
-#include <cstddef>
-#include <iostream>
-#include <string>
-#include <utility>
-#include <vector>
 #include "es2panda.h"
-#include "public/public.h"
-#include <ir/typeNode.h>
-#include "lsp/include/api.h"
 #include "ir/astNode.h"
-#include "lsp/include/user_preferences.h"
-#include "lsp/include/formatting/formatting_context.h"
+#include "lsp/include/api.h"
 #include "lsp/include/formatting/formatting.h"
+#include "lsp/include/formatting/formatting_context.h"
 #include "lsp/include/internal_api.h"
-#include "util.h"
+#include "lsp/include/user_preferences.h"
 #include "public/es2panda_lib.h"
+#include "public/public.h"
+#include <cstddef>
+#include <ir/typeNode.h>
 
 namespace ark::es2panda::lsp {
 
@@ -152,8 +147,7 @@ private:
     InsertNodeOptions GetInsertNodeAfterOptionsWorker(const ir::AstNode *node);
     void InsertNodeInListAfterMultiLine(bool multilineList, es2panda_Context *context, const SourceFile *sourceFile,
                                         size_t end, const ir::AstNode *newNode);
-    std::vector<FileTextChanges> GetTextChangesFromChanges(std::vector<Change> &changes, std::string &newLineCharacter,
-                                                           const FormatCodeSettings &formatCodeSettings);
+    std::vector<FileTextChanges> GetTextChangesFromChanges(std::vector<Change> &changes);
     std::vector<DeletedNode> deletedNodes_;
     std::vector<Change> changes_;
     std::vector<NewFile> newFiles_;
@@ -187,8 +181,6 @@ public:
     void Delete(const SourceFile *sourceFile,
                 std::variant<const ir::AstNode *, const std::vector<const ir::AstNode *>> &node);
     TextRange GetAdjustedRange(es2panda_Context *context, ir::AstNode *startNode, ir::AstNode *endNode);
-
-    void FinishDeleteDeclarations();
     void DeleteNode(es2panda_Context *context, const SourceFile *sourceFile, ir::AstNode *node);
 
     void DeleteNodeRange(es2panda_Context *context, ir::AstNode *startNode, ir::AstNode *endNode);
