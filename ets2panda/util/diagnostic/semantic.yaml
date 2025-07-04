@@ -1346,3 +1346,147 @@ semantic:
 - name: READONLY_PROPERTY_REASSIGN
   id: 338
   message: "The 'Readonly' property cannot be reassigned."
+
+- name: ILLEGAL_NON_NULLISH_TYPE
+  id: 339
+  message: "Only type parameters can be used as a nonnullish type"
+
+- name: ERROR_ARKTS_NO_LITERAL_INITIALIZATION_WITHOUT_PARAMETERLESS_CONSTRUCTOR
+  id: 340
+  message: "Initialization with literals is not supported if the type has no parameterless constructor. Declare the parameterless constructor explicitly or remove parametered constructors!"
+
+- name: ERROR_ARKTS_NO_DECLARATION_MERGING
+  id: 341
+  message: "Merging declarations is not supported, please keep all definitions of classes, interfaces and enums compact in the codebase!"
+
+- name: ERROR_ARKTS_NO_ENUM_MIXED_TYPES
+  id: 342
+  message: "Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type."
+
+- name: ERROR_ARKTS_NO_PROPERTIES_BY_INDEX
+  id: 343
+  message: "Indexed signatures are not allowed. Use arrays instead!"
+
+- name: TYPE_NOT_FOUND
+  id: 345
+  message: "Cannot find type '{}'."
+
+- name: INTERFACE_REDECLARED
+  id: 346
+  message: "Interface redeclaration is not allowed"
+
+- name: OVERLOADED_MAIN
+  id: 347
+  message: "Main overload is not enabled"
+
+- name: MULTIPLE_DEFAULT_EXPORTS
+  id: 348
+  message: "Only one default export is allowed in a module"
+
+- name: REDEFINITION
+  id: 349
+  message: "{} '{}' is already defined."
+
+- name: REDEFINITION_DIFF_TYPE
+  id: 350
+  message: "{} '{}' is already defined with different type."
+
+- name: VARIABLE_REDECLARED
+  id: 351
+  message: "Variable '{}' has already been declared."
+
+- name: DEFAULT_DYNAMIC_IMPORT
+  id: 352
+  message: "Default import is currently not implemented in dynamic import"
+
+- name: DEFAULT_EXPORT_DIRECT_IMPORTED
+  id: 353
+  message: "Use the default import syntax to import a default exported element"
+
+- name: IMPORTING_NONEXPORTED_TYPE
+  id: 354
+  message: "Cannot import '{}', imported type imports only exported types."
+
+- name: IMPORTED_NOT_EXPORTED
+  id: 355
+  message: "Imported element not exported '{}'"
+
+- name: IMPORT_NOT_FOUND
+  id: 356
+  message: "Cannot find imported element '{}'"
+
+- name: IMPORT_RENAMES_ANNOTATION
+  id: 357
+  message: "Can not rename annotation '{}' in export or import statements."
+
+- name: DEFAULT_IMPORT_NOT_FOUND
+  id: 358
+  message: "Cannot find default imported element in the target"
+
+- name: MODULE_INDEX_MISSING
+  id: 359
+  message: "Cannot find index.[ets|ts] or package module in folder: {}"
+
+- name: IMPORT_NOT_FOUND_2
+  id: 360
+  message: "Cannot find import: {}"
+
+- name: EXPORT_INCORRECT
+  id: 361
+  message: "Incorrect export '{}'"
+
+- name: AMBIGUOUS_EXPORT
+  id: 362
+  message: "Ambiguous export '{}'"
+
+- name: CONST_WITHOUT_INIT
+  id: 363
+  message: "Missing initializer in const declaration"
+
+- name: UNEXPECTED_STRUCT
+  id: 364
+  message: "Structs are only used to define UI components, it should be translated at 'plugin after parser' phase."
+
+- name: TEMPORAL_DEADZONE
+  id: 365
+  message: "Variable '{}' is accessed before it's initialization."
+
+- name: INVALID_CAPTURE
+  id: 366
+  message: "Cannot capture variable '{}'."
+
+- name: INVALID_EXPORT
+  id: 367
+  message: "Invalid exported binding"
+
+- name: NOT_IMPLEMENTED
+  id: 368
+  message: "not implemented"
+
+- name: ID_REDECLARED
+  id: 369
+  message: "Identifier '{}' has already been declared."
+
+- name: MERGED_DECLS
+  id: 370
+  message: "Merging declarations is not supported, please keep all definitions of classes, interfaces and enums compact in the codebase!"
+
+- name: LATE_INITIALIZATION_FIELD_HAS_INVALID_TYPE
+  id: 371
+  message: "Late-initialized field cannot be nullish types or possibly nullish types."
+
+- name: SUPER_NOT_ACCESSIBLE
+  id: 372
+  message: "Class field '{}' defined by the parent class is not accessible in the child class via super."
+
+- name: CYCLIC_TYPE_OF
+  id: 379
+  message: "Circular type of reference"
+
+- name: CYCLIC_CLASS_SUPER_TYPE
+  id: 380
+  message: "Class's super type is itself"
+
+- name: CYCLIC_CALLEE
+  id: 381
+  message: "Circular call function"

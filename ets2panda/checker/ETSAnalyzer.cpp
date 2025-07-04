@@ -1439,6 +1439,11 @@ checker::Type *ETSAnalyzer::Check(ir::CallExpression *expr) const
 
     CheckCallee(checker, expr);
 
+    checker::TypeStackElement tse(checker, expr, {{diagnostic::CYCLIC_CALLEE, {}}}, expr->Start());
+    if (tse.HasTypeError()) {
+        return checker->GlobalTypeError();
+    }
+
     checker::Type *const returnType = GetCallExpressionReturnType(expr, calleeType);
     expr->SetTsType(returnType);
     if (returnType->IsTypeError()) {

@@ -93,6 +93,29 @@ checker::VerifiedType ETSTypeReferencePart::Check(checker::ETSChecker *checker)
     return {this, checker->GetAnalyzer()->Check(this)};
 }
 
+[[maybe_unused]] static bool CheckTypeAliaLoop(ETSTypeReferencePart *ref, varbinder::Variable *variable)
+{
+    auto typeAliasDecl = variable->Declaration()->Node()->AsTSTypeAliasDeclaration();
+    auto typeDeclaration = typeAliasDecl->TypeParams();
+    if (typeDeclaration == nullptr) {
+        return false;
+    }
+
+    for (auto *param : typeDeclaration->Params()) {
+        auto constraint = param->Constraint();
+        if (constraint == nullptr || !constraint->IsETSTypeReference()) {
+            continue;
+        }
+
+        auto part = constraint->AsETSTypeReference()->Part();
+        if (part == ref) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 checker::Type *ETSTypeReferencePart::HandleInternalTypes(checker::ETSChecker *const checker)
 {
     ES2PANDA_ASSERT(name_->IsIdentifier() || name_->IsTSQualifiedName());
@@ -112,6 +135,10 @@ checker::Type *ETSTypeReferencePart::HandleInternalTypes(checker::ETSChecker *co
     }
 
     if (variable != nullptr && variable->Declaration()->IsTypeAliasDecl()) {
+        if (CheckTypeAliaLoop(this, variable)) {
+            checker->LogError(diagnostic::CYCLIC_ALIAS, {}, Start());
+            return checker->GlobalTypeError();
+        }
         return checker->HandleTypeAlias(name_, typeParams_,
                                         variable->Declaration()->AsTypeAliasDecl()->Node()->AsTSTypeAliasDeclaration());
     }
