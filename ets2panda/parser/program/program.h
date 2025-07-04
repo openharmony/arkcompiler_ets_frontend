@@ -287,6 +287,7 @@ public:
     void SetFlag(ProgramFlags flag);
     bool GetFlag(ProgramFlags flag) const;
     void SetASTChecked();
+    void ClearASTCheckedStatus();
     bool IsASTChecked();
 
     bool IsStdLib() const
