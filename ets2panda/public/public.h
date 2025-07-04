@@ -52,7 +52,7 @@ struct ConfigImpl {
 };
 
 using ExternalSources = std::unordered_map<util::StringView, ArenaVector<parser::Program *>>;
-
+using ExternalSource = ArenaUnorderedMap<util::StringView, ArenaVector<parser::Program *>>;
 using ComputedAbstracts =
     ArenaUnorderedMap<checker::ETSObjectType *,
                       std::pair<ArenaVector<checker::ETSFunctionType *>, ArenaUnorderedSet<checker::ETSObjectType *>>>;
@@ -160,6 +160,36 @@ struct Context {
         return util::NodeAllocator::ForceSetParent<T>(Allocator(), std::forward<Args>(args)...);
     }
 
+    void MarkGenAbcForExternal(std::unordered_set<std::string> &genAbcList, public_lib::ExternalSource &extSources)
+    {
+        size_t genCount = 0;
+        std::unordered_set<std::string> genAbcListAbsolute;
+
+        for (auto &path : genAbcList) {
+            genAbcListAbsolute.insert(os::GetAbsolutePath(path));
+        }
+        for (auto &[_, extPrograms] : extSources) {
+            (void)_;
+            bool setFlag = false;
+            for (auto *prog : extPrograms) {
+                if (auto it = genAbcListAbsolute.find(prog->AbsoluteName().Mutf8()); it != genAbcListAbsolute.end()) {
+                    ++genCount;
+                    setFlag = true;
+                }
+            }
+            if (!setFlag) {
+                continue;
+            }
+            for (auto *prog : extPrograms) {
+                prog->SetGenAbcForExternalSources();
+            }
+        }
+
+        if (genCount != genAbcListAbsolute.size()) {
+            diagnosticEngine->LogFatalError(diagnostic::SIMULTANEOUSLY_MARK_FAILED.Message());
+        }
+    }
+
     ConfigImpl *config = nullptr;
     std::string sourceFileName;
     std::string input;
@@ -188,6 +218,8 @@ struct Context {
     CompilingState compilingState {CompilingState::NONE_COMPILING};
     ExternalSources externalSources;
     TransitionMemory *transitionMemory {nullptr};
+    std::vector<std::string> sourceFileNames;
+    std::map<util::StringView, parser::Program *> dupPrograms {};
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
 }  // namespace ark::es2panda::public_lib

@@ -14,6 +14,7 @@
  */
 
 #include "phase.h"
+
 #include "checker/checker.h"
 #include "compiler/lowering/checkerPhase.h"
 #include "compiler/lowering/ets/asyncMethodLowering.h"
@@ -307,62 +308,81 @@ bool PhaseForDeclarations::Postcondition(public_lib::Context *ctx, const parser:
     return PostconditionForModule(ctx, program);
 }
 
+// CC-OFFNXT(huge_method, huge_depth) solid logic
 bool PhaseForBodies::Precondition(public_lib::Context *ctx, const parser::Program *program)
 {
-    auto checkExternalPrograms = [this, ctx](const ArenaVector<parser::Program *> &programs) {
-        for (auto *p : programs) {
-            if (!Precondition(ctx, p)) {
-                return false;
+    auto cMode = ctx->config->options->GetCompilationMode();
+
+    auto iterateExternal = [&cMode, this](public_lib::Context *context, const parser::Program *localProgram) {
+        for (auto &[_, extPrograms] : localProgram->ExternalSources()) {
+            (void)_;
+            for (auto *prog : extPrograms) {
+                if (!prog->IsGenAbcForExternal() && cMode == CompilationMode::GEN_ABC_FOR_EXTERNAL_SOURCE) {
+                    continue;
+                }
+
+                if (!Precondition(context, prog)) {
+                    return false;
+                }
             }
         }
         return true;
     };
-
-    if (ctx->config->options->GetCompilationMode() == CompilationMode::GEN_STD_LIB) {
-        for (auto &[_, extPrograms] : program->ExternalSources()) {
-            (void)_;
-            if (!checkExternalPrograms(extPrograms)) {
-                return false;
-            };
+    if (cMode == CompilationMode::GEN_STD_LIB || cMode == CompilationMode::GEN_ABC_FOR_EXTERNAL_SOURCE) {
+        if (!iterateExternal(ctx, program)) {
+            return false;
         }
     }
 
     return PreconditionForModule(ctx, program);
 }
 
+// CC-OFFNXT(huge_method, huge_depth) solid logic
 bool PhaseForBodies::Perform(public_lib::Context *ctx, parser::Program *program)
 {
     bool result = true;
-    if (ctx->config->options->GetCompilationMode() == CompilationMode::GEN_STD_LIB) {
-        for (auto &[_, extPrograms] : program->ExternalSources()) {
+    auto cMode = ctx->config->options->GetCompilationMode();
+    auto iterateExternal = [&result, &cMode, this](public_lib::Context *context, parser::Program *localProgram) {
+        for (auto &[_, extPrograms] : localProgram->ExternalSources()) {
             (void)_;
             for (auto *extProg : extPrograms) {
-                result &= Perform(ctx, extProg);
+                if (!extProg->IsGenAbcForExternal() && cMode == CompilationMode::GEN_ABC_FOR_EXTERNAL_SOURCE) {
+                    continue;
+                }
+                result &= Perform(context, extProg);
             }
         }
+    };
+    if (cMode == CompilationMode::GEN_STD_LIB || cMode == CompilationMode::GEN_ABC_FOR_EXTERNAL_SOURCE) {
+        iterateExternal(ctx, program);
     }
 
     result &= PerformForModule(ctx, program);
     return result;
 }
 
+// CC-OFFNXT(huge_method, huge_depth) solid logic
 bool PhaseForBodies::Postcondition(public_lib::Context *ctx, const parser::Program *program)
 {
-    auto checkExternalPrograms = [this, ctx](const ArenaVector<parser::Program *> &programs) {
-        for (auto *p : programs) {
-            if (!Postcondition(ctx, p)) {
-                return false;
+    auto cMode = ctx->config->options->GetCompilationMode();
+    auto iterateExternal = [&cMode, this](public_lib::Context *context, const parser::Program *localProgram) {
+        for (auto &[_, extPrograms] : localProgram->ExternalSources()) {
+            (void)_;
+            for (auto *prog : extPrograms) {
+                if (!prog->IsGenAbcForExternal() && cMode == CompilationMode::GEN_ABC_FOR_EXTERNAL_SOURCE) {
+                    continue;
+                }
+
+                if (!Postcondition(context, prog)) {
+                    return false;
+                }
             }
         }
         return true;
     };
-
-    if (ctx->config->options->GetCompilationMode() == CompilationMode::GEN_STD_LIB) {
-        for (auto &[_, extPrograms] : program->ExternalSources()) {
-            (void)_;
-            if (!checkExternalPrograms(extPrograms)) {
-                return false;
-            };
+    if (cMode == CompilationMode::GEN_STD_LIB || cMode == CompilationMode::GEN_ABC_FOR_EXTERNAL_SOURCE) {
+        if (!iterateExternal(ctx, program)) {
+            return false;
         }
     }
 

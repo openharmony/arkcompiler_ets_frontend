@@ -388,6 +388,11 @@ void ETSBinder::BuildInterfaceDeclaration(ir::TSInterfaceDeclaration *decl)
 
 void ETSBinder::BuildMethodDefinition(ir::MethodDefinition *methodDef)
 {
+    if (methodDef->BaseOverloadMethod() != nullptr &&
+        methodDef->GetTopStatement()->AsETSModule()->Program() != Program() &&
+        methodDef->BaseOverloadMethod()->GetTopStatement() != methodDef->GetTopStatement()) {
+        return;
+    }
     if (methodDef->Function()->TypeParams() != nullptr) {
         auto scopeCtx = LexicalScope<LocalScope>::Enter(this, methodDef->Function()->TypeParams()->Scope());
         ResolveReferences(methodDef->Function()->TypeParams());
@@ -785,11 +790,96 @@ static bool IsExportedVariable(varbinder::Variable *const var)
            (var->Declaration()->Node()->IsExported() || var->Declaration()->Node()->IsDefaultExported());
 }
 
-ir::ETSImportDeclaration *ETSBinder::FindImportDeclInReExports(const ir::ETSImportDeclaration *const import,
-                                                               const util::StringView &imported,
-                                                               const ir::StringLiteral *const importPath)
+std::pair<ir::ETSImportDeclaration *, ir::AstNode *> ETSBinder::FindImportDeclInExports(
+    const ir::ETSImportDeclaration *const import, const util::StringView &imported,
+    const ir::StringLiteral *const importPath)
 {
     ir::ETSImportDeclaration *implDecl = nullptr;
+    ir::AstNode *specifier = nullptr;
+    std::tie(implDecl, specifier) = FindImportDeclInReExports(import, imported, importPath);
+    if (implDecl != nullptr) {
+        return std::make_pair(implDecl, specifier);
+    }
+    std::tie(implDecl, specifier) = FindImportDeclInNamedExports(import, imported, importPath);
+    return std::make_pair(implDecl, specifier);
+}
+
+static std::pair<ir::ETSImportDeclaration *, ir::AstNode *> FindImportDeclInProgram(parser::Program *program,
+                                                                                    const util::StringView &imported)
+{
+    for (auto stmt : program->Ast()->AsETSModule()->Statements()) {
+        if (!stmt->IsETSImportDeclaration()) {
+            continue;
+        }
+        for (auto specifier : stmt->AsETSImportDeclaration()->Specifiers()) {
+            if (specifier->IsImportSpecifier() && specifier->AsImportSpecifier()->Local()->Name() == imported) {
+                return std::make_pair(stmt->AsETSImportDeclaration(), specifier);
+            }
+            if (specifier->IsImportDefaultSpecifier() &&
+                specifier->AsImportDefaultSpecifier()->Local()->Name() == imported) {
+                return std::make_pair(stmt->AsETSImportDeclaration(), specifier);
+            }
+        }
+    }
+    return std::make_pair(nullptr, nullptr);
+}
+
+std::pair<ir::ETSImportDeclaration *, ir::AstNode *> ETSBinder::FindImportDeclInNamedExports(
+    const ir::ETSImportDeclaration *const import, [[maybe_unused]] const util::StringView &imported,
+    const ir::StringLiteral *const importPath)
+{
+    auto importMapIter = selectiveExportAliasMultimap_.find(import->ImportMetadata().resolvedSource);
+    if (importMapIter == selectiveExportAliasMultimap_.end()) {
+        return std::make_pair(nullptr, nullptr);
+    }
+    auto pairIter = importMapIter->second.find(imported);
+    if (pairIter == importMapIter->second.end()) {
+        return std::make_pair(nullptr, nullptr);
+    }
+    auto [localName, declNode] = pairIter->second;
+    const auto records = GetExternalProgram(import->ImportMetadata().resolvedSource, importPath);
+    if (records.empty()) {
+        return std::make_pair(nullptr, nullptr);
+    }
+    auto currProgram = records[0];
+    if (currProgram == nullptr) {
+        return std::make_pair(nullptr, nullptr);
+    }
+    auto [newImportDecl, specfier] = FindImportDeclInProgram(currProgram, localName);
+    if (newImportDecl == nullptr) {
+        return std::make_pair(nullptr, nullptr);
+    }
+    return std::make_pair(newImportDecl->AsETSImportDeclaration(), specfier);
+}
+
+static ir::AstNode *GetSpecifier(const util::StringView &importedLocal, ir::ETSImportDeclaration *decl)
+{
+    for (auto localSpecfier : decl->Specifiers()) {
+        util::StringView name;
+        if (localSpecfier->IsImportSpecifier()) {
+            name = localSpecfier->AsImportSpecifier()->Local()->Name();
+        } else if (localSpecfier->IsImportNamespaceSpecifier()) {
+            name = localSpecfier->AsImportNamespaceSpecifier()->Local()->Name();
+        } else {
+            name = localSpecfier->AsImportDefaultSpecifier()->Local()->Name();
+        }
+        if (name == importedLocal) {
+            return localSpecfier;
+        }
+    }
+    if (decl->Specifiers().size() == 1 && decl->Specifiers()[0]->IsImportNamespaceSpecifier()) {
+        return decl->Specifiers()[0];
+    }
+    ES2PANDA_UNREACHABLE();
+};
+
+std::pair<ir::ETSImportDeclaration *, ir::AstNode *> ETSBinder::FindImportDeclInReExports(
+    const ir::ETSImportDeclaration *const import, const util::StringView &imported,
+    const ir::StringLiteral *const importPath)
+{
+    ir::ETSImportDeclaration *implDecl = nullptr;
+    ir::AstNode *specifier = nullptr;
+
     for (auto item : ReExportImports()) {
         if (!ReexportPathMatchesImportPath(item, import)) {
             continue;
@@ -803,6 +893,7 @@ ir::ETSImportDeclaration *ETSBinder::FindImportDeclInReExports(const ir::ETSImpo
                 continue;
             }
             implDecl = item->GetETSImportDeclarations();
+            specifier = GetSpecifier(imported, implDecl);
         } else {
             const auto records = GetExternalProgram(item->GetETSImportDeclarations()->ResolvedSource(), importPath);
             if (records.empty()) {
@@ -812,17 +903,20 @@ ir::ETSImportDeclaration *ETSBinder::FindImportDeclInReExports(const ir::ETSImpo
                 FindImportSpecifiersVariable(imported, records[0]->GlobalScope()->Bindings(), Span {records});
             if (IsExportedVariable(var)) {
                 implDecl = item->GetETSImportDeclarations();
+                specifier = GetSpecifier(imported, implDecl);
                 continue;
             }
             auto reExportImport = item->GetETSImportDeclarations();
             auto reExportImportPath = reExportImport->Source();
-            auto implDeclOrNullptr = FindImportDeclInReExports(reExportImport, imported, reExportImportPath);
+            auto [implDeclOrNullptr, localSpecifier] =
+                FindImportDeclInExports(reExportImport, imported, reExportImportPath);
             if (implDeclOrNullptr != nullptr) {
                 implDecl = implDeclOrNullptr;
+                specifier = GetSpecifier(imported, implDecl);
             }
         }
     }
-    return implDecl;
+    return std::make_pair(implDecl, specifier);
 }
 
 void ETSBinder::ValidateImportVariable(const ir::AstNode *node, const util::StringView &imported,
@@ -856,6 +950,46 @@ bool ETSBinder::DetectNameConflict(const util::StringView localName, Variable *c
     return true;
 }
 
+Variable *ETSBinder::AddImportSpecifierFromReExport(ir::AstNode *importSpecifier,
+                                                    const ir::ETSImportDeclaration *const import,
+                                                    const util::StringView &imported,
+                                                    const ir::StringLiteral *const importPath)
+{
+    auto [implDecl, localSpecifier] = FindImportDeclInExports(import, imported, importPath);
+    Variable *localVar = nullptr;
+    auto insertBinding = [this, importSpecifier, import](Variable *var) {
+        if (importSpecifier->IsImportSpecifier()) {
+            this->InsertOrAssignForeignBinding(importSpecifier, import,
+                                               importSpecifier->AsImportSpecifier()->Local()->Name(), var);
+            importSpecifier->AsImportSpecifier()->Local()->SetVariable(var);
+            importSpecifier->AsImportSpecifier()->Imported()->SetVariable(var);
+        } else if (importSpecifier->IsImportDefaultSpecifier()) {
+            this->InsertOrAssignForeignBinding(importSpecifier, import,
+                                               importSpecifier->AsImportDefaultSpecifier()->Local()->Name(), var);
+            importSpecifier->AsImportDefaultSpecifier()->Local()->SetVariable(var);
+        }
+    };
+    if (implDecl != nullptr) {
+        if (localSpecifier->IsImportSpecifier() || localSpecifier->IsImportDefaultSpecifier()) {
+            AddSpecifiersToTopBindings(localSpecifier, implDecl);
+            if (localSpecifier->IsImportSpecifier()) {
+                localVar = localSpecifier->AsImportSpecifier()->Imported()->Variable();
+                insertBinding(localVar);
+            } else if (localSpecifier->IsImportDefaultSpecifier()) {
+                localVar = localSpecifier->AsImportDefaultSpecifier()->Local()->Variable();
+                insertBinding(localVar);
+            }
+        } else {
+            AddSpecifiersToTopBindings(importSpecifier, implDecl);
+        }
+
+        return localVar;
+    }
+
+    ThrowError(importPath->Start(), diagnostic::IMPORT_NOT_FOUND, {imported});
+    return nullptr;
+}
+
 // CC-OFFNXT(huge_method, G.FUN.01-CPP) solid logic
 bool ETSBinder::AddImportSpecifiersToTopBindings(Span<parser::Program *const> records,
                                                  ir::ImportSpecifier *const importSpecifier,
@@ -882,18 +1016,14 @@ bool ETSBinder::AddImportSpecifiersToTopBindings(Span<parser::Program *const> re
         nameToSearchFor = imported;
     }
 
-    auto *const var = FindImportSpecifiersVariable(nameToSearchFor, globalBindings, records);
+    auto *var = FindImportSpecifiersVariable(nameToSearchFor, globalBindings, records);
     importSpecifier->Imported()->SetVariable(var);
     importSpecifier->Local()->SetVariable(var);
 
     if (var == nullptr) {
-        ir::ETSImportDeclaration *implDecl = FindImportDeclInReExports(import, imported, importPath);
-        if (implDecl != nullptr) {
-            AddSpecifiersToTopBindings(importSpecifier, implDecl);
-            return true;
-        }
-
-        ThrowError(importPath->Start(), diagnostic::IMPORT_NOT_FOUND, {imported});
+        var = AddImportSpecifierFromReExport(importSpecifier, import, imported, importPath);
+    }
+    if (var == nullptr) {
         return false;
     }
 
@@ -938,9 +1068,15 @@ void ETSBinder::AddImportDefaultSpecifiersToTopBindings(Span<parser::Program *co
     if (selectMap2 != selectMap.end()) {
         auto item1 = std::find_if(selectMap2->second.begin(), selectMap2->second.end(), isDefaultExpored);
         if (item1 != selectMap2->second.end()) {
-            auto item2 = FindImportSpecifiersVariable(item1->first, globalBindings, records);
-            importDefaultSpecifier->Local()->SetVariable(item2);
-            InsertForeignBinding(importDefaultSpecifier, import, importDefaultSpecifier->Local()->Name(), item2);
+            auto var = FindImportSpecifiersVariable(item1->first, globalBindings, records);
+            if (var == nullptr) {
+                var = AddImportSpecifierFromReExport(importDefaultSpecifier, import, item1->first, import->Source());
+            }
+            if (var == nullptr) {
+                return;
+            }
+            importDefaultSpecifier->Local()->SetVariable(var);
+            InsertOrAssignForeignBinding(importDefaultSpecifier, import, importDefaultSpecifier->Local()->Name(), var);
             return;
         }
     }
@@ -1192,12 +1328,21 @@ void ETSBinder::InitImplicitThisParam()
 
 void ETSBinder::BuildProgram()
 {
+    // A tmp solution caused by #23877, needs to check stdlib first to avoid a bug in std/math/math.ets
+    // After the bug fixed, we can merge these 2 loop.
+    static const std::string STD_SUFFIX = "std.";
+    for (auto &[_, extPrograms] : Program()->ExternalSources()) {
+        if (_.Utf8().substr(0, STD_SUFFIX.length()) == STD_SUFFIX) {
+            for (auto *extProg : extPrograms) {
+                BuildExternalProgram(extProg);
+            }
+        }
+    }
     for (auto &[_, extPrograms] : Program()->ExternalSources()) {
         (void)_;
-        for (auto *extProg : extPrograms) {
-            if (!extProg->GetFlag(parser::ProgramFlags::AST_IDENTIFIER_ANALYZED)) {
+        if (_.Utf8().substr(0, STD_SUFFIX.length()) != STD_SUFFIX) {
+            for (auto *extProg : extPrograms) {
                 BuildExternalProgram(extProg);
-                extProg->SetFlag(parser::ProgramFlags::AST_IDENTIFIER_ANALYZED);
             }
         }
     }
@@ -1232,7 +1377,9 @@ void ETSBinder::BuildExternalProgram(parser::Program *extProgram)
     auto *savedRecordTable = recordTable_;
     auto *savedTopScope = TopScope();
 
-    auto flags = Program()->VarBinder()->IsGenStdLib() ? RecordTableFlags::NONE : RecordTableFlags::EXTERNAL;
+    auto flags = Program()->VarBinder()->IsGenStdLib() || (extProgram->IsGenAbcForExternal())
+                     ? RecordTableFlags::NONE
+                     : RecordTableFlags::EXTERNAL;
     auto *extRecordTable = Allocator()->New<RecordTable>(Allocator(), extProgram, flags);
     externalRecordTable_.insert({extProgram, extRecordTable});
 
@@ -1301,7 +1448,7 @@ Variable *ETSBinder::ValidateImportSpecifier(const ir::ImportSpecifier *const sp
     }
 
     // Failed to find variable, go through reexports
-    const ir::ETSImportDeclaration *const implDecl = FindImportDeclInReExports(import, imported, import->Source());
+    auto [implDecl, localSpecifier] = FindImportDeclInExports(import, imported, import->Source());
     if (implDecl != nullptr) {
         return ValidateImportSpecifier(specifier, implDecl);
     }
@@ -1427,24 +1574,28 @@ const DynamicImportData *ETSBinder::DynamicImportDataForVar(const Variable *var)
     return &it->second;
 }
 
-ArenaVector<parser::Program *> ETSBinder::GetProgramList(const util::StringView &path) const noexcept
+ArenaVector<parser::Program *> ETSBinder::GetProgramList(const util::StringView &oldPath) const noexcept
 {
     auto const *globalProgram = globalRecordTable_.Program();
+    util::StringView newPath = oldPath;
+    if (auto it = GetContext()->dupPrograms.find(oldPath); it != GetContext()->dupPrograms.end()) {
+        newPath = it->second->AbsoluteName();
+    }
 
     for (const auto &extRecords : globalProgram->ExternalSources()) {
         for (const auto &program : extRecords.second) {
-            if (program->AbsoluteName() == path) {
+            if (program->AbsoluteName() == newPath) {
                 return extRecords.second;
             }
 
             // in case of importing a package folder, the path could not be resolved to a specific file
-            if (program->IsPackage() && program->SourceFileFolder() == path) {
+            if (program->IsPackage() && program->SourceFileFolder() == newPath) {
                 return extRecords.second;
             }
         }
     }
 
-    if (globalProgram->IsPackage() && path.Compare(globalProgram->SourceFileFolder()) == 0) {
+    if (globalProgram->IsPackage() && newPath.Compare(globalProgram->SourceFileFolder()) == 0) {
         return ArenaVector<parser::Program *>({GetContext()->parserProgram}, Allocator()->Adapter());
     }
 

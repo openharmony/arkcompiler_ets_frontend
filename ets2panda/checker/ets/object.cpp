@@ -440,6 +440,13 @@ Type *ETSChecker::BuildBasicInterfaceProperties(ir::TSInterfaceDeclaration *inte
         interfaceType = var->TsType()->AsETSObjectType();
     }
 
+    // Save before we mess with savedContext.
+    bool builtinsInitialized = HasStatus(CheckerStatus::BUILTINS_INITIALIZED);
+
+    auto *enclosingClass = Context().ContainingClass();
+    interfaceType->SetEnclosingType(enclosingClass);
+    CheckerStatus newStatus = CheckerStatus::IN_INTERFACE;
+    auto savedContext = checker::SavedCheckerContext(this, newStatus, interfaceType);
     ConstraintCheckScope ctScope(this);
     if (interfaceDecl->TypeParams() != nullptr) {
         interfaceType->AddTypeFlag(TypeFlag::GENERIC);
@@ -453,7 +460,7 @@ Type *ETSChecker::BuildBasicInterfaceProperties(ir::TSInterfaceDeclaration *inte
     // Skip this check if the builtins are not initialized.
     // They will be initialized in different order,
     // and it is possible that the FunctionType interface is not yet created.
-    if (HasStatus(CheckerStatus::BUILTINS_INITIALIZED)) {
+    if (builtinsInitialized) {
         CheckInterfaceFunctions(interfaceType);
     }
 
@@ -1873,7 +1880,11 @@ varbinder::Variable *ETSChecker::GetExtensionFuncVarInGlobalFunction(const ir::M
 {
     auto propertyName = memberExpr->Property()->AsIdentifier()->Name();
     auto *globalFunctionVar = Scope()->FindInGlobal(propertyName, VO::STATIC_METHODS).variable;
-    if (globalFunctionVar == nullptr || !IsExtensionETSFunctionType(globalFunctionVar->TsType())) {
+    if (globalFunctionVar == nullptr) {
+        return nullptr;
+    }
+
+    if (!IsExtensionETSFunctionType(GetTypeOfVariable(globalFunctionVar))) {
         return nullptr;
     }
 
