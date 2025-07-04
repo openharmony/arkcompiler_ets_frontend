@@ -23,12 +23,14 @@ config("libes2panda_public_config") {
   include_dirs = [
     "$target_gen_dir",
     "$target_gen_dir/include",
-    "$target_gen_dir/generated",
     "//third_party/icu/icu4c/source/common",
     "//third_party/icu/icu4c/source/i18n",
     "//third_party/icu/icu4c/source",
     "$ark_es2panda_root",
   ]
+  if (ark_standalone_build || ark_static_standalone_build) {
+    include_dirs += [ "$target_gen_dir/generated" ]
+  }
 }
 
 action("check_build_system_consistency") {
@@ -1131,26 +1133,35 @@ config("libes2panda_config") {
   ]
 }
 
+if (ark_standalone_build || ark_static_standalone_build) {
+  libes2panda_configs += [
+    "$ark_root/assembler:arkassembler_public_config",
+    "$ark_root/libpandabase:arkbase_public_config",
+    "$ark_root/libpandafile:arkfile_public_config",
+  ]
+}
+
 libes2panda_configs = [
-  "$ark_root/assembler:arkassembler_public_config",
   "$ark_root:ark_config",
   ":libes2panda_public_config",
   ":libes2panda_config",
-  "$ark_root/libpandabase:arkbase_public_config",
-  "$ark_root/libpandafile:arkfile_public_config",
-  "$ark_root/abc2program:arkts_abc2program_public_config",
 ]
 
+if (ark_standalone_build || ark_static_standalone_build) {
+  libes2panda_public_configs += [
+    "$ark_root/assembler:arkassembler_public_config",
+    "$ark_root/libpandabase:arkbase_public_config",
+    "$ark_root/libpandafile:arkfile_public_config",
+    "$ark_root/bytecode_optimizer:bytecodeopt_public_config",
+    "$ark_root/runtime:arkruntime_public_config",
+    "$ark_root/compiler:arkcompiler_public_config",
+  ]
+}
+
 libes2panda_public_configs = [
-  "$ark_root/assembler:arkassembler_public_config",
   "$ark_root:ark_config",
   ":libes2panda_public_config",
   ":libes2panda_config",
-  "$ark_root/libpandabase:arkbase_public_config",
-  "$ark_root/libpandafile:arkfile_public_config",
-  "$ark_root/bytecode_optimizer:bytecodeopt_public_config",
-  "$ark_root/compiler:arkcompiler_public_config",
-  "$ark_root/runtime:arkruntime_public_config",
 ]
 
 ohos_shared_library("libes2panda") {
@@ -1198,6 +1209,10 @@ ohos_source_set("libes2panda_frontend_static") {
     external_deps += [
       "icu:static_icui18n",
       "icu:static_icuuc",
+      "runtime_core:assembler_headers",
+      "runtime_core:libpandabase_headers",
+      "runtime_core:libpandafile_headers",
+      "runtime_core:runtime_gen_headers",
     ]
   }
   part_name = "ets_frontend"
@@ -1237,17 +1252,6 @@ ohos_source_set("libes2panda_public_frontend_static") {
 
   deps = [ ":libes2panda_frontend_static" ]
 
-  if (ark_standalone_build || ark_static_standalone_build) {
-    deps += [
-      "$ark_root/bytecode_optimizer:libarktsbytecodeopt_package",
-      "$ark_root/abc2program:libarktsabc2program_package",
-      "$ark_root/assembler:libarktsassembler",
-      "$ark_root/compiler:libarktscompiler",
-      "$ark_root/libpandabase:libarktsbase",
-      "$ark_root/libpandafile:libarktsfile",
-    ]
-  }
-
   if (target_os != "win" && target_os != "mingw" && target_os != "winuwp") {
     deps += [ ":generate_ets2panda_info" ]
     defines = [ "ES2PANDA_COMPILE_BY_GN" ]
@@ -1258,6 +1262,22 @@ ohos_source_set("libes2panda_public_frontend_static") {
     "runtime_core:libarktsabc2program_package",
     sdk_libc_secshared_dep,
   ]
+
+  if (ark_standalone_build || ark_static_standalone_build) {
+    deps += [ "$ark_root/bytecode_optimizer:libarktsbytecodeopt_package" ]
+  } else {
+    external_deps += [
+      "runtime_core:assembler_headers",
+      "runtime_core:runtime_gen_headers",
+      "runtime_core:libpandabase_headers",
+      "runtime_core:libpandafile_headers",
+      "runtime_core:bytecode_optimizer_headers",
+      "runtime_core:runtime_headers",
+      "runtime_core:compiler_headers",
+      "runtime_core:verification_headers",
+    ]
+  }
+  
   part_name = "ets_frontend"
   subsystem_name = "arkcompiler"
 }
