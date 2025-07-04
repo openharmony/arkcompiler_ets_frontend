@@ -165,6 +165,16 @@ import type { BaseClassConstructorInfo, ConstructorParameter, ExtendedIdentifier
 import { ExtendedIdentifierType } from './utils/consts/Types';
 import { STRING_ERROR_LITERAL } from './utils/consts/Literals';
 
+interface InterfaceSymbolTypeResult {
+  propNames: string[];
+  typeNames: string[];
+  allProps: Map<string, string>;
+}
+interface InterfaceSymbolTypePropertyNames {
+  propertyNames: string[];
+  typeNames: string[];
+}
+
 export class TypeScriptLinter extends BaseTypeScriptLinter {
   supportedStdCallApiChecker: SupportedStdCallApiChecker;
 
