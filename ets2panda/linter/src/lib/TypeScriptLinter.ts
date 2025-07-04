@@ -3317,26 +3317,67 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
     const methodName = node.name.text;
-    for (const baseType of allBaseTypes) {
-      const baseMethod = baseType.getProperty(methodName);
-      if (!baseMethod) {
-        continue;
-      }
-     
-      const baseMethodDecl = baseMethod.declarations?.find((d) => {
-        return (ts.isMethodDeclaration(d) || ts.isMethodSignature(d)) && 
-                this.isDeclarationInType(d, baseType, isStatic);
-      }) as ts.MethodDeclaration | ts.MethodSignature;
+    if (allBaseTypes && allBaseTypes.length > 0) {
+      for (const baseType of allBaseTypes) {
+        const baseMethod = baseType.getProperty(methodName);
+        if (!baseMethod) {
+          continue;
+        }
 
-      if (!baseMethodDecl) {
-        continue;
-      }
+        const baseMethodDecl = baseMethod.declarations?.find((d) => {
+          return (
+            (ts.isMethodDeclaration(d) || ts.isMethodSignature(d)) &&
+            this.tsTypeChecker.getTypeAtLocation(d.parent) === baseType
+          );
+        }) as ts.MethodDeclaration | ts.MethodSignature;
 
-      this.checkMethodParameters(node, baseMethodDecl);
-      this.checkMethodReturnType(node, baseMethodDecl);
+        if (!baseMethodDecl) {
+          continue;
+        }
+
+        this.checkMethodParameters(node, baseMethodDecl);
+
+        this.checkMethodReturnType(node, baseMethodDecl);
 
       break;
     }
+  }
+
+  private checkIncompatibleFunctionTypes(method: ts.MethodDeclaration): void {
+    const declaredReturnType = this.getActualReturnType(method);
+    if (!declaredReturnType) {
+      return;
+    }
+    const returnStatements = this.collectReturnStatements(method);
+    const declaredReturnTypeStr = this.tsTypeChecker.typeToString(declaredReturnType);
+    for (const returnStmt of returnStatements) {
+      if (!returnStmt.expression) {
+        continue;
+      }
+      const actualReturnType = this.tsTypeChecker.getTypeAtLocation(returnStmt.expression);
+      const actualReturnTypeStr = this.tsTypeChecker.typeToString(actualReturnType);
+      if (declaredReturnTypeStr === actualReturnTypeStr) {
+        return;
+      }
+      if (this.isSubtypeByBaseTypesList(actualReturnType, declaredReturnType)) {
+        this.incrementCounters(returnStmt.expression, FaultID.IncompationbleFunctionType);
+        return;
+      }
+    }
+  }
+
+  private collectReturnStatements(node: ts.Node): ts.ReturnStatement[] {
+    const result: ts.ReturnStatement[] = [];
+
+    ts.forEachChild(node, (child) => {
+      if (ts.isReturnStatement(child)) {
+        result.push(child);
+      } else {
+        result.push(...this.collectReturnStatements(child));
+      }
+    });
+
+    return result;
   }
 
   private getClassType( classDecl: ts.ClassDeclaration, isStatic?: boolean): ts.Type | undefined { 
@@ -3661,7 +3702,12 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     const baseTypeNode = baseDeclarations[0];
     const derivedTypeNode = derivedDeclarations[0];
 
-    if (ts.isClassDeclaration(baseTypeNode) && ts.isClassDeclaration(derivedTypeNode)) {
+    if (
+      baseTypeNode &&
+      derivedTypeNode &&
+      ts.isClassDeclaration(baseTypeNode) &&
+      ts.isClassDeclaration(derivedTypeNode)
+    ) {
       const baseTypes = this.tsTypeChecker.getTypeAtLocation(derivedTypeNode).getBaseTypes();
       const baseTypesExtends = baseTypes?.some((t) => {
         return t === baseType;
@@ -6953,15 +6999,12 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (!this.options.arkts2) {
       return;
     }
-    const isArray =
-      this.tsUtils.isOrDerivedFrom(lhsType, this.tsUtils.isArray) &&
-      this.tsUtils.isOrDerivedFrom(rhsType, this.tsUtils.isArray);
+    const isArray = this.tsUtils.isArray(lhsType) && this.tsUtils.isArray(rhsType);
     const isTuple =
       this.tsUtils.isOrDerivedFrom(lhsType, TsUtils.isTuple) && this.tsUtils.isOrDerivedFrom(rhsType, TsUtils.isTuple);
     if (!((isArray || isTuple) && lhsType !== rhsType)) {
       return;
     }
-
     const rhsTypeStr = this.tsTypeChecker.typeToString(rhsType);
     let lhsTypeStr = this.tsTypeChecker.typeToString(lhsType);
     if (rhsExpr && (this.isNullOrEmptyArray(rhsExpr) || ts.isArrayLiteralExpression(rhsExpr))) {
@@ -6978,6 +7021,16 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (lhsTypeStr !== rhsTypeStr) {
       this.incrementCounters(node, FaultID.ArrayTypeImmutable);
     }
+  }
+
+  private isSubtypeByBaseTypesList(baseType: ts.Type, actualType: ts.Type): boolean {
+    if (this.isTypeAssignable(actualType, baseType)) {
+      return true;
+    }
+    const actualBaseTypes = actualType.getBaseTypes() || [];
+    return actualBaseTypes.some((base) => {
+      return this.isSubtypeByBaseTypesList(baseType, base);
+    });
   }
 
   private isNullOrEmptyArray(expr: ts.Expression): boolean {
@@ -10376,11 +10429,34 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   private isExactlySameType(type1: ts.Type, type2: ts.Type): boolean {
     if (type2.getCallSignatures().length > 0) {
       const returnType = TsUtils.getFunctionReturnType(type2);
-      return returnType ?
-        this.tsTypeChecker.typeToString(type1) === this.tsTypeChecker.typeToString(returnType) :
-        false;
+      return returnType ? this.isExactlySameType(type1, returnType) : false;
     }
-    return this.tsTypeChecker.typeToString(type1) === this.tsTypeChecker.typeToString(type2);
+
+    const type1String = this.tsTypeChecker.typeToString(type1);
+    const type2String = this.tsTypeChecker.typeToString(type2);
+    if (type1String === type2String) {
+      return true;
+    }
+
+    if (this.checkBaseTypes(type1, type2) || this.checkBaseTypes(type2, type1)) {
+      return true;
+    }
+    return type1String === type2String;
+  }
+
+  private checkBaseTypes(type1: ts.Type, type2: ts.Type): boolean {
+    const isClassType =
+      (type1.getFlags() & ts.TypeFlags.Object) !== 0 &&
+      ((type1 as ts.ObjectType).objectFlags & ts.ObjectFlags.Class) !== 0;
+    if (isClassType) {
+      const baseTypes = (type1 as any).getBaseTypes?.() || [];
+      for (const baseType of baseTypes) {
+        if (this.isExactlySameType(baseType, type2)) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   private handleNumericBigintCompare(node: ts.BinaryExpression): void {
