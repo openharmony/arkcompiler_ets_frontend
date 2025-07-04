@@ -104,6 +104,9 @@ void DiagnosticEngine::FlushDiagnostic()
     for (auto it = log.begin(); it != last; it++) {
         printer_->Print(**it);
     }
+    for (auto &vec : diagnostics_) {
+        vec.clear();
+    }
 }
 #ifndef FUZZING_EXIT_ON_FAILED_ASSERT
 static void SigSegvHandler([[maybe_unused]] int sig)

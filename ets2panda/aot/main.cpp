@@ -165,6 +165,7 @@ static int Run(Span<const char *const> args)
     auto diagnosticEngine = util::DiagnosticEngine();
     auto options = std::make_unique<util::Options>(args[0], diagnosticEngine);
     if (!options->Parse(args)) {
+        diagnosticEngine.FlushDiagnostic();
         return 1;
     }
     diagnosticEngine.SetWError(options->IsEtsWarningsWerror());
@@ -175,6 +176,7 @@ static int Run(Span<const char *const> args)
 
     auto pluginsOpt = InitializePlugins(options->GetPlugins(), diagnosticEngine);
     if (!pluginsOpt.has_value()) {
+        diagnosticEngine.FlushDiagnostic();
         return 1;
     }
 
@@ -182,10 +184,12 @@ static int Run(Span<const char *const> args)
     if (options->IsListPhases()) {
         std::cerr << "Available phases:" << std::endl;
         std::cerr << compiler.GetPhasesList();
+        diagnosticEngine.FlushDiagnostic();
         return 1;
     }
 
     if (options->GetCompilationMode() == CompilationMode::PROJECT) {
+        diagnosticEngine.FlushDiagnostic();
         return CompileFromConfig(compiler, options.get(), diagnosticEngine);
     }
 
@@ -200,7 +204,9 @@ static int Run(Span<const char *const> args)
         parserInput = std::string_view(buf, size);
     }
     es2panda::SourceFile input(sourceFile, parserInput, options->IsModule(), options->GetOutput());
-    return CompileFromSource(compiler, input, *options.get(), diagnosticEngine);
+    auto res = CompileFromSource(compiler, input, *options.get(), diagnosticEngine);
+    diagnosticEngine.FlushDiagnostic();
+    return res;
 }
 }  // namespace ark::es2panda::aot
 
