@@ -11,3 +11,6 @@ memory-cache_test
 
 #18745
 
+#25759
+validator_test
+
