@@ -252,6 +252,7 @@ libes2panda_sources = [
   "compiler/lowering/ets/restArgsLowering.cpp",
   "compiler/lowering/ets/restTupleLowering.cpp",
   "compiler/lowering/ets/setJumpTarget.cpp",
+  "compiler/lowering/ets/setterLowering.cpp",
   "compiler/lowering/ets/spreadLowering.cpp",
   "compiler/lowering/ets/stringComparison.cpp",
   "compiler/lowering/ets/stringConstantsLowering.cpp",

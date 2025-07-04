@@ -323,6 +323,7 @@ set(ES2PANDA_LIB_SRC
   compiler/lowering/ets/enumPostCheckLowering.cpp
   compiler/lowering/ets/enumPropertiesInAnnotationsLowering.cpp
   compiler/lowering/ets/setJumpTarget.cpp
+  compiler/lowering/ets/setterLowering.cpp
   compiler/lowering/ets/annotationCopyLowering.cpp
   compiler/lowering/ets/annotationCopyPostLowering.cpp
   compiler/lowering/ets/primitiveConversionPhase.cpp

@@ -64,6 +64,7 @@
 #include "compiler/lowering/ets/lateInitialization.h"
 #include "compiler/lowering/ets/restArgsLowering.h"
 #include "compiler/lowering/ets/setJumpTarget.h"
+#include "compiler/lowering/ets/setterLowering.h"
 #include "compiler/lowering/ets/spreadLowering.h"
 #include "compiler/lowering/ets/stringComparison.h"
 #include "compiler/lowering/ets/stringConstantsLowering.h"
@@ -143,6 +144,7 @@ std::vector<Phase *> GetETSPhaseList()
         new ArrayLiteralLowering,
         new BigIntLowering,
         new OpAssignmentLowering,
+        new SetterLowering,
         new LateInitializationConvert,
         new ExtensionAccessorPhase,
         new BoxingForLocals,
