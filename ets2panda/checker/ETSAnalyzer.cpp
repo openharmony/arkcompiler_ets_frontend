@@ -1770,7 +1770,7 @@ checker::Type *ETSAnalyzer::Check(ir::ConditionalExpression *expr) const
     checker->Context().CombineSmartCasts(consequentSmartCasts);
 
     if (checker->IsTypeIdenticalTo(consequentType, alternateType)) {
-        expr->SetTsType(checker->GetNonConstantType(consequentType));
+        expr->SetTsType(consequentType);
     } else if (IsNumericType(GetETSChecker(), consequentType) && IsNumericType(GetETSChecker(), alternateType)) {
         expr->SetTsType(BiggerNumericType(GetETSChecker(), consequentType, alternateType));
     } else {

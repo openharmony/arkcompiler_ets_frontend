@@ -265,14 +265,14 @@
                                   "type": "ETSNullType",
                                   "loc": {
                                     "start": {
-                                      "line": 1,
-                                      "column": 1,
-                                      "program": null
+                                      "line": 17,
+                                      "column": 16,
+                                      "program": "proxyVoidGeneration.ets"
                                     },
                                     "end": {
-                                      "line": 1,
-                                      "column": 1,
-                                      "program": null
+                                      "line": 17,
+                                      "column": 28,
+                                      "program": "proxyVoidGeneration.ets"
                                     }
                                   }
                                 }
@@ -315,14 +315,14 @@
                                 "decorators": [],
                                 "loc": {
                                   "start": {
-                                    "line": 1,
-                                    "column": 1,
-                                    "program": null
+                                    "line": 17,
+                                    "column": 10,
+                                    "program": "proxyVoidGeneration.ets"
                                   },
                                   "end": {
-                                    "line": 1,
-                                    "column": 1,
-                                    "program": null
+                                    "line": 17,
+                                    "column": 35,
+                                    "program": "proxyVoidGeneration.ets"
                                   }
                                 }
                               },
@@ -331,26 +331,26 @@
                                 "value": "undefined",
                                 "loc": {
                                   "start": {
-                                    "line": 1,
-                                    "column": 3,
+                                    "line": 17,
+                                    "column": 10,
                                     "program": "proxyVoidGeneration.ets"
                                   },
                                   "end": {
-                                    "line": 1,
-                                    "column": 3,
+                                    "line": 17,
+                                    "column": 35,
                                     "program": "proxyVoidGeneration.ets"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
-                                  "line": 1,
-                                  "column": 3,
+                                  "line": 17,
+                                  "column": 10,
                                   "program": "proxyVoidGeneration.ets"
                                 },
                                 "end": {
-                                  "line": 1,
-                                  "column": 3,
+                                  "line": 17,
+                                  "column": 35,
                                   "program": "proxyVoidGeneration.ets"
                                 }
                               }
@@ -361,14 +361,14 @@
                               "decorators": [],
                               "loc": {
                                 "start": {
-                                  "line": 1,
-                                  "column": 1,
-                                  "program": null
+                                  "line": 17,
+                                  "column": 10,
+                                  "program": "proxyVoidGeneration.ets"
                                 },
                                 "end": {
-                                  "line": 1,
-                                  "column": 1,
-                                  "program": null
+                                  "line": 17,
+                                  "column": 35,
+                                  "program": "proxyVoidGeneration.ets"
                                 }
                               }
                             },
@@ -444,14 +444,14 @@
                                     "type": "ETSNullType",
                                     "loc": {
                                       "start": {
-                                        "line": 1,
-                                        "column": 1,
-                                        "program": null
+                                        "line": 17,
+                                        "column": 16,
+                                        "program": "proxyVoidGeneration.ets"
                                       },
                                       "end": {
-                                        "line": 1,
-                                        "column": 1,
-                                        "program": null
+                                        "line": 17,
+                                        "column": 28,
+                                        "program": "proxyVoidGeneration.ets"
                                       }
                                     }
                                   }
@@ -471,39 +471,39 @@
                               },
                               "loc": {
                                 "start": {
-                                  "line": 1,
-                                  "column": 3,
+                                  "line": 17,
+                                  "column": 10,
                                   "program": "proxyVoidGeneration.ets"
                                 },
                                 "end": {
-                                  "line": 1,
-                                  "column": 3,
+                                  "line": 17,
+                                  "column": 35,
                                   "program": "proxyVoidGeneration.ets"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
-                                "line": 1,
-                                "column": 3,
+                                "line": 17,
+                                "column": 10,
                                 "program": "proxyVoidGeneration.ets"
                               },
                               "end": {
-                                "line": 1,
-                                "column": 3,
+                                "line": 17,
+                                "column": 35,
                                 "program": "proxyVoidGeneration.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
-                              "line": 1,
-                              "column": 3,
+                              "line": 17,
+                              "column": 10,
                               "program": "proxyVoidGeneration.ets"
                             },
                             "end": {
-                              "line": 1,
-                              "column": 3,
+                              "line": 17,
+                              "column": 35,
                               "program": "proxyVoidGeneration.ets"
                             }
                           }
@@ -512,13 +512,13 @@
                       "kind": "let",
                       "loc": {
                         "start": {
-                          "line": 1,
-                          "column": 1,
+                          "line": 17,
+                          "column": 10,
                           "program": "proxyVoidGeneration.ets"
                         },
                         "end": {
-                          "line": 1,
-                          "column": 3,
+                          "line": 17,
+                          "column": 35,
                           "program": "proxyVoidGeneration.ets"
                         }
                       }
