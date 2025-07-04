@@ -545,16 +545,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 91,
-            "column": 15,
-            "endLine": 91,
-            "endColumn": 37,
-            "problem": "AvoidUnionTypes",
-            "suggest": "",
-            "rule": "Avoid using union types (arkts-common-union-member-access)",
-            "severity": "ERROR"
-        },
-        {
             "line": 94,
             "column": 8,
             "endLine": 94,

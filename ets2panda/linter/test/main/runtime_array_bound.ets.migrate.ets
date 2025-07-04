@@ -163,7 +163,7 @@ arr1[+24] = 23.0;
 enum TE{
   AA = 12
 }
-arr1[TE.AA as int] = 12.0;
+arr1[TE.AA] = 12.0;
 
 let a: string[] = [];
 let b: Array<string> = new Array<string>(a.length);

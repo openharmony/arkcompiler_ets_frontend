@@ -160,6 +160,7 @@ import { ERROR_PROP_LIST } from './utils/consts/ErrorProp';
 import { D_ETS, D_TS } from './utils/consts/TsSuffix';
 import { arkTsBuiltInTypeName } from './utils/consts/ArkuiImportList';
 import { ERROR_TASKPOOL_PROP_LIST } from './utils/consts/ErrorProp';
+import { COMMON_UNION_MEMBER_ACCESS_WHITELIST} from './utils/consts/ArktsWhiteApiPaths';
 import type { BaseClassConstructorInfo, ConstructorParameter, ExtendedIdentifierInfo } from './utils/consts/Types';
 import { ExtendedIdentifierType } from './utils/consts/Types';
 import { STRING_ERROR_LITERAL } from './utils/consts/Literals';
@@ -1440,7 +1441,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
     const baseExprType = this.tsTypeChecker.getTypeAtLocation(propertyAccessNode.expression);
-    if (!baseExprType.isUnion() || this.tsTypeChecker.typeToString(baseExprType) === 'ArrayBufferLike') {
+    const baseExprSym = baseExprType.aliasSymbol || baseExprType.getSymbol();
+    const symbolName = baseExprSym ? baseExprSym.name : this.tsTypeChecker.typeToString(baseExprType);
+    if (!baseExprType.isUnion() || COMMON_UNION_MEMBER_ACCESS_WHITELIST.has(symbolName)) {
       return;
     }
     const allType = baseExprType.types;

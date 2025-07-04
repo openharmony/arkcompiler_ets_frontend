@@ -115,6 +115,26 @@
             "severity": "ERROR"
         },
         {
+            "line": 44,
+            "column": 1,
+            "endLine": 44,
+            "endColumn": 15,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 45,
+            "column": 1,
+            "endLine": 45,
+            "endColumn": 15,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
             "line": 69,
             "column": 3,
             "endLine": 69,
@@ -125,9 +145,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 65,
+            "line": 70,
             "column": 8,
-            "endLine": 65,
+            "endLine": 70,
             "endColumn": 9,
             "problem": "NumericSemantics",
             "suggest": "",
@@ -135,9 +155,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 68,
+            "line": 73,
             "column": 1,
-            "endLine": 68,
+            "endLine": 73,
             "endColumn": 12,
             "problem": "RuntimeArrayCheck",
             "suggest": "",
@@ -145,9 +165,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 69,
+            "line": 74,
             "column": 1,
-            "endLine": 69,
+            "endLine": 74,
             "endColumn": 9,
             "problem": "RuntimeArrayCheck",
             "suggest": "",

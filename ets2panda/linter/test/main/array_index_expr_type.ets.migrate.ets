@@ -70,7 +70,7 @@ enum TE{
   BB = 0
 }
 arr1[TE.AA as int];
-arr1[TE.BB as int];
+arr1[TE.BB];
 arr1[+0];
 arr1[-0];
 arr1[+1];

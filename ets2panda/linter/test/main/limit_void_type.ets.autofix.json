@@ -611,16 +611,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 91,
-            "column": 15,
-            "endLine": 91,
-            "endColumn": 37,
-            "problem": "AvoidUnionTypes",
-            "suggest": "",
-            "rule": "Avoid using union types (arkts-common-union-member-access)",
-            "severity": "ERROR"
-        },
-        {
             "line": 94,
             "column": 8,
             "endLine": 94,
@@ -1741,17 +1731,6 @@
             "endLine": 252,
             "endColumn": 11,
             "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 6240,
-                    "end": 6241,
-                    "replacementText": "1.0",
-                    "line": 252,
-                    "column": 10,
-                    "endLine": 252,
-                    "endColumn": 11
-                }
-            ],
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
@@ -1762,17 +1741,6 @@
             "endLine": 253,
             "endColumn": 11,
             "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 6265,
-                    "end": 6266,
-                    "replacementText": "2.0",
-                    "line": 253,
-                    "column": 10,
-                    "endLine": 253,
-                    "endColumn": 11
-                }
-            ],
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
