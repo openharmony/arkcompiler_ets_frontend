@@ -72,7 +72,7 @@ export class StringBase64  {
     public  run(): void {
         let str : String = "";
         for (let i : int = 0; i < this.n1; i++) {
-            str += ((25 * random()) + 97).toChar();
+            str += ((25 * random().toInt()) + 97).toChar();
         }
         for (let i : int = this.n1; i <= this.n2; i *= 2) {
             let base64 : String = this.toBase64(str);

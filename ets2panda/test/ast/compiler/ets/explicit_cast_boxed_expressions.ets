@@ -189,7 +189,6 @@ function float_test(): boolean {
 
     let float_byte   = Float.toByte(Float_);
     let float_short  = Float.toShort(Float_);
-    let float_char   = Float.toChar(Float_);
     let float_int    = Float.toInt(Float_);
     let float_long   = Float.toLong(Float_);
     let float_float  = Float.toFloat(Float_);
@@ -197,9 +196,6 @@ function float_test(): boolean {
     // true test Type speciefic operations
     {
         if (float_double.toExponential() != testDouble.toExponential()) {
-            return false;
-        }
-        if (float_char != testChar || float_char.isBinDigit() != testChar.isBinDigit()) {
             return false;
         }
         if (float_float != testFloat || float_float.isNaN() != testFloat.isNaN()) { // better to find another way of checking
@@ -220,7 +216,6 @@ function double_test(): boolean {
 
     let double_byte   = Double.toByte(Double_);
     let double_short  = Double.toShort(Double_);
-    let double_char   = Double.toChar(Double_);
     let double_int    = Double.toInt(Double_);
     let double_long   = Double.toLong(Double_);
     let double_float  = Double.toFloat(Double_);
@@ -228,9 +223,6 @@ function double_test(): boolean {
     // true test Type speciefic operations
     {
         if (double_double.toExponential() != testDouble.toExponential()) {
-            return false;
-        }
-        if (double_char != testChar || double_char.isBinDigit() != testChar.isBinDigit()) {
             return false;
         }
         if (double_float != testFloat || double_float.isNaN() != testFloat.isNaN()) { // better to find another way of checking

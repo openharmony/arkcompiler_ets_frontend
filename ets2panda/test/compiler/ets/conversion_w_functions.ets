@@ -69,8 +69,4 @@ function tomato(): Long {
     return getD(3.0).toLong();
 }
 
-function uglifruit(): Char {
-    return getD(65.0).toChar();
-}
-
 function main(): void {}

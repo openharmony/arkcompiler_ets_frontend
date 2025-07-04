@@ -19,7 +19,6 @@ function main(): void {
 let nan_byte = Double.toByte(Infinity * 0)
 let nan_short = Double.toShort(Infinity * 0)
 let nan_long = Double.toLong(Infinity * 0)
-let nan_char = Double.toChar(Infinity * 0)
 let nan_int = Double.toInt(Infinity * 0)
 let nan_float = Double.toFloat(Infinity * 0)
 let nan_double = Double.toDouble(Infinity * 0)
@@ -29,7 +28,6 @@ arktest.assertEQ(nan_byte, 0)
 arktest.assertEQ(nan_int, 0)
 arktest.assertEQ(nan_short, 0)
 arktest.assertEQ(nan_long, 0)
-arktest.assertEQ(nan_char, 0)
 arktest.assertTrue(isNaN(nan_float))
 arktest.assertTrue(isNaN(nan_double))
 arktest.assertEQ(nan_byte2, 0)
@@ -67,15 +65,6 @@ let s4 = Double.toShort(-Infinity)
 arktest.assertEQ(s1, -1)
 arktest.assertEQ(s3, -1)
 arktest.assertEQ(s4, 0)
-
-let c1 = Double.toChar(Infinity)
-let c2: double = Infinity
-let c3 = Double.toChar(c2)
-let c4 = Double.toChar(-Infinity)
-
-arktest.assertEQ(c1, 65535)
-arktest.assertEQ(c3, 65535)
-arktest.assertEQ(c4, 0)
 
 let f1 = Double.toFloat(Infinity)
 let f2: double = Infinity

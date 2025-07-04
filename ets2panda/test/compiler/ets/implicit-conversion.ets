@@ -24,11 +24,10 @@ function main(): void {
     let honeydewmelon : Double = 5.0;
     let indian_fig : Char = 65;
 
-    
+
     let raspberry : Short = Double.toShort(1.0);
     let strawberry : Int = Double.toInt(2.0);
     let tomato : Long = Double.toLong(3.0);
-    let uglifruit : Char = Double.toChar(65.0);
 
   return;
 }
