@@ -75,6 +75,27 @@ Variable *Scope::FindLocal(const util::StringView &name, ResolveBindingOptions o
     return res->second;
 }
 
+bool Scope::CorrectForeignBinding(const util::StringView &name, Variable *builtinVar, Variable *redefinedVar)
+{
+    ES2PANDA_ASSERT(builtinVar != redefinedVar);
+    auto bindingTobeErase = bindings_.find(name);
+    if (bindingTobeErase == bindings_.end()) {
+        return false;
+    }
+
+    Variable *varTobeErase = bindingTobeErase->second;
+    if (varTobeErase != redefinedVar) {
+        return false;
+    }
+
+    auto declTobeErase = redefinedVar->Declaration();
+    bindings_.erase(name);
+    auto it = std::find_if(decls_.begin(), decls_.end(), [&](auto *decl) { return decl == declTobeErase; });
+    ES2PANDA_ASSERT(it != decls_.end());
+    decls_.erase(it);
+    return Scope::InsertBinding(name, builtinVar).second;
+}
+
 Scope::InsertResult Scope::InsertBinding(const util::StringView &name, Variable *const var)
 {
     ES2PANDA_ASSERT(var != nullptr);
@@ -628,6 +649,15 @@ Scope::InsertResult GlobalScope::InsertForeignBinding(const util::StringView &na
 Scope::InsertResult GlobalScope::InsertOrAssignForeignBinding(const util::StringView &name, Variable *const var)
 {
     return GlobalScope::InsertImpl(name, var, InsertBindingFlags::FOREIGN | InsertBindingFlags::ASSIGN);
+}
+
+bool GlobalScope::CorrectForeignBinding(const util::StringView &name, Variable *builtinVar, Variable *redefinedVar)
+{
+    const bool deleteRes = Scope::CorrectForeignBinding(name, builtinVar, redefinedVar);
+    if (deleteRes) {
+        foreignBindings_[name] = true;
+    }
+    return deleteRes;
 }
 
 Scope::InsertResult GlobalScope::InsertImpl(const util::StringView &name, Variable *const var,

@@ -249,6 +249,7 @@ public:
     virtual InsertResult TryInsertBinding(const util::StringView &name, Variable *var);
     virtual void MergeBindings(VariableMap const &bindings);
     virtual VariableMap::size_type EraseBinding(const util::StringView &name);
+    virtual bool CorrectForeignBinding(const util::StringView &name, Variable *builtinVar, Variable *redefinedVar);
 
     [[nodiscard]] const VariableMap &Bindings() const noexcept
     {
@@ -883,6 +884,7 @@ public:
     [[nodiscard]] bool IsForeignBinding(const util::StringView &name) const;
 
     InsertResult InsertDynamicBinding(const util::StringView &name, Variable *var);
+    bool CorrectForeignBinding(const util::StringView &name, Variable *builtinVar, Variable *redefinedVar) override;
 
 private:
     enum class InsertBindingFlags : uint8_t { NONE = 0, FOREIGN = 1U << 0U, DYNAMIC = 1U << 1U, ASSIGN = 1U << 2U };
