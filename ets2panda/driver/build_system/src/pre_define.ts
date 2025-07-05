@@ -36,7 +36,6 @@ export enum LANGUAGE_VERSION {
 
 export const PANDA_SDK_PATH_FROM_SDK: string = './build-tools/ets2panda';
 export const SYSTEM_SDK_PATH_FROM_SDK: string = './';
-export const KOALA_WRAPPER_PATH_FROM_SDK: string = './build-tools/koala-wrapper/build/lib/es2panda';
 export const KIT_CONFIGS_PATH_FROM_SDK: string = '../ets1.1/build-tools/ets-loader/kit_configs';
 
 export const DEFAULT_WOKER_NUMS: number = 4;
@@ -62,3 +61,7 @@ export type Record<K extends keyof any, T> = {
   [P in K]: T;
 };
 `;
+// Koala experimental variables
+export const KOALA_WRAPPER_PATH_FROM_SDK: string = process.env.USE_KOALA_LIBARKTS ? './build-tools/ui2abc/libarkts/lib/libarkts.js' : './build-tools/koala-wrapper/build/lib/es2panda'
+export const UI_PLUGIN_PATH_FROM_SDK: string = './build-tools/ui2abc/ui-plugin/lib/entry.js'
+export const MEMO_PLUGIN_PATH_FROM_SDK: string = './build-tools/ui2abc/memo-plugin/lib/entry.js'

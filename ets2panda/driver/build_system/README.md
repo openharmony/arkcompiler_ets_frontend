@@ -2,6 +2,11 @@
 
 The build system is designed to compile ArkTS1.2 source files. It takes source files and build configurations as input, compiles the source files, invokes plugins for transformation, and generates a merged bytecode file.
 
+## env
+USE_KOALA_LIBARKTS - use libarkts from koala_mirror
+USE_KOALA_UI_PLUGIN - use ui-plugin from koala_mirror
+USE_KOALA_MEMO_PLUGIN - use memo-plugin from koala_mirror
+
 ## How to Run
 
 The build system has two usage scenarios:
