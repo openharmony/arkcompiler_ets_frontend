@@ -437,8 +437,11 @@ Type *ETSChecker::BuildBasicInterfaceProperties(ir::TSInterfaceDeclaration *inte
         interfaceType = CreateETSObjectTypeOrBuiltin(interfaceDecl, checker::ETSObjectFlags::INTERFACE);
         interfaceType->SetVariable(var);
         var->SetTsType(interfaceType);
-    } else {
+    } else if (var->TsType()->IsETSObjectType()) {
         interfaceType = var->TsType()->AsETSObjectType();
+    } else {
+        ES2PANDA_ASSERT(IsAnyError());
+        return GlobalTypeError();
     }
 
     // Save before we mess with savedContext.
