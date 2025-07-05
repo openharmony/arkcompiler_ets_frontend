@@ -207,6 +207,7 @@ public:
     void CheckObjectLiteralKeys(const ArenaVector<ir::Expression *> &properties);
     Type *BuildBasicClassProperties(ir::ClassDefinition *classDef);
     ETSObjectType *BuildAnonymousClassProperties(ir::ClassDefinition *classDef, ETSObjectType *superType);
+    Type *MaybeGradualType(ir::AstNode *node, ETSObjectType *type);
     Type *BuildBasicInterfaceProperties(ir::TSInterfaceDeclaration *interfaceDecl);
     ETSObjectType *GetSuperType(ETSObjectType *type);
     ArenaVector<ETSObjectType *> GetInterfaces(ETSObjectType *type);

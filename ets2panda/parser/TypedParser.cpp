@@ -711,8 +711,9 @@ ir::TSEnumDeclaration *TypedParser::ParseEnumMembers(ir::Identifier *key, const 
         },
         &endLoc, true);
 
-    auto *enumDeclaration = AllocNode<ir::TSEnumDeclaration>(Allocator(), key, std::move(members),
-                                                             ir::TSEnumDeclaration::ConstructorFlags {isConst});
+    auto *enumDeclaration =
+        AllocNode<ir::TSEnumDeclaration>(Allocator(), key, std::move(members),
+                                         ir::TSEnumDeclaration::ConstructorFlags {isConst}, GetContext().GetLanguage());
     ES2PANDA_ASSERT(enumDeclaration != nullptr);
     enumDeclaration->SetRange({enumStart, endLoc});
 

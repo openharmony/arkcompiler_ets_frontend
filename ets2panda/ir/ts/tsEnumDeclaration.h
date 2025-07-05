@@ -39,13 +39,14 @@ public:
     // NOLINTEND(cppcoreguidelines-pro-type-member-init)
 
     explicit TSEnumDeclaration(ArenaAllocator *allocator, Identifier *key, ArenaVector<AstNode *> &&members,
-                               ConstructorFlags &&flags)
+                               ConstructorFlags &&flags, Language lang)
         : TypedStatement(AstNodeType::TS_ENUM_DECLARATION),
           decorators_(allocator->Adapter()),
           key_(key),
           typeNode_(nullptr),
           members_(std::move(members)),
-          isConst_(flags.isConst)
+          isConst_(flags.isConst),
+          lang_(lang)
     {
         if (flags.isStatic) {
             AddModifier(ModifierFlags::STATIC);
@@ -55,14 +56,16 @@ public:
         }
     }
 
+    // CC-OFFNXT(G.FUN.01-CPP) solid logic
     explicit TSEnumDeclaration(ArenaAllocator *allocator, Identifier *key, ArenaVector<AstNode *> &&members,
-                               ConstructorFlags &&flags, ir::TypeNode *typeNode)
+                               ConstructorFlags &&flags, ir::TypeNode *typeNode, Language lang)
         : TypedStatement(AstNodeType::TS_ENUM_DECLARATION),
           decorators_(allocator->Adapter()),
           key_(key),
           typeNode_(typeNode),
           members_(std::move(members)),
-          isConst_(flags.isConst)
+          isConst_(flags.isConst),
+          lang_(lang)
     {
         if (flags.isStatic) {
             AddModifier(ModifierFlags::STATIC);
@@ -73,14 +76,16 @@ public:
         InitHistory();
     }
 
+    // CC-OFFNXT(G.FUN.01-CPP) solid logic
     explicit TSEnumDeclaration(ArenaAllocator *allocator, Identifier *key, ArenaVector<AstNode *> &&members,
-                               ConstructorFlags &&flags, AstNodeHistory *history)
+                               ConstructorFlags &&flags, Language lang, AstNodeHistory *history)
         : TypedStatement(AstNodeType::TS_ENUM_DECLARATION),
           decorators_(allocator->Adapter()),
           key_(key),
           typeNode_(nullptr),
           members_(std::move(members)),
-          isConst_(flags.isConst)
+          isConst_(flags.isConst),
+          lang_(lang)
     {
         if (flags.isStatic) {
             AddModifier(ModifierFlags::STATIC);
@@ -171,6 +176,11 @@ public:
         return !inTs;
     }
 
+    [[nodiscard]] es2panda::Language Language() const noexcept
+    {
+        return GetHistoryNodeAs<TSEnumDeclaration>()->lang_;
+    }
+
     static varbinder::EnumMemberResult EvaluateEnumMember(checker::TSChecker *checker, varbinder::EnumVariable *enumVar,
                                                           const ir::AstNode *expr);
     void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;
@@ -213,6 +223,7 @@ private:
     util::StringView internalName_;
     ir::ClassDefinition *boxedClass_ {nullptr};
     bool isConst_;
+    es2panda::Language lang_;
 };
 }  // namespace ark::es2panda::ir
 

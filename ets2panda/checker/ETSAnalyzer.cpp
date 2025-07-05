@@ -2022,7 +2022,7 @@ checker::Type *ETSAnalyzer::CheckDynamic(ir::ObjectExpression *expr) const
 
 static bool ValidatePreferredType(ETSChecker *checker, ir::ObjectExpression *expr)
 {
-    auto preferredType = expr->PreferredType();
+    auto preferredType = expr->PreferredType()->MaybeBaseTypeOfGradualType();
     if (preferredType == nullptr) {
         checker->LogError(diagnostic::CLASS_COMPOSITE_UNKNOWN_TYPE, {}, expr->Start());
         return false;
@@ -2381,7 +2381,7 @@ checker::ETSObjectType *ResolveUnionObjectTypeForObjectLiteral(ETSChecker *check
 static checker::ETSObjectType *ResolveObjectTypeFromPreferredType(ETSChecker *checker, ir::ObjectExpression *expr)
 {
     // Assume not null, checked by caller in Check()
-    checker::Type *preferredType = expr->PreferredType();
+    checker::Type *preferredType = expr->PreferredType()->MaybeBaseTypeOfGradualType();
 
     if (preferredType->IsETSAsyncFuncReturnType()) {
         preferredType = preferredType->AsETSAsyncFuncReturnType()->GetPromiseTypeArg();

@@ -116,7 +116,7 @@ bool ObjectIndexLowering::PerformForModule(public_lib::Context *ctx, parser::Pro
                 auto memberExpr = ast->AsAssignmentExpression()->Left()->AsMemberExpression();
                 if (memberExpr->Kind() == ir::MemberExpressionKind::ELEMENT_ACCESS &&
                     memberExpr->AsMemberExpression()->ObjType() != nullptr &&
-                    !memberExpr->Object()->TsType()->IsETSAnyType()) {
+                    !memberExpr->Object()->TsType()->IsGradualType()) {
                     return ProcessIndexSetAccess(parser, checker, ast->AsAssignmentExpression());
                 }
             }
@@ -130,7 +130,7 @@ bool ObjectIndexLowering::PerformForModule(public_lib::Context *ctx, parser::Pro
             if (ast->IsMemberExpression()) {
                 auto memberExpr = ast->AsMemberExpression();
                 if (memberExpr->Kind() == ir::MemberExpressionKind::ELEMENT_ACCESS &&
-                    memberExpr->ObjType() != nullptr && !memberExpr->Object()->TsType()->IsETSAnyType()) {
+                    memberExpr->ObjType() != nullptr && !memberExpr->Object()->TsType()->IsGradualType()) {
                     return ProcessIndexGetAccess(parser, checker, ast->AsMemberExpression());
                 }
             }
@@ -148,7 +148,7 @@ bool ObjectIndexLowering::PostconditionForModule([[maybe_unused]] public_lib::Co
         if (ast->IsMemberExpression()) {
             auto memberExpr = ast->AsMemberExpression();
             if (memberExpr->Kind() == ir::MemberExpressionKind::ELEMENT_ACCESS && memberExpr->ObjType() != nullptr &&
-                !memberExpr->Object()->TsType()->IsETSAnyType()) {
+                !memberExpr->Object()->TsType()->IsGradualType()) {
                 return true;
             }
         }

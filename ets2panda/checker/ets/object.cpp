@@ -457,6 +457,15 @@ void ETSChecker::CreateTypeForClassOrInterfaceTypeParameters(ETSObjectType *type
     type->AddObjectFlag(ETSObjectFlags::INCOMPLETE_INSTANTIATION);
 }
 
+Type *ETSChecker::MaybeGradualType(ir::AstNode *node, ETSObjectType *type)
+{
+    ES2PANDA_ASSERT(node->IsClassDefinition() || node->IsTSInterfaceDeclaration());
+    auto isDynamic = node->IsClassDefinition() ? node->AsClassDefinition()->Language().IsDynamic()
+                                               : node->AsTSInterfaceDeclaration()->Language().IsDynamic();
+    // Temporary solution, the struct loses 'language' while being converted to a class through the plugin API.
+    return isDynamic || Program()->IsDeclForDynamicStaticInterop() ? CreateGradualType(type) : type;
+}
+
 Type *ETSChecker::BuildBasicInterfaceProperties(ir::TSInterfaceDeclaration *interfaceDecl)
 {
     auto *var = interfaceDecl->Id()->Variable();
@@ -470,11 +479,11 @@ Type *ETSChecker::BuildBasicInterfaceProperties(ir::TSInterfaceDeclaration *inte
     if (var->TsType() == nullptr) {
         interfaceType = CreateETSObjectTypeOrBuiltin(interfaceDecl, checker::ETSObjectFlags::INTERFACE);
         interfaceType->SetVariable(var);
-        type = Program()->IsDeclForDynamicStaticInterop() ? CreateGradualType(interfaceType) : interfaceType;
+        type = MaybeGradualType(interfaceDecl, interfaceType);
         var->SetTsType(type);
     } else if (var->TsType()->MaybeBaseTypeOfGradualType()->IsETSObjectType()) {
         interfaceType = var->TsType()->MaybeBaseTypeOfGradualType()->AsETSObjectType();
-        type = Program()->IsDeclForDynamicStaticInterop() ? CreateGradualType(interfaceType) : interfaceType;
+        type = MaybeGradualType(interfaceDecl, interfaceType);
     } else {
         ES2PANDA_ASSERT(IsAnyError());
         return GlobalTypeError();
@@ -523,7 +532,7 @@ Type *ETSChecker::BuildBasicClassProperties(ir::ClassDefinition *classDef)
     checker::Type *type {};
     if (var->TsType() == nullptr) {
         classType = CreateETSObjectTypeOrBuiltin(classDef, checker::ETSObjectFlags::CLASS);
-        type = Program()->IsDeclForDynamicStaticInterop() ? CreateGradualType(classType) : classType;
+        type = MaybeGradualType(classDef, classType);
         classType->SetVariable(var);
         var->SetTsType(type);
         if (classDef->IsAbstract()) {
@@ -531,7 +540,7 @@ Type *ETSChecker::BuildBasicClassProperties(ir::ClassDefinition *classDef)
         }
     } else if (var->TsType()->MaybeBaseTypeOfGradualType()->IsETSObjectType()) {
         classType = var->TsType()->MaybeBaseTypeOfGradualType()->AsETSObjectType();
-        type = Program()->IsDeclForDynamicStaticInterop() ? CreateGradualType(classType) : classType;
+        type = MaybeGradualType(classDef, classType);
     } else {
         ES2PANDA_ASSERT(IsAnyError());
         return GlobalTypeError();

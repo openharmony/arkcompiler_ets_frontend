@@ -161,9 +161,9 @@ ir::ClassDeclaration *GlobalClassHandler::CreateTransformedClass(ir::ETSModule *
     auto *ident = NodeAllocator::Alloc<ir::Identifier>(allocator_, className, allocator_);
     ident->SetRange(ns->Ident()->Range());
 
-    auto *classDef = NodeAllocator::Alloc<ir::ClassDefinition>(
-        allocator_, allocator_, ident, ir::ClassDefinitionModifiers::CLASS_DECL, ir::ModifierFlags::ABSTRACT,
-        Language(Language::Id::ETS));
+    auto *classDef = NodeAllocator::Alloc<ir::ClassDefinition>(allocator_, allocator_, ident,
+                                                               ir::ClassDefinitionModifiers::CLASS_DECL,
+                                                               ir::ModifierFlags::ABSTRACT, ns->Language());
     ES2PANDA_ASSERT(classDef != nullptr);
     classDef->SetRange(ns->Range());
     classDef->AddModifier(ns->Modifiers());

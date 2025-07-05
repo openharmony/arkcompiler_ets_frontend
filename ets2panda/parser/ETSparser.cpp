@@ -180,8 +180,8 @@ ir::ETSModule *ETSParser::ParseETSGlobalScript(lexer::SourcePosition startLoc, A
     etsnolintParser.ApplyETSNolintsToStatements(statements);
 
     auto ident = AllocNode<ir::Identifier>(compiler::Signatures::ETS_GLOBAL, Allocator());
-    auto *etsModule =
-        AllocNode<ir::ETSModule>(Allocator(), std::move(statements), ident, ir::ModuleFlag::ETSSCRIPT, GetProgram());
+    auto *etsModule = AllocNode<ir::ETSModule>(Allocator(), std::move(statements), ident, ir::ModuleFlag::ETSSCRIPT,
+                                               GetContext().GetLanguage(), GetProgram());
     ES2PANDA_ASSERT(etsModule != nullptr);
     etsModule->SetRange({startLoc, Lexer()->GetToken().End()});
     return etsModule;
@@ -202,8 +202,8 @@ ir::ETSModule *ETSParser::ParseImportsAndReExportOnly(lexer::SourcePosition star
     etsnolintParser.ApplyETSNolintsToStatements(statements);
 
     auto ident = AllocNode<ir::Identifier>(compiler::Signatures::ETS_GLOBAL, Allocator());
-    auto *etsModule =
-        AllocNode<ir::ETSModule>(Allocator(), std::move(statements), ident, ir::ModuleFlag::ETSSCRIPT, GetProgram());
+    auto *etsModule = AllocNode<ir::ETSModule>(Allocator(), std::move(statements), ident, ir::ModuleFlag::ETSSCRIPT,
+                                               GetContext().GetLanguage(), GetProgram());
     ES2PANDA_ASSERT(etsModule != nullptr);
     etsModule->SetRange({startLoc, Lexer()->GetToken().End()});
     return etsModule;
@@ -321,8 +321,10 @@ void ETSParser::AddGenExtenralSourceToParseList(public_lib::Context *ctx)
     auto allocator = ctx->allocator;
     auto ident = allocator->New<ir::Identifier>(compiler::Signatures::ETS_GLOBAL, allocator);
     ArenaVector<ir::Statement *> stmts(allocator->Adapter());
-    auto etsModule = allocator->New<ir::ETSModule>(allocator, std::move(stmts), ident, ir::ModuleFlag::ETSSCRIPT,
-                                                   ctx->parserProgram);
+
+    auto etsModule =
+        allocator->New<ir::ETSModule>(allocator, std::move(stmts), ident, ir::ModuleFlag::ETSSCRIPT,
+                                      ctx->parser->AsETSParser()->GetContext().GetLanguage(), ctx->parserProgram);
     ctx->parserProgram->SetAst(etsModule);
     for (auto &sourceName : ctx->sourceFileNames) {
         util::ImportPathManager::ImportMetadata importData {util::ImportFlags::NONE};
