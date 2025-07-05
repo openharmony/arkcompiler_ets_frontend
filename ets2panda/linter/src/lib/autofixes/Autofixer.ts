@@ -4615,16 +4615,8 @@ export class Autofixer {
   }
 
   fixImportClause(tsImportClause: ts.ImportClause): Autofix[] {
-    const newImportClause = ts.factory.createImportClause(
-      tsImportClause.isTypeOnly,
-      tsImportClause.name,
-      tsImportClause.namedBindings
-    );
-    const replacementText = this.printer.printNode(
-      ts.EmitHint.Unspecified,
-      newImportClause,
-      tsImportClause.getSourceFile()
-    );
+    void this;
+    const replacementText = tsImportClause.getText().replace(/\blazy\b\s*/, "");
     return [{ start: tsImportClause.getStart(), end: tsImportClause.getEnd(), replacementText }];
   }
 
