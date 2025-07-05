@@ -161,6 +161,7 @@ void ImportExportDecls::HandleSelectiveExportWithAlias(util::StringView original
                                    !declItem->second->HasExportAlias();
             if (!alreadyExported && declItem->second->IsVariableDeclaration()) {
                 auto declarator = declItem->second->AsVariableDeclaration()->GetDeclaratorByName(exportName);
+                ES2PANDA_ASSERT(declarator != nullptr);
                 alreadyExported |=
                     ((declarator->Modifiers() & ir::ModifierFlags::EXPORTED) != 0) && !declarator->HasExportAlias();
             }

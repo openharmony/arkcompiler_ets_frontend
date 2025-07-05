@@ -774,6 +774,7 @@ ir::TemplateLiteral *ParserImpl::ParseTemplateLiteral()
     }
 
     auto *templateNode = AllocNode<ir::TemplateLiteral>(std::move(quasis), std::move(expressions), multilineStr);
+    ES2PANDA_ASSERT(templateNode != nullptr);
     templateNode->SetRange({startLoc, lexer_->GetToken().End()});
 
     lexer_->NextToken();

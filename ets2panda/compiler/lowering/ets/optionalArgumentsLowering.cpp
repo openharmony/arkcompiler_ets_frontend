@@ -52,6 +52,7 @@ static void TransformArguments(public_lib::Context *ctx, ir::Expression *callLik
     size_t missing = signature->ArgCount() - arguments.size();
     for (size_t i = 0; i < missing; ++i) {
         auto undefArg = allocator->New<ir::UndefinedLiteral>();
+        ES2PANDA_ASSERT(undefArg != nullptr);
         undefArg->SetTsType(checker->GlobalETSUndefinedType());
         arguments.push_back(undefArg);
         undefArg->SetParent(callLike);

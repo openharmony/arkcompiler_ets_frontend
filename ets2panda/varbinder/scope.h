@@ -216,6 +216,7 @@ public:
 
     Variable *AddDecl(ArenaAllocator *allocator, Decl *decl, ScriptExtension extension)
     {
+        ES2PANDA_ASSERT(decl != nullptr);
         auto *var =
             AddBinding(allocator, FindLocal(decl->Name(), varbinder::ResolveBindingOptions::BINDINGS), decl, extension);
         if (var != nullptr) {
@@ -874,6 +875,7 @@ public:
     {
         auto *paramScope = allocator->New<FunctionParamScope>(allocator, this);
         paramScope_ = paramScope;
+        ES2PANDA_ASSERT(paramScope_ != nullptr);
         paramScope_->BindFunctionScope(this);
     }
 
@@ -981,7 +983,7 @@ std::pair<varbinder::Variable *, bool> Scope::AddDecl(ArenaAllocator *allocator,
 
     auto *decl = allocator->New<DeclType>(name);
     variable = allocator->New<VariableType>(decl, flags);
-
+    ES2PANDA_ASSERT(variable != nullptr);
     decls_.emplace_back(decl);
     bindings_.insert({decl->Name(), variable});
     variable->SetScope(this);

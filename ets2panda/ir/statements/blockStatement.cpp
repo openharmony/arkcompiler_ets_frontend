@@ -48,6 +48,7 @@ AstNode *BlockStatement::Clone(ArenaAllocator *const allocator, AstNode *const p
     }
 
     auto retVal = util::NodeAllocator::ForceSetParent<ir::BlockStatement>(allocator, allocator, std::move(statements));
+    ES2PANDA_ASSERT(retVal != nullptr);
     retVal->SetParent(parent);
 
     return retVal;
