@@ -36,6 +36,9 @@ def copy_files(source_path, dest_path, is_file=False):
 
 
 def run_cmd(cmd, execution_path=None):
+    if (cmd and cmd[0].strip().endswith('npm')):
+        cmd.append('--registry')
+        cmd.append('https://repo.huaweicloud.com/repository/npm/')
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                            stdin=subprocess.PIPE,
                            stderr=subprocess.PIPE,
@@ -48,15 +51,24 @@ def run_cmd(cmd, execution_path=None):
 
 def run_cmd_with_retry(max_retries, wait_time, cmd, execution_path=None):
     retry_count = 0
+    last_exception = None
     while retry_count < max_retries:
         try:
             run_cmd(cmd, execution_path)
             break
-        except Exception:
+        except Exception as e:
+            last_exception = e
             retry_count += 1
             time.sleep(wait_time)
     if retry_count >= max_retries:
-        raise Exception("Failed to run cmd: " + cmd)
+        raise Exception(
+            "Command failed after {r} attempts. Cmd: {c}. Error: {e}"
+            .format(
+                r=max_retries,
+                c=" ".join(cmd),
+                e=last_exception
+            )
+        )
 
 
 def is_npm_newer_than_6(options):
@@ -265,11 +277,15 @@ def parse_args():
 
 def main():
     options = parse_args()
+    backup_package_files(options.source_path)
+    install_homecheck(options, 5, 3)
     install_typescript(options)
     node_modules_path = os.path.join(options.source_path, "node_modules")
     extract(options.typescript, node_modules_path, "typescript")
     build(options)
     copy_output(options)
+    clean_env(options.source_path)
+
 
 if __name__ == '__main__':
     sys.exit(main())

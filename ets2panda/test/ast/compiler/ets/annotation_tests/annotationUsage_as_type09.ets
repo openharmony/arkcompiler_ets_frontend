@@ -19,4 +19,3 @@
 let a = 1 as MyAnno
 
 /* @@? 19:14 Error TypeError: Annotations cannot be used as a type. */
-/* @@? 19:14 Error TypeError: Annotations cannot be used as a type. */

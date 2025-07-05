@@ -19,8 +19,7 @@ function baz(): number {
 
 function main(): void {
    let A: Array<number> = new Array<number>();
-   let a: Number[][][];
-
+   let a: FixedArray<FixedArray<FixedArray<Number>>>;
    let catched = false;
    try {
      a = new Number[baz()][4][A.length + 3.0000];
@@ -28,5 +27,5 @@ function main(): void {
      catched = true;
    }
 
-   assertTrue(catched)
+   arktest.assertTrue(catched)
 }

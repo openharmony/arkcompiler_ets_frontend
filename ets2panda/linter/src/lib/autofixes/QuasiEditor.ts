@@ -14,11 +14,13 @@
  */
 
 import * as fs from 'node:fs';
+import * as path from 'node:path';
 import type * as ts from 'typescript';
 import { Logger } from '../Logger';
 import type { ProblemInfo } from '../ProblemInfo';
 import type { Autofix } from './Autofixer';
 import type { LinterOptions } from '../LinterOptions';
+import { USE_STATIC } from '../utils/consts/InteropAPI';
 import { AUTOFIX_HTML_TEMPLATE_TEXT, AutofixHtmlTemplate } from './AutofixReportHtmlHelper';
 
 const BACKUP_AFFIX = '~';
@@ -29,7 +31,8 @@ export class QuasiEditor {
     readonly srcFileName: string,
     readonly sourceText: string,
     readonly linterOpts: LinterOptions,
-    readonly cancellationToken?: ts.CancellationToken
+    readonly cancellationToken?: ts.CancellationToken,
+    readonly reportPath?: string
   ) {}
 
   private static getBackupFileName(filePath: string): string {
@@ -38,12 +41,6 @@ export class QuasiEditor {
 
   static backupSrcFile(filePath: string): void {
     fs.copyFileSync(filePath, QuasiEditor.getBackupFileName(filePath));
-  }
-
-  static hasAnyAutofixes(problemInfos: ProblemInfo[]): boolean {
-    return problemInfos.some((problemInfo) => {
-      return problemInfo.autofix !== undefined;
-    });
   }
 
   private generateReport(acceptedPatches: Autofix[]): void {
@@ -64,11 +61,14 @@ export class QuasiEditor {
       })
     };
 
-    const reportPath = './autofix-report.html';
-    const getOldJsonArray = (reportPath: string): Set<any> => {
+    let reportFilePath = './autofix-report.html';
+    if (this.reportPath !== undefined) {
+      reportFilePath = path.join(path.normalize(this.reportPath), 'autofix-report.html');
+    }
+    const getOldJsonArray = (reportFilePath: string): Set<any> => {
       try {
         const RegexCaptureBraketFirst = 1;
-        const rawData = fs.readFileSync(reportPath, 'utf-8');
+        const rawData = fs.readFileSync(reportFilePath, 'utf-8');
         const rawContent = rawData.match(/`([\s\S]*?)`/)?.[RegexCaptureBraketFirst] ?? '';
         return new Set(JSON.parse(rawContent) || []);
       } catch {
@@ -77,24 +77,29 @@ export class QuasiEditor {
     };
 
     try {
-      const existingReports = getOldJsonArray(reportPath);
+      const existingReports = getOldJsonArray(reportFilePath);
       existingReports.add(report);
       const str = JSON.stringify([...existingReports], null, 2);
       const HtmlContent = AutofixHtmlTemplate.replace(AUTOFIX_HTML_TEMPLATE_TEXT, str);
-      fs.writeFileSync(reportPath, HtmlContent, { encoding: 'utf-8' });
+      if (!fs.existsSync(path.dirname(reportFilePath))) {
+        fs.mkdirSync(path.dirname(reportFilePath), { recursive: true });
+      }
+      fs.writeFileSync(reportFilePath, HtmlContent, { encoding: 'utf-8' });
     } catch (error) {
       Logger.error(`Failed to update autofix report: ${(error as Error).message}`);
     }
   }
 
-  fix(problemInfos: ProblemInfo[]): string {
+  fix(problemInfos: ProblemInfo[], needAddUseStatic: boolean | undefined): string {
     const acceptedPatches = QuasiEditor.sortAndRemoveIntersections(problemInfos);
-    const result = this.applyFixes(acceptedPatches);
+    let result = this.applyFixes(acceptedPatches);
 
     if (this.linterOpts.migrationReport) {
       this.generateReport(acceptedPatches);
     }
-
+    if (needAddUseStatic) {
+      result = QuasiEditor.addUseStaticDirective(result);
+    }
     return result;
   }
 
@@ -187,5 +192,19 @@ export class QuasiEditor {
      * [--]         (rhs)
      */
     return !(lhs.end < rhs.start || rhs.end < lhs.start);
+  }
+
+  private static addUseStaticDirective(content: string): string {
+    const lines = content.split('\n');
+    if (lines.length > 0 && lines[0].trim() === USE_STATIC) {
+      return content;
+    }
+    return USE_STATIC + '\n' + content;
+  }
+
+  static hasAnyAutofixes(problemInfos: ProblemInfo[]): boolean {
+    return problemInfos.some((problemInfo) => {
+      return problemInfo.autofix !== undefined;
+    });
   }
 }

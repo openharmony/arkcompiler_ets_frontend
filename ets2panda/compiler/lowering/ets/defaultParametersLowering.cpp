@@ -38,6 +38,37 @@ static ir::Statement *TransformInitializer(ArenaAllocator *allocator, parser::ET
                                             param->Ident()->Name(), init, typeAnnotation->Clone(allocator, nullptr));
 }
 
+static void TransformDefaultParameters(public_lib::Context *ctx, ir::ScriptFunction *function,
+                                       const std::vector<ir::ETSParameterExpression *> &params,
+                                       bool isInterfaceFunction)
+{
+    if (isInterfaceFunction) {
+        for (const auto param : params) {
+            TransformInitializer(ctx->allocator, ctx->parser->AsETSParser(), param);
+        }
+        return;
+    }
+
+    if (!function->HasBody()) {  // #23134
+        ES2PANDA_ASSERT(ctx->diagnosticEngine->IsAnyError());
+        return;
+    }
+
+    auto const body = function->Body()->AsBlockStatement();
+    auto const allocator = ctx->allocator;
+    auto const parser = ctx->parser->AsETSParser();
+    auto &bodyStmt = body->StatementsForUpdates();
+
+    bodyStmt.insert(bodyStmt.begin(), params.size(), nullptr);
+
+    for (size_t dfltIdx = 0; dfltIdx < params.size(); ++dfltIdx) {
+        auto const param = params.at(dfltIdx);
+        auto stmt = TransformInitializer(allocator, parser, param);
+        bodyStmt[dfltIdx] = stmt;
+        stmt->SetParent(body);
+    }
+}
+
 static void TransformFunction(public_lib::Context *ctx, ir::ScriptFunction *function)
 {
     auto const &params = function->Params();
@@ -61,22 +92,20 @@ static void TransformFunction(public_lib::Context *ctx, ir::ScriptFunction *func
     if (defaultParams.empty()) {
         return;
     }
-    if (!function->HasBody()) {  // #23134
-        ES2PANDA_ASSERT(ctx->diagnosticEngine->IsAnyError());
-        return;
-    }
-    auto const body = function->Body()->AsBlockStatement();
-    auto const allocator = ctx->allocator;
-    auto const parser = ctx->parser->AsETSParser();
 
-    body->Statements().insert(body->Statements().begin(), defaultParams.size(), nullptr);
-
-    for (size_t dfltIdx = 0; dfltIdx < defaultParams.size(); ++dfltIdx) {
-        auto const param = defaultParams.at(dfltIdx);
-        auto stmt = TransformInitializer(allocator, parser, param);
-        body->Statements()[dfltIdx] = stmt;
-        stmt->SetParent(body);
+    bool isInterfaceFunction = function->IsTSInterfaceDeclaration();
+    if (!isInterfaceFunction) {
+        ir::AstNode *node = function->Parent();
+        while (node != nullptr) {
+            if (node->IsTSInterfaceDeclaration()) {
+                isInterfaceFunction = true;
+                break;
+            }
+            node = node->Parent();
+        }
     }
+
+    TransformDefaultParameters(ctx, function, defaultParams, isInterfaceFunction);
 }
 
 bool DefaultParametersLowering::PerformForModule(public_lib::Context *ctx, parser::Program *program)

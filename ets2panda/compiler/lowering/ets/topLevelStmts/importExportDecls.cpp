@@ -14,6 +14,8 @@
  */
 
 #include "compiler/lowering/ets/topLevelStmts/importExportDecls.h"
+#include "compiler/lowering/util.h"
+#include "utils/arena_containers.h"
 
 namespace ark::es2panda::compiler {
 
@@ -26,6 +28,24 @@ void ImportExportDecls::ParseDefaultSources()
 {
     auto imports = parser_->ParseDefaultSources(DEFAULT_IMPORT_SOURCE_FILE, defaultImportSource_);
     varbinder_->SetDefaultImports(std::move(imports));
+}
+
+void ImportExportDecls::HandleInitModuleCallExpression(ir::CallExpression *callExpr, parser::Program *program,
+                                                       GlobalClassHandler::ModuleDependencies &moduleDependencies)
+{
+    if (!callExpr->Callee()->IsIdentifier() ||
+        callExpr->Callee()->AsIdentifier()->Name() != compiler::Signatures::INIT_MODULE_METHOD) {
+        return;
+    }
+
+    auto metaData = parser_->GetImportPathManager()->GatherImportMetadata(
+        program, util::ImportFlags::NONE, callExpr->Arguments().front()->AsStringLiteral());
+
+    bool isSimultaneous = ctx_->config->options->GetCompilationMode() == CompilationMode::GEN_ABC_FOR_EXTERNAL_SOURCE;
+    auto sources = isSimultaneous ? ctx_->parserProgram->ExternalSources() : program->DirectExternalSources();
+    if (auto dependentProg = SearchExternalProgramInImport(sources, metaData); dependentProg != nullptr) {
+        GlobalClassHandler::InsertModuleDependencies(&moduleDependencies, dependentProg);
+    }
 }
 
 void ImportExportDecls::ProcessProgramStatements(parser::Program *program,
@@ -46,6 +66,10 @@ void ImportExportDecls::ProcessProgramStatements(parser::Program *program,
         if (stmt->IsTSTypeAliasDeclaration() && (stmt->IsExported() || stmt->IsDefaultExported())) {
             PopulateAliasMap(stmt->AsTSTypeAliasDeclaration(), program->SourceFilePath());
         }
+        if (stmt->IsExpressionStatement() && stmt->AsExpressionStatement()->GetExpression()->IsCallExpression()) {
+            HandleInitModuleCallExpression(stmt->AsExpressionStatement()->GetExpression()->AsCallExpression(), program,
+                                           moduleDependencies);
+        }
     }
 }
 
@@ -53,12 +77,16 @@ GlobalClassHandler::ModuleDependencies ImportExportDecls::HandleGlobalStmts(Aren
 {
     VerifySingleExportDefault(programs);
     VerifyTypeExports(programs);
-    GlobalClassHandler::ModuleDependencies moduleDependencies {programs.front()->Allocator()->Adapter()};
+    GlobalClassHandler::ModuleDependencies moduleDependencies(
+        ArenaVector<parser::Program *>(programs.front()->Allocator()->Adapter()),
+        ArenaUnorderedSet<parser::Program *>(programs.front()->Allocator()->Adapter()));
     if (!programs.empty()) {
         std::sort(programs.begin(), programs.end(), ProgramFileNameLessThan);
     }
-    for (const auto &program : programs) {
-        PreMergeNamespaces(program);
+    for (auto const &program : programs) {
+        if (!program->IsASTLowered()) {
+            PreMergeNamespaces(program);
+        }
         SavedImportExportDeclsContext savedContext(this, program);
         ProcessProgramStatements(program, program->Ast()->Statements(), moduleDependencies);
         VerifyCollectedExportName(program);
@@ -70,7 +98,8 @@ void ImportExportDecls::PopulateAliasMap(const ir::ExportNamedDeclaration *decl,
 {
     for (auto spec : decl->Specifiers()) {
         if (!varbinder_->AddSelectiveExportAlias(path, spec->Local()->Name(), spec->Exported()->Name(), decl)) {
-            parser_->LogError(diagnostic::DUPLICATE_EXPORT_NAME, {spec->Local()->Name().Mutf8()}, lastExportErrorPos_);
+            parser_->LogError(diagnostic::DUPLICATE_EXPORT_NAME, {spec->Local()->Name().Mutf8()},
+                              spec->Exported()->Start());
             lastExportErrorPos_ = lexer::SourcePosition();
         }
     }
@@ -147,6 +176,11 @@ void ImportExportDecls::VisitFunctionDeclaration(ir::FunctionDeclaration *funcDe
     fieldMap_.emplace(funcDecl->Function()->Id()->Name(), funcDecl->Function());
 }
 
+void ImportExportDecls::VisitOverloadDeclaration(ir::OverloadDeclaration *overloadDeclaration)
+{
+    fieldMap_.emplace(overloadDeclaration->Id()->Name(), overloadDeclaration);
+}
+
 void ImportExportDecls::VisitVariableDeclaration(ir::VariableDeclaration *varDecl)
 {
     for (const auto &decl : varDecl->Declarators()) {
@@ -199,9 +233,7 @@ void ImportExportDecls::VisitExportNamedDeclaration(ir::ExportNamedDeclaration *
             }
             exportDefaultName_ = local->Name();
         }
-        if (exportDecl->IsExportedType()) {
-            exportedTypes_.insert(local->Name());
-        }
+
         if (!exportNameMap_.emplace(local->Name(), local->Start()).second) {
             lastExportErrorPos_ = local->Start();
             parser_->LogError(diagnostic::DUPLICATE_EXPORT_NAME, {local->Name().Mutf8()}, lastExportErrorPos_);
@@ -215,98 +247,60 @@ void ImportExportDecls::VisitETSImportDeclaration(ir::ETSImportDeclaration *impo
         if (spec->IsImportSpecifier()) {
             importedSpecifiersForExportCheck_.emplace(spec->AsImportSpecifier()->Local()->Name(),
                                                       spec->AsImportSpecifier()->Imported()->Name());
-        }
-        if (spec->IsImportDefaultSpecifier()) {
+        } else if (spec->IsImportDefaultSpecifier()) {
             importedSpecifiersForExportCheck_.emplace(spec->AsImportDefaultSpecifier()->Local()->Name(),
                                                       spec->AsImportDefaultSpecifier()->Local()->Name());
+        } else if (spec->IsImportNamespaceSpecifier()) {
+            importedSpecifiersForExportCheck_.emplace(spec->AsImportNamespaceSpecifier()->Local()->Name(),
+                                                      spec->AsImportNamespaceSpecifier()->Local()->Name());
+        } else {
+            ES2PANDA_UNREACHABLE();
         }
     }
 }
 
-void ImportExportDecls::HandleSimpleType(std::set<util::StringView> &exportedTypes,
-                                         std::set<util::StringView> &exportedStatements, ir::Statement *stmt,
-                                         util::StringView name, lexer::SourcePosition pos)
+void ImportExportDecls::HandleSimpleType(std::set<util::StringView> &exportedStatements, ir::Statement *stmt,
+                                         util::StringView name)
 {
     if (stmt->IsExported()) {
         exportedStatements.insert(name);
-    }
-
-    if (!stmt->IsExportedType()) {
-        return;
-    }
-
-    if (exportedStatements.find(name) != exportedStatements.end()) {
-        parser_->LogError(diagnostic::NAME_CANNOT_BE_EXPORTED_AND_TYPE_EXPORTED, {name.Mutf8()}, pos);
-    }
-
-    if (exportedTypes.find(name) != exportedTypes.end()) {
-        parser_->LogError(diagnostic::CANNOT_EXPORT_SAME_TYPE_TWICE, {name.Mutf8()}, pos);
-    } else {
-        exportedTypes.insert(name);
     }
 }
 
 void ImportExportDecls::VerifyTypeExports(const ArenaVector<parser::Program *> &programs)
 {
-    std::set<util::StringView> exportedTypes;
     std::set<util::StringView> exportedStatements;
     std::map<util::StringView, ir::AstNode *> typesMap;
 
     for (const auto &program : programs) {
         for (auto stmt : program->Ast()->Statements()) {
-            VerifyType(stmt, exportedTypes, exportedStatements, typesMap);
+            VerifyType(stmt, exportedStatements, typesMap);
         }
     }
 }
 
-void ImportExportDecls::VerifyType(ir::Statement *stmt, std::set<util::StringView> &exportedTypes,
-                                   std::set<util::StringView> &exportedStatements,
+void ImportExportDecls::VerifyType(ir::Statement *stmt, std::set<util::StringView> &exportedStatements,
                                    std::map<util::StringView, ir::AstNode *> &typesMap)
 {
     if (stmt->IsClassDeclaration()) {
+        if (!stmt->IsDeclare() && stmt->AsClassDeclaration()->Definition()->Language().IsDynamic()) {
+            parser_->LogError(diagnostic::EXPORT_WITHOUT_DECLARE_IN_DECL_MODULE, {}, stmt->Start());
+        }
         typesMap.insert({stmt->AsClassDeclaration()->Definition()->Ident()->Name(), stmt});
-        return HandleSimpleType(exportedTypes, exportedStatements, stmt,
-                                stmt->AsClassDeclaration()->Definition()->Ident()->Name(), stmt->Start());
+        return HandleSimpleType(exportedStatements, stmt, stmt->AsClassDeclaration()->Definition()->Ident()->Name());
     }
 
     if (stmt->IsTSInterfaceDeclaration()) {
+        if (!stmt->IsDeclare() && stmt->AsTSInterfaceDeclaration()->Language().IsDynamic()) {
+            parser_->LogError(diagnostic::EXPORT_WITHOUT_DECLARE_IN_DECL_MODULE, {}, stmt->Start());
+        }
         typesMap.insert({stmt->AsTSInterfaceDeclaration()->Id()->Name(), stmt});
-        return HandleSimpleType(exportedTypes, exportedStatements, stmt, stmt->AsTSInterfaceDeclaration()->Id()->Name(),
-                                stmt->Start());
+        return HandleSimpleType(exportedStatements, stmt, stmt->AsTSInterfaceDeclaration()->Id()->Name());
     }
 
     if (stmt->IsTSTypeAliasDeclaration()) {
         typesMap.insert({stmt->AsTSTypeAliasDeclaration()->Id()->Name(), stmt});
-        return HandleSimpleType(exportedTypes, exportedStatements, stmt, stmt->AsTSTypeAliasDeclaration()->Id()->Name(),
-                                stmt->Start());
-    }
-
-    if (!stmt->IsExportedType()) {
-        return;
-    }
-
-    if (!stmt->IsExportNamedDeclaration()) {
-        parser_->LogError(diagnostic::ONLY_EXPORT_CLASS_OR_INTERFACE, {}, stmt->Start());
-        return;
-    }
-
-    for (auto spec : stmt->AsExportNamedDeclaration()->Specifiers()) {
-        util::StringView name = spec->Local()->Name();
-        util::StringView nameFind = spec->Exported()->Name();
-
-        auto element = typesMap.find(nameFind);
-        if (element == typesMap.end()) {
-            parser_->LogError(diagnostic::ONLY_EXPORT_CLASS_OR_INTERFACE, {}, spec->Local()->Start());
-            continue;
-        }
-        if (!element->second->IsExportedType()) {
-            element->second->AddModifier(ir::ModifierFlags::EXPORT_TYPE);
-        }
-        HandleSimpleType(exportedTypes, exportedStatements, stmt, name, spec->Local()->Start());
-        if (!name.Is(nameFind.Mutf8())) {
-            element->second->AddAstNodeFlags(ir::AstNodeFlags::HAS_EXPORT_ALIAS);
-            HandleSimpleType(exportedTypes, exportedStatements, stmt, nameFind, spec->Local()->Start());
-        }
+        return HandleSimpleType(exportedStatements, stmt, stmt->AsTSTypeAliasDeclaration()->Id()->Name());
     }
 }
 
@@ -319,7 +313,7 @@ void ImportExportDecls::VerifySingleExportDefault(const ArenaVector<parser::Prog
             return;
         }
         if (metDefaultExport) {
-            logger.LogSemanticError("Only one default export is allowed in a module", stmt->Start());
+            logger.LogDiagnostic(diagnostic::MULTIPLE_DEFAULT_EXPORTS, util::DiagnosticMessageParams {}, stmt->Start());
         }
         metDefaultExport = true;
     };
@@ -361,7 +355,7 @@ void ImportExportDecls::PreMergeNamespaces(parser::Program *program)
         }
 
         ArenaVector<ir::ETSModule *> namespaces(program->Allocator()->Adapter());
-        auto &body = ast->AsETSModule()->Statements();
+        auto &body = ast->AsETSModule()->StatementsForUpdates();
         auto originalSize = body.size();
         auto end = std::remove_if(body.begin(), body.end(), [&namespaces](ir::AstNode *node) {
             if (node->IsETSModule() && node->AsETSModule()->IsNamespace()) {

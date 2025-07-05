@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -30,15 +30,14 @@ public:
     bool PerformForModule(public_lib::Context *ctx, parser::Program *program) override;
 
 private:
-    ir::Expression *ProcessNewArrayInstanceExpression(parser::ETSParser *parser, checker::ETSChecker *checker,
+    ir::Expression *ProcessNewArrayInstanceExpression(public_lib::Context *ctx,
                                                       ir::ETSNewArrayInstanceExpression *newInstanceExpression) const;
 
     ir::Expression *ProcessNewMultiDimArrayInstanceExpression(
-        parser::ETSParser *parser, checker::ETSChecker *checker,
-        ir::ETSNewMultiDimArrayInstanceExpression *newInstanceExpression) const;
+        public_lib::Context *ctx, ir::ETSNewMultiDimArrayInstanceExpression *newInstanceExpression) const;
 
     ir::Expression *CreateNewMultiDimArrayInstanceExpression(
-        checker::ETSChecker *checker, ir::ETSNewMultiDimArrayInstanceExpression *newInstanceExpression,
+        public_lib::Context *ctx, ir::ETSNewMultiDimArrayInstanceExpression *newInstanceExpression,
         ir::BlockExpression *blockExpression) const;
 };
 }  // namespace ark::es2panda::compiler

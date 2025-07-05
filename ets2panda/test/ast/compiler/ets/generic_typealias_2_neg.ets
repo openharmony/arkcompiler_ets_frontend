@@ -17,7 +17,7 @@ type my_type<T> = T;
 
 
 function main(): void {
-    let a: /* @@ label */my_type = new Int();
+    let a: my_type = new Int();
 }
 
-/* @@@ label Error TypeError: Type alias declaration is generic, but no type parameters were provided  */
+/* @@? 20:12 Error TypeError: Type alias declaration is generic, but too few type arguments were provided */

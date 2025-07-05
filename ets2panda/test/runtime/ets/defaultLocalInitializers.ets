@@ -13,14 +13,14 @@
 * limitations under the License.
 */
 
-function erase<T>(v: T): object | null | undefined { return v }
+function erase<T>(v: T): Any { return v }
 
-assertTrue(erase((() => {
+arktest.assertTrue(erase((() => {
     let r: boolean | undefined;
     return r;
 })()) === undefined)
 
-assertTrue(erase((() => {
+arktest.assertTrue(erase((() => {
     let r: boolean | null | undefined;
     return r;
 })()) === undefined)

@@ -25,9 +25,9 @@ function main(): void {
   }
 }
 
-function forins(): char {
+function forins(): string {
   for (let i of "abcdef") {
       return i;
   }
-  return c'*';
+  return '*';
 }

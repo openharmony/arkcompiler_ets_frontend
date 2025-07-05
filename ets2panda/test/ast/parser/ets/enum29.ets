@@ -61,9 +61,10 @@ function main(): void {
   const red = Color.Red;
   switch (Color.Green) {
     case Color.Blue: break;
-    case red: break;
+    case /* @@ label1 */red: break;
     case Color.Green: break;
   }
 }
 
-/* @@@ label Error SyntaxError: Invalid enum initialization value */
+/* @@@ label Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type. */
+/* @@@ label1 Error TypeError: Enum switch case must be unqualified name of an enum constant */

@@ -20,3 +20,15 @@ export namespace utils {
 }
 
 export default utils;
+
+export namespace ArkTSUtils {
+  export namespace locks {
+    export class AsyncLock {
+      constructor();
+    }
+  }
+
+  export namespace safeModule {
+    export function foo(): void;
+  }
+}

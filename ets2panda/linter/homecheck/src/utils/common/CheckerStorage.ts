@@ -21,6 +21,11 @@ export class CheckerStorage {
     private apiVersion: number = 16;
     private product: string = '';
 
+    public static dispose(): void {
+        // @ts-ignore
+        this.instance = null;
+    }
+
     /**
      * 获取 CheckerStorage 的单例实例
      * @returns {CheckerStorage} CheckerStorage 的单例实例

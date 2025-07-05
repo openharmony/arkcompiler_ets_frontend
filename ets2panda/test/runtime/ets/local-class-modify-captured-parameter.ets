@@ -22,14 +22,14 @@ class GlobalClass
         {
             method()
             {
-                assertEQ(param, 1)
+                arktest.assertEQ(param, 1)
                 param = 3;
             }
         }
 
         let lc = new LocalClass();
         lc.method()
-        assertEQ(param, 3)
+        arktest.assertEQ(param, 3)
     }
 }
 

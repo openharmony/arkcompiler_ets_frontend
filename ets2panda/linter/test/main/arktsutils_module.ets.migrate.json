@@ -13,5 +13,36 @@
         "See the License for the specific language governing permissions and",
         "limitations under the License."
     ],
-    "result": []
+    "result": [
+        {
+            "line": 35,
+            "column": 22,
+            "endLine": 35,
+            "endColumn": 32,
+            "problem": "LimitedStdLibNoASON",
+            "suggest": "",
+            "rule": "ASON is not supported. (arkts-no-need-stdlib-ason)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 37,
+            "column": 33,
+            "endLine": 37,
+            "endColumn": 43,
+            "problem": "LimitedStdLibNoASON",
+            "suggest": "",
+            "rule": "ASON is not supported. (arkts-no-need-stdlib-ason)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 39,
+            "column": 23,
+            "endLine": 39,
+            "endColumn": 33,
+            "problem": "LimitedStdLibNoASON",
+            "suggest": "",
+            "rule": "ASON is not supported. (arkts-no-need-stdlib-ason)",
+            "severity": "ERROR"
+        }
+    ]
 }

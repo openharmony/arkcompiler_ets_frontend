@@ -16,6 +16,3 @@
 enum EmptyEnum {
 
 }
-
-/* @@? 18:1 Error SyntaxError: An enum must have at least one enum constant. */
-/* @@? 18:1 Error SyntaxError: Unexpected token '}'. */

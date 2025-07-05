@@ -38,17 +38,31 @@ public:
 
     [[nodiscard]] checker::Type const *TsType() const
     {
-        return tsType_;
+        return AstNode::GetHistoryNodeAs<Typed<T>>()->tsType_;
     }
 
     [[nodiscard]] checker::Type *TsType()
     {
-        return tsType_;
+        return AstNode::GetHistoryNodeAs<Typed<T>>()->tsType_;
     }
 
     checker::Type *SetTsType(checker::Type *tsType) noexcept
     {
-        return (tsType_ = tsType);
+        auto nowNode = AstNode::GetHistoryNodeAs<Typed<T>>();
+        if (nowNode->tsType_ != tsType) {
+            AstNode::GetOrCreateHistoryNodeAs<Typed<T>>()->tsType_ = tsType;
+        }
+        return tsType;
+    }
+
+    [[nodiscard]] checker::Type *PreferredType() const noexcept
+    {
+        return preferredType_;
+    }
+
+    checker::Type *SetPreferredType(checker::Type *type) noexcept
+    {
+        return (preferredType_ = type);
     }
 
     bool IsTyped() const override
@@ -63,8 +77,18 @@ protected:
     // NOTE: when cloning node its type is not copied but removed empty so that it can be re-checked further.
     Typed(Typed const &other) : T(static_cast<T const &>(other)) {}
 
+    void CopyTo(AstNode *other) const override
+    {
+        auto otherImpl = static_cast<Typed<T> *>(other);
+        otherImpl->tsType_ = tsType_;
+        otherImpl->preferredType_ = preferredType_;
+        T::CopyTo(other);
+    }
+
 private:
+    friend class SizeOfNodeTest;
     checker::Type *tsType_ {};
+    checker::Type *preferredType_ {};  // used by the checker to supply information from context
 };
 
 class TypedAstNode : public Typed<AstNode> {
@@ -74,6 +98,11 @@ public:
 
     NO_COPY_OPERATOR(TypedAstNode);
     NO_MOVE_SEMANTIC(TypedAstNode);
+
+    void CopyTo(AstNode *other) const override
+    {
+        Typed<AstNode>::CopyTo(other);
+    };
 
 protected:
     explicit TypedAstNode(AstNodeType const type) : Typed<AstNode>(type) {}
@@ -111,6 +140,11 @@ public:
     NO_COPY_OPERATOR(TypedStatement);
     NO_MOVE_SEMANTIC(TypedStatement);
 
+    void CopyTo(AstNode *other) const override
+    {
+        Typed<Statement>::CopyTo(other);
+    };
+
 protected:
     explicit TypedStatement(AstNodeType type) : Typed<Statement>(type) {};
     explicit TypedStatement(AstNodeType type, ModifierFlags flags) : Typed<Statement>(type, flags) {};
@@ -127,6 +161,11 @@ public:
 
     NO_COPY_OPERATOR(AnnotatedStatement);
     NO_MOVE_SEMANTIC(AnnotatedStatement);
+
+    void CopyTo(AstNode *other) const override
+    {
+        Annotated<Statement>::CopyTo(other);
+    }
 
 protected:
     explicit AnnotatedStatement(AstNodeType type, TypeNode *typeAnnotation) : Annotated<Statement>(type, typeAnnotation)

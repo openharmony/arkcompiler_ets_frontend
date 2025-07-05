@@ -17,5 +17,5 @@ function foo(a: int) {}
 
 foo(1,
 
-/* @@@ label Error SyntaxError: Expected ')', got 'eos'. */
+/* @@@ label Error SyntaxError: Expected ')', got 'end of stream'. */
 /* @@ label */

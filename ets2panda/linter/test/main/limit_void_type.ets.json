@@ -18,7 +18,7 @@
             "line": 29,
             "column": 16,
             "endLine": 29,
-            "endColumn": 35,
+            "endColumn": 37,
             "problem": "FunctionExpression",
             "suggest": "",
             "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)",
@@ -88,7 +88,7 @@
             "line": 102,
             "column": 7,
             "endLine": 102,
-            "endColumn": 32,
+            "endColumn": 33,
             "problem": "DestructuringDeclaration",
             "suggest": "",
             "rule": "Destructuring variable declarations are not supported (arkts-no-destruct-decls)",
@@ -138,7 +138,7 @@
             "line": 117,
             "column": 22,
             "endLine": 117,
-            "endColumn": 59,
+            "endColumn": 60,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
@@ -146,9 +146,9 @@
         },
         {
             "line": 117,
-            "column": 46,
+            "column": 47,
             "endLine": 117,
-            "endColumn": 47,
+            "endColumn": 48,
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
             "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
@@ -158,7 +158,7 @@
             "line": 126,
             "column": 10,
             "endLine": 126,
-            "endColumn": 34,
+            "endColumn": 36,
             "problem": "FunctionExpression",
             "suggest": "",
             "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)",
@@ -166,9 +166,9 @@
         },
         {
             "line": 126,
-            "column": 27,
+            "column": 28,
             "endLine": 126,
-            "endColumn": 30,
+            "endColumn": 31,
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
@@ -185,6 +185,16 @@
             "severity": "WARNING"
         },
         {
+            "line": 168,
+            "column": 6,
+            "endLine": 168,
+            "endColumn": 8,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)",
+            "severity": "ERROR"
+        },
+        {
             "line": 200,
             "column": 5,
             "endLine": 200,
@@ -192,6 +202,16 @@
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 224,
+            "column": 5,
+            "endLine": 224,
+            "endColumn": 7,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)",
             "severity": "ERROR"
         }
     ]

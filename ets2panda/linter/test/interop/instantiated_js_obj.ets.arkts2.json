@@ -15,19 +15,9 @@
     ],
     "result": [
         {
-            "line": 17,
+            "line": 16,
             "column": 1,
-            "endLine": 17,
-            "endColumn": 51,
-            "problem": "ImportAfterStatement",
-            "suggest": "",
-            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 17,
-            "column": 1,
-            "endLine": 17,
+            "endLine": 16,
             "endColumn": 51,
             "problem": "InterOpImportJs",
             "suggest": "",
@@ -35,10 +25,40 @@
             "severity": "ERROR"
         },
         {
+            "line": 18,
+            "column": 19,
+            "endLine": 18,
+            "endColumn": 20,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 22,
+            "column": 1,
+            "endLine": 22,
+            "endColumn": 13,
+            "problem": "InstantiatedJsOjbect",
+            "suggest": "",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 22,
+            "column": 9,
+            "endLine": 22,
+            "endColumn": 12,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 23,
             "column": 1,
             "endLine": 23,
-            "endColumn": 13,
+            "endColumn": 17,
             "problem": "InstantiatedJsOjbect",
             "suggest": "",
             "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
@@ -55,10 +75,10 @@
             "severity": "ERROR"
         },
         {
-            "line": 25,
+            "line": 26,
             "column": 1,
-            "endLine": 25,
-            "endColumn": 17,
+            "endLine": 26,
+            "endColumn": 15,
             "problem": "InstantiatedJsOjbect",
             "suggest": "",
             "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
@@ -68,17 +88,27 @@
             "line": 27,
             "column": 1,
             "endLine": 27,
-            "endColumn": 15,
+            "endColumn": 11,
             "problem": "InstantiatedJsOjbect",
             "suggest": "",
             "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
             "severity": "ERROR"
         },
         {
-            "line": 28,
-            "column": 1,
-            "endLine": 28,
+            "line": 29,
+            "column": 10,
+            "endLine": 29,
             "endColumn": 11,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 31,
+            "column": 1,
+            "endLine": 31,
+            "endColumn": 16,
             "problem": "InstantiatedJsOjbect",
             "suggest": "",
             "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
@@ -88,20 +118,20 @@
             "line": 32,
             "column": 1,
             "endLine": 32,
-            "endColumn": 16,
+            "endColumn": 23,
             "problem": "InstantiatedJsOjbect",
             "suggest": "",
             "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
             "severity": "ERROR"
         },
         {
-            "line": 33,
-            "column": 1,
-            "endLine": 33,
-            "endColumn": 23,
-            "problem": "InstantiatedJsOjbect",
+            "line": 32,
+            "column": 10,
+            "endLine": 32,
+            "endColumn": 13,
+            "problem": "NumericSemantics",
             "suggest": "",
-            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         }
     ]

@@ -32,6 +32,11 @@ keywords:
     keyword_like: [ts]
     flags: [reserved_type_name]
 
+  - name: 'Any'
+    token: KEYW_BUILTIN_ANY
+    keyword_like: [ets]
+    flags:  [predefined_type]
+
   - name: 'anyref'
     token: KEYW_ANYREF
     keyword_like: [as]
@@ -300,6 +305,11 @@ keywords:
     token: KEYW_INFER
     keyword_like: [ts]
 
+  - name: 'initModule'
+    token: KEYW_INIT_MODULE
+    keyword_like: [ets]
+    flags: [reserved_type_name]
+
   - name: 'instanceof'
     token: KEYW_INSTANCEOF
     keyword: [as, js, ts]
@@ -336,10 +346,6 @@ keywords:
   - name: 'let'
     token: KEYW_LET
     keyword: [as, js, ets, ts]
-
-  - name: 'launch'
-    token: KEYW_LAUNCH
-    keyword: [ets]
 
   - name: 'long'
     token: KEYW_LONG
@@ -415,6 +421,10 @@ keywords:
     token: KEYW_OUT
     keyword_like: [ets]
 
+  - name: 'overload'
+    token: KEYW_OVERLOAD
+    keyword: [ets]
+
   - name: 'override'
     token: KEYW_OVERRIDE
     keyword: [ets]
@@ -443,10 +453,6 @@ keywords:
   - name: 'readonly'
     token: KEYW_READONLY
     keyword_like: [as, ts, ets]
-
-  - name: 'rethrows'
-    token: KEYW_RETHROWS
-    keyword_like: [ets]
 
   - name: 'return'
     token: KEYW_RETURN
@@ -508,10 +514,6 @@ keywords:
   - name: 'throw'
     token: KEYW_THROW
     keyword: [js, ets, ts, as]
-
-  - name: 'throws'
-    token: KEYW_THROWS
-    keyword_like: [ets]
 
   - name: 'true'
     token: LITERAL_TRUE

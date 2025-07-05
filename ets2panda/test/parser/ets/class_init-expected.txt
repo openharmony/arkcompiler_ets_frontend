@@ -166,40 +166,8 @@
                           }
                         },
                         "right": {
-                          "type": "BinaryExpression",
-                          "operator": "*",
-                          "left": {
-                            "type": "NumberLiteral",
-                            "value": 30,
-                            "loc": {
-                              "start": {
-                                "line": 20,
-                                "column": 11,
-                                "program": "class_init.ets"
-                              },
-                              "end": {
-                                "line": 20,
-                                "column": 13,
-                                "program": "class_init.ets"
-                              }
-                            }
-                          },
-                          "right": {
-                            "type": "NumberLiteral",
-                            "value": 99,
-                            "loc": {
-                              "start": {
-                                "line": 20,
-                                "column": 16,
-                                "program": "class_init.ets"
-                              },
-                              "end": {
-                                "line": 20,
-                                "column": 18,
-                                "program": "class_init.ets"
-                              }
-                            }
-                          },
+                          "type": "NumberLiteral",
+                          "value": 2970,
                           "loc": {
                             "start": {
                               "line": 20,
@@ -503,12 +471,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "class_init.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "class_init.ets"
                     }
                   }
                 },
@@ -516,12 +484,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "class_init.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "class_init.ets"
                   }
                 }
               },
@@ -529,12 +497,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "class_init.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "class_init.ets"
                 }
               }
             },
@@ -609,12 +577,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "class_init.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "class_init.ets"
                     }
                   }
                 },
@@ -622,12 +590,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "class_init.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "class_init.ets"
                   }
                 }
               },
@@ -635,12 +603,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "class_init.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "class_init.ets"
                 }
               }
             },

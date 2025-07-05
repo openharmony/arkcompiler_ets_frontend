@@ -27,5 +27,4 @@ function main() {
     c.met()
 }
 
-/* @@? 27:5 Error TypeError: Call to `met` is ambiguous   */
-/* @@? 27:5 Error TypeError: Reference to met is ambiguous  */
+/* @@? 20:5 Error TypeError: Function met with this assembly signature already declared.   */

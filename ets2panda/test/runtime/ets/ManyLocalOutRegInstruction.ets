@@ -32,6 +32,6 @@ function main(): int {
     let x14 = 14;
     let x15 = 15;
     let x16 = 16;
-    let x = new int[10];
+    let x:FixedArray<int> = new int[10];
     return x[0];
 }

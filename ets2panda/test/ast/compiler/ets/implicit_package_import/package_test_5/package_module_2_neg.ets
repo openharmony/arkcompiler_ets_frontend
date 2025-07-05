@@ -21,6 +21,8 @@ let wont_exist: number = 8;
 
 syntax error
 
+/* @@? 22:1 Error SyntaxError: Invalid package toplevel statement */
 /* @@? 22:1 Error TypeError: Unresolved reference syntax */
 /* @@? 22:8 Error SyntaxError: Unexpected token 'error'. */
+/* @@? 22:8 Error SyntaxError: Invalid package toplevel statement */
 /* @@? 22:8 Error TypeError: Unresolved reference error */

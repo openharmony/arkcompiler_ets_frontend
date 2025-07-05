@@ -24,17 +24,18 @@ namespace ark::es2panda::compiler {
 
 class EnumLoweringPhase : public PhaseForDeclarations {
 public:
-    static constexpr std::string_view const STRING_REFERENCE_TYPE {"String"};
-    static constexpr std::string_view const IDENTIFIER_I {"i"};
-    static constexpr std::string_view const PARAM_NAME {"name"};
-    static constexpr std::string_view const PARAM_VALUE {"value"};
-    static constexpr std::string_view const PARAM_ORDINAL {"ordinal"};
-    static constexpr std::string_view const STRING_VALUES_ARRAY_NAME {"#StringValuesArray"};
-    static constexpr std::string_view const ITEMS_ARRAY_NAME {"#ItemsArray"};
-    static constexpr std::string_view const NAMES_ARRAY_NAME {"#NamesArray"};
-    static constexpr std::string_view const VALUES_ARRAY_NAME {"#ValuesArray"};
-    static constexpr std::string_view const ORDINAL_NAME {"#ordinal"};
-    static constexpr std::string_view const BASE_CLASS_NAME {"BaseEnum"};
+    static constexpr std::string_view STRING_REFERENCE_TYPE {"String"};
+    static constexpr std::string_view IDENTIFIER_I {"i"};
+    static constexpr std::string_view PARAM_NAME {"name"};
+    static constexpr std::string_view PARAM_VALUE {"value"};
+    static constexpr std::string_view PARAM_ORDINAL {"ordinal"};
+    static constexpr std::string_view ITEMS_ARRAY_NAME {"#ItemsArray"};
+    static constexpr std::string_view STRING_VALUES_ARRAY_NAME {checker::ETSEnumType::STRING_VALUES_ARRAY_NAME};
+    static constexpr std::string_view NAMES_ARRAY_NAME {checker::ETSEnumType::NAMES_ARRAY_NAME};
+    static constexpr std::string_view VALUES_ARRAY_NAME {checker::ETSEnumType::VALUES_ARRAY_NAME};
+    static constexpr std::string_view BASE_CLASS_NAME {"BaseEnum"};
+    static constexpr std::string_view ORDINAL_NAME {"#ordinal"};
+    static constexpr auto ORDINAL_TYPE {ir::PrimitiveType::INT};
 
     enum EnumType { INT = 0, LONG = 1, STRING = 2 };
 
@@ -133,6 +134,9 @@ private:
     void SetDefaultPositionInUnfilledClassNodes(const ir::ClassDeclaration *enumClassDecl,
                                                 ir::TSEnumDeclaration const *const enumDecl);
     ArenaAllocator *Allocator();
+
+    template <typename T, typename... Args>
+    T *AllocNode(Args &&...args);
 
 private:
     public_lib::Context *context_ {nullptr};

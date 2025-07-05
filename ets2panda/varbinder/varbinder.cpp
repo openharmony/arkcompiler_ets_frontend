@@ -24,7 +24,6 @@ void VarBinder::InitTopScope()
     } else {
         topScope_ = Allocator()->New<GlobalScope>(Allocator());
     }
-
     scope_ = topScope_;
     varScope_ = topScope_;
 }
@@ -37,49 +36,62 @@ Variable *VarBinder::AddParamDecl(ir::Expression *param)
     ES2PANDA_ASSERT(var != nullptr);
 
     if (node != nullptr) {
-        ThrowRedeclaration(node->Start(), var->Name());
+        ThrowRedeclaration(node->Start(), var->Name(), var->Declaration()->Type());
     }
 
     return var;
 }
 
-void VarBinder::ThrowRedeclaration(const lexer::SourcePosition &pos, const util::StringView &name) const
+void VarBinder::ThrowRedeclaration(const lexer::SourcePosition &pos, const util::StringView &name,
+                                   DeclType declType) const
 {
-    auto const str = std::string {"Variable '"}.append(name.Utf8()).append("' has already been declared.");
-    ThrowError(pos, str);
+    ThrowError(pos, diagnostic::VARIABLE_REDECLARED, {name});
+
+    switch (declType) {
+        case DeclType::CLASS:
+        case DeclType::INTERFACE:
+        case DeclType::ENUM:
+            ThrowError(pos, diagnostic::MERGED_DECLS);
+            break;
+        default:
+            break;
+    }
+}
+
+void VarBinder::ThrowLocalRedeclaration(const lexer::SourcePosition &pos, const util::StringView &className) const
+{
+    ThrowError(pos, diagnostic::ID_REDECLARED, {className});
 }
 
 void VarBinder::ThrowUnresolvableType(const lexer::SourcePosition &pos, const util::StringView &name) const
 {
-    auto const str = std::string {"Cannot find type '"}.append(name.Utf8()).append("'.");
-    ThrowError(pos, str);
+    ThrowError(pos, diagnostic::TYPE_NOT_FOUND, {name});
 }
 
 void VarBinder::ThrowTDZ(const lexer::SourcePosition &pos, const util::StringView &name) const
 {
-    auto const str = std::string {"Variable '"}.append(name.Utf8()).append("' is accessed before it's initialization.");
-    ThrowError(pos, str);
+    ThrowError(pos, diagnostic::TEMPORAL_DEADZONE, {name});
 }
 
 void VarBinder::ThrowInvalidCapture(const lexer::SourcePosition &pos, const util::StringView &name) const
 {
-    auto const str = std::string {"Cannot capture variable '"}.append(name.Utf8()).append("'.");
-    ThrowError(pos, str);
+    ThrowError(pos, diagnostic::INVALID_CAPTURE, {name});
 }
 
 void VarBinder::ThrowPrivateFieldMismatch(const lexer::SourcePosition &pos, const util::StringView &name) const
 {
-    auto const str =
-        std::string {"Private field '"}.append(name.Utf8()).append("' must be declared in an enclosing class");
-    ThrowError(pos, str);
+    ThrowError(pos, diagnostic::PRIVATE_FIELD_MISMATCH, {name});
 }
 
-void VarBinder::ThrowError(const lexer::SourcePosition &pos, const std::string_view msg) const
+void VarBinder::ThrowError(const lexer::SourcePosition &pos, const diagnostic::DiagnosticKind &kind,
+                           const util::DiagnosticMessageParams &params) const
 {
-    lexer::LineIndex index(program_->SourceCode());
-    lexer::SourceLocation loc = index.GetLocation(pos);
+    context_->diagnosticEngine->ThrowSyntaxError(kind, params, pos);
+}
 
-    context_->diagnosticEngine->ThrowSyntaxError(msg, program_->SourceFilePath().Utf8(), loc.line, loc.col);
+bool VarBinder::IsGlobalIdentifier(const util::StringView &str) const
+{
+    return util::Helpers::IsGlobalIdentifier(str);
 }
 
 bool VarBinder::IsGlobalIdentifier(const util::StringView &str) const
@@ -123,7 +135,7 @@ bool VarBinder::InstantiateArgumentsImpl(Scope **scope, Scope *iter, const ir::A
     auto [argumentsVariable, exists] =
         (*scope)->AddDecl<ConstDecl, LocalVariable>(Allocator(), FUNCTION_ARGUMENTS, VariableFlags::INITIALIZED);
     if (exists && Extension() != ScriptExtension::JS) {
-        ThrowRedeclaration(node->Start(), FUNCTION_ARGUMENTS);
+        ThrowRedeclaration(node->Start(), FUNCTION_ARGUMENTS, argumentsVariable->Declaration()->Type());
     } else if (iter->IsFunctionParamScope()) {
         *scope = iter->AsFunctionParamScope()->GetFunctionScope();
         (*scope)->InsertBinding(argumentsVariable->Name(), argumentsVariable);
@@ -463,6 +475,18 @@ void VarBinder::VisitScriptFunction(ir::ScriptFunction *func)
     }
 
     if (!BuildInternalName(func)) {
+        if (func->Body() == nullptr) {
+            return;
+        }
+        auto stmt = func->Body()->AsBlockStatement()->Statements();
+        auto scopeCtx = LexicalScope<FunctionScope>::Enter(this, funcScope);
+        std::function<void(ir::AstNode *)> doNode = [&](ir::AstNode *node) {
+            if (node->IsTSInterfaceDeclaration() || node->IsTSEnumDeclaration()) {
+                ResolveReference(node);
+            }
+            node->Iterate([&](ir::AstNode *child) { doNode(child); });
+        };
+        doNode(func->Body());
         return;
     }
 
@@ -481,6 +505,7 @@ void VarBinder::VisitScriptFunctionWithPotentialTypeParams(ir::ScriptFunction *f
 {
     if (func->TypeParams() != nullptr) {
         auto typeParamScopeCtx = LexicalScope<Scope>::Enter(this, func->TypeParams()->Scope());
+        ResolveReferences(func->TypeParams());
         VisitScriptFunction(func);
         return;
     }
@@ -508,6 +533,7 @@ void VarBinder::ResolveReferenceWhileHelper(ir::AstNode *childNode)
     return ResolveReference(whileStatement->Body());
 }
 
+// CC-OFFNXT(huge_method,huge_cyclomatic_complexity,G.FUN.01-CPP) big switch-case, solid logic
 void VarBinder::ResolveReference(ir::AstNode *childNode)
 {
     switch (childNode->Type()) {
@@ -517,8 +543,9 @@ void VarBinder::ResolveReference(ir::AstNode *childNode)
         case ir::AstNodeType::SUPER_EXPRESSION:
             scope_->EnclosingVariableScope()->AddFlag(ScopeFlags::USE_SUPER);
             return ResolveReferences(childNode);
-        case ir::AstNodeType::SCRIPT_FUNCTION:
+        case ir::AstNodeType::SCRIPT_FUNCTION: {
             return VisitScriptFunctionWithPotentialTypeParams(childNode->AsScriptFunction());
+        }
         case ir::AstNodeType::VARIABLE_DECLARATOR:
             return BuildVarDeclarator(childNode->AsVariableDeclarator());
         case ir::AstNodeType::CLASS_DEFINITION:
@@ -527,17 +554,14 @@ void VarBinder::ResolveReference(ir::AstNode *childNode)
             return BuildClassProperty(childNode->AsClassProperty());
         case ir::AstNodeType::BLOCK_STATEMENT: {
             auto scopeCtx = LexicalScope<Scope>::Enter(this, childNode->AsBlockStatement()->Scope());
-
             return ResolveReferences(childNode);
         }
         case ir::AstNodeType::BLOCK_EXPRESSION: {
             auto scopeCtx = LexicalScope<Scope>::Enter(this, childNode->AsBlockExpression()->Scope());
-
             return ResolveReferences(childNode);
         }
         case ir::AstNodeType::SWITCH_STATEMENT: {
             auto scopeCtx = LexicalScope<LocalScope>::Enter(this, childNode->AsSwitchStatement()->Scope());
-
             return ResolveReferences(childNode);
         }
         case ir::AstNodeType::DO_WHILE_STATEMENT:

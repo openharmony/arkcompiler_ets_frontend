@@ -15,6 +15,7 @@
 
 #include "condition.h"
 
+#include "checker/ETSAnalyzerHelpers.h"
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
 #include "ir/expressions/assignmentExpression.h"
@@ -235,7 +236,6 @@ void Condition::Compile(ETSGen *etsg, const ir::Expression *expr, Label *falseLa
         etsg->BranchIfTrue(expr, falseLabel);
         return;
     }
-    ES2PANDA_ASSERT(expr->TsType()->IsConditionalExprType());
     expr->Compile(etsg);
     etsg->ApplyConversion(expr, etsg->Checker()->GlobalETSBooleanType());
     etsg->ResolveConditionalResultIfFalse(expr, falseLabel);

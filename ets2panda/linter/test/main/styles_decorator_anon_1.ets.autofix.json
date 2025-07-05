@@ -19,16 +19,83 @@
             "column": 18,
             "endLine": 40,
             "endColumn": 6,
-            "problem": "StylesDecoratorNotSupported",
+            "problem": "StateStylesBlockNeedArrowFunc",
             "autofix": [
                 {
                     "start": 767,
                     "end": 1035,
-                    "replacementText": "{\n      normal: (instance: CommonMethod): void => {\n          instance.backgroundColor(\"#00ffff\");\n          instance.borderWidth(8);\n      },\n      pressed: (instance: CommonMethod): void => {\n          instance.backgroundColor(Color.Red);\n          instance.backgroundImagePosition({\n              x: 0,\n              y: 0\n          });\n          instance.backgroundColor(\"#ffff00\");\n      }\n    }"
+                    "replacementText": "{\n      normal: (instance: CommonMethod): void => {\n          instance.backgroundColor(\"#00ffff\");\n          instance.borderWidth(8);\n      },\n      pressed: (instance: CommonMethod): void => {\n          instance.backgroundColor(Color.Red);\n          instance.backgroundImagePosition({\n              x: 0,\n              y: 0\n          });\n          instance.backgroundColor(\"#ffff00\");\n      }\n    }",
+                    "line": 27,
+                    "column": 18,
+                    "endLine": 40,
+                    "endColumn": 6
                 }
             ],
             "suggest": "",
-            "rule": "\"@Styles\" decorator is not supported (arkui-no-styles-decorator)",
+            "rule": "The code block passed to stateStyles needs to be an arrow function (arkui-statestyles-block-need-arrow-func)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 30,
+            "column": 22,
+            "endLine": 30,
+            "endColumn": 23,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 842,
+                    "end": 843,
+                    "replacementText": "8.0",
+                    "line": 30,
+                    "column": 22,
+                    "endLine": 30,
+                    "endColumn": 23
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 35,
+            "column": 14,
+            "endLine": 35,
+            "endColumn": 15,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 956,
+                    "end": 957,
+                    "replacementText": "0.0",
+                    "line": 35,
+                    "column": 14,
+                    "endLine": 35,
+                    "endColumn": 15
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 36,
+            "column": 14,
+            "endLine": 36,
+            "endColumn": 15,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 972,
+                    "end": 973,
+                    "replacementText": "0.0",
+                    "line": 36,
+                    "column": 14,
+                    "endLine": 36,
+                    "endColumn": 15
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -41,11 +108,15 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, BuilderParam, Require, Button, CommonMethod, Color } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  BuilderParam,\n  Require,\n  Button,\n  CommonMethod,\n  Color,\n} from '@kit.ArkUI';",
+                    "line": 33,
+                    "column": 26,
+                    "endLine": 33,
+                    "endColumn": 31
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Entry\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -58,11 +129,15 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, BuilderParam, Require, Button, CommonMethod, Color } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  BuilderParam,\n  Require,\n  Button,\n  CommonMethod,\n  Color,\n} from '@kit.ArkUI';",
+                    "line": 33,
+                    "column": 26,
+                    "endLine": 33,
+                    "endColumn": 31
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Component\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -75,11 +150,15 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, BuilderParam, Require, Button, CommonMethod, Color } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  BuilderParam,\n  Require,\n  Button,\n  CommonMethod,\n  Color,\n} from '@kit.ArkUI';",
+                    "line": 33,
+                    "column": 26,
+                    "endLine": 33,
+                    "endColumn": 31
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"BuilderParam\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -92,11 +171,15 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, BuilderParam, Require, Button, CommonMethod, Color } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  BuilderParam,\n  Require,\n  Button,\n  CommonMethod,\n  Color,\n} from '@kit.ArkUI';",
+                    "line": 33,
+                    "column": 26,
+                    "endLine": 33,
+                    "endColumn": 31
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Require\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -109,11 +192,15 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, BuilderParam, Require, Button, CommonMethod, Color } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  BuilderParam,\n  Require,\n  Button,\n  CommonMethod,\n  Color,\n} from '@kit.ArkUI';",
+                    "line": 33,
+                    "column": 26,
+                    "endLine": 33,
+                    "endColumn": 31
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Button\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -126,11 +213,15 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, BuilderParam, Require, Button, CommonMethod, Color } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  BuilderParam,\n  Require,\n  Button,\n  CommonMethod,\n  Color,\n} from '@kit.ArkUI';",
+                    "line": 33,
+                    "column": 26,
+                    "endLine": 33,
+                    "endColumn": 31
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Color\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         }
     ]

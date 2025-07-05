@@ -12,7 +12,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { utils } from './oh_modules/@arkts.utils';
 
 import { utils as ArkTSUtilsAlias } from './oh_modules/@arkts.utils';
@@ -32,4 +31,10 @@ function tesCollectionsUsage() {
   const utils3 = kitArkTSUtils.ASON.stringify(1);
 
   const utils4: string = ArkTSUtilsAlias.ASON.stringify(1);
+
+  type CreatedType = ArkTSUtils.ASON.SomeType;
+
+  const someType: CreatedType = ArkTSUtils.ASON.SomeType;
+
+  const map: number = ArkTSUtils.ASON.ParseReturnType.map;
 }

@@ -18,7 +18,7 @@ function f() {
         x: boolean = true
     }
     let lam = (c: C): boolean => { return c.x }
-    assertTrue(lam(new C()))
+    arktest.assertTrue(lam(new C()))
 }
 
 function main() {

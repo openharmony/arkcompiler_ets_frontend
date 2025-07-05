@@ -130,7 +130,11 @@ bool TypedParser::IsNamespaceDecl()
     }
     auto savedPos = Lexer()->Save();
     Lexer()->NextToken();
-    bool isNamespaceDecl = Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT;
+    // namespace is a soft keyword, so it can be used as an identifier outside declarations
+    // If followed by an identifier (literal or keyword), it's treated as a declaration
+    // Using keywords as identifiers is invalid, but that error is handled later during parsing
+    bool isNamespaceDecl =
+        Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT || Lexer()->GetToken().IsKeyword();
     Lexer()->Rewind(savedPos);
     return isNamespaceDecl;
 }
@@ -141,7 +145,11 @@ ir::Statement *TypedParser::ParsePotentialExpressionStatement(StatementParsingFl
 
     switch (Lexer()->GetToken().KeywordType()) {
         case lexer::TokenType::KEYW_TYPE: {
-            return ParseTypeAliasDeclaration();
+            const auto maybeAlias = ParseTypeAliasDeclaration();
+            if (maybeAlias != nullptr) {
+                return maybeAlias;
+            }
+            break;
         }
         case lexer::TokenType::KEYW_ABSTRACT: {
             Lexer()->NextToken();  // eat abstract keyword
@@ -222,7 +230,7 @@ ir::Statement *TypedParser::ParseNamespace([[maybe_unused]] ir::ModifierFlags fl
     return ParseModuleDeclaration();
 }
 
-ir::ArrowFunctionExpression *TypedParser::ParseGenericArrowFunction()
+ir::ArrowFunctionExpression *TypedParser::ParseGenericArrowFunction(bool isThrowError)
 {
     ArrowFunctionContext arrowFunctionContext(this, false);
 
@@ -233,6 +241,10 @@ ir::ArrowFunctionExpression *TypedParser::ParseGenericArrowFunction()
     ir::TSTypeParameterDeclaration *typeParamDecl = ParseTypeParameterDeclaration(&typeParamDeclOptions);
 
     if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS) {
+        if (isThrowError) {
+            LogError(diagnostic::UNEXPECTED_TOKEN_EXPECTED_PARAM,
+                     {TokenToString(lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS)});
+        }
         return nullptr;
     }
 
@@ -252,6 +264,9 @@ ir::ArrowFunctionExpression *TypedParser::ParseGenericArrowFunction()
     }
 
     if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_ARROW) {
+        if (isThrowError) {
+            LogError(diagnostic::UNEXPECTED_TOKEN_EXPECTED_PARAM, {TokenToString(lexer::TokenType::PUNCTUATOR_ARROW)});
+        }
         return nullptr;
     }
 
@@ -559,6 +574,10 @@ ArenaVector<ir::AstNode *> TypedParser::ParseTypeLiteralOrInterfaceBody()
         util::ErrorRecursionGuard infiniteLoopBlocker(Lexer());
 
         ir::AstNode *member = ParseTypeLiteralOrInterfaceMember();
+        if (member == nullptr) {
+            break;
+        }
+
         if (member->IsMethodDefinition() && member->AsMethodDefinition()->Function() != nullptr &&
             member->AsMethodDefinition()->Function()->IsOverload() &&
             member->AsMethodDefinition()->Function()->Body() != nullptr) {
@@ -577,6 +596,10 @@ ArenaVector<ir::AstNode *> TypedParser::ParseTypeLiteralOrInterfaceBody()
             break;
         }
 
+        if (Lexer()->GetToken().Type() == lexer::TokenType::JS_DOC_START) {
+            continue;
+        }
+
         if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COMMA &&
             Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_SEMI_COLON) {
             if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
@@ -587,8 +610,9 @@ ArenaVector<ir::AstNode *> TypedParser::ParseTypeLiteralOrInterfaceBody()
                 LogExpectedToken(lexer::TokenType::PUNCTUATOR_COMMA);
             }
 
-            if (Lexer()->GetToken().IsKeyword() && ((Lexer()->GetToken().Type() != lexer::TokenType::KEYW_STATIC) &&
-                                                    (Lexer()->GetToken().Type() != lexer::TokenType::KEYW_PRIVATE))) {
+            if (Lexer()->GetToken().IsKeyword() && (Lexer()->GetToken().Type() != lexer::TokenType::KEYW_STATIC &&
+                                                    Lexer()->GetToken().Type() != lexer::TokenType::KEYW_PRIVATE &&
+                                                    Lexer()->GetToken().Type() != lexer::TokenType::KEYW_DEFAULT)) {
                 Lexer()->GetToken().SetTokenType(lexer::TokenType::LITERAL_IDENT);
                 Lexer()->GetToken().SetTokenStr(ERROR_LITERAL);
             }

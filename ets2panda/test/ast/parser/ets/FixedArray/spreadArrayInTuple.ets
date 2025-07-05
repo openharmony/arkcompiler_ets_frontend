@@ -21,6 +21,6 @@ function main() {
 }
 
 /* @@? 18:43 Error TypeError: Initializer has 1 elements, but tuple requires 2 */
-/* @@? 18:59 Error TypeError: '(Int|String)[]' cannot be spread in tuple. */
+/* @@? 18:59 Error TypeError: 'Array<Int|String>' cannot be spread in tuple. */
 /* @@? 20:53 Error TypeError: Initializer has 2 elements, but tuple requires 3 */
-/* @@? 20:75 Error TypeError: '(Int|String)[]' cannot be spread in tuple. */
+/* @@? 20:75 Error TypeError: 'Array<Int|String>' cannot be spread in tuple. */

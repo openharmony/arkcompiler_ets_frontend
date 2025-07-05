@@ -38,8 +38,14 @@ public:
     explicit ETSParameterExpression(AnnotatedExpression *identOrSpread, bool isOptional,
                                     ArenaAllocator *const allocator);
 
+    explicit ETSParameterExpression(AnnotatedExpression *identOrSpread, bool isOptional,
+                                    ArenaAllocator *const allocator, AstNodeHistory *history);
+
     explicit ETSParameterExpression(AnnotatedExpression *identOrSpread, ir::Expression *initializer,
                                     ArenaAllocator *const allocator);
+
+    explicit ETSParameterExpression(AnnotatedExpression *identOrSpread, ir::Expression *initializer,
+                                    ArenaAllocator *const allocator, AstNodeHistory *history);
 
     [[nodiscard]] const util::StringView &Name() const noexcept;
 
@@ -48,9 +54,21 @@ public:
 
     void SetIdent(Identifier *ident) noexcept
     {
-        ident_ = ident;
-        ident_->SetParent(this);
+        this->GetOrCreateHistoryNodeAs<ETSParameterExpression>()->ident_ = ident;
+        ident->SetParent(this);
     }
+
+    SpreadElement *Spread() noexcept
+    {
+        return GetHistoryNodeAs<ETSParameterExpression>()->spread_;
+    }
+
+    const SpreadElement *Spread() const noexcept
+    {
+        return GetHistoryNodeAs<ETSParameterExpression>()->spread_;
+    }
+
+    void SetSpread(SpreadElement *spread);
 
     [[nodiscard]] const SpreadElement *RestParameter() const noexcept;
     [[nodiscard]] SpreadElement *RestParameter() noexcept;
@@ -58,7 +76,7 @@ public:
     [[nodiscard]] const Expression *Initializer() const noexcept;
     [[nodiscard]] Expression *Initializer() noexcept;
 
-    void SetLexerSaved(util::StringView s) noexcept;
+    void SetLexerSaved(util::StringView savedLexer);
     [[nodiscard]] util::StringView LexerSaved() const noexcept;
 
     [[nodiscard]] varbinder::Variable *Variable() const noexcept;
@@ -71,35 +89,32 @@ public:
 
     [[nodiscard]] bool IsOptional() const noexcept
     {
-        return isOptional_;
+        return GetHistoryNodeAs<ETSParameterExpression>()->isOptional_;
     }
 
     void SetOptional(bool value) noexcept
     {
-        isOptional_ = value;
-        ES2PANDA_ASSERT(isOptional_ || initializer_ == nullptr);
+        this->GetOrCreateHistoryNodeAs<ETSParameterExpression>()->isOptional_ = value;
+        ES2PANDA_ASSERT(IsOptional() || Initializer() == nullptr);
     }
 
     void SetInitializer(Expression *initExpr) noexcept
     {
-        initializer_ = initExpr;
-        ES2PANDA_ASSERT(isOptional_ || initializer_ == nullptr);
+        this->GetOrCreateHistoryNodeAs<ETSParameterExpression>()->initializer_ = initExpr;
+        ES2PANDA_ASSERT(IsOptional() || Initializer() == nullptr);
     }
 
     [[nodiscard]] bool IsRestParameter() const noexcept
     {
-        return spread_ != nullptr;
+        return Spread() != nullptr;
     }
 
     [[nodiscard]] std::size_t GetRequiredParams() const noexcept
     {
-        return extraValue_;
+        return GetHistoryNodeAs<ETSParameterExpression>()->extraValue_;
     }
 
-    void SetRequiredParams(std::size_t const value) noexcept
-    {
-        extraValue_ = value;
-    }
+    void SetRequiredParams(std::size_t const extraValue);
 
     [[nodiscard]] ETSParameterExpression *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
@@ -117,7 +132,12 @@ public:
         v->Accept(this);
     }
 
+    ETSParameterExpression *Construct(ArenaAllocator *allocator) override;
+    void CopyTo(AstNode *other) const override;
+
 private:
+    friend class SizeOfNodeTest;
+
     Identifier *ident_;
     Expression *initializer_ = nullptr;
     SpreadElement *spread_ = nullptr;

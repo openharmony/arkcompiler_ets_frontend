@@ -15,13 +15,23 @@
     ],
     "result": [
         {
-            "line": 17,
-            "column": 1,
-            "endLine": 17,
-            "endColumn": 85,
-            "problem": "ImportAfterStatement",
+            "line": 25,
+            "column": 14,
+            "endLine": 25,
+            "endColumn": 15,
+            "problem": "ObjectLiteralNoContextType",
             "suggest": "",
-            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 26,
+            "column": 16,
+            "endLine": 26,
+            "endColumn": 23,
+            "problem": "SpreadOperator",
+            "suggest": "",
+            "rule": "It is possible to spread only arrays or classes derived from arrays into the rest parameter or array literals (arkts-no-spread)",
             "severity": "ERROR"
         }
     ]

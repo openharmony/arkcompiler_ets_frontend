@@ -64,6 +64,7 @@ ast_nodes_supported = [
     "MemberExpression",
     "MetaProperty",
     "MethodDefinition",
+    "OverloadDeclaration",
     "NamedType",
     "NewExpression",
     "NullLiteral",
@@ -89,7 +90,6 @@ ast_nodes_supported = [
     "ETSTypeReferencePart",
     "ETSUnionType",
     "ETSKeyofType",
-    "ETSLaunchExpression",
     "ETSNewArrayInstanceExpression",
     "ETSNewMultiDimArrayInstanceExpression",
     "ETSNewClassInstanceExpression",
@@ -175,7 +175,6 @@ ast_nodes_supported = [
 ]
 
 all_types_supported = [
-
     # Cpp types
     "char",
     "short",
@@ -187,16 +186,13 @@ all_types_supported = [
     "long double",
     "bool",
     "void",
-
     # enums
     "AstNodeFlags",
-    "BoxingUnboxingFlags",
     "ModifierFlags",
     "ScriptFunctionFlags",
     "TSOperatorType",
     "MappedOption",
     "PrivateFieldKind",
-
     # astType
     "Type",
     "ArrayType",
@@ -247,7 +243,6 @@ all_types_supported = [
     "TupleType",
     "ObjectLiteralType",
     "InterfaceType",
-
     # Variable
     "Variable",
     "LocalVariable",
@@ -257,7 +252,6 @@ all_types_supported = [
     "NamespaceVariable",
     "ImportEqualsVariable",
     "EnumLiteralVariable",
-
     # others
     "StringView",
     "ArenaAllocator",
@@ -300,14 +294,17 @@ def is_method_supported(function: dict) -> bool:
 
 def need_to_gen(function: dict) -> bool:
     if "postfix" in function:
-        for ban in no_gen_keywords["postfix"]: # CC-OFF(G.TYP.07) dict key exist
+        for ban in no_gen_keywords["postfix"]:  # CC-OFF(G.TYP.07) dict key exist
             if function["postfix"].find(ban) != -1:
                 return False
     for name_start in no_gen_keywords["name_starts_with"]:  # CC-OFF(G.TYP.07) dict key exist
         if function["name"].startswith(name_start):
             return False
     if "return_type" in function:
-        for ban in no_gen_keywords["return_type"]: # CC-OFF(G.TYP.07) dict key exist
-            if "name" in function["return_type"] and function["return_type"]["name"].find(ban) != -1:
+        for ban in no_gen_keywords["return_type"]:  # CC-OFF(G.TYP.07) dict key exist
+            if (
+                "name" in function["return_type"]
+                and function["return_type"]["name"].find(ban) != -1
+            ):
                 return False
     return True

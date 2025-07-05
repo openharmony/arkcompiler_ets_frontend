@@ -17,8 +17,8 @@ class A<T> {
     public static of<T>(...values: T[]): A<T> {
         return new A<T>();
     }
-}
-
-function main(): void {
-    let x = A.of(1,2,3);
-}
+  }
+  
+  function main(): void {
+    let x = A.of<number>(1,2,3);
+  }

@@ -15,10 +15,16 @@
 
 #include "etsEnumType.h"
 
+#include "checker/ETSchecker.h"
 #include "checker/ets/conversion.h"
 #include "checker/types/ets/etsUnionType.h"
 
 namespace ark::es2panda::checker {
+
+Type *ETSEnumType::GetBaseEnumElementType(ETSChecker *checker)
+{
+    return checker->MaybeUnboxType(SuperType()->TypeArguments()[0]);
+}
 
 bool ETSStringEnumType::AssignmentSource(TypeRelation *relation, Type *target)
 {
@@ -77,7 +83,7 @@ bool ETSIntEnumType::AssignmentSource(TypeRelation *relation, Type *target)
         if (target->AsETSObjectType()->IsGlobalETSObjectType() ||
             target->AsETSObjectType()->Name() == compiler::Signatures::NUMERIC) {
             result = true;
-        } else if (target->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::BUILTIN_NUMERIC)) {
+        } else if (target->IsBuiltinNumeric()) {
             result = true;
             relation->GetNode()->AddAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF);
         }
@@ -108,8 +114,7 @@ void ETSIntEnumType::Cast(TypeRelation *const relation, Type *const target)
         relation->Result(true);
         return;
     }
-    if (target->HasTypeFlag(TypeFlag::ETS_NUMERIC) ||
-        (target->IsETSObjectType() && target->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::BUILTIN_NUMERIC))) {
+    if (target->HasTypeFlag(TypeFlag::ETS_NUMERIC) || target->IsBuiltinNumeric()) {
         relation->Result(true);
         return;
     }
@@ -122,7 +127,7 @@ void ETSIntEnumType::CastTarget(TypeRelation *relation, Type *source)
         relation->Result(true);
         return;
     }
-    if (source->IsETSObjectType() && source->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::BUILTIN_NUMERIC)) {
+    if (source->IsBuiltinNumeric()) {
         relation->Result(true);
         return;
     }

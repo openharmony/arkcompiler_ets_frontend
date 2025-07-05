@@ -12,11 +12,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
-'use static'
-let GeneratedImportVar_1 = ESObject.load('./interop_import_js_index_js');
-let foo = GeneratedImportVar_1.getPropertyByName('foo');
 
-let arr = foo.getPropertyByName("arr")
-arr.getPropertyByIndex(1).toNumber()
-arr.setPropertyByIndex(3, ESObject.wrap(4))
+let GeneratedImportVar_2 = ESValue.load('./interop_import_js_index_js');
+let foo = GeneratedImportVar_2.getProperty('foo');
+let GeneratedImportVar_1 = ESValue.load('./interop_import_js_rules_js');
+let ff3 = GeneratedImportVar_1.getProperty('ff3');
+
+let arr = foo.getProperty("arr")
+arr.getProperty(1.0)
+arr.setProperty(3.0, ESValue.wrap(4.0))
+
+let arr1 = ff3.getProperty("arr")
+let len: number = arr1.getProperty("length") as number
+for (let i: number = 0.0; i < arr1.getProperty("length"); ++i) {
+    console.log(arr1.getProperty(i).toNumber()+'');  //error
+    let x = arr1.getProperty(i).toNumber()  //error
+    arr1.setProperty(i, ESValue.wrap(0.0 //error
+))  //error
+    console.log(arr1.getProperty(i).toNumber()+'');  //error
+}
+
+for (let element of arr1) {  //error
+  if (element == 8.0) {
+    console.log("hi");
+  }
+}

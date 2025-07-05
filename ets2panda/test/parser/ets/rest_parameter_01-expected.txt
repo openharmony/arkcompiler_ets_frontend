@@ -80,12 +80,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "rest_parameter_01.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "rest_parameter_01.ets"
                     }
                   }
                 },
@@ -93,12 +93,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "rest_parameter_01.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "rest_parameter_01.ets"
                   }
                 }
               },
@@ -106,12 +106,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "rest_parameter_01.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "rest_parameter_01.ets"
                 }
               }
             },
@@ -186,12 +186,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "rest_parameter_01.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "rest_parameter_01.ets"
                     }
                   }
                 },
@@ -199,12 +199,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "rest_parameter_01.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "rest_parameter_01.ets"
                   }
                 }
               },
@@ -212,12 +212,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "rest_parameter_01.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "rest_parameter_01.ets"
                 }
               }
             },
@@ -588,23 +588,71 @@
                             }
                           },
                           "typeAnnotation": {
-                            "type": "TSArrayType",
-                            "elementType": {
-                              "type": "ETSPrimitiveType",
+                            "type": "ETSTypeReference",
+                            "part": {
+                              "type": "ETSTypeReferencePart",
+                              "name": {
+                                "type": "Identifier",
+                                "name": "Array",
+                                "decorators": [],
+                                "loc": {
+                                  "start": {
+                                    "line": 1,
+                                    "column": 1,
+                                    "program": "rest_parameter_01.ets"
+                                  },
+                                  "end": {
+                                    "line": 1,
+                                    "column": 3,
+                                    "program": "rest_parameter_01.ets"
+                                  }
+                                }
+                              },
+                              "typeParams": {
+                                "type": "TSTypeParameterInstantiation",
+                                "params": [
+                                  {
+                                    "type": "ETSPrimitiveType",
+                                    "loc": {
+                                      "start": {
+                                        "line": 1,
+                                        "column": 3,
+                                        "program": "rest_parameter_01.ets"
+                                      },
+                                      "end": {
+                                        "line": 1,
+                                        "column": 3,
+                                        "program": "rest_parameter_01.ets"
+                                      }
+                                    }
+                                  }
+                                ],
+                                "loc": {
+                                  "start": {
+                                    "line": 1,
+                                    "column": 3,
+                                    "program": "rest_parameter_01.ets"
+                                  },
+                                  "end": {
+                                    "line": 1,
+                                    "column": 3,
+                                    "program": "rest_parameter_01.ets"
+                                  }
+                                }
+                              },
                               "loc": {
                                 "start": {
-                                  "line": 20,
-                                  "column": 29,
+                                  "line": 1,
+                                  "column": 1,
                                   "program": "rest_parameter_01.ets"
                                 },
                                 "end": {
-                                  "line": 20,
-                                  "column": 32,
+                                  "line": 1,
+                                  "column": 3,
                                   "program": "rest_parameter_01.ets"
                                 }
                               }
                             },
-                            "annotations": [],
                             "loc": {
                               "start": {
                                 "line": 20,

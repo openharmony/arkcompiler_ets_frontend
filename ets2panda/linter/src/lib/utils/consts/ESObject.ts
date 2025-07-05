@@ -13,4 +13,4 @@
  * limitations under the License.
  */
 
-export const ES_OBJECT = 'ESObject';
+export const ES_VALUE = 'ESValue';

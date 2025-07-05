@@ -67,7 +67,7 @@ ir::Identifier *CreateNewArrayLengthStatement(public_lib::Context *ctx, ir::Arra
         if (spaId->TsType() != nullptr && spaId->TsType()->IsETSTupleType()) {
             lengthString << "(" << spaId->TsType()->AsETSTupleType()->GetTupleSize() << ") + ";
         } else {
-            lengthString << "(@@I" << (argumentCount++) << ".length as int) + ";
+            lengthString << "(@@I" << (argumentCount++) << ".length.toInt()) + ";
             nodesWaitingInsert.emplace_back(spaId->Clone(allocator, nullptr));
         }
     }
@@ -82,11 +82,11 @@ static ir::Identifier *CreateNewArrayDeclareStatement(public_lib::Context *ctx, 
                                                       ArenaVector<ir::Statement *> &statements,
                                                       ir::Identifier *newArrayLengthId)
 {
-    auto *const checker = ctx->checker->AsETSChecker();
+    auto *const checker = ctx->GetChecker()->AsETSChecker();
     auto *const allocator = ctx->allocator;
     auto *const parser = ctx->parser->AsETSParser();
     ir::Identifier *newArrayId = Gensym(allocator);
-    checker::Type *arrayElementType = array->TsType()->AsETSArrayType()->ElementType();
+    checker::Type *arrayElementType = checker->GetElementTypeOfArray(array->TsType());
 
     // NOTE: If arrayElementType is ETSUnionType(String|Int) or ETSObjectType(private constructor) or ..., we cannot
     //       use "new Type[]" to declare an array, so we generate a new UnionType "arrayElementType|null" to solve
@@ -96,12 +96,17 @@ static ir::Identifier *CreateNewArrayDeclareStatement(public_lib::Context *ctx, 
     //       But now cast Expression doesn't support built-in array (cast fatherType[] to sonType[]), so "newArrayName
     //       as arrayType" should be added after cast Expression is implemented completely.
     //       Related issue: #issue20162
-    if (checker::ETSChecker::IsReferenceType(arrayElementType)) {
+    if (checker->IsReferenceType(arrayElementType) &&
+        !(arrayElementType->IsETSObjectType() && arrayElementType->AsETSObjectType()->IsBoxedPrimitive())) {
         arrayElementType = checker->CreateETSUnionType({arrayElementType, checker->GlobalETSUndefinedType()});
     }
 
     std::stringstream newArrayDeclareStr;
-    newArrayDeclareStr << "let @@I1: (@@T2)[] = new (@@T3)[@@I4];" << std::endl;
+    if (array->TsType()->IsETSResizableArrayType()) {
+        newArrayDeclareStr << "let @@I1: Array<@@T2> = new Array<@@T3>(@@I4);" << std::endl;
+    } else {
+        newArrayDeclareStr << "let @@I1: FixedArray<@@T2> = new (@@T3)[@@I4];" << std::endl;
+    }
 
     ir::Statement *newArrayDeclareSt = parser->CreateFormattedStatement(
         newArrayDeclareStr.str(), newArrayId->Clone(allocator, nullptr), arrayElementType, arrayElementType,
@@ -176,24 +181,10 @@ static ir::Identifier *CreateNewTupleDeclareStatement(public_lib::Context *ctx, 
     return newTupleId;
 }
 
-static ir::Statement *CreateSpreadArrIteratorStatement(public_lib::Context *ctx, ir::ArrayExpression *array,
-                                                       ir::Identifier *spreadArrIterator)
-{
-    auto *const allocator = ctx->allocator;
-    auto *const parser = ctx->parser->AsETSParser();
-    checker::Type *arrayElementType = array->TsType()->AsETSArrayType()->ElementType();
-
-    std::stringstream spArrIterDeclareStr;
-    spArrIterDeclareStr << "let @@I1: @@T2;" << std::endl;
-    ir::Statement *spArrIterDeclareSt = parser->CreateFormattedStatement(
-        spArrIterDeclareStr.str(), spreadArrIterator->Clone(allocator, nullptr), arrayElementType);
-
-    return spArrIterDeclareSt;
-}
-
 static ir::Statement *CreateElementsAssignStatementBySpreadArr(public_lib::Context *ctx, ir::Identifier *spId,
                                                                std::vector<ir::AstNode *> &newArrayAndIndex,
-                                                               ir::Identifier *spreadArrIterator)
+                                                               ir::Identifier *spreadArrIterator,
+                                                               checker::Type *arrayElementType)
 {
     auto *const allocator = ctx->allocator;
     auto *const parser = ctx->parser->AsETSParser();
@@ -201,16 +192,15 @@ static ir::Statement *CreateElementsAssignStatementBySpreadArr(public_lib::Conte
     auto *const newArrayIndexId = newArrayAndIndex[1];
 
     std::stringstream elementsAssignStr;
-    elementsAssignStr << "for (@@I2 of @@I3) {";
-    elementsAssignStr << "@@I4[@@I5] = @@I6;";
+    elementsAssignStr << "for (let @@I1 of @@I2) {";
+    elementsAssignStr << "@@I3[@@I4] = @@I5 as @@T6;";
     elementsAssignStr << "@@I7++;";
     elementsAssignStr << "}";
 
     ir::Statement *elementsAssignStatement = parser->CreateFormattedStatement(
-        elementsAssignStr.str(), spreadArrIterator->Clone(allocator, nullptr),
-        spreadArrIterator->Clone(allocator, nullptr), spId->Clone(allocator, nullptr),
+        elementsAssignStr.str(), spreadArrIterator->Clone(allocator, nullptr), spId->Clone(allocator, nullptr),
         newArrayId->Clone(allocator, nullptr), newArrayIndexId->Clone(allocator, nullptr),
-        spreadArrIterator->Clone(allocator, nullptr), newArrayIndexId->Clone(allocator, nullptr));
+        spreadArrIterator->Clone(allocator, nullptr), arrayElementType, newArrayIndexId->Clone(allocator, nullptr));
 
     return elementsAssignStatement;
 }
@@ -247,15 +237,36 @@ static std::vector<ir::Statement *> CreateElementsAssignForTupleElements(public_
 
     for (size_t idx = 0; idx < spreadType->GetTupleTypesList().size(); ++idx) {
         std::stringstream tupleAssignmentsStr {};
-        tupleAssignmentsStr << "@@I1[@@I2] = (@@I3[" << idx << "]);";
-        tupleAssignmentsStr << "@@I4++;";
+        auto *elementType = spreadType->GetTupleTypesList()[idx];
+        tupleAssignmentsStr << "@@I1[@@I2] = (@@I3[" << idx << "] as @@T4);";
+        tupleAssignmentsStr << "@@I5++;";
         tupleAssignmentStatements.emplace_back(parser->CreateFormattedStatement(
             tupleAssignmentsStr.str(), newArrayId->Clone(allocator, nullptr),
-            newArrayIndexId->Clone(allocator, nullptr), spId->Clone(allocator, nullptr),
+            newArrayIndexId->Clone(allocator, nullptr), spId->Clone(allocator, nullptr), elementType,
             newArrayIndexId->Clone(allocator, nullptr)));
     }
 
     return tupleAssignmentStatements;
+}
+
+static ir::Statement *CreateReturnStatement(public_lib::Context *ctx, ir::AstNode *newArrayId,
+                                            ir::ArrayExpression *array)
+{
+    auto *const allocator = ctx->allocator;
+    auto *const parser = ctx->parser->AsETSParser();
+
+    std::vector<ir::AstNode *> nodes {newArrayId};
+    std::stringstream ss;
+    ss << "@@I1 ";
+
+    if (array->TsType()->IsETSResizableArrayType()) {
+        ss << "as Object as Array<@@T2>;" << std::endl;
+        nodes.emplace_back(
+            allocator->New<ir::OpaqueTypeNode>(array->TsType()->AsETSResizableArrayType()->ElementType(), allocator));
+    }
+
+    ir::Statement *returnStatement = parser->CreateFormattedStatement(ss.str(), nodes);
+    return returnStatement;
 }
 
 static void CreateNewArrayElementsAssignStatement(public_lib::Context *ctx, ir::ArrayExpression *array,
@@ -264,7 +275,6 @@ static void CreateNewArrayElementsAssignStatement(public_lib::Context *ctx, ir::
                                                   std::vector<ir::AstNode *> &newArrayAndIndex)
 {
     auto *const allocator = ctx->allocator;
-    auto *const parser = ctx->parser->AsETSParser();
     auto *const newArrayId = newArrayAndIndex[0];
     size_t spArrIdx = 0;
 
@@ -277,16 +287,17 @@ static void CreateNewArrayElementsAssignStatement(public_lib::Context *ctx, ir::
                                   newTupleAssignmentStatements.cend());
             } else {
                 ir::Identifier *spreadArrIterator = Gensym(allocator);
-                statements.emplace_back(CreateSpreadArrIteratorStatement(ctx, array, spreadArrIterator));
-                statements.emplace_back(CreateElementsAssignStatementBySpreadArr(ctx, spArrIds[spArrIdx++],
-                                                                                 newArrayAndIndex, spreadArrIterator));
+                checker::Type *arrayElementType =
+                    ctx->GetChecker()->AsETSChecker()->GetElementTypeOfArray(array->TsType());
+                statements.emplace_back(CreateElementsAssignStatementBySpreadArr(
+                    ctx, spArrIds[spArrIdx++], newArrayAndIndex, spreadArrIterator, arrayElementType));
             }
         } else {
             statements.emplace_back(CreateElementsAssignStatementBySingle(ctx, element, newArrayAndIndex));
         }
     }
 
-    statements.emplace_back(parser->CreateFormattedStatement("@@I1;", newArrayId->Clone(allocator, nullptr)));
+    statements.emplace_back(CreateReturnStatement(ctx, newArrayId->Clone(allocator, nullptr), array));
 }
 
 /*
@@ -308,7 +319,6 @@ static void CreateNewArrayElementsAssignStatement(public_lib::Context *ctx, ir::
  */
 static ir::BlockExpression *CreateLoweredExpressionForArray(public_lib::Context *ctx, ir::ArrayExpression *array)
 {
-    auto *const checker = ctx->checker->AsETSChecker();
     auto *const parser = ctx->parser->AsETSParser();
     auto *const allocator = ctx->allocator;
     ArenaVector<ir::Statement *> statements(allocator->Adapter());
@@ -326,7 +336,7 @@ static ir::BlockExpression *CreateLoweredExpressionForArray(public_lib::Context 
                                                  newArrayIndexId->Clone(allocator, nullptr)};
 
     CreateNewArrayElementsAssignStatement(ctx, array, spreadArrayIds, statements, newArrayAndIndex);
-    return checker->AllocNode<ir::BlockExpression>(std::move(statements));
+    return ctx->AllocNode<ir::BlockExpression>(std::move(statements));
 }
 
 /*
@@ -335,7 +345,7 @@ static ir::BlockExpression *CreateLoweredExpressionForArray(public_lib::Context 
  */
 static ir::BlockExpression *CreateLoweredExpressionForTuple(public_lib::Context *ctx, ir::ArrayExpression *array)
 {
-    auto *const checker = ctx->checker->AsETSChecker();
+    auto *const checker = ctx->GetChecker()->AsETSChecker();
     auto *const parser = ctx->parser->AsETSParser();
     auto *const allocator = ctx->allocator;
 
@@ -348,7 +358,7 @@ static ir::BlockExpression *CreateLoweredExpressionForTuple(public_lib::Context 
 
 bool SpreadConstructionPhase::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
-    checker::ETSChecker *const checker = ctx->checker->AsETSChecker();
+    checker::ETSChecker *const checker = ctx->GetChecker()->AsETSChecker();
     varbinder::ETSBinder *const varbinder = checker->VarBinder()->AsETSBinder();
 
     program->Ast()->TransformChildrenRecursively(
@@ -361,8 +371,9 @@ bool SpreadConstructionPhase::PerformForModule(public_lib::Context *ctx, parser:
 
                 const auto *const arrayExprType = node->AsArrayExpression()->TsType();
                 ir::BlockExpression *blockExpression =
-                    arrayExprType->IsETSArrayType() ? CreateLoweredExpressionForArray(ctx, node->AsArrayExpression())
-                                                    : CreateLoweredExpressionForTuple(ctx, node->AsArrayExpression());
+                    arrayExprType->IsETSArrayType() || arrayExprType->IsETSResizableArrayType()
+                        ? CreateLoweredExpressionForArray(ctx, node->AsArrayExpression())
+                        : CreateLoweredExpressionForTuple(ctx, node->AsArrayExpression());
                 blockExpression->SetParent(node->Parent());
 
                 // NOTE: this blockExpression is a kind of formatted-dummy code, which is invisible to users,
@@ -371,7 +382,6 @@ bool SpreadConstructionPhase::PerformForModule(public_lib::Context *ctx, parser:
                 for (auto st : blockExpression->Statements()) {
                     SetSourceRangesRecursively(st, node->Range());
                 }
-
                 Recheck(ctx->phaseManager, varbinder, checker, blockExpression);
 
                 return blockExpression;

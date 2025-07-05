@@ -48,6 +48,11 @@ void JSCompiler::Compile([[maybe_unused]] const ir::MethodDefinition *node) cons
     ES2PANDA_UNREACHABLE();
 }
 
+void JSCompiler::Compile([[maybe_unused]] const ir::OverloadDeclaration *node) const
+{
+    ES2PANDA_UNREACHABLE();
+}
+
 void JSCompiler::Compile([[maybe_unused]] const ir::Property *expr) const
 {
     ES2PANDA_UNREACHABLE();
@@ -98,6 +103,11 @@ void JSCompiler::Compile([[maybe_unused]] const ir::ETSClassLiteral *expr) const
     ES2PANDA_UNREACHABLE();
 }
 
+void JSCompiler::Compile([[maybe_unused]] const ir::ETSIntrinsicNode *expr) const
+{
+    ES2PANDA_UNREACHABLE();
+}
+
 void JSCompiler::Compile([[maybe_unused]] const ir::ETSFunctionType *expr) const
 {
     ES2PANDA_UNREACHABLE();
@@ -114,11 +124,6 @@ void JSCompiler::Compile([[maybe_unused]] const ir::ETSImportDeclaration *node) 
 }
 
 void JSCompiler::Compile([[maybe_unused]] const ir::ETSReExportDeclaration *node) const
-{
-    ES2PANDA_UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::ETSLaunchExpression *expr) const
 {
     ES2PANDA_UNREACHABLE();
 }
@@ -164,6 +169,11 @@ void JSCompiler::Compile([[maybe_unused]] const ir::ETSTypeReference *expr) cons
 }
 
 void JSCompiler::Compile([[maybe_unused]] const ir::ETSTypeReferencePart *expr) const
+{
+    ES2PANDA_UNREACHABLE();
+}
+
+void JSCompiler::Compile([[maybe_unused]] const ir::ETSNonNullishTypeNode *node) const
 {
     ES2PANDA_UNREACHABLE();
 }

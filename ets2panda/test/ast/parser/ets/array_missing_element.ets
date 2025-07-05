@@ -18,3 +18,7 @@ function foo(): void {
 }
 
 /* @@? 17:45 Error SyntaxError: Unexpected token ','. */
+/* @@? 17:47 Error SyntaxError: Unexpected token, expected ',' or ']'. */
+/* @@? 17:47 Error SyntaxError: Unexpected token '4'. */
+/* @@? 17:48 Error SyntaxError: Unexpected token ','. */
+/* @@? 17:50 Error SyntaxError: Unexpected token ']'. */

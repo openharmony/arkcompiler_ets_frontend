@@ -80,12 +80,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "conversion_w_functions.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "conversion_w_functions.ets"
                     }
                   }
                 },
@@ -93,12 +93,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "conversion_w_functions.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "conversion_w_functions.ets"
                   }
                 }
               },
@@ -106,12 +106,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "conversion_w_functions.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "conversion_w_functions.ets"
                 }
               }
             },
@@ -636,13 +636,47 @@
                     {
                       "type": "ReturnStatement",
                       "argument": {
-                        "type": "TSAsExpression",
-                        "expression": {
-                          "type": "CallExpression",
-                          "callee": {
-                            "type": "Identifier",
-                            "name": "getI",
-                            "decorators": [],
+                        "type": "CallExpression",
+                        "callee": {
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "CallExpression",
+                            "callee": {
+                              "type": "Identifier",
+                              "name": "getI",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 25,
+                                  "column": 12,
+                                  "program": "conversion_w_functions.ets"
+                                },
+                                "end": {
+                                  "line": 25,
+                                  "column": 16,
+                                  "program": "conversion_w_functions.ets"
+                                }
+                              }
+                            },
+                            "arguments": [
+                              {
+                                "type": "NumberLiteral",
+                                "value": 0,
+                                "loc": {
+                                  "start": {
+                                    "line": 25,
+                                    "column": 17,
+                                    "program": "conversion_w_functions.ets"
+                                  },
+                                  "end": {
+                                    "line": 25,
+                                    "column": 18,
+                                    "program": "conversion_w_functions.ets"
+                                  }
+                                }
+                              }
+                            ],
+                            "optional": false,
                             "loc": {
                               "start": {
                                 "line": 25,
@@ -651,29 +685,29 @@
                               },
                               "end": {
                                 "line": 25,
-                                "column": 16,
+                                "column": 19,
                                 "program": "conversion_w_functions.ets"
                               }
                             }
                           },
-                          "arguments": [
-                            {
-                              "type": "NumberLiteral",
-                              "value": 0,
-                              "loc": {
-                                "start": {
-                                  "line": 25,
-                                  "column": 17,
-                                  "program": "conversion_w_functions.ets"
-                                },
-                                "end": {
-                                  "line": 25,
-                                  "column": 18,
-                                  "program": "conversion_w_functions.ets"
-                                }
+                          "property": {
+                            "type": "Identifier",
+                            "name": "toByte",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 25,
+                                "column": 20,
+                                "program": "conversion_w_functions.ets"
+                              },
+                              "end": {
+                                "line": 25,
+                                "column": 26,
+                                "program": "conversion_w_functions.ets"
                               }
                             }
-                          ],
+                          },
+                          "computed": false,
                           "optional": false,
                           "loc": {
                             "start": {
@@ -683,26 +717,13 @@
                             },
                             "end": {
                               "line": 25,
-                              "column": 19,
+                              "column": 26,
                               "program": "conversion_w_functions.ets"
                             }
                           }
                         },
-                        "typeAnnotation": {
-                          "type": "ETSPrimitiveType",
-                          "loc": {
-                            "start": {
-                              "line": 25,
-                              "column": 23,
-                              "program": "conversion_w_functions.ets"
-                            },
-                            "end": {
-                              "line": 25,
-                              "column": 27,
-                              "program": "conversion_w_functions.ets"
-                            }
-                          }
-                        },
+                        "arguments": [],
+                        "optional": false,
                         "loc": {
                           "start": {
                             "line": 25,
@@ -711,7 +732,7 @@
                           },
                           "end": {
                             "line": 25,
-                            "column": 19,
+                            "column": 28,
                             "program": "conversion_w_functions.ets"
                           }
                         }
@@ -724,7 +745,7 @@
                         },
                         "end": {
                           "line": 25,
-                          "column": 28,
+                          "column": 29,
                           "program": "conversion_w_functions.ets"
                         }
                       }
@@ -886,13 +907,47 @@
                     {
                       "type": "ReturnStatement",
                       "argument": {
-                        "type": "TSAsExpression",
-                        "expression": {
-                          "type": "CallExpression",
-                          "callee": {
-                            "type": "Identifier",
-                            "name": "getI",
-                            "decorators": [],
+                        "type": "CallExpression",
+                        "callee": {
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "CallExpression",
+                            "callee": {
+                              "type": "Identifier",
+                              "name": "getI",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 29,
+                                  "column": 12,
+                                  "program": "conversion_w_functions.ets"
+                                },
+                                "end": {
+                                  "line": 29,
+                                  "column": 16,
+                                  "program": "conversion_w_functions.ets"
+                                }
+                              }
+                            },
+                            "arguments": [
+                              {
+                                "type": "NumberLiteral",
+                                "value": 1,
+                                "loc": {
+                                  "start": {
+                                    "line": 29,
+                                    "column": 17,
+                                    "program": "conversion_w_functions.ets"
+                                  },
+                                  "end": {
+                                    "line": 29,
+                                    "column": 18,
+                                    "program": "conversion_w_functions.ets"
+                                  }
+                                }
+                              }
+                            ],
+                            "optional": false,
                             "loc": {
                               "start": {
                                 "line": 29,
@@ -901,29 +956,29 @@
                               },
                               "end": {
                                 "line": 29,
-                                "column": 16,
+                                "column": 19,
                                 "program": "conversion_w_functions.ets"
                               }
                             }
                           },
-                          "arguments": [
-                            {
-                              "type": "NumberLiteral",
-                              "value": 1,
-                              "loc": {
-                                "start": {
-                                  "line": 29,
-                                  "column": 17,
-                                  "program": "conversion_w_functions.ets"
-                                },
-                                "end": {
-                                  "line": 29,
-                                  "column": 18,
-                                  "program": "conversion_w_functions.ets"
-                                }
+                          "property": {
+                            "type": "Identifier",
+                            "name": "toShort",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 29,
+                                "column": 20,
+                                "program": "conversion_w_functions.ets"
+                              },
+                              "end": {
+                                "line": 29,
+                                "column": 27,
+                                "program": "conversion_w_functions.ets"
                               }
                             }
-                          ],
+                          },
+                          "computed": false,
                           "optional": false,
                           "loc": {
                             "start": {
@@ -933,26 +988,13 @@
                             },
                             "end": {
                               "line": 29,
-                              "column": 19,
+                              "column": 27,
                               "program": "conversion_w_functions.ets"
                             }
                           }
                         },
-                        "typeAnnotation": {
-                          "type": "ETSPrimitiveType",
-                          "loc": {
-                            "start": {
-                              "line": 29,
-                              "column": 23,
-                              "program": "conversion_w_functions.ets"
-                            },
-                            "end": {
-                              "line": 29,
-                              "column": 28,
-                              "program": "conversion_w_functions.ets"
-                            }
-                          }
-                        },
+                        "arguments": [],
+                        "optional": false,
                         "loc": {
                           "start": {
                             "line": 29,
@@ -961,7 +1003,7 @@
                           },
                           "end": {
                             "line": 29,
-                            "column": 19,
+                            "column": 29,
                             "program": "conversion_w_functions.ets"
                           }
                         }
@@ -974,7 +1016,7 @@
                         },
                         "end": {
                           "line": 29,
-                          "column": 29,
+                          "column": 30,
                           "program": "conversion_w_functions.ets"
                         }
                       }
@@ -1136,13 +1178,47 @@
                     {
                       "type": "ReturnStatement",
                       "argument": {
-                        "type": "TSAsExpression",
-                        "expression": {
-                          "type": "CallExpression",
-                          "callee": {
-                            "type": "Identifier",
-                            "name": "getI",
-                            "decorators": [],
+                        "type": "CallExpression",
+                        "callee": {
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "CallExpression",
+                            "callee": {
+                              "type": "Identifier",
+                              "name": "getI",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 33,
+                                  "column": 12,
+                                  "program": "conversion_w_functions.ets"
+                                },
+                                "end": {
+                                  "line": 33,
+                                  "column": 16,
+                                  "program": "conversion_w_functions.ets"
+                                }
+                              }
+                            },
+                            "arguments": [
+                              {
+                                "type": "NumberLiteral",
+                                "value": 2,
+                                "loc": {
+                                  "start": {
+                                    "line": 33,
+                                    "column": 17,
+                                    "program": "conversion_w_functions.ets"
+                                  },
+                                  "end": {
+                                    "line": 33,
+                                    "column": 18,
+                                    "program": "conversion_w_functions.ets"
+                                  }
+                                }
+                              }
+                            ],
+                            "optional": false,
                             "loc": {
                               "start": {
                                 "line": 33,
@@ -1151,29 +1227,29 @@
                               },
                               "end": {
                                 "line": 33,
-                                "column": 16,
+                                "column": 19,
                                 "program": "conversion_w_functions.ets"
                               }
                             }
                           },
-                          "arguments": [
-                            {
-                              "type": "NumberLiteral",
-                              "value": 2,
-                              "loc": {
-                                "start": {
-                                  "line": 33,
-                                  "column": 17,
-                                  "program": "conversion_w_functions.ets"
-                                },
-                                "end": {
-                                  "line": 33,
-                                  "column": 18,
-                                  "program": "conversion_w_functions.ets"
-                                }
+                          "property": {
+                            "type": "Identifier",
+                            "name": "toInt",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 33,
+                                "column": 20,
+                                "program": "conversion_w_functions.ets"
+                              },
+                              "end": {
+                                "line": 33,
+                                "column": 25,
+                                "program": "conversion_w_functions.ets"
                               }
                             }
-                          ],
+                          },
+                          "computed": false,
                           "optional": false,
                           "loc": {
                             "start": {
@@ -1183,26 +1259,13 @@
                             },
                             "end": {
                               "line": 33,
-                              "column": 19,
+                              "column": 25,
                               "program": "conversion_w_functions.ets"
                             }
                           }
                         },
-                        "typeAnnotation": {
-                          "type": "ETSPrimitiveType",
-                          "loc": {
-                            "start": {
-                              "line": 33,
-                              "column": 23,
-                              "program": "conversion_w_functions.ets"
-                            },
-                            "end": {
-                              "line": 33,
-                              "column": 26,
-                              "program": "conversion_w_functions.ets"
-                            }
-                          }
-                        },
+                        "arguments": [],
+                        "optional": false,
                         "loc": {
                           "start": {
                             "line": 33,
@@ -1211,7 +1274,7 @@
                           },
                           "end": {
                             "line": 33,
-                            "column": 19,
+                            "column": 27,
                             "program": "conversion_w_functions.ets"
                           }
                         }
@@ -1224,7 +1287,7 @@
                         },
                         "end": {
                           "line": 33,
-                          "column": 27,
+                          "column": 28,
                           "program": "conversion_w_functions.ets"
                         }
                       }
@@ -1386,13 +1449,47 @@
                     {
                       "type": "ReturnStatement",
                       "argument": {
-                        "type": "TSAsExpression",
-                        "expression": {
-                          "type": "CallExpression",
-                          "callee": {
-                            "type": "Identifier",
-                            "name": "getI",
-                            "decorators": [],
+                        "type": "CallExpression",
+                        "callee": {
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "CallExpression",
+                            "callee": {
+                              "type": "Identifier",
+                              "name": "getI",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 37,
+                                  "column": 12,
+                                  "program": "conversion_w_functions.ets"
+                                },
+                                "end": {
+                                  "line": 37,
+                                  "column": 16,
+                                  "program": "conversion_w_functions.ets"
+                                }
+                              }
+                            },
+                            "arguments": [
+                              {
+                                "type": "NumberLiteral",
+                                "value": 3,
+                                "loc": {
+                                  "start": {
+                                    "line": 37,
+                                    "column": 17,
+                                    "program": "conversion_w_functions.ets"
+                                  },
+                                  "end": {
+                                    "line": 37,
+                                    "column": 18,
+                                    "program": "conversion_w_functions.ets"
+                                  }
+                                }
+                              }
+                            ],
+                            "optional": false,
                             "loc": {
                               "start": {
                                 "line": 37,
@@ -1401,29 +1498,29 @@
                               },
                               "end": {
                                 "line": 37,
-                                "column": 16,
+                                "column": 19,
                                 "program": "conversion_w_functions.ets"
                               }
                             }
                           },
-                          "arguments": [
-                            {
-                              "type": "NumberLiteral",
-                              "value": 3,
-                              "loc": {
-                                "start": {
-                                  "line": 37,
-                                  "column": 17,
-                                  "program": "conversion_w_functions.ets"
-                                },
-                                "end": {
-                                  "line": 37,
-                                  "column": 18,
-                                  "program": "conversion_w_functions.ets"
-                                }
+                          "property": {
+                            "type": "Identifier",
+                            "name": "toLong",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 37,
+                                "column": 20,
+                                "program": "conversion_w_functions.ets"
+                              },
+                              "end": {
+                                "line": 37,
+                                "column": 26,
+                                "program": "conversion_w_functions.ets"
                               }
                             }
-                          ],
+                          },
+                          "computed": false,
                           "optional": false,
                           "loc": {
                             "start": {
@@ -1433,26 +1530,13 @@
                             },
                             "end": {
                               "line": 37,
-                              "column": 19,
+                              "column": 26,
                               "program": "conversion_w_functions.ets"
                             }
                           }
                         },
-                        "typeAnnotation": {
-                          "type": "ETSPrimitiveType",
-                          "loc": {
-                            "start": {
-                              "line": 37,
-                              "column": 23,
-                              "program": "conversion_w_functions.ets"
-                            },
-                            "end": {
-                              "line": 37,
-                              "column": 27,
-                              "program": "conversion_w_functions.ets"
-                            }
-                          }
-                        },
+                        "arguments": [],
+                        "optional": false,
                         "loc": {
                           "start": {
                             "line": 37,
@@ -1461,7 +1545,7 @@
                           },
                           "end": {
                             "line": 37,
-                            "column": 19,
+                            "column": 28,
                             "program": "conversion_w_functions.ets"
                           }
                         }
@@ -1474,7 +1558,7 @@
                         },
                         "end": {
                           "line": 37,
-                          "column": 28,
+                          "column": 29,
                           "program": "conversion_w_functions.ets"
                         }
                       }
@@ -1636,13 +1720,47 @@
                     {
                       "type": "ReturnStatement",
                       "argument": {
-                        "type": "TSAsExpression",
-                        "expression": {
-                          "type": "CallExpression",
-                          "callee": {
-                            "type": "Identifier",
-                            "name": "getI",
-                            "decorators": [],
+                        "type": "CallExpression",
+                        "callee": {
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "CallExpression",
+                            "callee": {
+                              "type": "Identifier",
+                              "name": "getI",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 41,
+                                  "column": 12,
+                                  "program": "conversion_w_functions.ets"
+                                },
+                                "end": {
+                                  "line": 41,
+                                  "column": 16,
+                                  "program": "conversion_w_functions.ets"
+                                }
+                              }
+                            },
+                            "arguments": [
+                              {
+                                "type": "NumberLiteral",
+                                "value": 4,
+                                "loc": {
+                                  "start": {
+                                    "line": 41,
+                                    "column": 17,
+                                    "program": "conversion_w_functions.ets"
+                                  },
+                                  "end": {
+                                    "line": 41,
+                                    "column": 18,
+                                    "program": "conversion_w_functions.ets"
+                                  }
+                                }
+                              }
+                            ],
+                            "optional": false,
                             "loc": {
                               "start": {
                                 "line": 41,
@@ -1651,29 +1769,29 @@
                               },
                               "end": {
                                 "line": 41,
-                                "column": 16,
+                                "column": 19,
                                 "program": "conversion_w_functions.ets"
                               }
                             }
                           },
-                          "arguments": [
-                            {
-                              "type": "NumberLiteral",
-                              "value": 4,
-                              "loc": {
-                                "start": {
-                                  "line": 41,
-                                  "column": 17,
-                                  "program": "conversion_w_functions.ets"
-                                },
-                                "end": {
-                                  "line": 41,
-                                  "column": 18,
-                                  "program": "conversion_w_functions.ets"
-                                }
+                          "property": {
+                            "type": "Identifier",
+                            "name": "toFloat",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 41,
+                                "column": 20,
+                                "program": "conversion_w_functions.ets"
+                              },
+                              "end": {
+                                "line": 41,
+                                "column": 27,
+                                "program": "conversion_w_functions.ets"
                               }
                             }
-                          ],
+                          },
+                          "computed": false,
                           "optional": false,
                           "loc": {
                             "start": {
@@ -1683,26 +1801,13 @@
                             },
                             "end": {
                               "line": 41,
-                              "column": 19,
+                              "column": 27,
                               "program": "conversion_w_functions.ets"
                             }
                           }
                         },
-                        "typeAnnotation": {
-                          "type": "ETSPrimitiveType",
-                          "loc": {
-                            "start": {
-                              "line": 41,
-                              "column": 23,
-                              "program": "conversion_w_functions.ets"
-                            },
-                            "end": {
-                              "line": 41,
-                              "column": 28,
-                              "program": "conversion_w_functions.ets"
-                            }
-                          }
-                        },
+                        "arguments": [],
+                        "optional": false,
                         "loc": {
                           "start": {
                             "line": 41,
@@ -1711,7 +1816,7 @@
                           },
                           "end": {
                             "line": 41,
-                            "column": 19,
+                            "column": 29,
                             "program": "conversion_w_functions.ets"
                           }
                         }
@@ -1724,7 +1829,7 @@
                         },
                         "end": {
                           "line": 41,
-                          "column": 29,
+                          "column": 30,
                           "program": "conversion_w_functions.ets"
                         }
                       }
@@ -1886,13 +1991,47 @@
                     {
                       "type": "ReturnStatement",
                       "argument": {
-                        "type": "TSAsExpression",
-                        "expression": {
-                          "type": "CallExpression",
-                          "callee": {
-                            "type": "Identifier",
-                            "name": "getD",
-                            "decorators": [],
+                        "type": "CallExpression",
+                        "callee": {
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "CallExpression",
+                            "callee": {
+                              "type": "Identifier",
+                              "name": "getD",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 45,
+                                  "column": 12,
+                                  "program": "conversion_w_functions.ets"
+                                },
+                                "end": {
+                                  "line": 45,
+                                  "column": 16,
+                                  "program": "conversion_w_functions.ets"
+                                }
+                              }
+                            },
+                            "arguments": [
+                              {
+                                "type": "NumberLiteral",
+                                "value": 4,
+                                "loc": {
+                                  "start": {
+                                    "line": 45,
+                                    "column": 17,
+                                    "program": "conversion_w_functions.ets"
+                                  },
+                                  "end": {
+                                    "line": 45,
+                                    "column": 20,
+                                    "program": "conversion_w_functions.ets"
+                                  }
+                                }
+                              }
+                            ],
+                            "optional": false,
                             "loc": {
                               "start": {
                                 "line": 45,
@@ -1901,29 +2040,29 @@
                               },
                               "end": {
                                 "line": 45,
-                                "column": 16,
+                                "column": 21,
                                 "program": "conversion_w_functions.ets"
                               }
                             }
                           },
-                          "arguments": [
-                            {
-                              "type": "NumberLiteral",
-                              "value": 4,
-                              "loc": {
-                                "start": {
-                                  "line": 45,
-                                  "column": 17,
-                                  "program": "conversion_w_functions.ets"
-                                },
-                                "end": {
-                                  "line": 45,
-                                  "column": 20,
-                                  "program": "conversion_w_functions.ets"
-                                }
+                          "property": {
+                            "type": "Identifier",
+                            "name": "toFloat",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 45,
+                                "column": 22,
+                                "program": "conversion_w_functions.ets"
+                              },
+                              "end": {
+                                "line": 45,
+                                "column": 29,
+                                "program": "conversion_w_functions.ets"
                               }
                             }
-                          ],
+                          },
+                          "computed": false,
                           "optional": false,
                           "loc": {
                             "start": {
@@ -1933,26 +2072,13 @@
                             },
                             "end": {
                               "line": 45,
-                              "column": 21,
+                              "column": 29,
                               "program": "conversion_w_functions.ets"
                             }
                           }
                         },
-                        "typeAnnotation": {
-                          "type": "ETSPrimitiveType",
-                          "loc": {
-                            "start": {
-                              "line": 45,
-                              "column": 25,
-                              "program": "conversion_w_functions.ets"
-                            },
-                            "end": {
-                              "line": 45,
-                              "column": 30,
-                              "program": "conversion_w_functions.ets"
-                            }
-                          }
-                        },
+                        "arguments": [],
+                        "optional": false,
                         "loc": {
                           "start": {
                             "line": 45,
@@ -1961,7 +2087,7 @@
                           },
                           "end": {
                             "line": 45,
-                            "column": 21,
+                            "column": 31,
                             "program": "conversion_w_functions.ets"
                           }
                         }
@@ -1974,7 +2100,7 @@
                         },
                         "end": {
                           "line": 45,
-                          "column": 31,
+                          "column": 32,
                           "program": "conversion_w_functions.ets"
                         }
                       }
@@ -2136,13 +2262,47 @@
                     {
                       "type": "ReturnStatement",
                       "argument": {
-                        "type": "TSAsExpression",
-                        "expression": {
-                          "type": "CallExpression",
-                          "callee": {
-                            "type": "Identifier",
-                            "name": "getI",
-                            "decorators": [],
+                        "type": "CallExpression",
+                        "callee": {
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "CallExpression",
+                            "callee": {
+                              "type": "Identifier",
+                              "name": "getI",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 49,
+                                  "column": 12,
+                                  "program": "conversion_w_functions.ets"
+                                },
+                                "end": {
+                                  "line": 49,
+                                  "column": 16,
+                                  "program": "conversion_w_functions.ets"
+                                }
+                              }
+                            },
+                            "arguments": [
+                              {
+                                "type": "NumberLiteral",
+                                "value": 5,
+                                "loc": {
+                                  "start": {
+                                    "line": 49,
+                                    "column": 17,
+                                    "program": "conversion_w_functions.ets"
+                                  },
+                                  "end": {
+                                    "line": 49,
+                                    "column": 18,
+                                    "program": "conversion_w_functions.ets"
+                                  }
+                                }
+                              }
+                            ],
+                            "optional": false,
                             "loc": {
                               "start": {
                                 "line": 49,
@@ -2151,29 +2311,29 @@
                               },
                               "end": {
                                 "line": 49,
-                                "column": 16,
+                                "column": 19,
                                 "program": "conversion_w_functions.ets"
                               }
                             }
                           },
-                          "arguments": [
-                            {
-                              "type": "NumberLiteral",
-                              "value": 5,
-                              "loc": {
-                                "start": {
-                                  "line": 49,
-                                  "column": 17,
-                                  "program": "conversion_w_functions.ets"
-                                },
-                                "end": {
-                                  "line": 49,
-                                  "column": 18,
-                                  "program": "conversion_w_functions.ets"
-                                }
+                          "property": {
+                            "type": "Identifier",
+                            "name": "toDouble",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 49,
+                                "column": 20,
+                                "program": "conversion_w_functions.ets"
+                              },
+                              "end": {
+                                "line": 49,
+                                "column": 28,
+                                "program": "conversion_w_functions.ets"
                               }
                             }
-                          ],
+                          },
+                          "computed": false,
                           "optional": false,
                           "loc": {
                             "start": {
@@ -2183,26 +2343,13 @@
                             },
                             "end": {
                               "line": 49,
-                              "column": 19,
+                              "column": 28,
                               "program": "conversion_w_functions.ets"
                             }
                           }
                         },
-                        "typeAnnotation": {
-                          "type": "ETSPrimitiveType",
-                          "loc": {
-                            "start": {
-                              "line": 49,
-                              "column": 23,
-                              "program": "conversion_w_functions.ets"
-                            },
-                            "end": {
-                              "line": 49,
-                              "column": 29,
-                              "program": "conversion_w_functions.ets"
-                            }
-                          }
-                        },
+                        "arguments": [],
+                        "optional": false,
                         "loc": {
                           "start": {
                             "line": 49,
@@ -2211,7 +2358,7 @@
                           },
                           "end": {
                             "line": 49,
-                            "column": 19,
+                            "column": 30,
                             "program": "conversion_w_functions.ets"
                           }
                         }
@@ -2224,7 +2371,7 @@
                         },
                         "end": {
                           "line": 49,
-                          "column": 30,
+                          "column": 31,
                           "program": "conversion_w_functions.ets"
                         }
                       }
@@ -2386,13 +2533,47 @@
                     {
                       "type": "ReturnStatement",
                       "argument": {
-                        "type": "TSAsExpression",
-                        "expression": {
-                          "type": "CallExpression",
-                          "callee": {
-                            "type": "Identifier",
-                            "name": "getD",
-                            "decorators": [],
+                        "type": "CallExpression",
+                        "callee": {
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "CallExpression",
+                            "callee": {
+                              "type": "Identifier",
+                              "name": "getD",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 53,
+                                  "column": 12,
+                                  "program": "conversion_w_functions.ets"
+                                },
+                                "end": {
+                                  "line": 53,
+                                  "column": 16,
+                                  "program": "conversion_w_functions.ets"
+                                }
+                              }
+                            },
+                            "arguments": [
+                              {
+                                "type": "NumberLiteral",
+                                "value": 5,
+                                "loc": {
+                                  "start": {
+                                    "line": 53,
+                                    "column": 17,
+                                    "program": "conversion_w_functions.ets"
+                                  },
+                                  "end": {
+                                    "line": 53,
+                                    "column": 20,
+                                    "program": "conversion_w_functions.ets"
+                                  }
+                                }
+                              }
+                            ],
+                            "optional": false,
                             "loc": {
                               "start": {
                                 "line": 53,
@@ -2401,29 +2582,29 @@
                               },
                               "end": {
                                 "line": 53,
-                                "column": 16,
+                                "column": 21,
                                 "program": "conversion_w_functions.ets"
                               }
                             }
                           },
-                          "arguments": [
-                            {
-                              "type": "NumberLiteral",
-                              "value": 5,
-                              "loc": {
-                                "start": {
-                                  "line": 53,
-                                  "column": 17,
-                                  "program": "conversion_w_functions.ets"
-                                },
-                                "end": {
-                                  "line": 53,
-                                  "column": 20,
-                                  "program": "conversion_w_functions.ets"
-                                }
+                          "property": {
+                            "type": "Identifier",
+                            "name": "toDouble",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 53,
+                                "column": 22,
+                                "program": "conversion_w_functions.ets"
+                              },
+                              "end": {
+                                "line": 53,
+                                "column": 30,
+                                "program": "conversion_w_functions.ets"
                               }
                             }
-                          ],
+                          },
+                          "computed": false,
                           "optional": false,
                           "loc": {
                             "start": {
@@ -2433,26 +2614,13 @@
                             },
                             "end": {
                               "line": 53,
-                              "column": 21,
+                              "column": 30,
                               "program": "conversion_w_functions.ets"
                             }
                           }
                         },
-                        "typeAnnotation": {
-                          "type": "ETSPrimitiveType",
-                          "loc": {
-                            "start": {
-                              "line": 53,
-                              "column": 25,
-                              "program": "conversion_w_functions.ets"
-                            },
-                            "end": {
-                              "line": 53,
-                              "column": 31,
-                              "program": "conversion_w_functions.ets"
-                            }
-                          }
-                        },
+                        "arguments": [],
+                        "optional": false,
                         "loc": {
                           "start": {
                             "line": 53,
@@ -2461,7 +2629,7 @@
                           },
                           "end": {
                             "line": 53,
-                            "column": 21,
+                            "column": 32,
                             "program": "conversion_w_functions.ets"
                           }
                         }
@@ -2474,7 +2642,7 @@
                         },
                         "end": {
                           "line": 53,
-                          "column": 32,
+                          "column": 33,
                           "program": "conversion_w_functions.ets"
                         }
                       }
@@ -2636,13 +2804,47 @@
                     {
                       "type": "ReturnStatement",
                       "argument": {
-                        "type": "TSAsExpression",
-                        "expression": {
-                          "type": "CallExpression",
-                          "callee": {
-                            "type": "Identifier",
-                            "name": "getI",
-                            "decorators": [],
+                        "type": "CallExpression",
+                        "callee": {
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "CallExpression",
+                            "callee": {
+                              "type": "Identifier",
+                              "name": "getI",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 57,
+                                  "column": 12,
+                                  "program": "conversion_w_functions.ets"
+                                },
+                                "end": {
+                                  "line": 57,
+                                  "column": 16,
+                                  "program": "conversion_w_functions.ets"
+                                }
+                              }
+                            },
+                            "arguments": [
+                              {
+                                "type": "NumberLiteral",
+                                "value": 65,
+                                "loc": {
+                                  "start": {
+                                    "line": 57,
+                                    "column": 17,
+                                    "program": "conversion_w_functions.ets"
+                                  },
+                                  "end": {
+                                    "line": 57,
+                                    "column": 19,
+                                    "program": "conversion_w_functions.ets"
+                                  }
+                                }
+                              }
+                            ],
+                            "optional": false,
                             "loc": {
                               "start": {
                                 "line": 57,
@@ -2651,29 +2853,29 @@
                               },
                               "end": {
                                 "line": 57,
-                                "column": 16,
+                                "column": 20,
                                 "program": "conversion_w_functions.ets"
                               }
                             }
                           },
-                          "arguments": [
-                            {
-                              "type": "NumberLiteral",
-                              "value": 65,
-                              "loc": {
-                                "start": {
-                                  "line": 57,
-                                  "column": 17,
-                                  "program": "conversion_w_functions.ets"
-                                },
-                                "end": {
-                                  "line": 57,
-                                  "column": 19,
-                                  "program": "conversion_w_functions.ets"
-                                }
+                          "property": {
+                            "type": "Identifier",
+                            "name": "toChar",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 57,
+                                "column": 21,
+                                "program": "conversion_w_functions.ets"
+                              },
+                              "end": {
+                                "line": 57,
+                                "column": 27,
+                                "program": "conversion_w_functions.ets"
                               }
                             }
-                          ],
+                          },
+                          "computed": false,
                           "optional": false,
                           "loc": {
                             "start": {
@@ -2683,26 +2885,13 @@
                             },
                             "end": {
                               "line": 57,
-                              "column": 20,
+                              "column": 27,
                               "program": "conversion_w_functions.ets"
                             }
                           }
                         },
-                        "typeAnnotation": {
-                          "type": "ETSPrimitiveType",
-                          "loc": {
-                            "start": {
-                              "line": 57,
-                              "column": 24,
-                              "program": "conversion_w_functions.ets"
-                            },
-                            "end": {
-                              "line": 57,
-                              "column": 28,
-                              "program": "conversion_w_functions.ets"
-                            }
-                          }
-                        },
+                        "arguments": [],
+                        "optional": false,
                         "loc": {
                           "start": {
                             "line": 57,
@@ -2711,7 +2900,7 @@
                           },
                           "end": {
                             "line": 57,
-                            "column": 20,
+                            "column": 29,
                             "program": "conversion_w_functions.ets"
                           }
                         }
@@ -2724,7 +2913,7 @@
                         },
                         "end": {
                           "line": 57,
-                          "column": 29,
+                          "column": 30,
                           "program": "conversion_w_functions.ets"
                         }
                       }
@@ -2886,13 +3075,47 @@
                     {
                       "type": "ReturnStatement",
                       "argument": {
-                        "type": "TSAsExpression",
-                        "expression": {
-                          "type": "CallExpression",
-                          "callee": {
-                            "type": "Identifier",
-                            "name": "getD",
-                            "decorators": [],
+                        "type": "CallExpression",
+                        "callee": {
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "CallExpression",
+                            "callee": {
+                              "type": "Identifier",
+                              "name": "getD",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 61,
+                                  "column": 12,
+                                  "program": "conversion_w_functions.ets"
+                                },
+                                "end": {
+                                  "line": 61,
+                                  "column": 16,
+                                  "program": "conversion_w_functions.ets"
+                                }
+                              }
+                            },
+                            "arguments": [
+                              {
+                                "type": "NumberLiteral",
+                                "value": 1,
+                                "loc": {
+                                  "start": {
+                                    "line": 61,
+                                    "column": 17,
+                                    "program": "conversion_w_functions.ets"
+                                  },
+                                  "end": {
+                                    "line": 61,
+                                    "column": 20,
+                                    "program": "conversion_w_functions.ets"
+                                  }
+                                }
+                              }
+                            ],
+                            "optional": false,
                             "loc": {
                               "start": {
                                 "line": 61,
@@ -2901,29 +3124,29 @@
                               },
                               "end": {
                                 "line": 61,
-                                "column": 16,
+                                "column": 21,
                                 "program": "conversion_w_functions.ets"
                               }
                             }
                           },
-                          "arguments": [
-                            {
-                              "type": "NumberLiteral",
-                              "value": 1,
-                              "loc": {
-                                "start": {
-                                  "line": 61,
-                                  "column": 17,
-                                  "program": "conversion_w_functions.ets"
-                                },
-                                "end": {
-                                  "line": 61,
-                                  "column": 20,
-                                  "program": "conversion_w_functions.ets"
-                                }
+                          "property": {
+                            "type": "Identifier",
+                            "name": "toShort",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 61,
+                                "column": 22,
+                                "program": "conversion_w_functions.ets"
+                              },
+                              "end": {
+                                "line": 61,
+                                "column": 29,
+                                "program": "conversion_w_functions.ets"
                               }
                             }
-                          ],
+                          },
+                          "computed": false,
                           "optional": false,
                           "loc": {
                             "start": {
@@ -2933,26 +3156,13 @@
                             },
                             "end": {
                               "line": 61,
-                              "column": 21,
+                              "column": 29,
                               "program": "conversion_w_functions.ets"
                             }
                           }
                         },
-                        "typeAnnotation": {
-                          "type": "ETSPrimitiveType",
-                          "loc": {
-                            "start": {
-                              "line": 61,
-                              "column": 25,
-                              "program": "conversion_w_functions.ets"
-                            },
-                            "end": {
-                              "line": 61,
-                              "column": 30,
-                              "program": "conversion_w_functions.ets"
-                            }
-                          }
-                        },
+                        "arguments": [],
+                        "optional": false,
                         "loc": {
                           "start": {
                             "line": 61,
@@ -2961,7 +3171,7 @@
                           },
                           "end": {
                             "line": 61,
-                            "column": 21,
+                            "column": 31,
                             "program": "conversion_w_functions.ets"
                           }
                         }
@@ -2974,7 +3184,7 @@
                         },
                         "end": {
                           "line": 61,
-                          "column": 31,
+                          "column": 32,
                           "program": "conversion_w_functions.ets"
                         }
                       }
@@ -3136,13 +3346,47 @@
                     {
                       "type": "ReturnStatement",
                       "argument": {
-                        "type": "TSAsExpression",
-                        "expression": {
-                          "type": "CallExpression",
-                          "callee": {
-                            "type": "Identifier",
-                            "name": "getD",
-                            "decorators": [],
+                        "type": "CallExpression",
+                        "callee": {
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "CallExpression",
+                            "callee": {
+                              "type": "Identifier",
+                              "name": "getD",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 65,
+                                  "column": 12,
+                                  "program": "conversion_w_functions.ets"
+                                },
+                                "end": {
+                                  "line": 65,
+                                  "column": 16,
+                                  "program": "conversion_w_functions.ets"
+                                }
+                              }
+                            },
+                            "arguments": [
+                              {
+                                "type": "NumberLiteral",
+                                "value": 2,
+                                "loc": {
+                                  "start": {
+                                    "line": 65,
+                                    "column": 17,
+                                    "program": "conversion_w_functions.ets"
+                                  },
+                                  "end": {
+                                    "line": 65,
+                                    "column": 20,
+                                    "program": "conversion_w_functions.ets"
+                                  }
+                                }
+                              }
+                            ],
+                            "optional": false,
                             "loc": {
                               "start": {
                                 "line": 65,
@@ -3151,29 +3395,29 @@
                               },
                               "end": {
                                 "line": 65,
-                                "column": 16,
+                                "column": 21,
                                 "program": "conversion_w_functions.ets"
                               }
                             }
                           },
-                          "arguments": [
-                            {
-                              "type": "NumberLiteral",
-                              "value": 2,
-                              "loc": {
-                                "start": {
-                                  "line": 65,
-                                  "column": 17,
-                                  "program": "conversion_w_functions.ets"
-                                },
-                                "end": {
-                                  "line": 65,
-                                  "column": 20,
-                                  "program": "conversion_w_functions.ets"
-                                }
+                          "property": {
+                            "type": "Identifier",
+                            "name": "toInt",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 65,
+                                "column": 22,
+                                "program": "conversion_w_functions.ets"
+                              },
+                              "end": {
+                                "line": 65,
+                                "column": 27,
+                                "program": "conversion_w_functions.ets"
                               }
                             }
-                          ],
+                          },
+                          "computed": false,
                           "optional": false,
                           "loc": {
                             "start": {
@@ -3183,26 +3427,13 @@
                             },
                             "end": {
                               "line": 65,
-                              "column": 21,
+                              "column": 27,
                               "program": "conversion_w_functions.ets"
                             }
                           }
                         },
-                        "typeAnnotation": {
-                          "type": "ETSPrimitiveType",
-                          "loc": {
-                            "start": {
-                              "line": 65,
-                              "column": 25,
-                              "program": "conversion_w_functions.ets"
-                            },
-                            "end": {
-                              "line": 65,
-                              "column": 28,
-                              "program": "conversion_w_functions.ets"
-                            }
-                          }
-                        },
+                        "arguments": [],
+                        "optional": false,
                         "loc": {
                           "start": {
                             "line": 65,
@@ -3211,7 +3442,7 @@
                           },
                           "end": {
                             "line": 65,
-                            "column": 21,
+                            "column": 29,
                             "program": "conversion_w_functions.ets"
                           }
                         }
@@ -3224,7 +3455,7 @@
                         },
                         "end": {
                           "line": 65,
-                          "column": 29,
+                          "column": 30,
                           "program": "conversion_w_functions.ets"
                         }
                       }
@@ -3386,13 +3617,47 @@
                     {
                       "type": "ReturnStatement",
                       "argument": {
-                        "type": "TSAsExpression",
-                        "expression": {
-                          "type": "CallExpression",
-                          "callee": {
-                            "type": "Identifier",
-                            "name": "getD",
-                            "decorators": [],
+                        "type": "CallExpression",
+                        "callee": {
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "CallExpression",
+                            "callee": {
+                              "type": "Identifier",
+                              "name": "getD",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 69,
+                                  "column": 12,
+                                  "program": "conversion_w_functions.ets"
+                                },
+                                "end": {
+                                  "line": 69,
+                                  "column": 16,
+                                  "program": "conversion_w_functions.ets"
+                                }
+                              }
+                            },
+                            "arguments": [
+                              {
+                                "type": "NumberLiteral",
+                                "value": 3,
+                                "loc": {
+                                  "start": {
+                                    "line": 69,
+                                    "column": 17,
+                                    "program": "conversion_w_functions.ets"
+                                  },
+                                  "end": {
+                                    "line": 69,
+                                    "column": 20,
+                                    "program": "conversion_w_functions.ets"
+                                  }
+                                }
+                              }
+                            ],
+                            "optional": false,
                             "loc": {
                               "start": {
                                 "line": 69,
@@ -3401,29 +3666,29 @@
                               },
                               "end": {
                                 "line": 69,
-                                "column": 16,
+                                "column": 21,
                                 "program": "conversion_w_functions.ets"
                               }
                             }
                           },
-                          "arguments": [
-                            {
-                              "type": "NumberLiteral",
-                              "value": 3,
-                              "loc": {
-                                "start": {
-                                  "line": 69,
-                                  "column": 17,
-                                  "program": "conversion_w_functions.ets"
-                                },
-                                "end": {
-                                  "line": 69,
-                                  "column": 20,
-                                  "program": "conversion_w_functions.ets"
-                                }
+                          "property": {
+                            "type": "Identifier",
+                            "name": "toLong",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 69,
+                                "column": 22,
+                                "program": "conversion_w_functions.ets"
+                              },
+                              "end": {
+                                "line": 69,
+                                "column": 28,
+                                "program": "conversion_w_functions.ets"
                               }
                             }
-                          ],
+                          },
+                          "computed": false,
                           "optional": false,
                           "loc": {
                             "start": {
@@ -3433,26 +3698,13 @@
                             },
                             "end": {
                               "line": 69,
-                              "column": 21,
+                              "column": 28,
                               "program": "conversion_w_functions.ets"
                             }
                           }
                         },
-                        "typeAnnotation": {
-                          "type": "ETSPrimitiveType",
-                          "loc": {
-                            "start": {
-                              "line": 69,
-                              "column": 25,
-                              "program": "conversion_w_functions.ets"
-                            },
-                            "end": {
-                              "line": 69,
-                              "column": 29,
-                              "program": "conversion_w_functions.ets"
-                            }
-                          }
-                        },
+                        "arguments": [],
+                        "optional": false,
                         "loc": {
                           "start": {
                             "line": 69,
@@ -3461,7 +3713,7 @@
                           },
                           "end": {
                             "line": 69,
-                            "column": 21,
+                            "column": 30,
                             "program": "conversion_w_functions.ets"
                           }
                         }
@@ -3474,7 +3726,7 @@
                         },
                         "end": {
                           "line": 69,
-                          "column": 30,
+                          "column": 31,
                           "program": "conversion_w_functions.ets"
                         }
                       }
@@ -3538,266 +3790,16 @@
             "type": "MethodDefinition",
             "key": {
               "type": "Identifier",
-              "name": "uglifruit",
-              "decorators": [],
-              "loc": {
-                "start": {
-                  "line": 72,
-                  "column": 10,
-                  "program": "conversion_w_functions.ets"
-                },
-                "end": {
-                  "line": 72,
-                  "column": 19,
-                  "program": "conversion_w_functions.ets"
-                }
-              }
-            },
-            "kind": "method",
-            "accessibility": "public",
-            "static": true,
-            "optional": false,
-            "computed": false,
-            "value": {
-              "type": "FunctionExpression",
-              "function": {
-                "type": "ScriptFunction",
-                "id": {
-                  "type": "Identifier",
-                  "name": "uglifruit",
-                  "decorators": [],
-                  "loc": {
-                    "start": {
-                      "line": 72,
-                      "column": 10,
-                      "program": "conversion_w_functions.ets"
-                    },
-                    "end": {
-                      "line": 72,
-                      "column": 19,
-                      "program": "conversion_w_functions.ets"
-                    }
-                  }
-                },
-                "generator": false,
-                "async": false,
-                "expression": false,
-                "params": [],
-                "returnType": {
-                  "type": "ETSTypeReference",
-                  "part": {
-                    "type": "ETSTypeReferencePart",
-                    "name": {
-                      "type": "Identifier",
-                      "name": "Char",
-                      "decorators": [],
-                      "loc": {
-                        "start": {
-                          "line": 72,
-                          "column": 23,
-                          "program": "conversion_w_functions.ets"
-                        },
-                        "end": {
-                          "line": 72,
-                          "column": 27,
-                          "program": "conversion_w_functions.ets"
-                        }
-                      }
-                    },
-                    "loc": {
-                      "start": {
-                        "line": 72,
-                        "column": 23,
-                        "program": "conversion_w_functions.ets"
-                      },
-                      "end": {
-                        "line": 72,
-                        "column": 29,
-                        "program": "conversion_w_functions.ets"
-                      }
-                    }
-                  },
-                  "loc": {
-                    "start": {
-                      "line": 72,
-                      "column": 23,
-                      "program": "conversion_w_functions.ets"
-                    },
-                    "end": {
-                      "line": 72,
-                      "column": 29,
-                      "program": "conversion_w_functions.ets"
-                    }
-                  }
-                },
-                "body": {
-                  "type": "BlockStatement",
-                  "statements": [
-                    {
-                      "type": "ReturnStatement",
-                      "argument": {
-                        "type": "TSAsExpression",
-                        "expression": {
-                          "type": "CallExpression",
-                          "callee": {
-                            "type": "Identifier",
-                            "name": "getD",
-                            "decorators": [],
-                            "loc": {
-                              "start": {
-                                "line": 73,
-                                "column": 12,
-                                "program": "conversion_w_functions.ets"
-                              },
-                              "end": {
-                                "line": 73,
-                                "column": 16,
-                                "program": "conversion_w_functions.ets"
-                              }
-                            }
-                          },
-                          "arguments": [
-                            {
-                              "type": "NumberLiteral",
-                              "value": 65,
-                              "loc": {
-                                "start": {
-                                  "line": 73,
-                                  "column": 17,
-                                  "program": "conversion_w_functions.ets"
-                                },
-                                "end": {
-                                  "line": 73,
-                                  "column": 21,
-                                  "program": "conversion_w_functions.ets"
-                                }
-                              }
-                            }
-                          ],
-                          "optional": false,
-                          "loc": {
-                            "start": {
-                              "line": 73,
-                              "column": 12,
-                              "program": "conversion_w_functions.ets"
-                            },
-                            "end": {
-                              "line": 73,
-                              "column": 22,
-                              "program": "conversion_w_functions.ets"
-                            }
-                          }
-                        },
-                        "typeAnnotation": {
-                          "type": "ETSPrimitiveType",
-                          "loc": {
-                            "start": {
-                              "line": 73,
-                              "column": 26,
-                              "program": "conversion_w_functions.ets"
-                            },
-                            "end": {
-                              "line": 73,
-                              "column": 30,
-                              "program": "conversion_w_functions.ets"
-                            }
-                          }
-                        },
-                        "loc": {
-                          "start": {
-                            "line": 73,
-                            "column": 12,
-                            "program": "conversion_w_functions.ets"
-                          },
-                          "end": {
-                            "line": 73,
-                            "column": 22,
-                            "program": "conversion_w_functions.ets"
-                          }
-                        }
-                      },
-                      "loc": {
-                        "start": {
-                          "line": 73,
-                          "column": 5,
-                          "program": "conversion_w_functions.ets"
-                        },
-                        "end": {
-                          "line": 73,
-                          "column": 31,
-                          "program": "conversion_w_functions.ets"
-                        }
-                      }
-                    }
-                  ],
-                  "loc": {
-                    "start": {
-                      "line": 72,
-                      "column": 28,
-                      "program": "conversion_w_functions.ets"
-                    },
-                    "end": {
-                      "line": 74,
-                      "column": 2,
-                      "program": "conversion_w_functions.ets"
-                    }
-                  }
-                },
-                "loc": {
-                  "start": {
-                    "line": 72,
-                    "column": 10,
-                    "program": "conversion_w_functions.ets"
-                  },
-                  "end": {
-                    "line": 74,
-                    "column": 2,
-                    "program": "conversion_w_functions.ets"
-                  }
-                }
-              },
-              "loc": {
-                "start": {
-                  "line": 72,
-                  "column": 10,
-                  "program": "conversion_w_functions.ets"
-                },
-                "end": {
-                  "line": 74,
-                  "column": 2,
-                  "program": "conversion_w_functions.ets"
-                }
-              }
-            },
-            "overloads": [],
-            "decorators": [],
-            "loc": {
-              "start": {
-                "line": 72,
-                "column": 1,
-                "program": "conversion_w_functions.ets"
-              },
-              "end": {
-                "line": 74,
-                "column": 2,
-                "program": "conversion_w_functions.ets"
-              }
-            }
-          },
-          {
-            "type": "MethodDefinition",
-            "key": {
-              "type": "Identifier",
               "name": "main",
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 76,
+                  "line": 72,
                   "column": 10,
                   "program": "conversion_w_functions.ets"
                 },
                 "end": {
-                  "line": 76,
+                  "line": 72,
                   "column": 14,
                   "program": "conversion_w_functions.ets"
                 }
@@ -3818,12 +3820,12 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 76,
+                      "line": 72,
                       "column": 10,
                       "program": "conversion_w_functions.ets"
                     },
                     "end": {
-                      "line": 76,
+                      "line": 72,
                       "column": 14,
                       "program": "conversion_w_functions.ets"
                     }
@@ -3837,12 +3839,12 @@
                   "type": "ETSPrimitiveType",
                   "loc": {
                     "start": {
-                      "line": 76,
+                      "line": 72,
                       "column": 18,
                       "program": "conversion_w_functions.ets"
                     },
                     "end": {
-                      "line": 76,
+                      "line": 72,
                       "column": 22,
                       "program": "conversion_w_functions.ets"
                     }
@@ -3853,12 +3855,12 @@
                   "statements": [],
                   "loc": {
                     "start": {
-                      "line": 76,
+                      "line": 72,
                       "column": 23,
                       "program": "conversion_w_functions.ets"
                     },
                     "end": {
-                      "line": 76,
+                      "line": 72,
                       "column": 25,
                       "program": "conversion_w_functions.ets"
                     }
@@ -3866,12 +3868,12 @@
                 },
                 "loc": {
                   "start": {
-                    "line": 76,
+                    "line": 72,
                     "column": 10,
                     "program": "conversion_w_functions.ets"
                   },
                   "end": {
-                    "line": 76,
+                    "line": 72,
                     "column": 25,
                     "program": "conversion_w_functions.ets"
                   }
@@ -3879,12 +3881,12 @@
               },
               "loc": {
                 "start": {
-                  "line": 76,
+                  "line": 72,
                   "column": 10,
                   "program": "conversion_w_functions.ets"
                 },
                 "end": {
-                  "line": 76,
+                  "line": 72,
                   "column": 25,
                   "program": "conversion_w_functions.ets"
                 }
@@ -3894,12 +3896,12 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 76,
+                "line": 72,
                 "column": 1,
                 "program": "conversion_w_functions.ets"
               },
               "end": {
-                "line": 76,
+                "line": 72,
                 "column": 25,
                 "program": "conversion_w_functions.ets"
               }
@@ -3940,7 +3942,7 @@
       "program": "conversion_w_functions.ets"
     },
     "end": {
-      "line": 77,
+      "line": 73,
       "column": 1,
       "program": "conversion_w_functions.ets"
     }

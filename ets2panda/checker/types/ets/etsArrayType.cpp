@@ -14,6 +14,7 @@
  */
 
 #include "etsArrayType.h"
+#include <cstddef>
 
 #include "varbinder/variable.h"
 #include "checker/ETSchecker.h"
@@ -27,6 +28,7 @@ void ETSArrayType::ToString(std::stringstream &ss, bool precise) const
     if (HasTypeFlag(TypeFlag::READONLY)) {
         ss << "readonly ";
     }
+    ss << "FixedArray<";
     bool needParens = (element_->IsETSUnionType() || element_->IsETSFunctionType());
     if (needParens) {
         ss << "(";
@@ -35,7 +37,7 @@ void ETSArrayType::ToString(std::stringstream &ss, bool precise) const
     if (needParens) {
         ss << ")";
     }
-    ss << "[]";
+    ss << ">";
 }
 
 void ETSArrayType::ToAssemblerType(std::stringstream &ss) const
@@ -82,6 +84,22 @@ void ETSArrayType::Identical(TypeRelation *relation, Type *other)
     }
 }
 
+static bool IsFixedArrayDeclaration(ir::AstNode *node)
+{
+    return node != nullptr && (node->IsArrayExpression() || node->IsETSNewArrayInstanceExpression() ||
+                               node->IsETSNewMultiDimArrayInstanceExpression());
+}
+
+bool ETSArrayType::AssignmentSource(TypeRelation *relation, Type *target)
+{
+    if (target->IsETSResizableArrayType() && IsFixedArrayDeclaration(relation->GetNode())) {
+        relation->IsAssignableTo(element_, target->AsETSResizableArrayType()->ElementType());
+        // For lowering purpose
+        relation->GetNode()->SetTsType(target);
+    }
+    return relation->IsTrue();
+}
+
 void ETSArrayType::AssignmentTarget(TypeRelation *relation, Type *source)
 {
     if (source->HasTypeFlag(TypeFlag::READONLY)) {
@@ -93,7 +111,7 @@ void ETSArrayType::AssignmentTarget(TypeRelation *relation, Type *source)
             source->AsETSArrayType()->ElementType()->IsETSPrimitiveOrEnumType()) {
             return;
         }
-        relation->IsAssignableTo(source->AsETSArrayType()->ElementType(), element_);
+        relation->IsSupertypeOf(element_, source->AsETSArrayType()->ElementType());
     }
 }
 

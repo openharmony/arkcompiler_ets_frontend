@@ -16,8 +16,11 @@
 #include "helpers.h"
 #include <iomanip>
 
+#include "checker/ETSchecker.h"
+
 #include "parser/program/program.h"
 #include "varbinder/privateBinding.h"
+#include "varbinder/ETSBinder.h"
 #include "lexer/token/letters.h"
 
 #include "ir/base/classDefinition.h"
@@ -700,10 +703,61 @@ std::pair<std::string_view, std::string_view> Helpers::SplitSignature(std::strin
 
 std::vector<std::string> const &Helpers::StdLib()
 {
-    static std::vector<std::string> stdlib {"std/core",       "std/math",        "std/containers",        "std/time",
-                                            "std/interop/js", "std/debug",       "std/debug/concurrency", "std/testing",
-                                            "escompat",       "std/concurrency", "std/annotations"};
+    static std::vector<std::string> stdlib {"std/core", "std/math",        "std/containers",        "std/interop/js",
+                                            "std/time", "std/debug",       "std/debug/concurrency", "std/testing",
+                                            "escompat", "std/concurrency", "std/annotations",       "std/interop"};
     return stdlib;
+}
+
+varbinder::Scope *Helpers::NearestScope(const ir::AstNode *ast)
+{
+    while (ast != nullptr && !ast->IsScopeBearer()) {
+        ast = ast->Parent();
+    }
+
+    return ast == nullptr ? nullptr : ast->Scope();
+}
+
+checker::ETSObjectType const *Helpers::ContainingClass(const ir::AstNode *ast)
+{
+    while (ast != nullptr && !ast->IsClassDefinition()) {
+        ast = ast->Parent();
+    }
+
+    return ast == nullptr ? nullptr : ast->AsClassDefinition()->TsType()->AsETSObjectType();
+}
+
+bool CheckTypeRelation(checker::ETSChecker *checker, checker::Type *super, checker::Type *sub)
+{
+    return checker->Relation()->IsSupertypeOf(super, sub);
+}
+
+void Helpers::CheckLoweredNode(varbinder::ETSBinder *varBinder, checker::ETSChecker *checker, ir::AstNode *node)
+{
+    auto *scope = util::Helpers::NearestScope(node);
+    varBinder->ResolveReferencesForScopeWithContext(node, scope);
+
+    auto *containingClass = ContainingClass(node);
+    checker::CheckerStatus newStatus =
+        (containingClass == nullptr) ? checker::CheckerStatus::NO_OPTS : checker::CheckerStatus::IN_CLASS;
+    if ((checker->Context().Status() & checker::CheckerStatus::IN_EXTENSION_ACCESSOR_CHECK) != 0) {
+        newStatus |= checker::CheckerStatus::IN_EXTENSION_ACCESSOR_CHECK;
+    }
+    auto checkerCtx = checker::SavedCheckerContext(checker, newStatus, containingClass);
+    auto scopeCtx = checker::ScopeContext(checker, scope);
+
+    node->Check(checker);
+}
+
+bool Helpers::IsNumericGlobalBuiltIn(checker::Type *type, checker::ETSChecker *checker)
+{
+    return CheckTypeRelation(checker, type, checker->GetGlobalTypesHolder()->GlobalIntegerBuiltinType()) ||
+           CheckTypeRelation(checker, type, checker->GetGlobalTypesHolder()->GlobalShortBuiltinType()) ||
+           CheckTypeRelation(checker, type, checker->GetGlobalTypesHolder()->GlobalByteBuiltinType()) ||
+           CheckTypeRelation(checker, type, checker->GetGlobalTypesHolder()->GlobalCharBuiltinType()) ||
+           CheckTypeRelation(checker, type, checker->GetGlobalTypesHolder()->GlobalLongBuiltinType()) ||
+           CheckTypeRelation(checker, type, checker->GetGlobalTypesHolder()->GlobalDoubleBuiltinType()) ||
+           CheckTypeRelation(checker, type, checker->GetGlobalTypesHolder()->GlobalFloatBuiltinType());
 }
 
 bool Helpers::IsStdLib(const parser::Program *program)
@@ -767,6 +821,12 @@ bool Helpers::IsAsyncMethod(ir::AstNode const *node)
     }
     auto *method = node->AsMethodDefinition();
     return method->Function()->IsAsyncFunc() && !method->Function()->IsProxy();
+}
+
+bool Helpers::IsGlobalVar(const ark::es2panda::varbinder::Variable *var)
+{
+    return var->Declaration()->Node()->IsClassDeclaration() &&
+           var->Declaration()->Node()->AsClassDeclaration()->Definition()->IsGlobal();
 }
 
 }  // namespace ark::es2panda::util

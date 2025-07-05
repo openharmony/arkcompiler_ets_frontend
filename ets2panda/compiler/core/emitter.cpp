@@ -438,6 +438,9 @@ static void UpdateLiteralBufferId([[maybe_unused]] ark::pandasm::Ins *ins, [[may
 
 void Emitter::AddProgramElement(ProgramElement *programElement)
 {
+    if (programElement->Function() == nullptr) {
+        return;
+    }
     prog_->strings.insert(programElement->Strings().begin(), programElement->Strings().end());
 
     uint32_t newLiteralBufferIndex = literalBufferIndex_;
@@ -535,7 +538,8 @@ pandasm::Program *Emitter::Finalize(bool dumpDebugInfo, std::string_view globalC
         dumper.Dump();
     }
 
-    if (context_->parserProgram->VarBinder()->IsGenStdLib()) {
+    if (context_->parserProgram->VarBinder()->IsGenStdLib() ||
+        context_->parserProgram->VarBinder()->Program()->IsGenAbcForExternal()) {
         auto it = prog_->recordTable.find(std::string(globalClass));
         if (it != prog_->recordTable.end()) {
             prog_->recordTable.erase(it);

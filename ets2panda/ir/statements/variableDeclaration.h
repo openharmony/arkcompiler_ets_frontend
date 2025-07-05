@@ -17,6 +17,7 @@
 #define ES2PANDA_IR_STATEMENT_VARIABLE_DECLARATION_H
 
 #include "ir/annotationAllowed.h"
+#include "ir/jsDocAllowed.h"
 #include "ir/statement.h"
 #include "ir/expressions/identifier.h"
 #include "ir/statements/annotationUsage.h"
@@ -25,7 +26,7 @@
 namespace ark::es2panda::ir {
 class VariableDeclarator;
 
-class VariableDeclaration : public AnnotationAllowed<Statement> {
+class VariableDeclaration : public JsDocAllowed<AnnotationAllowed<Statement>> {
 private:
     struct Tag {};
 
@@ -34,33 +35,59 @@ public:
 
     explicit VariableDeclaration(VariableDeclarationKind kind, ArenaAllocator *allocator,
                                  ArenaVector<VariableDeclarator *> &&declarators)
-        : AnnotationAllowed<Statement>(AstNodeType::VARIABLE_DECLARATION, allocator),
+        : JsDocAllowed<AnnotationAllowed<Statement>>(AstNodeType::VARIABLE_DECLARATION, allocator),
           kind_(kind),
           decorators_(allocator->Adapter()),
           declarators_(std::move(declarators))
     {
+        InitHistory();
+    }
+
+    explicit VariableDeclaration(VariableDeclarationKind kind, ArenaAllocator *allocator,
+                                 ArenaVector<VariableDeclarator *> &&declarators, AstNodeHistory *history)
+        : JsDocAllowed<AnnotationAllowed<Statement>>(AstNodeType::VARIABLE_DECLARATION, allocator),
+          kind_(kind),
+          decorators_(allocator->Adapter()),
+          declarators_(std::move(declarators))
+    {
+        if (history != nullptr) {
+            history_ = history;
+        } else {
+            InitHistory();
+        }
     }
 
     explicit VariableDeclaration(Tag tag, VariableDeclaration const &other, ArenaAllocator *allocator);
 
+    explicit VariableDeclaration(Tag const tag, VariableDeclaration const &other, ArenaAllocator *const allocator,
+                                 AstNodeHistory *history);
+
     const ArenaVector<VariableDeclarator *> &Declarators() const
     {
-        return declarators_;
+        return GetHistoryNodeAs<VariableDeclaration>()->declarators_;
     }
+
+    [[nodiscard]] const ArenaVector<VariableDeclarator *> &Declarators();
+
+    [[nodiscard]] ArenaVector<VariableDeclarator *> &DeclaratorsForUpdate();
 
     VariableDeclarationKind Kind() const
     {
-        return kind_;
+        return GetHistoryNodeAs<VariableDeclaration>()->kind_;
     }
 
     const ArenaVector<Decorator *> &Decorators() const
     {
-        return decorators_;
+        return GetHistoryNodeAs<VariableDeclaration>()->decorators_;
     }
+
+    [[nodiscard]] const ArenaVector<Decorator *> &Decorators();
+
+    [[nodiscard]] ArenaVector<Decorator *> &DecoratorsForUpdate();
 
     VariableDeclarator *GetDeclaratorByName(util::StringView name) const
     {
-        for (VariableDeclarator *declarator : declarators_) {
+        for (VariableDeclarator *declarator : Declarators()) {
             if (declarator->Id()->AsIdentifier()->Name().Compare(name) == 0) {
                 return declarator;
             }
@@ -68,14 +95,10 @@ public:
         return nullptr;
     }
 
-    const ArenaVector<Decorator *> *DecoratorsPtr() const override
-    {
-        return &Decorators();
-    }
-
     void AddDecorators([[maybe_unused]] ArenaVector<ir::Decorator *> &&decorators) override
     {
-        decorators_ = std::move(decorators);
+        auto newNode = reinterpret_cast<VariableDeclaration *>(this->GetOrCreateHistoryNode());
+        newNode->decorators_ = std::move(decorators);
     }
 
     bool CanHaveDecorator([[maybe_unused]] bool inTs) const override
@@ -99,7 +122,18 @@ public:
 
     [[nodiscard]] VariableDeclaration *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
+    VariableDeclaration *Construct(ArenaAllocator *allocator) override;
+    void CopyTo(AstNode *other) const override;
+
 private:
+    friend class SizeOfNodeTest;
+    void SetValueDecorators(Decorator *source, size_t index);
+    void SetValueDeclarators(VariableDeclarator *source, size_t index);
+    void EmplaceDecorators(Decorator *source);
+    void ClearDecorators();
+    void EmplaceDeclarators(VariableDeclarator *source);
+    void ClearDeclarators();
+
     VariableDeclarationKind kind_;
     ArenaVector<Decorator *> decorators_;
     ArenaVector<VariableDeclarator *> declarators_;

@@ -651,6 +651,11 @@ becomes
 s.compareTo("test") > 0
 ```
 
+- `AnnotationCopyLowering` and `AnnotationCopyPostLowering` handle copying of annotation properties. These phases ensure that annotation properties are properly copied and processed during the lowering phase. The phases work together to:
+  1. Copy annotation properties from annotation declarations to their usages
+  2. Process and validate annotation properties
+  3. Ensure proper handling of annotation metadata in the generated code
+
 - `PartialExportClassGen` generates declarations for `Partial<C>` where `C` is exported
 ```
 export class C {
@@ -667,3 +672,20 @@ class C$partial {
 ```
 
 - `plugins-after-lowering` call compiler plugins that work at the end of the lowering process, if any.
+
+- `ConvertPrimitiveCastMethodCall` replaces all primitive cast method calls with corresponding 'as' expressions.
+NOTE: To be removed after delivering 'primitive types refactoring' patch
+
+Before phase:
+
+```
+let d: double = 3.14
+let i: int = d.toInt()
+```
+
+After phase:
+
+```
+let d: double = 3.14
+let i: int = d as int
+```

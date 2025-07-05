@@ -1300,23 +1300,71 @@
             "optional": false,
             "computed": false,
             "typeAnnotation": {
-              "type": "TSArrayType",
-              "elementType": {
-                "type": "ETSPrimitiveType",
+              "type": "ETSTypeReference",
+              "part": {
+                "type": "ETSTypeReferencePart",
+                "name": {
+                  "type": "Identifier",
+                  "name": "Array",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": "MathCordic.ets"
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 3,
+                      "program": "MathCordic.ets"
+                    }
+                  }
+                },
+                "typeParams": {
+                  "type": "TSTypeParameterInstantiation",
+                  "params": [
+                    {
+                      "type": "ETSPrimitiveType",
+                      "loc": {
+                        "start": {
+                          "line": 1,
+                          "column": 3,
+                          "program": "MathCordic.ets"
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 3,
+                          "program": "MathCordic.ets"
+                        }
+                      }
+                    }
+                  ],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 3,
+                      "program": "MathCordic.ets"
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 3,
+                      "program": "MathCordic.ets"
+                    }
+                  }
+                },
                 "loc": {
                   "start": {
-                    "line": 20,
-                    "column": 30,
+                    "line": 1,
+                    "column": 1,
                     "program": "MathCordic.ets"
                   },
                   "end": {
-                    "line": 20,
-                    "column": 36,
+                    "line": 1,
+                    "column": 3,
                     "program": "MathCordic.ets"
                   }
                 }
               },
-              "annotations": [],
               "loc": {
                 "start": {
                   "line": 20,
@@ -2672,43 +2720,8 @@
                               "type": "BinaryExpression",
                               "operator": "*",
                               "left": {
-                                "type": "MemberExpression",
-                                "object": {
-                                  "type": "Identifier",
-                                  "name": "MathCordic",
-                                  "decorators": [],
-                                  "loc": {
-                                    "start": {
-                                      "line": 40,
-                                      "column": 32,
-                                      "program": "MathCordic.ets"
-                                    },
-                                    "end": {
-                                      "line": 40,
-                                      "column": 42,
-                                      "program": "MathCordic.ets"
-                                    }
-                                  }
-                                },
-                                "property": {
-                                  "type": "Identifier",
-                                  "name": "AG_CONST",
-                                  "decorators": [],
-                                  "loc": {
-                                    "start": {
-                                      "line": 40,
-                                      "column": 43,
-                                      "program": "MathCordic.ets"
-                                    },
-                                    "end": {
-                                      "line": 40,
-                                      "column": 51,
-                                      "program": "MathCordic.ets"
-                                    }
-                                  }
-                                },
-                                "computed": false,
-                                "optional": false,
+                                "type": "NumberLiteral",
+                                "value": 0.607253,
                                 "loc": {
                                   "start": {
                                     "line": 40,
@@ -3230,11 +3243,45 @@
                                         "type": "BinaryExpression",
                                         "operator": ">>",
                                         "left": {
-                                          "type": "TSAsExpression",
-                                          "expression": {
-                                            "type": "Identifier",
-                                            "name": "y",
-                                            "decorators": [],
+                                          "type": "CallExpression",
+                                          "callee": {
+                                            "type": "MemberExpression",
+                                            "object": {
+                                              "type": "Identifier",
+                                              "name": "y",
+                                              "decorators": [],
+                                              "loc": {
+                                                "start": {
+                                                  "line": 45,
+                                                  "column": 29,
+                                                  "program": "MathCordic.ets"
+                                                },
+                                                "end": {
+                                                  "line": 45,
+                                                  "column": 30,
+                                                  "program": "MathCordic.ets"
+                                                }
+                                              }
+                                            },
+                                            "property": {
+                                              "type": "Identifier",
+                                              "name": "toInt",
+                                              "decorators": [],
+                                              "loc": {
+                                                "start": {
+                                                  "line": 45,
+                                                  "column": 31,
+                                                  "program": "MathCordic.ets"
+                                                },
+                                                "end": {
+                                                  "line": 45,
+                                                  "column": 36,
+                                                  "program": "MathCordic.ets"
+                                                }
+                                              }
+                                            },
+                                            "computed": false,
+                                            "optional": false,
                                             "loc": {
                                               "start": {
                                                 "line": 45,
@@ -3243,26 +3290,13 @@
                                               },
                                               "end": {
                                                 "line": 45,
-                                                "column": 30,
+                                                "column": 36,
                                                 "program": "MathCordic.ets"
                                               }
                                             }
                                           },
-                                          "typeAnnotation": {
-                                            "type": "ETSPrimitiveType",
-                                            "loc": {
-                                              "start": {
-                                                "line": 45,
-                                                "column": 34,
-                                                "program": "MathCordic.ets"
-                                              },
-                                              "end": {
-                                                "line": 45,
-                                                "column": 37,
-                                                "program": "MathCordic.ets"
-                                              }
-                                            }
-                                          },
+                                          "arguments": [],
+                                          "optional": false,
                                           "loc": {
                                             "start": {
                                               "line": 45,
@@ -3271,7 +3305,7 @@
                                             },
                                             "end": {
                                               "line": 45,
-                                              "column": 30,
+                                              "column": 38,
                                               "program": "MathCordic.ets"
                                             }
                                           }
@@ -3283,12 +3317,12 @@
                                           "loc": {
                                             "start": {
                                               "line": 45,
-                                              "column": 41,
+                                              "column": 42,
                                               "program": "MathCordic.ets"
                                             },
                                             "end": {
                                               "line": 45,
-                                              "column": 45,
+                                              "column": 46,
                                               "program": "MathCordic.ets"
                                             }
                                           }
@@ -3301,7 +3335,7 @@
                                           },
                                           "end": {
                                             "line": 45,
-                                            "column": 46,
+                                            "column": 47,
                                             "program": "MathCordic.ets"
                                           }
                                         }
@@ -3314,7 +3348,7 @@
                                         },
                                         "end": {
                                           "line": 45,
-                                          "column": 46,
+                                          "column": 47,
                                           "program": "MathCordic.ets"
                                         }
                                       }
@@ -3327,7 +3361,7 @@
                                       },
                                       "end": {
                                         "line": 45,
-                                        "column": 46,
+                                        "column": 47,
                                         "program": "MathCordic.ets"
                                       }
                                     }
@@ -3340,7 +3374,7 @@
                                     },
                                     "end": {
                                       "line": 45,
-                                      "column": 47,
+                                      "column": 48,
                                       "program": "MathCordic.ets"
                                     }
                                   }
@@ -3374,11 +3408,45 @@
                                         "type": "BinaryExpression",
                                         "operator": ">>",
                                         "left": {
-                                          "type": "TSAsExpression",
-                                          "expression": {
-                                            "type": "Identifier",
-                                            "name": "x",
-                                            "decorators": [],
+                                          "type": "CallExpression",
+                                          "callee": {
+                                            "type": "MemberExpression",
+                                            "object": {
+                                              "type": "Identifier",
+                                              "name": "x",
+                                              "decorators": [],
+                                              "loc": {
+                                                "start": {
+                                                  "line": 46,
+                                                  "column": 22,
+                                                  "program": "MathCordic.ets"
+                                                },
+                                                "end": {
+                                                  "line": 46,
+                                                  "column": 23,
+                                                  "program": "MathCordic.ets"
+                                                }
+                                              }
+                                            },
+                                            "property": {
+                                              "type": "Identifier",
+                                              "name": "toInt",
+                                              "decorators": [],
+                                              "loc": {
+                                                "start": {
+                                                  "line": 46,
+                                                  "column": 24,
+                                                  "program": "MathCordic.ets"
+                                                },
+                                                "end": {
+                                                  "line": 46,
+                                                  "column": 29,
+                                                  "program": "MathCordic.ets"
+                                                }
+                                              }
+                                            },
+                                            "computed": false,
+                                            "optional": false,
                                             "loc": {
                                               "start": {
                                                 "line": 46,
@@ -3387,26 +3455,13 @@
                                               },
                                               "end": {
                                                 "line": 46,
-                                                "column": 23,
+                                                "column": 29,
                                                 "program": "MathCordic.ets"
                                               }
                                             }
                                           },
-                                          "typeAnnotation": {
-                                            "type": "ETSPrimitiveType",
-                                            "loc": {
-                                              "start": {
-                                                "line": 46,
-                                                "column": 27,
-                                                "program": "MathCordic.ets"
-                                              },
-                                              "end": {
-                                                "line": 46,
-                                                "column": 30,
-                                                "program": "MathCordic.ets"
-                                              }
-                                            }
-                                          },
+                                          "arguments": [],
+                                          "optional": false,
                                           "loc": {
                                             "start": {
                                               "line": 46,
@@ -3415,7 +3470,7 @@
                                             },
                                             "end": {
                                               "line": 46,
-                                              "column": 23,
+                                              "column": 31,
                                               "program": "MathCordic.ets"
                                             }
                                           }
@@ -3427,12 +3482,12 @@
                                           "loc": {
                                             "start": {
                                               "line": 46,
-                                              "column": 34,
+                                              "column": 35,
                                               "program": "MathCordic.ets"
                                             },
                                             "end": {
                                               "line": 46,
-                                              "column": 38,
+                                              "column": 39,
                                               "program": "MathCordic.ets"
                                             }
                                           }
@@ -3445,7 +3500,7 @@
                                           },
                                           "end": {
                                             "line": 46,
-                                            "column": 39,
+                                            "column": 40,
                                             "program": "MathCordic.ets"
                                           }
                                         }
@@ -3457,12 +3512,12 @@
                                         "loc": {
                                           "start": {
                                             "line": 46,
-                                            "column": 42,
+                                            "column": 43,
                                             "program": "MathCordic.ets"
                                           },
                                           "end": {
                                             "line": 46,
-                                            "column": 43,
+                                            "column": 44,
                                             "program": "MathCordic.ets"
                                           }
                                         }
@@ -3475,7 +3530,7 @@
                                         },
                                         "end": {
                                           "line": 46,
-                                          "column": 43,
+                                          "column": 44,
                                           "program": "MathCordic.ets"
                                         }
                                       }
@@ -3488,7 +3543,7 @@
                                       },
                                       "end": {
                                         "line": 46,
-                                        "column": 43,
+                                        "column": 44,
                                         "program": "MathCordic.ets"
                                       }
                                     }
@@ -3501,7 +3556,7 @@
                                     },
                                     "end": {
                                       "line": 46,
-                                      "column": 44,
+                                      "column": 45,
                                       "program": "MathCordic.ets"
                                     }
                                   }
@@ -3767,11 +3822,45 @@
                                         "type": "BinaryExpression",
                                         "operator": ">>",
                                         "left": {
-                                          "type": "TSAsExpression",
-                                          "expression": {
-                                            "type": "Identifier",
-                                            "name": "y",
-                                            "decorators": [],
+                                          "type": "CallExpression",
+                                          "callee": {
+                                            "type": "MemberExpression",
+                                            "object": {
+                                              "type": "Identifier",
+                                              "name": "y",
+                                              "decorators": [],
+                                              "loc": {
+                                                "start": {
+                                                  "line": 51,
+                                                  "column": 29,
+                                                  "program": "MathCordic.ets"
+                                                },
+                                                "end": {
+                                                  "line": 51,
+                                                  "column": 30,
+                                                  "program": "MathCordic.ets"
+                                                }
+                                              }
+                                            },
+                                            "property": {
+                                              "type": "Identifier",
+                                              "name": "toInt",
+                                              "decorators": [],
+                                              "loc": {
+                                                "start": {
+                                                  "line": 51,
+                                                  "column": 31,
+                                                  "program": "MathCordic.ets"
+                                                },
+                                                "end": {
+                                                  "line": 51,
+                                                  "column": 36,
+                                                  "program": "MathCordic.ets"
+                                                }
+                                              }
+                                            },
+                                            "computed": false,
+                                            "optional": false,
                                             "loc": {
                                               "start": {
                                                 "line": 51,
@@ -3780,26 +3869,13 @@
                                               },
                                               "end": {
                                                 "line": 51,
-                                                "column": 30,
+                                                "column": 36,
                                                 "program": "MathCordic.ets"
                                               }
                                             }
                                           },
-                                          "typeAnnotation": {
-                                            "type": "ETSPrimitiveType",
-                                            "loc": {
-                                              "start": {
-                                                "line": 51,
-                                                "column": 34,
-                                                "program": "MathCordic.ets"
-                                              },
-                                              "end": {
-                                                "line": 51,
-                                                "column": 37,
-                                                "program": "MathCordic.ets"
-                                              }
-                                            }
-                                          },
+                                          "arguments": [],
+                                          "optional": false,
                                           "loc": {
                                             "start": {
                                               "line": 51,
@@ -3808,7 +3884,7 @@
                                             },
                                             "end": {
                                               "line": 51,
-                                              "column": 30,
+                                              "column": 38,
                                               "program": "MathCordic.ets"
                                             }
                                           }
@@ -3820,12 +3896,12 @@
                                           "loc": {
                                             "start": {
                                               "line": 51,
-                                              "column": 41,
+                                              "column": 42,
                                               "program": "MathCordic.ets"
                                             },
                                             "end": {
                                               "line": 51,
-                                              "column": 45,
+                                              "column": 46,
                                               "program": "MathCordic.ets"
                                             }
                                           }
@@ -3838,7 +3914,7 @@
                                           },
                                           "end": {
                                             "line": 51,
-                                            "column": 46,
+                                            "column": 47,
                                             "program": "MathCordic.ets"
                                           }
                                         }
@@ -3851,7 +3927,7 @@
                                         },
                                         "end": {
                                           "line": 51,
-                                          "column": 46,
+                                          "column": 47,
                                           "program": "MathCordic.ets"
                                         }
                                       }
@@ -3864,7 +3940,7 @@
                                       },
                                       "end": {
                                         "line": 51,
-                                        "column": 46,
+                                        "column": 47,
                                         "program": "MathCordic.ets"
                                       }
                                     }
@@ -3877,7 +3953,7 @@
                                     },
                                     "end": {
                                       "line": 51,
-                                      "column": 47,
+                                      "column": 48,
                                       "program": "MathCordic.ets"
                                     }
                                   }
@@ -3915,11 +3991,45 @@
                                           "type": "BinaryExpression",
                                           "operator": ">>",
                                           "left": {
-                                            "type": "TSAsExpression",
-                                            "expression": {
-                                              "type": "Identifier",
-                                              "name": "x",
-                                              "decorators": [],
+                                            "type": "CallExpression",
+                                            "callee": {
+                                              "type": "MemberExpression",
+                                              "object": {
+                                                "type": "Identifier",
+                                                "name": "x",
+                                                "decorators": [],
+                                                "loc": {
+                                                  "start": {
+                                                    "line": 52,
+                                                    "column": 23,
+                                                    "program": "MathCordic.ets"
+                                                  },
+                                                  "end": {
+                                                    "line": 52,
+                                                    "column": 24,
+                                                    "program": "MathCordic.ets"
+                                                  }
+                                                }
+                                              },
+                                              "property": {
+                                                "type": "Identifier",
+                                                "name": "toInt",
+                                                "decorators": [],
+                                                "loc": {
+                                                  "start": {
+                                                    "line": 52,
+                                                    "column": 25,
+                                                    "program": "MathCordic.ets"
+                                                  },
+                                                  "end": {
+                                                    "line": 52,
+                                                    "column": 30,
+                                                    "program": "MathCordic.ets"
+                                                  }
+                                                }
+                                              },
+                                              "computed": false,
+                                              "optional": false,
                                               "loc": {
                                                 "start": {
                                                   "line": 52,
@@ -3928,26 +4038,13 @@
                                                 },
                                                 "end": {
                                                   "line": 52,
-                                                  "column": 24,
+                                                  "column": 30,
                                                   "program": "MathCordic.ets"
                                                 }
                                               }
                                             },
-                                            "typeAnnotation": {
-                                              "type": "ETSPrimitiveType",
-                                              "loc": {
-                                                "start": {
-                                                  "line": 52,
-                                                  "column": 28,
-                                                  "program": "MathCordic.ets"
-                                                },
-                                                "end": {
-                                                  "line": 52,
-                                                  "column": 31,
-                                                  "program": "MathCordic.ets"
-                                                }
-                                              }
-                                            },
+                                            "arguments": [],
+                                            "optional": false,
                                             "loc": {
                                               "start": {
                                                 "line": 52,
@@ -3956,7 +4053,7 @@
                                               },
                                               "end": {
                                                 "line": 52,
-                                                "column": 24,
+                                                "column": 32,
                                                 "program": "MathCordic.ets"
                                               }
                                             }
@@ -3968,12 +4065,12 @@
                                             "loc": {
                                               "start": {
                                                 "line": 52,
-                                                "column": 35,
+                                                "column": 36,
                                                 "program": "MathCordic.ets"
                                               },
                                               "end": {
                                                 "line": 52,
-                                                "column": 39,
+                                                "column": 40,
                                                 "program": "MathCordic.ets"
                                               }
                                             }
@@ -3986,7 +4083,7 @@
                                             },
                                             "end": {
                                               "line": 52,
-                                              "column": 40,
+                                              "column": 41,
                                               "program": "MathCordic.ets"
                                             }
                                           }
@@ -3999,7 +4096,7 @@
                                           },
                                           "end": {
                                             "line": 52,
-                                            "column": 40,
+                                            "column": 41,
                                             "program": "MathCordic.ets"
                                           }
                                         }
@@ -4011,12 +4108,12 @@
                                         "loc": {
                                           "start": {
                                             "line": 52,
-                                            "column": 43,
+                                            "column": 44,
                                             "program": "MathCordic.ets"
                                           },
                                           "end": {
                                             "line": 52,
-                                            "column": 44,
+                                            "column": 45,
                                             "program": "MathCordic.ets"
                                           }
                                         }
@@ -4029,7 +4126,7 @@
                                         },
                                         "end": {
                                           "line": 52,
-                                          "column": 44,
+                                          "column": 45,
                                           "program": "MathCordic.ets"
                                         }
                                       }
@@ -4042,7 +4139,7 @@
                                       },
                                       "end": {
                                         "line": 52,
-                                        "column": 44,
+                                        "column": 45,
                                         "program": "MathCordic.ets"
                                       }
                                     }
@@ -4055,7 +4152,7 @@
                                     },
                                     "end": {
                                       "line": 52,
-                                      "column": 45,
+                                      "column": 46,
                                       "program": "MathCordic.ets"
                                     }
                                   }
@@ -5013,43 +5110,8 @@
                                 },
                                 "arguments": [
                                   {
-                                    "type": "MemberExpression",
-                                    "object": {
-                                      "type": "Identifier",
-                                      "name": "MathCordic",
-                                      "decorators": [],
-                                      "loc": {
-                                        "start": {
-                                          "line": 63,
-                                          "column": 46,
-                                          "program": "MathCordic.ets"
-                                        },
-                                        "end": {
-                                          "line": 63,
-                                          "column": 56,
-                                          "program": "MathCordic.ets"
-                                        }
-                                      }
-                                    },
-                                    "property": {
-                                      "type": "Identifier",
-                                      "name": "TARGET_ANGLE",
-                                      "decorators": [],
-                                      "loc": {
-                                        "start": {
-                                          "line": 63,
-                                          "column": 57,
-                                          "program": "MathCordic.ets"
-                                        },
-                                        "end": {
-                                          "line": 63,
-                                          "column": 69,
-                                          "program": "MathCordic.ets"
-                                        }
-                                      }
-                                    },
-                                    "computed": false,
-                                    "optional": false,
+                                    "type": "NumberLiteral",
+                                    "value": 28.027,
                                     "loc": {
                                       "start": {
                                         "line": 63,
@@ -5624,9 +5686,43 @@
                       "expression": {
                         "type": "CallExpression",
                         "callee": {
-                          "type": "Identifier",
-                          "name": "assertEQ",
-                          "decorators": [],
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "Identifier",
+                            "name": "arktest",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 74,
+                                "column": 9,
+                                "program": "MathCordic.ets"
+                              },
+                              "end": {
+                                "line": 74,
+                                "column": 16,
+                                "program": "MathCordic.ets"
+                              }
+                            }
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "assertEQ",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 74,
+                                "column": 17,
+                                "program": "MathCordic.ets"
+                              },
+                              "end": {
+                                "line": 74,
+                                "column": 25,
+                                "program": "MathCordic.ets"
+                              }
+                            }
+                          },
+                          "computed": false,
+                          "optional": false,
                           "loc": {
                             "start": {
                               "line": 74,
@@ -5635,7 +5731,7 @@
                             },
                             "end": {
                               "line": 74,
-                              "column": 17,
+                              "column": 25,
                               "program": "MathCordic.ets"
                             }
                           }
@@ -5648,63 +5744,28 @@
                             "loc": {
                               "start": {
                                 "line": 74,
-                                "column": 18,
+                                "column": 26,
                                 "program": "MathCordic.ets"
                               },
                               "end": {
                                 "line": 74,
-                                "column": 23,
+                                "column": 31,
                                 "program": "MathCordic.ets"
                               }
                             }
                           },
                           {
-                            "type": "MemberExpression",
-                            "object": {
-                              "type": "Identifier",
-                              "name": "MathCordic",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 74,
-                                  "column": 25,
-                                  "program": "MathCordic.ets"
-                                },
-                                "end": {
-                                  "line": 74,
-                                  "column": 35,
-                                  "program": "MathCordic.ets"
-                                }
-                              }
-                            },
-                            "property": {
-                              "type": "Identifier",
-                              "name": "expected",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 74,
-                                  "column": 36,
-                                  "program": "MathCordic.ets"
-                                },
-                                "end": {
-                                  "line": 74,
-                                  "column": 44,
-                                  "program": "MathCordic.ets"
-                                }
-                              }
-                            },
-                            "computed": false,
-                            "optional": false,
+                            "type": "NumberLiteral",
+                            "value": 10362.6,
                             "loc": {
                               "start": {
                                 "line": 74,
-                                "column": 25,
+                                "column": 33,
                                 "program": "MathCordic.ets"
                               },
                               "end": {
                                 "line": 74,
-                                "column": 44,
+                                "column": 52,
                                 "program": "MathCordic.ets"
                               }
                             }
@@ -5715,12 +5776,12 @@
                             "loc": {
                               "start": {
                                 "line": 74,
-                                "column": 47,
+                                "column": 55,
                                 "program": "MathCordic.ets"
                               },
                               "end": {
                                 "line": 74,
-                                "column": 65,
+                                "column": 73,
                                 "program": "MathCordic.ets"
                               }
                             }
@@ -5735,7 +5796,7 @@
                           },
                           "end": {
                             "line": 74,
-                            "column": 66,
+                            "column": 74,
                             "program": "MathCordic.ets"
                           }
                         }
@@ -5748,7 +5809,7 @@
                         },
                         "end": {
                           "line": 74,
-                          "column": 67,
+                          "column": 75,
                           "program": "MathCordic.ets"
                         }
                       }
@@ -6019,12 +6080,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "MathCordic.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "MathCordic.ets"
                     }
                   }
                 },
@@ -6032,12 +6093,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "MathCordic.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "MathCordic.ets"
                   }
                 }
               },
@@ -6045,12 +6106,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "MathCordic.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "MathCordic.ets"
                 }
               }
             },

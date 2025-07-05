@@ -30,11 +30,8 @@ function main(): int {
     return 0;
 }
 
-/* @@? 29:38 Error TypeError: No Matching Parameterless Constructor, parameter count 1  */
-/* @@? 29:38 Error TypeError: No matching parameterless constructor  */
-/* @@? 29:38 Error TypeError: Signature is not available here.  */
-/* @@? 29:38 Error TypeError: Type 'A<Y>[]' is not compatible with type 'A<X>[]' at index 1  */
-/* @@? 29:38 Error TypeError: No Matching Parameterless Constructor, parameter count 1  */
-/* @@? 29:38 Error TypeError: No matching parameterless constructor  */
-/* @@? 29:38 Error TypeError: Signature is not available here.  */
-/* @@? 29:24 Error TypeError: No matching construct signature for type_argument_conversion.A(A<Y>[])  */
+/* @@? 29:24 Error TypeError: No matching construct signature for type_argument_conversion.A(Array<A<Y>>) */
+/* @@? 29:38 Error TypeError: No Matching Parameterless Constructor, parameter count 1 */
+/* @@? 29:38 Error TypeError: No matching parameterless constructor */
+/* @@? 29:38 Error TypeError: Signature is not available here. */
+/* @@? 29:38 Error TypeError: Type 'Array<A<Y>>' is not compatible with type 'Array<A<X>>' at index 1 */

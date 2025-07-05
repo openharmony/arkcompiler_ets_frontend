@@ -43,9 +43,9 @@ public:
         return typeList_;
     }
 
-    std::tuple<bool, bool> ResolveConditionExpr() const override
+    [[nodiscard]] ETSObjectType *GetWrapperType() const
     {
-        return {false, false};
+        return wrapperType_;
     }
 
     [[nodiscard]] ETSObjectType *GetWrapperType() const

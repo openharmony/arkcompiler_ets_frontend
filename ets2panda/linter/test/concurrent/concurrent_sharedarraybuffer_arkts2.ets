@@ -22,3 +22,9 @@ let newTypeName: NewTypeName
 let ntn: NewTypeName = new SharedArrayBuffer(0) // ERROR
 
 function foo(atmo: Atomics) {} // NOT ERROR
+
+class A extends SharedArrayBuffer {
+    constructor() {
+        supper(1)
+    }
+}

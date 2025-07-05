@@ -19,8 +19,8 @@ function main() {
 
     {
       enum Foo {Baz, Bar}
-      assertEQ(Foo.Bar as int, 1)
+      arktest.assertEQ(Foo.Bar as int, 1)
     }
 
-    assertEQ(Foo.Bar as int, 0)
+    arktest.assertEQ(Foo.Bar as int, 0)
 }

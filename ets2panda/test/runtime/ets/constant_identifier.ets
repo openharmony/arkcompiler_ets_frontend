@@ -19,6 +19,6 @@ const const3: short = const2
 
 function main() {
     enum TestEnum { One = const3 }
-    assertEQ(TestEnum.One.valueOf(), 101)
+    arktest.assertEQ(TestEnum.One.valueOf(), 101)
 }
 

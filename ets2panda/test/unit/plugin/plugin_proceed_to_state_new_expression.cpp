@@ -103,6 +103,23 @@ static es2panda_AstNode *CreateNewExpr()
     return newExpr;
 }
 
+bool Find(es2panda_AstNode *ast)
+{
+    if (impl->IsETSTypeReference(ast)) {
+        auto part = impl->ETSTypeReferencePart(context, ast);
+        auto newTypeReference = impl->UpdateETSTypeReference(context, ast, part);
+        auto property = impl->AstNodeParent(context, ast);
+        impl->ClassPropertySetTypeAnnotation(context, property, newTypeReference);
+        impl->AstNodeSetParent(context, newTypeReference, property);
+        impl->AstNodeSetParent(context, part, newTypeReference);
+        std::string str(impl->AstNodeDumpEtsSrcConst(context, property));
+        if (str.find("public name: string = \"a\"") != std::string::npos) {
+            return true;
+        }
+    }
+    return false;
+}
+
 int main(int argc, char **argv)
 {
     if (argc < MIN_ARGC) {
@@ -127,6 +144,10 @@ int main(int argc, char **argv)
     CheckForErrors("PARSE", context);
 
     es2panda_AstNode *programNode = impl->ProgramAst(context, impl->ContextProgram(context));
+
+    if (!impl->AstNodeIsAnyChildConst(context, programNode, Find)) {
+        return TEST_ERROR_CODE;
+    }
 
     impl->AstNodeIterateConst(context, programNode, FindClass);
     impl->AstNodeIterateConst(context, programNode, FindVariableDeclaration);
@@ -154,12 +175,6 @@ int main(int argc, char **argv)
     CheckForErrors("CHECKED", context);
 
     impl->AstNodeRecheck(context, programNode);
-
-    impl->ProceedToState(context, ES2PANDA_STATE_LOWERED);
-    CheckForErrors("LOWERED", context);
-
-    impl->ProceedToState(context, ES2PANDA_STATE_ASM_GENERATED);
-    CheckForErrors("ASM", context);
 
     impl->ProceedToState(context, ES2PANDA_STATE_BIN_GENERATED);
     CheckForErrors("BIN", context);

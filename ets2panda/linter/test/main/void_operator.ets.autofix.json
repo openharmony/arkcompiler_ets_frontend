@@ -24,11 +24,36 @@
                 {
                     "start": 605,
                     "end": 611,
-                    "replacementText": "(() => {\n    0;\n    return undefined;\n})()"
+                    "replacementText": "(() => {\n    0;\n    return undefined;\n})()",
+                    "line": 16,
+                    "column": 1,
+                    "endLine": 16,
+                    "endColumn": 5
                 }
             ],
             "suggest": "",
             "rule": "\"void\" operator is not supported (arkts-no-void-operator)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 16,
+            "column": 6,
+            "endLine": 16,
+            "endColumn": 7,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 610,
+                    "end": 611,
+                    "replacementText": "0.0",
+                    "line": 16,
+                    "column": 6,
+                    "endLine": 16,
+                    "endColumn": 7
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -41,7 +66,11 @@
                 {
                     "start": 614,
                     "end": 626,
-                    "replacementText": "(() => {\n    'hello';\n    return undefined;\n})()"
+                    "replacementText": "(() => {\n    'hello';\n    return undefined;\n})()",
+                    "line": 18,
+                    "column": 1,
+                    "endLine": 18,
+                    "endColumn": 5
                 }
             ],
             "suggest": "",
@@ -58,11 +87,57 @@
                 {
                     "start": 629,
                     "end": 641,
-                    "replacementText": "(() => {\n    (1 + 2);\n    return undefined;\n})()"
+                    "replacementText": "(() => {\n    (1 + 2);\n    return undefined;\n})()",
+                    "line": 20,
+                    "column": 1,
+                    "endLine": 20,
+                    "endColumn": 5
                 }
             ],
             "suggest": "",
             "rule": "\"void\" operator is not supported (arkts-no-void-operator)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 7,
+            "endLine": 20,
+            "endColumn": 8,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 635,
+                    "end": 636,
+                    "replacementText": "1.0",
+                    "line": 20,
+                    "column": 7,
+                    "endLine": 20,
+                    "endColumn": 8
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 11,
+            "endLine": 20,
+            "endColumn": 12,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 639,
+                    "end": 640,
+                    "replacementText": "2.0",
+                    "line": 20,
+                    "column": 11,
+                    "endLine": 20,
+                    "endColumn": 12
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -75,7 +150,11 @@
                 {
                     "start": 644,
                     "end": 663,
-                    "replacementText": "(() => {\n    ({ a: 1, b: 2 });\n    return undefined;\n})()"
+                    "replacementText": "(() => {\n    ({ a: 1, b: 2 });\n    return undefined;\n})()",
+                    "line": 22,
+                    "column": 1,
+                    "endLine": 22,
+                    "endColumn": 5
                 }
             ],
             "suggest": "",
@@ -92,16 +171,66 @@
                 {
                     "start": 644,
                     "end": 644,
-                    "replacementText": "interface GeneratedObjectLiteralInterface_1 {\n    a: number;\n    b: number;\n}\n"
+                    "replacementText": "interface GeneratedObjectLiteralInterface_1 {\n    a: number;\n    b: number;\n}\n",
+                    "line": 22,
+                    "column": 6,
+                    "endLine": 22,
+                    "endColumn": 7
                 },
                 {
                     "start": 649,
                     "end": 663,
-                    "replacementText": "({ a: 1, b: 2 } as GeneratedObjectLiteralInterface_1)"
+                    "replacementText": "({ a: 1, b: 2 } as GeneratedObjectLiteralInterface_1)",
+                    "line": 22,
+                    "column": 6,
+                    "endLine": 22,
+                    "endColumn": 7
                 }
             ],
             "suggest": "",
             "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 22,
+            "column": 11,
+            "endLine": 22,
+            "endColumn": 12,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 654,
+                    "end": 655,
+                    "replacementText": "1.0",
+                    "line": 22,
+                    "column": 11,
+                    "endLine": 22,
+                    "endColumn": 12
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 22,
+            "column": 17,
+            "endLine": 22,
+            "endColumn": 18,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 660,
+                    "end": 661,
+                    "replacementText": "2.0",
+                    "line": 22,
+                    "column": 17,
+                    "endLine": 22,
+                    "endColumn": 18
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -114,11 +243,78 @@
                 {
                     "start": 666,
                     "end": 680,
-                    "replacementText": "(() => {\n    [1, 2, 3];\n    return undefined;\n})()"
+                    "replacementText": "(() => {\n    [1, 2, 3];\n    return undefined;\n})()",
+                    "line": 24,
+                    "column": 1,
+                    "endLine": 24,
+                    "endColumn": 5
                 }
             ],
             "suggest": "",
             "rule": "\"void\" operator is not supported (arkts-no-void-operator)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 24,
+            "column": 7,
+            "endLine": 24,
+            "endColumn": 8,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 672,
+                    "end": 673,
+                    "replacementText": "1.0",
+                    "line": 24,
+                    "column": 7,
+                    "endLine": 24,
+                    "endColumn": 8
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 24,
+            "column": 10,
+            "endLine": 24,
+            "endColumn": 11,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 675,
+                    "end": 676,
+                    "replacementText": "2.0",
+                    "line": 24,
+                    "column": 10,
+                    "endLine": 24,
+                    "endColumn": 11
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 24,
+            "column": 13,
+            "endLine": 24,
+            "endColumn": 14,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 678,
+                    "end": 679,
+                    "replacementText": "3.0",
+                    "line": 24,
+                    "column": 13,
+                    "endLine": 24,
+                    "endColumn": 14
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -131,7 +327,11 @@
                 {
                     "start": 683,
                     "end": 723,
-                    "replacementText": "(() => {\n    console.log('expression evaluated');\n    return undefined;\n})()"
+                    "replacementText": "(() => {\n    console.log('expression evaluated');\n    return undefined;\n})()",
+                    "line": 26,
+                    "column": 1,
+                    "endLine": 26,
+                    "endColumn": 5
                 }
             ],
             "suggest": "",
@@ -148,11 +348,36 @@
                 {
                     "start": 750,
                     "end": 756,
-                    "replacementText": "(() => {\n    1;\n    return undefined;\n})()"
+                    "replacementText": "(() => {\n    1;\n    return undefined;\n})()",
+                    "line": 28,
+                    "column": 25,
+                    "endLine": 28,
+                    "endColumn": 29
                 }
             ],
             "suggest": "",
             "rule": "\"void\" operator is not supported (arkts-no-void-operator)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 28,
+            "column": 30,
+            "endLine": 28,
+            "endColumn": 31,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 755,
+                    "end": 756,
+                    "replacementText": "1.0",
+                    "line": 28,
+                    "column": 30,
+                    "endLine": 28,
+                    "endColumn": 31
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -165,11 +390,36 @@
                 {
                     "start": 795,
                     "end": 801,
-                    "replacementText": "(() => {\n    2;\n    return undefined;\n})()"
+                    "replacementText": "(() => {\n    2;\n    return undefined;\n})()",
+                    "line": 30,
+                    "column": 37,
+                    "endLine": 30,
+                    "endColumn": 41
                 }
             ],
             "suggest": "",
             "rule": "\"void\" operator is not supported (arkts-no-void-operator)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 30,
+            "column": 42,
+            "endLine": 30,
+            "endColumn": 43,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 800,
+                    "end": 801,
+                    "replacementText": "2.0",
+                    "line": 30,
+                    "column": 42,
+                    "endLine": 30,
+                    "endColumn": 43
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -182,11 +432,36 @@
                 {
                     "start": 849,
                     "end": 855,
-                    "replacementText": "(() => {\n    3;\n    return undefined;\n})()"
+                    "replacementText": "(() => {\n    3;\n    return undefined;\n})()",
+                    "line": 32,
+                    "column": 46,
+                    "endLine": 32,
+                    "endColumn": 50
                 }
             ],
             "suggest": "",
             "rule": "\"void\" operator is not supported (arkts-no-void-operator)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 32,
+            "column": 51,
+            "endLine": 32,
+            "endColumn": 52,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 854,
+                    "end": 855,
+                    "replacementText": "3.0",
+                    "line": 32,
+                    "column": 51,
+                    "endLine": 32,
+                    "endColumn": 52
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -199,7 +474,11 @@
                 {
                     "start": 858,
                     "end": 869,
-                    "replacementText": "(() => {\n    void 1;\n    return undefined;\n})()"
+                    "replacementText": "(() => {\n    void 1;\n    return undefined;\n})()",
+                    "line": 34,
+                    "column": 1,
+                    "endLine": 34,
+                    "endColumn": 5
                 }
             ],
             "suggest": "",
@@ -216,11 +495,36 @@
                 {
                     "start": 863,
                     "end": 869,
-                    "replacementText": "(() => {\n    1;\n    return undefined;\n})()"
+                    "replacementText": "(() => {\n    1;\n    return undefined;\n})()",
+                    "line": 34,
+                    "column": 6,
+                    "endLine": 34,
+                    "endColumn": 10
                 }
             ],
             "suggest": "",
             "rule": "\"void\" operator is not supported (arkts-no-void-operator)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 34,
+            "column": 11,
+            "endLine": 34,
+            "endColumn": 12,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 868,
+                    "end": 869,
+                    "replacementText": "1.0",
+                    "line": 34,
+                    "column": 11,
+                    "endLine": 34,
+                    "endColumn": 12
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -233,7 +537,11 @@
                 {
                     "start": 872,
                     "end": 914,
-                    "replacementText": "(() => {\n    (function () {\n        console.log('foo');\n    });\n    return undefined;\n})()"
+                    "replacementText": "(() => {\n    (function () {\n        console.log('foo');\n    });\n    return undefined;\n})()",
+                    "line": 36,
+                    "column": 1,
+                    "endLine": 36,
+                    "endColumn": 5
                 }
             ],
             "suggest": "",
@@ -250,7 +558,11 @@
                 {
                     "start": 877,
                     "end": 914,
-                    "replacementText": "(() => {\n    console.log('foo');\n})"
+                    "replacementText": "(() => {\n    console.log('foo');\n})",
+                    "line": 36,
+                    "column": 6,
+                    "endLine": 38,
+                    "endColumn": 2
                 }
             ],
             "suggest": "",
@@ -267,7 +579,11 @@
                 {
                     "start": 917,
                     "end": 962,
-                    "replacementText": "(() => {\n    (function () {\n        console.log(\"bar!\");\n    })();\n    return undefined;\n})()"
+                    "replacementText": "(() => {\n    (function () {\n        console.log(\"bar!\");\n    })();\n    return undefined;\n})()",
+                    "line": 40,
+                    "column": 1,
+                    "endLine": 40,
+                    "endColumn": 5
                 }
             ],
             "suggest": "",
@@ -284,7 +600,11 @@
                 {
                     "start": 922,
                     "end": 960,
-                    "replacementText": "(() => {\n    console.log(\"bar!\");\n})"
+                    "replacementText": "(() => {\n    console.log(\"bar!\");\n})",
+                    "line": 40,
+                    "column": 6,
+                    "endLine": 42,
+                    "endColumn": 2
                 }
             ],
             "suggest": "",
@@ -301,7 +621,11 @@
                 {
                     "start": 965,
                     "end": 1012,
-                    "replacementText": "(() => {\n    (function () {\n        console.log('baz!');\n    })();\n    return undefined;\n})()"
+                    "replacementText": "(() => {\n    (function () {\n        console.log('baz!');\n    })();\n    return undefined;\n})()",
+                    "line": 44,
+                    "column": 1,
+                    "endLine": 44,
+                    "endColumn": 5
                 }
             ],
             "suggest": "",
@@ -318,7 +642,11 @@
                 {
                     "start": 971,
                     "end": 1009,
-                    "replacementText": "() => {\n    console.log('baz!');\n}"
+                    "replacementText": "() => {\n    console.log('baz!');\n}",
+                    "line": 44,
+                    "column": 7,
+                    "endLine": 46,
+                    "endColumn": 2
                 }
             ],
             "suggest": "",
@@ -335,7 +663,11 @@
                 {
                     "start": 1015,
                     "end": 1028,
-                    "replacementText": "(() => {\n    (class {\n    });\n    return undefined;\n})()"
+                    "replacementText": "(() => {\n    (class {\n    });\n    return undefined;\n})()",
+                    "line": 48,
+                    "column": 1,
+                    "endLine": 48,
+                    "endColumn": 5
                 }
             ],
             "suggest": "",
@@ -362,7 +694,11 @@
                 {
                     "start": 1031,
                     "end": 1046,
-                    "replacementText": "(() => {\n    (class {\n    });\n    return undefined;\n})()"
+                    "replacementText": "(() => {\n    (class {\n    });\n    return undefined;\n})()",
+                    "line": 50,
+                    "column": 1,
+                    "endLine": 50,
+                    "endColumn": 5
                 }
             ],
             "suggest": "",
@@ -389,7 +725,11 @@
                 {
                     "start": 1049,
                     "end": 1064,
-                    "replacementText": "(() => {\n    (() => { });\n    return undefined;\n})()"
+                    "replacementText": "(() => {\n    (() => { });\n    return undefined;\n})()",
+                    "line": 52,
+                    "column": 1,
+                    "endLine": 52,
+                    "endColumn": 5
                 }
             ],
             "suggest": "",
@@ -406,7 +746,32 @@
                 {
                     "start": 1090,
                     "end": 1095,
-                    "replacementText": "a: number = 1"
+                    "replacementText": "a: number = 1",
+                    "line": 55,
+                    "column": 7,
+                    "endLine": 55,
+                    "endColumn": 12
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 55,
+            "column": 11,
+            "endLine": 55,
+            "endColumn": 12,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1094,
+                    "end": 1095,
+                    "replacementText": "1.0",
+                    "line": 55,
+                    "column": 11,
+                    "endLine": 55,
+                    "endColumn": 12
                 }
             ],
             "suggest": "",
@@ -423,7 +788,11 @@
                 {
                     "start": 1099,
                     "end": 1107,
-                    "replacementText": "(() => {\n    a++;\n    return undefined;\n})()"
+                    "replacementText": "(() => {\n    a++;\n    return undefined;\n})()",
+                    "line": 56,
+                    "column": 3,
+                    "endLine": 56,
+                    "endColumn": 7
                 }
             ],
             "suggest": "",
@@ -440,7 +809,74 @@
                 {
                     "start": 1116,
                     "end": 1129,
-                    "replacementText": "b: number[] = [1, 2, 3]"
+                    "replacementText": "b: number[] = [1, 2, 3]",
+                    "line": 58,
+                    "column": 7,
+                    "endLine": 58,
+                    "endColumn": 20
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 58,
+            "column": 12,
+            "endLine": 58,
+            "endColumn": 13,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1121,
+                    "end": 1122,
+                    "replacementText": "1.0",
+                    "line": 58,
+                    "column": 12,
+                    "endLine": 58,
+                    "endColumn": 13
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 58,
+            "column": 15,
+            "endLine": 58,
+            "endColumn": 16,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1124,
+                    "end": 1125,
+                    "replacementText": "2.0",
+                    "line": 58,
+                    "column": 15,
+                    "endLine": 58,
+                    "endColumn": 16
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 58,
+            "column": 18,
+            "endLine": 58,
+            "endColumn": 19,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1127,
+                    "end": 1128,
+                    "replacementText": "3.0",
+                    "line": 58,
+                    "column": 18,
+                    "endLine": 58,
+                    "endColumn": 19
                 }
             ],
             "suggest": "",
@@ -457,11 +893,57 @@
                 {
                     "start": 1133,
                     "end": 1177,
-                    "replacementText": "(() => {\n    console.log(b.filter(x => x % 2 !== 0));\n    return undefined;\n})()"
+                    "replacementText": "(() => {\n    console.log(b.filter(x => x % 2 !== 0));\n    return undefined;\n})()",
+                    "line": 59,
+                    "column": 3,
+                    "endLine": 59,
+                    "endColumn": 7
                 }
             ],
             "suggest": "",
             "rule": "\"void\" operator is not supported (arkts-no-void-operator)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 59,
+            "column": 38,
+            "endLine": 59,
+            "endColumn": 39,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1168,
+                    "end": 1169,
+                    "replacementText": "2.0",
+                    "line": 59,
+                    "column": 38,
+                    "endLine": 59,
+                    "endColumn": 39
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 59,
+            "column": 44,
+            "endLine": 59,
+            "endColumn": 45,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1174,
+                    "end": 1175,
+                    "replacementText": "0.0",
+                    "line": 59,
+                    "column": 44,
+                    "endLine": 59,
+                    "endColumn": 45
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -474,7 +956,11 @@
                 {
                     "start": 1184,
                     "end": 1229,
-                    "replacementText": "(() => {\n    (function () {\n        console.log('foo');\n    });\n    return undefined;\n})()"
+                    "replacementText": "(() => {\n    (function () {\n        console.log('foo');\n    });\n    return undefined;\n})()",
+                    "line": 61,
+                    "column": 3,
+                    "endLine": 61,
+                    "endColumn": 7
                 }
             ],
             "suggest": "",
@@ -491,7 +977,11 @@
                 {
                     "start": 1189,
                     "end": 1229,
-                    "replacementText": "(() => {\n    console.log('foo');\n})"
+                    "replacementText": "(() => {\n    console.log('foo');\n})",
+                    "line": 61,
+                    "column": 8,
+                    "endLine": 63,
+                    "endColumn": 4
                 }
             ],
             "suggest": "",
@@ -508,7 +998,11 @@
                 {
                     "start": 1234,
                     "end": 1288,
-                    "replacementText": "(() => {\n    (function localFun() {\n        console.log('foo');\n    });\n    return undefined;\n})()"
+                    "replacementText": "(() => {\n    (function localFun() {\n        console.log('foo');\n    });\n    return undefined;\n})()",
+                    "line": 65,
+                    "column": 3,
+                    "endLine": 65,
+                    "endColumn": 7
                 }
             ],
             "suggest": "",
@@ -525,7 +1019,11 @@
                 {
                     "start": 1239,
                     "end": 1288,
-                    "replacementText": "(() => {\n    console.log('foo');\n})"
+                    "replacementText": "(() => {\n    console.log('foo');\n})",
+                    "line": 65,
+                    "column": 8,
+                    "endLine": 67,
+                    "endColumn": 4
                 }
             ],
             "suggest": "",
@@ -542,7 +1040,11 @@
                 {
                     "start": 1295,
                     "end": 1308,
-                    "replacementText": "(() => {\n    (class {\n    });\n    return undefined;\n})()"
+                    "replacementText": "(() => {\n    (class {\n    });\n    return undefined;\n})()",
+                    "line": 69,
+                    "column": 3,
+                    "endLine": 69,
+                    "endColumn": 7
                 }
             ],
             "suggest": "",
@@ -569,7 +1071,11 @@
                 {
                     "start": 1313,
                     "end": 1336,
-                    "replacementText": "(() => {\n    (class localClass {\n    });\n    return undefined;\n})()"
+                    "replacementText": "(() => {\n    (class localClass {\n    });\n    return undefined;\n})()",
+                    "line": 71,
+                    "column": 3,
+                    "endLine": 71,
+                    "endColumn": 7
                 }
             ],
             "suggest": "",

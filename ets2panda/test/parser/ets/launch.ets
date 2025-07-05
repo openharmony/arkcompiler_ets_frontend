@@ -13,12 +13,15 @@
  * limitations under the License.
  */
 
+import {launch} from "std/concurrency"
+import {Job} from "std/core"
+
 class Example {
     public static foobar(): Object {
         return new Object();
     }
 
-    public baz(): Object {
+    public static baz(): Object {
         return new Object();
     }
 }
@@ -28,19 +31,18 @@ function bar(x: int, y: float): Object {
 }
 
 function foo(x: int): Object {
-  launch bar(x, 30);
+  launch<Object, (i:int,f:float)=>Object>(bar,x, 30);
   return new Object();
 }
 
 function main(): void {
-  let p: Promise<Object>;
-  p = launch foo(11);
-  p = launch Example.foobar();
-  p = launch new Example().baz();
-  let example = new Example();
-  p = launch example.baz();
+  let p: Job<Object>;
+  p = launch<Object, (i:int) => Object>(foo, 11);
+  p = launch<Object, () => Object>(Example.foobar);
+  p = launch<Object, () => Object>(Example.baz);
+  p = launch<Object, () => Object>(Example.baz);
   let foo_ref: (x: int) => Object = foo;
-  p = launch foo_ref(5);
+  p = launch<Object, (i:int) => Object>(foo_ref, 5);
   let lambda: () => void = (): void => { return; }
-  launch lambda();
+  launch<void, ()=>void>(lambda);
 }

@@ -41,7 +41,7 @@ protected:
     ArenaVector<ir::AstNode *> ParseTypeLiteralOrInterfaceBody();
     void CheckObjectTypeForDuplicatedProperties(ir::Expression *key, ArenaVector<ir::AstNode *> &members);
 
-    ir::ArrowFunctionExpression *ParseGenericArrowFunction();
+    ir::ArrowFunctionExpression *ParseGenericArrowFunction(bool isThrowError = false);
     ir::TSTypeAssertion *ParseTypeAssertion();
 
     ir::TSTypeParameterInstantiation *ParseTypeParameterInstantiation(TypeAnnotationParsingOptions *options);

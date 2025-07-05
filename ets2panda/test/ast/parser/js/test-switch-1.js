@@ -16,9 +16,9 @@
 
 switch
 
-/* @@@ label Error SyntaxError: Expected '(', got 'eos'. */
-/* @@@ label Error SyntaxError: Unexpected token 'eos'. */
-/* @@@ label Error SyntaxError: Expected ')', got 'eos'. */
-/* @@@ label Error SyntaxError: Expected '{', got 'eos'. */
-/* @@@ label Error SyntaxError: Expected '}', got 'eos'. */
+/* @@@ label Error SyntaxError: Expected '(', got 'end of stream'. */
+/* @@@ label Error SyntaxError: Unexpected token 'end of stream'. */
+/* @@@ label Error SyntaxError: Expected ')', got 'end of stream'. */
+/* @@@ label Error SyntaxError: Expected '{', got 'end of stream'. */
+/* @@@ label Error SyntaxError: Expected '}', got 'end of stream'. */
 /* @@ label */

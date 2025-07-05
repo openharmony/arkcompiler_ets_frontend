@@ -15,6 +15,16 @@
     ],
     "result": [
         {
+            "line": 16,
+            "column": 18,
+            "endLine": 16,
+            "endColumn": 21,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 19,
             "column": 1,
             "endLine": 19,
@@ -89,6 +99,356 @@
             "column": 1,
             "endLine": 27,
             "endColumn": 8,
+            "problem": "NumericBigintCompare",
+            "suggest": "",
+            "rule": "Not supporting comparison between number type and bigint type (arkts-numeric-bigint-compare)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 29,
+            "column": 1,
+            "endLine": 29,
+            "endColumn": 8,
+            "problem": "NumericBigintCompare",
+            "suggest": "",
+            "rule": "Not supporting comparison between number type and bigint type (arkts-numeric-bigint-compare)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 30,
+            "column": 1,
+            "endLine": 30,
+            "endColumn": 8,
+            "problem": "NumericBigintCompare",
+            "suggest": "",
+            "rule": "Not supporting comparison between number type and bigint type (arkts-numeric-bigint-compare)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 31,
+            "column": 1,
+            "endLine": 31,
+            "endColumn": 8,
+            "problem": "NumericBigintCompare",
+            "suggest": "",
+            "rule": "Not supporting comparison between number type and bigint type (arkts-numeric-bigint-compare)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 32,
+            "column": 1,
+            "endLine": 32,
+            "endColumn": 8,
+            "problem": "NumericBigintCompare",
+            "suggest": "",
+            "rule": "Not supporting comparison between number type and bigint type (arkts-numeric-bigint-compare)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 33,
+            "column": 1,
+            "endLine": 33,
+            "endColumn": 8,
+            "problem": "NumericBigintCompare",
+            "suggest": "",
+            "rule": "Not supporting comparison between number type and bigint type (arkts-numeric-bigint-compare)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 34,
+            "column": 1,
+            "endLine": 34,
+            "endColumn": 8,
+            "problem": "NumericBigintCompare",
+            "suggest": "",
+            "rule": "Not supporting comparison between number type and bigint type (arkts-numeric-bigint-compare)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 37,
+            "column": 11,
+            "endLine": 37,
+            "endColumn": 19,
+            "problem": "NumericBigintCompare",
+            "suggest": "",
+            "rule": "Not supporting comparison between number type and bigint type (arkts-numeric-bigint-compare)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 38,
+            "column": 11,
+            "endLine": 38,
+            "endColumn": 19,
+            "problem": "NumericBigintCompare",
+            "suggest": "",
+            "rule": "Not supporting comparison between number type and bigint type (arkts-numeric-bigint-compare)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 39,
+            "column": 11,
+            "endLine": 39,
+            "endColumn": 20,
+            "problem": "NumericBigintCompare",
+            "suggest": "",
+            "rule": "Not supporting comparison between number type and bigint type (arkts-numeric-bigint-compare)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 40,
+            "column": 11,
+            "endLine": 40,
+            "endColumn": 20,
+            "problem": "NumericBigintCompare",
+            "suggest": "",
+            "rule": "Not supporting comparison between number type and bigint type (arkts-numeric-bigint-compare)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 41,
+            "column": 11,
+            "endLine": 41,
+            "endColumn": 20,
+            "problem": "NumericBigintCompare",
+            "suggest": "",
+            "rule": "Not supporting comparison between number type and bigint type (arkts-numeric-bigint-compare)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 44,
+            "column": 10,
+            "endLine": 44,
+            "endColumn": 18,
+            "problem": "NumericBigintCompare",
+            "suggest": "",
+            "rule": "Not supporting comparison between number type and bigint type (arkts-numeric-bigint-compare)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 47,
+            "column": 10,
+            "endLine": 47,
+            "endColumn": 18,
+            "problem": "NumericBigintCompare",
+            "suggest": "",
+            "rule": "Not supporting comparison between number type and bigint type (arkts-numeric-bigint-compare)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 50,
+            "column": 10,
+            "endLine": 50,
+            "endColumn": 19,
+            "problem": "NumericBigintCompare",
+            "suggest": "",
+            "rule": "Not supporting comparison between number type and bigint type (arkts-numeric-bigint-compare)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 53,
+            "column": 10,
+            "endLine": 53,
+            "endColumn": 19,
+            "problem": "NumericBigintCompare",
+            "suggest": "",
+            "rule": "Not supporting comparison between number type and bigint type (arkts-numeric-bigint-compare)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 56,
+            "column": 10,
+            "endLine": 56,
+            "endColumn": 19,
+            "problem": "NumericBigintCompare",
+            "suggest": "",
+            "rule": "Not supporting comparison between number type and bigint type (arkts-numeric-bigint-compare)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 59,
+            "column": 5,
+            "endLine": 59,
+            "endColumn": 13,
+            "problem": "NumericBigintCompare",
+            "suggest": "",
+            "rule": "Not supporting comparison between number type and bigint type (arkts-numeric-bigint-compare)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 62,
+            "column": 5,
+            "endLine": 62,
+            "endColumn": 13,
+            "problem": "NumericBigintCompare",
+            "suggest": "",
+            "rule": "Not supporting comparison between number type and bigint type (arkts-numeric-bigint-compare)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 65,
+            "column": 5,
+            "endLine": 65,
+            "endColumn": 14,
+            "problem": "NumericBigintCompare",
+            "suggest": "",
+            "rule": "Not supporting comparison between number type and bigint type (arkts-numeric-bigint-compare)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 68,
+            "column": 5,
+            "endLine": 68,
+            "endColumn": 14,
+            "problem": "NumericBigintCompare",
+            "suggest": "",
+            "rule": "Not supporting comparison between number type and bigint type (arkts-numeric-bigint-compare)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 71,
+            "column": 5,
+            "endLine": 71,
+            "endColumn": 14,
+            "problem": "NumericBigintCompare",
+            "suggest": "",
+            "rule": "Not supporting comparison between number type and bigint type (arkts-numeric-bigint-compare)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 76,
+            "column": 13,
+            "endLine": 76,
+            "endColumn": 21,
+            "problem": "NumericBigintCompare",
+            "suggest": "",
+            "rule": "Not supporting comparison between number type and bigint type (arkts-numeric-bigint-compare)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 76,
+            "column": 25,
+            "endLine": 76,
+            "endColumn": 33,
+            "problem": "NumericBigintCompare",
+            "suggest": "",
+            "rule": "Not supporting comparison between number type and bigint type (arkts-numeric-bigint-compare)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 76,
+            "column": 37,
+            "endLine": 76,
+            "endColumn": 46,
+            "problem": "NumericBigintCompare",
+            "suggest": "",
+            "rule": "Not supporting comparison between number type and bigint type (arkts-numeric-bigint-compare)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 79,
+            "column": 15,
+            "endLine": 79,
+            "endColumn": 23,
+            "problem": "NumericBigintCompare",
+            "suggest": "",
+            "rule": "Not supporting comparison between number type and bigint type (arkts-numeric-bigint-compare)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 79,
+            "column": 28,
+            "endLine": 79,
+            "endColumn": 36,
+            "problem": "NumericBigintCompare",
+            "suggest": "",
+            "rule": "Not supporting comparison between number type and bigint type (arkts-numeric-bigint-compare)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 79,
+            "column": 41,
+            "endLine": 79,
+            "endColumn": 50,
+            "problem": "NumericBigintCompare",
+            "suggest": "",
+            "rule": "Not supporting comparison between number type and bigint type (arkts-numeric-bigint-compare)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 80,
+            "column": 15,
+            "endLine": 80,
+            "endColumn": 24,
+            "problem": "NumericBigintCompare",
+            "suggest": "",
+            "rule": "Not supporting comparison between number type and bigint type (arkts-numeric-bigint-compare)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 80,
+            "column": 29,
+            "endLine": 80,
+            "endColumn": 38,
+            "problem": "NumericBigintCompare",
+            "suggest": "",
+            "rule": "Not supporting comparison between number type and bigint type (arkts-numeric-bigint-compare)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 80,
+            "column": 43,
+            "endLine": 80,
+            "endColumn": 51,
+            "problem": "NumericBigintCompare",
+            "suggest": "",
+            "rule": "Not supporting comparison between number type and bigint type (arkts-numeric-bigint-compare)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 82,
+            "column": 10,
+            "endLine": 82,
+            "endColumn": 18,
+            "problem": "NumericBigintCompare",
+            "suggest": "",
+            "rule": "Not supporting comparison between number type and bigint type (arkts-numeric-bigint-compare)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 82,
+            "column": 22,
+            "endLine": 82,
+            "endColumn": 30,
+            "problem": "NumericBigintCompare",
+            "suggest": "",
+            "rule": "Not supporting comparison between number type and bigint type (arkts-numeric-bigint-compare)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 82,
+            "column": 34,
+            "endLine": 82,
+            "endColumn": 43,
+            "problem": "NumericBigintCompare",
+            "suggest": "",
+            "rule": "Not supporting comparison between number type and bigint type (arkts-numeric-bigint-compare)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 82,
+            "column": 47,
+            "endLine": 82,
+            "endColumn": 56,
+            "problem": "NumericBigintCompare",
+            "suggest": "",
+            "rule": "Not supporting comparison between number type and bigint type (arkts-numeric-bigint-compare)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 82,
+            "column": 60,
+            "endLine": 82,
+            "endColumn": 69,
             "problem": "NumericBigintCompare",
             "suggest": "",
             "rule": "Not supporting comparison between number type and bigint type (arkts-numeric-bigint-compare)",

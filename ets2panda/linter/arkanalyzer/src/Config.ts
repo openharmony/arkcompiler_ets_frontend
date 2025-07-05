@@ -43,6 +43,7 @@ export interface SceneOptions {
     ignoreFileNames?: string[];
     enableLeadingComments?: boolean;
     enableTrailingComments?: boolean;
+    enableBuiltIn?: boolean;
     tsconfig?: string;
     isScanAbc?: boolean;
     sdkGlobalFolders?: string[];
@@ -86,6 +87,7 @@ export class SceneConfig {
     public buildConfig(targetProjectName: string, targetProjectDirectory: string, sdks: Sdk[], fullFilePath?: string[]): void {
         this.targetProjectName = targetProjectName;
         this.targetProjectDirectory = targetProjectDirectory;
+        this.projectFiles = getAllFiles(targetProjectDirectory, this.options.supportFileExts!, this.options.ignoreFileNames);
         this.sdksObj = sdks;
         if (fullFilePath) {
             this.projectFiles.push(...fullFilePath);

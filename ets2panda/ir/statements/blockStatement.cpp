@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,16 +22,19 @@
 #include "checker/ETSchecker.h"
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
+#include "utils/arena_containers.h"
 
 namespace ark::es2panda::ir {
 void BlockStatement::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
     // This will survive pushing element to the back of statements_ in the process
-    // NOLINTNEXTLINE(modernize-loop-convert)
-    for (size_t ix = 0; ix < statements_.size(); ix++) {
-        if (auto *transformedNode = cb(statements_[ix]); statements_[ix] != transformedNode) {
-            statements_[ix]->SetTransformedNode(transformationName, transformedNode);
-            statements_[ix] = transformedNode->AsStatement();
+    auto const &constStatements = Statements();
+    for (size_t index = 0; index < constStatements.size(); index++) {
+        auto statement = constStatements[index];
+        if (auto *transformedNode = cb(statement); statement != transformedNode) {
+            statement->SetTransformedNode(transformationName, transformedNode);
+            auto &statements = AstNode::GetOrCreateHistoryNodeAs<BlockStatement>()->statements_;
+            statements[index] = transformedNode->AsStatement();
         }
     }
 }
@@ -40,7 +43,7 @@ AstNode *BlockStatement::Clone(ArenaAllocator *const allocator, AstNode *const p
 {
     ArenaVector<Statement *> statements(allocator->Adapter());
 
-    for (auto *statement : this->statements_) {
+    for (auto *statement : Statements()) {
         statements.push_back(statement->Clone(allocator, parent)->AsStatement());
     }
 
@@ -53,35 +56,37 @@ AstNode *BlockStatement::Clone(ArenaAllocator *const allocator, AstNode *const p
 void BlockStatement::Iterate(const NodeTraverser &cb) const
 {
     // This will survive pushing element to the back of statements_ in the process
+    auto const &statements = Statements();
     // NOLINTNEXTLINE(modernize-loop-convert)
-    for (size_t ix = 0; ix < statements_.size(); ix++) {
-        cb(statements_[ix]);
+    for (size_t ix = 0; ix < statements.size(); ix++) {
+        cb(statements[ix]);
     }
 }
 
 void BlockStatement::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", IsProgram() ? "Program" : "BlockStatement"}, {"statements", statements_}});
+    dumper->Add({{"type", IsProgram() ? "Program" : "BlockStatement"}, {"statements", Statements()}});
 }
 
 void BlockStatement::Dump(ir::SrcDumper *dumper) const
 {
+    auto const &statements = Statements();
     // NOTE(nsizov): trailing blocks
     if (Parent() != nullptr && (Parent()->IsBlockStatement() || Parent()->IsCallExpression())) {
         dumper->Add("{");
-        if (!statements_.empty()) {
+        if (!statements.empty()) {
             dumper->IncrIndent();
             dumper->Endl();
         }
     }
-    for (auto statement : statements_) {
+    for (auto statement : statements) {
         statement->Dump(dumper);
-        if (statement != statements_.back()) {
+        if (statement != statements.back()) {
             dumper->Endl();
         }
     }
     if (Parent() != nullptr && (Parent()->IsBlockStatement() || Parent()->IsCallExpression())) {
-        if (!statements_.empty()) {
+        if (!statements.empty()) {
             dumper->DecrIndent();
             dumper->Endl();
         }
@@ -108,4 +113,22 @@ checker::VerifiedType BlockStatement::Check([[maybe_unused]] checker::ETSChecker
 {
     return {this, checker->GetAnalyzer()->Check(this)};
 }
+
+BlockStatement *BlockStatement::Construct(ArenaAllocator *allocator)
+{
+    ArenaVector<Statement *> statementList(allocator->Adapter());
+    return allocator->New<BlockStatement>(allocator, std::move(statementList));
+}
+
+void BlockStatement::CopyTo(AstNode *other) const
+{
+    auto otherImpl = static_cast<BlockStatement *>(other);
+
+    otherImpl->scope_ = scope_;
+    otherImpl->statements_ = statements_;
+    otherImpl->trailingBlocks_ = trailingBlocks_;
+
+    Statement::CopyTo(other);
+}
+
 }  // namespace ark::es2panda::ir

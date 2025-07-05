@@ -387,12 +387,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "this_type_valid_return_type.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "this_type_valid_return_type.ets"
                     }
                   }
                 },
@@ -400,12 +400,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "this_type_valid_return_type.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "this_type_valid_return_type.ets"
                   }
                 }
               },
@@ -413,12 +413,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "this_type_valid_return_type.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "this_type_valid_return_type.ets"
                 }
               }
             },
@@ -493,12 +493,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "this_type_valid_return_type.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "this_type_valid_return_type.ets"
                     }
                   }
                 },
@@ -506,12 +506,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "this_type_valid_return_type.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "this_type_valid_return_type.ets"
                   }
                 }
               },
@@ -519,12 +519,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "this_type_valid_return_type.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "this_type_valid_return_type.ets"
                 }
               }
             },

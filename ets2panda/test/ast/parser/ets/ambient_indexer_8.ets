@@ -27,5 +27,5 @@ declare class A {
 /* @@@ label3 Error SyntaxError: An index signature must have a type annotation.  */
 /* @@@ label4 Error SyntaxError: Return type of index signature from exported class or interface need to be identifier.  */
 /* @@@ label6 Error TypeError: Native and Declare methods should have explicit return type.  */
-/* @@@ label5 Error SyntaxError: Expected '}', got 'eos'.  */
+/* @@@ label5 Error SyntaxError: Expected '}', got 'end of stream'.  */
 /* @@ label5 */

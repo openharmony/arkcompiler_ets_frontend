@@ -44,5 +44,10 @@ export interface LinterOptions {
   noMigrationBackupFile?: boolean;
   migrationReport?: boolean;
   wholeProjectPath?: string;
+  projectFolderList?: string[];
   checkTsAndJs?: boolean;
+  inputFiles?: string[];
+  ruleConfigTags?: Set<number>;
+  autofixCheck?: boolean;
+  autofixRuleConfigTags?: Set<number>;
 }

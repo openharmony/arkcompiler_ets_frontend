@@ -21,6 +21,5 @@ export let importantInfo = "All good!"
 
 export const notInit ;
 
-/* @@? distant_package.ets:22:21 Error TypeError: Missing initializer in const declaration */
-/* @@? distant_package.ets:22:22 Error SyntaxError: Variable must be initialized or it's type must be declared. */
+/* @@? distant_package.ets:22:14 Error SyntaxError: Missing initialization for const package property */
 /* @@? distant_package.ets:22:22 Error SyntaxError: Variable must be initialized or it's type must be declared. */

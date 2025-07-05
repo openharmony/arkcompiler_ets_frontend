@@ -20,13 +20,6 @@
             "endLine": 18,
             "endColumn": 39,
             "problem": "GlobalThisError",
-            "autofix": [
-                {
-                    "start": 700,
-                    "end": 723,
-                    "replacementText": "specialAutofixLib.globalThis.get(\"localStorage\")"
-                }
-            ],
             "suggest": "",
             "rule": "\"globalThis\" is not supported (arkts-no-globalthis)",
             "severity": "ERROR"

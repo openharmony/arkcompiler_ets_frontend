@@ -13,28 +13,27 @@
  * limitations under the License.
  */
  
-'use static'
 
 
 
 
 
 
-let GeneratedImportVar_7 = ESObject.load('./interop_import_js_js');
-let Wiki = GeneratedImportVar_7.getPropertyByName('Wiki');
-let Doge = GeneratedImportVar_7.getPropertyByName('Dog');
-let GeneratedImportVar_6 = ESObject.load('./interop_import_js_js');
-let GeneratedImportVar_5 = ESObject.load('./interop_import_js_js');
-let myAaa = GeneratedImportVar_5.getPropertyByName('aaa');
-let ClassA = GeneratedImportVar_5.getPropertyByName('ClassA');
-let Dog = GeneratedImportVar_5.getPropertyByName('Dog');
-let GeneratedImportVar_4 = ESObject.load('./interop_import_js_js');
-let myAaa = GeneratedImportVar_4.getPropertyByName('aaa');
-let GeneratedImportVar_3 = ESObject.load('./jsfiles/preview_import_js');
-let CPreview = GeneratedImportVar_3.getPropertyByName('CPreview');
-let bar = GeneratedImportVar_3.getPropertyByName('bar');
-let foo = GeneratedImportVar_3.getPropertyByName('foo');
-let GeneratedImportVar_2 = ESObject.load('../main/js_lib');
-let fjs = GeneratedImportVar_2.getPropertyByName('fjs');
-let GeneratedImportVar_1 = ESObject.load('../main/js_lib');
-let Cjs = GeneratedImportVar_1.getPropertyByName('Cjs');
+let GeneratedImportVar_7 = ESValue.load('./interop_import_js_js');
+let Wiki = GeneratedImportVar_7.getProperty('Wiki');
+let Doge = GeneratedImportVar_7.getProperty('Dog');
+let GeneratedImportVar_6 = ESValue.load('./interop_import_js_js');
+let GeneratedImportVar_5 = ESValue.load('./interop_import_js_js');
+let myAaa = GeneratedImportVar_5.getProperty('aaa');
+let ClassA = GeneratedImportVar_5.getProperty('ClassA');
+let Dog = GeneratedImportVar_5.getProperty('Dog');
+let GeneratedImportVar_4 = ESValue.load('./interop_import_js_js');
+let myAaa = GeneratedImportVar_4.getProperty('aaa');
+let GeneratedImportVar_3 = ESValue.load('./jsfiles/preview_import_js');
+let CPreview = GeneratedImportVar_3.getProperty('CPreview');
+let bar = GeneratedImportVar_3.getProperty('bar');
+let foo = GeneratedImportVar_3.getProperty('foo');
+let GeneratedImportVar_2 = ESValue.load('../main/js_lib');
+let fjs = GeneratedImportVar_2.getProperty('fjs');
+let GeneratedImportVar_1 = ESValue.load('../main/js_lib');
+let Cjs = GeneratedImportVar_1.getProperty('Cjs');

@@ -13,6 +13,9 @@
  * limitations under the License.
  */
 
-type /* @@ label */5 = number;
+type 5 = number;
 
-/* @@@ label Error SyntaxError: Identifier expected, got 'number literal'. */
+/* @@? 16:1 Error TypeError: Unresolved reference type */
+/* @@? 16:6 Error SyntaxError: Unexpected token '5'. */
+/* @@? 16:6 Error TypeError: Invalid left-hand side of assignment expression */
+/* @@? 16:8 Error SyntaxError: Invalid left-hand side in assignment expression. */

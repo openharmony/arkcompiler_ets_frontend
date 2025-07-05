@@ -631,12 +631,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "from-soft-keyword-0.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "from-soft-keyword-0.ets"
                     }
                   }
                 },
@@ -644,12 +644,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "from-soft-keyword-0.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "from-soft-keyword-0.ets"
                   }
                 }
               },
@@ -657,12 +657,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "from-soft-keyword-0.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "from-soft-keyword-0.ets"
                 }
               }
             },

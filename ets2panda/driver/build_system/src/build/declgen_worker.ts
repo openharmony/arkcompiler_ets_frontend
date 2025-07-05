@@ -15,8 +15,7 @@
 
 import { CompileFileInfo, ModuleInfo } from '../types';
 import { BuildConfig } from '../types';
-import { LogData, LogDataFactory, Logger } from '../logger';
-import { ErrorCode } from '../error_code';
+import { Logger } from '../logger';
 import * as fs from 'fs';
 import * as path from 'path';
 import { changeFileExtension, ensurePathExists } from '../utils';
@@ -44,6 +43,7 @@ process.on('message', (message: {
 
   const koalaWrapperPath = path.resolve(buildConfig.buildSdkPath, KOALA_WRAPPER_PATH_FROM_SDK);
   let { arkts, arktsGlobal } = require(koalaWrapperPath);
+  arktsGlobal.es2panda._SetUpSoPath(buildConfig.pandaSdkPath);
 
   for (const fileInfo of taskList) {
     let errorStatus = false;
@@ -79,13 +79,13 @@ process.on('message', (message: {
       arktsGlobal.compilerContext = arkts.Context.createFromString(source);
       pluginDriver.getPluginContext().setArkTSProgram(arktsGlobal.compilerContext.program);
 
-      arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_PARSED, true);
+      arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_PARSED, arktsGlobal.compilerContext.peer, true);
 
       let ast = arkts.EtsScript.fromContext();
       pluginDriver.getPluginContext().setArkTSAst(ast);
       pluginDriver.runPluginHook(PluginHook.PARSED);
 
-      arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_CHECKED, true);
+      arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_CHECKED, arktsGlobal.compilerContext.peer, true);
 
       ast = arkts.EtsScript.fromContext();
       pluginDriver.getPluginContext().setArkTSAst(ast);
@@ -94,6 +94,7 @@ process.on('message', (message: {
       arkts.generateTsDeclarationsFromContext(
         declEtsOutputPath,
         etsOutputPath,
+        false,
         false
       ); // Generate 1.0 declaration files & 1.0 glue code
       logger.printInfo('declaration files generated');
@@ -102,18 +103,13 @@ process.on('message', (message: {
     } catch (error) {
       errorStatus = true;
       if (error instanceof Error) {
-        const logData: LogData = LogDataFactory.newInstance(
-          ErrorCode.BUILDSYSTEM_DECLGEN_FAIL,
-          'Generate declaration files failed in worker.',
-          error.message
-        );
-        logger.printError(logData);
+        process.send({
+          success: false,
+          isDeclFile: true,
+          filePath: fileInfo.filePath,
+          error: 'Generate declaration files failed.\n' + error.message
+        });
       }
-      process.send({
-        success: false,
-        filePath: fileInfo.filePath,
-        error: 'Generate declaration files failed in worker.'
-      });
     } finally {
       if (!errorStatus) {
         // when error occur,wrapper will destroy context.

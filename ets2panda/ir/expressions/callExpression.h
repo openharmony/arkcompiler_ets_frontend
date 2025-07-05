@@ -17,7 +17,9 @@
 #define ES2PANDA_IR_EXPRESSION_CALL_EXPRESSION_H
 
 #include "varbinder/variable.h"
+#include "ir/base/scriptFunction.h"
 #include "ir/expression.h"
+#include "ir/expressions/arrowFunctionExpression.h"
 
 namespace ark::es2panda::checker {
 class ETSAnalyzer;
@@ -134,23 +136,35 @@ public:
 
     [[nodiscard]] ir::BlockStatement *TrailingBlock() const noexcept
     {
-        return trailingBlock_;
+        return trailingLambdaInfo_.block;
     }
 
     void SetIsTrailingBlockInNewLine(bool const isNewLine) noexcept
     {
-        isTrailingBlockInNewLine_ = isNewLine;
+        trailingLambdaInfo_.isBlockInNewLine = isNewLine;
     }
 
     [[nodiscard]] bool IsTrailingBlockInNewLine() const noexcept
     {
-        return isTrailingBlockInNewLine_;
+        return trailingLambdaInfo_.isBlockInNewLine;
+    }
+
+    void SetIsTrailingCall(bool const isTrailingCall) noexcept
+    {
+        trailingLambdaInfo_.isTrailingCall = isTrailingCall;
+    }
+
+    [[nodiscard]] bool IsTrailingCall() const noexcept
+    {
+        return trailingLambdaInfo_.isTrailingCall;
     }
 
     bool IsETSConstructorCall() const noexcept
     {
         return callee_->IsThisExpression() || callee_->IsSuperExpression();
     }
+
+    bool IsDynamicCall() const noexcept;
 
     [[nodiscard]] CallExpression *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
@@ -174,6 +188,29 @@ public:
         AstNode::CleanUp();
         signature_ = nullptr;
         uncheckedType_ = nullptr;
+        if (IsTransformedFromTrailingCall()) {
+            RetrieveTrailingBlock();
+        }
+    }
+
+private:
+    struct TrailingLambdaInfo {
+        ir::BlockStatement *block {nullptr};
+        bool isTrailingCall {false};
+        bool isBlockInNewLine {false};
+    };
+
+    bool IsTransformedFromTrailingCall()
+    {
+        return !arguments_.empty() && arguments_.back()->IsArrowFunctionExpression() &&
+               arguments_.back()->AsArrowFunctionExpression()->Function()->IsTrailingLambda();
+    }
+
+    void RetrieveTrailingBlock()
+    {
+        SetTrailingBlock(arguments_.back()->AsArrowFunctionExpression()->Function()->Body()->AsBlockStatement());
+        trailingLambdaInfo_.isTrailingCall = false;
+        arguments_.pop_back();
     }
 
 protected:
@@ -184,8 +221,7 @@ protected:
     checker::Signature *signature_ {};
     bool trailingComma_;
     // for trailing lambda feature in ets
-    ir::BlockStatement *trailingBlock_ {};
-    bool isTrailingBlockInNewLine_ {false};
+    TrailingLambdaInfo trailingLambdaInfo_ {};
     checker::Type *uncheckedType_ {};
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };

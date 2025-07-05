@@ -1,0 +1,2140 @@
+{
+  "type": "Program",
+  "statements": [
+    {
+      "type": "ClassDeclaration",
+      "definition": {
+        "id": {
+          "type": "Identifier",
+          "name": "ETSGLOBAL",
+          "decorators": [],
+          "loc": {
+            "start": {
+              "line": 1,
+              "column": 1,
+              "program": "optional-chaining-array.ets"
+            },
+            "end": {
+              "line": 1,
+              "column": 1,
+              "program": "optional-chaining-array.ets"
+            }
+          }
+        },
+        "superClass": null,
+        "implements": [],
+        "annotations": [
+          {
+            "expr_": {
+              "type": "Identifier",
+              "name": "Module",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "optional-chaining-array.ets"
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "optional-chaining-array.ets"
+                }
+              }
+            },
+            "properties": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "optional-chaining-array.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "optional-chaining-array.ets"
+              }
+            }
+          }
+        ],
+        "body": [
+          {
+            "type": "MethodDefinition",
+            "key": {
+              "type": "Identifier",
+              "name": "main",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "kind": "method",
+            "accessibility": "public",
+            "static": true,
+            "optional": false,
+            "computed": false,
+            "value": {
+              "type": "FunctionExpression",
+              "function": {
+                "type": "ScriptFunction",
+                "id": {
+                  "type": "Identifier",
+                  "name": "main",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "generator": false,
+                "async": false,
+                "expression": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "statements": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "overloads": [],
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "optional-chaining-array.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "optional-chaining-array.ets"
+              }
+            }
+          },
+          {
+            "type": "MethodDefinition",
+            "key": {
+              "type": "Identifier",
+              "name": "_$init$_",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "kind": "method",
+            "accessibility": "public",
+            "static": true,
+            "optional": false,
+            "computed": false,
+            "value": {
+              "type": "FunctionExpression",
+              "function": {
+                "type": "ScriptFunction",
+                "id": {
+                  "type": "Identifier",
+                  "name": "_$init$_",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "generator": false,
+                "async": false,
+                "expression": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "statements": [
+                    {
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "AssignmentExpression",
+                        "operator": "=",
+                        "left": {
+                          "type": "Identifier",
+                          "name": "arr",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 16,
+                              "column": 5,
+                              "program": "optional-chaining-array.ets"
+                            },
+                            "end": {
+                              "line": 16,
+                              "column": 8,
+                              "program": "optional-chaining-array.ets"
+                            }
+                          }
+                        },
+                        "right": {
+                          "type": "TSAsExpression",
+                          "expression": {
+                            "type": "ArrayExpression",
+                            "elements": [
+                              {
+                                "type": "NumberLiteral",
+                                "value": 1,
+                                "loc": {
+                                  "start": {
+                                    "line": 16,
+                                    "column": 26,
+                                    "program": "optional-chaining-array.ets"
+                                  },
+                                  "end": {
+                                    "line": 16,
+                                    "column": 27,
+                                    "program": "optional-chaining-array.ets"
+                                  }
+                                }
+                              },
+                              {
+                                "type": "NumberLiteral",
+                                "value": 4,
+                                "loc": {
+                                  "start": {
+                                    "line": 16,
+                                    "column": 29,
+                                    "program": "optional-chaining-array.ets"
+                                  },
+                                  "end": {
+                                    "line": 16,
+                                    "column": 30,
+                                    "program": "optional-chaining-array.ets"
+                                  }
+                                }
+                              },
+                              {
+                                "type": "NumberLiteral",
+                                "value": 5,
+                                "loc": {
+                                  "start": {
+                                    "line": 16,
+                                    "column": 32,
+                                    "program": "optional-chaining-array.ets"
+                                  },
+                                  "end": {
+                                    "line": 16,
+                                    "column": 33,
+                                    "program": "optional-chaining-array.ets"
+                                  }
+                                }
+                              }
+                            ],
+                            "loc": {
+                              "start": {
+                                "line": 16,
+                                "column": 25,
+                                "program": "optional-chaining-array.ets"
+                              },
+                              "end": {
+                                "line": 16,
+                                "column": 34,
+                                "program": "optional-chaining-array.ets"
+                              }
+                            }
+                          },
+                          "typeAnnotation": {
+                            "type": "ETSTypeReference",
+                            "part": {
+                              "type": "ETSTypeReferencePart",
+                              "name": {
+                                "type": "Identifier",
+                                "name": "Array",
+                                "decorators": [],
+                                "loc": {
+                                  "start": {
+                                    "line": 1,
+                                    "column": 1,
+                                    "program": "optional-chaining-array.ets"
+                                  },
+                                  "end": {
+                                    "line": 1,
+                                    "column": 3,
+                                    "program": "optional-chaining-array.ets"
+                                  }
+                                }
+                              },
+                              "typeParams": {
+                                "type": "TSTypeParameterInstantiation",
+                                "params": [
+                                  {
+                                    "type": "ETSTypeReference",
+                                    "part": {
+                                      "type": "ETSTypeReferencePart",
+                                      "name": {
+                                        "type": "Identifier",
+                                        "name": "Int",
+                                        "decorators": [],
+                                        "loc": {
+                                          "start": {
+                                            "line": 1,
+                                            "column": 3,
+                                            "program": "optional-chaining-array.ets"
+                                          },
+                                          "end": {
+                                            "line": 1,
+                                            "column": 3,
+                                            "program": "optional-chaining-array.ets"
+                                          }
+                                        }
+                                      },
+                                      "loc": {
+                                        "start": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "optional-chaining-array.ets"
+                                        },
+                                        "end": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "optional-chaining-array.ets"
+                                        }
+                                      }
+                                    },
+                                    "loc": {
+                                      "start": {
+                                        "line": 1,
+                                        "column": 3,
+                                        "program": "optional-chaining-array.ets"
+                                      },
+                                      "end": {
+                                        "line": 1,
+                                        "column": 3,
+                                        "program": "optional-chaining-array.ets"
+                                      }
+                                    }
+                                  }
+                                ],
+                                "loc": {
+                                  "start": {
+                                    "line": 1,
+                                    "column": 3,
+                                    "program": "optional-chaining-array.ets"
+                                  },
+                                  "end": {
+                                    "line": 1,
+                                    "column": 3,
+                                    "program": "optional-chaining-array.ets"
+                                  }
+                                }
+                              },
+                              "loc": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 1,
+                                  "program": "optional-chaining-array.ets"
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 3,
+                                  "program": "optional-chaining-array.ets"
+                                }
+                              }
+                            },
+                            "loc": {
+                              "start": {
+                                "line": 16,
+                                "column": 41,
+                                "program": "optional-chaining-array.ets"
+                              },
+                              "end": {
+                                "line": 16,
+                                "column": 43,
+                                "program": "optional-chaining-array.ets"
+                              }
+                            }
+                          },
+                          "loc": {
+                            "start": {
+                              "line": 16,
+                              "column": 25,
+                              "program": "optional-chaining-array.ets"
+                            },
+                            "end": {
+                              "line": 16,
+                              "column": 34,
+                              "program": "optional-chaining-array.ets"
+                            }
+                          }
+                        },
+                        "loc": {
+                          "start": {
+                            "line": 16,
+                            "column": 5,
+                            "program": "optional-chaining-array.ets"
+                          },
+                          "end": {
+                            "line": 16,
+                            "column": 34,
+                            "program": "optional-chaining-array.ets"
+                          }
+                        }
+                      },
+                      "loc": {
+                        "start": {
+                          "line": 16,
+                          "column": 5,
+                          "program": "optional-chaining-array.ets"
+                        },
+                        "end": {
+                          "line": 16,
+                          "column": 34,
+                          "program": "optional-chaining-array.ets"
+                        }
+                      }
+                    },
+                    {
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "AssignmentExpression",
+                        "operator": "=",
+                        "left": {
+                          "type": "Identifier",
+                          "name": "test",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 17,
+                              "column": 5,
+                              "program": "optional-chaining-array.ets"
+                            },
+                            "end": {
+                              "line": 17,
+                              "column": 9,
+                              "program": "optional-chaining-array.ets"
+                            }
+                          }
+                        },
+                        "right": {
+                          "type": "LogicalExpression",
+                          "operator": "??",
+                          "left": {
+                            "type": "BlockExpression",
+                            "statements": [
+                              {
+                                "type": "VariableDeclaration",
+                                "declarations": [
+                                  {
+                                    "type": "VariableDeclarator",
+                                    "id": {
+                                      "type": "Identifier",
+                                      "name": "gensym%%_16",
+                                      "decorators": [],
+                                      "loc": {
+                                        "start": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "optional-chaining-array.ets"
+                                        },
+                                        "end": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "optional-chaining-array.ets"
+                                        }
+                                      }
+                                    },
+                                    "init": {
+                                      "type": "Identifier",
+                                      "name": "arr",
+                                      "decorators": [],
+                                      "loc": {
+                                        "start": {
+                                          "line": 17,
+                                          "column": 12,
+                                          "program": "optional-chaining-array.ets"
+                                        },
+                                        "end": {
+                                          "line": 17,
+                                          "column": 15,
+                                          "program": "optional-chaining-array.ets"
+                                        }
+                                      }
+                                    },
+                                    "loc": {
+                                      "start": {
+                                        "line": 1,
+                                        "column": 3,
+                                        "program": "optional-chaining-array.ets"
+                                      },
+                                      "end": {
+                                        "line": 1,
+                                        "column": 3,
+                                        "program": "optional-chaining-array.ets"
+                                      }
+                                    }
+                                  }
+                                ],
+                                "kind": "let",
+                                "loc": {
+                                  "start": {
+                                    "line": 17,
+                                    "column": 12,
+                                    "program": "optional-chaining-array.ets"
+                                  },
+                                  "end": {
+                                    "line": 17,
+                                    "column": 33,
+                                    "program": "optional-chaining-array.ets"
+                                  }
+                                }
+                              },
+                              {
+                                "type": "ExpressionStatement",
+                                "expression": {
+                                  "type": "ConditionalExpression",
+                                  "test": {
+                                    "type": "BinaryExpression",
+                                    "operator": "==",
+                                    "left": {
+                                      "type": "Identifier",
+                                      "name": "gensym%%_16",
+                                      "decorators": [],
+                                      "loc": {
+                                        "start": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "optional-chaining-array.ets"
+                                        },
+                                        "end": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "optional-chaining-array.ets"
+                                        }
+                                      }
+                                    },
+                                    "right": {
+                                      "type": "NullLiteral",
+                                      "value": null,
+                                      "loc": {
+                                        "start": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "optional-chaining-array.ets"
+                                        },
+                                        "end": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "optional-chaining-array.ets"
+                                        }
+                                      }
+                                    },
+                                    "loc": {
+                                      "start": {
+                                        "line": 1,
+                                        "column": 3,
+                                        "program": "optional-chaining-array.ets"
+                                      },
+                                      "end": {
+                                        "line": 1,
+                                        "column": 3,
+                                        "program": "optional-chaining-array.ets"
+                                      }
+                                    }
+                                  },
+                                  "consequent": {
+                                    "type": "UndefinedLiteral",
+                                    "value": "undefined",
+                                    "loc": {
+                                      "start": {
+                                        "line": 1,
+                                        "column": 3,
+                                        "program": "optional-chaining-array.ets"
+                                      },
+                                      "end": {
+                                        "line": 1,
+                                        "column": 3,
+                                        "program": "optional-chaining-array.ets"
+                                      }
+                                    }
+                                  },
+                                  "alternate": {
+                                    "type": "MemberExpression",
+                                    "object": {
+                                      "type": "Identifier",
+                                      "name": "gensym%%_16",
+                                      "decorators": [],
+                                      "loc": {
+                                        "start": {
+                                          "line": 17,
+                                          "column": 12,
+                                          "program": "optional-chaining-array.ets"
+                                        },
+                                        "end": {
+                                          "line": 17,
+                                          "column": 20,
+                                          "program": "optional-chaining-array.ets"
+                                        }
+                                      }
+                                    },
+                                    "property": {
+                                      "type": "NumberLiteral",
+                                      "value": 1,
+                                      "loc": {
+                                        "start": {
+                                          "line": 17,
+                                          "column": 18,
+                                          "program": "optional-chaining-array.ets"
+                                        },
+                                        "end": {
+                                          "line": 17,
+                                          "column": 19,
+                                          "program": "optional-chaining-array.ets"
+                                        }
+                                      }
+                                    },
+                                    "computed": true,
+                                    "optional": false,
+                                    "loc": {
+                                      "start": {
+                                        "line": 17,
+                                        "column": 12,
+                                        "program": "optional-chaining-array.ets"
+                                      },
+                                      "end": {
+                                        "line": 17,
+                                        "column": 20,
+                                        "program": "optional-chaining-array.ets"
+                                      }
+                                    }
+                                  },
+                                  "loc": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "optional-chaining-array.ets"
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "optional-chaining-array.ets"
+                                    }
+                                  }
+                                },
+                                "loc": {
+                                  "start": {
+                                    "line": 1,
+                                    "column": 3,
+                                    "program": "optional-chaining-array.ets"
+                                  },
+                                  "end": {
+                                    "line": 1,
+                                    "column": 3,
+                                    "program": "optional-chaining-array.ets"
+                                  }
+                                }
+                              }
+                            ],
+                            "loc": {
+                              "start": {
+                                "line": 17,
+                                "column": 12,
+                                "program": "optional-chaining-array.ets"
+                              },
+                              "end": {
+                                "line": 17,
+                                "column": 33,
+                                "program": "optional-chaining-array.ets"
+                              }
+                            }
+                          },
+                          "right": {
+                            "type": "StringLiteral",
+                            "value": "unknown",
+                            "loc": {
+                              "start": {
+                                "line": 17,
+                                "column": 24,
+                                "program": "optional-chaining-array.ets"
+                              },
+                              "end": {
+                                "line": 17,
+                                "column": 33,
+                                "program": "optional-chaining-array.ets"
+                              }
+                            }
+                          },
+                          "loc": {
+                            "start": {
+                              "line": 17,
+                              "column": 12,
+                              "program": "optional-chaining-array.ets"
+                            },
+                            "end": {
+                              "line": 17,
+                              "column": 33,
+                              "program": "optional-chaining-array.ets"
+                            }
+                          }
+                        },
+                        "loc": {
+                          "start": {
+                            "line": 17,
+                            "column": 5,
+                            "program": "optional-chaining-array.ets"
+                          },
+                          "end": {
+                            "line": 17,
+                            "column": 33,
+                            "program": "optional-chaining-array.ets"
+                          }
+                        }
+                      },
+                      "loc": {
+                        "start": {
+                          "line": 17,
+                          "column": 5,
+                          "program": "optional-chaining-array.ets"
+                        },
+                        "end": {
+                          "line": 17,
+                          "column": 33,
+                          "program": "optional-chaining-array.ets"
+                        }
+                      }
+                    },
+                    {
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "AssignmentExpression",
+                        "operator": "=",
+                        "left": {
+                          "type": "Identifier",
+                          "name": "test2",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 20,
+                              "column": 5,
+                              "program": "optional-chaining-array.ets"
+                            },
+                            "end": {
+                              "line": 20,
+                              "column": 10,
+                              "program": "optional-chaining-array.ets"
+                            }
+                          }
+                        },
+                        "right": {
+                          "type": "LogicalExpression",
+                          "operator": "??",
+                          "left": {
+                            "type": "BlockExpression",
+                            "statements": [
+                              {
+                                "type": "VariableDeclaration",
+                                "declarations": [
+                                  {
+                                    "type": "VariableDeclarator",
+                                    "id": {
+                                      "type": "Identifier",
+                                      "name": "gensym%%_17",
+                                      "decorators": [],
+                                      "loc": {
+                                        "start": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "optional-chaining-array.ets"
+                                        },
+                                        "end": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "optional-chaining-array.ets"
+                                        }
+                                      }
+                                    },
+                                    "init": {
+                                      "type": "Identifier",
+                                      "name": "arr2",
+                                      "decorators": [],
+                                      "loc": {
+                                        "start": {
+                                          "line": 20,
+                                          "column": 13,
+                                          "program": "optional-chaining-array.ets"
+                                        },
+                                        "end": {
+                                          "line": 20,
+                                          "column": 17,
+                                          "program": "optional-chaining-array.ets"
+                                        }
+                                      }
+                                    },
+                                    "loc": {
+                                      "start": {
+                                        "line": 1,
+                                        "column": 3,
+                                        "program": "optional-chaining-array.ets"
+                                      },
+                                      "end": {
+                                        "line": 1,
+                                        "column": 3,
+                                        "program": "optional-chaining-array.ets"
+                                      }
+                                    }
+                                  }
+                                ],
+                                "kind": "let",
+                                "loc": {
+                                  "start": {
+                                    "line": 20,
+                                    "column": 13,
+                                    "program": "optional-chaining-array.ets"
+                                  },
+                                  "end": {
+                                    "line": 20,
+                                    "column": 38,
+                                    "program": "optional-chaining-array.ets"
+                                  }
+                                }
+                              },
+                              {
+                                "type": "ExpressionStatement",
+                                "expression": {
+                                  "type": "ConditionalExpression",
+                                  "test": {
+                                    "type": "BinaryExpression",
+                                    "operator": "==",
+                                    "left": {
+                                      "type": "Identifier",
+                                      "name": "gensym%%_17",
+                                      "decorators": [],
+                                      "loc": {
+                                        "start": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "optional-chaining-array.ets"
+                                        },
+                                        "end": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "optional-chaining-array.ets"
+                                        }
+                                      }
+                                    },
+                                    "right": {
+                                      "type": "NullLiteral",
+                                      "value": null,
+                                      "loc": {
+                                        "start": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "optional-chaining-array.ets"
+                                        },
+                                        "end": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "optional-chaining-array.ets"
+                                        }
+                                      }
+                                    },
+                                    "loc": {
+                                      "start": {
+                                        "line": 1,
+                                        "column": 3,
+                                        "program": "optional-chaining-array.ets"
+                                      },
+                                      "end": {
+                                        "line": 1,
+                                        "column": 3,
+                                        "program": "optional-chaining-array.ets"
+                                      }
+                                    }
+                                  },
+                                  "consequent": {
+                                    "type": "UndefinedLiteral",
+                                    "value": "undefined",
+                                    "loc": {
+                                      "start": {
+                                        "line": 1,
+                                        "column": 3,
+                                        "program": "optional-chaining-array.ets"
+                                      },
+                                      "end": {
+                                        "line": 1,
+                                        "column": 3,
+                                        "program": "optional-chaining-array.ets"
+                                      }
+                                    }
+                                  },
+                                  "alternate": {
+                                    "type": "MemberExpression",
+                                    "object": {
+                                      "type": "Identifier",
+                                      "name": "gensym%%_17",
+                                      "decorators": [],
+                                      "loc": {
+                                        "start": {
+                                          "line": 20,
+                                          "column": 13,
+                                          "program": "optional-chaining-array.ets"
+                                        },
+                                        "end": {
+                                          "line": 20,
+                                          "column": 24,
+                                          "program": "optional-chaining-array.ets"
+                                        }
+                                      }
+                                    },
+                                    "property": {
+                                      "type": "NumberLiteral",
+                                      "value": 100,
+                                      "loc": {
+                                        "start": {
+                                          "line": 20,
+                                          "column": 20,
+                                          "program": "optional-chaining-array.ets"
+                                        },
+                                        "end": {
+                                          "line": 20,
+                                          "column": 23,
+                                          "program": "optional-chaining-array.ets"
+                                        }
+                                      }
+                                    },
+                                    "computed": true,
+                                    "optional": false,
+                                    "loc": {
+                                      "start": {
+                                        "line": 20,
+                                        "column": 13,
+                                        "program": "optional-chaining-array.ets"
+                                      },
+                                      "end": {
+                                        "line": 20,
+                                        "column": 24,
+                                        "program": "optional-chaining-array.ets"
+                                      }
+                                    }
+                                  },
+                                  "loc": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "optional-chaining-array.ets"
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "optional-chaining-array.ets"
+                                    }
+                                  }
+                                },
+                                "loc": {
+                                  "start": {
+                                    "line": 1,
+                                    "column": 3,
+                                    "program": "optional-chaining-array.ets"
+                                  },
+                                  "end": {
+                                    "line": 1,
+                                    "column": 3,
+                                    "program": "optional-chaining-array.ets"
+                                  }
+                                }
+                              }
+                            ],
+                            "loc": {
+                              "start": {
+                                "line": 20,
+                                "column": 13,
+                                "program": "optional-chaining-array.ets"
+                              },
+                              "end": {
+                                "line": 20,
+                                "column": 38,
+                                "program": "optional-chaining-array.ets"
+                              }
+                            }
+                          },
+                          "right": {
+                            "type": "StringLiteral",
+                            "value": "unknown2",
+                            "loc": {
+                              "start": {
+                                "line": 20,
+                                "column": 28,
+                                "program": "optional-chaining-array.ets"
+                              },
+                              "end": {
+                                "line": 20,
+                                "column": 38,
+                                "program": "optional-chaining-array.ets"
+                              }
+                            }
+                          },
+                          "loc": {
+                            "start": {
+                              "line": 20,
+                              "column": 13,
+                              "program": "optional-chaining-array.ets"
+                            },
+                            "end": {
+                              "line": 20,
+                              "column": 38,
+                              "program": "optional-chaining-array.ets"
+                            }
+                          }
+                        },
+                        "loc": {
+                          "start": {
+                            "line": 20,
+                            "column": 5,
+                            "program": "optional-chaining-array.ets"
+                          },
+                          "end": {
+                            "line": 20,
+                            "column": 38,
+                            "program": "optional-chaining-array.ets"
+                          }
+                        }
+                      },
+                      "loc": {
+                        "start": {
+                          "line": 20,
+                          "column": 5,
+                          "program": "optional-chaining-array.ets"
+                        },
+                        "end": {
+                          "line": 20,
+                          "column": 38,
+                          "program": "optional-chaining-array.ets"
+                        }
+                      }
+                    }
+                  ],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "overloads": [],
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "optional-chaining-array.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "optional-chaining-array.ets"
+              }
+            }
+          },
+          {
+            "type": "ClassProperty",
+            "key": {
+              "type": "Identifier",
+              "name": "arr",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 16,
+                  "column": 5,
+                  "program": "optional-chaining-array.ets"
+                },
+                "end": {
+                  "line": 16,
+                  "column": 8,
+                  "program": "optional-chaining-array.ets"
+                }
+              }
+            },
+            "accessibility": "public",
+            "static": true,
+            "readonly": false,
+            "declare": false,
+            "optional": false,
+            "computed": false,
+            "typeAnnotation": {
+              "type": "ETSUnionType",
+              "types": [
+                {
+                  "type": "ETSTypeReference",
+                  "part": {
+                    "type": "ETSTypeReferencePart",
+                    "name": {
+                      "type": "Identifier",
+                      "name": "Array",
+                      "decorators": [],
+                      "loc": {
+                        "start": {
+                          "line": 1,
+                          "column": 1,
+                          "program": "optional-chaining-array.ets"
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 3,
+                          "program": "optional-chaining-array.ets"
+                        }
+                      }
+                    },
+                    "typeParams": {
+                      "type": "TSTypeParameterInstantiation",
+                      "params": [
+                        {
+                          "type": "ETSTypeReference",
+                          "part": {
+                            "type": "ETSTypeReferencePart",
+                            "name": {
+                              "type": "Identifier",
+                              "name": "Int",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 3,
+                                  "program": "optional-chaining-array.ets"
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 3,
+                                  "program": "optional-chaining-array.ets"
+                                }
+                              }
+                            },
+                            "loc": {
+                              "start": {
+                                "line": 1,
+                                "column": 3,
+                                "program": "optional-chaining-array.ets"
+                              },
+                              "end": {
+                                "line": 1,
+                                "column": 3,
+                                "program": "optional-chaining-array.ets"
+                              }
+                            }
+                          },
+                          "loc": {
+                            "start": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "optional-chaining-array.ets"
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "optional-chaining-array.ets"
+                            }
+                          }
+                        }
+                      ],
+                      "loc": {
+                        "start": {
+                          "line": 1,
+                          "column": 3,
+                          "program": "optional-chaining-array.ets"
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 3,
+                          "program": "optional-chaining-array.ets"
+                        }
+                      }
+                    },
+                    "loc": {
+                      "start": {
+                        "line": 1,
+                        "column": 1,
+                        "program": "optional-chaining-array.ets"
+                      },
+                      "end": {
+                        "line": 1,
+                        "column": 3,
+                        "program": "optional-chaining-array.ets"
+                      }
+                    }
+                  },
+                  "loc": {
+                    "start": {
+                      "line": 16,
+                      "column": 13,
+                      "program": "optional-chaining-array.ets"
+                    },
+                    "end": {
+                      "line": 16,
+                      "column": 15,
+                      "program": "optional-chaining-array.ets"
+                    }
+                  }
+                },
+                {
+                  "type": "ETSNullType",
+                  "loc": {
+                    "start": {
+                      "line": 16,
+                      "column": 18,
+                      "program": "optional-chaining-array.ets"
+                    },
+                    "end": {
+                      "line": 16,
+                      "column": 22,
+                      "program": "optional-chaining-array.ets"
+                    }
+                  }
+                }
+              ],
+              "loc": {
+                "start": {
+                  "line": 16,
+                  "column": 13,
+                  "program": "optional-chaining-array.ets"
+                },
+                "end": {
+                  "line": 16,
+                  "column": 22,
+                  "program": "optional-chaining-array.ets"
+                }
+              }
+            },
+            "definite": false,
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 16,
+                "column": 5,
+                "program": "optional-chaining-array.ets"
+              },
+              "end": {
+                "line": 16,
+                "column": 34,
+                "program": "optional-chaining-array.ets"
+              }
+            }
+          },
+          {
+            "type": "ClassProperty",
+            "key": {
+              "type": "Identifier",
+              "name": "test",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 17,
+                  "column": 5,
+                  "program": "optional-chaining-array.ets"
+                },
+                "end": {
+                  "line": 17,
+                  "column": 9,
+                  "program": "optional-chaining-array.ets"
+                }
+              }
+            },
+            "value": {
+              "type": "LogicalExpression",
+              "operator": "??",
+              "left": {
+                "type": "BlockExpression",
+                "statements": [
+                  {
+                    "type": "VariableDeclaration",
+                    "declarations": [
+                      {
+                        "type": "VariableDeclarator",
+                        "id": {
+                          "type": "Identifier",
+                          "name": "gensym%%_18",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "optional-chaining-array.ets"
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "optional-chaining-array.ets"
+                            }
+                          }
+                        },
+                        "init": {
+                          "type": "Identifier",
+                          "name": "arr",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 17,
+                              "column": 12,
+                              "program": "optional-chaining-array.ets"
+                            },
+                            "end": {
+                              "line": 17,
+                              "column": 15,
+                              "program": "optional-chaining-array.ets"
+                            }
+                          }
+                        },
+                        "loc": {
+                          "start": {
+                            "line": 1,
+                            "column": 3,
+                            "program": "optional-chaining-array.ets"
+                          },
+                          "end": {
+                            "line": 1,
+                            "column": 3,
+                            "program": "optional-chaining-array.ets"
+                          }
+                        }
+                      }
+                    ],
+                    "kind": "let",
+                    "loc": {
+                      "start": {
+                        "line": 17,
+                        "column": 12,
+                        "program": "optional-chaining-array.ets"
+                      },
+                      "end": {
+                        "line": 17,
+                        "column": 33,
+                        "program": "optional-chaining-array.ets"
+                      }
+                    }
+                  },
+                  {
+                    "type": "ExpressionStatement",
+                    "expression": {
+                      "type": "ConditionalExpression",
+                      "test": {
+                        "type": "BinaryExpression",
+                        "operator": "==",
+                        "left": {
+                          "type": "Identifier",
+                          "name": "gensym%%_18",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "optional-chaining-array.ets"
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "optional-chaining-array.ets"
+                            }
+                          }
+                        },
+                        "right": {
+                          "type": "NullLiteral",
+                          "value": null,
+                          "loc": {
+                            "start": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "optional-chaining-array.ets"
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "optional-chaining-array.ets"
+                            }
+                          }
+                        },
+                        "loc": {
+                          "start": {
+                            "line": 1,
+                            "column": 3,
+                            "program": "optional-chaining-array.ets"
+                          },
+                          "end": {
+                            "line": 1,
+                            "column": 3,
+                            "program": "optional-chaining-array.ets"
+                          }
+                        }
+                      },
+                      "consequent": {
+                        "type": "UndefinedLiteral",
+                        "value": "undefined",
+                        "loc": {
+                          "start": {
+                            "line": 1,
+                            "column": 3,
+                            "program": "optional-chaining-array.ets"
+                          },
+                          "end": {
+                            "line": 1,
+                            "column": 3,
+                            "program": "optional-chaining-array.ets"
+                          }
+                        }
+                      },
+                      "alternate": {
+                        "type": "MemberExpression",
+                        "object": {
+                          "type": "Identifier",
+                          "name": "gensym%%_18",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 17,
+                              "column": 12,
+                              "program": "optional-chaining-array.ets"
+                            },
+                            "end": {
+                              "line": 17,
+                              "column": 20,
+                              "program": "optional-chaining-array.ets"
+                            }
+                          }
+                        },
+                        "property": {
+                          "type": "NumberLiteral",
+                          "value": 1,
+                          "loc": {
+                            "start": {
+                              "line": 17,
+                              "column": 18,
+                              "program": "optional-chaining-array.ets"
+                            },
+                            "end": {
+                              "line": 17,
+                              "column": 19,
+                              "program": "optional-chaining-array.ets"
+                            }
+                          }
+                        },
+                        "computed": true,
+                        "optional": false,
+                        "loc": {
+                          "start": {
+                            "line": 17,
+                            "column": 12,
+                            "program": "optional-chaining-array.ets"
+                          },
+                          "end": {
+                            "line": 17,
+                            "column": 20,
+                            "program": "optional-chaining-array.ets"
+                          }
+                        }
+                      },
+                      "loc": {
+                        "start": {
+                          "line": 1,
+                          "column": 3,
+                          "program": "optional-chaining-array.ets"
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 3,
+                          "program": "optional-chaining-array.ets"
+                        }
+                      }
+                    },
+                    "loc": {
+                      "start": {
+                        "line": 1,
+                        "column": 3,
+                        "program": "optional-chaining-array.ets"
+                      },
+                      "end": {
+                        "line": 1,
+                        "column": 3,
+                        "program": "optional-chaining-array.ets"
+                      }
+                    }
+                  }
+                ],
+                "loc": {
+                  "start": {
+                    "line": 17,
+                    "column": 12,
+                    "program": "optional-chaining-array.ets"
+                  },
+                  "end": {
+                    "line": 17,
+                    "column": 33,
+                    "program": "optional-chaining-array.ets"
+                  }
+                }
+              },
+              "right": {
+                "type": "StringLiteral",
+                "value": "unknown",
+                "loc": {
+                  "start": {
+                    "line": 17,
+                    "column": 24,
+                    "program": "optional-chaining-array.ets"
+                  },
+                  "end": {
+                    "line": 17,
+                    "column": 33,
+                    "program": "optional-chaining-array.ets"
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 17,
+                  "column": 12,
+                  "program": "optional-chaining-array.ets"
+                },
+                "end": {
+                  "line": 17,
+                  "column": 33,
+                  "program": "optional-chaining-array.ets"
+                }
+              }
+            },
+            "accessibility": "public",
+            "static": true,
+            "readonly": false,
+            "declare": false,
+            "optional": false,
+            "computed": false,
+            "definite": false,
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 17,
+                "column": 5,
+                "program": "optional-chaining-array.ets"
+              },
+              "end": {
+                "line": 17,
+                "column": 33,
+                "program": "optional-chaining-array.ets"
+              }
+            }
+          },
+          {
+            "type": "ClassProperty",
+            "key": {
+              "type": "Identifier",
+              "name": "arr2",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 19,
+                  "column": 5,
+                  "program": "optional-chaining-array.ets"
+                },
+                "end": {
+                  "line": 19,
+                  "column": 9,
+                  "program": "optional-chaining-array.ets"
+                }
+              }
+            },
+            "accessibility": "public",
+            "static": true,
+            "readonly": false,
+            "declare": false,
+            "optional": false,
+            "computed": false,
+            "typeAnnotation": {
+              "type": "ETSUnionType",
+              "types": [
+                {
+                  "type": "ETSTypeReference",
+                  "part": {
+                    "type": "ETSTypeReferencePart",
+                    "name": {
+                      "type": "Identifier",
+                      "name": "Array",
+                      "decorators": [],
+                      "loc": {
+                        "start": {
+                          "line": 1,
+                          "column": 1,
+                          "program": "optional-chaining-array.ets"
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 3,
+                          "program": "optional-chaining-array.ets"
+                        }
+                      }
+                    },
+                    "typeParams": {
+                      "type": "TSTypeParameterInstantiation",
+                      "params": [
+                        {
+                          "type": "ETSTypeReference",
+                          "part": {
+                            "type": "ETSTypeReferencePart",
+                            "name": {
+                              "type": "Identifier",
+                              "name": "String",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 3,
+                                  "program": "optional-chaining-array.ets"
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 3,
+                                  "program": "optional-chaining-array.ets"
+                                }
+                              }
+                            },
+                            "loc": {
+                              "start": {
+                                "line": 1,
+                                "column": 3,
+                                "program": "optional-chaining-array.ets"
+                              },
+                              "end": {
+                                "line": 1,
+                                "column": 3,
+                                "program": "optional-chaining-array.ets"
+                              }
+                            }
+                          },
+                          "loc": {
+                            "start": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "optional-chaining-array.ets"
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "optional-chaining-array.ets"
+                            }
+                          }
+                        }
+                      ],
+                      "loc": {
+                        "start": {
+                          "line": 1,
+                          "column": 3,
+                          "program": "optional-chaining-array.ets"
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 3,
+                          "program": "optional-chaining-array.ets"
+                        }
+                      }
+                    },
+                    "loc": {
+                      "start": {
+                        "line": 1,
+                        "column": 1,
+                        "program": "optional-chaining-array.ets"
+                      },
+                      "end": {
+                        "line": 1,
+                        "column": 3,
+                        "program": "optional-chaining-array.ets"
+                      }
+                    }
+                  },
+                  "loc": {
+                    "start": {
+                      "line": 19,
+                      "column": 17,
+                      "program": "optional-chaining-array.ets"
+                    },
+                    "end": {
+                      "line": 19,
+                      "column": 19,
+                      "program": "optional-chaining-array.ets"
+                    }
+                  }
+                },
+                {
+                  "type": "ETSNullType",
+                  "loc": {
+                    "start": {
+                      "line": 19,
+                      "column": 22,
+                      "program": "optional-chaining-array.ets"
+                    },
+                    "end": {
+                      "line": 19,
+                      "column": 26,
+                      "program": "optional-chaining-array.ets"
+                    }
+                  }
+                }
+              ],
+              "loc": {
+                "start": {
+                  "line": 19,
+                  "column": 17,
+                  "program": "optional-chaining-array.ets"
+                },
+                "end": {
+                  "line": 19,
+                  "column": 26,
+                  "program": "optional-chaining-array.ets"
+                }
+              }
+            },
+            "definite": false,
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 19,
+                "column": 5,
+                "program": "optional-chaining-array.ets"
+              },
+              "end": {
+                "line": 19,
+                "column": 9,
+                "program": "optional-chaining-array.ets"
+              }
+            }
+          },
+          {
+            "type": "ClassProperty",
+            "key": {
+              "type": "Identifier",
+              "name": "test2",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 20,
+                  "column": 5,
+                  "program": "optional-chaining-array.ets"
+                },
+                "end": {
+                  "line": 20,
+                  "column": 10,
+                  "program": "optional-chaining-array.ets"
+                }
+              }
+            },
+            "value": {
+              "type": "LogicalExpression",
+              "operator": "??",
+              "left": {
+                "type": "BlockExpression",
+                "statements": [
+                  {
+                    "type": "VariableDeclaration",
+                    "declarations": [
+                      {
+                        "type": "VariableDeclarator",
+                        "id": {
+                          "type": "Identifier",
+                          "name": "gensym%%_19",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "optional-chaining-array.ets"
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "optional-chaining-array.ets"
+                            }
+                          }
+                        },
+                        "init": {
+                          "type": "Identifier",
+                          "name": "arr2",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 20,
+                              "column": 13,
+                              "program": "optional-chaining-array.ets"
+                            },
+                            "end": {
+                              "line": 20,
+                              "column": 17,
+                              "program": "optional-chaining-array.ets"
+                            }
+                          }
+                        },
+                        "loc": {
+                          "start": {
+                            "line": 1,
+                            "column": 3,
+                            "program": "optional-chaining-array.ets"
+                          },
+                          "end": {
+                            "line": 1,
+                            "column": 3,
+                            "program": "optional-chaining-array.ets"
+                          }
+                        }
+                      }
+                    ],
+                    "kind": "let",
+                    "loc": {
+                      "start": {
+                        "line": 20,
+                        "column": 13,
+                        "program": "optional-chaining-array.ets"
+                      },
+                      "end": {
+                        "line": 20,
+                        "column": 38,
+                        "program": "optional-chaining-array.ets"
+                      }
+                    }
+                  },
+                  {
+                    "type": "ExpressionStatement",
+                    "expression": {
+                      "type": "ConditionalExpression",
+                      "test": {
+                        "type": "BinaryExpression",
+                        "operator": "==",
+                        "left": {
+                          "type": "Identifier",
+                          "name": "gensym%%_19",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "optional-chaining-array.ets"
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "optional-chaining-array.ets"
+                            }
+                          }
+                        },
+                        "right": {
+                          "type": "NullLiteral",
+                          "value": null,
+                          "loc": {
+                            "start": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "optional-chaining-array.ets"
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "optional-chaining-array.ets"
+                            }
+                          }
+                        },
+                        "loc": {
+                          "start": {
+                            "line": 1,
+                            "column": 3,
+                            "program": "optional-chaining-array.ets"
+                          },
+                          "end": {
+                            "line": 1,
+                            "column": 3,
+                            "program": "optional-chaining-array.ets"
+                          }
+                        }
+                      },
+                      "consequent": {
+                        "type": "UndefinedLiteral",
+                        "value": "undefined",
+                        "loc": {
+                          "start": {
+                            "line": 1,
+                            "column": 3,
+                            "program": "optional-chaining-array.ets"
+                          },
+                          "end": {
+                            "line": 1,
+                            "column": 3,
+                            "program": "optional-chaining-array.ets"
+                          }
+                        }
+                      },
+                      "alternate": {
+                        "type": "MemberExpression",
+                        "object": {
+                          "type": "Identifier",
+                          "name": "gensym%%_19",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 20,
+                              "column": 13,
+                              "program": "optional-chaining-array.ets"
+                            },
+                            "end": {
+                              "line": 20,
+                              "column": 24,
+                              "program": "optional-chaining-array.ets"
+                            }
+                          }
+                        },
+                        "property": {
+                          "type": "NumberLiteral",
+                          "value": 100,
+                          "loc": {
+                            "start": {
+                              "line": 20,
+                              "column": 20,
+                              "program": "optional-chaining-array.ets"
+                            },
+                            "end": {
+                              "line": 20,
+                              "column": 23,
+                              "program": "optional-chaining-array.ets"
+                            }
+                          }
+                        },
+                        "computed": true,
+                        "optional": false,
+                        "loc": {
+                          "start": {
+                            "line": 20,
+                            "column": 13,
+                            "program": "optional-chaining-array.ets"
+                          },
+                          "end": {
+                            "line": 20,
+                            "column": 24,
+                            "program": "optional-chaining-array.ets"
+                          }
+                        }
+                      },
+                      "loc": {
+                        "start": {
+                          "line": 1,
+                          "column": 3,
+                          "program": "optional-chaining-array.ets"
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 3,
+                          "program": "optional-chaining-array.ets"
+                        }
+                      }
+                    },
+                    "loc": {
+                      "start": {
+                        "line": 1,
+                        "column": 3,
+                        "program": "optional-chaining-array.ets"
+                      },
+                      "end": {
+                        "line": 1,
+                        "column": 3,
+                        "program": "optional-chaining-array.ets"
+                      }
+                    }
+                  }
+                ],
+                "loc": {
+                  "start": {
+                    "line": 20,
+                    "column": 13,
+                    "program": "optional-chaining-array.ets"
+                  },
+                  "end": {
+                    "line": 20,
+                    "column": 38,
+                    "program": "optional-chaining-array.ets"
+                  }
+                }
+              },
+              "right": {
+                "type": "StringLiteral",
+                "value": "unknown2",
+                "loc": {
+                  "start": {
+                    "line": 20,
+                    "column": 28,
+                    "program": "optional-chaining-array.ets"
+                  },
+                  "end": {
+                    "line": 20,
+                    "column": 38,
+                    "program": "optional-chaining-array.ets"
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 20,
+                  "column": 13,
+                  "program": "optional-chaining-array.ets"
+                },
+                "end": {
+                  "line": 20,
+                  "column": 38,
+                  "program": "optional-chaining-array.ets"
+                }
+              }
+            },
+            "accessibility": "public",
+            "static": true,
+            "readonly": false,
+            "declare": false,
+            "optional": false,
+            "computed": false,
+            "definite": false,
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 20,
+                "column": 5,
+                "program": "optional-chaining-array.ets"
+              },
+              "end": {
+                "line": 20,
+                "column": 38,
+                "program": "optional-chaining-array.ets"
+              }
+            }
+          }
+        ],
+        "loc": {
+          "start": {
+            "line": 1,
+            "column": 1,
+            "program": "optional-chaining-array.ets"
+          },
+          "end": {
+            "line": 1,
+            "column": 1,
+            "program": "optional-chaining-array.ets"
+          }
+        }
+      },
+      "loc": {
+        "start": {
+          "line": 1,
+          "column": 1,
+          "program": "optional-chaining-array.ets"
+        },
+        "end": {
+          "line": 1,
+          "column": 1,
+          "program": "optional-chaining-array.ets"
+        }
+      }
+    }
+  ],
+  "loc": {
+    "start": {
+      "line": 1,
+      "column": 1,
+      "program": "optional-chaining-array.ets"
+    },
+    "end": {
+      "line": 21,
+      "column": 1,
+      "program": "optional-chaining-array.ets"
+    }
+  }
+}
+Warning: Variable 'arr2' is used before being assigned. [optional-chaining-array.ets:20:13]

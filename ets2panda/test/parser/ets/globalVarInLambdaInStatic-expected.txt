@@ -1013,12 +1013,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "globalVarInLambdaInStatic.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "globalVarInLambdaInStatic.ets"
                     }
                   }
                 },
@@ -1026,12 +1026,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "globalVarInLambdaInStatic.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "globalVarInLambdaInStatic.ets"
                   }
                 }
               },
@@ -1039,12 +1039,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "globalVarInLambdaInStatic.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "globalVarInLambdaInStatic.ets"
                 }
               }
             },
@@ -1119,12 +1119,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "globalVarInLambdaInStatic.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "globalVarInLambdaInStatic.ets"
                     }
                   }
                 },
@@ -1132,12 +1132,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "globalVarInLambdaInStatic.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "globalVarInLambdaInStatic.ets"
                   }
                 }
               },
@@ -1145,12 +1145,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "globalVarInLambdaInStatic.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "globalVarInLambdaInStatic.ets"
                 }
               }
             },

@@ -2,12 +2,12 @@ LOAD SUCCESS
 PROCEED TO PARSE SUCCESS
 SETTER: 
 public set member(value: number) {
-  (this).m = value;
+  this.m = value;
 }
 
 GETTER: 
 public get member() {
-  return (this).m;
+  return this.m;
 }
 
 PROCEED TO BOUND SUCCESS

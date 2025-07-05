@@ -53,7 +53,6 @@ OuterSpace.InnerSpace.privateVariable = 456; // CTE
 /* @@? 45:16 Error TypeError: 'InnerSpace' is not exported in 'OuterSpace'  */
 /* @@? 45:27 Error TypeError: 'innerClass' is not exported in 'InnerSpace'  */
 /* @@? 40:27 Error TypeError: 'privateVariable' is not exported in 'InnerSpace'  */
-/* @@? 40:27 Error TypeError: 'privateVariable' is not exported in 'InnerSpace'  */
 /* @@? 50:12 Error TypeError: 'InnerSpace' is not exported in 'OuterSpace'  */
 /* @@? 50:23 Error TypeError: 'privateVariable' is not exported in 'InnerSpace'  */
 /* @@? 43:31 Error TypeError: 'InnerSpace' is not exported in 'OuterSpace'  */

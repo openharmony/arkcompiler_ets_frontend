@@ -19,6 +19,7 @@ interface /* @@ label1 */double {
 
 /* @@@ label1 Error SyntaxError: Cannot be used as user-defined type. */
 /* @@@ label1 Error SyntaxError: Identifier expected, got 'double'. */
+/* @@@ label1 Error SyntaxError: Hard keyword 'double' cannot be used as identifier */
 /* @@@ label2 Error SyntaxError: Interface member initialization is prohibited. */
 /* @@@ label3 Error SyntaxError: Unexpected token, expected ','. */
 /* @@? 17:51 Error SyntaxError: Unexpected token, expected 'private' or identifier. */

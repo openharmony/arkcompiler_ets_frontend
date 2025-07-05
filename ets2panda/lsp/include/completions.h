@@ -52,7 +52,8 @@ enum class CompletionEntryKind {
     STRUCT = 22,
     EVENT = 23,
     OPERATOR = 24,
-    TYPE_PARAMETER = 25
+    TYPE_PARAMETER = 25,
+    ALIAS_TYPE = 26
 };
 
 namespace sort_text {
@@ -205,10 +206,15 @@ std::optional<CompletionEntryData> CompletionEntryDataToOriginInfo(ark::es2panda
                                                                    const std::string &name);
 std::optional<bool> IsCompletionEntryDataResolved(ark::es2panda::lsp::CompletionEntryData *data,
                                                   const std::shared_ptr<ArkTsConfig> &config);
+std::vector<ir::AstNode *> FilterFromBody(const ark::ArenaVector<ir::AstNode *> &bodyNodes,
+                                          const std::string &triggerWord);
 
 bool StartsWith(const std::string &str, const std::string &prefix);
+bool IsDefinedClassOrStruct(ir::AstNode *preNode);
 std::shared_ptr<ArkTsConfig> GetArkTsConfigFromFile(const char *fileName);
 std::vector<CompletionEntry> GetPropertyCompletions(ir::AstNode *preNode, const std::string &triggerWord);
+std::string GetClassPropertyName(ir::AstNode *node);
+ir::AstNode *GetIdentifierFromTSInterfaceHeritage(ir::AstNode *node);
 
 }  // namespace ark::es2panda::lsp
 #endif

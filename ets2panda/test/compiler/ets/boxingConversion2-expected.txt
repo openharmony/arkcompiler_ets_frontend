@@ -80,12 +80,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "boxingConversion2.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "boxingConversion2.ets"
                     }
                   }
                 },
@@ -93,12 +93,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "boxingConversion2.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "boxingConversion2.ets"
                   }
                 }
               },
@@ -106,12 +106,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "boxingConversion2.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "boxingConversion2.ets"
                 }
               }
             },
@@ -731,7 +731,7 @@
                               },
                               "end": {
                                 "line": 23,
-                                "column": 23,
+                                "column": 24,
                                 "program": "boxingConversion2.ets"
                               }
                             }
@@ -744,7 +744,7 @@
                             },
                             "end": {
                               "line": 23,
-                              "column": 23,
+                              "column": 24,
                               "program": "boxingConversion2.ets"
                             }
                           }
@@ -759,7 +759,7 @@
                         },
                         "end": {
                           "line": 23,
-                          "column": 24,
+                          "column": 25,
                           "program": "boxingConversion2.ets"
                         }
                       }
@@ -2053,8 +2053,77 @@
                             }
                           },
                           "init": {
-                            "type": "NumberLiteral",
-                            "value": 1,
+                            "type": "CallExpression",
+                            "callee": {
+                              "type": "MemberExpression",
+                              "object": {
+                                "type": "Identifier",
+                                "name": "Double",
+                                "decorators": [],
+                                "loc": {
+                                  "start": {
+                                    "line": 35,
+                                    "column": 20,
+                                    "program": "boxingConversion2.ets"
+                                  },
+                                  "end": {
+                                    "line": 35,
+                                    "column": 26,
+                                    "program": "boxingConversion2.ets"
+                                  }
+                                }
+                              },
+                              "property": {
+                                "type": "Identifier",
+                                "name": "toFloat",
+                                "decorators": [],
+                                "loc": {
+                                  "start": {
+                                    "line": 35,
+                                    "column": 27,
+                                    "program": "boxingConversion2.ets"
+                                  },
+                                  "end": {
+                                    "line": 35,
+                                    "column": 34,
+                                    "program": "boxingConversion2.ets"
+                                  }
+                                }
+                              },
+                              "computed": false,
+                              "optional": false,
+                              "loc": {
+                                "start": {
+                                  "line": 35,
+                                  "column": 20,
+                                  "program": "boxingConversion2.ets"
+                                },
+                                "end": {
+                                  "line": 35,
+                                  "column": 34,
+                                  "program": "boxingConversion2.ets"
+                                }
+                              }
+                            },
+                            "arguments": [
+                              {
+                                "type": "NumberLiteral",
+                                "value": 1,
+                                "loc": {
+                                  "start": {
+                                    "line": 35,
+                                    "column": 35,
+                                    "program": "boxingConversion2.ets"
+                                  },
+                                  "end": {
+                                    "line": 35,
+                                    "column": 38,
+                                    "program": "boxingConversion2.ets"
+                                  }
+                                }
+                              }
+                            ],
+                            "optional": false,
                             "loc": {
                               "start": {
                                 "line": 35,
@@ -2063,7 +2132,7 @@
                               },
                               "end": {
                                 "line": 35,
-                                "column": 23,
+                                "column": 39,
                                 "program": "boxingConversion2.ets"
                               }
                             }
@@ -2076,7 +2145,7 @@
                             },
                             "end": {
                               "line": 35,
-                              "column": 23,
+                              "column": 39,
                               "program": "boxingConversion2.ets"
                             }
                           }
@@ -2091,7 +2160,7 @@
                         },
                         "end": {
                           "line": 35,
-                          "column": 24,
+                          "column": 40,
                           "program": "boxingConversion2.ets"
                         }
                       }
@@ -2166,8 +2235,77 @@
                             }
                           },
                           "init": {
-                            "type": "NumberLiteral",
-                            "value": 1,
+                            "type": "CallExpression",
+                            "callee": {
+                              "type": "MemberExpression",
+                              "object": {
+                                "type": "Identifier",
+                                "name": "Double",
+                                "decorators": [],
+                                "loc": {
+                                  "start": {
+                                    "line": 36,
+                                    "column": 18,
+                                    "program": "boxingConversion2.ets"
+                                  },
+                                  "end": {
+                                    "line": 36,
+                                    "column": 24,
+                                    "program": "boxingConversion2.ets"
+                                  }
+                                }
+                              },
+                              "property": {
+                                "type": "Identifier",
+                                "name": "toInt",
+                                "decorators": [],
+                                "loc": {
+                                  "start": {
+                                    "line": 36,
+                                    "column": 25,
+                                    "program": "boxingConversion2.ets"
+                                  },
+                                  "end": {
+                                    "line": 36,
+                                    "column": 30,
+                                    "program": "boxingConversion2.ets"
+                                  }
+                                }
+                              },
+                              "computed": false,
+                              "optional": false,
+                              "loc": {
+                                "start": {
+                                  "line": 36,
+                                  "column": 18,
+                                  "program": "boxingConversion2.ets"
+                                },
+                                "end": {
+                                  "line": 36,
+                                  "column": 30,
+                                  "program": "boxingConversion2.ets"
+                                }
+                              }
+                            },
+                            "arguments": [
+                              {
+                                "type": "NumberLiteral",
+                                "value": 1,
+                                "loc": {
+                                  "start": {
+                                    "line": 36,
+                                    "column": 31,
+                                    "program": "boxingConversion2.ets"
+                                  },
+                                  "end": {
+                                    "line": 36,
+                                    "column": 34,
+                                    "program": "boxingConversion2.ets"
+                                  }
+                                }
+                              }
+                            ],
+                            "optional": false,
                             "loc": {
                               "start": {
                                 "line": 36,
@@ -2176,7 +2314,7 @@
                               },
                               "end": {
                                 "line": 36,
-                                "column": 21,
+                                "column": 35,
                                 "program": "boxingConversion2.ets"
                               }
                             }
@@ -2189,7 +2327,7 @@
                             },
                             "end": {
                               "line": 36,
-                              "column": 21,
+                              "column": 35,
                               "program": "boxingConversion2.ets"
                             }
                           }
@@ -2204,7 +2342,7 @@
                         },
                         "end": {
                           "line": 36,
-                          "column": 22,
+                          "column": 36,
                           "program": "boxingConversion2.ets"
                         }
                       }

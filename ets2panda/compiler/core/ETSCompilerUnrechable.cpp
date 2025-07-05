@@ -52,6 +52,11 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::MethodDefinition *node) con
     ES2PANDA_UNREACHABLE();
 }
 
+void ETSCompiler::Compile([[maybe_unused]] const ir::OverloadDeclaration *node) const
+{
+    ES2PANDA_UNREACHABLE();
+}
+
 void ETSCompiler::Compile([[maybe_unused]] const ir::Property *expr) const
 {
     ES2PANDA_UNREACHABLE();
@@ -113,6 +118,11 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::ETSPrimitiveType *node) con
 }
 
 void ETSCompiler::Compile([[maybe_unused]] const ir::ETSStructDeclaration *node) const
+{
+    ES2PANDA_UNREACHABLE();
+}
+
+void ETSCompiler::Compile([[maybe_unused]] const ir::ETSNonNullishTypeNode *node) const
 {
     ES2PANDA_UNREACHABLE();
 }
@@ -184,11 +194,6 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::NewExpression *expr) const
 }
 
 void ETSCompiler::Compile([[maybe_unused]] const ir::OmittedExpression *expr) const
-{
-    ES2PANDA_UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::OpaqueTypeNode *node) const
 {
     ES2PANDA_UNREACHABLE();
 }
@@ -415,11 +420,6 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::TSParameterProperty *expr) 
 }
 
 void ETSCompiler::Compile([[maybe_unused]] const ir::TSParenthesizedType *node) const
-{
-    ES2PANDA_UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSQualifiedName *expr) const
 {
     ES2PANDA_UNREACHABLE();
 }

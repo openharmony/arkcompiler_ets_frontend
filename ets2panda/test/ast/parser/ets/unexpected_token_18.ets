@@ -17,4 +17,3 @@ try {} catch (e: number) /* @@ label */}
 
 /* @@? 16:15 Error TypeError: Argument must be an instance of 'Exception' or 'Error' */
 /* @@@ label Error SyntaxError: Expected '{', got '}'. */
-/* @@@ label Error SyntaxError: Expected '{', got '}'. */

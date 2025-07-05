@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,31 +23,34 @@
 #include "compiler/core/pandagen.h"
 
 namespace ark::es2panda::ir {
+
+void FunctionDeclaration::SetFunction(ScriptFunction *func)
+{
+    this->GetOrCreateHistoryNodeAs<FunctionDeclaration>()->func_ = func;
+}
+
 void FunctionDeclaration::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    for (auto *&it : VectorIterationGuard(decorators_)) {
-        if (auto *transformedNode = cb(it); it != transformedNode) {
-            it->SetTransformedNode(transformationName, transformedNode);
-            it = transformedNode->AsDecorator();
+    auto const &decorators = Decorators();
+    for (size_t ix = 0; ix < decorators.size(); ix++) {
+        if (auto *transformedNode = cb(decorators[ix]); decorators[ix] != transformedNode) {
+            decorators[ix]->SetTransformedNode(transformationName, transformedNode);
+            SetValueDecorators(transformedNode->AsDecorator(), ix);
         }
     }
 
-    for (auto *&it : VectorIterationGuard(Annotations())) {
-        if (auto *transformedNode = cb(it); it != transformedNode) {
-            it->SetTransformedNode(transformationName, transformedNode);
-            it = transformedNode->AsAnnotationUsage();
-        }
-    }
+    TransformAnnotations(cb, transformationName);
 
-    if (auto *transformedNode = cb(func_); func_ != transformedNode) {
-        func_->SetTransformedNode(transformationName, transformedNode);
-        func_ = transformedNode->AsScriptFunction();
+    auto const func = Function();
+    if (auto *transformedNode = cb(func); func != transformedNode) {
+        func->SetTransformedNode(transformationName, transformedNode);
+        SetFunction(transformedNode->AsScriptFunction());
     }
 }
 
 void FunctionDeclaration::Iterate(const NodeTraverser &cb) const
 {
-    for (auto *it : VectorIterationGuard(decorators_)) {
+    for (auto *it : VectorIterationGuard(Decorators())) {
         cb(it);
     }
 
@@ -55,15 +58,16 @@ void FunctionDeclaration::Iterate(const NodeTraverser &cb) const
         cb(it);
     }
 
-    cb(func_);
+    auto func = GetHistoryNode()->AsFunctionDeclaration()->func_;
+    cb(func);
 }
 
 void FunctionDeclaration::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", func_->IsOverload() ? "TSDeclareFunction" : "FunctionDeclaration"},
-                 {"decorators", AstDumper::Optional(decorators_)},
+    dumper->Add({{"type", Function()->IsOverload() ? "TSDeclareFunction" : "FunctionDeclaration"},
+                 {"decorators", AstDumper::Optional(Decorators())},
                  {"annotations", AstDumper::Optional(Annotations())},
-                 {"function", func_}});
+                 {"function", Function()}});
 }
 
 void FunctionDeclaration::Dump(ir::SrcDumper *dumper) const
@@ -71,19 +75,20 @@ void FunctionDeclaration::Dump(ir::SrcDumper *dumper) const
     for (auto *anno : Annotations()) {
         anno->Dump(dumper);
     }
-    if (func_->IsNative()) {
+    auto func = Function();
+    if (func->IsNative()) {
         dumper->Add("native ");
     }
-    if (func_->IsDeclare()) {
+    if (func->IsDeclare()) {
         dumper->Add("declare ");
     }
-    if (func_->IsAsyncFunc()) {
+    if (func->IsAsyncFunc()) {
         dumper->Add("async ");
     }
     dumper->Add("function ");
 
-    func_->Id()->Dump(dumper);
-    func_->Dump(dumper);
+    func->Id()->Dump(dumper);
+    func->Dump(dumper);
 }
 
 void FunctionDeclaration::Compile(compiler::PandaGen *pg) const
@@ -105,4 +110,47 @@ checker::VerifiedType FunctionDeclaration::Check(checker::ETSChecker *checker)
 {
     return {this, checker->GetAnalyzer()->Check(this)};
 }
+
+FunctionDeclaration *FunctionDeclaration::Construct(ArenaAllocator *allocator)
+{
+    return allocator->New<FunctionDeclaration>(allocator, nullptr);
+}
+
+void FunctionDeclaration::CopyTo(AstNode *other) const
+{
+    auto otherImpl = other->AsFunctionDeclaration();
+
+    otherImpl->decorators_ = decorators_;
+    otherImpl->func_ = func_;
+    otherImpl->isAnonymous_ = isAnonymous_;
+
+    JsDocAllowed<AnnotationAllowed<Statement>>::CopyTo(other);
+}
+
+void FunctionDeclaration::EmplaceDecorators(Decorator *decorators)
+{
+    auto newNode = this->GetOrCreateHistoryNodeAs<FunctionDeclaration>();
+    newNode->decorators_.emplace_back(decorators);
+}
+
+void FunctionDeclaration::ClearDecorators()
+{
+    auto newNode = this->GetOrCreateHistoryNodeAs<FunctionDeclaration>();
+    newNode->decorators_.clear();
+}
+
+void FunctionDeclaration::SetValueDecorators(Decorator *decorators, size_t index)
+{
+    auto newNode = this->GetOrCreateHistoryNodeAs<FunctionDeclaration>();
+    auto &arenaVector = newNode->decorators_;
+    ES2PANDA_ASSERT(arenaVector.size() > index);
+    arenaVector[index] = decorators;
+}
+
+[[nodiscard]] ArenaVector<Decorator *> &FunctionDeclaration::DecoratorsForUpdate()
+{
+    auto newNode = this->GetOrCreateHistoryNodeAs<FunctionDeclaration>();
+    return newNode->decorators_;
+}
+
 }  // namespace ark::es2panda::ir

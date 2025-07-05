@@ -768,6 +768,7 @@ bool ASParser::ParsePotentialNonNullExpression(ir::Expression **returnExpression
     }
 
     *returnExpression = AllocNode<ir::TSNonNullExpression>(*returnExpression);
+    // NOLINTNEXTLINE(clang-analyzer-core.CallAndMessage)
     (*returnExpression)->SetRange({startLoc, Lexer()->GetToken().End()});
     Lexer()->NextToken();
     return false;

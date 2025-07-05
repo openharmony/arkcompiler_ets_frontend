@@ -19,4 +19,4 @@ let test = arr?.[1] ?? "unknown";
 let arr2: String[] | null;
 let test2 = arr2?.[100] ?? "unknown2";
 
-/* @@? 20:13 Warning Warning: Variable 'arr2' is used before being assigned.  */
+/* @@? 20:13 Error TypeError: Variable 'arr2' is used before being assigned.  */

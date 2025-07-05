@@ -17,12 +17,7 @@ export function foo() : int {
     return 2;
 }
 
-export class A {
-    foo() : int {
-        return 2;
-    }
-    b: int = 2
-}
+export const A0: int = 1 
 
 export class B {
     foo() : int {
@@ -30,3 +25,5 @@ export class B {
     }
     b: int = 2
 }
+
+hello()

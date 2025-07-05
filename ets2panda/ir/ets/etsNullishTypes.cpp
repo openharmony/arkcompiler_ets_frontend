@@ -21,12 +21,7 @@ namespace ark::es2panda::ir {
 void ETSUndefinedType::TransformChildren([[maybe_unused]] const NodeTransformer &cb,
                                          [[maybe_unused]] std::string_view const transformationName)
 {
-    for (auto *&it : VectorIterationGuard(Annotations())) {
-        if (auto *transformedNode = cb(it); it != transformedNode) {
-            it->SetTransformedNode(transformationName, transformedNode);
-            it = transformedNode->AsAnnotationUsage();
-        }
-    }
+    TransformAnnotations(cb, transformationName);
 }
 
 void ETSUndefinedType::Iterate([[maybe_unused]] const NodeTraverser &cb) const
@@ -92,12 +87,7 @@ ETSUndefinedType *ETSUndefinedType::Clone(ArenaAllocator *allocator, AstNode *pa
 void ETSNullType::TransformChildren([[maybe_unused]] const NodeTransformer &cb,
                                     [[maybe_unused]] std::string_view const transformationName)
 {
-    for (auto *&it : VectorIterationGuard(Annotations())) {
-        if (auto *transformedNode = cb(it); it != transformedNode) {
-            it->SetTransformedNode(transformationName, transformedNode);
-            it = transformedNode->AsAnnotationUsage();
-        }
-    }
+    TransformAnnotations(cb, transformationName);
 }
 
 void ETSNullType::Iterate([[maybe_unused]] const NodeTraverser &cb) const

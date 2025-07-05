@@ -23,12 +23,7 @@ function main(): void {
 /* @@? 18:32 Error SyntaxError: Unexpected token, expected '>'. */
 /* @@? 18:32 Error SyntaxError: Unexpected token, expected ',' or ']'. */
 /* @@? 18:32 Error SyntaxError: Unexpected token '>'. */
-/* @@? 18:32 Error SyntaxError: Unexpected token '>'. */
-/* @@? 18:32 Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type. */
-/* @@? 18:32 Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type. */
+/* @@? 18:35 Error SyntaxError: Unexpected token 'number'. */
 /* @@? 18:35 Error TypeError: Type name 'number' used in the wrong context */
+/* @@? 18:35 Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type. */
 /* @@? 18:42 Error SyntaxError: Unexpected token ']'. */
-/* @@? 18:42 Error SyntaxError: Unexpected token ']'. */
-/* @@? 18:42 Error SyntaxError: Unexpected token ']'. */
-/* @@? 18:42 Error SyntaxError: Unexpected token ']'. */
-/* @@? 18:44 Error SyntaxError: Unexpected token '='. */

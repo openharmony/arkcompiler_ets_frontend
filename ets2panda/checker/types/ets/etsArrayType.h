@@ -38,11 +38,6 @@ public:
         element_ = element;
     }
 
-    std::tuple<bool, bool> ResolveConditionExpr() const override
-    {
-        return {false, false};
-    }
-
     void ToString(std::stringstream &ss, bool precise) const override;
 
     void ToAssemblerType(std::stringstream &ss) const override;
@@ -51,6 +46,7 @@ public:
 
     uint32_t Rank() const override;
     void Identical(TypeRelation *relation, Type *other) override;
+    bool AssignmentSource(TypeRelation *relation, Type *target) override;
     void AssignmentTarget(TypeRelation *relation, Type *source) override;
     void Cast(TypeRelation *relation, Type *target) override;
     void IsSupertypeOf(TypeRelation *relation, Type *source) override;

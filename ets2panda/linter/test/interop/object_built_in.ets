@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use static'
+
 
 import { X } from "./oh_modules/object_built_in"
 
@@ -25,3 +25,11 @@ export function foo(prx: Object) {
 }
 
 foo(new X()); // Illegal
+
+export function shouldPass() {
+    const bar = JSON.parse('{}');
+    console.log(Object.keys(bar).length);
+}
+
+shouldPass()
+

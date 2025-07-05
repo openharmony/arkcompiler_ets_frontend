@@ -408,12 +408,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "asyncfunc_lambda_main.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "asyncfunc_lambda_main.ets"
                     }
                   }
                 },
@@ -421,12 +421,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "asyncfunc_lambda_main.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "asyncfunc_lambda_main.ets"
                   }
                 }
               },
@@ -434,12 +434,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "asyncfunc_lambda_main.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "asyncfunc_lambda_main.ets"
                 }
               }
             },
@@ -765,7 +765,7 @@
                           },
                           "end": {
                             "line": 24,
-                            "column": 24,
+                            "column": 23,
                             "program": "asyncfunc_lambda_main.ets"
                           }
                         }

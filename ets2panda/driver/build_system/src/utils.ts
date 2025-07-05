@@ -13,9 +13,23 @@
  * limitations under the License.
  */
 
+import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+
+import {
+  ARKTS_MODULE_NAME,
+  DECL_ETS_SUFFIX,
+  NATIVE_MODULE,
+  sdkConfigPrefix
+} from './pre_define';
+import {
+  Logger,
+  LogData,
+  LogDataFactory
+} from './logger';
+import { ErrorCode } from './error_code';
 
 const WINDOWS: string = 'Windows_NT';
 const LINUX: string = 'Linux';
@@ -39,6 +53,13 @@ export function changeFileExtension(file: string, targetExt: string, originExt =
   return fileWithoutExt + targetExt;
 }
 
+export function changeDeclgenFileExtension(file: string, targetExt: string): string {
+  if (file.endsWith(DECL_ETS_SUFFIX)) {
+      return changeFileExtension(file, targetExt, DECL_ETS_SUFFIX);
+  }
+  return changeFileExtension(file, targetExt);
+}
+
 export function ensurePathExists(filePath: string): void {
   try {
     const dirPath: string = path.dirname(filePath);
@@ -52,6 +73,78 @@ export function ensurePathExists(filePath: string): void {
   }
 }
 
-export function isFileExistSync(filePath: string): boolean {
-  return fs.existsSync(filePath);
+export function getFileHash(filePath: string): string {
+  const content = fs.readFileSync(filePath, 'utf8');
+  return crypto.createHash('sha256').update(content).digest('hex');
+}
+
+export function toUnixPath(path: string): string {
+  return path.replace(/\\/g, '/');
+}
+
+export function readFirstLineSync(filePath: string): string | null {
+
+  const fd = fs.openSync(filePath, 'r');
+  const buffer = Buffer.alloc(256);
+  const bytesRead = fs.readSync(fd, buffer, 0, buffer.length, 0);
+  fs.closeSync(fd);
+
+  const content = buffer.toString('utf-8', 0, bytesRead);
+  const firstLine = content.split(/\r?\n/, 1)[0].trim();
+
+  return firstLine;
+}
+
+export function safeRealpath(path: string, logger: Logger): string {
+  try {
+    return fs.realpathSync(path);
+  } catch(error) {
+    const msg = error instanceof Error ? error.message : String(error);
+    const logData: LogData = LogDataFactory.newInstance(
+      ErrorCode.BUILDSYSTEM_PATH_RESOLVE_FAIL,
+      `Error resolving path "${path}".`,
+      msg
+    );
+    logger.printError(logData);
+    throw logData;
+  }
+}
+
+export function getInteropFilePathByApi(apiName: string, interopSDKPath: Set<string>): string {
+  for (const sdkPath of interopSDKPath) {
+    const modulePath = path.resolve(sdkPath, apiName + DECL_ETS_SUFFIX);
+    if (fs.existsSync(modulePath)) {
+      return modulePath;
+    }
+  }
+  return '';
+}
+
+/**
+ * Issue:26513
+ * todo read config from external instead of prodcue
+ */
+export function getOhmurlByApi(api: string): string {
+  const REG_SYSTEM_MODULE: RegExp = new RegExp(`@(${sdkConfigPrefix})\\.(\\S+)`);
+
+  if (REG_SYSTEM_MODULE.test(api.trim())) {
+    return api.replace(REG_SYSTEM_MODULE, (_, moduleType, systemKey) => {
+      const systemModule: string = `${moduleType}.${systemKey}`;
+      if (NATIVE_MODULE.has(systemModule)) {
+        return `@native:${systemModule}`;
+      } else if (moduleType === ARKTS_MODULE_NAME) {
+        // @arkts.xxx -> @ohos:arkts.xxx
+        return `@ohos:${systemModule}`;
+      } else {
+        return `@ohos:${systemKey}`;
+      };
+    });
+  }
+  return '';
+}
+
+export function isSubPathOf(targetPath: string, parentDir: string): boolean {
+  const resolvedParent = toUnixPath(path.resolve(parentDir));
+  const resolvedTarget = toUnixPath(path.resolve(targetPath));
+  return resolvedTarget === resolvedParent || resolvedTarget.startsWith(resolvedParent + '/');
 }

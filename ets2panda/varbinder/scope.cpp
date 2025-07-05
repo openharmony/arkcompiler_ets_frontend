@@ -236,7 +236,10 @@ Variable *Scope::AddLocalTypeAliasVariable(ArenaAllocator *allocator, Decl *newD
 Variable *Scope::AddLocalClassVariable(ArenaAllocator *allocator, Decl *newDecl)
 {
     auto isNamespaceTransformed = newDecl->Node()->AsClassDefinition()->IsNamespaceTransformed();
-    VariableFlags flag = isNamespaceTransformed ? VariableFlags::NAMESPACE : VariableFlags::CLASS;
+    auto isEnumTransformed = newDecl->Node()->AsClassDefinition()->IsEnumTransformed();
+    VariableFlags flag = isNamespaceTransformed ? VariableFlags::NAMESPACE
+                         : isEnumTransformed    ? VariableFlags::ENUM_LITERAL
+                                                : VariableFlags::CLASS;
     auto *var = bindings_.insert({newDecl->Name(), allocator->New<LocalVariable>(newDecl, flag)}).first->second;
     newDecl->Node()->AsClassDefinition()->Ident()->SetVariable(var);
     return var;
@@ -484,7 +487,7 @@ Variable *FunctionParamScope::AddBinding([[maybe_unused]] ArenaAllocator *alloca
                                          [[maybe_unused]] Variable *currentVariable, [[maybe_unused]] Decl *newDecl,
                                          [[maybe_unused]] ScriptExtension extension)
 {
-    ES2PANDA_UNREACHABLE();
+    return AddLocal(allocator, currentVariable, newDecl, extension);
 }
 
 Variable *AnnotationParamScope::AddBinding([[maybe_unused]] ArenaAllocator *allocator,
@@ -641,7 +644,7 @@ Scope::InsertResult GlobalScope::InsertImpl(const util::StringView &name, Variab
         ES2PANDA_ASSERT(var->Declaration()->Name().Utf8().find(compiler::Signatures::ETS_GLOBAL) == std::string::npos);
         const auto *const node = var->Declaration()->Node();
 
-        if (!(node->IsExported() || node->IsDefaultExported() || node->IsExportedType())) {
+        if (!(node->IsExported() || node->IsDefaultExported())) {
             return Scope::InsertResult {Bindings().end(), false};
         }
     }
@@ -866,6 +869,10 @@ Variable *ClassScope::FindLocal(const util::StringView &name, ResolveBindingOpti
 
 void ClassScope::SetBindingProps(Decl *newDecl, BindingProps *props, bool isStatic)
 {
+    if (newDecl->IsImportDecl()) {
+        return;
+    }
+
     switch (newDecl->Type()) {
         case DeclType::CONST:
             [[fallthrough]];
@@ -960,11 +967,15 @@ Variable *ClassScope::AddBinding(ArenaAllocator *allocator, [[maybe_unused]] Var
         return nullptr;
     }
 
-    if (auto node = newDecl->Node();
-        node->IsStatement() &&
-        (node->AsStatement()->IsMethodDefinition() || node->IsClassProperty() || node->IsClassStaticBlock()) &&
-        node->AsStatement()->AsClassElement()->Value() != nullptr) {
-        props.SetFlagsType(VariableFlags::INITIALIZED);
+    if (auto node = newDecl->Node(); node->IsStatement() && (node->AsStatement()->IsMethodDefinition() ||
+                                                             node->IsClassProperty() || node->IsClassStaticBlock())) {
+        if (node->AsStatement()->AsClassElement()->Value() != nullptr) {
+            props.SetFlagsType(VariableFlags::INITIALIZED);
+        }
+
+        if (node->IsClassProperty() && node->AsClassProperty()->NeedInitInStaticBlock()) {
+            props.SetFlagsType(VariableFlags::INIT_IN_STATIC_BLOCK);
+        }
     }
 
     var->SetScope(this);

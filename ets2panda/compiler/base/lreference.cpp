@@ -69,6 +69,10 @@ LReference::LReferenceBase LReference::CreateBase(CodeGen *cg, const ir::AstNode
         case ir::AstNodeType::TS_NON_NULL_EXPRESSION: {
             return CreateBase(cg, node->AsTSNonNullExpression()->Expr(), isDeclaration);
         }
+        case ir::AstNodeType::ETS_NEW_CLASS_INSTANCE_EXPRESSION: {
+            ES2PANDA_ASSERT(node->AsETSNewClassInstanceExpression()->GetArguments().size() == 1);
+            return CreateBase(cg, node->AsETSNewClassInstanceExpression()->GetArguments()[0], isDeclaration);
+        }
         default: {
             ES2PANDA_UNREACHABLE();
         }
@@ -183,8 +187,8 @@ ETSLReference::ETSLReference(CodeGen *cg, const ir::AstNode *node, ReferenceKind
 
     const auto *memberExpr = Node()->AsMemberExpression();
     staticObjRef_ = memberExpr->Object()->TsType();
-    if (!memberExpr->IsComputed() && etsg_->Checker()->IsVariableStatic(memberExpr->PropVar()) &&
-        !staticObjRef_->IsETSDynamicType()) {
+    if (!memberExpr->IsComputed() && memberExpr->PropVar() != nullptr &&
+        etsg_->Checker()->IsVariableStatic(memberExpr->PropVar())) {
         return;
     }
 
@@ -197,7 +201,8 @@ ETSLReference::ETSLReference(CodeGen *cg, const ir::AstNode *node, ReferenceKind
         TargetTypeContext pttctx(etsg_, memberExpr->Property()->TsType());
         memberExpr->Property()->Compile(etsg_);
         etsg_->ApplyConversion(memberExpr->Property());
-        ES2PANDA_ASSERT(etsg_->GetAccumulatorType()->HasTypeFlag(checker::TypeFlag::ETS_INTEGRAL));
+        ES2PANDA_ASSERT(memberExpr->Object()->TsType()->IsETSAnyType() ||
+                        etsg_->GetAccumulatorType()->HasTypeFlag(checker::TypeFlag::ETS_INTEGRAL));
         propReg_ = etsg_->AllocReg();
         etsg_->StoreAccumulator(node, propReg_);
     }
@@ -281,8 +286,12 @@ void ETSLReference::SetValueComputed(const ir::MemberExpression *memberExpr) con
 {
     const auto *const objectType = memberExpr->Object()->TsType();
 
-    if (objectType->IsETSDynamicType()) {
-        etsg_->StoreElementDynamic(Node(), baseReg_, propReg_);
+    if (objectType->IsETSAnyType()) {
+        if (memberExpr->Property()->TsType()->HasTypeFlag(checker::TypeFlag::ETS_NUMERIC)) {
+            etsg_->StoreByIndexAny(memberExpr, baseReg_, propReg_);
+        } else {
+            etsg_->StoreByValueAny(memberExpr, baseReg_, propReg_);
+        }
         return;
     }
 
@@ -295,8 +304,15 @@ void ETSLReference::SetValueComputed(const ir::MemberExpression *memberExpr) con
         return;
     }
 
-    ES2PANDA_ASSERT(objectType->IsETSArrayType());
-    etsg_->StoreArrayElement(Node(), baseReg_, propReg_, etsg_->GetVRegType(baseReg_)->AsETSArrayType()->ElementType());
+    if (objectType->IsETSArrayType() || objectType->IsETSResizableArrayType()) {
+        auto vRegtype = etsg_->GetVRegType(baseReg_);
+        auto *elementType = vRegtype->IsETSArrayType() ? vRegtype->AsETSArrayType()->ElementType()
+                                                       : vRegtype->AsETSResizableArrayType()->ElementType();
+        etsg_->StoreArrayElement(Node(), baseReg_, propReg_, elementType);
+        return;
+    }
+
+    ES2PANDA_ASSERT(objectType->IsETSNeverType());  // nothing to do, we're in dead code anyway
 }
 
 void ETSLReference::SetValueGetterSetter(const ir::MemberExpression *memberExpr) const
@@ -324,6 +340,7 @@ void ETSLReference::SetValue() const
 
     const auto *const memberExpr = Node()->AsMemberExpression();
     const auto *const memberExprTsType = memberExpr->TsType();
+    auto const *objectType = memberExpr->Object()->TsType();
 
     if (!memberExpr->IsIgnoreBox()) {
         etsg_->ApplyConversion(Node(), memberExprTsType);
@@ -331,6 +348,11 @@ void ETSLReference::SetValue() const
 
     if (memberExpr->IsComputed()) {
         SetValueComputed(memberExpr);
+        return;
+    }
+
+    if (objectType->IsETSAnyType()) {
+        etsg_->StorePropertyByNameAny(memberExpr, baseReg_, memberExpr->Property()->AsIdentifier()->Name());
         return;
     }
 
@@ -343,19 +365,8 @@ void ETSLReference::SetValue() const
     if (memberExpr->PropVar()->HasFlag(varbinder::VariableFlags::STATIC)) {
         const util::StringView fullName = etsg_->FormClassPropReference(staticObjRef_->AsETSObjectType(), propName);
 
-        if (staticObjRef_->IsETSDynamicType()) {
-            etsg_->StorePropertyDynamic(Node(), memberExprTsType, baseReg_, propName);
-        } else {
-            etsg_->StoreStaticProperty(Node(), memberExprTsType, fullName);
-        }
+        etsg_->StoreStaticProperty(Node(), memberExprTsType, fullName);
 
-        return;
-    }
-
-    auto const *objectType = memberExpr->Object()->TsType();
-
-    if (objectType->IsETSDynamicType()) {
-        etsg_->StorePropertyDynamic(Node(), memberExprTsType, baseReg_, propName);
         return;
     }
 

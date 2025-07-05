@@ -136,8 +136,8 @@ private:
     void AnalyzeArrowFunctionExpr(const ir::ArrowFunctionExpression *arrowFuncExpr);
 
     // utils
-    void Warning(std::string_view message, const lexer::SourcePosition &pos);
-    void Warning(const util::DiagnosticMessageParams &list, const lexer::SourcePosition &pos);
+    void Warning(const diagnostic::DiagnosticKind &kind, const util::DiagnosticMessageParams &list,
+                 const lexer::SourcePosition &pos);
     bool Trackable(const ir::AstNode *node) const;
     bool IsConstUninitializedField(const ir::AstNode *node) const;
     bool IsConstUninitializedStaticField(const ir::AstNode *node) const;
@@ -150,7 +150,7 @@ private:
     NodeId GetNodeId(const ir::AstNode *node) const;
     util::StringView GetVariableType(const ir::AstNode *node) const;
     util::StringView GetVariableName(const ir::AstNode *node) const;
-    const lexer::SourcePosition &GetVariablePosition(const ir::AstNode *node) const;
+    lexer::SourcePosition GetVariablePosition(const ir::AstNode *node) const;
     const ir::AstNode *GetDeclaringNode(const ir::AstNode *node);
     varbinder::Variable *GetBoundVariable(const ir::AstNode *node);
     bool VariableHasDefaultValue(const ir::AstNode *node);

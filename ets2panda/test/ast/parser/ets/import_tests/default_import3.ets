@@ -16,8 +16,7 @@
 import {default/* @@ label */} from /* @@ label1 */"./modules/class_default_module.ets"/* @@ label2 */;
 
 /* @@@ label Error SyntaxError: Unexpected token, expected 'as'. */
-/* @@@ label Error SyntaxError: Unexpected token, expected an identifier. */
-/* @@@ label1 Error SyntaxError: Unexpected token, expected an identifier. */
-/* @@@ label2 Error SyntaxError: Unexpected token, expected an identifier. */
-/* @@@ label3 Error SyntaxError: Expected '}', got 'eos'. */
-/* @@ label3 */
+/* @@@ label Error SyntaxError: Unexpected token '}'. */
+/* @@@ label1 Error SyntaxError: Unexpected token, expected ',' or '}'. */
+/* @@@ label1 Error SyntaxError: Unexpected token, expected 'from'. */
+/* @@@ label2 Error SyntaxError: Unexpected token, expected string literal. */

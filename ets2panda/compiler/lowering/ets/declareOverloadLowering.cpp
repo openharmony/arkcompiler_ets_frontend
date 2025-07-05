@@ -24,17 +24,16 @@ namespace ark::es2panda::compiler {
 void GenerateOverloadHelperParams(public_lib::Context *ctx, uint32_t minArg, size_t maxArg, bool hasRestVar,
                                   ArenaVector<ir::Expression *> &params)
 {
-    auto *checker = ctx->checker->AsETSChecker();
+    auto *checker = ctx->GetChecker()->AsETSChecker();
     auto *allocator = ctx->allocator;
 
     if (!hasRestVar) {
         for (size_t idx = 0; idx < maxArg; ++idx) {
             auto *id = Gensym(allocator);
-            auto *typeAnnotation =
-                checker->AllocNode<ir::OpaqueTypeNode>(checker->GlobalETSNullishObjectType(), allocator);
+            auto *typeAnnotation = ctx->AllocNode<ir::OpaqueTypeNode>(checker->GlobalETSAnyType(), allocator);
             id->SetTsTypeAnnotation(typeAnnotation);
             typeAnnotation->SetParent(id);
-            auto *param = checker->AllocNode<ir::ETSParameterExpression>(id, false, allocator);
+            auto *param = ctx->AllocNode<ir::ETSParameterExpression>(id, false, allocator);
             param->SetOptional(idx >= minArg);
             params.push_back(param);
         }
@@ -42,14 +41,14 @@ void GenerateOverloadHelperParams(public_lib::Context *ctx, uint32_t minArg, siz
     }
 
     auto *restIdent = Gensym(allocator);
-    auto *spread = checker->AllocNode<ir::SpreadElement>(ir::AstNodeType::REST_ELEMENT, allocator, restIdent);
-    auto *arr = checker->CreateETSArrayType(checker->GlobalETSNullishObjectType(), false);
-    auto *typeAnnotation = checker->AllocNode<ir::OpaqueTypeNode>(arr, allocator);
+    auto *spread = ctx->AllocNode<ir::SpreadElement>(ir::AstNodeType::REST_ELEMENT, allocator, restIdent);
+    auto *arr = checker->CreateETSArrayType(checker->GlobalETSAnyType(), false);
+    auto *typeAnnotation = ctx->AllocNode<ir::OpaqueTypeNode>(arr, allocator);
 
     spread->SetTsTypeAnnotation(typeAnnotation);
     spread->SetTsType(arr);
     restIdent->SetTsType(arr);
-    auto *param = checker->AllocNode<ir::ETSParameterExpression>(spread, nullptr, allocator);
+    auto *param = ctx->AllocNode<ir::ETSParameterExpression>(spread, nullptr, allocator);
 
     restIdent->SetParent(spread);
     typeAnnotation->SetParent(spread);
@@ -59,9 +58,9 @@ void GenerateOverloadHelperParams(public_lib::Context *ctx, uint32_t minArg, siz
 
 void BuildOverloadHelperFunction(public_lib::Context *ctx, ir::MethodDefinition *method)
 {
-    auto *checker = ctx->checker->AsETSChecker();
+    auto *checker = ctx->GetChecker()->AsETSChecker();
     auto *allocator = ctx->allocator;
-    auto *varBinder = ctx->checker->VarBinder()->AsETSBinder();
+    auto *varBinder = ctx->GetChecker()->VarBinder()->AsETSBinder();
 
     auto const &[minArg, maxArg, needHelperOverload, isDeclare, hasRestVar, returnVoid] = method->GetOverloadInfo();
     ES2PANDA_ASSERT(needHelperOverload);
@@ -69,20 +68,20 @@ void BuildOverloadHelperFunction(public_lib::Context *ctx, ir::MethodDefinition 
     auto params = ArenaVector<ir::Expression *>(allocator->Adapter());
     GenerateOverloadHelperParams(ctx, minArg, maxArg, hasRestVar, params);
 
-    auto *returnType = returnVoid ? checker->GlobalVoidType() : checker->GlobalETSNullishObjectType();
-    auto *returnAnno = checker->AllocNode<ir::OpaqueTypeNode>(returnType, allocator);
+    auto *returnType = returnVoid ? checker->GlobalVoidType() : checker->GlobalETSAnyType();
+    auto *returnAnno = ctx->AllocNode<ir::OpaqueTypeNode>(returnType, allocator);
 
     ir::ScriptFunctionFlags functionFlag = method->Function()->Flags();
-    auto *func = checker->AllocNode<ir::ScriptFunction>(
+    auto *func = ctx->AllocNode<ir::ScriptFunction>(
         allocator,
         ir::ScriptFunction::ScriptFunctionData {nullptr, ir::FunctionSignature(nullptr, std::move(params), returnAnno),
                                                 functionFlag, method->Function()->Modifiers()});
-    auto *methodId = checker->AllocNode<ir::Identifier>(method->Id()->Name(), allocator);
+    auto *methodId = ctx->AllocNode<ir::Identifier>(method->Id()->Name(), allocator);
     func->SetIdent(methodId);
-    auto *funcExpr = checker->AllocNode<ir::FunctionExpression>(func);
+    auto *funcExpr = ctx->AllocNode<ir::FunctionExpression>(func);
     auto *methodIdClone = methodId->Clone(allocator, nullptr);
-    auto *helperOverload = checker->AllocNode<ir::MethodDefinition>(method->Kind(), methodIdClone, funcExpr,
-                                                                    method->Modifiers(), allocator, false);
+    auto *helperOverload = ctx->AllocNode<ir::MethodDefinition>(method->Kind(), methodIdClone, funcExpr,
+                                                                method->Modifiers(), allocator, false);
 
     method->AddOverload(helperOverload);
     helperOverload->Function()->ClearFlag((ir::ScriptFunctionFlags::OVERLOAD));
@@ -108,7 +107,7 @@ void UpdateCallSignature(public_lib::Context *ctx, ir::CallExpression *expr)
 {
     ES2PANDA_ASSERT(expr->Signature()->HasSignatureFlag(checker::SignatureFlags::DUPLICATE_ASM));
 
-    auto *checker = ctx->checker->AsETSChecker();
+    auto *checker = ctx->GetChecker()->AsETSChecker();
     expr->SetTsType(nullptr);
     expr->Check(checker);
 }
@@ -116,27 +115,27 @@ void UpdateCallSignature(public_lib::Context *ctx, ir::CallExpression *expr)
 bool DeclareOverloadLowering::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
     // Note: Generate helper overload method
-    program->Ast()->TransformChildrenRecursively(
-        [ctx](ir::AstNode *ast) {
-            if (ast->IsMethodDefinition() && ast->AsMethodDefinition()->GetOverloadInfo().needHelperOverload) {
-                BuildOverloadHelperFunction(ctx, ast->AsMethodDefinition());
-            }
-            return ast;
-        },
-        Name());
+    auto const transformMethodDef = [ctx](ir::AstNode *ast) {
+        if (ast->IsMethodDefinition() && ast->AsMethodDefinition()->GetOverloadInfo().needHelperOverload) {
+            BuildOverloadHelperFunction(ctx, ast->AsMethodDefinition());
+        }
+        return ast;
+    };
 
     // Note: Update signature for call expression
-    program->Ast()->TransformChildrenRecursively(
-        [ctx](ir::AstNode *ast) {
-            if (!ast->IsCallExpression() || ast->AsCallExpression()->Signature() == nullptr) {
-                return ast;
-            }
-
-            if (ast->AsCallExpression()->Signature()->HasSignatureFlag(checker::SignatureFlags::DUPLICATE_ASM)) {
-                UpdateCallSignature(ctx, ast->AsCallExpression());
-            }
-
+    auto const transformCallExpr = [ctx](ir::AstNode *ast) {
+        if (!ast->IsCallExpression() || ast->AsCallExpression()->Signature() == nullptr) {
             return ast;
+        }
+        if (ast->AsCallExpression()->Signature()->HasSignatureFlag(checker::SignatureFlags::DUPLICATE_ASM)) {
+            UpdateCallSignature(ctx, ast->AsCallExpression());
+        }
+        return ast;
+    };
+
+    program->Ast()->TransformChildrenRecursively(
+        [transformMethodDef, transformCallExpr](ir::AstNode *ast) {
+            return transformMethodDef(transformCallExpr(ast));
         },
         Name());
     return true;

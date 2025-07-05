@@ -92,13 +92,22 @@ ir::AstNode *AmbientLowering::CreateIndexerMethodIfNeeded(ir::AstNode *ast, publ
         return ast;
     }
 
-    ArenaVector<ir::AstNode *> &classBody =
+    const ArenaVector<ir::AstNode *> &classBodyConst =
         ast->IsClassDefinition() ? ast->AsClassDefinition()->Body() : ast->AsTSInterfaceBody()->Body();
 
-    auto it = classBody.begin();
     // Only one DummyNode is allowed in classBody for now
-    ES2PANDA_ASSERT(
-        std::count_if(classBody.begin(), classBody.end(), [](ir::AstNode *node) { return node->IsDummyNode(); }) <= 1);
+    ES2PANDA_ASSERT(std::count_if(classBodyConst.cbegin(), classBodyConst.cend(),
+                                  [](const ir::AstNode *node) { return node->IsDummyNode(); }) <= 1);
+    if (!std::any_of(classBodyConst.cbegin(), classBodyConst.cend(), [](const ir::AstNode *node) {
+            return node->IsDummyNode() && node->AsDummyNode()->IsDeclareIndexer();
+        })) {
+        return ast;
+    }
+
+    ArenaVector<ir::AstNode *> &classBody =
+        ast->IsClassDefinition() ? ast->AsClassDefinition()->BodyForUpdate() : ast->AsTSInterfaceBody()->Body();
+
+    auto it = classBody.begin();
     while (it != classBody.end()) {
         if ((*it)->IsDummyNode() && (*it)->AsDummyNode()->IsDeclareIndexer()) {
             auto setDefinition =

@@ -379,3 +379,36 @@ switch (num00) {
     break;
   }
 }
+
+
+enum Direction1 {
+  North,
+  South,
+  East,
+  West
+}
+function funSE() : string | Direction1 {
+  return 'aaa'
+}
+switch (funSE()) {  // 误报
+  case 'aaa':
+    console.log('aaa');
+    break;
+  case Direction1.North:
+    console.log('aaa');
+    break;
+  default:
+    console.log('F');
+}
+
+
+enum H {
+  RED,
+  BLUE
+}
+function foo11(e: H) { // 误报
+  switch (e) {
+    case H.RED:
+  }
+}
+

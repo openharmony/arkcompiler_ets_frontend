@@ -16,9 +16,4 @@
 let a: int => void
 
 /* @@? 16:12 Error SyntaxError: Unexpected token '=>'. */
-/* @@? 16:12 Error SyntaxError: Unexpected token '=>'. */
-/* @@? 16:12 Error SyntaxError: Unexpected token '=>'. */
-/* @@? 16:15 Error SyntaxError: Unexpected token 'void'. */
-/* @@? 16:15 Error SyntaxError: Unexpected token 'void'. */
-/* @@? 16:15 Error SyntaxError: Unexpected token 'void'. */
 /* @@? 16:15 Error SyntaxError: Unexpected token 'void'. */

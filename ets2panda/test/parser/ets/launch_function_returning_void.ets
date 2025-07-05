@@ -13,8 +13,11 @@
  * limitations under the License.
  */
 
+import {launch} from "std/concurrency"
+import {Job} from "std/core"
+
 function foo(){}
 
 function main(){
-    let r: Promise<void> = launch foo()
+    let r: Job<void> = launch<void, () => void>(foo)
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -30,25 +30,38 @@
 namespace ark::es2panda::ir {
 void ClassStaticBlock::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    if (auto *transformedNode = cb(value_); value_ != transformedNode) {
-        value_->SetTransformedNode(transformationName, transformedNode);
-        value_ = transformedNode->AsExpression();
+    auto const value = Value();
+    if (auto *transformedNode = cb(value); value != transformedNode) {
+        value->SetTransformedNode(transformationName, transformedNode);
+        SetValue(transformedNode->AsExpression());
     }
 }
 
 void ClassStaticBlock::Iterate(const NodeTraverser &cb) const
 {
-    cb(value_);
+    auto const value = reinterpret_cast<ClassStaticBlock *>(GetHistoryNode())->value_;
+    cb(value);
 }
 
 void ClassStaticBlock::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "ClassStaticBlock"}, {"value", value_}});
+    dumper->Add({{"type", "ClassStaticBlock"}, {"value", Value()}});
 }
 
 void ClassStaticBlock::Dump([[maybe_unused]] ir::SrcDumper *dumper) const
 {
-    // NOTE(nsizov): we don't want to show this node
+    ES2PANDA_ASSERT(value_);
+    ES2PANDA_ASSERT(value_->IsFunctionExpression());
+    ES2PANDA_ASSERT(value_->AsFunctionExpression()->Function()->IsScriptFunction());
+    dumper->Add("static {");
+    dumper->IncrIndent();
+    dumper->Endl();
+    const auto *scriptFunc = value_->AsFunctionExpression()->Function()->AsScriptFunction();
+    ES2PANDA_ASSERT(scriptFunc->HasBody());
+    scriptFunc->Body()->Dump(dumper);
+    dumper->DecrIndent();
+    dumper->Endl();
+    dumper->Add("}");
 }
 
 void ClassStaticBlock::Compile(compiler::PandaGen *pg) const
@@ -73,12 +86,12 @@ checker::VerifiedType ClassStaticBlock::Check(checker::ETSChecker *checker)
 
 ir::ScriptFunction *ClassStaticBlock::Function()
 {
-    return value_->AsFunctionExpression()->Function();
+    return Value()->AsFunctionExpression()->Function();
 }
 
 const ir::ScriptFunction *ClassStaticBlock::Function() const
 {
-    return value_->AsFunctionExpression()->Function();
+    return Value()->AsFunctionExpression()->Function();
 }
 
 const util::StringView &ClassStaticBlock::Name() const

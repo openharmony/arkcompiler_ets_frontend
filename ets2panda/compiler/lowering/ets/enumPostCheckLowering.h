@@ -29,7 +29,7 @@ enum class EnumCastType {
     CAST_TO_STRING_ENUM,
 };
 
-class EnumPostCheckLoweringPhase : public PhaseForBodies {
+class EnumPostCheckLoweringPhase : public PhaseForDeclarations {
 public:
     EnumPostCheckLoweringPhase() noexcept = default;
     std::string_view Name() const override
@@ -50,6 +50,7 @@ private:
     ir::Expression *HandleUnionTypeForCalls(checker::ETSUnionType *unionType, ir::Expression *expr,
                                             ir::TSAsExpression *tsAsExpr, EnumCastType castType);
 
+    public_lib::Context *context_ {nullptr};
     parser::ETSParser *parser_ {nullptr};
     checker::ETSChecker *checker_ {nullptr};
     varbinder::ETSBinder *varbinder_ {nullptr};

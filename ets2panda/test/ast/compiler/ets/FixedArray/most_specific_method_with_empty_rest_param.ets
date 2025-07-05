@@ -17,7 +17,7 @@ class C {
     public met(...p: FixedArray<number>): string {
          return "nR"
     }
-    public met(...p: FixedArray<Number>): string {
+    public met(...p: FixedArray<int>): string {
         return "NR"
     }
 }
@@ -26,6 +26,3 @@ function main() {
     let c: C = new C()
     c.met()
 }
-
-/* @@? 27:5 Error TypeError: Call to `met` is ambiguous   */
-/* @@? 27:5 Error TypeError: Reference to met is ambiguous  */

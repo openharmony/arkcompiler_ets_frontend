@@ -15,20 +15,20 @@
     ],
     "result": [
         {
-            "line": 17,
+            "line": 16,
             "column": 1,
-            "endLine": 17,
+            "endLine": 16,
             "endColumn": 69,
-            "problem": "ImportAfterStatement",
+            "problem": "InterOpImportJs",
             "suggest": "",
-            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
+            "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
             "severity": "ERROR"
         },
         {
             "line": 17,
             "column": 1,
             "endLine": 17,
-            "endColumn": 69,
+            "endColumn": 54,
             "problem": "InterOpImportJs",
             "suggest": "",
             "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
@@ -38,36 +38,6 @@
             "line": 18,
             "column": 1,
             "endLine": 18,
-            "endColumn": 54,
-            "problem": "ImportAfterStatement",
-            "suggest": "",
-            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 18,
-            "column": 1,
-            "endLine": 18,
-            "endColumn": 54,
-            "problem": "InterOpImportJs",
-            "suggest": "",
-            "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 19,
-            "column": 1,
-            "endLine": 19,
-            "endColumn": 55,
-            "problem": "ImportAfterStatement",
-            "suggest": "",
-            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 19,
-            "column": 1,
-            "endLine": 19,
             "endColumn": 55,
             "problem": "InterOpImportJs",
             "suggest": "",
@@ -75,9 +45,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 21,
+            "line": 20,
             "column": 1,
-            "endLine": 21,
+            "endLine": 20,
             "endColumn": 15,
             "problem": "InterOpImportJsForTypeOf",
             "suggest": "",
@@ -86,38 +56,8 @@
         },
         {
             "line": 21,
-            "column": 8,
-            "endLine": 21,
-            "endColumn": 15,
-            "problem": "InteropJsObjectCallStaticFunc",
-            "suggest": "",
-            "rule": "Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-call-static-function)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 21,
-            "column": 8,
-            "endLine": 21,
-            "endColumn": 15,
-            "problem": "CallJSFunction",
-            "suggest": "",
-            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-interop-js2s-call-js-func)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 22,
             "column": 11,
-            "endLine": 22,
-            "endColumn": 18,
-            "problem": "InteropJsObjectCallStaticFunc",
-            "suggest": "",
-            "rule": "Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-call-static-function)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 22,
-            "column": 11,
-            "endLine": 22,
+            "endLine": 21,
             "endColumn": 18,
             "problem": "CallJSFunction",
             "suggest": "",
@@ -125,9 +65,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 24,
+            "line": 23,
             "column": 1,
-            "endLine": 24,
+            "endLine": 23,
             "endColumn": 11,
             "problem": "InterOpImportJsForTypeOf",
             "suggest": "",
@@ -135,10 +75,30 @@
             "severity": "ERROR"
         },
         {
+            "line": 24,
+            "column": 1,
+            "endLine": 24,
+            "endColumn": 19,
+            "problem": "InterOpImportJsForTypeOf",
+            "suggest": "",
+            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 24,
+            "column": 8,
+            "endLine": 24,
+            "endColumn": 19,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
             "line": 25,
             "column": 1,
             "endLine": 25,
-            "endColumn": 19,
+            "endColumn": 20,
             "problem": "InterOpImportJsForTypeOf",
             "suggest": "",
             "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
@@ -148,86 +108,26 @@
             "line": 25,
             "column": 8,
             "endLine": 25,
-            "endColumn": 19,
+            "endColumn": 20,
             "problem": "LimitedVoidType",
             "suggest": "",
             "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 25,
-            "column": 8,
-            "endLine": 25,
-            "endColumn": 19,
-            "problem": "InteropJsObjectCallStaticFunc",
-            "suggest": "",
-            "rule": "Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-call-static-function)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 25,
-            "column": 8,
-            "endLine": 25,
-            "endColumn": 19,
-            "problem": "CallJSFunction",
-            "suggest": "",
-            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-interop-js2s-call-js-func)",
             "severity": "ERROR"
         },
         {
             "line": 26,
             "column": 1,
             "endLine": 26,
-            "endColumn": 20,
+            "endColumn": 12,
             "problem": "InterOpImportJsForTypeOf",
             "suggest": "",
             "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 26,
-            "column": 8,
-            "endLine": 26,
-            "endColumn": 20,
-            "problem": "LimitedVoidType",
-            "suggest": "",
-            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 26,
-            "column": 8,
-            "endLine": 26,
-            "endColumn": 20,
-            "problem": "InteropJsObjectCallStaticFunc",
-            "suggest": "",
-            "rule": "Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-call-static-function)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 26,
-            "column": 8,
-            "endLine": 26,
-            "endColumn": 20,
-            "problem": "CallJSFunction",
-            "suggest": "",
-            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-interop-js2s-call-js-func)",
             "severity": "ERROR"
         },
         {
             "line": 27,
             "column": 1,
             "endLine": 27,
-            "endColumn": 12,
-            "problem": "InterOpImportJsForTypeOf",
-            "suggest": "",
-            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 28,
-            "column": 1,
-            "endLine": 28,
             "endColumn": 17,
             "problem": "InterOpImportJsForTypeOf",
             "suggest": "",
@@ -235,9 +135,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 28,
+            "line": 27,
             "column": 8,
-            "endLine": 28,
+            "endLine": 27,
             "endColumn": 17,
             "problem": "InteropObjectProperty",
             "suggest": "",
@@ -246,38 +146,18 @@
         },
         {
             "line": 28,
-            "column": 8,
+            "column": 1,
             "endLine": 28,
-            "endColumn": 17,
-            "problem": "InteropJsObjectUsage",
+            "endColumn": 12,
+            "problem": "InterOpImportJsForTypeOf",
             "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 28,
-            "column": 8,
-            "endLine": 28,
-            "endColumn": 17,
-            "problem": "BinaryOperations",
-            "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
+            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
             "severity": "ERROR"
         },
         {
             "line": 29,
-            "column": 1,
-            "endLine": 29,
-            "endColumn": 12,
-            "problem": "InterOpImportJsForTypeOf",
-            "suggest": "",
-            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 30,
             "column": 11,
-            "endLine": 30,
+            "endLine": 29,
             "endColumn": 20,
             "problem": "InteropObjectProperty",
             "suggest": "",
@@ -285,29 +165,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 30,
-            "column": 11,
-            "endLine": 30,
-            "endColumn": 20,
-            "problem": "InteropJsObjectUsage",
-            "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 30,
-            "column": 11,
-            "endLine": 30,
-            "endColumn": 20,
-            "problem": "BinaryOperations",
-            "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 32,
+            "line": 31,
             "column": 23,
-            "endLine": 32,
+            "endLine": 31,
             "endColumn": 35,
             "problem": "InstantiatedJsOjbect",
             "suggest": "",
@@ -315,9 +175,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 33,
+            "line": 32,
             "column": 1,
-            "endLine": 33,
+            "endLine": 32,
             "endColumn": 20,
             "problem": "InterOpImportJsForTypeOf",
             "suggest": "",
@@ -325,9 +185,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 33,
+            "line": 32,
             "column": 8,
-            "endLine": 33,
+            "endLine": 32,
             "endColumn": 20,
             "problem": "InstantiatedJsOjbect",
             "suggest": "",
@@ -335,9 +195,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 35,
+            "line": 34,
             "column": 21,
-            "endLine": 35,
+            "endLine": 34,
             "endColumn": 33,
             "problem": "InstantiatedJsOjbect",
             "suggest": "",
@@ -345,9 +205,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 36,
+            "line": 35,
             "column": 11,
-            "endLine": 36,
+            "endLine": 35,
             "endColumn": 22,
             "problem": "InteropObjectProperty",
             "suggest": "",
@@ -355,9 +215,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 37,
+            "line": 36,
             "column": 12,
-            "endLine": 37,
+            "endLine": 36,
             "endColumn": 28,
             "problem": "InteropCallObjectMethods",
             "suggest": "",
@@ -365,59 +225,49 @@
             "severity": "ERROR"
         },
         {
-            "line": 40,
-            "column": 12,
-            "endLine": 40,
+            "line": 42,
+            "column": 10,
+            "endLine": 42,
             "endColumn": 28,
-            "problem": "InteropCallObjectMethods",
-            "suggest": "",
-            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-interop-js2s-call-js-method)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 43,
-            "column": 12,
-            "endLine": 43,
-            "endColumn": 30,
             "problem": "LimitedVoidType",
             "suggest": "",
             "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
             "severity": "ERROR"
         },
         {
-            "line": 43,
-            "column": 12,
-            "endLine": 43,
-            "endColumn": 30,
-            "problem": "InteropCallObjectMethods",
+            "line": 42,
+            "column": 24,
+            "endLine": 42,
+            "endColumn": 27,
+            "problem": "NumericSemantics",
             "suggest": "",
-            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-interop-js2s-call-js-method)",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
-            "line": 45,
-            "column": 5,
-            "endLine": 45,
-            "endColumn": 24,
+            "line": 44,
+            "column": 3,
+            "endLine": 44,
+            "endColumn": 22,
             "problem": "InterOpImportJsForTypeOf",
             "suggest": "",
             "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js2s-typeof-js-type)",
             "severity": "ERROR"
         },
         {
-            "line": 45,
-            "column": 12,
-            "endLine": 45,
-            "endColumn": 24,
+            "line": 44,
+            "column": 10,
+            "endLine": 44,
+            "endColumn": 22,
             "problem": "InstantiatedJsOjbect",
             "suggest": "",
             "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
             "severity": "ERROR"
         },
         {
-            "line": 48,
+            "line": 47,
             "column": 21,
-            "endLine": 48,
+            "endLine": 47,
             "endColumn": 39,
             "problem": "LimitedVoidType",
             "suggest": "",
@@ -425,19 +275,19 @@
             "severity": "ERROR"
         },
         {
-            "line": 48,
-            "column": 21,
-            "endLine": 48,
-            "endColumn": 39,
-            "problem": "InteropCallObjectMethods",
+            "line": 47,
+            "column": 35,
+            "endLine": 47,
+            "endColumn": 38,
+            "problem": "NumericSemantics",
             "suggest": "",
-            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-interop-js2s-call-js-method)",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
-            "line": 50,
+            "line": 49,
             "column": 7,
-            "endLine": 50,
+            "endLine": 49,
             "endColumn": 13,
             "problem": "InvalidIdentifier",
             "suggest": "",
@@ -445,9 +295,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 62,
+            "line": 61,
             "column": 5,
-            "endLine": 62,
+            "endLine": 61,
             "endColumn": 21,
             "problem": "InterOpImportJsForTypeOf",
             "suggest": "",
@@ -455,9 +305,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 62,
+            "line": 61,
             "column": 12,
-            "endLine": 62,
+            "endLine": 61,
             "endColumn": 21,
             "problem": "InteropObjectProperty",
             "suggest": "",
@@ -465,29 +315,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 62,
-            "column": 12,
-            "endLine": 62,
-            "endColumn": 21,
-            "problem": "InteropJsObjectUsage",
-            "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 62,
-            "column": 12,
-            "endLine": 62,
-            "endColumn": 21,
-            "problem": "BinaryOperations",
-            "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 66,
+            "line": 65,
             "column": 28,
-            "endLine": 66,
+            "endLine": 65,
             "endColumn": 47,
             "problem": "InterOpImportJsForTypeOf",
             "suggest": "",
@@ -495,9 +325,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 66,
+            "line": 65,
             "column": 35,
-            "endLine": 66,
+            "endLine": 65,
             "endColumn": 47,
             "problem": "InstantiatedJsOjbect",
             "suggest": "",
@@ -505,9 +335,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 70,
+            "line": 69,
             "column": 1,
-            "endLine": 70,
+            "endLine": 69,
             "endColumn": 13,
             "problem": "InterOpImportJsForTypeOf",
             "suggest": "",
@@ -515,9 +345,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 71,
+            "line": 70,
             "column": 1,
-            "endLine": 71,
+            "endLine": 70,
             "endColumn": 25,
             "problem": "InterOpImportJsForTypeOf",
             "suggest": "",
@@ -525,9 +355,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 71,
+            "line": 70,
             "column": 8,
-            "endLine": 71,
+            "endLine": 70,
             "endColumn": 25,
             "problem": "InteropObjectProperty",
             "suggest": "",
@@ -535,19 +365,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 71,
+            "line": 70,
             "column": 8,
-            "endLine": 71,
-            "endColumn": 25,
-            "problem": "InteropJsObjectUsage",
-            "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 71,
-            "column": 8,
-            "endLine": 71,
+            "endLine": 70,
             "endColumn": 20,
             "problem": "InstantiatedJsOjbect",
             "suggest": "",
@@ -555,9 +375,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 72,
+            "line": 71,
             "column": 1,
-            "endLine": 72,
+            "endLine": 71,
             "endColumn": 30,
             "problem": "InterOpImportJsForTypeOf",
             "suggest": "",
@@ -565,29 +385,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 72,
+            "line": 71,
             "column": 8,
-            "endLine": 72,
-            "endColumn": 30,
-            "problem": "InteropJsObjectCallStaticFunc",
-            "suggest": "",
-            "rule": "Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-call-static-function)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 72,
-            "column": 8,
-            "endLine": 72,
-            "endColumn": 30,
-            "problem": "InteropCallObjectMethods",
-            "suggest": "",
-            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-interop-js2s-call-js-method)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 72,
-            "column": 8,
-            "endLine": 72,
+            "endLine": 71,
             "endColumn": 20,
             "problem": "InstantiatedJsOjbect",
             "suggest": "",
@@ -595,9 +395,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 73,
+            "line": 72,
             "column": 1,
-            "endLine": 73,
+            "endLine": 72,
             "endColumn": 31,
             "problem": "InterOpImportJsForTypeOf",
             "suggest": "",
@@ -605,9 +405,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 73,
+            "line": 72,
             "column": 8,
-            "endLine": 73,
+            "endLine": 72,
             "endColumn": 31,
             "problem": "LimitedVoidType",
             "suggest": "",
@@ -615,33 +415,23 @@
             "severity": "ERROR"
         },
         {
-            "line": 73,
+            "line": 72,
             "column": 8,
-            "endLine": 73,
-            "endColumn": 31,
-            "problem": "InteropJsObjectCallStaticFunc",
-            "suggest": "",
-            "rule": "Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-call-static-function)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 73,
-            "column": 8,
-            "endLine": 73,
-            "endColumn": 31,
-            "problem": "InteropCallObjectMethods",
-            "suggest": "",
-            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-interop-js2s-call-js-method)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 73,
-            "column": 8,
-            "endLine": 73,
+            "endLine": 72,
             "endColumn": 20,
             "problem": "InstantiatedJsOjbect",
             "suggest": "",
             "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 72,
+            "column": 28,
+            "endLine": 72,
+            "endColumn": 30,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         }
     ]

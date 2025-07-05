@@ -14,6 +14,7 @@
  */
 
 #include "parserImpl.h"
+#include "forwardDeclForParserImpl.h"
 #include "parserStatusContext.h"
 
 #include "generated/diagnostic.h"
@@ -28,6 +29,7 @@
 #include "ir/expressions/arrayExpression.h"
 #include "ir/expressions/assignmentExpression.h"
 #include "ir/expressions/callExpression.h"
+#include "ir/expressions/dummyNode.h"
 #include "ir/expressions/functionExpression.h"
 #include "ir/expressions/literals/bigIntLiteral.h"
 #include "ir/expressions/literals/numberLiteral.h"
@@ -44,7 +46,10 @@ using namespace std::literals::string_literals;
 namespace ark::es2panda::parser {
 ParserImpl::ParserImpl(Program *program, const util::Options *options, util::DiagnosticEngine &diagnosticEngine,
                        ParserStatus status)
-    : program_(program), context_(program_, status), options_(options), diagnosticEngine_(diagnosticEngine)
+    : program_(program),
+      context_(program_, status, options == nullptr ? false : options->IsEnableJsdocParse()),
+      options_(options),
+      diagnosticEngine_(diagnosticEngine)
 {
 }
 
@@ -680,7 +685,7 @@ ir::MethodDefinition *ParserImpl::BuildImplicitConstructor(ir::ClassDefinitionMo
     }
 
     auto *ctor = AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::CONSTRUCTOR, key, funcExpr,
-                                                 ir::ModifierFlags::NONE, Allocator(), false);
+                                                 ir::ModifierFlags::CONSTRUCTOR, Allocator(), false);
 
     const auto rangeImplicitContstuctor = lexer::SourceRange(startLoc, startLoc);
     ctor->IterateRecursively(
@@ -823,11 +828,24 @@ ParserImpl::ClassBody ParserImpl::ParseClassBody(ir::ClassDefinitionModifiers mo
 
             util::ErrorRecursionGuard infiniteLoopBlocker(Lexer());
             ir::AstNode *property = ParseClassElement(properties, modifiers, flags);
+            if (property == nullptr) {
+                continue;
+            }
+
             if (property->IsBrokenStatement()) {  // Error processing.
                 continue;
             }
 
             if (CheckClassElement(property, ctor, properties)) {
+                continue;
+            }
+            auto isIndexer = [](ir::AstNode *node) {
+                return node->IsDummyNode() && node->AsDummyNode()->IsDeclareIndexer();
+            };
+            if (std::any_of(properties.begin(), properties.end(),
+                            [&isIndexer](ir::AstNode *node) { return isIndexer(node); }) &&
+                isIndexer(property)) {
+                LogError(diagnostic::MORE_INDEXER, {}, property->Start());
                 continue;
             }
 
@@ -969,10 +987,8 @@ FunctionSignature ParserImpl::ParseFunctionSignature(ParserStatus status)
         LogError(diagnostic::EXTENSION_ACCESSOR_RECEIVER);
     }
 
-    ir::ScriptFunctionFlags throwMarker = ParseFunctionThrowMarker(true);
-
     auto res = ir::FunctionSignature(typeParamDecl, std::move(params), returnTypeAnnotation, hasReceiver);
-    return {std::move(res), throwMarker};
+    return {std::move(res), ir::ScriptFunctionFlags::NONE};
 }
 
 ir::ScriptFunction *ParserImpl::ParseFunction(ParserStatus newStatus)
@@ -1259,6 +1275,11 @@ ir::Identifier *ParserImpl::ExpectIdentifier([[maybe_unused]] bool isReference, 
     if (tokenName.Empty()) {
         if ((options & TypeAnnotationParsingOptions::REPORT_ERROR) == 0) {
             return nullptr;
+        }
+        if (token.IsLiteral()) {
+            LogError(diagnostic::LITERAL_VALUE_IDENT, {token.ToString()}, tokenStart);
+        } else if (token.IsKeyword()) {
+            LogError(diagnostic::HARD_KEYWORD_IDENT, {token.ToString()}, tokenStart);
         }
         LogError(diagnostic::IDENTIFIER_EXPECTED_HERE, {TokenToString(tokenType)}, tokenStart);
         lexer_->NextToken();

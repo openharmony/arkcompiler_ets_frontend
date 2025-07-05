@@ -14,4 +14,4 @@
  */
 class SomeType{}
 function foo<T=/* @@ label */T2[], T2=SomeType>(){}
-/* @@@ label Error TypeError: Type Parameter T2 should be defined before use.  */
+/* @@? 1:3 Error TypeError: Type Parameter T2 should be defined before use. */

@@ -99,6 +99,7 @@ public:
 
 private:
     using DebugInfoMap = ArenaUnorderedMap<std::string_view, FileDebugInfo *>;
+    static constexpr std::string_view ANNOTATION_MODULE = "Lstd/annotations/Module;";
 
 private:
     void LoadFileDebugInfo(std::string_view pfPath);

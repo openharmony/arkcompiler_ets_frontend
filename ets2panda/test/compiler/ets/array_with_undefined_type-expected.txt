@@ -80,12 +80,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "array_with_undefined_type.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "array_with_undefined_type.ets"
                     }
                   }
                 },
@@ -93,12 +93,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "array_with_undefined_type.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "array_with_undefined_type.ets"
                   }
                 }
               },
@@ -106,12 +106,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "array_with_undefined_type.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "array_with_undefined_type.ets"
                 }
               }
             },
@@ -206,23 +206,71 @@
                             "type": "Identifier",
                             "name": "foo",
                             "typeAnnotation": {
-                              "type": "TSArrayType",
-                              "elementType": {
-                                "type": "ETSUndefinedType",
+                              "type": "ETSTypeReference",
+                              "part": {
+                                "type": "ETSTypeReferencePart",
+                                "name": {
+                                  "type": "Identifier",
+                                  "name": "Array",
+                                  "decorators": [],
+                                  "loc": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 1,
+                                      "program": "array_with_undefined_type.ets"
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 4,
+                                      "program": "array_with_undefined_type.ets"
+                                    }
+                                  }
+                                },
+                                "typeParams": {
+                                  "type": "TSTypeParameterInstantiation",
+                                  "params": [
+                                    {
+                                      "type": "ETSUndefinedType",
+                                      "loc": {
+                                        "start": {
+                                          "line": 1,
+                                          "column": 4,
+                                          "program": "array_with_undefined_type.ets"
+                                        },
+                                        "end": {
+                                          "line": 1,
+                                          "column": 4,
+                                          "program": "array_with_undefined_type.ets"
+                                        }
+                                      }
+                                    }
+                                  ],
+                                  "loc": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 4,
+                                      "program": "array_with_undefined_type.ets"
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 4,
+                                      "program": "array_with_undefined_type.ets"
+                                    }
+                                  }
+                                },
                                 "loc": {
                                   "start": {
-                                    "line": 17,
-                                    "column": 14,
+                                    "line": 1,
+                                    "column": 1,
                                     "program": "array_with_undefined_type.ets"
                                   },
                                   "end": {
-                                    "line": 17,
-                                    "column": 23,
+                                    "line": 1,
+                                    "column": 4,
                                     "program": "array_with_undefined_type.ets"
                                   }
                                 }
                               },
-                              "annotations": [],
                               "loc": {
                                 "start": {
                                   "line": 17,
@@ -399,9 +447,43 @@
                       "expression": {
                         "type": "CallExpression",
                         "callee": {
-                          "type": "Identifier",
-                          "name": "assertEQ",
-                          "decorators": [],
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "Identifier",
+                            "name": "arktest",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 19,
+                                "column": 5,
+                                "program": "array_with_undefined_type.ets"
+                              },
+                              "end": {
+                                "line": 19,
+                                "column": 12,
+                                "program": "array_with_undefined_type.ets"
+                              }
+                            }
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "assertEQ",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 19,
+                                "column": 13,
+                                "program": "array_with_undefined_type.ets"
+                              },
+                              "end": {
+                                "line": 19,
+                                "column": 21,
+                                "program": "array_with_undefined_type.ets"
+                              }
+                            }
+                          },
+                          "computed": false,
+                          "optional": false,
                           "loc": {
                             "start": {
                               "line": 19,
@@ -410,7 +492,7 @@
                             },
                             "end": {
                               "line": 19,
-                              "column": 13,
+                              "column": 21,
                               "program": "array_with_undefined_type.ets"
                             }
                           }
@@ -425,12 +507,12 @@
                               "loc": {
                                 "start": {
                                   "line": 19,
-                                  "column": 14,
+                                  "column": 22,
                                   "program": "array_with_undefined_type.ets"
                                 },
                                 "end": {
                                   "line": 19,
-                                  "column": 17,
+                                  "column": 25,
                                   "program": "array_with_undefined_type.ets"
                                 }
                               }
@@ -441,12 +523,12 @@
                               "loc": {
                                 "start": {
                                   "line": 19,
-                                  "column": 18,
+                                  "column": 26,
                                   "program": "array_with_undefined_type.ets"
                                 },
                                 "end": {
                                   "line": 19,
-                                  "column": 19,
+                                  "column": 27,
                                   "program": "array_with_undefined_type.ets"
                                 }
                               }
@@ -456,12 +538,12 @@
                             "loc": {
                               "start": {
                                 "line": 19,
-                                "column": 14,
+                                "column": 22,
                                 "program": "array_with_undefined_type.ets"
                               },
                               "end": {
                                 "line": 19,
-                                "column": 20,
+                                "column": 28,
                                 "program": "array_with_undefined_type.ets"
                               }
                             }
@@ -472,12 +554,12 @@
                             "loc": {
                               "start": {
                                 "line": 19,
-                                "column": 22,
+                                "column": 30,
                                 "program": "array_with_undefined_type.ets"
                               },
                               "end": {
                                 "line": 19,
-                                "column": 31,
+                                "column": 39,
                                 "program": "array_with_undefined_type.ets"
                               }
                             }
@@ -492,7 +574,7 @@
                           },
                           "end": {
                             "line": 19,
-                            "column": 32,
+                            "column": 40,
                             "program": "array_with_undefined_type.ets"
                           }
                         }
@@ -505,7 +587,7 @@
                         },
                         "end": {
                           "line": 19,
-                          "column": 33,
+                          "column": 41,
                           "program": "array_with_undefined_type.ets"
                         }
                       }

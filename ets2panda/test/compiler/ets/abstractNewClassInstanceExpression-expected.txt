@@ -921,12 +921,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "abstractNewClassInstanceExpression.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "abstractNewClassInstanceExpression.ets"
                     }
                   }
                 },
@@ -934,12 +934,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "abstractNewClassInstanceExpression.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "abstractNewClassInstanceExpression.ets"
                   }
                 }
               },
@@ -947,12 +947,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "abstractNewClassInstanceExpression.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "abstractNewClassInstanceExpression.ets"
                 }
               }
             },
@@ -1200,40 +1200,40 @@
                   ],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1,
-                      "program": null
+                      "line": 32,
+                      "column": 11,
+                      "program": "abstractNewClassInstanceExpression.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1,
-                      "program": null
+                      "line": 35,
+                      "column": 2,
+                      "program": "abstractNewClassInstanceExpression.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1,
-                    "program": null
+                    "line": 32,
+                    "column": 11,
+                    "program": "abstractNewClassInstanceExpression.ets"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1,
-                    "program": null
+                    "line": 35,
+                    "column": 2,
+                    "program": "abstractNewClassInstanceExpression.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1,
-                  "program": null
+                  "line": 32,
+                  "column": 11,
+                  "program": "abstractNewClassInstanceExpression.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1,
-                  "program": null
+                  "line": 35,
+                  "column": 2,
+                  "program": "abstractNewClassInstanceExpression.ets"
                 }
               }
             },
@@ -1241,13 +1241,13 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
-                "column": 1,
+                "line": 32,
+                "column": 11,
                 "program": "abstractNewClassInstanceExpression.ets"
               },
               "end": {
-                "line": 1,
-                "column": 1,
+                "line": 35,
+                "column": 2,
                 "program": "abstractNewClassInstanceExpression.ets"
               }
             }
@@ -1297,6 +1297,6 @@ TypeError: A is abstract therefore cannot be instantiated. [abstractNewClassInst
 SyntaxError: Unexpected token '{'. [abstractNewClassInstanceExpression.ets:26:22]
 TypeError: Method foo(): void in B not overriding any method [abstractNewClassInstanceExpression.ets:27:21]
 SyntaxError: Label must be followed by a loop statement. [abstractNewClassInstanceExpression.ets:32:11]
-TypeError: Class name 'H' used in the wrong context [abstractNewClassInstanceExpression.ets:32:11]
+SyntaxError: Class cannot be used as object. [abstractNewClassInstanceExpression.ets:32:11]
 SyntaxError: Unexpected token '{'. [abstractNewClassInstanceExpression.ets:32:23]
 SyntaxError: Unexpected token '}'. [abstractNewClassInstanceExpression.ets:35:1]

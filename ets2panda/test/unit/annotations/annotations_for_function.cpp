@@ -65,7 +65,7 @@ public:
         const AnnotationMap expectedFuncAnnotations1 = {
             {"Anno", {{"a", "1.000000"}}},
         };
-        const std::string funcName2 = "A.bar:f64;FixedArray<f64>;void;";
+        const std::string funcName2 = "A.bar:f64;f64[];void;";
         // Index 0 is the parameter 'this'
         const uint32_t paramIndex2 = 1;
         const uint32_t paramIndex3 = 2;
@@ -106,7 +106,7 @@ TEST_F(AnnotationsforFunction, DISABLED_annotations_for_function)
     function foo(@Anno a ?: number) {}
 
     class A {
-        bar(@Anno(2) a : number, @Anno(3) ...rest : FixedArray<number>) {}
+        bar(@Anno(2) a : number, @Anno(3) ...rest : number[]) {}
     })";
 
     RunAnnotationEmitTest(text);

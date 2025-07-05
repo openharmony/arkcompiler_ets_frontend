@@ -34,7 +34,7 @@ funct\u{0069}on
 /* @@? 20:5 Error SyntaxError: Unexpected token: 'identification literal'. */
 /* @@? 22:1 Error SyntaxError: Unexpected strict mode reserved keyword */
 /* @@? 24:1 Error SyntaxError: Escape sequences are not allowed in keywords */
-/* @@? 40:66 Error SyntaxError: Expected '}', got 'eos'. */
+/* @@? 40:66 Error SyntaxError: Expected '}', got 'end of stream'. */
 /* @@? 40:66 Error SyntaxError: Unterminated string */
 /* @@? 40:66 Error SyntaxError: Unexpected token, expected '${' or '`' */
 /* @@? 40:66 Error SyntaxError: Unexpected token, expected '`' */

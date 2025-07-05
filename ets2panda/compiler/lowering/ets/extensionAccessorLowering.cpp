@@ -68,20 +68,19 @@ static void TryHandleExtensionAccessor(checker::ETSChecker *checker, ir::MemberE
     if (IsAssignExprExtensionSetter(oldParent) && expr == oldParent->AsAssignmentExpression()->Left()) {
         auto *assignExpr = oldParent->AsAssignmentExpression();
         auto *callExpr = checker->CreateExtensionAccessorCall(
-            checker, expr, ArenaVector<ir::Expression *>(checker->Allocator()->Adapter()));
+            checker, expr, ArenaVector<ir::Expression *>(checker->ProgramAllocator()->Adapter()));
 
         auto *rightExpr = assignExpr->AsAssignmentExpression()->Right();
-        rightExpr->SetBoxingUnboxingFlags(ir::BoxingUnboxingFlags::NONE);
         if (IsMemberExprExtensionAccessor(rightExpr)) {
             SwitchType(rightExpr->AsMemberExpression());
             checker::Type *tsType = rightExpr->AsMemberExpression()->TsType();
             checker::ETSFunctionType *eAccType = rightExpr->AsMemberExpression()->ExtensionAccessorType();
-            auto *copyedRight = rightExpr->Clone(checker->Allocator(), nullptr);
+            auto *copyedRight = rightExpr->Clone(checker->ProgramAllocator(), nullptr);
             copyedRight->AsMemberExpression()->SetTsType(tsType);
             copyedRight->AsMemberExpression()->SetExtensionAccessorType(eAccType);
-            rightExpr =
-                checker->CreateExtensionAccessorCall(checker, copyedRight->AsMemberExpression(),
-                                                     ArenaVector<ir::Expression *>(checker->Allocator()->Adapter()));
+            rightExpr = checker->CreateExtensionAccessorCall(
+                checker, copyedRight->AsMemberExpression(),
+                ArenaVector<ir::Expression *>(checker->ProgramAllocator()->Adapter()));
         }
         rightExpr->SetParent(callExpr);
         callExpr->AsCallExpression()->Arguments().emplace_back(rightExpr);
@@ -93,10 +92,9 @@ static void TryHandleExtensionAccessor(checker::ETSChecker *checker, ir::MemberE
     }
 
     auto *callExpr = checker->CreateExtensionAccessorCall(
-        checker, expr, ArenaVector<ir::Expression *>(checker->Allocator()->Adapter()));
+        checker, expr, ArenaVector<ir::Expression *>(checker->ProgramAllocator()->Adapter()));
     callExpr->SetParent(oldParent);
     CheckLoweredNode(checker->VarBinder()->AsETSBinder(), checker, callExpr);
-    callExpr->AddBoxingUnboxingFlags(expr->GetBoxingUnboxingFlags());
 }
 
 static ir::AstNode *CheckAndReturnNode(checker::ETSChecker *checker, ir::AstNode *node)
@@ -133,7 +131,7 @@ bool ExtensionAccessorPhase::PerformForModule(public_lib::Context *ctx, parser::
         return true;
     }
 
-    checker::ETSChecker *const checker = ctx->checker->AsETSChecker();
+    checker::ETSChecker *const checker = ctx->GetChecker()->AsETSChecker();
     program->Ast()->TransformChildrenRecursively(
         [&checker](ir::AstNode *const node) -> AstNodePtr { return CheckAndReturnNode(checker, node); }, Name());
     return true;

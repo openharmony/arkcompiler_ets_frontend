@@ -27,4 +27,4 @@ function main() {
 /* @@? 17:20 Error SyntaxError: Field type annotation expected. */
 /* @@? 17:20 Error SyntaxError: Unexpected token ']'. */
 /* @@? 17:22 Error SyntaxError: Unexpected token ':'. */
-/* @@? 18:1 Error SyntaxError: Field type annotation expected. */
+/* @@? 17:30 Error SyntaxError: Field type annotation expected. */

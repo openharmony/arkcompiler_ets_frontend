@@ -152,4 +152,4 @@ async (x = await 7) /* @@ label56 */=> expression;
 /* @@@ label57 Error SyntaxError: Unexpected token ']'.  */
 /* @@@ label57 Error SyntaxError: Unexpected token ']'.  */
 /* @@@ label57 Error SyntaxError: Unexpected token ']'.  */
-/* @@? 156:1 Error SyntaxError: Expected '}', got 'eos'.  */
+/* @@? 156:1 Error SyntaxError: Expected '}', got 'end of stream'.  */

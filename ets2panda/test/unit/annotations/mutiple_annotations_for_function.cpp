@@ -91,36 +91,35 @@ public:
     void CheckLiteralArrayTable(pandasm::Program *program)
     {
         std::vector<std::pair<std::string, std::vector<AnnotationValueType>>> expectedLiteralArrayTable = {
-            {"ETSGLOBAL$Anno2$param$0", std::vector<AnnotationValueType> {VALUE_1, VALUE_2, VALUE_3, VALUE_4}},
-            {"ETSGLOBAL$Anno3$param$1", std::vector<AnnotationValueType> {VALUE_1}},
-            {"ETSGLOBAL$Anno3$param$2", std::vector<AnnotationValueType> {VALUE_2}},
+            {"ETSGLOBAL$Anno2$param$0", std::vector<AnnotationValueType> {1U, 2U, 3U, 4U}},
+            {"ETSGLOBAL$Anno3$param$1", std::vector<AnnotationValueType> {1U}},
+            {"ETSGLOBAL$Anno3$param$2", std::vector<AnnotationValueType> {2U}},
             {"ETSGLOBAL$Anno3$param$3", std::vector<AnnotationValueType> {std::string("ETSGLOBAL$Anno3$param$1"),
                                                                           std::string("ETSGLOBAL$Anno3$param$2")}},
-            {"ETSGLOBAL$Anno3$param$4", std::vector<AnnotationValueType> {VALUE_2}},
-            {"ETSGLOBAL$Anno3$param$5", std::vector<AnnotationValueType> {VALUE_3}},
+            {"ETSGLOBAL$Anno3$param$4", std::vector<AnnotationValueType> {2U}},
+            {"ETSGLOBAL$Anno3$param$5", std::vector<AnnotationValueType> {3U}},
             {"ETSGLOBAL$Anno3$param$6", std::vector<AnnotationValueType> {std::string("ETSGLOBAL$Anno3$param$4"),
                                                                           std::string("ETSGLOBAL$Anno3$param$5")}},
-            {"ETSGLOBAL$Anno3$param$7", std::vector<AnnotationValueType> {VALUE_3}},
-            {"ETSGLOBAL$Anno3$param$8", std::vector<AnnotationValueType> {VALUE_4}},
+            {"ETSGLOBAL$Anno3$param$7", std::vector<AnnotationValueType> {3U}},
+            {"ETSGLOBAL$Anno3$param$8", std::vector<AnnotationValueType> {4U}},
             {"ETSGLOBAL$Anno3$param$9", std::vector<AnnotationValueType> {std::string("ETSGLOBAL$Anno3$param$7"),
                                                                           std::string("ETSGLOBAL$Anno3$param$8")}},
             {"ETSGLOBAL$Anno3$param$10", std::vector<AnnotationValueType> {std::string("ETSGLOBAL$Anno3$param$3"),
                                                                            std::string("ETSGLOBAL$Anno3$param$6"),
                                                                            std::string("ETSGLOBAL$Anno3$param$9")}},
-            {"ETSGLOBAL.foo:void;$Anno2$value$11",
-             std::vector<AnnotationValueType> {VALUE_4, VALUE_5, VALUE_6, VALUE_7}},
-            {"ETSGLOBAL.foo:void;$Anno3$param$12", std::vector<AnnotationValueType> {VALUE_1}},
-            {"ETSGLOBAL.foo:void;$Anno3$param$13", std::vector<AnnotationValueType> {VALUE_2}},
+            {"ETSGLOBAL.foo:void;$Anno2$value$11", std::vector<AnnotationValueType> {4U, 5U, 6U, 7U}},
+            {"ETSGLOBAL.foo:void;$Anno3$param$12", std::vector<AnnotationValueType> {1U}},
+            {"ETSGLOBAL.foo:void;$Anno3$param$13", std::vector<AnnotationValueType> {2U}},
             {"ETSGLOBAL.foo:void;$Anno3$param$14",
              std::vector<AnnotationValueType> {std::string("ETSGLOBAL.foo:void;$Anno3$param$12"),
                                                std::string("ETSGLOBAL.foo:void;$Anno3$param$13")}},
-            {"ETSGLOBAL.foo:void;$Anno3$param$15", std::vector<AnnotationValueType> {VALUE_2}},
-            {"ETSGLOBAL.foo:void;$Anno3$param$16", std::vector<AnnotationValueType> {VALUE_3}},
+            {"ETSGLOBAL.foo:void;$Anno3$param$15", std::vector<AnnotationValueType> {2U}},
+            {"ETSGLOBAL.foo:void;$Anno3$param$16", std::vector<AnnotationValueType> {3U}},
             {"ETSGLOBAL.foo:void;$Anno3$param$17",
              std::vector<AnnotationValueType> {std::string("ETSGLOBAL.foo:void;$Anno3$param$15"),
                                                std::string("ETSGLOBAL.foo:void;$Anno3$param$16")}},
-            {"ETSGLOBAL.foo:void;$Anno3$param$18", std::vector<AnnotationValueType> {VALUE_3}},
-            {"ETSGLOBAL.foo:void;$Anno3$param$19", std::vector<AnnotationValueType> {VALUE_4}},
+            {"ETSGLOBAL.foo:void;$Anno3$param$18", std::vector<AnnotationValueType> {3U}},
+            {"ETSGLOBAL.foo:void;$Anno3$param$19", std::vector<AnnotationValueType> {4U}},
             {"ETSGLOBAL.foo:void;$Anno3$param$20",
              std::vector<AnnotationValueType> {std::string("ETSGLOBAL.foo:void;$Anno3$param$18"),
                                                std::string("ETSGLOBAL.foo:void;$Anno3$param$19")}},
@@ -146,11 +145,11 @@ TEST_F(MutipleAnnotationsforFunction, mutiple_annotations_for_function)
         }
 
         @interface Anno2 {
-            param: FixedArray<int> = [1, 2, 3, 4]
+            param: int[] = [1, 2, 3, 4]
         }
 
         @interface Anno3 {
-            param: FixedArray<FixedArray<FixedArray<int>>> = [[[1], [2]], [[2], [3]], [[3], [4]]]
+            param: int[][][] = [[[1], [2]], [[2], [3]], [[3], [4]]]
         }
 
         @Anno1(2)

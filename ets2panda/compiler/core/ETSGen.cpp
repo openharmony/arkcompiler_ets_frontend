@@ -13,9 +13,10 @@
  * limitations under the License.
  */
 
-#include "ETSGen.h"
 #include "ETSGen-inl.h"
 
+#include "compiler/core/regScope.h"
+#include "generated/isa.h"
 #include "generated/signatures.h"
 #include "ir/base/scriptFunction.h"
 #include "ir/base/classDefinition.h"
@@ -30,14 +31,13 @@
 #include "ir/statements/continueStatement.h"
 #include "ir/statements/tryStatement.h"
 #include "ir/ts/tsInterfaceDeclaration.h"
-#include "varbinder/variableFlags.h"
 #include "compiler/base/lreference.h"
 #include "compiler/base/catchTable.h"
 #include "compiler/core/dynamicContext.h"
 #include "varbinder/ETSBinder.h"
 #include "varbinder/variable.h"
 #include "checker/types/type.h"
-#include "checker/types/typeFlag.h"
+#include "checker/types/signature.h"
 #include "checker/checker.h"
 #include "checker/ETSchecker.h"
 #include "checker/types/ets/etsObjectType.h"
@@ -97,7 +97,7 @@ void ETSGen::CompileAndCheck(const ir::Expression *expr)
 
 const checker::ETSChecker *ETSGen::Checker() const noexcept
 {
-    return Context()->checker->AsETSChecker();
+    return Context()->GetChecker()->AsETSChecker();
 }
 
 const varbinder::ETSBinder *ETSGen::VarBinder() const noexcept
@@ -236,71 +236,8 @@ void ETSGen::LoadAccumulatorPoison(const ir::AstNode *node, const checker::Type 
     SetAccumulatorType(type);
 }
 
-util::StringView ETSGen::FormDynamicModulePropReference(const varbinder::Variable *var)
-{
-    ES2PANDA_ASSERT(VarBinder()->IsDynamicModuleVariable(var) || VarBinder()->IsDynamicNamespaceVariable(var));
-
-    auto *data = VarBinder()->DynamicImportDataForVar(var);
-    ES2PANDA_ASSERT(data != nullptr);
-
-    auto *import = data->import;
-
-    return FormDynamicModulePropReference(import);
-}
-
-void ETSGen::LoadAccumulatorDynamicModule(const ir::AstNode *node, const ir::ETSImportDeclaration *import)
-{
-    ES2PANDA_ASSERT(import->Language().IsDynamic());
-    LoadStaticProperty(node, Checker()->GlobalBuiltinDynamicType(import->Language()),
-                       FormDynamicModulePropReference(import));
-}
-
-util::StringView ETSGen::FormDynamicModulePropReference(const ir::ETSImportDeclaration *import)
-{
-    std::stringstream ss;
-    ss << VarBinder()->Program()->ModulePrefix();
-    ss << compiler::Signatures::DYNAMIC_MODULE_CLASS;
-    ss << '.';
-    ss << import->AssemblerName();
-    return util::UString(ss.str(), Allocator()).View();
-}
-
-void ETSGen::LoadDynamicModuleVariable(const ir::AstNode *node, varbinder::Variable const *const var)
-{
-    RegScope rs(this);
-
-    auto *data = VarBinder()->DynamicImportDataForVar(var);
-    auto *import = data->import;
-
-    LoadStaticProperty(node, var->TsType(), FormDynamicModulePropReference(var));
-
-    auto objReg = AllocReg();
-    StoreAccumulator(node, objReg);
-
-    auto *id = data->specifier->AsImportSpecifier()->Imported();
-    auto lang = import->Language();
-    LoadPropertyDynamic(node, Checker()->GlobalBuiltinDynamicType(lang), objReg, id->Name());
-
-    ApplyConversion(node);
-}
-
-void ETSGen::LoadDynamicNamespaceVariable(const ir::AstNode *node, varbinder::Variable const *const var)
-{
-    LoadStaticProperty(node, var->TsType(), FormDynamicModulePropReference(var));
-}
-
 void ETSGen::LoadVar(const ir::Identifier *node, varbinder::Variable const *const var)
 {
-    if (VarBinder()->IsDynamicModuleVariable(var)) {
-        LoadDynamicModuleVariable(node, var);
-        return;
-    }
-
-    if (VarBinder()->IsDynamicNamespaceVariable(var)) {
-        LoadDynamicNamespaceVariable(node, var);
-        return;
-    }
-
     auto *local = var->AsLocalVariable();
 
     switch (ETSLReference::ResolveReferenceKind(var)) {
@@ -390,11 +327,29 @@ void ETSGen::StoreStaticProperty(const ir::AstNode *const node, const checker::T
     }
 }
 
+static bool StaticAccessRequiresReferenceSafetyCheck(const ir::AstNode *const node, const checker::Type *propType)
+{
+    if (propType->PossiblyETSUndefined()) {
+        return false;
+    }
+    auto parent = node->Parent();
+    if (parent->IsMemberExpression()) {
+        return false;
+    }
+    if (parent->IsCallExpression() && parent->AsCallExpression()->Callee() == node) {
+        return false;
+    }
+    return true;
+}
+
 void ETSGen::LoadStaticProperty(const ir::AstNode *const node, const checker::Type *propType,
                                 const util::StringView &fullName)
 {
     if (propType->IsETSReferenceType()) {
         Sa().Emit<LdstaticObj>(node, fullName);
+        if (StaticAccessRequiresReferenceSafetyCheck(node, propType)) {
+            EmitNullcheck(node);
+        }
     } else if (IsWidePrimitiveType(propType)) {
         Sa().Emit<LdstaticWide>(node, fullName);
     } else {
@@ -417,6 +372,22 @@ void ETSGen::StoreProperty(const ir::AstNode *const node, const checker::Type *p
     } else {
         Ra().Emit<Stobj>(node, objReg, fullName);
     }
+}
+
+void ETSGen::StorePropertyByNameAny(const ir::AstNode *const node, const VReg objReg, const util::StringView &fullName)
+{
+    ES2PANDA_ASSERT(node->IsMemberExpression() &&
+                    Checker()->GetApparentType(node->AsMemberExpression()->Object()->TsType())->IsETSAnyType());
+    Ra().Emit<AnyStbyname>(node, objReg, fullName);
+    SetAccumulatorType(node->AsMemberExpression()->TsType());
+}
+
+void ETSGen::LoadPropertyByNameAny(const ir::AstNode *const node, const VReg objReg, const util::StringView &fullName)
+{
+    ES2PANDA_ASSERT(node->IsMemberExpression() &&
+                    Checker()->GetApparentType(node->AsMemberExpression()->Object()->TsType())->IsETSAnyType());
+    Ra().Emit<AnyLdbyname>(node, objReg, fullName);
+    SetAccumulatorType(node->AsMemberExpression()->TsType());
 }
 
 void ETSGen::LoadProperty(const ir::AstNode *const node, const checker::Type *propType, const VReg objReg,
@@ -472,137 +443,46 @@ void ETSGen::LoadPropertyByName([[maybe_unused]] const ir::AstNode *const node, 
 #endif  // PANDA_WITH_ETS
 }
 
-void ETSGen::StorePropertyDynamic(const ir::AstNode *node, const checker::Type *propType, VReg objReg,
-                                  const util::StringView &propName)
+void ETSGen::StoreByIndexAny(const ir::MemberExpression *node, VReg objectReg, VReg index)
 {
-    auto const lang = GetVRegType(objReg)->AsETSDynamicType()->Language();
-    std::string_view methodName {};
-    if (propType->IsETSBooleanType()) {
-        methodName = Signatures::Dynamic::SetPropertyBooleanBuiltin(lang);
-    } else if (propType->IsByteType()) {
-        methodName = Signatures::Dynamic::SetPropertyByteBuiltin(lang);
-    } else if (propType->IsCharType()) {
-        methodName = Signatures::Dynamic::SetPropertyCharBuiltin(lang);
-    } else if (propType->IsShortType()) {
-        methodName = Signatures::Dynamic::SetPropertyShortBuiltin(lang);
-    } else if (propType->IsIntType()) {
-        methodName = Signatures::Dynamic::SetPropertyIntBuiltin(lang);
-    } else if (propType->IsLongType()) {
-        methodName = Signatures::Dynamic::SetPropertyLongBuiltin(lang);
-    } else if (propType->IsFloatType()) {
-        methodName = Signatures::Dynamic::SetPropertyFloatBuiltin(lang);
-    } else if (propType->IsDoubleType()) {
-        methodName = Signatures::Dynamic::SetPropertyDoubleBuiltin(lang);
-    } else if (propType->IsETSStringType()) {
-        methodName = Signatures::Dynamic::SetPropertyStringBuiltin(lang);
-    } else if (propType->IsETSObjectType() || propType->IsETSTypeParameter()) {
-        methodName = Signatures::Dynamic::SetPropertyDynamicBuiltin(lang);
-        // NOTE: vpukhov. add non-dynamic builtin
-        if (!propType->IsETSDynamicType()) {
-            CastToDynamic(node, Checker()->GlobalBuiltinDynamicType(lang)->AsETSDynamicType());
-        }
-    } else {
-        ASSERT_PRINT(false, "Unsupported property type");
-    }
-
-    RegScope rs(this);
-    VReg propValueReg = AllocReg();
-    VReg propNameReg = AllocReg();
-
-    StoreAccumulator(node, propValueReg);
-
-    // Load property name
-    LoadAccumulatorString(node, propName);
-    StoreAccumulator(node, propNameReg);
-
-    // Set property by name
-    Ra().Emit<Call, 3U>(node, methodName, objReg, propNameReg, propValueReg, dummyReg_);
-    SetAccumulatorType(Checker()->GlobalBuiltinJSValueType());
-}
-
-void ETSGen::LoadPropertyDynamic(const ir::AstNode *node, const checker::Type *propType, VReg objReg,
-                                 std::variant<util::StringView, const ark::es2panda::ir::Expression *> property)
-{
-    auto const lang = GetVRegType(objReg)->AsETSDynamicType()->Language();
-    auto *type = propType;
-    std::string_view methodName {};
-    if (propType->IsETSBooleanType()) {
-        methodName = Signatures::Dynamic::GetPropertyBooleanBuiltin(lang);
-    } else if (propType->IsByteType()) {
-        methodName = Signatures::Dynamic::GetPropertyByteBuiltin(lang);
-    } else if (propType->IsCharType()) {
-        methodName = Signatures::Dynamic::GetPropertyCharBuiltin(lang);
-    } else if (propType->IsShortType()) {
-        methodName = Signatures::Dynamic::GetPropertyShortBuiltin(lang);
-    } else if (propType->IsIntType()) {
-        methodName = Signatures::Dynamic::GetPropertyIntBuiltin(lang);
-    } else if (propType->IsLongType()) {
-        methodName = Signatures::Dynamic::GetPropertyLongBuiltin(lang);
-    } else if (propType->IsFloatType()) {
-        methodName = Signatures::Dynamic::GetPropertyFloatBuiltin(lang);
-    } else if (propType->IsDoubleType()) {
-        methodName = Signatures::Dynamic::GetPropertyDoubleBuiltin(lang);
-    } else if (propType->IsETSStringType()) {
-        methodName = Signatures::Dynamic::GetPropertyStringBuiltin(lang);
-    } else if (propType->IsETSObjectType() || propType->IsETSTypeParameter()) {
-        methodName = Signatures::Dynamic::GetPropertyDynamicBuiltin(lang);
-        type = Checker()->GlobalBuiltinDynamicType(lang);
-    } else {
-        ASSERT_PRINT(false, "Unsupported property type");
-    }
-
     RegScope rs(this);
 
-    VReg propNameObject;
-
-    if (node->IsMemberExpression() && node->AsMemberExpression()->IsComputed()) {
-        (std::get<const ark::es2panda::ir::Expression *>(property))->Compile(this);
-    } else {
-        // Load property name
-        LoadAccumulatorString(node, std::get<util::StringView>(property));
-    }
-
-    propNameObject = AllocReg();
-    StoreAccumulator(node, propNameObject);
-
-    // Get property
-    Ra().Emit<CallShort, 2U>(node, methodName, objReg, propNameObject);
-
-    SetAccumulatorType(type);
-
-    if (propType != type && !propType->IsETSDynamicType()) {
-        CastDynamicToObject(node, propType);
-    }
-}
-
-void ETSGen::StoreElementDynamic(const ir::AstNode *node, VReg objectReg, VReg index)
-{
-    auto const lang = GetVRegType(objectReg)->AsETSDynamicType()->Language();
-    std::string_view methodName = Signatures::Dynamic::SetElementDynamicBuiltin(lang);
-
-    RegScope rs(this);
-
-    VReg valueReg = AllocReg();
-    StoreAccumulator(node, valueReg);
-
-    // Set property by index
-    Ra().Emit<Call, 3U>(node, methodName, objectReg, index, valueReg, dummyReg_);
+    // Store property by index
+    Ra().Emit<AnyStbyidx>(node, objectReg, index);
     SetAccumulatorType(Checker()->GlobalVoidType());
 }
 
-void ETSGen::LoadElementDynamic(const ir::AstNode *node, VReg objectReg)
+void ETSGen::LoadByIndexAny(const ir::MemberExpression *node, VReg objectReg)
 {
-    auto const lang = GetVRegType(objectReg)->AsETSDynamicType()->Language();
-    std::string_view methodName = Signatures::Dynamic::GetElementDynamicBuiltin(lang);
-
     RegScope rs(this);
 
     VReg indexReg = AllocReg();
     StoreAccumulator(node, indexReg);
 
     // Get property by index
-    Ra().Emit<CallShort, 2U>(node, methodName, objectReg, indexReg);
-    SetAccumulatorType(Checker()->GlobalBuiltinDynamicType(lang));
+    Ra().Emit<AnyLdbyidx>(node, objectReg);
+    SetAccumulatorType(node->TsType());
+}
+
+void ETSGen::StoreByValueAny(const ir::MemberExpression *node, VReg objectReg, VReg value)
+{
+    RegScope rs(this);
+
+    // Store property by value
+    Ra().Emit<AnyStbyval>(node, objectReg, value);
+    SetAccumulatorType(Checker()->GlobalVoidType());
+}
+
+void ETSGen::LoadByValueAny(const ir::MemberExpression *node, VReg objectReg)
+{
+    RegScope rs(this);
+
+    VReg valueReg = AllocReg();
+    StoreAccumulator(node, valueReg);
+
+    // Get property by value
+    Ra().Emit<AnyLdbyval>(node, objectReg, valueReg);
+    SetAccumulatorType(node->TsType());
 }
 
 void ETSGen::CallRangeFillUndefined(const ir::AstNode *const node, checker::Signature *const signature,
@@ -659,6 +539,18 @@ const checker::Type *ETSGen::LoadDefaultValue(const ir::AstNode *node, const che
     if (type->IsETSReferenceType()) {
         if (checker->Relation()->IsSupertypeOf(type, checker->GlobalETSUndefinedType())) {
             LoadAccumulatorUndefined(node);
+        } else if (type->IsETSObjectType() && type->AsETSObjectType()->IsBoxedPrimitive()) {
+            //  Call default constructor for boxed primitive types.
+            static auto const DUMMY_ARGS = ArenaVector<ir::Expression *>(checker->Allocator()->Adapter());
+            auto const &signatures = type->AsETSObjectType()->ConstructSignatures();
+            auto const it = std::find_if(signatures.cbegin(), signatures.cend(), [](checker::Signature *signature) {
+                return signature->ArgCount() == 0U && !signature->HasRestParameter();
+            });
+            if (it != signatures.cend()) {
+                InitObject(node, *it, DUMMY_ARGS);
+            } else {
+                LoadAccumulatorPoison(node, type);
+            }
         } else {
             LoadAccumulatorPoison(node, type);
         }
@@ -692,128 +584,20 @@ void ETSGen::ReturnAcc(const ir::AstNode *node)
     }
 }
 
-static bool IsAnyReferenceSupertype(checker::Type const *type)
-{
-    if (!type->IsETSUnionType()) {
-        return false;
-    }
-    auto const &constituent = type->AsETSUnionType()->ConstituentTypes();
-    return constituent.size() == 3U && std::all_of(constituent.begin(), constituent.end(), [](checker::Type *t) {
-               return t->IsETSUndefinedType() || t->IsETSNullType() ||
-                      (t->IsETSObjectType() && t->AsETSObjectType()->IsGlobalETSObjectType());
-           });  // CC-OFF(G.FMT.02) project code style
-}
-
 static bool IsNullUnsafeObjectType(checker::Type const *type)
 {
     return type->IsETSObjectType() && type->AsETSObjectType()->IsGlobalETSObjectType();
 }
 
-void ETSGen::IsInstanceDynamic(const ir::BinaryExpression *const node, const VReg srcReg,
-                               [[maybe_unused]] const VReg tgtReg)
-{
-    ES2PANDA_ASSERT(node->OperatorType() == lexer::TokenType::KEYW_INSTANCEOF);
-    const checker::Type *lhsType = node->Left()->TsType();
-    const checker::Type *rhsType = node->Right()->TsType();
-    ES2PANDA_ASSERT(rhsType->IsETSDynamicType() || lhsType->IsETSDynamicType());
-
-    const RegScope rs(this);
-    if (rhsType->IsETSDynamicType()) {
-        ES2PANDA_ASSERT(node->Right()->TsType()->AsETSDynamicType()->HasDecl());
-        if (lhsType->IsETSDynamicType()) {
-            VReg dynTypeReg = MoveAccToReg(node);
-            // Semantics:
-            //      let dyn_val: JSValue = ...
-            //      dyn_value instanceof DynamicDecl
-            // Bytecode:
-            //      call runtime intrinsic_dynamic
-            CallExact(node, Signatures::BUILTIN_JSRUNTIME_INSTANCE_OF_DYNAMIC, srcReg, dynTypeReg);
-        } else if (lhsType == Checker()->GlobalETSObjectType()) {
-            // Semantics:
-            //      let obj: Object = ...
-            //      obj instanceof DynamicDecl
-            // Bytecode:
-            //      if isinstance <dynamic type name>:
-            //          checkcast <dynamic type name>
-            //          return call runtime intrinsic_dynamic
-            //      return false
-            Label *ifFalse = AllocLabel();
-            Language lang = rhsType->AsETSDynamicType()->Language();
-            VReg dynTypeReg = MoveAccToReg(node);
-            LoadAccumulator(node, srcReg);
-            Sa().Emit<Isinstance>(node, Checker()->GlobalBuiltinDynamicType(lang)->AssemblerName());
-            BranchIfFalse(node, ifFalse);
-            LoadAccumulator(node, srcReg);
-            Sa().Emit<Checkcast>(node, Checker()->GlobalBuiltinDynamicType(lang)->AssemblerName());
-            CallExact(node, Signatures::BUILTIN_JSRUNTIME_INSTANCE_OF_DYNAMIC, srcReg, dynTypeReg);
-            SetLabel(node, ifFalse);
-        } else {
-            // Semantics:
-            //      let obj: EtsType = ...
-            //      obj instanceof DynamicDecl
-            // Bytecode:
-            //      False
-            Sa().Emit<Ldai>(node, 0);
-        }
-    } else {
-        if (lhsType->IsETSDynamicType()) {
-            if (rhsType == Checker()->GlobalETSObjectType()) {
-                // Semantics:
-                //      let dyn_val: JSValue = ...
-                //      dyn_val instanceof Object
-                // Bytecode:
-                //      True
-                Sa().Emit<Ldai>(node, 1);
-            } else {
-                // Semantics:
-                //      let dyn_val: JSValue = ...
-                //      dyn_val instanceof EtsType
-                // Bytecode:
-                //      lda.type + call runtime instrinsic_static
-                Sa().Emit<LdaType>(node, rhsType->AsETSObjectType()->AssemblerName());
-                VReg typeReg = MoveAccToReg(node);
-                CallExact(node, Signatures::BUILTIN_JSRUNTIME_INSTANCE_OF_STATIC, srcReg, typeReg);
-            }
-        } else {
-            ES2PANDA_UNREACHABLE();
-        }
-    }
-    SetAccumulatorType(Checker()->GlobalETSBooleanType());
-}
-
-void ETSGen::TestIsInstanceConstant(const ir::AstNode *node, Label *ifTrue, VReg srcReg, checker::Type const *target)
-{
-    if (!target->IsConstantType()) {
-        return;
-    }
-    RegScope rs(this);
-    VReg rhs = AllocReg();
-    auto ifNotEquals = AllocLabel();
-
-    LoadAccumulator(node, srcReg);
-    LoadConstantObject(node->AsExpression(), target);
-    StoreAccumulator(node, rhs);
-    EmitEtsEquals(node, srcReg, rhs);
-    BranchIfFalse(node, ifNotEquals);
-    BranchIfTrue(node, ifTrue);
-    SetLabel(node, ifNotEquals);
-    SetAccumulatorType(nullptr);
-}
-
 // Implemented on top of the runtime type system, do not relax checks, do not introduce new types
-void ETSGen::TestIsInstanceConstituent(const ir::AstNode *const node, std::tuple<Label *, Label *> label, VReg srcReg,
+void ETSGen::TestIsInstanceConstituent(const ir::AstNode *const node, std::tuple<Label *, Label *> label,
                                        checker::Type const *target, bool acceptNull)
 {
-    ES2PANDA_ASSERT(!target->IsETSDynamicType());
     auto [ifTrue, ifFalse] = label;
-
-    if (target->IsConstantType()) {
-        TestIsInstanceConstant(node, ifTrue, srcReg, target);
-        return;
-    }
 
     switch (checker::ETSChecker::ETSType(target)) {
         case checker::TypeFlag::ETS_UNDEFINED:
+        case checker::TypeFlag::ETS_VOID:
             BranchIfUndefined(node, ifTrue);
             break;
         case checker::TypeFlag::ETS_NULL:
@@ -821,7 +605,7 @@ void ETSGen::TestIsInstanceConstituent(const ir::AstNode *const node, std::tuple
             break;
         case checker::TypeFlag::ETS_OBJECT:
             if (!IsNullUnsafeObjectType(target)) {
-                Sa().Emit<Isinstance>(node, ToAssemblerType(target));
+                EmitIsInstance(node, ToAssemblerType(target));
                 BranchIfTrue(node, ifTrue);
                 break;
             }
@@ -833,7 +617,7 @@ void ETSGen::TestIsInstanceConstituent(const ir::AstNode *const node, std::tuple
         case checker::TypeFlag::ETS_ARRAY:
         case checker::TypeFlag::ETS_TUPLE:
         case checker::TypeFlag::FUNCTION: {
-            Sa().Emit<Isinstance>(node, ToAssemblerType(target));
+            EmitIsInstance(node, ToAssemblerType(target));
             BranchIfTrue(node, ifTrue);
             break;
         }
@@ -860,7 +644,7 @@ void ETSGen::BranchIfIsInstance(const ir::AstNode *const node, const VReg srcReg
         LoadAccumulator(n, srcReg);
         // #21835: type-alias in ApparentType
         t = t->IsETSTypeAliasType() ? t->AsETSTypeAliasType()->GetTargetType() : t;
-        TestIsInstanceConstituent(n, std::tie(ifTrue, ifFalse), srcReg, t, acceptNull);
+        TestIsInstanceConstituent(n, std::tie(ifTrue, ifFalse), t, acceptNull);
     };
 
     if (target->IsETSUnionType()) {
@@ -881,7 +665,7 @@ void ETSGen::IsInstance(const ir::AstNode *const node, const VReg srcReg, const 
     target = Checker()->GetApparentType(target);
     ES2PANDA_ASSERT(target->IsETSReferenceType());
 
-    if (IsAnyReferenceSupertype(target)) {  // should be IsSupertypeOf(target, source)
+    if (target->IsETSAnyType()) {  // should be IsSupertypeOf(target, source)
         LoadAccumulatorBoolean(node, true);
         return;
     }
@@ -908,7 +692,7 @@ void ETSGen::InternalIsInstance(const ir::AstNode *node, const es2panda::checker
 {
     ES2PANDA_ASSERT(target->IsETSObjectType() || target->IsETSArrayType());
     if (!IsNullUnsafeObjectType(target)) {
-        Sa().Emit<Isinstance>(node, ToAssemblerType(target));
+        EmitIsInstance(node, ToAssemblerType(target));
         SetAccumulatorType(Checker()->GlobalETSBooleanType());
     } else {
         LoadAccumulatorBoolean(node, true);
@@ -920,9 +704,18 @@ void ETSGen::InternalCheckCast(const ir::AstNode *node, const es2panda::checker:
 {
     ES2PANDA_ASSERT(target->IsETSObjectType() || target->IsETSArrayType() || target->IsETSTupleType());
     if (!IsNullUnsafeObjectType(target)) {
-        Sa().Emit<Checkcast>(node, ToAssemblerType(target));
+        EmitCheckCast(node, ToAssemblerType(target));
     }
     SetAccumulatorType(target);
+}
+
+// Handle checkcast for interop if it is 1.2 type.
+void ETSGen::EmitAnyCheckCast(const ir::AstNode *node, const checker::Type *target)
+{
+    if (!target->IsETSAnyType() &&
+        (target->IsETSObjectType() || target->IsETSArrayType() || target->IsETSTupleType())) {
+        InternalCheckCast(node, target);
+    }
 }
 
 // optimized specialization for object and [] targets
@@ -974,7 +767,7 @@ void ETSGen::CheckedReferenceNarrowing(const ir::AstNode *node, const checker::T
     target = Checker()->GetApparentType(target);
     ES2PANDA_ASSERT(target->IsETSReferenceType());
 
-    if (IsAnyReferenceSupertype(target)) {  // should be IsSupertypeOf(target, source)
+    if (target->IsETSAnyType()) {  // should be IsSupertypeOf(target, source)
         SetAccumulatorType(target);
         return;
     }
@@ -996,7 +789,7 @@ void ETSGen::CheckedReferenceNarrowing(const ir::AstNode *node, const checker::T
     SetLabel(node, ifTrue);
     LoadAccumulator(node, srcReg);
     // Verifier can't infer type if isinstance met, help him
-    Sa().Emit<Checkcast>(node, ToAssemblerType(target));
+    EmitCheckCast(node, ToAssemblerType(target));
     SetAccumulatorType(target);
 }
 
@@ -1006,6 +799,11 @@ void ETSGen::GuardUncheckedType(const ir::AstNode *node, const checker::Type *un
         SetAccumulatorType(unchecked);
         // this check guards possible type violations, **do not relax it**
         CheckedReferenceNarrowing(node, Checker()->MaybeBoxType(target));
+        // Because on previous step accumulator type may be set in CheckerReferenceNarrowing to boxed counterpart of
+        // target We need to apply unbox conversion if needed to avoid RTE
+        if (target->IsETSPrimitiveType() && GetAccumulatorType()->IsETSUnboxableObject()) {
+            ApplyConversion(node, target);
+        }
     }
     SetAccumulatorType(target);
 }
@@ -1024,14 +822,16 @@ void ETSGen::EmitFailedTypeCastException(const ir::AstNode *node, const VReg src
 
 void ETSGen::LoadConstantObject(const ir::Expression *node, const checker::Type *type)
 {
-    if (type->HasTypeFlag(checker::TypeFlag::BIGINT_LITERAL)) {
+    if (type->IsETSBigIntType()) {
         LoadAccumulatorBigInt(node, type->AsETSObjectType()->AsETSBigIntType()->GetValue());
         const VReg value = AllocReg();
         StoreAccumulator(node, value);
         CreateBigIntObject(node, value);
-    } else {
+    } else if (type->IsETSStringType()) {
         LoadAccumulatorString(node, type->AsETSObjectType()->AsETSStringType()->GetValue());
         SetAccumulatorType(node->TsType());
+    } else {
+        ES2PANDA_UNREACHABLE();
     }
 }
 
@@ -1068,100 +868,21 @@ void ETSGen::ApplyConversionCast(const ir::AstNode *node, const checker::Type *t
         }
         case checker::TypeFlag::ETS_ARRAY:
         case checker::TypeFlag::ETS_OBJECT:
-        case checker::TypeFlag::ETS_TYPE_PARAMETER: {
-            if (GetAccumulatorType() != nullptr && GetAccumulatorType()->IsETSDynamicType()) {
-                CastDynamicToObject(node, targetType);
-            }
-            break;
-        }
-        case checker::TypeFlag::ETS_DYNAMIC_TYPE: {
-            CastToDynamic(node, targetType->AsETSDynamicType());
-            break;
-        }
         default: {
             break;
         }
     }
 }
 
-void ETSGen::ApplyBoxingConversion(const ir::AstNode *node)
-{
-    EmitBoxingConversion(node);
-    node->SetBoxingUnboxingFlags(
-        static_cast<ir::BoxingUnboxingFlags>(node->GetBoxingUnboxingFlags() & ~(ir::BoxingUnboxingFlags::BOXING_FLAG)));
-}
-
-void ETSGen::ApplyUnboxingConversion(const ir::AstNode *node)
-{
-    auto const callUnbox = [this, node](std::string_view sig, checker::Type const *unboxedType) {
-        auto boxedType = Checker()->MaybeBoxType(unboxedType)->AsETSObjectType();
-        EmitUnboxedCall(node, sig, unboxedType, boxedType);
-    };
-
-    auto const unboxFlags =
-        ir::BoxingUnboxingFlags(node->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::UNBOXING_FLAG);
-    node->RemoveBoxingUnboxingFlags(ir::BoxingUnboxingFlags::UNBOXING_FLAG);
-
-    switch (unboxFlags) {
-        case ir::BoxingUnboxingFlags::UNBOX_TO_BOOLEAN:
-            callUnbox(Signatures::BUILTIN_BOOLEAN_UNBOXED, Checker()->GlobalETSBooleanType());
-            return;
-        case ir::BoxingUnboxingFlags::UNBOX_TO_BYTE:
-            callUnbox(Signatures::BUILTIN_BYTE_UNBOXED, Checker()->GlobalByteType());
-            return;
-        case ir::BoxingUnboxingFlags::UNBOX_TO_CHAR:
-            callUnbox(Signatures::BUILTIN_CHAR_UNBOXED, Checker()->GlobalCharType());
-            return;
-        case ir::BoxingUnboxingFlags::UNBOX_TO_SHORT:
-            callUnbox(Signatures::BUILTIN_SHORT_UNBOXED, Checker()->GlobalShortType());
-            return;
-        case ir::BoxingUnboxingFlags::UNBOX_TO_INT:
-            callUnbox(Signatures::BUILTIN_INT_UNBOXED, Checker()->GlobalIntType());
-            return;
-        case ir::BoxingUnboxingFlags::UNBOX_TO_LONG:
-            callUnbox(Signatures::BUILTIN_LONG_UNBOXED, Checker()->GlobalLongType());
-            return;
-        case ir::BoxingUnboxingFlags::UNBOX_TO_FLOAT:
-            callUnbox(Signatures::BUILTIN_FLOAT_UNBOXED, Checker()->GlobalFloatType());
-            return;
-        case ir::BoxingUnboxingFlags::UNBOX_TO_DOUBLE:
-            callUnbox(Signatures::BUILTIN_DOUBLE_UNBOXED, Checker()->GlobalDoubleType());
-            return;
-        default:
-            ES2PANDA_UNREACHABLE();
-    }
-}
-
 void ETSGen::ApplyConversion(const ir::AstNode *node, const checker::Type *targetType)
 {
-    auto ttctx = TargetTypeContext(this, targetType);
-
-    const bool hasBoxingflags = (node->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::BOXING_FLAG) != 0U;
-    const bool hasUnboxingflags = (node->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::UNBOXING_FLAG) != 0U;
-    if (hasBoxingflags && !hasUnboxingflags) {
-        ApplyBoxingConversion(node);
-
-        if (node->HasAstNodeFlags(ir::AstNodeFlags::CONVERT_TO_STRING)) {
-            CastToString(node);
-            node->RemoveAstNodeFlags(ir::AstNodeFlags::CONVERT_TO_STRING);
-        }
-
-        return;
-    }
-
-    if (hasUnboxingflags) {
-        ApplyUnboxingConversion(node);
-    }
-
     if (targetType == nullptr) {
         return;
     }
 
-    ApplyConversionCast(node, targetType);
+    auto ttctx = TargetTypeContext(this, targetType);
 
-    if (hasBoxingflags) {
-        ApplyBoxingConversion(node);
-    }
+    ApplyConversionCast(node, targetType);
 }
 
 void ETSGen::ApplyCast(const ir::AstNode *node, const checker::Type *targetType)
@@ -1197,119 +918,9 @@ void ETSGen::ApplyCast(const ir::AstNode *node, const checker::Type *targetType)
             CastToChar(node);
             break;
         }
-        case checker::TypeFlag::ETS_DYNAMIC_TYPE: {
-            CastToDynamic(node, targetType->AsETSDynamicType());
-            break;
-        }
         default: {
             break;
         }
-    }
-}
-
-void ETSGen::ApplyCastToBoxingFlags(const ir::AstNode *node, const ir::BoxingUnboxingFlags targetType)
-{
-    switch (targetType) {
-        case ir::BoxingUnboxingFlags::BOX_TO_DOUBLE: {
-            CastToDouble(node);
-            break;
-        }
-        case ir::BoxingUnboxingFlags::BOX_TO_FLOAT: {
-            CastToFloat(node);
-            break;
-        }
-        case ir::BoxingUnboxingFlags::BOX_TO_LONG: {
-            CastToLong(node);
-            break;
-        }
-        case ir::BoxingUnboxingFlags::BOX_TO_INT: {
-            CastToInt(node);
-            break;
-        }
-        default: {
-            break;
-        }
-    }
-}
-
-void ETSGen::EmitUnboxedCall(const ir::AstNode *node, std::string_view signatureFlag,
-                             const checker::Type *const targetType, const checker::Type *const boxedType)
-{
-    RegScope rs(this);
-    // NOTE(vpukhov): #20510 lowering
-    if (node->HasAstNodeFlags(ir::AstNodeFlags::CHECKCAST)) {
-        CheckedReferenceNarrowing(node, boxedType);
-    }
-
-    // to cast to primitive types we probably have to cast to corresponding boxed built-in types first.
-    auto *const checker = Checker()->AsETSChecker();
-    auto const *accumulatorType = GetAccumulatorType();
-    if (accumulatorType->IsETSObjectType() &&  //! accumulatorType->DefinitelyNotETSNullish() &&
-        !checker->Relation()->IsIdenticalTo(const_cast<checker::Type *>(accumulatorType),
-                                            const_cast<checker::Type *>(boxedType))) {
-        CastToReftype(node, boxedType, false);
-    }
-
-    Ra().Emit<CallAccShort, 0>(node, signatureFlag, dummyReg_, 0);
-    SetAccumulatorType(targetType);
-    if (node->IsExpression()) {
-        const_cast<ir::Expression *>(node->AsExpression())->SetTsType(const_cast<checker::Type *>(targetType));
-    }
-}
-
-// NOTE(vpukhov): #20510 should be available only as a part of ApplyBoxingConversion
-void ETSGen::EmitBoxingConversion(ir::BoxingUnboxingFlags boxingFlag, const ir::AstNode *node)
-{
-    auto const callBox = [this, node](std::string_view sig, checker::Type const *unboxedType) {
-        Ra().Emit<CallAccShort, 0>(node, sig, dummyReg_, 0);
-        SetAccumulatorType(Checker()->MaybeBoxType(unboxedType)->AsETSObjectType());
-    };
-
-    switch (boxingFlag) {
-        case ir::BoxingUnboxingFlags::BOX_TO_BOOLEAN:
-            callBox(Signatures::BUILTIN_BOOLEAN_VALUE_OF, Checker()->GlobalETSBooleanType());
-            return;
-        case ir::BoxingUnboxingFlags::BOX_TO_BYTE:
-            callBox(Signatures::BUILTIN_BYTE_VALUE_OF, Checker()->GlobalByteType());
-            return;
-        case ir::BoxingUnboxingFlags::BOX_TO_CHAR:
-            callBox(Signatures::BUILTIN_CHAR_VALUE_OF, Checker()->GlobalCharType());
-            return;
-        case ir::BoxingUnboxingFlags::BOX_TO_SHORT:
-            callBox(Signatures::BUILTIN_SHORT_VALUE_OF, Checker()->GlobalShortType());
-            return;
-        case ir::BoxingUnboxingFlags::BOX_TO_INT:
-            callBox(Signatures::BUILTIN_INT_VALUE_OF, Checker()->GlobalIntType());
-            return;
-        case ir::BoxingUnboxingFlags::BOX_TO_LONG:
-            callBox(Signatures::BUILTIN_LONG_VALUE_OF, Checker()->GlobalLongType());
-            return;
-        case ir::BoxingUnboxingFlags::BOX_TO_FLOAT:
-            callBox(Signatures::BUILTIN_FLOAT_VALUE_OF, Checker()->GlobalFloatType());
-            return;
-        case ir::BoxingUnboxingFlags::BOX_TO_DOUBLE:
-            callBox(Signatures::BUILTIN_DOUBLE_VALUE_OF, Checker()->GlobalDoubleType());
-            return;
-        default:
-            ES2PANDA_UNREACHABLE();
-    }
-}
-
-// NOTE(vpukhov): #20510 should be available only as a part of ApplyBoxingConversion
-void ETSGen::EmitBoxingConversion(const ir::AstNode *node)
-{
-    auto boxingFlag =
-        static_cast<ir::BoxingUnboxingFlags>(ir::BoxingUnboxingFlags::BOXING_FLAG & node->GetBoxingUnboxingFlags());
-
-    RegScope rs(this);
-
-    ApplyCastToBoxingFlags(node, boxingFlag);
-
-    EmitBoxingConversion(boxingFlag, node);
-
-    if (node->IsExpression()) {
-        auto boxedType = const_cast<checker::Type *>(GetAccumulatorType());
-        const_cast<ir::Expression *>(node->AsExpression())->SetTsType(boxedType);
     }
 }
 
@@ -1361,11 +972,6 @@ void ETSGen::CastToBoolean([[maybe_unused]] const ir::AstNode *node)
             Sa().Emit<I32tou1>(node);
             break;
         }
-        case checker::TypeFlag::ETS_DYNAMIC_TYPE: {
-            CastDynamicTo(node, checker::TypeFlag::ETS_BOOLEAN);
-            ES2PANDA_ASSERT(GetAccumulatorType() == Checker()->GlobalETSBooleanType());
-            break;
-        }
         default: {
             ES2PANDA_UNREACHABLE();
         }
@@ -1400,11 +1006,6 @@ void ETSGen::CastToByte([[maybe_unused]] const ir::AstNode *node)
             Sa().Emit<F32toi32>(node);
             Sa().Emit<I32toi8>(node);
             break;
-        }
-        case checker::TypeFlag::ETS_DYNAMIC_TYPE: {
-            CastDynamicTo(node, checker::TypeFlag::DOUBLE);
-            ES2PANDA_ASSERT(GetAccumulatorType() == Checker()->GlobalDoubleType());
-            [[fallthrough]];
         }
         case checker::TypeFlag::DOUBLE: {
             Sa().Emit<F64toi32>(node);
@@ -1454,11 +1055,6 @@ void ETSGen::CastToChar([[maybe_unused]] const ir::AstNode *node)
             Sa().Emit<I32tou16>(node);
             break;
         }
-        case checker::TypeFlag::ETS_DYNAMIC_TYPE: {
-            CastDynamicTo(node, checker::TypeFlag::DOUBLE);
-            ES2PANDA_ASSERT(GetAccumulatorType() == Checker()->GlobalDoubleType());
-            [[fallthrough]];
-        }
         case checker::TypeFlag::DOUBLE: {
             Sa().Emit<F64toi32>(node);
             Sa().Emit<I32tou16>(node);
@@ -1503,11 +1099,6 @@ void ETSGen::CastToShort([[maybe_unused]] const ir::AstNode *node)
             Sa().Emit<F32toi32>(node);
             Sa().Emit<I32toi16>(node);
             break;
-        }
-        case checker::TypeFlag::ETS_DYNAMIC_TYPE: {
-            CastDynamicTo(node, checker::TypeFlag::DOUBLE);
-            ES2PANDA_ASSERT(GetAccumulatorType() == Checker()->GlobalDoubleType());
-            [[fallthrough]];
         }
         case checker::TypeFlag::DOUBLE: {
             Sa().Emit<F64toi32>(node);
@@ -1555,11 +1146,6 @@ void ETSGen::CastToDouble(const ir::AstNode *node)
         case checker::TypeFlag::ETS_OBJECT: {
             break;
         }
-        case checker::TypeFlag::ETS_DYNAMIC_TYPE: {
-            CastDynamicTo(node, checker::TypeFlag::DOUBLE);
-            ES2PANDA_ASSERT(GetAccumulatorType() == Checker()->GlobalDoubleType());
-            break;
-        }
         default: {
             ES2PANDA_UNREACHABLE();
         }
@@ -1589,11 +1175,6 @@ void ETSGen::CastToFloat(const ir::AstNode *node)
         case checker::TypeFlag::LONG: {
             Sa().Emit<I64tof32>(node);
             break;
-        }
-        case checker::TypeFlag::ETS_DYNAMIC_TYPE: {
-            CastDynamicTo(node, checker::TypeFlag::DOUBLE);
-            ES2PANDA_ASSERT(GetAccumulatorType() == Checker()->GlobalDoubleType());
-            [[fallthrough]];
         }
         case checker::TypeFlag::DOUBLE: {
             Sa().Emit<F64tof32>(node);
@@ -1632,11 +1213,6 @@ void ETSGen::CastToLong(const ir::AstNode *node)
             Sa().Emit<F32toi64>(node);
             break;
         }
-        case checker::TypeFlag::ETS_DYNAMIC_TYPE: {
-            CastDynamicTo(node, checker::TypeFlag::DOUBLE);
-            ES2PANDA_ASSERT(GetAccumulatorType() == Checker()->GlobalDoubleType());
-            [[fallthrough]];
-        }
         case checker::TypeFlag::DOUBLE: {
             Sa().Emit<F64toi64>(node);
             break;
@@ -1674,11 +1250,6 @@ void ETSGen::CastToInt(const ir::AstNode *node)
             Sa().Emit<F32toi32>(node);
             break;
         }
-        case checker::TypeFlag::ETS_DYNAMIC_TYPE: {
-            CastDynamicTo(node, checker::TypeFlag::DOUBLE);
-            ES2PANDA_ASSERT(GetAccumulatorType() == Checker()->GlobalDoubleType());
-            [[fallthrough]];
-        }
         case checker::TypeFlag::DOUBLE: {
             Sa().Emit<F64toi32>(node);
             break;
@@ -1698,21 +1269,6 @@ void ETSGen::CastToReftype(const ir::AstNode *const node, const checker::Type *c
 {
     ES2PANDA_ASSERT(GetAccumulatorType()->IsETSReferenceType());
 
-    const auto *const sourceType = GetAccumulatorType();
-
-    if (sourceType->IsETSDynamicType()) {
-        CastDynamicToObject(node, targetType);
-        return;
-    }
-    if (targetType->IsETSDynamicType()) {
-        CastToDynamic(node, targetType->AsETSDynamicType());
-        return;
-    }
-
-    if (targetType->IsETSStringType() && !sourceType->IsETSStringType()) {
-        CastToString(node);
-    }
-
     if (!unchecked) {
         CheckedReferenceNarrowing(node, targetType);
         return;
@@ -1722,174 +1278,6 @@ void ETSGen::CastToReftype(const ir::AstNode *const node, const checker::Type *c
                     !targetType->IsETSPartialTypeParameter());
     CheckedReferenceNarrowing(node, targetType);
     SetAccumulatorType(targetType);
-}
-
-void ETSGen::CastDynamicToObject(const ir::AstNode *node, const checker::Type *targetType)
-{
-    if (targetType->IsETSStringType()) {
-        CastDynamicTo(node, checker::TypeFlag::STRING);
-        CheckedReferenceNarrowing(node, targetType);
-        SetAccumulatorType(targetType);
-        return;
-    }
-
-    // NOTE(vpukhov): #14626 remove, replace targetType with interface
-    if (targetType->IsLambdaObject()) {
-        RegScope rs(this);
-        VReg dynObjReg = AllocReg();
-        StoreAccumulator(node, dynObjReg);
-        Ra().Emit<InitobjShort>(node, targetType->AsETSObjectType()->ConstructSignatures()[0]->InternalName(),
-                                dynObjReg, dummyReg_);
-        SetAccumulatorType(targetType);
-        return;
-    }
-
-    if (targetType == Checker()->GlobalETSObjectType()) {
-        SetAccumulatorType(targetType);
-        return;
-    }
-
-    if (targetType->IsETSDynamicType()) {
-        SetAccumulatorType(targetType);
-        return;
-    }
-
-    // should be valid only for Object and [] types, other are workarounds
-    // the DefinitelyETSNullish function has been used to add handling for null and undefined cases,
-    // and this function will need to be refactored in the future.
-    if (targetType->IsETSArrayType() || targetType->IsETSObjectType() || targetType->IsETSTypeParameter() ||
-        targetType->IsETSUnionType() || targetType->IsETSFunctionType() || targetType->DefinitelyETSNullish() ||
-        targetType->IsETSTupleType()) {
-        auto lang = GetAccumulatorType()->AsETSDynamicType()->Language();
-        auto methodName = compiler::Signatures::Dynamic::GetObjectBuiltin(lang);
-
-        RegScope rs(this);
-        VReg dynObjReg = AllocReg();
-        StoreAccumulator(node, dynObjReg);
-
-        // try internal checkcast
-        VReg typeReg = AllocReg();
-        auto assemblerType = ToAssemblerType(targetType);
-        Sa().Emit<LdaType>(node, assemblerType);
-        StoreAccumulator(node, typeReg);
-
-        Ra().Emit<CallShort, 2U>(node, methodName, dynObjReg, typeReg);
-        Sa().Emit<Checkcast>(node, assemblerType);  // trick verifier
-        SetAccumulatorType(targetType);
-        return;
-    }
-
-    ES2PANDA_UNREACHABLE();
-}
-
-void ETSGen::CastToString(const ir::AstNode *const node)
-{
-    const auto *const sourceType = GetAccumulatorType();
-    if (sourceType->IsETSStringType()) {
-        return;
-    }
-    if (sourceType->IsETSCharType()) {
-        Ra().Emit<CallVirtAccShort, 0>(node, Signatures::BUILTIN_OBJECT_TO_STRING, dummyReg_, 0);
-        return;
-    }
-    if (sourceType->IsETSPrimitiveType()) {
-        EmitBoxingConversion(node);
-    } else {
-        ES2PANDA_ASSERT(sourceType->IsETSReferenceType());
-    }
-    // caller must ensure parameter is not null
-    Ra().Emit<CallVirtAccShort, 0>(node, Signatures::BUILTIN_OBJECT_TO_STRING, dummyReg_, 0);
-    SetAccumulatorType(Checker()->GetGlobalTypesHolder()->GlobalETSStringBuiltinType());
-}
-
-void ETSGen::CastToDynamic(const ir::AstNode *node, const checker::ETSDynamicType *type)
-{
-    std::string_view methodName {};
-    auto typeKind = checker::ETSChecker::TypeKind(GetAccumulatorType());
-    switch (typeKind) {
-        case checker::TypeFlag::ETS_BOOLEAN:
-            methodName = compiler::Signatures::Dynamic::NewBooleanBuiltin(type->Language());
-            break;
-        case checker::TypeFlag::CHAR:
-        case checker::TypeFlag::BYTE:
-        case checker::TypeFlag::SHORT:
-        case checker::TypeFlag::INT:
-        case checker::TypeFlag::LONG:
-        case checker::TypeFlag::FLOAT:
-        case checker::TypeFlag::DOUBLE:
-            CastToDouble(node);
-            methodName = compiler::Signatures::Dynamic::NewDoubleBuiltin(type->Language());
-            break;
-        case checker::TypeFlag::ETS_OBJECT:
-        case checker::TypeFlag::ETS_TYPE_PARAMETER:
-        case checker::TypeFlag::ETS_NONNULLISH:
-        case checker::TypeFlag::ETS_PARTIAL_TYPE_PARAMETER:
-        case checker::TypeFlag::ETS_UNION:  // NOTE(vpukhov): refine dynamic type cast rules
-            if (GetAccumulatorType()->IsETSStringType()) {
-                methodName = compiler::Signatures::Dynamic::NewStringBuiltin(type->Language());
-                break;
-            }
-            [[fallthrough]];
-        case checker::TypeFlag::FUNCTION:
-            ES2PANDA_ASSERT(!GetAccumulatorType()->IsETSMethodType());
-            [[fallthrough]];
-        case checker::TypeFlag::ETS_ARRAY:
-        case checker::TypeFlag::ETS_TUPLE:
-            methodName = compiler::Signatures::Dynamic::NewObjectBuiltin(type->Language());
-            break;
-        case checker::TypeFlag::ETS_DYNAMIC_TYPE:
-            SetAccumulatorType(type);
-            return;
-        default:
-            ES2PANDA_UNREACHABLE();
-    }
-
-    ES2PANDA_ASSERT(!methodName.empty());
-
-    RegScope rs(this);
-    // Load value
-    VReg valReg = AllocReg();
-    StoreAccumulator(node, valReg);
-
-    // Create new JSValue and initialize it
-    Ra().Emit<CallShort, 1>(node, methodName, valReg, dummyReg_);
-    SetAccumulatorType(Checker()->GlobalBuiltinDynamicType(type->Language()));
-}
-
-void ETSGen::CastDynamicTo(const ir::AstNode *node, enum checker::TypeFlag typeFlag)
-{
-    std::string_view methodName {};
-    checker::Type *objectType {};
-    auto type = GetAccumulatorType()->AsETSDynamicType();
-    switch (typeFlag) {
-        case checker::TypeFlag::ETS_BOOLEAN: {
-            methodName = compiler::Signatures::Dynamic::GetBooleanBuiltin(type->Language());
-            objectType = Checker()->GlobalETSBooleanType();
-            break;
-        }
-        case checker::TypeFlag::DOUBLE: {
-            methodName = compiler::Signatures::Dynamic::GetDoubleBuiltin(type->Language());
-            objectType = Checker()->GlobalDoubleType();
-            break;
-        }
-        case checker::TypeFlag::STRING: {
-            methodName = compiler::Signatures::Dynamic::GetStringBuiltin(type->Language());
-            objectType = Checker()->GlobalBuiltinETSStringType();
-            break;
-        }
-        default: {
-            ES2PANDA_UNREACHABLE();
-        }
-    }
-
-    RegScope rs(this);
-    // Load dynamic object
-    VReg dynObjReg = AllocReg();
-    StoreAccumulator(node, dynObjReg);
-
-    // Get value from dynamic object
-    Ra().Emit<CallShort, 1>(node, methodName, dynObjReg, dummyReg_);
-    SetAccumulatorType(objectType);
 }
 
 void ETSGen::ToBinaryResult(const ir::AstNode *node, Label *ifFalse)
@@ -2160,7 +1548,7 @@ void ETSGen::ResolveConditionalResultReference(const ir::AstNode *node)
     compiler::VReg objReg = AllocReg();
     StoreAccumulator(node, objReg);
 
-    Sa().Emit<Isinstance>(node, Checker()->GlobalBuiltinETSStringType()->AssemblerName());
+    EmitIsInstance(node, Checker()->GlobalBuiltinETSStringType()->AssemblerName());
     BranchIfTrue(node, isString);
     Sa().Emit<Ldai>(node, 1);
     Branch(node, end);
@@ -2336,10 +1724,9 @@ void ETSGen::BranchIfNotNullish(const ir::AstNode *node, Label *ifNotNullish)
 void ETSGen::AssumeNonNullish(const ir::AstNode *node, checker::Type const *targetType)
 {
     auto const *nullishType = GetAccumulatorType();
-    if (nullishType->PossiblyETSNull() &&
-        ToAssemblerType(targetType) != ToAssemblerType(Checker()->GlobalETSObjectType())) {
+    if (nullishType->PossiblyETSNull()) {
         // clear 'null' dataflow
-        Sa().Emit<Checkcast>(node, ToAssemblerType(targetType));
+        EmitCheckCast(node, ToAssemblerType(targetType));
     }
     SetAccumulatorType(targetType);
 }
@@ -2355,14 +1742,6 @@ void ETSGen::EmitNullishException(const ir::AstNode *node)
     CallExact(node, Signatures::BUILTIN_NULLPOINTER_ERROR_CTOR, exception, undef, undef);
     EmitThrow(node, exception);
     SetAccumulatorType(nullptr);
-}
-
-template <bool IS_STRICT>
-void ETSGen::RefEqualityLooseDynamic(const ir::AstNode *node, VReg lhs, VReg rhs, Label *ifFalse)
-{
-    // NOTE(vpukhov): implement
-    EmitEtsEquals<IS_STRICT>(node, lhs, rhs);
-    BranchIfFalse(node, ifFalse);
 }
 
 template <typename IntCompare, typename CondCompare, typename DynCompare, bool IS_STRICT>
@@ -2635,22 +2014,8 @@ void ETSGen::RefEqualityLoose(const ir::AstNode *node, VReg lhs, VReg rhs, Label
     auto *checker = const_cast<checker::ETSChecker *>(Checker());
     auto ltype = checker->GetNonConstantType(const_cast<checker::Type *>(GetVRegType(lhs)));
     auto rtype = checker->GetNonConstantType(const_cast<checker::Type *>(GetVRegType(rhs)));
-    if (ltype->IsETSDynamicType() || rtype->IsETSDynamicType()) {
-        RefEqualityLooseDynamic<IS_STRICT>(node, lhs, rhs, ifFalse);
-        return;
-    }
-
     if (ltype->DefinitelyETSNullish() || rtype->DefinitelyETSNullish()) {
         HandleDefinitelyNullishEquality<IS_STRICT>(node, lhs, rhs, ifFalse);
-    } else if (!ltype->PossiblyETSValueTypedExceptNullish() || !rtype->PossiblyETSValueTypedExceptNullish()) {
-        auto ifTrue = AllocLabel();
-        if ((ltype->PossiblyETSUndefined() && rtype->PossiblyETSNull()) ||
-            (rtype->PossiblyETSUndefined() && ltype->PossiblyETSNull())) {
-            HandlePossiblyNullishEquality(node, lhs, rhs, ifFalse, ifTrue);
-        }
-        LoadAccumulator(node, lhs);
-        Ra().Emit<JneObj>(node, rhs, ifFalse);
-        SetLabel(node, ifTrue);
     } else if (auto spec = SelectLooseObjComparator(  // try to select specific type
                                                       // CC-OFFNXT(G.FMT.06-CPP) project code style
                    const_cast<checker::ETSChecker *>(Checker()), const_cast<checker::Type *>(ltype),
@@ -2714,7 +2079,6 @@ void ETSGen::Negate(const ir::AstNode *node)
 
 void ETSGen::LogicalNot(const ir::AstNode *node)
 {
-    ES2PANDA_ASSERT(GetAccumulatorType()->IsConditionalExprType());
     ResolveConditionalResultIfFalse<true, false>(node);
     Sa().Emit<Xori>(node, 1);
     SetAccumulatorType(Checker()->GlobalETSBooleanType());
@@ -3075,6 +2439,21 @@ void ETSGen::NewArray(const ir::AstNode *const node, const VReg arr, const VReg 
     SetVRegType(arr, arrType);
 }
 
+void ETSGen::LoadResizableArrayLength(const ir::AstNode *node)
+{
+    Ra().Emit<CallAccShort, 0>(node, Signatures::BUILTIN_ARRAY_LENGTH, dummyReg_, 0);
+    Sa().Emit<F64toi32>(node);
+    SetAccumulatorType(Checker()->GlobalIntType());
+}
+
+void ETSGen::LoadResizableArrayElement(const ir::AstNode *node, const VReg arrObj, const VReg arrIndex)
+{
+    auto *vRegType = GetVRegType(arrObj);
+    auto *elementType = vRegType->AsETSResizableArrayType()->ElementType();
+    Ra().Emit<CallVirtShort>(node, Signatures::BUILTIN_ARRAY_GET_ELEMENT, arrObj, arrIndex);
+    SetAccumulatorType(elementType);
+}
+
 void ETSGen::LoadArrayLength(const ir::AstNode *node, VReg arrayReg)
 {
     Ra().Emit<Lenarr>(node, arrayReg);
@@ -3252,10 +2631,14 @@ void ETSGen::DoubleIsNaN(const ir::AstNode *node)
     SetAccumulatorType(Checker()->GlobalETSBooleanType());
 }
 
-void ETSGen::LoadStringChar(const ir::AstNode *node, const VReg stringObj, const VReg charIndex)
+void ETSGen::LoadStringChar(const ir::AstNode *node, const VReg stringObj, const VReg charIndex, bool needBox)
 {
     Ra().Emit<CallShort>(node, Signatures::BUILTIN_STRING_CHAR_AT, stringObj, charIndex);
     SetAccumulatorType(Checker()->GlobalCharType());
+    if (needBox) {
+        Ra().Emit<CallAccShort, 0>(node, Signatures::BUILTIN_CHAR_VALUE_OF, dummyReg_, 0);
+        SetAccumulatorType(Checker()->GlobalCharBuiltinType());
+    }
 }
 
 void ETSGen::ThrowException(const ir::Expression *expr)

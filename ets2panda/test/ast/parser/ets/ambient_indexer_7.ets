@@ -26,5 +26,5 @@ declare class A {
 /* @@@ label2 Error SyntaxError: Return type of index signature from exported class or interface need to be identifier.  */
 /* @@@ label3 Error SyntaxError: Unexpected token 'function'.  */
 /* @@@ label5 Error TypeError: Native and Declare methods should have explicit return type.  */
-/* @@@ label4 Error SyntaxError: Expected '}', got 'eos'.  */
+/* @@@ label4 Error SyntaxError: Expected '}', got 'end of stream'.  */
 /* @@ label4 */

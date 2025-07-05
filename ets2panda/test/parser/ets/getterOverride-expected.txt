@@ -132,13 +132,13 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 19,
-                "column": 1,
+                "line": 18,
+                "column": 15,
                 "program": "getterOverride.ets"
               },
               "end": {
                 "line": 18,
-                "column": 15,
+                "column": 26,
                 "program": "getterOverride.ets"
               }
             }
@@ -670,12 +670,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "getterOverride.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "getterOverride.ets"
                     }
                   }
                 },
@@ -683,12 +683,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "getterOverride.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "getterOverride.ets"
                   }
                 }
               },
@@ -696,12 +696,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "getterOverride.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "getterOverride.ets"
                 }
               }
             },
@@ -776,12 +776,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "getterOverride.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "getterOverride.ets"
                     }
                   }
                 },
@@ -789,12 +789,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "getterOverride.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "getterOverride.ets"
                   }
                 }
               },
@@ -802,12 +802,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "getterOverride.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "getterOverride.ets"
                 }
               }
             },

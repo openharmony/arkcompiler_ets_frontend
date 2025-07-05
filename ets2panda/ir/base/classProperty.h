@@ -19,6 +19,7 @@
 #include "ir/base/classElement.h"
 #include "ir/statements/annotationUsage.h"
 #include "ir/annotationAllowed.h"
+#include "ir/jsDocAllowed.h"
 
 namespace ark::es2panda::checker {
 class ETSAnalyzer;
@@ -28,7 +29,7 @@ namespace ark::es2panda::ir {
 class Expression;
 class TypeNode;
 
-class ClassProperty : public AnnotationAllowed<ClassElement> {
+class ClassProperty : public JsDocAllowed<AnnotationAllowed<ClassElement>> {
 public:
     ClassProperty() = delete;
     ~ClassProperty() override = default;
@@ -38,30 +39,25 @@ public:
     // CC-OFFNXT(G.FUN.01-CPP) solid logic
     explicit ClassProperty(Expression *const key, Expression *const value, TypeNode *const typeAnnotation,
                            ModifierFlags const modifiers, ArenaAllocator *const allocator, bool const isComputed)
-        : AnnotationAllowed<ClassElement>(AstNodeType::CLASS_PROPERTY, key, value, modifiers, allocator, isComputed),
+        : JsDocAllowed<AnnotationAllowed<ClassElement>>(AstNodeType::CLASS_PROPERTY, key, value, modifiers, allocator,
+                                                        isComputed),
           typeAnnotation_(typeAnnotation)
     {
     }
 
     [[nodiscard]] bool IsDefaultAccessModifier() const noexcept
     {
-        return isDefault_;
+        return GetHistoryNodeAs<ClassProperty>()->isDefault_;
     }
 
-    void SetDefaultAccessModifier(bool isDefault)
-    {
-        isDefault_ = isDefault;
-    }
+    void SetDefaultAccessModifier(bool isDefault);
 
     [[nodiscard]] TypeNode *TypeAnnotation() const noexcept
     {
-        return typeAnnotation_;
+        return GetHistoryNodeAs<ClassProperty>()->typeAnnotation_;
     }
 
-    void SetTypeAnnotation(TypeNode *typeAnnotation) noexcept
-    {
-        typeAnnotation_ = typeAnnotation;
-    }
+    void SetTypeAnnotation(TypeNode *typeAnnotation);
 
     [[nodiscard]] PrivateFieldKind ToPrivateFieldKind(bool const isStatic) const override
     {
@@ -85,10 +81,31 @@ public:
         v->Accept(this);
     }
 
+    [[nodiscard]] bool NeedInitInStaticBlock() const
+    {
+        return needInitInStaticBlock_;
+    }
+
+    void SetInitInStaticBlock(bool needInitInStaticBlock)
+    {
+        needInitInStaticBlock_ = needInitInStaticBlock;
+    }
+
+protected:
+    ClassProperty *Construct(ArenaAllocator *allocator) override;
+    void CopyTo(AstNode *other) const override;
+
 private:
     void DumpPrefix(ir::SrcDumper *dumper) const;
+    void DumpModifiers(ir::SrcDumper *dumper) const;
+    bool RegisterUnexportedForDeclGen(ir::SrcDumper *dumper) const;
+    bool DumpNamespaceForDeclGen(ir::SrcDumper *dumper) const;
+    void DumpCheckerTypeForDeclGen(ir::SrcDumper *dumper) const;
+
+    friend class SizeOfNodeTest;
     TypeNode *typeAnnotation_;
     bool isDefault_ = false;
+    bool needInitInStaticBlock_ = false;
 };
 }  // namespace ark::es2panda::ir
 

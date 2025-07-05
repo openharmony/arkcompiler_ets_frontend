@@ -29,23 +29,6 @@ std::string_view OptionalLowering::Name() const
     return "OptionalLowering";
 }
 
-static ir::AstNode *RefineSourceRanges(ir::AstNode *node)
-{
-    auto const isDummyLoc = [](lexer::SourceRange const &range) {
-        return range.start.index == 0 && range.start.line == 0;
-    };
-
-    auto const refine = [isDummyLoc](ir::AstNode *n) {
-        if (isDummyLoc(n->Range())) {
-            n->SetRange(n->Parent()->Range());
-        };
-    };
-
-    refine(node);
-    node->IterateRecursively(refine);
-    return node;
-}
-
 template <typename Expr, typename GetSource, typename SetSource>
 static ir::AstNode *LowerOptionalExpr(GetSource const &getSource, SetSource const &setSource, public_lib::Context *ctx,
                                       Expr *const expr, ir::ChainExpression *const chain)

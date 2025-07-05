@@ -1,3 +1,4 @@
+/* @@ label2 */
 /*
  * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,5 +22,6 @@ enum Date {
     Day = /* @@ label1 */Date.now()
 }
 
-/* @@@ label Error SyntaxError: Invalid enum initialization value  */
-/* @@@ label1 Error SyntaxError: Invalid enum initialization value  */
+/* @@@ label Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type.  */
+/* @@@ label1 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type.  */
+/* @@@ label2 Error TypeError: Class 'Date' is already defined with different type.  */

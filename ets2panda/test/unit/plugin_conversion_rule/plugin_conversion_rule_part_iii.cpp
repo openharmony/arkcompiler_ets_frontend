@@ -206,38 +206,6 @@ TEST_F(PluginConversionRuleUnitTest, SourcePositionInputParameter)
     EXPECT_TRUE(HasMatched(targetAPIWithNoSpace));
 }
 
-// apiName: AstNodeStartConst
-TEST_F(PluginConversionRuleUnitTest, SourcePositionPtrReturnValue)
-{
-    std::string targetCAPI {R"(
-    extern "C" const es2panda_SourcePosition *AstNodeStartConst([[maybe_unused]] es2panda_Context *context,
-    es2panda_AstNode *classInstance/*return_args:*/)
-    {
-        auto apiRes = reinterpret_cast<const es2panda_SourcePosition *>(reinterpret_cast<Context *>(context)->
-        allocator->New<lexer::SourcePosition>(((reinterpret_cast<const ir::AstNode *>(classInstance))->Start())));
-    	return apiRes;
-    })"};
-
-    std::string targetAPIWithNoSpace = RemoveWhitespace(targetCAPI);
-    EXPECT_TRUE(HasMatched(targetAPIWithNoSpace));
-}
-
-// apiName: AstNodeRangeConst
-TEST_F(PluginConversionRuleUnitTest, SourceRangePtrInputParameter)
-{
-    std::string targetCAPI {R"(
-    extern "C" const es2panda_SourceRange *AstNodeRangeConst([[maybe_unused]] es2panda_Context *context,
-    es2panda_AstNode *classInstance/*return_args:*/)
-    {
-        auto apiRes = reinterpret_cast<const es2panda_SourceRange *>(reinterpret_cast<Context *>(context)->allocator->
-                   New<lexer::SourceRange>(((reinterpret_cast<const ir::AstNode *>(classInstance))->Range())));
-    	return apiRes;
-    })"};
-
-    std::string targetAPIWithNoSpace = RemoveWhitespace(targetCAPI);
-    EXPECT_TRUE(HasMatched(targetAPIWithNoSpace));
-}
-
 // apiName: MemberExpressionCompileToRegConst
 TEST_F(PluginConversionRuleUnitTest, VRegInputParameter)
 {

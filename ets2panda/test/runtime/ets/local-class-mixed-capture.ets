@@ -23,7 +23,7 @@ function main() : int
     {
         local_method()
         {
-            assertEQ(i, 1)
+            arktest.assertEQ(i, 1)
         }
     }
 
@@ -31,7 +31,7 @@ function main() : int
     {
         local_method()
         {
-            assertEQ(i, 1)
+            arktest.assertEQ(i, 1)
             i = 2;
         }
     }
@@ -41,6 +41,6 @@ function main() : int
 
     let blc = new BoxingLocalClass();
     blc.local_method();
-    assertEQ(i, 2)
+    arktest.assertEQ(i, 2)
     return 0;
 }

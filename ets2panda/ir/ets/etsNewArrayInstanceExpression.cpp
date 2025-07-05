@@ -16,6 +16,7 @@
 #include "etsNewArrayInstanceExpression.h"
 
 #include "checker/ETSchecker.h"
+#include "checker/ets/typeRelationContext.h"
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
@@ -100,5 +101,42 @@ ETSNewArrayInstanceExpression *ETSNewArrayInstanceExpression::Clone(ArenaAllocat
     clone->SetRange(Range());
 
     return clone;
+}
+
+void ETSNewArrayInstanceExpression::ClearPreferredType()
+{
+    SetPreferredType(nullptr);
+    SetTsType(nullptr);
+}
+
+void ETSNewArrayInstanceExpression::CleanCheckInformation()
+{
+    SetPreferredType(nullptr);
+    SetTsType(nullptr);
+    if (dimension_ != nullptr) {
+        dimension_->CleanCheckInformation();
+    }
+}
+
+void ETSNewArrayInstanceExpression::SetPreferredTypeBasedOnFuncParam(checker::ETSChecker *checker, checker::Type *param,
+                                                                     checker::TypeRelationFlag flags)
+{
+    // NOTE (mmartin): This needs a complete solution
+    if (PreferredType() != nullptr) {
+        return;
+    }
+
+    if (!param->IsETSArrayType()) {
+        return;
+    }
+
+    auto *elementType = param->AsETSArrayType()->ElementType();
+
+    auto assignCtx =
+        checker::AssignmentContext(checker->Relation(), typeReference_, typeReference_->GetType(checker), elementType,
+                                   typeReference_->Start(), std::nullopt, checker::TypeRelationFlag::NO_THROW | flags);
+    if (assignCtx.IsAssignable()) {
+        SetPreferredType(param);
+    }
 }
 }  // namespace ark::es2panda::ir

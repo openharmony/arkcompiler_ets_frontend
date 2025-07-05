@@ -24,27 +24,47 @@
                 {
                     "start": 622,
                     "end": 622,
-                    "replacementText": "public readonly x: number;\nprotected y: number;\nprivate z: number;\n"
+                    "replacementText": "public readonly x: number;\nprotected y: number;\nprivate z: number;\n",
+                    "line": 20,
+                    "column": 5,
+                    "endLine": 20,
+                    "endColumn": 12
                 },
                 {
                     "start": 639,
                     "end": 664,
-                    "replacementText": "x: number"
+                    "replacementText": "x: number",
+                    "line": 20,
+                    "column": 5,
+                    "endLine": 20,
+                    "endColumn": 12
                 },
                 {
                     "start": 670,
                     "end": 689,
-                    "replacementText": "y: number"
+                    "replacementText": "y: number",
+                    "line": 20,
+                    "column": 5,
+                    "endLine": 20,
+                    "endColumn": 12
                 },
                 {
                     "start": 695,
                     "end": 712,
-                    "replacementText": "z: number"
+                    "replacementText": "z: number",
+                    "line": 20,
+                    "column": 5,
+                    "endLine": 20,
+                    "endColumn": 12
                 },
                 {
                     "start": 717,
                     "end": 719,
-                    "replacementText": "{\n    this.x = x;\n    this.y = y;\n    this.z = z;\n}"
+                    "replacementText": "{\n    this.x = x;\n    this.y = y;\n    this.z = z;\n}",
+                    "line": 20,
+                    "column": 5,
+                    "endLine": 20,
+                    "endColumn": 12
                 }
             ],
             "suggest": "",
@@ -61,27 +81,47 @@
                 {
                     "start": 622,
                     "end": 622,
-                    "replacementText": "public readonly x: number;\nprotected y: number;\nprivate z: number;\n"
+                    "replacementText": "public readonly x: number;\nprotected y: number;\nprivate z: number;\n",
+                    "line": 20,
+                    "column": 5,
+                    "endLine": 20,
+                    "endColumn": 12
                 },
                 {
                     "start": 639,
                     "end": 664,
-                    "replacementText": "x: number"
+                    "replacementText": "x: number",
+                    "line": 20,
+                    "column": 5,
+                    "endLine": 20,
+                    "endColumn": 12
                 },
                 {
                     "start": 670,
                     "end": 689,
-                    "replacementText": "y: number"
+                    "replacementText": "y: number",
+                    "line": 20,
+                    "column": 5,
+                    "endLine": 20,
+                    "endColumn": 12
                 },
                 {
                     "start": 695,
                     "end": 712,
-                    "replacementText": "z: number"
+                    "replacementText": "z: number",
+                    "line": 20,
+                    "column": 5,
+                    "endLine": 20,
+                    "endColumn": 12
                 },
                 {
                     "start": 717,
                     "end": 719,
-                    "replacementText": "{\n    this.x = x;\n    this.y = y;\n    this.z = z;\n}"
+                    "replacementText": "{\n    this.x = x;\n    this.y = y;\n    this.z = z;\n}",
+                    "line": 20,
+                    "column": 5,
+                    "endLine": 20,
+                    "endColumn": 12
                 }
             ],
             "suggest": "",
@@ -98,31 +138,145 @@
                 {
                     "start": 622,
                     "end": 622,
-                    "replacementText": "public readonly x: number;\nprotected y: number;\nprivate z: number;\n"
+                    "replacementText": "public readonly x: number;\nprotected y: number;\nprivate z: number;\n",
+                    "line": 20,
+                    "column": 5,
+                    "endLine": 20,
+                    "endColumn": 12
                 },
                 {
                     "start": 639,
                     "end": 664,
-                    "replacementText": "x: number"
+                    "replacementText": "x: number",
+                    "line": 20,
+                    "column": 5,
+                    "endLine": 20,
+                    "endColumn": 12
                 },
                 {
                     "start": 670,
                     "end": 689,
-                    "replacementText": "y: number"
+                    "replacementText": "y: number",
+                    "line": 20,
+                    "column": 5,
+                    "endLine": 20,
+                    "endColumn": 12
                 },
                 {
                     "start": 695,
                     "end": 712,
-                    "replacementText": "z: number"
+                    "replacementText": "z: number",
+                    "line": 20,
+                    "column": 5,
+                    "endLine": 20,
+                    "endColumn": 12
                 },
                 {
                     "start": 717,
                     "end": 719,
-                    "replacementText": "{\n    this.x = x;\n    this.y = y;\n    this.z = z;\n}"
+                    "replacementText": "{\n    this.x = x;\n    this.y = y;\n    this.z = z;\n}",
+                    "line": 20,
+                    "column": 5,
+                    "endLine": 20,
+                    "endColumn": 12
                 }
             ],
             "suggest": "",
             "rule": "Declaring fields in \"constructor\" is not supported (arkts-no-ctor-prop-decls)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 28,
+            "column": 17,
+            "endLine": 28,
+            "endColumn": 18,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 803,
+                    "end": 804,
+                    "replacementText": "1.0",
+                    "line": 28,
+                    "column": 17,
+                    "endLine": 28,
+                    "endColumn": 18
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 28,
+            "column": 20,
+            "endLine": 28,
+            "endColumn": 21,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 806,
+                    "end": 807,
+                    "replacementText": "2.0",
+                    "line": 28,
+                    "column": 20,
+                    "endLine": 28,
+                    "endColumn": 21
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 28,
+            "column": 23,
+            "endLine": 28,
+            "endColumn": 24,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 809,
+                    "end": 810,
+                    "replacementText": "3.0",
+                    "line": 28,
+                    "column": 23,
+                    "endLine": 28,
+                    "endColumn": 24
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 32,
+            "column": 22,
+            "endLine": 32,
+            "endColumn": 24,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 863,
+                    "end": 865,
+                    "replacementText": "10.0",
+                    "line": 32,
+                    "column": 22,
+                    "endLine": 32,
+                    "endColumn": 24
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 34,
+            "column": 33,
+            "endLine": 34,
+            "endColumn": 34,
+            "problem": "DefaultArgsBehindRequiredArgs",
+            "suggest": "",
+            "rule": "Default parameters must be placed after mandatory parameters (arkts-default-args-behind-required-args)",
             "severity": "ERROR"
         },
         {
@@ -135,22 +289,38 @@
                 {
                     "start": 870,
                     "end": 870,
-                    "replacementText": "public w: string;\nprivate readonly r: number[];\n"
+                    "replacementText": "public w: string;\nprivate readonly r: number[];\n",
+                    "line": 34,
+                    "column": 60,
+                    "endLine": 34,
+                    "endColumn": 67
                 },
                 {
                     "start": 893,
                     "end": 913,
-                    "replacementText": "w = 'default'"
+                    "replacementText": "w = 'default'",
+                    "line": 34,
+                    "column": 60,
+                    "endLine": 34,
+                    "endColumn": 67
                 },
                 {
                     "start": 927,
                     "end": 967,
-                    "replacementText": "r: number[] = [1, 2, 3]"
+                    "replacementText": "r: number[] = [1, 2, 3]",
+                    "line": 34,
+                    "column": 60,
+                    "endLine": 34,
+                    "endColumn": 67
                 },
                 {
                     "start": 969,
                     "end": 1021,
-                    "replacementText": "{\n    this.w = w;\n    this.r = r;\n    console.log(q, this.w, e, this.r, this.f);\n}"
+                    "replacementText": "{\n    this.w = w;\n    this.r = r;\n    console.log(q, this.w, e, this.r, this.f);\n}",
+                    "line": 34,
+                    "column": 60,
+                    "endLine": 34,
+                    "endColumn": 67
                 }
             ],
             "suggest": "",
@@ -167,26 +337,126 @@
                 {
                     "start": 870,
                     "end": 870,
-                    "replacementText": "public w: string;\nprivate readonly r: number[];\n"
+                    "replacementText": "public w: string;\nprivate readonly r: number[];\n",
+                    "line": 34,
+                    "column": 60,
+                    "endLine": 34,
+                    "endColumn": 67
                 },
                 {
                     "start": 893,
                     "end": 913,
-                    "replacementText": "w = 'default'"
+                    "replacementText": "w = 'default'",
+                    "line": 34,
+                    "column": 60,
+                    "endLine": 34,
+                    "endColumn": 67
                 },
                 {
                     "start": 927,
                     "end": 967,
-                    "replacementText": "r: number[] = [1, 2, 3]"
+                    "replacementText": "r: number[] = [1, 2, 3]",
+                    "line": 34,
+                    "column": 60,
+                    "endLine": 34,
+                    "endColumn": 67
                 },
                 {
                     "start": 969,
                     "end": 1021,
-                    "replacementText": "{\n    this.w = w;\n    this.r = r;\n    console.log(q, this.w, e, this.r, this.f);\n}"
+                    "replacementText": "{\n    this.w = w;\n    this.r = r;\n    console.log(q, this.w, e, this.r, this.f);\n}",
+                    "line": 34,
+                    "column": 60,
+                    "endLine": 34,
+                    "endColumn": 67
                 }
             ],
             "suggest": "",
             "rule": "Declaring fields in \"constructor\" is not supported (arkts-no-ctor-prop-decls)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 34,
+            "column": 92,
+            "endLine": 34,
+            "endColumn": 93,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 959,
+                    "end": 960,
+                    "replacementText": "1.0",
+                    "line": 34,
+                    "column": 92,
+                    "endLine": 34,
+                    "endColumn": 93
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 34,
+            "column": 95,
+            "endLine": 34,
+            "endColumn": 96,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 962,
+                    "end": 963,
+                    "replacementText": "2.0",
+                    "line": 34,
+                    "column": 95,
+                    "endLine": 34,
+                    "endColumn": 96
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 34,
+            "column": 98,
+            "endLine": 34,
+            "endColumn": 99,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 965,
+                    "end": 966,
+                    "replacementText": "3.0",
+                    "line": 34,
+                    "column": 98,
+                    "endLine": 34,
+                    "endColumn": 99
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 39,
+            "column": 17,
+            "endLine": 39,
+            "endColumn": 18,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1041,
+                    "end": 1042,
+                    "replacementText": "1.0",
+                    "line": 39,
+                    "column": 17,
+                    "endLine": 39,
+                    "endColumn": 18
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -239,16 +509,66 @@
                 {
                     "start": 1139,
                     "end": 1139,
-                    "replacementText": "interface GeneratedTypeLiteralInterface_1 {\n    x: string;\n}\n"
+                    "replacementText": "interface GeneratedTypeLiteralInterface_1 {\n    x: string;\n}\n",
+                    "line": 47,
+                    "column": 44,
+                    "endLine": 47,
+                    "endColumn": 45
                 },
                 {
                     "start": 1192,
                     "end": 1203,
-                    "replacementText": "GeneratedTypeLiteralInterface_1"
+                    "replacementText": "GeneratedTypeLiteralInterface_1",
+                    "line": 47,
+                    "column": 44,
+                    "endLine": 47,
+                    "endColumn": 45
                 }
             ],
             "suggest": "",
             "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 51,
+            "column": 15,
+            "endLine": 51,
+            "endColumn": 16,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1250,
+                    "end": 1251,
+                    "replacementText": "0.0",
+                    "line": 51,
+                    "column": 15,
+                    "endLine": 51,
+                    "endColumn": 16
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 52,
+            "column": 15,
+            "endLine": 52,
+            "endColumn": 16,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1267,
+                    "end": 1268,
+                    "replacementText": "0.0",
+                    "line": 52,
+                    "column": 15,
+                    "endLine": 52,
+                    "endColumn": 16
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -261,17 +581,29 @@
                 {
                     "start": 1275,
                     "end": 1275,
-                    "replacementText": "readonly a: number;\n"
+                    "replacementText": "readonly a: number;\n",
+                    "line": 54,
+                    "column": 15,
+                    "endLine": 54,
+                    "endColumn": 33
                 },
                 {
                     "start": 1287,
                     "end": 1305,
-                    "replacementText": "a: number"
+                    "replacementText": "a: number",
+                    "line": 54,
+                    "column": 15,
+                    "endLine": 54,
+                    "endColumn": 33
                 },
                 {
                     "start": 1307,
                     "end": 1309,
-                    "replacementText": "{\n    this.a = a;\n}"
+                    "replacementText": "{\n    this.a = a;\n}",
+                    "line": 54,
+                    "column": 15,
+                    "endLine": 54,
+                    "endColumn": 33
                 }
             ],
             "suggest": "",
@@ -288,27 +620,47 @@
                 {
                     "start": 1335,
                     "end": 1335,
-                    "replacementText": "readonly aa: number;\nb: number;\npublic c: number;\n"
+                    "replacementText": "readonly aa: number;\nb: number;\npublic c: number;\n",
+                    "line": 61,
+                    "column": 5,
+                    "endLine": 61,
+                    "endColumn": 11
                 },
                 {
                     "start": 1352,
                     "end": 1371,
-                    "replacementText": "aa: number"
+                    "replacementText": "aa: number",
+                    "line": 61,
+                    "column": 5,
+                    "endLine": 61,
+                    "endColumn": 11
                 },
                 {
                     "start": 1377,
                     "end": 1395,
-                    "replacementText": "b: number"
+                    "replacementText": "b: number",
+                    "line": 61,
+                    "column": 5,
+                    "endLine": 61,
+                    "endColumn": 11
                 },
                 {
                     "start": 1401,
                     "end": 1426,
-                    "replacementText": "c: number"
+                    "replacementText": "c: number",
+                    "line": 61,
+                    "column": 5,
+                    "endLine": 61,
+                    "endColumn": 11
                 },
                 {
                     "start": 1430,
                     "end": 1450,
-                    "replacementText": "{\n    super(aa);\n    this.aa = aa;\n    this.b = b;\n    this.c = c;\n}"
+                    "replacementText": "{\n    super(aa);\n    this.aa = aa;\n    this.b = b;\n    this.c = c;\n}",
+                    "line": 61,
+                    "column": 5,
+                    "endLine": 61,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
@@ -325,27 +677,47 @@
                 {
                     "start": 1335,
                     "end": 1335,
-                    "replacementText": "readonly aa: number;\nb: number;\npublic c: number;\n"
+                    "replacementText": "readonly aa: number;\nb: number;\npublic c: number;\n",
+                    "line": 61,
+                    "column": 5,
+                    "endLine": 61,
+                    "endColumn": 11
                 },
                 {
                     "start": 1352,
                     "end": 1371,
-                    "replacementText": "aa: number"
+                    "replacementText": "aa: number",
+                    "line": 61,
+                    "column": 5,
+                    "endLine": 61,
+                    "endColumn": 11
                 },
                 {
                     "start": 1377,
                     "end": 1395,
-                    "replacementText": "b: number"
+                    "replacementText": "b: number",
+                    "line": 61,
+                    "column": 5,
+                    "endLine": 61,
+                    "endColumn": 11
                 },
                 {
                     "start": 1401,
                     "end": 1426,
-                    "replacementText": "c: number"
+                    "replacementText": "c: number",
+                    "line": 61,
+                    "column": 5,
+                    "endLine": 61,
+                    "endColumn": 11
                 },
                 {
                     "start": 1430,
                     "end": 1450,
-                    "replacementText": "{\n    super(aa);\n    this.aa = aa;\n    this.b = b;\n    this.c = c;\n}"
+                    "replacementText": "{\n    super(aa);\n    this.aa = aa;\n    this.b = b;\n    this.c = c;\n}",
+                    "line": 61,
+                    "column": 5,
+                    "endLine": 61,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
@@ -362,27 +734,47 @@
                 {
                     "start": 1335,
                     "end": 1335,
-                    "replacementText": "readonly aa: number;\nb: number;\npublic c: number;\n"
+                    "replacementText": "readonly aa: number;\nb: number;\npublic c: number;\n",
+                    "line": 61,
+                    "column": 5,
+                    "endLine": 61,
+                    "endColumn": 11
                 },
                 {
                     "start": 1352,
                     "end": 1371,
-                    "replacementText": "aa: number"
+                    "replacementText": "aa: number",
+                    "line": 61,
+                    "column": 5,
+                    "endLine": 61,
+                    "endColumn": 11
                 },
                 {
                     "start": 1377,
                     "end": 1395,
-                    "replacementText": "b: number"
+                    "replacementText": "b: number",
+                    "line": 61,
+                    "column": 5,
+                    "endLine": 61,
+                    "endColumn": 11
                 },
                 {
                     "start": 1401,
                     "end": 1426,
-                    "replacementText": "c: number"
+                    "replacementText": "c: number",
+                    "line": 61,
+                    "column": 5,
+                    "endLine": 61,
+                    "endColumn": 11
                 },
                 {
                     "start": 1430,
                     "end": 1450,
-                    "replacementText": "{\n    super(aa);\n    this.aa = aa;\n    this.b = b;\n    this.c = c;\n}"
+                    "replacementText": "{\n    super(aa);\n    this.aa = aa;\n    this.b = b;\n    this.c = c;\n}",
+                    "line": 61,
+                    "column": 5,
+                    "endLine": 61,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
@@ -399,21 +791,54 @@
                 {
                     "start": 1477,
                     "end": 1477,
-                    "replacementText": "readonly aa: number;\n"
+                    "replacementText": "readonly aa: number;\n",
+                    "line": 68,
+                    "column": 15,
+                    "endLine": 68,
+                    "endColumn": 34
                 },
                 {
                     "start": 1489,
                     "end": 1508,
-                    "replacementText": "aa: number"
+                    "replacementText": "aa: number",
+                    "line": 68,
+                    "column": 15,
+                    "endLine": 68,
+                    "endColumn": 34
                 },
                 {
                     "start": 1510,
                     "end": 1594,
-                    "replacementText": "{\n    let f2: number = 1;\n    console.log('before super() call');\n    super(aa);\n    this.aa = aa;\n}"
+                    "replacementText": "{\n    let f2: number = 1;\n    console.log('before super() call');\n    super(aa);\n    this.aa = aa;\n}",
+                    "line": 68,
+                    "column": 15,
+                    "endLine": 68,
+                    "endColumn": 34
                 }
             ],
             "suggest": "",
             "rule": "Declaring fields in \"constructor\" is not supported (arkts-no-ctor-prop-decls)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 69,
+            "column": 22,
+            "endLine": 69,
+            "endColumn": 23,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1533,
+                    "end": 1534,
+                    "replacementText": "1.0",
+                    "line": 69,
+                    "column": 22,
+                    "endLine": 69,
+                    "endColumn": 23
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -426,21 +851,54 @@
                 {
                     "start": 1621,
                     "end": 1621,
-                    "replacementText": "readonly aa: number;\n"
+                    "replacementText": "readonly aa: number;\n",
+                    "line": 76,
+                    "column": 15,
+                    "endLine": 76,
+                    "endColumn": 34
                 },
                 {
                     "start": 1633,
                     "end": 1652,
-                    "replacementText": "aa: number"
+                    "replacementText": "aa: number",
+                    "line": 76,
+                    "column": 15,
+                    "endLine": 76,
+                    "endColumn": 34
                 },
                 {
                     "start": 1654,
                     "end": 1737,
-                    "replacementText": "{\n    super(aa);\n    this.aa = aa;\n    let f3: number = 1;\n    console.log('after super() call');\n}"
+                    "replacementText": "{\n    super(aa);\n    this.aa = aa;\n    let f3: number = 1;\n    console.log('after super() call');\n}",
+                    "line": 76,
+                    "column": 15,
+                    "endLine": 76,
+                    "endColumn": 34
                 }
             ],
             "suggest": "",
             "rule": "Declaring fields in \"constructor\" is not supported (arkts-no-ctor-prop-decls)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 78,
+            "column": 22,
+            "endLine": 78,
+            "endColumn": 23,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1692,
+                    "end": 1693,
+                    "replacementText": "1.0",
+                    "line": 78,
+                    "column": 22,
+                    "endLine": 78,
+                    "endColumn": 23
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -453,21 +911,75 @@
                 {
                     "start": 1764,
                     "end": 1764,
-                    "replacementText": "readonly aa: number;\n"
+                    "replacementText": "readonly aa: number;\n",
+                    "line": 84,
+                    "column": 15,
+                    "endLine": 84,
+                    "endColumn": 34
                 },
                 {
                     "start": 1776,
                     "end": 1795,
-                    "replacementText": "aa: number"
+                    "replacementText": "aa: number",
+                    "line": 84,
+                    "column": 15,
+                    "endLine": 84,
+                    "endColumn": 34
                 },
                 {
                     "start": 1797,
                     "end": 1944,
-                    "replacementText": "{\n    let f4: number = 1;\n    console.log('before super() call');\n    super(aa);\n    this.aa = aa;\n    console.log('after super() call');\n    let f5: number = 1;\n}"
+                    "replacementText": "{\n    let f4: number = 1;\n    console.log('before super() call');\n    super(aa);\n    this.aa = aa;\n    console.log('after super() call');\n    let f5: number = 1;\n}",
+                    "line": 84,
+                    "column": 15,
+                    "endLine": 84,
+                    "endColumn": 34
                 }
             ],
             "suggest": "",
             "rule": "Declaring fields in \"constructor\" is not supported (arkts-no-ctor-prop-decls)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 85,
+            "column": 22,
+            "endLine": 85,
+            "endColumn": 23,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1820,
+                    "end": 1821,
+                    "replacementText": "1.0",
+                    "line": 85,
+                    "column": 22,
+                    "endLine": 85,
+                    "endColumn": 23
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 89,
+            "column": 22,
+            "endLine": 89,
+            "endColumn": 23,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1938,
+                    "end": 1939,
+                    "replacementText": "1.0",
+                    "line": 89,
+                    "column": 22,
+                    "endLine": 89,
+                    "endColumn": 23
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -480,22 +992,38 @@
                 {
                     "start": 2003,
                     "end": 2003,
-                    "replacementText": "public a?: number;\npublic b: number;\n"
+                    "replacementText": "public a?: number;\npublic b: number;\n",
+                    "line": 98,
+                    "column": 34,
+                    "endLine": 98,
+                    "endColumn": 40
                 },
                 {
                     "start": 2015,
                     "end": 2032,
-                    "replacementText": "a?: number"
+                    "replacementText": "a?: number",
+                    "line": 98,
+                    "column": 34,
+                    "endLine": 98,
+                    "endColumn": 40
                 },
                 {
                     "start": 2034,
                     "end": 2050,
-                    "replacementText": "b: number"
+                    "replacementText": "b: number",
+                    "line": 98,
+                    "column": 34,
+                    "endLine": 98,
+                    "endColumn": 40
                 },
                 {
                     "start": 2052,
                     "end": 2054,
-                    "replacementText": "{\n    this.a = a;\n    this.b = b;\n}"
+                    "replacementText": "{\n    this.a = a;\n    this.b = b;\n}",
+                    "line": 98,
+                    "column": 34,
+                    "endLine": 98,
+                    "endColumn": 40
                 }
             ],
             "suggest": "",
@@ -512,22 +1040,38 @@
                 {
                     "start": 2003,
                     "end": 2003,
-                    "replacementText": "public a?: number;\npublic b: number;\n"
+                    "replacementText": "public a?: number;\npublic b: number;\n",
+                    "line": 98,
+                    "column": 34,
+                    "endLine": 98,
+                    "endColumn": 40
                 },
                 {
                     "start": 2015,
                     "end": 2032,
-                    "replacementText": "a?: number"
+                    "replacementText": "a?: number",
+                    "line": 98,
+                    "column": 34,
+                    "endLine": 98,
+                    "endColumn": 40
                 },
                 {
                     "start": 2034,
                     "end": 2050,
-                    "replacementText": "b: number"
+                    "replacementText": "b: number",
+                    "line": 98,
+                    "column": 34,
+                    "endLine": 98,
+                    "endColumn": 40
                 },
                 {
                     "start": 2052,
                     "end": 2054,
-                    "replacementText": "{\n    this.a = a;\n    this.b = b;\n}"
+                    "replacementText": "{\n    this.a = a;\n    this.b = b;\n}",
+                    "line": 98,
+                    "column": 34,
+                    "endLine": 98,
+                    "endColumn": 40
                 }
             ],
             "suggest": "",
@@ -544,22 +1088,38 @@
                 {
                     "start": 2071,
                     "end": 2071,
-                    "replacementText": "public a?: number;\npublic b?: number;\n"
+                    "replacementText": "public a?: number;\npublic b?: number;\n",
+                    "line": 102,
+                    "column": 34,
+                    "endLine": 102,
+                    "endColumn": 40
                 },
                 {
                     "start": 2083,
                     "end": 2100,
-                    "replacementText": "a?: number"
+                    "replacementText": "a?: number",
+                    "line": 102,
+                    "column": 34,
+                    "endLine": 102,
+                    "endColumn": 40
                 },
                 {
                     "start": 2102,
                     "end": 2119,
-                    "replacementText": "b?: number"
+                    "replacementText": "b?: number",
+                    "line": 102,
+                    "column": 34,
+                    "endLine": 102,
+                    "endColumn": 40
                 },
                 {
                     "start": 2121,
                     "end": 2123,
-                    "replacementText": "{\n    this.a = a;\n    this.b = b;\n}"
+                    "replacementText": "{\n    this.a = a;\n    this.b = b;\n}",
+                    "line": 102,
+                    "column": 34,
+                    "endLine": 102,
+                    "endColumn": 40
                 }
             ],
             "suggest": "",
@@ -576,22 +1136,38 @@
                 {
                     "start": 2071,
                     "end": 2071,
-                    "replacementText": "public a?: number;\npublic b?: number;\n"
+                    "replacementText": "public a?: number;\npublic b?: number;\n",
+                    "line": 102,
+                    "column": 34,
+                    "endLine": 102,
+                    "endColumn": 40
                 },
                 {
                     "start": 2083,
                     "end": 2100,
-                    "replacementText": "a?: number"
+                    "replacementText": "a?: number",
+                    "line": 102,
+                    "column": 34,
+                    "endLine": 102,
+                    "endColumn": 40
                 },
                 {
                     "start": 2102,
                     "end": 2119,
-                    "replacementText": "b?: number"
+                    "replacementText": "b?: number",
+                    "line": 102,
+                    "column": 34,
+                    "endLine": 102,
+                    "endColumn": 40
                 },
                 {
                     "start": 2121,
                     "end": 2123,
-                    "replacementText": "{\n    this.a = a;\n    this.b = b;\n}"
+                    "replacementText": "{\n    this.a = a;\n    this.b = b;\n}",
+                    "line": 102,
+                    "column": 34,
+                    "endLine": 102,
+                    "endColumn": 40
                 }
             ],
             "suggest": "",

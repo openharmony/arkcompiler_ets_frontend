@@ -77,7 +77,7 @@ bool TextSpanIntersectsWith(const TextSpan span, const int position, const int n
 
 bool IsExpressionWithTypeArguments(const ir::AstNode *node)
 {
-    return node->Type() == ir::AstNodeType::EXPRESSION_STATEMENT;
+    return node->Type() == ir::AstNodeType::CALL_EXPRESSION;
 }
 
 void GetVariableDeclarationTypeForHints(const ir::AstNode *decl, InlayHintList *result)
@@ -357,24 +357,35 @@ void ProcessNodeBasedOnPreferences(const ir::AstNode *node, const ir::AstNode *p
     }
 }
 
-void Visitor(const ir::AstNode *node, const TextSpan *span, const ir::AstNode *parent,
-             CancellationToken cancellationToken, InlayHintList *result)
+// NOLINTBEGIN(misc-non-private-member-variables-in-classes)
+struct InlayHintProcessingContext {
+    const TextSpan *span = nullptr;
+    const ir::AstNode *ast = nullptr;
+    CancellationToken &cancellationToken;
+    UserPreferences &preferences;
+
+    InlayHintProcessingContext(const TextSpan *s, const ir::AstNode *a, CancellationToken &c, UserPreferences &p)
+        : span(s), ast(a), cancellationToken(c), preferences(p)
+    {
+    }
+};
+// NOLINTEND(misc-non-private-member-variables-in-classes)
+
+void Visitor(const ir::AstNode *node, InlayHintProcessingContext &context, InlayHintList *result)
 {
-    if (!ShouldProcessNode(node, span)) {
+    if (!ShouldProcessNode(node, context.span)) {
         return;
     }
-    const UserPreferences preferences = UserPreferences::GetDefaultUserPreferences();
-    if (cancellationToken.IsCancellationRequested() && IsCancellableNode(node)) {
+    if (context.cancellationToken.IsCancellationRequested() && IsCancellableNode(node)) {
         return;
     }
-    ProcessNodeBasedOnPreferences(node, parent, preferences, result);
+    ProcessNodeBasedOnPreferences(node, context.ast, context.preferences, result);
 }
 
-InlayHintList ProvideInlayHints(const char *file, const TextSpan *span, CancellationToken cancellationToken)
+InlayHintList ProvideInlayHintsImpl(es2panda_Context *context, const TextSpan *span,
+                                    CancellationToken &cancellationToken, UserPreferences &preferences)
 {
     auto result = InlayHintList();
-    Initializer initializer = Initializer();
-    const auto context = initializer.CreateContext(file, ES2PANDA_STATE_CHECKED);
     if (context == nullptr) {
         return {};
     }
@@ -386,12 +397,12 @@ InlayHintList ProvideInlayHints(const char *file, const TextSpan *span, Cancella
     if (parent == nullptr) {
         return {};
     }
-    parent->FindChild([cancellationToken, span, parent, &result](ir ::AstNode *childNode) {
-        Visitor(childNode, span, parent, cancellationToken, &result);
+    InlayHintProcessingContext processingContext = {span, parent, cancellationToken, preferences};
+    parent->FindChild([&processingContext, &result](ir::AstNode *childNode) {
+        Visitor(childNode, processingContext, &result);
         return false;
     });
 
-    initializer.DestroyContext(context);
     return result;
 }
 

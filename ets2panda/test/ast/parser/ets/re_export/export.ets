@@ -13,6 +13,6 @@
  * limitations under the License.
  */
 
-export function foo():void
-{
-}
+export function foo():void {}
+
+function bar() :void {}

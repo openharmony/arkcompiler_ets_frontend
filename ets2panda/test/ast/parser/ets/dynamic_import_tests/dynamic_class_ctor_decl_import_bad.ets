@@ -22,5 +22,5 @@ import { A } from "dynamic_import_tests/modules/module"
 function main(): void {
     let x = /* @@ label */new A(/* @@ label1 */"abc", 10)
 }
-/* @@@ label1 Error TypeError: Type '"abc"' is not compatible with type 'double' at index 1  */
-/* @@@ label Error TypeError: No matching construct signature for module.A("abc", int)  */
+/* @@@ label1 Error TypeError: Type '"abc"' is not compatible with type 'Double' at index 1  */
+/* @@@ label Error TypeError: No matching construct signature for module.A("abc", Int)  */

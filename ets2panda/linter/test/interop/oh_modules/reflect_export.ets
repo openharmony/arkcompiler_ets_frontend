@@ -12,7 +12,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use static'
 
 export function foo(prx: Object) {
  Reflect.get(prx, 'a')  // 'hello'
@@ -27,4 +26,38 @@ export function bar(obj: Object) {
 export class X {
     a: string = 'hello'
     getName() { return this.a }
+}
+
+export class Reflect1 {
+  a: string = 'hello'
+  getName() { return this.a }
+}
+export let obj_Reflect1 = new Reflect1();
+
+interface Iface {
+  a:number
+}
+export let objInter:Iface = {a:1}
+
+export function reflect_method1(prx: ESObject) {
+  Reflect.ownKeys(prx)  // ['a']
+  Reflect.set(prx, 'a', 7)  // true
+  Reflect.get(prx, 'a')  // true
+  Reflect.has(prx, 'a')  // true
+}
+
+export function reflect_method1_set(prx: ESObject) {
+  Reflect.set(prx, 'a', 7)  // true
+}
+
+export function reflect_method1_get(prx: ESObject) {
+  Reflect.get(prx, 'a')  // true
+}
+
+export function reflect_method1_ownKeys(prx: ESObject) {
+  Reflect.ownKeys(prx)  // ['a']
+}
+
+export function reflect_method1_has(prx: ESObject) {
+  Reflect.has(prx, 'a')  // true
 }

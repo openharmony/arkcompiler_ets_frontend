@@ -16,6 +16,6 @@
 function main() {
     enum Enum { first = -2147483648, second }
     
-    assertEQ(Enum.first.valueOf(), -2147483648)
-    assertEQ(Enum.second.valueOf(), -2147483647)
+    arktest.assertEQ(Enum.first.valueOf(), -2147483648)
+    arktest.assertEQ(Enum.second.valueOf(), -2147483647)
 }

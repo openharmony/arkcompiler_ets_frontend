@@ -13,17 +13,20 @@
  * limitations under the License.
  */
 
+import {launch} from "std/concurrency"
+import {Job} from "std/core"
+
 class Foo {
-  public  bar(): Promise<Foo> {
-    return launch this.baz(this);
+  public  bar(): Job<Foo> {
+    return launch<Foo, (f: Foo) => Foo>(this.baz, this);
   }
 
   public  baz(x: Foo): Foo {
     return x;
   }
 
-  public  bar2(): Promise<Foo> {
-    return launch this.baz2(this, 1);
+  public  bar2(): Job<Foo> {
+    return launch<Foo, (f: Foo, i: int) => Foo>(this.baz2, this, 1);
   }
 
   public  baz2(x: Foo, y: int): Foo {

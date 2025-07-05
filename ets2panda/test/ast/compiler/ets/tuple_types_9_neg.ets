@@ -22,10 +22,6 @@ function main(): void {
 /* @@? 18:29 Error SyntaxError: Invalid Type. */
 /* @@? 18:29 Error SyntaxError: Unexpected token, expected ',' or ']'. */
 /* @@? 18:29 Error SyntaxError: Unexpected token '...'. */
-/* @@? 18:29 Error SyntaxError: Unexpected token '...'. */
-/* @@? 18:29 Error SyntaxError: Unexpected token '...'. */
+/* @@? 18:32 Error SyntaxError: Unexpected token 'Int'. */
 /* @@? 18:37 Error SyntaxError: Unexpected token ']'. */
-/* @@? 18:37 Error SyntaxError: Unexpected token ']'. */
-/* @@? 18:37 Error SyntaxError: Unexpected token ']'. */
-/* @@? 18:39 Error SyntaxError: Unexpected token '='. */
-/* @@@ label Error TypeError: Type '[double, String, *ERROR_TYPE*]' cannot be assigned to type '[double, String, Int]'  */
+/* @@@ label Error TypeError: Type '[Double, String, *ERROR_TYPE*]' cannot be assigned to type '[Double, String, Int]'  */

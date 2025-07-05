@@ -14,18 +14,18 @@
  */
 
 import type * as ts from 'typescript';
+import type { Autofix } from './autofixes/Autofixer';
+import { cookBookRefToFixTitle } from './autofixes/AutofixTitles';
+import { cookBookTag } from './CookBookMsg';
+import { faultsAttrs } from './FaultAttrs';
+import { faultDesc } from './FaultDesc';
 import type { LinterOptions } from './LinterOptions';
 import type { ProblemInfo } from './ProblemInfo';
-import type { Autofix } from './autofixes/Autofixer';
-import { FileStatistics } from './statistics/FileStatistics';
-import { TsUtils } from './utils/TsUtils';
-import { cookBookRefToFixTitle } from './autofixes/AutofixTitles';
-import { faultDesc } from './FaultDesc';
-import { TypeScriptLinterConfig } from './TypeScriptLinterConfig';
-import { faultsAttrs } from './FaultAttrs';
-import { cookBookTag } from './CookBookMsg';
 import { FaultID } from './Problems';
 import { ProblemSeverity } from './ProblemSeverity';
+import { FileStatistics } from './statistics/FileStatistics';
+import { TypeScriptLinterConfig } from './TypeScriptLinterConfig';
+import { TsUtils } from './utils/TsUtils';
 
 export abstract class BaseTypeScriptLinter {
   problemsInfos: ProblemInfo[] = [];
@@ -69,19 +69,42 @@ export abstract class BaseTypeScriptLinter {
     });
   }
 
-  protected incrementCounters(node: ts.Node | ts.CommentRange, faultId: number, autofix?: Autofix[]): void {
+  protected incrementCounters(
+    node: ts.Node | ts.CommentRange,
+    faultId: number,
+    autofix?: Autofix[],
+    errorMsg?: string
+  ): void {
+    const badNodeInfo = this.getbadNodeInfo(node, faultId, autofix, errorMsg);
+
+    if (this.shouldSkipRule(badNodeInfo)) {
+      return;
+    }
+
+    this.problemsInfos.push(badNodeInfo);
+    this.updateFileStats(faultId, badNodeInfo.line);
+    // problems with autofixes might be collected separately
+    if (this.options.reportAutofixCb && badNodeInfo.autofix) {
+      this.options.reportAutofixCb(badNodeInfo);
+    }
+  }
+
+  private getbadNodeInfo(
+    node: ts.Node | ts.CommentRange,
+    faultId: number,
+    autofix?: Autofix[],
+    errorMsg?: string
+  ): ProblemInfo {
     const [startOffset, endOffset] = TsUtils.getHighlightRange(node, faultId);
     const startPos = this.sourceFile.getLineAndCharacterOfPosition(startOffset);
     const endPos = this.sourceFile.getLineAndCharacterOfPosition(endOffset);
-
     const faultDescr = faultDesc[faultId];
     const faultType = TypeScriptLinterConfig.tsSyntaxKindNames[node.kind];
-
     const cookBookMsgNum = faultsAttrs[faultId] ? faultsAttrs[faultId].cookBookRef : 0;
-    const cookBookTg = cookBookTag[cookBookMsgNum];
+    const cookBookTg = errorMsg ? errorMsg : cookBookTag[cookBookMsgNum];
     const severity = faultsAttrs[faultId]?.severity ?? ProblemSeverity.ERROR;
     const isMsgNumValid = cookBookMsgNum > 0;
-    autofix = autofix ? BaseTypeScriptLinter.addLineColumnInfoInAutofix(autofix, startPos, endPos) : autofix;
+    autofix = BaseTypeScriptLinter.processAutofix(autofix, startPos, endPos);
     const badNodeInfo: ProblemInfo = {
       line: startPos.line + 1,
       column: startPos.character + 1,
@@ -101,12 +124,24 @@ export abstract class BaseTypeScriptLinter {
       autofix: autofix,
       autofixTitle: isMsgNumValid && autofix !== undefined ? cookBookRefToFixTitle.get(cookBookMsgNum) : undefined
     };
-    this.problemsInfos.push(badNodeInfo);
-    this.updateFileStats(faultId, badNodeInfo.line);
+    return badNodeInfo;
+  }
 
-    // problems with autofixes might be collected separately
-    if (this.options.reportAutofixCb && badNodeInfo.autofix) {
-      this.options.reportAutofixCb(badNodeInfo);
+  private static processAutofix(
+    autofix: Autofix[] | undefined,
+    startPos: ts.LineAndCharacter,
+    endPos: ts.LineAndCharacter
+  ): Autofix[] | undefined {
+    return autofix ? BaseTypeScriptLinter.addLineColumnInfoInAutofix(autofix, startPos, endPos) : autofix;
+  }
+
+  private shouldSkipRule(badNodeInfo: ProblemInfo): boolean {
+    if (this.options?.ideInteractive) {
+      const ruleConfigTags = this.options.ruleConfigTags;
+      if (ruleConfigTags && !ruleConfigTags.has(badNodeInfo.ruleTag)) {
+        return true;
+      }
     }
+    return false;
   }
 }

@@ -22,6 +22,10 @@ namespace ark::es2panda::ir {
 class EmptyStatement : public Statement {
 public:
     explicit EmptyStatement() : Statement(AstNodeType::EMPTY_STATEMENT) {}
+    explicit EmptyStatement(bool isBrokenStatement)
+        : Statement(AstNodeType::EMPTY_STATEMENT), isBrokenStatement_(isBrokenStatement)
+    {
+    }
 
     void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;
     void Iterate(const NodeTraverser &cb) const override;
@@ -32,6 +36,7 @@ public:
     checker::Type *Check(checker::TSChecker *checker) override;
     checker::VerifiedType Check(checker::ETSChecker *checker) override;
     [[nodiscard]] EmptyStatement *Clone(ArenaAllocator *allocator, AstNode *parent) override;
+    bool IsBrokenStatement();
 
     void Accept(ASTVisitorT *v) override
     {
@@ -39,6 +44,7 @@ public:
     }
 
 private:
+    bool isBrokenStatement_ {false};
 };
 }  // namespace ark::es2panda::ir
 

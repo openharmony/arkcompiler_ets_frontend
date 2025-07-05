@@ -13,18 +13,41 @@
  * limitations under the License.
  */
 
+export enum BUILD_MODE {
+  DEBUG = 'Debug',
+  RELEASE = 'Release'
+};
+
+export enum BUILD_TYPE {
+  BUILD = 'build',
+  PREVIEW = 'preview'
+}
+
+export enum OHOS_MODULE_TYPE {
+  HAP = 'hap',
+  FEATURE = 'feature',
+  SHARED = 'shared',
+  HAR = 'har',
+}
+
 // ProjectConfig begins
 export interface PluginsConfig {
   [pluginName: string]: string;
 }
 
+export interface PathsConfig {
+  [pathName: string]: string[];
+}
+
 export interface BuildBaseConfig {
-  buildType: 'build' | 'preview' | 'hotreload' | 'coldreload';
-  buildMode: 'Debug' | 'Release';
+  buildType: BUILD_TYPE;
+  buildMode: BUILD_MODE;
+  es2pandaMode: ES2PANDA_MODE;
   hasMainModule: boolean;
   arkts: ArkTS;
   arktsGlobal: ArkTSGlobal;
   maxWorkers?: number;
+  isBuildConfigModified?: boolean;
 }
 
 export interface ArkTSGlobal {
@@ -36,12 +59,18 @@ export interface ArkTSGlobal {
   };
   es2panda: {
     _DestroyContext: Function;
+    _MemInitialize: Function;
+    _MemFinalize: Function;
+    _CreateGlobalContext: Function;
+    _DestroyGlobalContext: Function;
+    _SetUpSoPath: Function;
   }
 }
 
 export interface ArkTS {
   Config: {
     create: Function;
+    createContextGenerateAbcForExternalSourceFiles: Function;
   };
   Context: {
     createFromString: Function;
@@ -51,27 +80,46 @@ export interface ArkTS {
   };
   proceedToState: Function;
   generateTsDeclarationsFromContext: Function;
+  generateStaticDeclarationsFromContext: Function;
   destroyConfig: Function;
   Es2pandaContextState: typeof Es2pandaContextState;
+  MemInitialize: Function;
+  CreateGlobalContext: Function;
+  AstNode: AstNode;
+  ETSImportDeclaration: ETSImportDeclaration;
+  isEtsScript: Function;
+  isImportSpecifier: Function;
+  isETSImportDeclaration: Function;
+  factory: {
+    createEtsScript: Function;
+    createImportDeclaration: Function;
+    createImportSpecifier: Function;
+    createLiteral: Function;
+    createIdentifier: Function;
+    updateEtsScript: Function;
+    createStringLiteral: Function;
+  };
+  Es2pandaImportKinds: typeof Es2pandaImportKinds;
+  Es2pandaImportFlags: typeof Es2pandaImportFlags;
 }
 
 export enum Es2pandaContextState {
     ES2PANDA_STATE_NEW = 0,
     ES2PANDA_STATE_PARSED = 1,
-    ES2PANDA_STATE_SCOPE_INITED = 2,
-    ES2PANDA_STATE_BOUND = 3,
-    ES2PANDA_STATE_CHECKED = 4,
-    ES2PANDA_STATE_LOWERED = 5,
-    ES2PANDA_STATE_ASM_GENERATED = 6,
-    ES2PANDA_STATE_BIN_GENERATED = 7,
-    ES2PANDA_STATE_ERROR = 8
+    ES2PANDA_STATE_BOUND = 2,
+    ES2PANDA_STATE_CHECKED = 3,
+    ES2PANDA_STATE_LOWERED = 4,
+    ES2PANDA_STATE_ASM_GENERATED = 5,
+    ES2PANDA_STATE_BIN_GENERATED = 6,
+    ES2PANDA_STATE_ERROR = 7
 }
 
 export interface ModuleConfig {
   packageName: string;
-  moduleType: string;
+  moduleType: OHOS_MODULE_TYPE;
   moduleRootPath: string;
   sourceRoots: string[];
+  byteCodeHar: boolean;
 }
 
 export interface PathConfig {
@@ -82,11 +130,39 @@ export interface PathConfig {
   pandaStdlibPath?: string; // path to panda sdk stdlib, for local test
   externalApiPaths: string[];
   abcLinkerPath?: string;
+  dependencyAnalyzerPath?: string;
+  sdkAliasConfigPaths?: string[];
+  aliasPaths: Map<string, string>;
+  interopSDKPaths: Set<string>;
+  dynamicInteroSDKBasePath:string;
+  projectRootPath: string;
+}
+
+/**
+ * Configuration for framework mode compilation using generate_static_abc gni.
+ * 
+ * In framework mode, the compiler generates static ABC files from framework SDK ETS files.
+ * This mode requires additional arktsconfig.json parameters for proper operation.
+ */
+export interface FrameworkConfig {
+  /**
+   * Enables or disables framework compilation mode.
+   * When enabled (true), activates special processing rules for framework-level
+   * compilation, including different output locations and packaging requirements.
+   */
+  frameworkMode?: boolean;
+  
+  /**
+   * Determines whether an empty package name should be used.
+   * Must be set to true when compiling framework components without a package name.
+   */
+  useEmptyPackage?: boolean;
 }
 
 export interface DeclgenConfig {
   enableDeclgenEts2Ts: boolean;
   declgenV1OutPath?: string;
+  declgenV2OutPath?: string;
   declgenBridgeCodePath?: string;
 }
 
@@ -104,45 +180,119 @@ export interface DependentModuleConfig {
   language: string;
   declFilesPath?: string;
   dependencies?: string[];
+  abcPath?: string;
   declgenV1OutPath?: string;
+  declgenV2OutPath?: string;
   declgenBridgeCodePath?: string;
+  byteCodeHar: boolean;
 }
 
-export interface BuildConfig extends BuildBaseConfig, DeclgenConfig, LoggerConfig, ModuleConfig, PathConfig {
+export interface BuildConfig extends BuildBaseConfig, DeclgenConfig, LoggerConfig, ModuleConfig, PathConfig, FrameworkConfig {
   plugins: PluginsConfig;
+  paths: PathsConfig; // paths config passed from template to generate arktsconfig.json "paths" configs.
   compileFiles: string[];
+  entryFiles?: string[];
   dependentModuleList: DependentModuleConfig[];
+  aliasConfig: Map<string, Map<string, AliasConfig>>;
 }
 // ProjectConfig ends
 
 export interface CompileFileInfo {
-  filePath: string,
-  dependentFiles: string[],
-  abcFilePath: string,
-  arktsConfigFile: string,
-  packageName: string,
+  filePath: string;
+  dependentFiles: string[];
+  abcFilePath: string;
+  arktsConfigFile: string;
+  packageName: string;
 };
 
 export interface ModuleInfo {
-  isMainModule: boolean,
-  packageName: string,
-  moduleRootPath: string,
-  moduleType: string,
-  sourceRoots: string[],
-  entryFile: string,
-  arktsConfigFile: string,
-  compileFileInfos: CompileFileInfo[],
-  declgenV1OutPath: string | undefined,
-  declgenBridgeCodePath: string | undefined,
-  dependencies?: string[]
+  isMainModule: boolean;
+  packageName: string;
+  moduleRootPath: string;
+  moduleType: string;
+  sourceRoots: string[];
+  entryFile: string;
+  arktsConfigFile: string;
+  compileFileInfos: CompileFileInfo[];
+  declgenV1OutPath: string | undefined;
+  declgenV2OutPath: string | undefined;
+  declgenBridgeCodePath: string | undefined;
+  dependencies?: string[];
   staticDepModuleInfos: Map<string, ModuleInfo>;
   dynamicDepModuleInfos: Map<string, ModuleInfo>;
   language?: string;
   declFilesPath?: string;
+  abcPath?: string;
+  frameworkMode?: boolean;
+  useEmptyPackage?: boolean;
+  byteCodeHar: boolean;
 }
 
 export type SetupClusterOptions = {
   clearExitListeners?: boolean;
   execPath?: string;
   execArgs?: string[];
+};
+
+export interface DependencyFileConfig {
+  dependants: {
+    [filePath: string]: string[];
+  };
+  dependencies: {
+    [filePath: string]: string[];
+  }
+}
+
+export interface JobInfo {
+  id: string;
+  isCompileAbc: boolean;
+  compileFileInfo: CompileFileInfo;
+  buildConfig: Object;
+  globalContextPtr?: KPointer;
+}
+
+export type KPointer = number | bigint;
+
+export interface AliasConfig {
+  originalAPIName: string;
+  isStatic: boolean;
+}
+
+export interface AstNode {
+  kind: string;
+  statements: AstNode[];
+  source: LiteralNode;
+  specifiers: ImportSpecifierNode[];
+}
+
+export interface LiteralNode {
+  str: string;
+  clone: Function;
+}
+
+export interface IdentifierNode {
+  name: string;
+}
+
+export interface ImportSpecifierNode {
+  imported?: IdentifierNode;
+}
+
+export interface ETSImportDeclaration extends AstNode {
+  specifiers: ImportSpecifierNode[];
+  source: LiteralNode;
+}
+
+export enum Es2pandaImportKinds {
+  IMPORT_KINDS_VALUE = 0,
+}
+
+export enum Es2pandaImportFlags {
+  IMPORT_FLAGS_NONE,
+}
+
+export enum ES2PANDA_MODE {
+  RUN_PARALLEL = 0,
+  RUN_CONCURRENT = 1,
+  RUN = 2
 };

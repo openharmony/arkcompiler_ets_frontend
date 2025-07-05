@@ -23,7 +23,7 @@ void AnnotationUsage::TransformChildren(const NodeTransformer &cb, std::string_v
 {
     if (auto *transformedNode = cb(expr_); expr_ != transformedNode) {
         expr_->SetTransformedNode(transformationName, transformedNode);
-        expr_ = transformedNode->AsIdentifier();
+        expr_ = transformedNode->AsExpression();
     }
 
     for (auto *&it : VectorIterationGuard(properties_)) {
@@ -87,7 +87,7 @@ AnnotationUsage *AnnotationUsage::Clone(ArenaAllocator *const allocator, AstNode
         clone->AddProperty(property->Clone(allocator, clone));
     }
 
-    clone->SetRange(range_);
+    clone->SetRange(range_.GetRange());
     clone->SetScope(propertiesScope_);
 
     return clone;

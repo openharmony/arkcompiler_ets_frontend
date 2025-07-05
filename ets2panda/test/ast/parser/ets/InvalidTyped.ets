@@ -35,17 +35,21 @@ interface I {
 /* @@? 16:21 Error TypeError: Interface expected here. */
 /* @@? 16:23 Error SyntaxError: Identifier expected. */
 /* @@? 16:23 Error TypeError: Interface expected here. */
+/* @@? 18:1 Error TypeError: Merging declarations is not supported, please keep all definitions of classes, interfaces and enums compact in the codebase! */
 /* @@? 18:1 Error TypeError: Variable 'C' has already been declared. */
 /* @@? 18:23 Error SyntaxError: Unexpected token, expected ','. */
 /* @@? 18:25 Error SyntaxError: Identifier expected. */
 /* @@? 20:1 Error TypeError: Variable 'C' has already been declared. */
+/* @@? 20:1 Error TypeError: Merging declarations is not supported, please keep all definitions of classes, interfaces and enums compact in the codebase! */
 /* @@? 20:21 Error SyntaxError: Identifier expected. */
 /* @@? 22:20 Error SyntaxError: Implements clause can not be empty. */
 /* @@? 24:7 Error TypeError: Variable 'A' has already been declared. */
-/* @@? 24:21 Error SyntaxError: Unexpected token, expected ','. */
+/* @@? 24:7 Error TypeError: Merging declarations is not supported, please keep all definitions of classes, interfaces and enums compact in the codebase! */
 /* @@? 24:21 Error SyntaxError: Expected '{', got ','. */
+/* @@? 24:21 Error SyntaxError: Unexpected token, expected ','. */
 /* @@? 24:23 Error SyntaxError: Unexpected token '{'. */
 /* @@? 26:13 Error SyntaxError: Interface declaration cannot have 'implements' clause. */
 /* @@? 28:1 Error TypeError: Variable 'I' has already been declared. */
+/* @@? 28:1 Error TypeError: Merging declarations is not supported, please keep all definitions of classes, interfaces and enums compact in the codebase! */
 /* @@? 29:5 Error SyntaxError: 'override' modifier cannot appear in interfaces. */
-/* @@? 52:1 Error SyntaxError: Unexpected token, expected '}'. */
+/* @@? 56:1 Error SyntaxError: Unexpected token, expected '}'. */

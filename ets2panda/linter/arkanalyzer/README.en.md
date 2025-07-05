@@ -67,7 +67,7 @@ Checking OpenHarmony Apps for Potential Code-level Defects
 # ArkAnalyzer: Static Program Analysis Framework for the ArkTS Language
 ## Develope environment setup
 1. [Download Visual Studio Code](https://code.visualstudio.com/download) or other IDEA;
-2. 
+2. [Download Node.js](https://nodejs.org/en/download/current) and install it. Node.js is a runtime environment for JavaScript, which comes with its own package manager, npm. 
 3. Install Typescript via npm: 
 ```shell
 npm install -g typescript

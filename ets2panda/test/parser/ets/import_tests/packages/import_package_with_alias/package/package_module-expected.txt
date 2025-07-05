@@ -175,40 +175,40 @@
                   ],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1,
-                      "program": null
+                      "line": 19,
+                      "column": 12,
+                      "program": "package_module.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1,
-                      "program": null
+                      "line": 19,
+                      "column": 19,
+                      "program": "package_module.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1,
-                    "program": null
+                    "line": 19,
+                    "column": 12,
+                    "program": "package_module.ets"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1,
-                    "program": null
+                    "line": 19,
+                    "column": 19,
+                    "program": "package_module.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1,
-                  "program": null
+                  "line": 19,
+                  "column": 12,
+                  "program": "package_module.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1,
-                  "program": null
+                  "line": 19,
+                  "column": 19,
+                  "program": "package_module.ets"
                 }
               }
             },
@@ -216,13 +216,13 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
-                "column": 1,
+                "line": 19,
+                "column": 12,
                 "program": "package_module.ets"
               },
               "end": {
-                "line": 1,
-                "column": 1,
+                "line": 19,
+                "column": 19,
                 "program": "package_module.ets"
               }
             }

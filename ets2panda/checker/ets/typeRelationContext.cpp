@@ -47,8 +47,7 @@ bool InstantiationContext::ValidateTypeArguments(ETSObjectType *type, ir::TSType
 {
     if (checker_->HasStatus(CheckerStatus::IN_INSTANCEOF_CONTEXT)) {
         if (typeArgs != nullptr) {
-            checker_->ReportWarning(
-                {"Type parameter is erased from type '", type->Name(), "' when used in instanceof expression."}, pos);
+            checker_->LogDiagnostic(diagnostic::INSTANCEOF_ERASED, {type->Name()}, pos);
         }
         result_ = type;
         return true;
@@ -78,26 +77,13 @@ void InstantiationContext::InstantiateType(ETSObjectType *type, ir::TSTypeParame
                 result_ = paramType;
                 return;
             }
-
-            if (paramType->IsETSPrimitiveType()) {
-                checker_->Relation()->SetNode(it);
-
-                auto *const boxedTypeArg = checker_->MaybeBoxInRelation(paramType);
-                if (boxedTypeArg != nullptr) {
-                    paramType = boxedTypeArg->Instantiate(checker_->Allocator(), checker_->Relation(),
-                                                          checker_->GetGlobalTypesHolder());
-                } else {
-                    ES2PANDA_UNREACHABLE();
-                }
-            }
-
+            ES2PANDA_ASSERT(!paramType->IsETSPrimitiveType());
             typeArgTypes.push_back(paramType);
         }
     }
 
     while (typeArgTypes.size() < type->TypeArguments().size()) {
         Type *defaultType = nullptr;
-
         if (type->TypeArguments().at(typeArgTypes.size())->IsETSTypeParameter()) {
             defaultType = type->TypeArguments().at(typeArgTypes.size())->AsETSTypeParameter()->GetDefaultType();
         } else {
@@ -137,10 +123,10 @@ static void CheckInstantiationConstraints(ETSChecker *checker, ArenaVector<Type 
         }
         // NOTE(vpukhov): #19701 void refactoring
         ES2PANDA_ASSERT(typeArg->IsETSReferenceType() || typeArg->IsETSVoidType());
+        auto maybeIrrelevantTypeArg = typeArg->IsETSVoidType() ? checker->GlobalETSUndefinedType() : typeArg;
         auto constraint = typeParam->GetConstraintType()->Substitute(relation, substitution);
-        if (!relation->IsAssignableTo(typeArg, constraint)) {
-            // NOTE(vpukhov): refine message
-            checker->LogError(diagnostic::INIT_NOT_ASSIGNABLE, {typeArg, constraint}, pos);
+        if (!relation->IsSupertypeOf(constraint, maybeIrrelevantTypeArg)) {
+            checker->LogError(diagnostic::TYPEARG_TYPEPARAM_SUBTYPING, {typeArg, constraint}, pos);
         }
     }
 }
@@ -150,7 +136,7 @@ void ConstraintCheckScope::TryCheckConstraints()
     if (Unlock()) {
         auto &records = checker_->PendingConstraintCheckRecords();
         for (auto const &[typeParams, substitution, pos] : records) {
-            CheckInstantiationConstraints(checker_, *typeParams, substitution, pos);
+            CheckInstantiationConstraints(checker_, *typeParams, &substitution, pos);
         }
         records.clear();
     }
@@ -166,21 +152,21 @@ void InstantiationContext::InstantiateType(ETSObjectType *type, ArenaVector<Type
         typeArgTypes.push_back(typeParams.at(typeArgTypes.size()));
     }
 
-    auto *substitution = checker_->NewSubstitution();
+    auto substitution = Substitution {};
     for (size_t idx = 0; idx < typeParams.size(); idx++) {
         if (!typeParams[idx]->IsETSTypeParameter()) {
             continue;
         }
-        checker_->EmplaceSubstituted(substitution, typeParams[idx]->AsETSTypeParameter(), typeArgTypes[idx]);
+        checker_->EmplaceSubstituted(&substitution, typeParams[idx]->AsETSTypeParameter(), typeArgTypes[idx]);
     }
 
     ConstraintCheckScope ctScope(checker_);
+    result_ = type->Substitute(checker_->Relation(), &substitution)->AsETSObjectType();
     if (!checker_->Relation()->NoThrowGenericTypeAlias()) {
-        checker_->PendingConstraintCheckRecords().push_back({&typeParams, substitution, pos});
+        checker_->PendingConstraintCheckRecords().emplace_back(&typeParams, std::move(substitution), pos);
     }
 
-    result_ = type->Substitute(checker_->Relation(), substitution)->AsETSObjectType();
-    type->GetInstantiationMap().try_emplace(hash, result_->AsETSObjectType());
+    type->InsertInstantiationMap(hash, result_->AsETSObjectType());
     result_->AddTypeFlag(TypeFlag::GENERIC);
 
     ctScope.TryCheckConstraints();

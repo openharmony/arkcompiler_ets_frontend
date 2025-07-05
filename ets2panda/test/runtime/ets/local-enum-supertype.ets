@@ -20,13 +20,13 @@ function main():void {
     // Such reference version type has no name, but can be detected by instanceof
     if (o instanceof Commands) {
         let d = o as Commands // And explicitly converted back by 'as' conversion
-        assertEQ(d, Commands.Close)
+        arktest.assertEQ(d, Commands.Close)
     }
 
     let u : Object | Commands = Commands.Close;
     if (u instanceof Commands)
     {
         let d = o as Commands;
-        assertEQ(d, Commands.Close)
+        arktest.assertEQ(d, Commands.Close)
     }
 }

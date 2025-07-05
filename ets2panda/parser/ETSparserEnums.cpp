@@ -73,7 +73,6 @@
 #include "ir/statements/doWhileStatement.h"
 #include "ir/statements/breakStatement.h"
 #include "ir/statements/debuggerStatement.h"
-#include "ir/ets/etsLaunchExpression.h"
 #include "ir/ets/etsClassLiteral.h"
 #include "ir/ets/etsPrimitiveType.h"
 #include "ir/ets/etsPackageDeclaration.h"
@@ -161,11 +160,6 @@ ir::TSEnumDeclaration *ETSParser::ParseEnumMembers(ir::Identifier *const key, co
 
     Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);  // eat '{'
 
-    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
-        LogError(diagnostic::ENUM_MUST_HAVE_ONE_CONST);
-        return nullptr;  // Error processing.
-    }
-
     ArenaVector<ir::AstNode *> members(Allocator()->Adapter());
 
     lexer::SourcePosition enumEnd = ParseEnumMember(members);
@@ -220,6 +214,7 @@ lexer::SourcePosition ETSParser::ParseEnumMember(ArenaVector<ir::AstNode *> &mem
 
     // Lambda to parse enum member (maybe with initializer)
     auto const parseMember = [this, &members, &currentNumberExpr]() {
+        HandleJsDocLikeComments();
         auto *const ident = ExpectIdentifier(false, true);
 
         ir::Expression *ordinal;

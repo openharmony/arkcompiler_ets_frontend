@@ -13,5 +13,16 @@
         "See the License for the specific language governing permissions and",
         "limitations under the License."
     ],
-    "result": []
+    "result": [
+        {
+            "line": 18,
+            "column": 51,
+            "endLine": 18,
+            "endColumn": 74,
+            "problem": "GlobalThisError",
+            "suggest": "",
+            "rule": "\"globalThis\" is not supported (arkts-no-globalthis)",
+            "severity": "ERROR"
+        }
+    ]
 }
