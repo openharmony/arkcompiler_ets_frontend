@@ -226,6 +226,7 @@ bool ETSChecker::CheckBinaryOperatorForBigInt(Type *left, Type *right, lexer::To
         case lexer::TokenType::PUNCTUATOR_STRICT_EQUAL:
         case lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL:
         case lexer::TokenType::KEYW_INSTANCEOF:
+        case lexer::TokenType::PUNCTUATOR_UNSIGNED_RIGHT_SHIFT:
             // This is handled in the main CheckBinaryOperator function
             return false;
         default:
