@@ -59,6 +59,10 @@ Type *ETSChecker::HandleUtilityTypeParameterNode(const ir::TSTypeParameterInstan
         return GlobalTypeError();
     }
 
+    if (baseType->IsETSAnyType()) {
+        return baseType;
+    }
+
     if (utilityType == compiler::Signatures::PARTIAL_TYPE_NAME) {
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         return CreatePartialType(baseType);
@@ -115,6 +119,10 @@ Type *ETSChecker::CreatePartialType(Type *const typeToBePartial)
 {
     ES2PANDA_ASSERT(typeToBePartial->IsETSReferenceType());
     if (typeToBePartial->IsTypeError()) {
+        return typeToBePartial;
+    }
+
+    if (typeToBePartial->IsETSAnyType()) {
         return typeToBePartial;
     }
 

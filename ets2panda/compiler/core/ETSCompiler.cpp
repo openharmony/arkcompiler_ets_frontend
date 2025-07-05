@@ -1665,6 +1665,7 @@ void ETSCompiler::CompileCast(const ir::TSAsExpression *expr) const
         case checker::TypeFlag::ETS_NONNULLISH:
         case checker::TypeFlag::ETS_PARTIAL_TYPE_PARAMETER:
         case checker::TypeFlag::ETS_UNION:
+        case checker::TypeFlag::ETS_ANY:
         case checker::TypeFlag::ETS_NULL:
         case checker::TypeFlag::ETS_UNDEFINED: {
             etsg->CastToReftype(expr, targetType, expr->isUncheckedCast_);

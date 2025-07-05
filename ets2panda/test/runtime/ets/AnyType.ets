@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,11 +13,29 @@
  * limitations under the License.
  */
 
-function foo<T, U>(p: T, q: U): T|U {
-    return (p! as object).toString() > (q! as object).toString() ? p : q
-}
+let a: Any
 
-function main() {
-    let v = foo(1.0, 11.0)
-    assertEQ(v as number, 11.0)
-}
+a = undefined
+a = new Object()
+a = null
+a = 1
+
+a = undefined as Any
+a = new Object() as Any
+a = null as Any
+a = 1 as Any
+
+function asgn<T = Any>(a: T): Any { return a }
+
+assertTrue(asgn(null) === null)
+assertTrue(asgn(undefined) === undefined)
+assertTrue(asgn("a") === "a")
+assertTrue(asgn(1) === 1)
+
+class C<out T> {}
+
+asgn<C<Any>>(new C<Any>())
+asgn<C<Any>>(new C<null>())
+asgn<C<Any>>(new C<number>())
+asgn<C<Any>>(new C<string>())
+asgn<C<Any>>(new C<never>())

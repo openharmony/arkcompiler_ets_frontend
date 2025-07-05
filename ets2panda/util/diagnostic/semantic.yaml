@@ -40,10 +40,6 @@ semantic:
   id: 7
   message: Cannot use array creation expression with type parameter.
 
-- name: NOT_COND_TYPE
-  id: 8
-  message: "Condition must be of possible condition type"
-
 - name: VOID_IN_LOGIC
   id: 9
   message: "An expression of type 'void' cannot be tested for truthiness"
@@ -123,10 +119,6 @@ semantic:
 - name: TEMPLATE_COUNT_MISMATCH
   id: 28
   message: "Invalid string template expression"
-
-- name: ASSERT_NOT_LOGICAL
-  id: 29
-  message: "Bad operand type, the type of the operand must be boolean type."
 
 - name: ASSERT_MESSAGE_NOT_STRING
   id: 30

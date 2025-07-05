@@ -1093,7 +1093,7 @@ std::pair<Type *, Type *> ETSChecker::CheckTestNullishCondition(Type *testedType
         return {GlobalETSUndefinedType(), RemoveUndefinedType(actualType)};
     }
 
-    return {GlobalETSNullishType(), GetNonNullishType(actualType)};
+    return {GlobalETSUnionUndefinedNull(), GetNonNullishType(actualType)};
 }
 
 // Auxiliary method to reduce the size of common 'CheckTestSmartCastConditions' function.

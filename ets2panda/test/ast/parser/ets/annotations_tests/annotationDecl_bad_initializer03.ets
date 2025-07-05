@@ -14,8 +14,8 @@
  */
 
 @interface MyAnno {
-    testProperty1: string = /* @@ label */[1,2,a]
+    testProperty1: string = [1,2,/* @@ label */a]
 }
 
 
-/* @@@ label Error TypeError: Expected type for array literal should be an array type, got String  */
+/* @@@ label Error TypeError: Unresolved reference a  */

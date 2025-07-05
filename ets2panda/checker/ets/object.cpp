@@ -374,7 +374,7 @@ void ETSChecker::SetUpTypeParameterConstraint(ir::TSTypeParameter *const param)
         traverseReferenced(param->Constraint());
         paramType->SetConstraintType(param->Constraint()->GetType(this));
     } else {
-        paramType->SetConstraintType(GlobalETSNullishObjectType());
+        paramType->SetConstraintType(GlobalETSAnyType());
     }
 
     if (param->DefaultType() != nullptr) {
@@ -399,7 +399,7 @@ ETSTypeParameter *ETSChecker::SetUpParameterType(ir::TSTypeParameter *const para
     paramType->SetDeclNode(param);
     paramType->SetVariable(param->Variable());
     // NOTE: #15026 recursive type parameter workaround
-    paramType->SetConstraintType(GlobalETSNullishObjectType());
+    paramType->SetConstraintType(GlobalETSAnyType());
 
     var->SetTsType(paramType);
     return paramType;

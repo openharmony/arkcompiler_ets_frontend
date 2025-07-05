@@ -55,8 +55,7 @@ void ETSChecker::CheckTruthinessOfType(ir::Expression *expr)
 
     expr->SetTsType(conditionType);
 
-    if (conditionType == nullptr || (!conditionType->IsTypeError() && !conditionType->IsConditionalExprType())) {
-        LogError(diagnostic::NOT_COND_TYPE, {}, expr->Start());
+    if (conditionType == nullptr) {
         return;
     }
 
@@ -94,6 +93,9 @@ Type *ETSChecker::GetNonNullishType(Type *type)
     if (type->DefinitelyNotETSNullish()) {
         return type;
     }
+    if (type->IsETSAnyType()) {
+        return type;
+    }
     if (type->IsETSTypeParameter()) {
         return ProgramAllocator()->New<ETSNonNullishType>(type->AsETSTypeParameter());
     }
@@ -116,7 +118,7 @@ Type *ETSChecker::GetNonNullishType(Type *type)
 
 Type *ETSChecker::RemoveNullType(Type *const type)
 {
-    if (type->DefinitelyNotETSNullish() || type->IsETSUndefinedType()) {
+    if (type->IsETSAnyType() || type->DefinitelyNotETSNullish() || type->IsETSUndefinedType()) {
         return type;
     }
 
@@ -144,7 +146,7 @@ Type *ETSChecker::RemoveNullType(Type *const type)
 
 Type *ETSChecker::RemoveUndefinedType(Type *const type)
 {
-    if (type->DefinitelyNotETSNullish() || type->IsETSNullType()) {
+    if (type->IsETSAnyType() || type->DefinitelyNotETSNullish() || type->IsETSNullType()) {
         return type;
     }
 
@@ -176,8 +178,12 @@ std::pair<Type *, Type *> ETSChecker::RemoveNullishTypes(Type *type)
         return {GetGlobalTypesHolder()->GlobalETSNeverType(), type};
     }
 
+    if (type->IsETSAnyType()) {
+        return {type, type};
+    }
+
     if (type->IsETSTypeParameter()) {
-        return {GetGlobalTypesHolder()->GlobalETSNullishType(),
+        return {GetGlobalTypesHolder()->GlobalETSUnionUndefinedNull(),
                 ProgramAllocator()->New<ETSNonNullishType>(type->AsETSTypeParameter())};
     }
 
@@ -251,21 +257,21 @@ static bool MatchConstituentOrConstraint(const Type *type, Pred const &pred)
 bool Type::PossiblyETSNull() const
 {
     return MatchConstituentOrConstraint(
-        this, [](const Type *t) { return t->IsETSNullType(); },
+        this, [](const Type *t) { return t->IsETSAnyType() || t->IsETSNullType(); },
         [](const Type *t) { return !t->IsETSNonNullishType(); });
 }
 
 bool Type::PossiblyETSUndefined() const
 {
     return MatchConstituentOrConstraint(
-        this, [](const Type *t) { return t->IsETSUndefinedType(); },
+        this, [](const Type *t) { return t->IsETSAnyType() || t->IsETSUndefinedType(); },
         [](const Type *t) { return !t->IsETSNonNullishType(); });
 }
 
 bool Type::PossiblyETSNullish() const
 {
     return MatchConstituentOrConstraint(
-        this, [](const Type *t) { return t->IsETSNullType() || t->IsETSUndefinedType(); },
+        this, [](const Type *t) { return t->IsETSAnyType() || t->IsETSNullType() || t->IsETSUndefinedType(); },
         [](const Type *t) { return !t->IsETSNonNullishType(); });
 }
 
@@ -287,7 +293,8 @@ bool Type::DefinitelyNotETSNullish() const
 bool Type::PossiblyETSString() const
 {
     return MatchConstituentOrConstraint(this, [](const Type *t) {
-        return t->IsETSStringType() || (t->IsETSObjectType() && t->AsETSObjectType()->IsGlobalETSObjectType());
+        return t->IsETSAnyType() || t->IsETSStringType() ||
+               (t->IsETSObjectType() && t->AsETSObjectType()->IsGlobalETSObjectType());
     });
 }
 
@@ -308,7 +315,8 @@ bool Type::PossiblyETSValueTyped() const
 bool Type::PossiblyETSValueTypedExceptNullish() const
 {
     return MatchConstituentOrConstraint(this, [](const Type *t) {
-        return t->IsETSFunctionType() || (t->IsETSObjectType() && IsValueTypedObjectType(t->AsETSObjectType()));
+        return t->IsETSAnyType() || t->IsETSFunctionType() ||
+               (t->IsETSObjectType() && IsValueTypedObjectType(t->AsETSObjectType()));
     });
 }
 
@@ -328,9 +336,9 @@ bool Type::IsETSMethodType() const
     static constexpr TypeFlag ETS_SANE_REFERENCE_TYPE =
         TypeFlag::TYPE_ERROR | TypeFlag::ETS_NULL | TypeFlag::ETS_UNDEFINED | TypeFlag::ETS_OBJECT |
         TypeFlag::ETS_TYPE_PARAMETER | TypeFlag::WILDCARD | TypeFlag::ETS_NONNULLISH |
-        TypeFlag::ETS_REQUIRED_TYPE_PARAMETER | TypeFlag::ETS_NEVER | TypeFlag::ETS_UNION | TypeFlag::ETS_ARRAY |
-        TypeFlag::FUNCTION | TypeFlag::ETS_PARTIAL_TYPE_PARAMETER | TypeFlag::ETS_TUPLE | TypeFlag::ETS_ENUM |
-        TypeFlag::ETS_READONLY;
+        TypeFlag::ETS_REQUIRED_TYPE_PARAMETER | TypeFlag::ETS_ANY | TypeFlag::ETS_NEVER | TypeFlag::ETS_UNION |
+        TypeFlag::ETS_ARRAY | TypeFlag::FUNCTION | TypeFlag::ETS_PARTIAL_TYPE_PARAMETER | TypeFlag::ETS_TUPLE |
+        TypeFlag::ETS_ENUM | TypeFlag::ETS_READONLY;
 
     // Issues
     if (type->IsETSVoidType()) {  // NOTE(vpukhov): #19701 void refactoring
@@ -340,7 +348,7 @@ bool Type::IsETSMethodType() const
         return true;
     }
     if (type->IsNeverType()) {  // NOTE(vpukhov): #20562 We use ets/never and ts/never simultaneously
-        return true;
+        ES2PANDA_UNREACHABLE();
     }
     return type->HasTypeFlag(ETS_SANE_REFERENCE_TYPE);
 }
@@ -1195,7 +1203,7 @@ Type *ETSChecker::MaybeUnboxConditionalInRelation(Type *const objectType)
         return objectType;
     }
 
-    if ((objectType == nullptr) || !objectType->IsConditionalExprType()) {
+    if (objectType == nullptr) {
         return nullptr;
     }
 
