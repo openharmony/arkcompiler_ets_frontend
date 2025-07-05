@@ -169,6 +169,10 @@ syntax:
   id: 133
   message: "Default value is allowed only for optional parameters."
 
+- name: DEFAULT_PARAM_IN_DECLARE
+  id: 328
+  message: "A parameter initializer is only allowed in a function or constructor implementation."
+
 - name: DEFAULT_UNDEF_NOT_ALLOWED
   id: 132
   message: "Not enable default value with default undefined."
