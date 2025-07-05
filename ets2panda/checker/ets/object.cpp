@@ -471,9 +471,12 @@ Type *ETSChecker::BuildBasicInterfaceProperties(ir::TSInterfaceDeclaration *inte
         interfaceType->SetVariable(var);
         type = Program()->IsDeclForDynamicStaticInterop() ? CreateGradualType(interfaceType) : interfaceType;
         var->SetTsType(type);
-    } else {
+    } else if (var->TsType()->MaybeBaseTypeOfGradualType()->IsETSObjectType()) {
         interfaceType = var->TsType()->MaybeBaseTypeOfGradualType()->AsETSObjectType();
         type = Program()->IsDeclForDynamicStaticInterop() ? CreateGradualType(interfaceType) : interfaceType;
+    } else {
+        ES2PANDA_ASSERT(IsAnyError());
+        return GlobalTypeError();
     }
 
     // Save before we mess with savedContext.
@@ -525,7 +528,7 @@ Type *ETSChecker::BuildBasicClassProperties(ir::ClassDefinition *classDef)
         if (classDef->IsAbstract()) {
             classType->AddObjectFlag(checker::ETSObjectFlags::ABSTRACT);
         }
-    } else if (var->TsType()->IsETSObjectType()) {
+    } else if (var->TsType()->MaybeBaseTypeOfGradualType()->IsETSObjectType()) {
         classType = var->TsType()->MaybeBaseTypeOfGradualType()->AsETSObjectType();
         type = Program()->IsDeclForDynamicStaticInterop() ? CreateGradualType(classType) : classType;
     } else {
