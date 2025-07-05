@@ -145,6 +145,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 80,
+            "column": 11,
+            "endLine": 80,
+            "endColumn": 15,
+            "problem": "NoTsLikeSmartType",
+            "suggest": "",
+            "rule": "Smart type differences (arkts-no-ts-like-smart-type)",
+            "severity": "ERROR"
+        },
+        {
             "line": 87,
             "column": 16,
             "endLine": 87,

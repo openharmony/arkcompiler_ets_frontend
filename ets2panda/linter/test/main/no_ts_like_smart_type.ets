@@ -149,3 +149,16 @@ if ((b.a?.f() ?? 0) > 0) {
   console.log('ok');
 }
 const val = b.a.f(); //Error
+
+
+function foo4(uri: string | number | boolean) : string {
+  return uri as string
+}
+
+class AA {
+  public static starUrl(url: string)  {
+    if (url?startsWith('http')) {
+      url = `https:/test?appid=2000?url=${foo4(url)}`;
+    }
+  }
+}

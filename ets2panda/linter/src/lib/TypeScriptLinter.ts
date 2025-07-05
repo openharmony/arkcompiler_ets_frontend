@@ -639,7 +639,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     return (
       ts.isPropertyAssignment(prop) ||
       ts.isShorthandPropertyAssignment(prop) &&
-        (ts.isCallExpression(objLitExpr.parent) || ts.isNewExpression(objLitExpr.parent))
+      (ts.isCallExpression(objLitExpr.parent) || ts.isNewExpression(objLitExpr.parent))
     );
   }
 
@@ -4095,7 +4095,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStdRecordType) ||
       this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStringType) ||
       !this.options.arkts2 &&
-        (this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStdMapType) || TsUtils.isIntrinsicObjectType(type)) ||
+      (this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStdMapType) || TsUtils.isIntrinsicObjectType(type)) ||
       TsUtils.isEnumType(type) ||
       // we allow EsObject here beacuse it is reported later using FaultId.EsObjectType
       TsUtils.isEsValueType(typeNode)
@@ -6450,7 +6450,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (
       this.compatibleSdkVersion > SENDBALE_FUNCTION_START_VERSION ||
       this.compatibleSdkVersion === SENDBALE_FUNCTION_START_VERSION &&
-        !SENDABLE_FUNCTION_UNSUPPORTED_STAGES_IN_API12.includes(this.compatibleSdkVersionStage)
+      !SENDABLE_FUNCTION_UNSUPPORTED_STAGES_IN_API12.includes(this.compatibleSdkVersionStage)
     ) {
       return true;
     }
@@ -6664,10 +6664,10 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       const typeText = this.tsTypeChecker.typeToString(t);
       return Boolean(
         t.flags & ts.TypeFlags.StringLike ||
-          typeText === 'String' ||
-          t.flags & ts.TypeFlags.NumberLike && (/^\d+$/).test(typeText) ||
-          isLiteralInitialized && !hasExplicitTypeAnnotation && !isFloatLiteral ||
-          t.flags & ts.TypeFlags.EnumLike
+        typeText === 'String' ||
+        t.flags & ts.TypeFlags.NumberLike && (/^\d+$/).test(typeText) ||
+        isLiteralInitialized && !hasExplicitTypeAnnotation && !isFloatLiteral ||
+        t.flags & ts.TypeFlags.EnumLike
       );
     };
 
@@ -6939,9 +6939,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
     if (
       this.tsUtils.isOrDerivedFrom(lhsType, this.tsUtils.isArray) &&
-        this.tsUtils.isOrDerivedFrom(rhsType, TsUtils.isTuple) ||
+      this.tsUtils.isOrDerivedFrom(rhsType, TsUtils.isTuple) ||
       this.tsUtils.isOrDerivedFrom(rhsType, this.tsUtils.isArray) &&
-        this.tsUtils.isOrDerivedFrom(lhsType, TsUtils.isTuple)
+      this.tsUtils.isOrDerivedFrom(lhsType, TsUtils.isTuple)
     ) {
       this.incrementCounters(node, FaultID.NoTuplesArrays);
     }
@@ -10185,11 +10185,23 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         return;
       }
       const expectedType = parameterTypes[index];
+      let expectedUnionType: string[] = [];
+      if (expectedType.includes('|')) {
+        expectedUnionType = expectedType.split('|').map((item) => { 
+          return item.trim(); 
+        });
+      }
       const actualSym = this.tsTypeChecker.getSymbolAtLocation(arg);
       const decl = TsUtils.getDeclaration(actualSym);
       if (decl && ts.isParameter(decl) && decl.type) {
         const actualType = this.tsTypeChecker.getTypeFromTypeNode(decl.type);
         const actualTypeName = this.tsTypeChecker.typeToString(actualType);
+        if (expectedUnionType.length > 0) {
+          if (!expectedUnionType.includes(actualTypeName)) { 
+            this.incrementCounters(arg, FaultID.NoTsLikeSmartType); 
+          }
+          return;
+        }
         if (actualTypeName !== expectedType) {
           this.incrementCounters(arg, FaultID.NoTsLikeSmartType);
         }
@@ -11003,9 +11015,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return (
         (argType.flags & ts.TypeFlags.NumberLike) !== 0 ||
         argType.isUnionOrIntersection() &&
-          argType.types.some((t) => {
-            return t.flags & ts.TypeFlags.NumberLike;
-          })
+        argType.types.some((t) => {
+          return t.flags & ts.TypeFlags.NumberLike;
+        })
       );
     };
 
