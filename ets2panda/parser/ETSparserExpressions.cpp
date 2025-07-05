@@ -68,6 +68,7 @@ ir::Expression *ETSParser::ParseFunctionParameterExpression(ir::AnnotatedExpress
         }
 
         paramExpression = AllocNode<ir::ETSParameterExpression>(paramIdent->AsIdentifier(), defaultValue, Allocator());
+        ES2PANDA_ASSERT(paramExpression != nullptr);
 
         std::string value = GetArgumentsSourceView(Lexer(), lexerPos);
         paramExpression->SetLexerSaved(util::UString(value, Allocator()).View());
@@ -163,6 +164,7 @@ ir::Expression *ETSParser::ParseUnaryOrPrefixUpdateExpression(ExpressionParseFla
     ir::Expression *argument = ResolveArgumentUnaryExpr(flags);
     if (operatorType == lexer::TokenType::KEYW_AWAIT) {
         auto *awaitExpr = AllocNode<ir::AwaitExpression>(argument);
+        ES2PANDA_ASSERT(awaitExpr != nullptr);
         awaitExpr->SetRange({start, argument->End()});
         return awaitExpr;
     }
@@ -208,6 +210,7 @@ ir::Expression *ETSParser::ParsePropertyDefinition(ExpressionParseFlags flags)
     ir::Expression *key = ParsePropertyKey(flags);
 
     ir::Expression *value = ParsePropertyValue(&propertyKind, &methodStatus, flags);
+    ES2PANDA_ASSERT(value != nullptr);
     lexer::SourcePosition end = value->End();
 
     ir::Expression *returnProperty = nullptr;
@@ -255,6 +258,7 @@ ir::Expression *ETSParser::ParseDefaultPrimaryExpression(ExpressionParseFlags fl
         if (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_CLASS || IsStructKeyword()) {
             Lexer()->NextToken();  // eat 'class' and 'struct'
             auto *classLiteral = AllocNode<ir::ETSClassLiteral>(potentialType);
+            ES2PANDA_ASSERT(classLiteral != nullptr);
             classLiteral->SetRange({startLoc, Lexer()->GetToken().End()});
             return classLiteral;
         }
@@ -477,6 +481,7 @@ ir::ArrowFunctionExpression *ETSParser::ParseArrowFunctionExpression()
     auto newStatus = ParserStatus::ARROW_FUNCTION | ParserStatus::ALLOW_RECEIVER;
     auto *func = ParseFunction(newStatus);
     auto *arrowFuncNode = AllocNode<ir::ArrowFunctionExpression>(func, Allocator());
+    ES2PANDA_ASSERT(arrowFuncNode != nullptr);
     arrowFuncNode->SetRange(func->Range());
     return arrowFuncNode;
 }
@@ -605,6 +610,7 @@ ir::Expression *ETSParser::ParsePotentialAsExpression(ir::Expression *primaryExp
     }
 
     auto *asExpression = AllocNode<ir::TSAsExpression>(primaryExpr, type, false);
+    ES2PANDA_ASSERT(asExpression != nullptr);
     asExpression->SetRange(primaryExpr->Range());
     return asExpression;
 }
@@ -672,6 +678,7 @@ ir::Expression *ETSParser::ParseNewExpression()
         } while (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET);
 
         auto *multiArray = AllocNode<ir::ETSNewMultiDimArrayInstanceExpression>(typeReference, std::move(dimensions));
+        ES2PANDA_ASSERT(multiArray != nullptr);
         multiArray->SetRange({start, endLoc});
         return multiArray;
     }
@@ -699,6 +706,7 @@ ir::Expression *ETSParser::ParseAsyncExpression()
         return nullptr;
     }
     auto *arrowFuncNode = AllocNode<ir::ArrowFunctionExpression>(func, Allocator());
+    ES2PANDA_ASSERT(arrowFuncNode != nullptr);
     arrowFuncNode->SetRange(func->Range());
     return arrowFuncNode;
 }
@@ -709,6 +717,7 @@ ir::Expression *ETSParser::ParseAwaitExpression()
     Lexer()->NextToken();
     ir::Expression *argument = ParseExpression();
     auto *awaitExpression = AllocNode<ir::AwaitExpression>(argument);
+    ES2PANDA_ASSERT(awaitExpression != nullptr);
     awaitExpression->SetRange({start, Lexer()->GetToken().End()});
     return awaitExpression;
 }
@@ -735,6 +744,7 @@ bool ETSParser::ParsePotentialNonNullExpression(ir::Expression **expression, con
     }
 
     const auto nonNullExpr = AllocNode<ir::TSNonNullExpression>(*expression);
+    ES2PANDA_ASSERT(nonNullExpr != nullptr);
     nonNullExpr->SetRange({startLoc, Lexer()->GetToken().End()});
 
     *expression = nonNullExpr;

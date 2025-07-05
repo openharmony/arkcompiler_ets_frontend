@@ -934,6 +934,7 @@ Type *ETSChecker::CheckBinaryOperatorNullishCoalescing(ir::Expression *left, ir:
         LogError(diagnostic::COALESCE_NOT_REF, {}, pos);
     }
     leftType = GetNonNullishType(leftType);
+    ES2PANDA_ASSERT(leftType != nullptr);
     if (leftType->IsTypeError()) {
         ES2PANDA_ASSERT(IsAnyError());
         return GlobalTypeError();

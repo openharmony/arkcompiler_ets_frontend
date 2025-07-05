@@ -215,6 +215,7 @@ bool ETSChecker::ComputeSuperType(ETSObjectType *type)
 void ETSChecker::ValidateImplementedInterface(ETSObjectType *type, Type *interface,
                                               std::unordered_set<Type *> *extendsSet, const lexer::SourcePosition &pos)
 {
+    ES2PANDA_ASSERT(interface != nullptr);
     interface = interface->MaybeBaseTypeOfGradualType();
     if (interface->IsETSObjectType() && interface->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::CLASS)) {
         LogError(diagnostic::INTERFACE_EXTENDS_CLASS, {}, pos);
@@ -428,7 +429,7 @@ ETSTypeParameter *ETSChecker::SetUpParameterType(ir::TSTypeParameter *const para
     }
 
     auto *const paramType = CreateTypeParameter();
-
+    ES2PANDA_ASSERT(paramType != nullptr);
     paramType->AddTypeFlag(TypeFlag::GENERIC);
     paramType->SetDeclNode(param);
     paramType->SetVariable(param->Variable());
@@ -564,6 +565,7 @@ ETSObjectType *ETSChecker::BuildAnonymousClassProperties(ir::ClassDefinition *cl
 {
     auto classType = CreateETSObjectType(classDef, checker::ETSObjectFlags::CLASS);
     classDef->SetTsType(classType);
+    ES2PANDA_ASSERT(classType != nullptr);
     classType->SetSuperType(superType);
     classType->AddObjectFlag(checker::ETSObjectFlags::RESOLVED_SUPER);
 
@@ -589,6 +591,7 @@ static void ResolveDeclaredFieldsOfObject(ETSChecker *checker, const ETSObjectTy
     }
 }
 
+// CC-OFFNXT(huge_method[C++], G.FUN.01-CPP) solid logic
 static void ResolveDeclaredMethodsOfObject(ETSChecker *checker, const ETSObjectType *type, varbinder::ClassScope *scope)
 {
     for (auto &[_, it] : scope->InstanceMethodScope()->Bindings()) {
@@ -596,6 +599,7 @@ static void ResolveDeclaredMethodsOfObject(ETSChecker *checker, const ETSObjectT
         if (it->Declaration()->Node()->IsMethodDefinition()) {
             auto *method = it->Declaration()->Node()->AsMethodDefinition();
             auto *function = method->Function();
+            ES2PANDA_ASSERT(function != nullptr);
             if (function->IsProxy()) {
                 continue;
             }
@@ -919,6 +923,7 @@ void ETSChecker::CheckFunctionRedeclarationInInterface(ETSObjectType *classType,
         if (sig == sigFunc) {
             return;
         }
+        ES2PANDA_ASSERT(sigFunc != nullptr);
         if (sigFunc->Function()->Id()->Name() == sig->Function()->Id()->Name()) {
             if (classType->IsSameBasedGeneric(Relation(), sig->Owner())) {
                 return;
@@ -938,6 +943,7 @@ static void CallRedeclarationCheckForCorrectSignature(ir::MethodDefinition *meth
                                                       ETSObjectType *classType, ETSChecker *checker)
 {
     ir::ScriptFunction *func = method->Function();
+    ES2PANDA_ASSERT(func != nullptr);
     if (!func->IsAbstract()) {
         auto *sigFunc = funcType->FindSignature(func);
         checker->CheckFunctionRedeclarationInInterface(classType, similarSignatures, sigFunc);
@@ -1812,6 +1818,7 @@ void ETSChecker::CheckCyclicConstructorCall(Signature *signature)
 
 ETSObjectType *ETSChecker::CheckExceptionOrErrorType(checker::Type *type, const lexer::SourcePosition pos)
 {
+    ES2PANDA_ASSERT(type != nullptr);
     if (!type->IsETSObjectType() || (!Relation()->IsAssignableTo(type, GlobalBuiltinExceptionType()) &&
                                      !Relation()->IsAssignableTo(type, GlobalBuiltinErrorType()))) {
         LogError(diagnostic::CATCH_OR_THROW_OF_INVALID_TYPE,
@@ -2324,7 +2331,8 @@ void ETSChecker::WarnForEndlessLoopInGetterSetter(const ir::MemberExpression *co
                                               !parent->AsMethodDefinition()->Function()->IsSetter()))) {
         parent = parent->Parent();
     }
-    if (parent != nullptr && ident->Name() == parent->AsMethodDefinition()->Function()->Id()->Name()) {
+    if (parent != nullptr && parent->AsMethodDefinition()->Function() != nullptr &&
+        ident->Name() == parent->AsMethodDefinition()->Function()->Id()->Name()) {
         if (parent->AsMethodDefinition()->Function()->IsGetter()) {
             LogDiagnostic(diagnostic::GETTER_LOOP, memberExpr->Property()->AsIdentifier()->Start());
         } else {
@@ -2568,7 +2576,7 @@ Type *ETSChecker::GetApparentType(Type *type)
         apparentTypes.insert({res, res});
         return res;
     };
-
+    ES2PANDA_ASSERT(type != nullptr);
     if (type->IsGradualType()) {
         return cached(type->AsGradualType()->GetBaseType());
     }

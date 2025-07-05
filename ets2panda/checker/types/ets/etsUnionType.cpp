@@ -65,6 +65,7 @@ bool ETSUnionType::TypeRelatedToSomeType(TypeRelation *relation, Type *source, E
 Type *ETSUnionType::ComputeAssemblerLUB(ETSChecker *checker, ETSUnionType *un)
 {
     auto *const apparent = checker->GetApparentType(un);
+    ES2PANDA_ASSERT(apparent != nullptr);
     if (!apparent->IsETSUnionType()) {
         return apparent;
     }
@@ -368,6 +369,7 @@ bool ETSUnionType::ExtractType(checker::ETSChecker *checker, checker::Type *sour
             constituentType = constituentType->AsETSTypeParameter()->GetConstraintType();
         } else if (constituentType->HasTypeFlag(checker::TypeFlag::GENERIC)) {
             constituentType = constituentType->Clone(checker);
+            ES2PANDA_ASSERT(constituentType != nullptr);
             constituentType->RemoveTypeFlag(checker::TypeFlag::GENERIC);
         }
 

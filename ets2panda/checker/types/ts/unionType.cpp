@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -111,6 +111,7 @@ void UnionType::RemoveDuplicatedTypes(TypeRelation *relation, ArenaVector<Type *
 
 Type *UnionType::HandleUnionType(UnionType *unionType, GlobalTypesHolder *globalTypesHolder)
 {
+    ES2PANDA_ASSERT(unionType != nullptr);
     if (unionType->HasConstituentFlag(TypeFlag::ANY)) {
         return globalTypesHolder->GlobalAnyType();
     }
@@ -184,6 +185,7 @@ Type *UnionType::Instantiate(ArenaAllocator *allocator, TypeRelation *relation, 
 
     Type *newUnionType = allocator->New<UnionType>(allocator, std::move(copiedConstituents));
 
+    ES2PANDA_ASSERT(newUnionType != nullptr);
     return HandleUnionType(newUnionType->AsUnionType(), globalTypes);
 }
 }  // namespace ark::es2panda::checker

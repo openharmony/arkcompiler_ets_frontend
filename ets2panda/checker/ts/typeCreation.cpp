@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -125,6 +125,7 @@ Type *TSChecker::CreateUnionType(ArenaVector<Type *> &&constituentTypes)
 Type *TSChecker::CreateObjectTypeWithCallSignature(Signature *callSignature)
 {
     auto *objType = Allocator()->New<ObjectLiteralType>(Allocator()->New<ObjectDescriptor>(Allocator()));
+    ES2PANDA_ASSERT(objType != nullptr);
     objType->AddCallSignature(callSignature);
     return objType;
 }
@@ -132,6 +133,7 @@ Type *TSChecker::CreateObjectTypeWithCallSignature(Signature *callSignature)
 Type *TSChecker::CreateObjectTypeWithConstructSignature(Signature *constructSignature)
 {
     auto *objType = Allocator()->New<ObjectLiteralType>(Allocator()->New<ObjectDescriptor>(Allocator()));
+    ES2PANDA_ASSERT(objType != nullptr);
     objType->AddConstructSignature(constructSignature);
     return objType;
 }
@@ -139,6 +141,7 @@ Type *TSChecker::CreateObjectTypeWithConstructSignature(Signature *constructSign
 Type *TSChecker::CreateFunctionTypeWithSignature(Signature *callSignature)
 {
     auto *funcObjType = Allocator()->New<FunctionType>(Allocator()->New<ObjectDescriptor>(Allocator()));
+    ES2PANDA_ASSERT(funcObjType != nullptr);
     funcObjType->AddCallSignature(callSignature);
     return funcObjType;
 }
@@ -146,6 +149,7 @@ Type *TSChecker::CreateFunctionTypeWithSignature(Signature *callSignature)
 Type *TSChecker::CreateConstructorTypeWithSignature(Signature *constructSignature)
 {
     auto *constructObjType = Allocator()->New<ConstructorType>(Allocator()->New<ObjectDescriptor>(Allocator()));
+    ES2PANDA_ASSERT(constructObjType != nullptr);
     constructObjType->AddConstructSignature(constructSignature);
     return constructObjType;
 }
