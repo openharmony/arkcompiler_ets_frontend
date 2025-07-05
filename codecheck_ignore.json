@@ -8,9 +8,18 @@
     "test_ecma_bcopt": "*",
     "legacy_bin": "*",
     "merge_abc": "*",
+    "ets2panda/bindings/src": "*",
+    "ets2panda/driver/build_system/src": "*",
     "ets2panda/public/headers_parser": "*",
     "ets2panda/linter/arkanalyzer": "*",
     "ets2panda/linter/homecheck": "*",
+    "ets2panda/linter/build_linter.py": "*",
+    "ets2panda/linter/src/cli/CommandLineParser.ts": "*",
+    "ets2panda/linter/src/lib/TypeScriptLinter.ts": "*",
+    "ets2panda/linter/src/lib/autofixes/Autofixer.ts": "*",
+    "ets2panda/linter/src/lib/autofixes/QuasiEditor.ts": "*",
+    "ets2panda/linter/src/lib/statistics/scan/ProblemStatisticsCommonFunction.ts": "*",
+    "ets2panda/linter/src/lib/utils/functions/ConfiguredRulesProcess.ts": "*",
     "*": ["G.CMT.03", "G.FMT.11", "G.NAM.03", "huge_headerfile", "huge_non_headerfile", "bc-30001"]
 }
 
