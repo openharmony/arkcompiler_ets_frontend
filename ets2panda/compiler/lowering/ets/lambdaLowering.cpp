@@ -25,6 +25,7 @@ namespace ark::es2panda::compiler {
 
 struct LambdaInfo {
     ir::ClassDeclaration *calleeClass = nullptr;
+    ir::TSInterfaceDeclaration *calleeInterface = nullptr;
     ir::ScriptFunction *enclosingFunction = nullptr;
     util::StringView name = "";
     util::StringView originalFuncName = "";
@@ -424,10 +425,12 @@ static void CreateLambdaClassFields(public_lib::Context *ctx, ir::ClassDefinitio
     auto *checker = ctx->checker->AsETSChecker();
     auto props = ArenaVector<ir::AstNode *>(allocator->Adapter());
 
+    checker::Type *objectType =
+        info->calleeClass != nullptr ? info->calleeClass->Definition()->TsType() : info->calleeInterface->TsType();
+
     if (info->callReceiver != nullptr) {
         auto *outerThisDeclaration = parser->CreateFormattedClassFieldDefinition(
-            "@@I1: @@T2", "$this",
-            info->calleeClass->Definition()->TsType()->Substitute(checker->Relation(), substitution));
+            "@@I1: @@T2", "$this", objectType->Substitute(checker->Relation(), substitution));
         props.push_back(outerThisDeclaration);
     }
 
@@ -457,8 +460,11 @@ static void CreateLambdaClassConstructor(public_lib::Context *ctx, ir::ClassDefi
         params.push_back(param);
     };
 
+    checker::Type *objectType =
+        info->calleeClass != nullptr ? info->calleeClass->Definition()->TsType() : info->calleeInterface->TsType();
+
     if (info->callReceiver != nullptr) {
-        makeParam("$this", info->calleeClass->Definition()->TsType());
+        makeParam("$this", objectType);
     }
     for (auto *var : *info->capturedVars) {
         makeParam(AvoidMandatoryThis(var->Name()), var->TsType());
@@ -805,7 +811,11 @@ static ir::ClassDeclaration *CreateEmptyLambdaClassDeclaration(public_lib::Conte
     auto *varBinder = ctx->checker->VarBinder()->AsETSBinder();
 
     auto lambdaClassName = util::UString {std::string_view {"LambdaObject-"}, allocator};
-    lambdaClassName.Append(info->calleeClass->Definition()->Ident()->Name()).Append("$").Append(info->name);
+
+    util::StringView &objectName = info->calleeClass != nullptr ? info->calleeClass->Definition()->Ident()->Name()
+                                                                : info->calleeInterface->Id()->Name();
+
+    lambdaClassName.Append(objectName).Append("$").Append(info->name);
 
     auto *providerTypeReference = checker->AllocNode<ir::ETSTypeReference>(
         checker->AllocNode<ir::ETSTypeReferencePart>(
@@ -924,8 +934,10 @@ static ir::ETSNewClassInstanceExpression *CreateConstructorCall(public_lib::Cont
     auto lexScope = varbinder::LexicalScope<varbinder::Scope>::Enter(varBinder, nearestScope);
     varBinder->ResolveReferencesForScopeWithContext(newExpr, nearestScope);
 
-    auto checkerCtx = checker::SavedCheckerContext(ctx->checker, checker::CheckerStatus::IN_CLASS,
-                                                   info->calleeClass->Definition()->TsType()->AsETSObjectType());
+    checker::Type *objectType =
+        info->calleeClass != nullptr ? info->calleeClass->Definition()->TsType() : info->calleeInterface->TsType();
+    auto checkerCtx =
+        checker::SavedCheckerContext(ctx->checker, checker::CheckerStatus::IN_CLASS, objectType->AsETSObjectType());
     auto scopeCtx = checker::ScopeContext(ctx->checker, nearestScope);
     newExpr->Check(checker);
 
@@ -1034,9 +1046,34 @@ static ir::ArrowFunctionExpression *CreateWrappingLambda(public_lib::Context *ct
     return lambda;
 }
 
-static ir::AstNode *ConvertFunctionReference(public_lib::Context *ctx, ir::Expression *funcRef)
+static LambdaInfo GenerateLambdaInfoForFunctionReference(public_lib::Context *ctx, ir::Expression *funcRef,
+                                                         ir::MethodDefinition *method)
 {
     auto *allocator = ctx->allocator;
+    LambdaInfo info;
+    if (method->Parent()->Parent()->IsClassDeclaration()) {
+        info.calleeClass = method->Parent()->Parent()->AsClassDeclaration();
+    } else if (method->Parent()->Parent()->IsTSInterfaceDeclaration()) {
+        info.calleeInterface = method->Parent()->Parent()->AsTSInterfaceDeclaration();
+    } else {
+        ES2PANDA_UNREACHABLE();
+    }
+    info.enclosingFunction = nullptr;
+    info.name = CreateCalleeName(allocator);
+    info.originalFuncName = method->Id()->Name();
+    info.capturedVars = allocator->New<ArenaSet<varbinder::Variable *>>(allocator->Adapter());
+    info.isFunctionReference = true;
+    if (method->IsStatic()) {
+        info.callReceiver = nullptr;
+    } else {
+        ES2PANDA_ASSERT(funcRef->IsMemberExpression());
+        info.callReceiver = funcRef->AsMemberExpression()->Object();
+    }
+    return info;
+}
+
+static ir::AstNode *ConvertFunctionReference(public_lib::Context *ctx, ir::Expression *funcRef)
+{
     ES2PANDA_ASSERT(funcRef->IsIdentifier() ||
                     (funcRef->IsMemberExpression() &&
                      funcRef->AsMemberExpression()->Kind() == ir::MemberExpressionKind::PROPERTY_ACCESS &&
@@ -1071,20 +1108,7 @@ static ir::AstNode *ConvertFunctionReference(public_lib::Context *ctx, ir::Expre
         return lam == nullptr ? funcRef : ConvertLambda(ctx, lam);
     }
 
-    LambdaInfo info;
-    info.calleeClass = method->Parent()->Parent()->AsClassDeclaration();
-    info.enclosingFunction = nullptr;
-    info.name = CreateCalleeName(allocator);
-    info.originalFuncName = method->Id()->Name();
-    auto emptySet = ArenaSet<varbinder::Variable *>(allocator->Adapter());
-    info.capturedVars = &emptySet;
-    info.isFunctionReference = true;
-    if (method->IsStatic()) {
-        info.callReceiver = nullptr;
-    } else {
-        ES2PANDA_ASSERT(funcRef->IsMemberExpression());
-        info.callReceiver = funcRef->AsMemberExpression()->Object();
-    }
+    LambdaInfo info = GenerateLambdaInfoForFunctionReference(ctx, funcRef, method);
 
     ES2PANDA_ASSERT(funcRef->TsType()->IsETSArrowType());
     auto *lambdaClass = CreateLambdaClass(ctx, funcRef->TsType()->AsETSFunctionType(), method, &info);
