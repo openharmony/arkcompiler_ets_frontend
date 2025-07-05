@@ -54,6 +54,7 @@ public:
     Item *Append(const T &data)
     {
         auto item = allocator_->New<Item>();
+        ES2PANDA_ASSERT(item != nullptr);
         item->data = data;
         Append(item);
         return item;
@@ -77,6 +78,7 @@ public:
     Item *Prepend(const T &data)
     {
         auto item = allocator_->New<Item>();
+        ES2PANDA_ASSERT(item != nullptr);
         item->data = data;
         Prepend(item);
         return item;
@@ -100,6 +102,7 @@ public:
     Item *Insert(Item *after, const T &data)
     {
         auto item = allocator_->New<Item>();
+        ES2PANDA_ASSERT(item != nullptr);
         item->data = data;
         Insert(after, item);
         return item;
