@@ -385,10 +385,11 @@ bool ETSChecker::CheckOptionalLambdaFunction(ir::Expression *argument, Signature
     return false;
 }
 
-bool ETSChecker::ValidateArgumentAsIdentifier(const ir::Identifier *identifier)
+static bool IsInvalidArgumentAsIdentifier(varbinder::Scope *scope, const ir::Identifier *identifier)
 {
-    auto result = Scope()->Find(identifier->Name());
-    return result.variable != nullptr && (result.variable->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE));
+    auto result = scope->Find(identifier->Name());
+    return result.variable != nullptr && (result.variable->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE |
+                                                                   varbinder::VariableFlags::TYPE_ALIAS));
 }
 
 static void ClearPreferredTypeForArray(checker::ETSChecker *checker, ir::Expression *argument, Type *paramType,
@@ -476,7 +477,7 @@ bool ETSChecker::ValidateSignatureRequiredParams(Signature *substitutedSig,
 
         ClearPreferredTypeForArray(this, argument, paramType, flags, false);
 
-        if (argument->IsIdentifier() && ValidateArgumentAsIdentifier(argument->AsIdentifier())) {
+        if (argument->IsIdentifier() && IsInvalidArgumentAsIdentifier(Scope(), argument->AsIdentifier())) {
             LogError(diagnostic::ARG_IS_CLASS_ID, {}, argument->Start());
             return false;
         }
@@ -2692,7 +2693,7 @@ bool ETSChecker::ValidateOrderSignatureRequiredParams(Signature *substitutedSig,
             return false;
         }
 
-        if (argument->IsIdentifier() && ValidateArgumentAsIdentifier(argument->AsIdentifier())) {
+        if (argument->IsIdentifier() && IsInvalidArgumentAsIdentifier(Scope(), argument->AsIdentifier())) {
             LogError(diagnostic::ARG_IS_CLASS_ID, {}, argument->Start());
             return false;
         }
