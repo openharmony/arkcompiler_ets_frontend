@@ -361,7 +361,9 @@ checker::Type *ETSAnalyzer::Check(ir::OverloadDeclaration *node) const
     }
 
     if (node->IsFunctionOverloadDeclaration()) {
-        ES2PANDA_ASSERT(node->Parent()->IsClassDefinition() && compiler::HasGlobalClassParent(node));
+        ES2PANDA_ASSERT(
+            node->Parent()->IsClassDefinition() &&
+            (compiler::HasGlobalClassParent(node) || node->Parent()->AsClassDefinition()->IsNamespaceTransformed()));
         checker->CheckFunctionOverloadDeclaration(checker, node);
         return nullptr;
     }
