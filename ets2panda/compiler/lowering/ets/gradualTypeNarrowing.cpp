@@ -78,10 +78,10 @@ void GradualTypeNarrowing::NarrowGradualType(ir::AstNode *node)
 {
     auto typedNode = node->AsTyped();
     auto typeTransformFunc = [this](checker::Type *type) -> checker::TypePtr {
-        if (type->IsGradualType()) {
-            return type->AsGradualType()->GetBaseType()->IsETSTypeParameter()
-                       ? type->AsGradualType()->GetBaseType()->AsETSTypeParameter()->GetConstraintType()
-                       : this->checker_->GlobalETSRelaxedAnyType();
+        if (type->IsGradualType() || (type->IsETSObjectType() && type->AsETSObjectType()->GetDeclNode() != nullptr &&
+                                      type->AsETSObjectType()->GetDeclNode()->AsTyped()->TsType() != nullptr &&
+                                      type->AsETSObjectType()->GetDeclNode()->AsTyped()->TsType()->IsGradualType())) {
+            return this->checker_->GlobalETSRelaxedAnyType();
         }
         return type;
     };

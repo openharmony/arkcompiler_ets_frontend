@@ -3178,7 +3178,7 @@ void ETSChecker::CheckTypeParameterVariance(ir::ClassDefinition *classDef)
         return;
     }
 
-    Context().SetContainingClass(classDef->TsType()->AsETSObjectType());
+    Context().SetContainingClass(classDef->TsType()->MaybeBaseTypeOfGradualType()->AsETSObjectType());
     auto checkVariance = [this](VarianceFlag varianceFlag, ir::Expression *expression, Type *type) {
         Relation()->Result(RelationResult::TRUE);
         Relation()->SetNode(expression);

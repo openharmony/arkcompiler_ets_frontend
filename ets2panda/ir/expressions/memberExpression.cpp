@@ -482,10 +482,11 @@ checker::Type *MemberExpression::HandleComputedInGradualType(checker::ETSChecker
 
 checker::Type *MemberExpression::CheckComputed(checker::ETSChecker *checker, checker::Type *baseType)
 {
-    if (baseType->IsGradualType()) {
-        auto objType = baseType->MaybeBaseTypeOfGradualType()->AsETSObjectType();
-        SetObjectType(objType);
-        return HandleComputedInGradualType(checker, objType);
+    if (baseType->IsETSObjectType() && baseType->AsETSObjectType()->GetDeclNode() != nullptr &&
+        baseType->AsETSObjectType()->GetDeclNode()->AsTyped()->TsType() != nullptr &&
+        baseType->AsETSObjectType()->GetDeclNode()->AsTyped()->TsType()->IsGradualType()) {
+        SetObjectType(baseType->AsETSObjectType());
+        return HandleComputedInGradualType(checker, baseType);
     }
     if (baseType->IsETSArrayType()) {
         auto *dflt = baseType->AsETSArrayType()->ElementType();

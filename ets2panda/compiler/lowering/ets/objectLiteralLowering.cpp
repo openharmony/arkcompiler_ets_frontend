@@ -293,6 +293,30 @@ static ir::AstNode *HandleObjectLiteralLowering(public_lib::Context *ctx, ir::Ob
     return loweringResult;
 }
 
+static ir::AstNode *HandleDynamicObjectLiteralLowering(public_lib::Context *ctx, ir::ObjectExpression *objExpr)
+{
+    auto parser = ctx->parser->AsETSParser();
+    auto checker = ctx->GetChecker()->AsETSChecker();
+    auto varBinder = checker->VarBinder()->AsETSBinder();
+    auto allocator = checker->ProgramAllocator();
+
+    std::stringstream ss;
+    ArenaVector<ir::Statement *> blockStatements(allocator->Adapter());
+    auto gensym = GenName(allocator);
+    blockStatements.push_back(
+        parser->CreateFormattedStatement("let @@I1:ESValue = ESValue.instantiateEmptyObject()", gensym));
+    for (auto property : objExpr->Properties()) {
+        ss << "@@I1.setProperty('" + property->AsProperty()->Key()->DumpEtsSrc() + "', ESValue.wrap(" +
+                  property->AsProperty()->Value()->DumpEtsSrc() + "))";
+    }
+    blockStatements.push_back(parser->CreateFormattedStatement(ss.str(), gensym));
+    blockStatements.push_back(parser->CreateFormattedStatement("@@I1", gensym));
+    auto *blockExpr = util::NodeAllocator::ForceSetParent<ir::BlockExpression>(allocator, std::move(blockStatements));
+    blockExpr->SetParent(objExpr->Parent());
+    CheckLoweredNode(varBinder, checker, blockExpr);
+    return blockExpr;
+}
+
 bool ObjectLiteralLowering::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
     program->Ast()->TransformChildrenRecursively(
@@ -301,8 +325,14 @@ bool ObjectLiteralLowering::PerformForModule(public_lib::Context *ctx, parser::P
             // Skip processing invalid and dynamic objects
             if (ast->IsObjectExpression()) {
                 auto *exprType = ast->AsObjectExpression()->TsType();
-                if (exprType != nullptr && exprType->IsETSObjectType()) {
+                if (exprType == nullptr) {
+                    return ast;
+                }
+                if (exprType->IsETSObjectType()) {
                     return HandleObjectLiteralLowering(ctx, ast->AsObjectExpression());
+                }
+                if (exprType->IsETSAnyType()) {
+                    return HandleDynamicObjectLiteralLowering(ctx, ast->AsObjectExpression());
                 }
             }
             return ast;

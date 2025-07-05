@@ -214,134 +214,7 @@
                 "generator": false,
                 "async": false,
                 "expression": false,
-                "params": [
-                  {
-                    "type": "ETSParameterExpression",
-                    "name": {
-                      "type": "Identifier",
-                      "name": "p1",
-                      "typeAnnotation": {
-                        "type": "ETSPrimitiveType",
-                        "loc": {
-                          "start": {
-                            "line": 22,
-                            "column": 21,
-                            "program": "module.ets"
-                          },
-                          "end": {
-                            "line": 22,
-                            "column": 27,
-                            "program": "module.ets"
-                          }
-                        }
-                      },
-                      "decorators": [],
-                      "loc": {
-                        "start": {
-                          "line": 22,
-                          "column": 17,
-                          "program": "module.ets"
-                        },
-                        "end": {
-                          "line": 22,
-                          "column": 27,
-                          "program": "module.ets"
-                        }
-                      }
-                    },
-                    "loc": {
-                      "start": {
-                        "line": 22,
-                        "column": 17,
-                        "program": "module.ets"
-                      },
-                      "end": {
-                        "line": 22,
-                        "column": 27,
-                        "program": "module.ets"
-                      }
-                    }
-                  },
-                  {
-                    "type": "ETSParameterExpression",
-                    "name": {
-                      "type": "Identifier",
-                      "name": "p2",
-                      "typeAnnotation": {
-                        "type": "ETSTypeReference",
-                        "part": {
-                          "type": "ETSTypeReferencePart",
-                          "name": {
-                            "type": "Identifier",
-                            "name": "string",
-                            "decorators": [],
-                            "loc": {
-                              "start": {
-                                "line": 22,
-                                "column": 33,
-                                "program": "module.ets"
-                              },
-                              "end": {
-                                "line": 22,
-                                "column": 39,
-                                "program": "module.ets"
-                              }
-                            }
-                          },
-                          "loc": {
-                            "start": {
-                              "line": 22,
-                              "column": 33,
-                              "program": "module.ets"
-                            },
-                            "end": {
-                              "line": 22,
-                              "column": 40,
-                              "program": "module.ets"
-                            }
-                          }
-                        },
-                        "loc": {
-                          "start": {
-                            "line": 22,
-                            "column": 33,
-                            "program": "module.ets"
-                          },
-                          "end": {
-                            "line": 22,
-                            "column": 40,
-                            "program": "module.ets"
-                          }
-                        }
-                      },
-                      "decorators": [],
-                      "loc": {
-                        "start": {
-                          "line": 22,
-                          "column": 29,
-                          "program": "module.ets"
-                        },
-                        "end": {
-                          "line": 22,
-                          "column": 40,
-                          "program": "module.ets"
-                        }
-                      }
-                    },
-                    "loc": {
-                      "start": {
-                        "line": 22,
-                        "column": 29,
-                        "program": "module.ets"
-                      },
-                      "end": {
-                        "line": 22,
-                        "column": 40,
-                        "program": "module.ets"
-                      }
-                    }
-                  }
-                ],
+                "params": [],
                 "declare": true,
                 "loc": {
                   "start": {
@@ -369,7 +242,226 @@
                 }
               }
             },
-            "overloads": [],
+            "overloads": [
+              {
+                "type": "MethodDefinition",
+                "key": {
+                  "type": "Identifier",
+                  "name": "constructor",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "kind": "constructor",
+                "accessibility": "public",
+                "static": false,
+                "optional": false,
+                "computed": false,
+                "value": {
+                  "type": "FunctionExpression",
+                  "function": {
+                    "type": "ScriptFunction",
+                    "id": {
+                      "type": "Identifier",
+                      "name": "constructor",
+                      "decorators": [],
+                      "loc": {
+                        "start": {
+                          "line": 1,
+                          "column": 1,
+                          "program": null
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 1,
+                          "program": null
+                        }
+                      }
+                    },
+                    "generator": false,
+                    "async": false,
+                    "expression": false,
+                    "params": [
+                      {
+                        "type": "ETSParameterExpression",
+                        "name": {
+                          "type": "Identifier",
+                          "name": "p1",
+                          "typeAnnotation": {
+                            "type": "ETSPrimitiveType",
+                            "loc": {
+                              "start": {
+                                "line": 23,
+                                "column": 21,
+                                "program": "module.ets"
+                              },
+                              "end": {
+                                "line": 23,
+                                "column": 27,
+                                "program": "module.ets"
+                              }
+                            }
+                          },
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 23,
+                              "column": 17,
+                              "program": "module.ets"
+                            },
+                            "end": {
+                              "line": 23,
+                              "column": 27,
+                              "program": "module.ets"
+                            }
+                          }
+                        },
+                        "loc": {
+                          "start": {
+                            "line": 23,
+                            "column": 17,
+                            "program": "module.ets"
+                          },
+                          "end": {
+                            "line": 23,
+                            "column": 27,
+                            "program": "module.ets"
+                          }
+                        }
+                      },
+                      {
+                        "type": "ETSParameterExpression",
+                        "name": {
+                          "type": "Identifier",
+                          "name": "p2",
+                          "typeAnnotation": {
+                            "type": "ETSTypeReference",
+                            "part": {
+                              "type": "ETSTypeReferencePart",
+                              "name": {
+                                "type": "Identifier",
+                                "name": "string",
+                                "decorators": [],
+                                "loc": {
+                                  "start": {
+                                    "line": 23,
+                                    "column": 33,
+                                    "program": "module.ets"
+                                  },
+                                  "end": {
+                                    "line": 23,
+                                    "column": 39,
+                                    "program": "module.ets"
+                                  }
+                                }
+                              },
+                              "loc": {
+                                "start": {
+                                  "line": 23,
+                                  "column": 33,
+                                  "program": "module.ets"
+                                },
+                                "end": {
+                                  "line": 23,
+                                  "column": 40,
+                                  "program": "module.ets"
+                                }
+                              }
+                            },
+                            "loc": {
+                              "start": {
+                                "line": 23,
+                                "column": 33,
+                                "program": "module.ets"
+                              },
+                              "end": {
+                                "line": 23,
+                                "column": 40,
+                                "program": "module.ets"
+                              }
+                            }
+                          },
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 23,
+                              "column": 29,
+                              "program": "module.ets"
+                            },
+                            "end": {
+                              "line": 23,
+                              "column": 40,
+                              "program": "module.ets"
+                            }
+                          }
+                        },
+                        "loc": {
+                          "start": {
+                            "line": 23,
+                            "column": 29,
+                            "program": "module.ets"
+                          },
+                          "end": {
+                            "line": 23,
+                            "column": 40,
+                            "program": "module.ets"
+                          }
+                        }
+                      }
+                    ],
+                    "declare": true,
+                    "loc": {
+                      "start": {
+                        "line": 23,
+                        "column": 16,
+                        "program": "module.ets"
+                      },
+                      "end": {
+                        "line": 23,
+                        "column": 16,
+                        "program": "module.ets"
+                      }
+                    }
+                  },
+                  "loc": {
+                    "start": {
+                      "line": 23,
+                      "column": 16,
+                      "program": "module.ets"
+                    },
+                    "end": {
+                      "line": 23,
+                      "column": 16,
+                      "program": "module.ets"
+                    }
+                  }
+                },
+                "overloads": [],
+                "decorators": [],
+                "loc": {
+                  "start": {
+                    "line": 23,
+                    "column": 5,
+                    "program": "module.ets"
+                  },
+                  "end": {
+                    "line": 23,
+                    "column": 16,
+                    "program": "module.ets"
+                  }
+                }
+              }
+            ],
             "decorators": [],
             "loc": {
               "start": {
@@ -392,12 +484,12 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 24,
+                  "line": 25,
                   "column": 5,
                   "program": "module.ets"
                 },
                 "end": {
-                  "line": 24,
+                  "line": 25,
                   "column": 8,
                   "program": "module.ets"
                 }
@@ -418,12 +510,12 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 24,
+                      "line": 25,
                       "column": 5,
                       "program": "module.ets"
                     },
                     "end": {
-                      "line": 24,
+                      "line": 25,
                       "column": 8,
                       "program": "module.ets"
                     }
@@ -442,12 +534,12 @@
                         "type": "ETSPrimitiveType",
                         "loc": {
                           "start": {
-                            "line": 24,
+                            "line": 25,
                             "column": 12,
                             "program": "module.ets"
                           },
                           "end": {
-                            "line": 24,
+                            "line": 25,
                             "column": 18,
                             "program": "module.ets"
                           }
@@ -456,12 +548,12 @@
                       "decorators": [],
                       "loc": {
                         "start": {
-                          "line": 24,
+                          "line": 25,
                           "column": 9,
                           "program": "module.ets"
                         },
                         "end": {
-                          "line": 24,
+                          "line": 25,
                           "column": 18,
                           "program": "module.ets"
                         }
@@ -469,12 +561,12 @@
                     },
                     "loc": {
                       "start": {
-                        "line": 24,
+                        "line": 25,
                         "column": 9,
                         "program": "module.ets"
                       },
                       "end": {
-                        "line": 24,
+                        "line": 25,
                         "column": 18,
                         "program": "module.ets"
                       }
@@ -491,12 +583,12 @@
                       "decorators": [],
                       "loc": {
                         "start": {
-                          "line": 24,
+                          "line": 25,
                           "column": 21,
                           "program": "module.ets"
                         },
                         "end": {
-                          "line": 24,
+                          "line": 25,
                           "column": 27,
                           "program": "module.ets"
                         }
@@ -504,12 +596,12 @@
                     },
                     "loc": {
                       "start": {
-                        "line": 24,
+                        "line": 25,
                         "column": 21,
                         "program": "module.ets"
                       },
                       "end": {
-                        "line": 24,
+                        "line": 25,
                         "column": 28,
                         "program": "module.ets"
                       }
@@ -517,12 +609,12 @@
                   },
                   "loc": {
                     "start": {
-                      "line": 24,
+                      "line": 25,
                       "column": 21,
                       "program": "module.ets"
                     },
                     "end": {
-                      "line": 24,
+                      "line": 25,
                       "column": 28,
                       "program": "module.ets"
                     }
@@ -531,12 +623,12 @@
                 "declare": true,
                 "loc": {
                   "start": {
-                    "line": 24,
+                    "line": 25,
                     "column": 8,
                     "program": "module.ets"
                   },
                   "end": {
-                    "line": 24,
+                    "line": 25,
                     "column": 8,
                     "program": "module.ets"
                   }
@@ -544,12 +636,12 @@
               },
               "loc": {
                 "start": {
-                  "line": 24,
+                  "line": 25,
                   "column": 8,
                   "program": "module.ets"
                 },
                 "end": {
-                  "line": 24,
+                  "line": 25,
                   "column": 8,
                   "program": "module.ets"
                 }
@@ -559,12 +651,12 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 24,
+                "line": 25,
                 "column": 5,
                 "program": "module.ets"
               },
               "end": {
-                "line": 24,
+                "line": 25,
                 "column": 8,
                 "program": "module.ets"
               }
@@ -578,12 +670,12 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 25,
+                  "line": 26,
                   "column": 12,
                   "program": "module.ets"
                 },
                 "end": {
-                  "line": 25,
+                  "line": 26,
                   "column": 15,
                   "program": "module.ets"
                 }
@@ -604,12 +696,12 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 25,
+                      "line": 26,
                       "column": 12,
                       "program": "module.ets"
                     },
                     "end": {
-                      "line": 25,
+                      "line": 26,
                       "column": 15,
                       "program": "module.ets"
                     }
@@ -623,12 +715,12 @@
                   "type": "ETSPrimitiveType",
                   "loc": {
                     "start": {
-                      "line": 25,
+                      "line": 26,
                       "column": 19,
                       "program": "module.ets"
                     },
                     "end": {
-                      "line": 25,
+                      "line": 26,
                       "column": 25,
                       "program": "module.ets"
                     }
@@ -637,12 +729,12 @@
                 "declare": true,
                 "loc": {
                   "start": {
-                    "line": 25,
+                    "line": 26,
                     "column": 15,
                     "program": "module.ets"
                   },
                   "end": {
-                    "line": 25,
+                    "line": 26,
                     "column": 15,
                     "program": "module.ets"
                   }
@@ -650,12 +742,12 @@
               },
               "loc": {
                 "start": {
-                  "line": 25,
+                  "line": 26,
                   "column": 15,
                   "program": "module.ets"
                 },
                 "end": {
-                  "line": 25,
+                  "line": 26,
                   "column": 15,
                   "program": "module.ets"
                 }
@@ -665,12 +757,12 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 25,
+                "line": 26,
                 "column": 5,
                 "program": "module.ets"
               },
               "end": {
-                "line": 25,
+                "line": 26,
                 "column": 15,
                 "program": "module.ets"
               }
@@ -684,12 +776,12 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 26,
+                  "line": 27,
                   "column": 5,
                   "program": "module.ets"
                 },
                 "end": {
-                  "line": 26,
+                  "line": 27,
                   "column": 17,
                   "program": "module.ets"
                 }
@@ -710,12 +802,12 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 26,
+                      "line": 27,
                       "column": 5,
                       "program": "module.ets"
                     },
                     "end": {
-                      "line": 26,
+                      "line": 27,
                       "column": 17,
                       "program": "module.ets"
                     }
@@ -734,12 +826,12 @@
                         "type": "ETSPrimitiveType",
                         "loc": {
                           "start": {
-                            "line": 26,
+                            "line": 27,
                             "column": 22,
                             "program": "module.ets"
                           },
                           "end": {
-                            "line": 26,
+                            "line": 27,
                             "column": 28,
                             "program": "module.ets"
                           }
@@ -748,12 +840,12 @@
                       "decorators": [],
                       "loc": {
                         "start": {
-                          "line": 26,
+                          "line": 27,
                           "column": 18,
                           "program": "module.ets"
                         },
                         "end": {
-                          "line": 26,
+                          "line": 27,
                           "column": 28,
                           "program": "module.ets"
                         }
@@ -761,12 +853,12 @@
                     },
                     "loc": {
                       "start": {
-                        "line": 26,
+                        "line": 27,
                         "column": 18,
                         "program": "module.ets"
                       },
                       "end": {
-                        "line": 26,
+                        "line": 27,
                         "column": 28,
                         "program": "module.ets"
                       }
@@ -783,12 +875,12 @@
                       "decorators": [],
                       "loc": {
                         "start": {
-                          "line": 26,
+                          "line": 27,
                           "column": 31,
                           "program": "module.ets"
                         },
                         "end": {
-                          "line": 26,
+                          "line": 27,
                           "column": 37,
                           "program": "module.ets"
                         }
@@ -796,12 +888,12 @@
                     },
                     "loc": {
                       "start": {
-                        "line": 26,
+                        "line": 27,
                         "column": 31,
                         "program": "module.ets"
                       },
                       "end": {
-                        "line": 26,
+                        "line": 27,
                         "column": 38,
                         "program": "module.ets"
                       }
@@ -809,12 +901,12 @@
                   },
                   "loc": {
                     "start": {
-                      "line": 26,
+                      "line": 27,
                       "column": 31,
                       "program": "module.ets"
                     },
                     "end": {
-                      "line": 26,
+                      "line": 27,
                       "column": 38,
                       "program": "module.ets"
                     }
@@ -835,12 +927,12 @@
                             "decorators": [],
                             "loc": {
                               "start": {
-                                "line": 26,
+                                "line": 27,
                                 "column": 17,
                                 "program": "module.ets"
                               },
                               "end": {
-                                "line": 26,
+                                "line": 27,
                                 "column": 17,
                                 "program": "module.ets"
                               }
@@ -852,12 +944,12 @@
                             "decorators": [],
                             "loc": {
                               "start": {
-                                "line": 26,
+                                "line": 27,
                                 "column": 17,
                                 "program": "module.ets"
                               },
                               "end": {
-                                "line": 26,
+                                "line": 27,
                                 "column": 17,
                                 "program": "module.ets"
                               }
@@ -865,12 +957,12 @@
                           },
                           "loc": {
                             "start": {
-                              "line": 26,
+                              "line": 27,
                               "column": 17,
                               "program": "module.ets"
                             },
                             "end": {
-                              "line": 26,
+                              "line": 27,
                               "column": 17,
                               "program": "module.ets"
                             }
@@ -878,12 +970,12 @@
                         },
                         "loc": {
                           "start": {
-                            "line": 26,
+                            "line": 27,
                             "column": 17,
                             "program": "module.ets"
                           },
                           "end": {
-                            "line": 26,
+                            "line": 27,
                             "column": 17,
                             "program": "module.ets"
                           }
@@ -891,12 +983,12 @@
                       },
                       "loc": {
                         "start": {
-                          "line": 26,
+                          "line": 27,
                           "column": 17,
                           "program": "module.ets"
                         },
                         "end": {
-                          "line": 26,
+                          "line": 27,
                           "column": 17,
                           "program": "module.ets"
                         }
@@ -911,12 +1003,12 @@
                           "decorators": [],
                           "loc": {
                             "start": {
-                              "line": 26,
+                              "line": 27,
                               "column": 17,
                               "program": "module.ets"
                             },
                             "end": {
-                              "line": 26,
+                              "line": 27,
                               "column": 17,
                               "program": "module.ets"
                             }
@@ -927,12 +1019,12 @@
                           "value": 0,
                           "loc": {
                             "start": {
-                              "line": 26,
+                              "line": 27,
                               "column": 17,
                               "program": "module.ets"
                             },
                             "end": {
-                              "line": 26,
+                              "line": 27,
                               "column": 17,
                               "program": "module.ets"
                             }
@@ -947,12 +1039,12 @@
                         "decorators": [],
                         "loc": {
                           "start": {
-                            "line": 26,
+                            "line": 27,
                             "column": 17,
                             "program": "module.ets"
                           },
                           "end": {
-                            "line": 26,
+                            "line": 27,
                             "column": 17,
                             "program": "module.ets"
                           }
@@ -961,12 +1053,12 @@
                     ],
                     "loc": {
                       "start": {
-                        "line": 26,
+                        "line": 27,
                         "column": 17,
                         "program": "module.ets"
                       },
                       "end": {
-                        "line": 26,
+                        "line": 27,
                         "column": 17,
                         "program": "module.ets"
                       }
@@ -975,12 +1067,12 @@
                 ],
                 "loc": {
                   "start": {
-                    "line": 26,
+                    "line": 27,
                     "column": 17,
                     "program": "module.ets"
                   },
                   "end": {
-                    "line": 26,
+                    "line": 27,
                     "column": 17,
                     "program": "module.ets"
                   }
@@ -988,12 +1080,12 @@
               },
               "loc": {
                 "start": {
-                  "line": 26,
+                  "line": 27,
                   "column": 17,
                   "program": "module.ets"
                 },
                 "end": {
-                  "line": 26,
+                  "line": 27,
                   "column": 17,
                   "program": "module.ets"
                 }
@@ -1003,12 +1095,12 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 26,
+                "line": 27,
                 "column": 5,
                 "program": "module.ets"
               },
               "end": {
-                "line": 26,
+                "line": 27,
                 "column": 17,
                 "program": "module.ets"
               }
@@ -1022,7 +1114,7 @@
             "program": "module.ets"
           },
           "end": {
-            "line": 28,
+            "line": 29,
             "column": 7,
             "program": "module.ets"
           }
@@ -1035,7 +1127,7 @@
           "program": "module.ets"
         },
         "end": {
-          "line": 28,
+          "line": 29,
           "column": 7,
           "program": "module.ets"
         }
@@ -1050,16 +1142,324 @@
             "type": "MethodDefinition",
             "key": {
               "type": "Identifier",
-              "name": "f1",
+              "name": "s",
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 29,
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "kind": "get",
+            "accessibility": "public",
+            "static": false,
+            "optional": false,
+            "computed": false,
+            "value": {
+              "type": "FunctionExpression",
+              "function": {
+                "type": "ScriptFunction",
+                "id": {
+                  "type": "Identifier",
+                  "name": "s",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "generator": false,
+                "async": false,
+                "expression": false,
+                "params": [],
+                "returnType": {
+                  "type": "ETSTypeReference",
+                  "part": {
+                    "type": "ETSTypeReferencePart",
+                    "name": {
+                      "type": "Identifier",
+                      "name": "string",
+                      "decorators": [],
+                      "loc": {
+                        "start": {
+                          "line": 30,
+                          "column": 7,
+                          "program": "module.ets"
+                        },
+                        "end": {
+                          "line": 30,
+                          "column": 13,
+                          "program": "module.ets"
+                        }
+                      }
+                    },
+                    "loc": {
+                      "start": {
+                        "line": 30,
+                        "column": 7,
+                        "program": "module.ets"
+                      },
+                      "end": {
+                        "line": 31,
+                        "column": 7,
+                        "program": "module.ets"
+                      }
+                    }
+                  },
+                  "loc": {
+                    "start": {
+                      "line": 30,
+                      "column": 7,
+                      "program": "module.ets"
+                    },
+                    "end": {
+                      "line": 31,
+                      "column": 7,
+                      "program": "module.ets"
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 30,
+                    "column": 5,
+                    "program": "module.ets"
+                  },
+                  "end": {
+                    "line": 31,
+                    "column": 7,
+                    "program": "module.ets"
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 30,
                   "column": 5,
                   "program": "module.ets"
                 },
                 "end": {
-                  "line": 29,
+                  "line": 31,
+                  "column": 7,
+                  "program": "module.ets"
+                }
+              }
+            },
+            "overloads": [
+              {
+                "type": "MethodDefinition",
+                "key": {
+                  "type": "Identifier",
+                  "name": "s",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "kind": "set",
+                "accessibility": "public",
+                "static": false,
+                "optional": false,
+                "computed": false,
+                "value": {
+                  "type": "FunctionExpression",
+                  "function": {
+                    "type": "ScriptFunction",
+                    "id": {
+                      "type": "Identifier",
+                      "name": "s",
+                      "decorators": [],
+                      "loc": {
+                        "start": {
+                          "line": 1,
+                          "column": 1,
+                          "program": null
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 1,
+                          "program": null
+                        }
+                      }
+                    },
+                    "generator": false,
+                    "async": false,
+                    "expression": false,
+                    "params": [
+                      {
+                        "type": "ETSParameterExpression",
+                        "name": {
+                          "type": "Identifier",
+                          "name": "s",
+                          "typeAnnotation": {
+                            "type": "ETSTypeReference",
+                            "part": {
+                              "type": "ETSTypeReferencePart",
+                              "name": {
+                                "type": "Identifier",
+                                "name": "string",
+                                "decorators": [],
+                                "loc": {
+                                  "start": {
+                                    "line": 30,
+                                    "column": 7,
+                                    "program": "module.ets"
+                                  },
+                                  "end": {
+                                    "line": 30,
+                                    "column": 13,
+                                    "program": "module.ets"
+                                  }
+                                }
+                              },
+                              "loc": {
+                                "start": {
+                                  "line": 30,
+                                  "column": 7,
+                                  "program": "module.ets"
+                                },
+                                "end": {
+                                  "line": 31,
+                                  "column": 7,
+                                  "program": "module.ets"
+                                }
+                              }
+                            },
+                            "loc": {
+                              "start": {
+                                "line": 30,
+                                "column": 7,
+                                "program": "module.ets"
+                              },
+                              "end": {
+                                "line": 31,
+                                "column": 7,
+                                "program": "module.ets"
+                              }
+                            }
+                          },
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 30,
+                              "column": 5,
+                              "program": "module.ets"
+                            },
+                            "end": {
+                              "line": 30,
+                              "column": 6,
+                              "program": "module.ets"
+                            }
+                          }
+                        },
+                        "loc": {
+                          "start": {
+                            "line": 30,
+                            "column": 5,
+                            "program": "module.ets"
+                          },
+                          "end": {
+                            "line": 30,
+                            "column": 6,
+                            "program": "module.ets"
+                          }
+                        }
+                      }
+                    ],
+                    "loc": {
+                      "start": {
+                        "line": 30,
+                        "column": 5,
+                        "program": "module.ets"
+                      },
+                      "end": {
+                        "line": 31,
+                        "column": 7,
+                        "program": "module.ets"
+                      }
+                    }
+                  },
+                  "loc": {
+                    "start": {
+                      "line": 30,
+                      "column": 5,
+                      "program": "module.ets"
+                    },
+                    "end": {
+                      "line": 31,
+                      "column": 7,
+                      "program": "module.ets"
+                    }
+                  }
+                },
+                "overloads": [],
+                "decorators": [],
+                "loc": {
+                  "start": {
+                    "line": 30,
+                    "column": 5,
+                    "program": "module.ets"
+                  },
+                  "end": {
+                    "line": 31,
+                    "column": 7,
+                    "program": "module.ets"
+                  }
+                }
+              }
+            ],
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 30,
+                "column": 5,
+                "program": "module.ets"
+              },
+              "end": {
+                "line": 31,
+                "column": 7,
+                "program": "module.ets"
+              }
+            }
+          },
+          {
+            "type": "MethodDefinition",
+            "key": {
+              "type": "Identifier",
+              "name": "f1",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 31,
+                  "column": 5,
+                  "program": "module.ets"
+                },
+                "end": {
+                  "line": 31,
                   "column": 7,
                   "program": "module.ets"
                 }
@@ -1080,12 +1480,12 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 29,
+                      "line": 31,
                       "column": 5,
                       "program": "module.ets"
                     },
                     "end": {
-                      "line": 29,
+                      "line": 31,
                       "column": 7,
                       "program": "module.ets"
                     }
@@ -1110,12 +1510,12 @@
                             "decorators": [],
                             "loc": {
                               "start": {
-                                "line": 29,
+                                "line": 31,
                                 "column": 11,
                                 "program": "module.ets"
                               },
                               "end": {
-                                "line": 29,
+                                "line": 31,
                                 "column": 17,
                                 "program": "module.ets"
                               }
@@ -1123,12 +1523,12 @@
                           },
                           "loc": {
                             "start": {
-                              "line": 29,
+                              "line": 31,
                               "column": 11,
                               "program": "module.ets"
                             },
                             "end": {
-                              "line": 29,
+                              "line": 31,
                               "column": 18,
                               "program": "module.ets"
                             }
@@ -1136,12 +1536,12 @@
                         },
                         "loc": {
                           "start": {
-                            "line": 29,
+                            "line": 31,
                             "column": 11,
                             "program": "module.ets"
                           },
                           "end": {
-                            "line": 29,
+                            "line": 31,
                             "column": 18,
                             "program": "module.ets"
                           }
@@ -1150,12 +1550,12 @@
                       "decorators": [],
                       "loc": {
                         "start": {
-                          "line": 29,
+                          "line": 31,
                           "column": 8,
                           "program": "module.ets"
                         },
                         "end": {
-                          "line": 29,
+                          "line": 31,
                           "column": 18,
                           "program": "module.ets"
                         }
@@ -1163,12 +1563,12 @@
                     },
                     "loc": {
                       "start": {
-                        "line": 29,
+                        "line": 31,
                         "column": 8,
                         "program": "module.ets"
                       },
                       "end": {
-                        "line": 29,
+                        "line": 31,
                         "column": 18,
                         "program": "module.ets"
                       }
@@ -1179,12 +1579,12 @@
                   "type": "ETSPrimitiveType",
                   "loc": {
                     "start": {
-                      "line": 29,
+                      "line": 31,
                       "column": 20,
                       "program": "module.ets"
                     },
                     "end": {
-                      "line": 29,
+                      "line": 31,
                       "column": 26,
                       "program": "module.ets"
                     }
@@ -1193,12 +1593,12 @@
                 "declare": true,
                 "loc": {
                   "start": {
-                    "line": 29,
+                    "line": 31,
                     "column": 7,
                     "program": "module.ets"
                   },
                   "end": {
-                    "line": 29,
+                    "line": 31,
                     "column": 26,
                     "program": "module.ets"
                   }
@@ -1206,12 +1606,12 @@
               },
               "loc": {
                 "start": {
-                  "line": 29,
+                  "line": 31,
                   "column": 7,
                   "program": "module.ets"
                 },
                 "end": {
-                  "line": 29,
+                  "line": 31,
                   "column": 26,
                   "program": "module.ets"
                 }
@@ -1221,12 +1621,12 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 29,
+                "line": 31,
                 "column": 5,
                 "program": "module.ets"
               },
               "end": {
-                "line": 29,
+                "line": 31,
                 "column": 27,
                 "program": "module.ets"
               }
@@ -1240,12 +1640,12 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 30,
+                  "line": 32,
                   "column": 5,
                   "program": "module.ets"
                 },
                 "end": {
-                  "line": 30,
+                  "line": 32,
                   "column": 7,
                   "program": "module.ets"
                 }
@@ -1266,12 +1666,12 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 30,
+                      "line": 32,
                       "column": 5,
                       "program": "module.ets"
                     },
                     "end": {
-                      "line": 30,
+                      "line": 32,
                       "column": 7,
                       "program": "module.ets"
                     }
@@ -1290,12 +1690,12 @@
                         "type": "ETSPrimitiveType",
                         "loc": {
                           "start": {
-                            "line": 30,
+                            "line": 32,
                             "column": 11,
                             "program": "module.ets"
                           },
                           "end": {
-                            "line": 30,
+                            "line": 32,
                             "column": 17,
                             "program": "module.ets"
                           }
@@ -1304,12 +1704,12 @@
                       "decorators": [],
                       "loc": {
                         "start": {
-                          "line": 30,
+                          "line": 32,
                           "column": 8,
                           "program": "module.ets"
                         },
                         "end": {
-                          "line": 30,
+                          "line": 32,
                           "column": 17,
                           "program": "module.ets"
                         }
@@ -1317,12 +1717,12 @@
                     },
                     "loc": {
                       "start": {
-                        "line": 30,
+                        "line": 32,
                         "column": 8,
                         "program": "module.ets"
                       },
                       "end": {
-                        "line": 30,
+                        "line": 32,
                         "column": 17,
                         "program": "module.ets"
                       }
@@ -1339,12 +1739,12 @@
                       "decorators": [],
                       "loc": {
                         "start": {
-                          "line": 30,
+                          "line": 32,
                           "column": 20,
                           "program": "module.ets"
                         },
                         "end": {
-                          "line": 30,
+                          "line": 32,
                           "column": 26,
                           "program": "module.ets"
                         }
@@ -1352,12 +1752,12 @@
                     },
                     "loc": {
                       "start": {
-                        "line": 30,
+                        "line": 32,
                         "column": 20,
                         "program": "module.ets"
                       },
                       "end": {
-                        "line": 30,
+                        "line": 32,
                         "column": 27,
                         "program": "module.ets"
                       }
@@ -1365,12 +1765,12 @@
                   },
                   "loc": {
                     "start": {
-                      "line": 30,
+                      "line": 32,
                       "column": 20,
                       "program": "module.ets"
                     },
                     "end": {
-                      "line": 30,
+                      "line": 32,
                       "column": 27,
                       "program": "module.ets"
                     }
@@ -1379,12 +1779,12 @@
                 "declare": true,
                 "loc": {
                   "start": {
-                    "line": 30,
+                    "line": 32,
                     "column": 7,
                     "program": "module.ets"
                   },
                   "end": {
-                    "line": 30,
+                    "line": 32,
                     "column": 27,
                     "program": "module.ets"
                   }
@@ -1392,12 +1792,12 @@
               },
               "loc": {
                 "start": {
-                  "line": 30,
+                  "line": 32,
                   "column": 7,
                   "program": "module.ets"
                 },
                 "end": {
-                  "line": 30,
+                  "line": 32,
                   "column": 27,
                   "program": "module.ets"
                 }
@@ -1407,12 +1807,12 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 30,
+                "line": 32,
                 "column": 5,
                 "program": "module.ets"
               },
               "end": {
-                "line": 30,
+                "line": 32,
                 "column": 27,
                 "program": "module.ets"
               }
@@ -1421,12 +1821,12 @@
         ],
         "loc": {
           "start": {
-            "line": 28,
+            "line": 29,
             "column": 28,
             "program": "module.ets"
           },
           "end": {
-            "line": 31,
+            "line": 33,
             "column": 2,
             "program": "module.ets"
           }
@@ -1438,12 +1838,12 @@
         "decorators": [],
         "loc": {
           "start": {
-            "line": 28,
+            "line": 29,
             "column": 26,
             "program": "module.ets"
           },
           "end": {
-            "line": 28,
+            "line": 29,
             "column": 27,
             "program": "module.ets"
           }
@@ -1452,12 +1852,273 @@
       "extends": [],
       "loc": {
         "start": {
-          "line": 28,
+          "line": 29,
           "column": 16,
           "program": "module.ets"
         },
         "end": {
-          "line": 31,
+          "line": 35,
+          "column": 7,
+          "program": "module.ets"
+        }
+      }
+    },
+    {
+      "type": "ClassDeclaration",
+      "definition": {
+        "id": {
+          "type": "Identifier",
+          "name": "Animal",
+          "decorators": [],
+          "loc": {
+            "start": {
+              "line": 35,
+              "column": 31,
+              "program": "module.ets"
+            },
+            "end": {
+              "line": 35,
+              "column": 37,
+              "program": "module.ets"
+            }
+          }
+        },
+        "superClass": null,
+        "implements": [],
+        "body": [
+          {
+            "type": "MethodDefinition",
+            "key": {
+              "type": "Identifier",
+              "name": "move",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 36,
+                  "column": 14,
+                  "program": "module.ets"
+                },
+                "end": {
+                  "line": 36,
+                  "column": 18,
+                  "program": "module.ets"
+                }
+              }
+            },
+            "kind": "method",
+            "accessibility": "public",
+            "static": false,
+            "optional": false,
+            "computed": false,
+            "value": {
+              "type": "FunctionExpression",
+              "function": {
+                "type": "ScriptFunction",
+                "id": {
+                  "type": "Identifier",
+                  "name": "move",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 36,
+                      "column": 14,
+                      "program": "module.ets"
+                    },
+                    "end": {
+                      "line": 36,
+                      "column": 18,
+                      "program": "module.ets"
+                    }
+                  }
+                },
+                "generator": false,
+                "async": false,
+                "expression": false,
+                "params": [],
+                "returnType": {
+                  "type": "ETSPrimitiveType",
+                  "loc": {
+                    "start": {
+                      "line": 36,
+                      "column": 22,
+                      "program": "module.ets"
+                    },
+                    "end": {
+                      "line": 36,
+                      "column": 26,
+                      "program": "module.ets"
+                    }
+                  }
+                },
+                "declare": true,
+                "loc": {
+                  "start": {
+                    "line": 36,
+                    "column": 18,
+                    "program": "module.ets"
+                  },
+                  "end": {
+                    "line": 36,
+                    "column": 18,
+                    "program": "module.ets"
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 36,
+                  "column": 18,
+                  "program": "module.ets"
+                },
+                "end": {
+                  "line": 36,
+                  "column": 18,
+                  "program": "module.ets"
+                }
+              }
+            },
+            "overloads": [],
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 36,
+                "column": 5,
+                "program": "module.ets"
+              },
+              "end": {
+                "line": 36,
+                "column": 18,
+                "program": "module.ets"
+              }
+            }
+          },
+          {
+            "type": "MethodDefinition",
+            "key": {
+              "type": "Identifier",
+              "name": "constructor",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 35,
+                  "column": 39,
+                  "program": "module.ets"
+                },
+                "end": {
+                  "line": 35,
+                  "column": 39,
+                  "program": "module.ets"
+                }
+              }
+            },
+            "kind": "constructor",
+            "static": false,
+            "optional": false,
+            "computed": false,
+            "value": {
+              "type": "FunctionExpression",
+              "function": {
+                "type": "ScriptFunction",
+                "id": {
+                  "type": "Identifier",
+                  "name": "constructor",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 35,
+                      "column": 39,
+                      "program": "module.ets"
+                    },
+                    "end": {
+                      "line": 35,
+                      "column": 39,
+                      "program": "module.ets"
+                    }
+                  }
+                },
+                "generator": false,
+                "async": false,
+                "expression": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "statements": [],
+                  "loc": {
+                    "start": {
+                      "line": 35,
+                      "column": 39,
+                      "program": "module.ets"
+                    },
+                    "end": {
+                      "line": 35,
+                      "column": 39,
+                      "program": "module.ets"
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 35,
+                    "column": 39,
+                    "program": "module.ets"
+                  },
+                  "end": {
+                    "line": 35,
+                    "column": 39,
+                    "program": "module.ets"
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 35,
+                  "column": 39,
+                  "program": "module.ets"
+                },
+                "end": {
+                  "line": 35,
+                  "column": 39,
+                  "program": "module.ets"
+                }
+              }
+            },
+            "overloads": [],
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": null
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": null
+              }
+            }
+          }
+        ],
+        "loc": {
+          "start": {
+            "line": 35,
+            "column": 38,
+            "program": "module.ets"
+          },
+          "end": {
+            "line": 37,
+            "column": 2,
+            "program": "module.ets"
+          }
+        }
+      },
+      "loc": {
+        "start": {
+          "line": 35,
+          "column": 25,
+          "program": "module.ets"
+        },
+        "end": {
+          "line": 37,
           "column": 2,
           "program": "module.ets"
         }
@@ -2045,7 +2706,7 @@
       "program": "module.ets"
     },
     "end": {
-      "line": 31,
+      "line": 37,
       "column": 2,
       "program": "module.ets"
     }

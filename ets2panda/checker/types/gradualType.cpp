@@ -70,7 +70,8 @@ void GradualType::ToString(std::stringstream &ss, [[maybe_unused]] bool precise)
 
 Type *GradualType::Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes)
 {
-    return baseType_->Instantiate(allocator, relation, globalTypes);
+    auto baseType = baseType_->Instantiate(allocator, relation, globalTypes);
+    return relation->GetChecker()->AsETSChecker()->CreateGradualType(baseType);
 }
 
 Type *GradualType::Substitute(TypeRelation *relation, const Substitution *substitution)

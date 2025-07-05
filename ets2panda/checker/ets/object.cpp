@@ -183,7 +183,7 @@ bool ETSChecker::ComputeSuperType(ETSObjectType *type)
         return false;
     }
 
-    auto *superType = classDef->Super()->AsTypeNode()->GetType(this);
+    auto *superType = classDef->Super()->AsTypeNode()->GetType(this)->MaybeBaseTypeOfGradualType();
     if (superType == nullptr) {
         return true;
     }
@@ -215,6 +215,7 @@ bool ETSChecker::ComputeSuperType(ETSObjectType *type)
 void ETSChecker::ValidateImplementedInterface(ETSObjectType *type, Type *interface,
                                               std::unordered_set<Type *> *extendsSet, const lexer::SourcePosition &pos)
 {
+    interface = interface->MaybeBaseTypeOfGradualType();
     if (interface->IsETSObjectType() && interface->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::CLASS)) {
         LogError(diagnostic::INTERFACE_EXTENDS_CLASS, {}, pos);
         return;
@@ -471,7 +472,7 @@ Type *ETSChecker::BuildBasicInterfaceProperties(ir::TSInterfaceDeclaration *inte
         type = Program()->IsDeclForDynamicStaticInterop() ? CreateGradualType(interfaceType) : interfaceType;
         var->SetTsType(type);
     } else {
-        interfaceType = var->TsType()->AsETSObjectType();
+        interfaceType = var->TsType()->MaybeBaseTypeOfGradualType()->AsETSObjectType();
         type = Program()->IsDeclForDynamicStaticInterop() ? CreateGradualType(interfaceType) : interfaceType;
     }
 
@@ -525,7 +526,7 @@ Type *ETSChecker::BuildBasicClassProperties(ir::ClassDefinition *classDef)
             classType->AddObjectFlag(checker::ETSObjectFlags::ABSTRACT);
         }
     } else if (var->TsType()->IsETSObjectType()) {
-        classType = var->TsType()->AsETSObjectType();
+        classType = var->TsType()->MaybeBaseTypeOfGradualType()->AsETSObjectType();
         type = Program()->IsDeclForDynamicStaticInterop() ? CreateGradualType(classType) : classType;
     } else {
         ES2PANDA_ASSERT(IsAnyError());
@@ -2567,6 +2568,10 @@ Type *ETSChecker::GetApparentType(Type *type)
         apparentTypes.insert({res, res});
         return res;
     };
+
+    if (type->IsGradualType()) {
+        return cached(type->AsGradualType()->GetBaseType());
+    }
 
     if (type->IsETSTypeParameter()) {
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
