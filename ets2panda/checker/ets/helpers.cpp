@@ -43,7 +43,8 @@ std::pair<varbinder::Variable *, const ETSObjectType *> ETSChecker::FindVariable
         return {nullptr, nullptr};
     }
     const auto searchFlags = PropertySearchFlags::SEARCH_ALL | PropertySearchFlags::SEARCH_IN_BASE |
-                             PropertySearchFlags::SEARCH_IN_INTERFACES;
+                             PropertySearchFlags::SEARCH_IN_INTERFACES |
+                             PropertySearchFlags::DISALLOW_SYNTHETIC_METHOD_CREATION;
     auto *resolved = classType->GetProperty(name, searchFlags);
     while (classType->EnclosingType() != nullptr && resolved == nullptr) {
         classType = classType->EnclosingType();
