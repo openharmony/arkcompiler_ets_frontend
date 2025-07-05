@@ -14,7 +14,7 @@
  */
 
 import type * as ts from 'typescript';
-import type { LinterOptions } from './LinterOptions';
+import type { LinterOptions } from '../LinterOptions';
 import type { MigrationInfo } from './MigrationInfo';
 
 export interface ProgressBarInfo {

@@ -16,7 +16,6 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as ts from 'typescript';
-import { processSyncErr } from '../lib/utils/functions/ProcessWrite';
 import * as qEd from './autofixes/QuasiEditor';
 import type { BaseTypeScriptLinter } from './BaseTypeScriptLinter';
 import type { CommandLineOptions } from './CommandLineOptions';
@@ -25,9 +24,16 @@ import type { LinterConfig } from './LinterConfig';
 import type { LinterOptions } from './LinterOptions';
 import type { LintRunResult } from './LintRunResult';
 import { Logger } from './Logger';
-import type { MigrationInfo } from './MigrationInfo';
 import type { ProblemInfo } from './ProblemInfo';
-import type { ProgressBarInfo } from './ProgressBarInfo';
+import type { CmdProgressInfo } from './progress/CmdProgressInfo';
+import {
+  FixedLineProgressBar,
+  postProcessCmdProgressBar,
+  preProcessCmdProgressBar,
+  processCmdProgressBar
+} from './progress/FixedLineProgressBar';
+import type { MigrationInfo } from './progress/MigrationInfo';
+import type { ProgressBarInfo } from './progress/ProgressBarInfo';
 import { ProjectStatistics } from './statistics/ProjectStatistics';
 import { generateMigrationStatisicsReport } from './statistics/scan/ProblemStatisticsCommonFunction';
 import type { TimeRecorder } from './statistics/scan/TimeRecorder';
@@ -46,6 +52,7 @@ import { USE_STATIC } from './utils/consts/InteropAPI';
 import { LibraryTypeCallDiagnosticChecker } from './utils/functions/LibraryTypeCallDiagnosticChecker';
 import { mergeArrayMaps } from './utils/functions/MergeArrayMaps';
 import { clearPathHelperCache, pathContainsDirectory } from './utils/functions/PathHelper';
+import { processSyncErr } from './utils/functions/ProcessWrite';
 
 function prepareInputFilesList(cmdOptions: CommandLineOptions): string[] {
   let inputFiles = cmdOptions.inputFiles.map((x) => {
@@ -140,21 +147,36 @@ function lintFiles(
   TypeScriptLinter.initGlobals();
   InteropTypescriptLinter.initGlobals();
   let fileCount: number = 0;
+  const cmdProgressBar = new FixedLineProgressBar();
+  const cmdProgressInfo: CmdProgressInfo = {
+    cmdProgressBar: cmdProgressBar,
+    migrationInfo: migrationInfo,
+    srcFiles: srcFiles,
+    options: options
+  };
 
+  process.stderr.write('\n');
+  preProcessCmdProgressBar(cmdProgressInfo);
   for (const srcFile of srcFiles) {
     const linter: BaseTypeScriptLinter = !options.interopCheckMode ?
       new TypeScriptLinter(tsProgram.getTypeChecker(), options, srcFile, tscStrictDiagnostics) :
       new InteropTypescriptLinter(tsProgram.getTypeChecker(), tsProgram.getCompilerOptions(), options, srcFile);
+
     linter.lint();
     const problems = linter.problemsInfos;
     problemsInfos.set(path.normalize(srcFile.fileName), [...problems]);
     projectStats.fileStats.push(linter.fileStats);
     fileCount += 1;
-    processProgressBar(
-      { migrationInfo: migrationInfo, currentSrcFile: srcFile, srcFiles: srcFiles, options: options },
-      fileCount
-    );
+    processCmdProgressBar(cmdProgressInfo, fileCount);
+    if (options.ideInteractive) {
+      processIdeProgressBar(
+        { migrationInfo: migrationInfo, currentSrcFile: srcFile, srcFiles: srcFiles, options: options },
+        fileCount
+      );
+    }
   }
+
+  postProcessCmdProgressBar(cmdProgressInfo);
 
   return {
     hasErrors: projectStats.hasError(),
@@ -163,12 +185,8 @@ function lintFiles(
   };
 }
 
-function processProgressBar(progressBarInfo: ProgressBarInfo, fileCount: number): void {
+export function processIdeProgressBar(progressBarInfo: ProgressBarInfo, fileCount: number): void {
   const { currentSrcFile, srcFiles, options } = progressBarInfo;
-
-  if (!options.ideInteractive) {
-    return;
-  }
 
   const isMigrationStep = options.migratorMode && progressBarInfo.migrationInfo;
   const phasePrefix = isMigrationStep ? 'Migration Phase' : 'Scan Phase';
@@ -179,7 +197,8 @@ function processProgressBar(progressBarInfo: ProgressBarInfo, fileCount: number)
 
   const progressRatio = fileCount / srcFiles.length;
   const displayContent = `currentFile: ${currentSrcFile.fileName}, ${phasePrefix}${migrationPhase}`;
-
+  process.stderr.write('\x1B[1F\x1B[0G');
+  process.stderr.write('\x1B[2K');
   processSyncErr(
     JSON.stringify({
       content: displayContent,
@@ -187,6 +206,7 @@ function processProgressBar(progressBarInfo: ProgressBarInfo, fileCount: number)
       indicator: progressRatio
     }) + '\n'
   );
+  process.stderr.write('\x1B[1E');
 }
 
 function migrate(
@@ -235,8 +255,8 @@ function filterLinterProblemsWithAutofixConfig(
   problemsInfos: Map<string, ProblemInfo[]>
 ): Map<string, ProblemInfo[]> {
   const autofixRuleConfigTags = cmdOptions.linterOptions.autofixRuleConfigTags;
-  if (!cmdOptions.linterOptions.ideInteractive || !autofixRuleConfigTags) { 
-    return problemsInfos; 
+  if (!cmdOptions.linterOptions.ideInteractive || !autofixRuleConfigTags) {
+    return problemsInfos;
   }
 
   const needToBeFixedProblemsInfos = new Map<string, ProblemInfo[]>();
@@ -284,7 +304,10 @@ function fix(
   let appliedFix = false;
   // Apply homecheck fixes first to avoid them being skipped due to conflict with linter autofixes
   let mergedProblems: Map<string, ProblemInfo[]> = hcResults ?? new Map();
-  mergedProblems = mergeArrayMaps(mergedProblems, filterLinterProblemsWithAutofixConfig(linterConfig.cmdOptions, lintResult.problemsInfos));
+  mergedProblems = mergeArrayMaps(
+    mergedProblems,
+    filterLinterProblemsWithAutofixConfig(linterConfig.cmdOptions, lintResult.problemsInfos)
+  );
   mergedProblems.forEach((problemInfos, fileName) => {
     const srcFile = program.getSourceFile(fileName);
     if (!srcFile) {

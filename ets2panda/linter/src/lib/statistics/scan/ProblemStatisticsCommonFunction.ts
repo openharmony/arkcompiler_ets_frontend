@@ -16,6 +16,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import type { LintRunResult } from '../../LintRunResult';
+import { Logger } from '../../Logger';
 import type { ProblemInfo } from '../../ProblemInfo';
 import * as mk from '../../utils/consts/MapKeyConst';
 import { countFiles } from './CountFile';
@@ -105,7 +106,7 @@ export async function generateReportFile(reportName: string, reportData, reportP
     await fs.promises.mkdir(path.dirname(reportFilePath), { recursive: true });
     await fs.promises.writeFile(reportFilePath, JSON.stringify(reportData, null, 2));
   } catch (error) {
-    console.error('Error generating report file:', error);
+    Logger.error(`Error generating report file:${error}`);
   }
 }
 
@@ -118,7 +119,7 @@ export function generateReportFileSync(reportName: string, reportData: any, repo
     fs.mkdirSync(path.dirname(reportFilePath), { recursive: true });
     fs.writeFileSync(reportFilePath, JSON.stringify(reportData, null, 2));
   } catch (error) {
-    console.error('Error generating report file:', error);
+      Logger.error(`Error generating report file:${error}`);
   }
 }
 
