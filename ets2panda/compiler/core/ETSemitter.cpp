@@ -144,6 +144,7 @@ static pandasm::Function GenScriptFunction(const ir::ScriptFunction *scriptFunc,
     uint32_t accessFlags = 0;
     if (!scriptFunc->IsStaticBlock()) {
         const auto *methodDef = util::Helpers::GetContainingClassMethodDefinition(scriptFunc);
+        ES2PANDA_ASSERT(methodDef != nullptr);
         accessFlags |= TranslateModifierFlags(methodDef->Modifiers());
     }
     if (scriptFunc->HasRestParameter()) {
@@ -449,6 +450,7 @@ void ETSEmitter::GenInterfaceMethodDefinition(const ir::MethodDefinition *method
 void ETSEmitter::GenClassField(const ir::ClassProperty *prop, pandasm::Record &classRecord, bool external)
 {
     auto field = pandasm::Field(Program()->lang);
+    ES2PANDA_ASSERT(prop->Id() != nullptr);
     field.name = prop->Id()->Name().Mutf8();
     field.type = PandasmTypeWithRank(prop->TsType());
     field.metadata->SetAccessFlags(TranslateModifierFlags(prop->Modifiers()));
@@ -685,6 +687,7 @@ static void CreateEnumProp(const ir::ClassProperty *prop, pandasm::Field &field)
         return;
     }
     field.metadata->SetFieldType(field.type);
+    ES2PANDA_ASSERT(prop->Value()->AsMemberExpression()->PropVar() != nullptr);
     auto declNode = prop->Value()->AsMemberExpression()->PropVar()->Declaration()->Node();
     auto *init = declNode->AsClassProperty()->OriginEnumMember()->Init();
     if (init->IsNumberLiteral()) {
@@ -702,6 +705,7 @@ static void ProcessEnumExpression(std::vector<pandasm::LiteralArray::Literal> &l
 {
     auto *memberExpr = elem->IsCallExpression() ? elem->AsCallExpression()->Arguments()[0]->AsMemberExpression()
                                                 : elem->AsMemberExpression();
+    ES2PANDA_ASSERT(memberExpr->PropVar() != nullptr);
     auto *init = memberExpr->PropVar()->Declaration()->Node()->AsClassProperty()->OriginEnumMember()->Init();
     if (init->IsNumberLiteral()) {
         auto enumValue = static_cast<uint32_t>(init->AsNumberLiteral()->Number().GetInt());
@@ -816,6 +820,7 @@ void ETSEmitter::GenCustomAnnotationProp(const ir::ClassProperty *prop, std::str
 {
     auto field = pandasm::Field(Program()->lang);
     auto *type = prop->TsType();
+    ES2PANDA_ASSERT(prop->Id() != nullptr);
     field.name = prop->Id()->Name().Mutf8();
     field.type = PandasmTypeWithRank(type);
     field.metadata->SetAccessFlags(TranslateModifierFlags(prop->Modifiers()));
@@ -859,6 +864,7 @@ void ETSEmitter::GenCustomAnnotationRecord(const ir::AnnotationDeclaration *anno
 pandasm::AnnotationElement ETSEmitter::ProcessArrayType(const ir::ClassProperty *prop, std::string &baseName,
                                                         const ir::Expression *init)
 {
+    ES2PANDA_ASSERT(prop->Id() != nullptr);
     auto propName = prop->Id()->Name().Mutf8();
     std::string newBaseName = GenerateMangledName(baseName, propName);
     auto litArrays = CreateLiteralArray(newBaseName, init);
@@ -875,6 +881,7 @@ pandasm::AnnotationElement ETSEmitter::ProcessArrayType(const ir::ClassProperty 
 static pandasm::AnnotationElement ProcessETSEnumType(std::string &baseName, const ir::Expression *init,
                                                      const checker::Type *type)
 {
+    ES2PANDA_ASSERT(init->AsMemberExpression()->PropVar() != nullptr);
     auto declNode = init->AsMemberExpression()->PropVar()->Declaration()->Node();
     auto *initValue = declNode->AsClassProperty()->OriginEnumMember()->Init();
     if (type->IsETSIntEnumType()) {
@@ -900,6 +907,7 @@ pandasm::AnnotationElement ETSEmitter::GenCustomAnnotationElement(const ir::Clas
     }
     if (init->IsLiteral()) {
         auto typeKind = checker::ETSChecker::TypeKind(type);
+        ES2PANDA_ASSERT(prop->Id() != nullptr);
         auto propName = prop->Id()->Name().Mutf8();
         return pandasm::AnnotationElement {
             propName, std::make_unique<pandasm::ScalarValue>(CreateScalarValue(init->AsLiteral(), typeKind))};
@@ -1024,6 +1032,7 @@ pandasm::AnnotationData ETSEmitter::GenAnnotationEnclosingMethod(const ir::Metho
 {
     GenAnnotationRecord(Signatures::ETS_ANNOTATION_ENCLOSING_METHOD);
     pandasm::AnnotationData enclosingMethod(Signatures::ETS_ANNOTATION_ENCLOSING_METHOD);
+    ES2PANDA_ASSERT(methodDef->Function() != nullptr);
     pandasm::AnnotationElement value(
         Signatures::ANNOTATION_KEY_VALUE,
         std::make_unique<pandasm::ScalarValue>(pandasm::ScalarValue::Create<pandasm::Value::Type::METHOD>(
@@ -1037,6 +1046,7 @@ pandasm::AnnotationData ETSEmitter::GenAnnotationFunctionalReference(const ir::C
     GenAnnotationRecord(Signatures::ETS_ANNOTATION_FUNCTIONAL_REFERENCE);
     pandasm::AnnotationData functionalReference(Signatures::ETS_ANNOTATION_FUNCTIONAL_REFERENCE);
     bool isStatic = classDef->FunctionalReferenceReferencedMethod()->IsStatic();
+    ES2PANDA_ASSERT(const_cast<ir::ClassDefinition *>(classDef) != nullptr);
     pandasm::AnnotationElement value(
         Signatures::ANNOTATION_KEY_VALUE,
         std::make_unique<pandasm::ScalarValue>(
@@ -1113,6 +1123,7 @@ ir::MethodDefinition *ETSEmitter::FindAsyncImpl(ir::ScriptFunction *asyncFunc)
     auto *checker = static_cast<checker::ETSChecker *>(Context()->GetChecker());
     checker::TypeRelation *typeRel = checker->Relation();
     checker::SavedTypeRelationFlagsContext savedFlagsCtx(typeRel, checker::TypeRelationFlag::NO_RETURN_TYPE_CHECK);
+    ES2PANDA_ASSERT(method->Function() != nullptr);
     method->Function()->Signature()->IsSubtypeOf(typeRel, asyncFunc->Signature());
     if (typeRel->IsTrue()) {
         return method;
@@ -1131,6 +1142,7 @@ pandasm::AnnotationData ETSEmitter::GenAnnotationAsync(ir::ScriptFunction *scrip
     GenAnnotationRecord(Signatures::ETS_COROUTINE_ASYNC);
     const ir::MethodDefinition *impl = FindAsyncImpl(scriptFunc);
     ES2PANDA_ASSERT(impl != nullptr);
+    ES2PANDA_ASSERT(impl->Function() != nullptr);
     pandasm::AnnotationData ann(Signatures::ETS_COROUTINE_ASYNC);
     pandasm::AnnotationElement value(
         Signatures::ANNOTATION_KEY_VALUE,

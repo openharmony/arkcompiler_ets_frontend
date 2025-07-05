@@ -32,6 +32,7 @@ static void CreateFuncDecl(checker::ETSChecker *checker, ir::MethodDefinition *f
     auto *varBinder = checker->VarBinder();
     // Add the function declarations to the lambda class scope
     auto ctx = varbinder::LexicalScope<varbinder::LocalScope>::Enter(varBinder, scope);
+    ES2PANDA_ASSERT(func->Id() != nullptr);
     varbinder::Variable *var = scope->FindLocal(func->Id()->Name(), varbinder::ResolveBindingOptions::ALL_DECLARATION);
     if (var == nullptr) {
         var = std::get<1>(
@@ -53,6 +54,7 @@ ir::ETSTypeReference *CreateAsyncImplMethodReturnTypeAnnotation(checker::ETSChec
     auto *returnTypeAnn = checker->AllocNode<ir::ETSTypeReference>(
         checker->AllocNode<ir::ETSTypeReferencePart>(objectId, nullptr, nullptr, checker->Allocator()),
         checker->Allocator());
+    ES2PANDA_ASSERT(returnTypeAnn != nullptr);
     objectId->SetParent(returnTypeAnn->Part());
     returnTypeAnn->Part()->SetParent(returnTypeAnn);
 
@@ -76,6 +78,7 @@ ir::MethodDefinition *CreateAsyncImplMethod(checker::ETSChecker *checker, ir::Me
     // clear ASYNC flag for implementation
     modifiers &= ~ir::ModifierFlags::ASYNC;
     ir::ScriptFunction *asyncFunc = asyncMethod->Function();
+    ES2PANDA_ASSERT(asyncFunc != nullptr);
     ir::ScriptFunctionFlags flags = ir::ScriptFunctionFlags::METHOD;
 
     if (asyncFunc->IsProxy()) {
@@ -130,6 +133,7 @@ ir::MethodDefinition *CreateAsyncProxy(checker::ETSChecker *checker, ir::MethodD
     }
 
     ir::MethodDefinition *implMethod = CreateAsyncImplMethod(checker, asyncMethod, classDef);
+    ES2PANDA_ASSERT(implMethod->Function() != nullptr);
     varbinder::FunctionScope *implFuncScope = implMethod->Function()->Scope();
     for (auto *decl : asyncFunc->Scope()->Decls()) {
         auto res = asyncFunc->Scope()->Bindings().find(decl->Name());
@@ -178,7 +182,7 @@ void ComposeAsyncImplMethod(checker::ETSChecker *checker, ir::MethodDefinition *
 void HandleMethod(checker::ETSChecker *checker, ir::MethodDefinition *node)
 {
     ES2PANDA_ASSERT(!node->TsType()->IsTypeError());
-    if (util::Helpers::IsAsyncMethod(node) && !node->Function()->IsExternal()) {
+    if (util::Helpers::IsAsyncMethod(node) && node->Function() != nullptr && !node->Function()->IsExternal()) {
         ComposeAsyncImplMethod(checker, node);
     }
 

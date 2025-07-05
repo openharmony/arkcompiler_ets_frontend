@@ -174,6 +174,7 @@ static void ConvertRestArguments(checker::ETSChecker *const checker, const ir::E
                 elements.emplace_back(expr->GetArguments()[i]);
             }
             auto *arrayExpression = checker->AllocNode<ir::ArrayExpression>(std::move(elements), checker->Allocator());
+            ES2PANDA_ASSERT(arrayExpression != nullptr);
             arrayExpression->SetParent(const_cast<ir::ETSNewClassInstanceExpression *>(expr));
             auto restType = expr->GetSignature()->RestVar()->TsType()->AsETSArrayType();
             arrayExpression->SetTsType(restType);
@@ -735,6 +736,7 @@ void ETSCompiler::EmitCall(const ir::CallExpression *expr, compiler::VReg &calle
             // NOTE: need to refactor: type of member expression object can be obtained via
             // me->ObjType() or me->Object()->TsType() and they may differ!!!!
         } else if (me->ObjType() == etsg->Checker()->GlobalETSObjectType() &&
+                   (etsg->Checker()->GetApparentType(me->Object()->TsType()) != nullptr) &&
                    (etsg->Checker()->GetApparentType(me->Object()->TsType())->IsETSUnionType())) {
             etsg->CallByName(expr, signature, calleeReg, expr->Arguments());
         } else {
@@ -939,6 +941,7 @@ void ETSCompiler::Compile(const ir::MemberExpression *expr) const
     auto ttctx = compiler::TargetTypeContext(etsg, expr->TsType());
     ES2PANDA_ASSERT(expr->PropVar()->TsType() != nullptr);
     const checker::Type *const variableType = expr->PropVar()->TsType();
+    ES2PANDA_ASSERT(variableType != nullptr);
     if (variableType->HasTypeFlag(checker::TypeFlag::GETTER_SETTER)) {
         if (expr->Object()->IsSuperExpression()) {
             etsg->CallExact(expr, variableType->AsETSFunctionType()->FindGetter()->InternalName(), objReg);
@@ -959,6 +962,7 @@ void ETSCompiler::Compile(const ir::MemberExpression *expr) const
 bool ETSCompiler::HandleArrayTypeLengthProperty(const ir::MemberExpression *expr, ETSGen *etsg) const
 {
     auto *const objectType = etsg->Checker()->GetApparentType(expr->Object()->TsType());
+    ES2PANDA_ASSERT(objectType != nullptr);
     auto &propName = expr->Property()->AsIdentifier()->Name();
     if (objectType->IsETSArrayType() && propName.Is("length")) {
         auto ottctx = compiler::TargetTypeContext(etsg, objectType);
@@ -982,6 +986,7 @@ bool ETSCompiler::HandleStaticProperties(const ir::MemberExpression *expr, ETSGe
 
         if (auto const *const varType = variable->TsType(); varType->HasTypeFlag(checker::TypeFlag::GETTER_SETTER)) {
             checker::Signature *sig = varType->AsETSFunctionType()->FindGetter();
+            ES2PANDA_ASSERT(sig != nullptr);
             etsg->CallExact(expr, sig->InternalName());
             etsg->SetAccumulatorType(expr->TsType());
         } else {

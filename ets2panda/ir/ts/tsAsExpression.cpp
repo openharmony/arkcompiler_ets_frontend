@@ -99,6 +99,7 @@ TSAsExpression *TSAsExpression::Clone(ArenaAllocator *const allocator, AstNode *
     }
 
     auto *const clone = allocator->New<TSAsExpression>(expression, typeAnnotation, isConst_);
+    ES2PANDA_ASSERT(clone != nullptr);
 
     if (expression != nullptr) {
         expression->SetParent(clone);
