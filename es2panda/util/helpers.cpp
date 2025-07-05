@@ -956,7 +956,7 @@ bool Helpers::BelongingToRecords(const std::string &name, const std::unordered_s
     return retainRecordSet.find(recordName) != retainRecordSet.end();
 }
 
-bool Helpers::IsInnerAnnotationRecordName(const std::string &name)
+bool Helpers::IsInnerAnnotationRecordName(const std::string_view &name)
 {
     return name == panda::abc2program::CONCURRENT_MODULE_REQUEST_RECORD_NAME ||
            name == panda::abc2program::SLOT_NUMBER_RECORD_NAME ||
@@ -965,7 +965,7 @@ bool Helpers::IsInnerAnnotationRecordName(const std::string &name)
 
 std::string Helpers::RemoveRecordSuffixAnnotationName(const std::string &name)
 {
-    auto pos = name.rfind(util::DOT_SEPARATOR);
+    auto pos = name.rfind(abc2program::RECORD_ANNOTATION_SEPARATOR);
     if (pos == std::string::npos) {
         return name;
     }

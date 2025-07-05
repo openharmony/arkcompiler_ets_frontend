@@ -258,6 +258,7 @@ void CompileAbcClassJob::Run()
         auto name = compiler_.GetAbcFile().GetFilename();
         name += util::CHAR_VERTICAL_LINE + program->record_table.begin()->first;
         auto *cache = allocator_->New<util::ProgramCache>(src_->hash, std::move(*program), true);
+        ASSERT(!progsInfo_.count(name));
         progsInfo_.emplace(name, cache);
     }
     panda::Timer::timerEnd(panda::EVENT_UPDATE_ABC_PROG_CACHE, record_name);

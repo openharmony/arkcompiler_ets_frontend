@@ -1133,7 +1133,6 @@ class CompilerProjectTest(Test):
         process = run_subprocess_with_beta3(self, es2abc_cmd)
         self.path = exec_file_path
         out, err = [None, None]
-
         # Check single-thread execution timeout when required
         if "--file-threads=0" in self.flags:
             try:
@@ -1144,6 +1143,9 @@ class CompilerProjectTest(Test):
         else:
             out, err = process.communicate()
         
+        if "non-merged-abc"  in self.path and "--merge-abc" in es2abc_cmd:
+            es2abc_cmd.remove("--merge-abc")
+
         if "--cache-file" in self.flags:
             # Firstly generate cache file, and generate abc from cache file
             if (os.path.exists(self.project_mod_path)):
