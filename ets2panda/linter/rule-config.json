@@ -123,7 +123,7 @@
     "arkts-builtin-cotr"
   ],
   "OHMURL": [
-    "arkts-ohmurl-full-path"
+    "arkts-require-fullpath-name"
   ],
   "sdk": [
     "sdk-limited-void-type",

@@ -291,7 +291,7 @@ cookBookTag[285] = '"setAndProp" function is not supported (arkui-no-setandprop-
 cookBookTag[286] =
   'Parameters decorated with "@Prop" need to call the specific method when receiving data to ensure deep copy of the data (arkui-prop-need-call-method-for-deep-copy)';
 cookBookTag[300] = 'The function type should be explicit (arkts-no-ts-like-function-call)';
-cookBookTag[301] = 'Importing from "oh module" requires specifying full path (arkts-ohmurl-full-path)';
+cookBookTag[301] = 'Importing from "oh module" requires specifying full path (arkts-require-fullpath-name)';
 cookBookTag[302] =
   'Class type is not compatible with "Object" parameter in interop call (arkts-interop-d2s-static-object-on-dynamic-instance)';
 cookBookTag[303] =
