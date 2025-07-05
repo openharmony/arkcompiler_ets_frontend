@@ -158,16 +158,6 @@ import { D_ETS, D_TS } from './utils/consts/TsSuffix';
 import { arkTsBuiltInTypeName } from './utils/consts/ArkuiImportList';
 import { ERROR_TASKPOOL_PROP_LIST } from './utils/consts/ErrorProp';
 
-interface InterfaceSymbolTypeResult {
-  propNames: string[];
-  typeNames: string[];
-  allProps: Map<string, string>;
-}
-interface InterfaceSymbolTypePropertyNames {
-  propertyNames: string[];
-  typeNames: string[];
-}
-
 export class TypeScriptLinter extends BaseTypeScriptLinter {
   supportedStdCallApiChecker: SupportedStdCallApiChecker;
 
@@ -2529,7 +2519,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleInvalidIdentifier(tsVarDecl);
     this.checkAssignmentNumericSemanticsly(tsVarDecl);
     this.checkTypeFromSdk(tsVarDecl.type);
-    this.handleNoStructuralTyping(tsVarDecl);
     this.handleObjectLiteralforUnionTypeInterop(tsVarDecl);
     this.handleObjectLiteralAssignmentToClass(tsVarDecl);
     this.handleObjectLiteralAssignment(tsVarDecl);
@@ -2555,194 +2544,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         return;
       }
     }
-  }
-
-  private static extractUsedObjectType(tsVarDecl: ts.VariableDeclaration): InterfaceSymbolTypePropertyNames | null {
-    const result = {
-      propertyNames: [] as string[],
-      typeNames: [] as string[]
-    };
-
-    if (!this.isObjectLiteralWithProperties(tsVarDecl)) {
-      return null;
-    }
-
-    this.processObjectLiteralProperties(tsVarDecl.initializer as ts.ObjectLiteralExpression, result);
-    return result.propertyNames.length > 0 ? result : null;
-  }
-
-  private static isObjectLiteralWithProperties(tsVarDecl: ts.VariableDeclaration): boolean {
-    return (
-      tsVarDecl.initializer !== undefined &&
-      ts.isObjectLiteralExpression(tsVarDecl.initializer) &&
-      tsVarDecl.initializer.properties.length > 0
-    );
-  }
-
-  private static processObjectLiteralProperties(
-    objectLiteral: ts.ObjectLiteralExpression,
-    result: { propertyNames: string[]; typeNames: string[] }
-  ): void {
-    objectLiteral.properties.forEach((property) => {
-      if (!ts.isPropertyAssignment(property)) {
-        return;
-      }
-
-      const propertyName = property.name.getText();
-      result.propertyNames.push(propertyName);
-
-      if (ts.isNewExpression(property.initializer)) {
-        const typeName = property.initializer.expression.getText();
-        result.typeNames.push(typeName);
-      }
-    });
-  }
-
-  private interfaceSymbolType(tsVarDecl: ts.VariableDeclaration): InterfaceSymbolTypeResult | null {
-    if (!tsVarDecl.type) {
-      return null;
-    }
-
-    const typeSymbol = this.getTypeSymbol(tsVarDecl);
-    if (!typeSymbol) {
-      return null;
-    }
-
-    const interfaceType = this.getInterfaceType(tsVarDecl);
-    if (!interfaceType) {
-      return null;
-    }
-
-    return this.collectInterfaceProperties(interfaceType, tsVarDecl);
-  }
-
-  private getTypeSymbol(tsVarDecl: ts.VariableDeclaration): ts.Symbol | null {
-    const typeNode = ts.isTypeReferenceNode(tsVarDecl.type!) ? tsVarDecl.type.typeName : tsVarDecl.type;
-    return this.tsTypeChecker.getSymbolAtLocation(typeNode!) ?? null;
-  }
-
-  private getInterfaceType(tsVarDecl: ts.VariableDeclaration): ts.InterfaceType | null {
-    const type = this.tsTypeChecker.getTypeAtLocation(tsVarDecl.type!);
-    return type && (type as ts.ObjectType).objectFlags & ts.ObjectFlags.Interface ? (type as ts.InterfaceType) : null;
-  }
-
-  private collectInterfaceProperties(
-    interfaceType: ts.InterfaceType,
-    tsVarDecl: ts.VariableDeclaration
-  ): InterfaceSymbolTypeResult {
-    const result = {
-      propNames: [] as string[],
-      typeNames: [] as string[],
-      allProps: new Map<string, string>()
-    };
-
-    this.collectPropertiesRecursive(interfaceType, result, tsVarDecl);
-    return result;
-  }
-
-  private collectPropertiesRecursive(
-    type: ts.Type,
-    result: {
-      propNames: string[];
-      typeNames: string[];
-      allProps: Map<string, string>;
-    },
-    tsVarDecl: ts.VariableDeclaration
-  ): void {
-    type.getProperties().forEach((property) => {
-      this.collectProperty(property, result, tsVarDecl);
-    });
-
-    if ('getBaseTypes' in type) {
-      type.getBaseTypes()?.forEach((baseType) => {
-        this.collectPropertiesRecursive(baseType, result, tsVarDecl);
-      });
-    }
-  }
-
-  private collectProperty(
-    property: ts.Symbol,
-    result: {
-      propNames: string[];
-      typeNames: string[];
-      allProps: Map<string, string>;
-    },
-    tsVarDecl: ts.VariableDeclaration
-  ): void {
-    const propName = property.getName();
-    const propType = this.tsTypeChecker.getTypeOfSymbolAtLocation(
-      property,
-      property.valueDeclaration || tsVarDecl.type!
-    );
-    const typeString = this.tsTypeChecker.typeToString(propType);
-
-    if (!result.allProps.has(propName)) {
-      result.propNames.push(propName);
-      result.typeNames.push(typeString);
-      result.allProps.set(propName, typeString);
-    }
-  }
-
-  handleNoStructuralTyping(tsVarDecl: ts.VariableDeclaration): void {
-    const { interfaceInfo, actualUsage } = this.getTypeComparisonData(tsVarDecl);
-    if (!interfaceInfo || !actualUsage) {
-      return;
-    }
-    if (!this.options.arkts2) {
-      return;
-    }
-    const actualMap = TypeScriptLinter.createActualTypeMap(actualUsage);
-    const hasMismatch = TypeScriptLinter.checkTypeMismatches(interfaceInfo, actualMap);
-
-    if (hasMismatch) {
-      this.incrementCounters(tsVarDecl, FaultID.StructuralIdentity);
-    }
-  }
-
-  private getTypeComparisonData(tsVarDecl: ts.VariableDeclaration): {
-    interfaceInfo: { propNames: string[]; typeNames: string[]; allProps: Map<string, string> } | null;
-    actualUsage: {
-      propertyNames: string[];
-      typeNames: string[];
-    } | null;
-  } {
-    return {
-      interfaceInfo: this.interfaceSymbolType(tsVarDecl),
-      actualUsage: TypeScriptLinter.extractUsedObjectType(tsVarDecl)
-    };
-  }
-
-  private static createActualTypeMap(actualUsage: {
-    propertyNames: string[];
-    typeNames: string[];
-  }): Map<string, string> {
-    const actualMap = new Map<string, string>();
-    actualUsage.propertyNames.forEach((prop, index) => {
-      if (actualUsage.typeNames[index]) {
-        actualMap.set(prop, actualUsage.typeNames[index]);
-      }
-    });
-    return actualMap;
-  }
-
-  private static checkTypeMismatches(
-    interfaceInfo: { allProps: Map<string, string> },
-    actualMap: Map<string, string>
-  ): boolean {
-    let hasMismatch = false;
-
-    interfaceInfo.allProps.forEach((expectedType, prop) => {
-      if (!actualMap.has(prop)) {
-        return;
-      }
-
-      const actualType = actualMap.get(prop)!;
-      if (expectedType !== actualType) {
-        hasMismatch = true;
-      }
-    });
-
-    return hasMismatch;
   }
 
   private handleDeclarationDestructuring(decl: ts.VariableDeclaration | ts.ParameterDeclaration): void {
@@ -5361,22 +5162,27 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (this.tsUtils.isWrongSendableFunctionAssignment(targetType, exprType)) {
       this.incrementCounters(tsAsExpr, FaultID.SendableFunctionAsExpr);
     }
-    if (
-      this.options.arkts2 &&
-      this.tsUtils.needToDeduceStructuralIdentity(targetType, exprType, tsAsExpr.expression, true)
-    ) {
-      if (this.isExemptedAsExpression(tsAsExpr)) {
-        return;
-      }
-      if (!this.tsUtils.isObject(exprType)) {
-        this.incrementCounters(node, FaultID.StructuralIdentity);
-      }
-    }
+    this.handleAsExprStructuralTyping(tsAsExpr, targetType, exprType);
     this.handleAsExpressionImport(tsAsExpr);
     this.handleNoTuplesArrays(node, targetType, exprType);
     this.handleObjectLiteralAssignmentToClass(tsAsExpr);
     this.handleArrayTypeImmutable(tsAsExpr, exprType, targetType);
     this.handleNotsLikeSmartTypeOnAsExpression(tsAsExpr);
+  }
+
+  private handleAsExprStructuralTyping(asExpr: ts.AsExpression, targetType: ts.Type, exprType: ts.Type): void {
+    if (
+      this.options.arkts2 &&
+      this.tsUtils.needToDeduceStructuralIdentity(targetType, exprType, asExpr.expression, true) &&
+      this.tsUtils.needToDeduceStructuralIdentity(exprType, targetType, asExpr.expression, true)
+    ) {
+      if (this.isExemptedAsExpression(asExpr)) {
+        return;
+      }
+      if (!this.tsUtils.isObject(exprType)) {
+        this.incrementCounters(asExpr, FaultID.StructuralIdentity);
+      }
+    }
   }
 
   private isExemptedAsExpression(node: ts.AsExpression): boolean {
@@ -6250,39 +6056,70 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
    * only need to strictly match the type of filling the check again
    */
   private checkAssignmentMatching(
-    field: ts.Node,
+    contextNode: ts.Node,
     lhsType: ts.Type,
     rhsExpr: ts.Expression,
     isNewStructuralCheck: boolean = false
   ): void {
     const rhsType = this.tsTypeChecker.getTypeAtLocation(rhsExpr);
-    this.handleNoTuplesArrays(field, lhsType, rhsType);
-    this.handleArrayTypeImmutable(field, lhsType, rhsType, rhsExpr);
+    this.handleNoTuplesArrays(contextNode, lhsType, rhsType);
+    this.handleArrayTypeImmutable(contextNode, lhsType, rhsType, rhsExpr);
     // check that 'sendable typeAlias' is assigned correctly
     if (this.tsUtils.isWrongSendableFunctionAssignment(lhsType, rhsType)) {
-      this.incrementCounters(field, FaultID.SendableFunctionAssignment);
+      this.incrementCounters(contextNode, FaultID.SendableFunctionAssignment);
     }
     const isStrict = this.tsUtils.needStrictMatchType(lhsType, rhsType);
     // 'isNewStructuralCheck' means that this assignment scenario was previously omitted, so only strict matches are checked now
     if (isNewStructuralCheck && !isStrict) {
       return;
     }
-    if (this.tsUtils.needToDeduceStructuralIdentity(lhsType, rhsType, rhsExpr, isStrict)) {
-      if (ts.isNewExpression(rhsExpr) && ts.isIdentifier(rhsExpr.expression) && rhsExpr.expression.text === 'Promise') {
-        const isReturnStatement = ts.isReturnStatement(rhsExpr.parent);
-        const enclosingFunction = ts.findAncestor(rhsExpr, ts.isFunctionLike);
-        const isAsyncFunction =
-          enclosingFunction &&
-          (enclosingFunction.modifiers?.some((m) => {
-            return m.kind === ts.SyntaxKind.AsyncKeyword;
-          }) ||
-            false);
-        if (isReturnStatement && isAsyncFunction) {
-          return;
-        }
-      }
-      this.incrementCounters(field, FaultID.StructuralIdentity);
+    this.handleStructuralTyping(contextNode, lhsType, rhsType, rhsExpr, isStrict);
+  }
+
+  private handleStructuralTyping(
+    contextNode: ts.Node,
+    lhsType: ts.Type,
+    rhsType: ts.Type,
+    rhsExpr: ts.Expression,
+    isStrict: boolean
+  ): void {
+    if (TypeScriptLinter.isValidPromiseReturnedFromAsyncFunction(lhsType, rhsType, rhsExpr)) {
+      return;
     }
+    if (this.tsUtils.needToDeduceStructuralIdentity(lhsType, rhsType, rhsExpr, isStrict)) {
+      this.incrementCounters(contextNode, FaultID.StructuralIdentity);
+    }
+  }
+
+  private static isValidPromiseReturnedFromAsyncFunction(
+    lhsType: ts.Type,
+    rhsType: ts.Type,
+    rhsExpr: ts.Expression
+  ): boolean {
+
+    /*
+     * When resolving the contextual type for return expression in async function, the TS compiler
+     * infers 'PromiseLike<T>' type instead of standard 'Promise<T>' (see following link:
+     * https://github.com/microsoft/TypeScript/pull/27270). In this special case, we treat
+     * these two types as equal and only need to validate the type argument.
+     */
+
+    if (!ts.isReturnStatement(rhsExpr.parent)) {
+      return false;
+    }
+    const enclosingFunction = ts.findAncestor(rhsExpr, ts.isFunctionLike);
+    if (!TsUtils.hasModifier(enclosingFunction?.modifiers, ts.SyntaxKind.AsyncKeyword)) {
+      return false;
+    }
+
+    const lhsPromiseLikeType = lhsType.isUnion() && lhsType.types.find(TsUtils.isStdPromiseLikeType);
+    if (!lhsPromiseLikeType || !TsUtils.isStdPromiseType(rhsType)) {
+      return false;
+    }
+
+    const lhsTypeArg = TsUtils.isTypeReference(lhsPromiseLikeType) && lhsPromiseLikeType.typeArguments?.[0];
+    const rhsTypeArg = TsUtils.isTypeReference(rhsType) && rhsType.typeArguments?.[0];
+    return lhsTypeArg !== undefined && lhsTypeArg === rhsTypeArg;
   }
 
   private handleDecorator(node: ts.Node): void {
