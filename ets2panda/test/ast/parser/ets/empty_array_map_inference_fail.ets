@@ -21,6 +21,7 @@
   return x+1; 
 });
 
-/* @@? 16:2 Error SyntaxError: Unexpected token 'function'. */
+/* @@? 16:2 Error SyntaxError: Function expressions are not supported, use arrow functions instead */
 /* @@? 20:1 Error TypeError: Can't resolve array type */
-/* @@? 20:8 Error SyntaxError: Unexpected token 'function'. */
+/* @@? 20:8 Error SyntaxError: Function expressions are not supported, use arrow functions instead */
+/* @@? 20:18 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
