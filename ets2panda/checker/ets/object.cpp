@@ -2218,6 +2218,12 @@ void ETSChecker::CheckValidInheritance(ETSObjectType *classType, ir::ClassDefini
     const auto &allProps = classType->GetAllProperties();
 
     for (auto *it : allProps) {
+        auto *node = it->Declaration()->Node();
+        if (node->IsClassProperty() && node->AsClassProperty()->TsType() != nullptr &&
+            node->AsClassProperty()->TsType()->IsTypeError()) {
+            continue;
+        }
+
         const auto searchFlag = PropertySearchFlags::SEARCH_ALL | PropertySearchFlags::SEARCH_IN_BASE |
                                 PropertySearchFlags::SEARCH_IN_INTERFACES |
                                 PropertySearchFlags::DISALLOW_SYNTHETIC_METHOD_CREATION;
