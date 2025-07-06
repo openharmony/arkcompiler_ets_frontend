@@ -73,6 +73,7 @@ checker::Type *ETSNeverType::GetType([[maybe_unused]] checker::ETSChecker *check
 ETSNeverType *ETSNeverType::Clone(ArenaAllocator *allocator, AstNode *parent)
 {
     auto *const clone = allocator->New<ir::ETSNeverType>(allocator);
+    ES2PANDA_ASSERT(clone);
 
     if (parent != nullptr) {
         clone->SetParent(parent);
