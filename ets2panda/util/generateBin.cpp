@@ -82,6 +82,7 @@ static int GenerateProgramImpl(ark::pandasm::Program *prog, const util::Options 
         std::cout << "Panda file size statistic:" << std::endl;
         constexpr std::array<std::string_view, 2> INFO_STATS = {"instructions_number", "codesize"};
 
+        ES2PANDA_ASSERT(statp != nullptr);
         auto &stat = *statp;
         for (const auto &[name, size] : stat) {
             if (find(INFO_STATS.begin(), INFO_STATS.end(), name) != INFO_STATS.end()) {
