@@ -58,6 +58,7 @@ void AnnotationUsage::Dump(ir::SrcDumper *dumper) const
     if (!properties_.empty()) {
         dumper->Add("{");
         for (auto elem : properties_) {
+            ES2PANDA_ASSERT(elem->AsClassProperty()->Id() != nullptr);
             dumper->Add(elem->AsClassProperty()->Id()->Name().Mutf8());
             dumper->Add(":");
             elem->AsClassProperty()->Value()->Dump(dumper);
@@ -74,6 +75,7 @@ AnnotationUsage *AnnotationUsage::Clone(ArenaAllocator *const allocator, AstNode
 {
     auto *const expr = expr_ != nullptr ? expr_->Clone(allocator, nullptr)->AsExpression() : nullptr;
     auto *const clone = allocator->New<AnnotationUsage>(expr, allocator);
+    ES2PANDA_ASSERT(clone != nullptr);
 
     if (expr != nullptr) {
         expr->SetParent(clone);

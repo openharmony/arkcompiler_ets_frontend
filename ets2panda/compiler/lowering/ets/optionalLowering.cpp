@@ -39,6 +39,7 @@ static ir::AstNode *LowerOptionalExpr(GetSource const &getSource, SetSource cons
 
     auto expressionCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(varbinder, NearestScope(expr));
     auto *tmpIdent = Gensym(allocator);
+    ES2PANDA_ASSERT(tmpIdent != nullptr);
     auto *tmpIdentClone = tmpIdent->Clone(allocator, nullptr);
 
     // '0's act as placeholders

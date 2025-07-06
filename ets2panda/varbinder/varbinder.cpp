@@ -145,7 +145,7 @@ void VarBinder::InstantiateArguments()
     auto *iter = scope_;
     while (true) {
         Scope *scope = iter->IsFunctionParamScope() ? iter : iter->EnclosingVariableScope();
-
+        ES2PANDA_ASSERT(scope != nullptr);
         const auto *node = scope->Node();
 
         if (scope->IsLoopScope()) {
@@ -172,7 +172,7 @@ void VarBinder::PropagateDirectEval() const
     do {
         VariableScope *scope = iter->IsFunctionParamScope() ? iter->AsFunctionParamScope()->GetFunctionScope()
                                                             : iter->EnclosingVariableScope();
-
+        ES2PANDA_ASSERT(scope != nullptr);
         scope->AddFlag(ScopeFlags::NO_REG_STORE);
         iter = iter->Parent();
     } while (iter != nullptr);
@@ -185,7 +185,7 @@ void VarBinder::InstantiatePrivateContext(const ir::Identifier *ident) const
     while (classDef != nullptr) {
         auto *scope = classDef->Scope();
         Variable *variable = scope->FindLocal(classDef->InternalName(), varbinder::ResolveBindingOptions::BINDINGS);
-
+        ES2PANDA_ASSERT(variable != nullptr);
         if (!variable->HasFlag(VariableFlags::INITIALIZED)) {
             break;
         }
@@ -328,6 +328,7 @@ void VarBinder::BuildVarDeclarator(ir::VariableDeclarator *varDecl)
 void VarBinder::BuildClassProperty(const ir::ClassProperty *prop)
 {
     const ir::ScriptFunction *ctor = util::Helpers::GetContainingConstructor(prop);
+    ES2PANDA_ASSERT(ctor != nullptr);
     auto scopeCtx = LexicalScope<FunctionScope>::Enter(this, ctor->Scope());
 
     ResolveReferences(prop);
@@ -363,6 +364,7 @@ void VarBinder::BuildClassDefinition(ir::ClassDefinition *classDef)
     }
 
     Variable *variable = scope_->FindLocal(classDef->InternalName(), varbinder::ResolveBindingOptions::BINDINGS);
+    ES2PANDA_ASSERT(variable != nullptr);
     variable->AddFlag(VariableFlags::INITIALIZED);
 
     if (classDef->Ident() != nullptr) {
@@ -536,6 +538,7 @@ void VarBinder::ResolveReference(ir::AstNode *childNode)
             LookupIdentReference(childNode->AsIdentifier());
             return ResolveReferences(childNode);
         case ir::AstNodeType::SUPER_EXPRESSION:
+            ES2PANDA_ASSERT(scope_->EnclosingVariableScope() != nullptr);
             scope_->EnclosingVariableScope()->AddFlag(ScopeFlags::USE_SUPER);
             return ResolveReferences(childNode);
         case ir::AstNodeType::SCRIPT_FUNCTION: {

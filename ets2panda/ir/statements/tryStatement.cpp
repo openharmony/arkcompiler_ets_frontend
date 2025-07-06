@@ -127,9 +127,21 @@ TryStatement::TryStatement(TryStatement const &other, ArenaAllocator *allocator)
 {
     block_ = other.block_ == nullptr ? nullptr : other.block_->Clone(allocator, this)->AsBlockStatement();
     for (auto &cc : other.catchClauses_) {
-        catchClauses_.push_back(cc == nullptr ? nullptr : cc->Clone(allocator, this)->AsCatchClause());
+        if (cc == nullptr) {
+            catchClauses_.push_back(nullptr);
+            continue;
+        }
+        auto *ccClone = cc->Clone(allocator, this);
+        ES2PANDA_ASSERT(ccClone != nullptr);
+        catchClauses_.push_back(ccClone->AsCatchClause());
     }
-    finalizer_ = other.finalizer_ == nullptr ? nullptr : other.finalizer_->Clone(allocator, this)->AsBlockStatement();
+    if (other.finalizer_ == nullptr) {
+        finalizer_ = nullptr;
+    } else {
+        auto *otherFinalizerClone = other.finalizer_->Clone(allocator, this);
+        ES2PANDA_ASSERT(otherFinalizerClone != nullptr);
+        finalizer_ = otherFinalizerClone->AsBlockStatement();
+    }
     for (auto &[label, st] : other.finalizerInsertions_) {
         finalizerInsertions_.emplace_back(label, st);
     }
@@ -138,6 +150,7 @@ TryStatement::TryStatement(TryStatement const &other, ArenaAllocator *allocator)
 TryStatement *TryStatement::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     auto *const clone = allocator->New<TryStatement>(*this, allocator);
+    ES2PANDA_ASSERT(clone != nullptr);
     if (parent != nullptr) {
         clone->SetParent(parent);
     }

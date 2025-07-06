@@ -142,7 +142,9 @@ VariableDeclaration::VariableDeclaration([[maybe_unused]] Tag const tag, Variabl
     }
 
     for (auto const &d : other.declarators_) {
-        declarators_.emplace_back(d->Clone(allocator, nullptr)->AsVariableDeclarator());
+        auto *dClone = d->Clone(allocator, nullptr);
+        ES2PANDA_ASSERT(dClone != nullptr);
+        declarators_.emplace_back(dClone->AsVariableDeclarator());
         declarators_.back()->SetParent(this);
     }
 }
@@ -150,6 +152,7 @@ VariableDeclaration::VariableDeclaration([[maybe_unused]] Tag const tag, Variabl
 VariableDeclaration *VariableDeclaration::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     auto *const clone = allocator->New<VariableDeclaration>(Tag {}, *this, allocator);
+    ES2PANDA_ASSERT(clone != nullptr);
     if (parent != nullptr) {
         clone->SetParent(parent);
     }
