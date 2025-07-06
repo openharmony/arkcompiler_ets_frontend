@@ -18,6 +18,7 @@ function foo(...^number: int[]): int {
 }
 
 /* @@? 16:10 Error TypeError: Only abstract or native methods can't have body. */
+/* @@? 16:14 Error SyntaxError: Rest parameter should be either array or tuple type. */
 /* @@? 16:17 Error SyntaxError: Unexpected token, expected an identifier. */
 /* @@? 16:18 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
 /* @@? 16:18 Error SyntaxError: Rest parameter must be the last formal parameter. */
