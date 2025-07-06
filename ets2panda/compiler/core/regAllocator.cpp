@@ -146,6 +146,7 @@ void RegAllocator::Run(IRNode *const ins, const int32_t spillMax)
 {
     ES2PANDA_ASSERT(Spiller().Restored());
     std::array<VReg *, IRNode::MAX_REG_OPERAND> regs {};
+    ES2PANDA_ASSERT(ins != nullptr);
     const auto regCnt = ins->Registers(&regs);
     const auto registers =
         Span<VReg *>(regs.data(), regs.data() + (spillMax == std::numeric_limits<int32_t>::max() ? regCnt : spillMax));
@@ -215,6 +216,7 @@ void RangeRegAllocator::Run(IRNode *const ins, VReg rangeStart, const std::size_
     const auto rangeEnd = rangeStart + argCount;
 
     std::array<VReg *, IRNode::MAX_REG_OPERAND> regs {};
+    ES2PANDA_ASSERT(ins != nullptr);
     const auto regCnt = ins->Registers(&regs);
     const auto registers = Span<VReg *>(regs.data(), regs.data() + regCnt);
     if (RegIndicesValid(ins, registers).first) {

@@ -32,6 +32,7 @@ static void CreateFuncDecl(checker::ETSChecker *checker, ir::MethodDefinition *f
     auto *varBinder = checker->VarBinder();
     // Add the function declarations to the lambda class scope
     auto ctx = varbinder::LexicalScope<varbinder::LocalScope>::Enter(varBinder, scope);
+    ES2PANDA_ASSERT(func->Id() != nullptr);
     varbinder::Variable *var = scope->FindLocal(func->Id()->Name(), varbinder::ResolveBindingOptions::ALL_DECLARATION);
     if (var == nullptr) {
         var = std::get<1>(
@@ -53,6 +54,7 @@ ir::ETSTypeReference *CreateAsyncImplMethodReturnTypeAnnotation(checker::ETSChec
     auto *returnTypeAnn = checker->AllocNode<ir::ETSTypeReference>(
         checker->AllocNode<ir::ETSTypeReferencePart>(objectId, nullptr, nullptr, checker->Allocator()),
         checker->Allocator());
+    ES2PANDA_ASSERT(returnTypeAnn != nullptr);
     objectId->SetParent(returnTypeAnn->Part());
     returnTypeAnn->Part()->SetParent(returnTypeAnn);
 
@@ -76,6 +78,7 @@ ir::MethodDefinition *CreateAsyncImplMethod(checker::ETSChecker *checker, ir::Me
     // clear ASYNC flag for implementation
     modifiers &= ~ir::ModifierFlags::ASYNC;
     ir::ScriptFunction *asyncFunc = asyncMethod->Function();
+    ES2PANDA_ASSERT(asyncFunc != nullptr);
     ir::ScriptFunctionFlags flags = ir::ScriptFunctionFlags::METHOD;
 
     if (asyncFunc->IsProxy()) {
@@ -124,6 +127,7 @@ ir::MethodDefinition *CreateAsyncImplMethod(checker::ETSChecker *checker, ir::Me
 ir::MethodDefinition *CreateAsyncProxy(checker::ETSChecker *checker, ir::MethodDefinition *asyncMethod,
                                        ir::ClassDefinition *classDef)
 {
+    ES2PANDA_ASSERT(asyncMethod != nullptr);
     ir::ScriptFunction *asyncFunc = asyncMethod->Function();
     if (!asyncFunc->IsExternal()) {
         checker->VarBinder()->AsETSBinder()->GetRecordTable()->Signatures().push_back(asyncFunc->Scope());
@@ -159,6 +163,7 @@ ir::MethodDefinition *CreateAsyncProxy(checker::ETSChecker *checker, ir::MethodD
 
 void ComposeAsyncImplMethod(checker::ETSChecker *checker, ir::MethodDefinition *node)
 {
+    ES2PANDA_ASSERT(checker->FindAncestorGivenByType(node, ir::AstNodeType::CLASS_DEFINITION) != nullptr);
     auto *classDef = checker->FindAncestorGivenByType(node, ir::AstNodeType::CLASS_DEFINITION)->AsClassDefinition();
     ir::MethodDefinition *implMethod = CreateAsyncProxy(checker, node, classDef);
 
@@ -176,7 +181,7 @@ void ComposeAsyncImplMethod(checker::ETSChecker *checker, ir::MethodDefinition *
 
 void HandleMethod(checker::ETSChecker *checker, ir::MethodDefinition *node)
 {
-    ES2PANDA_ASSERT(!node->TsType()->IsTypeError());
+    ES2PANDA_ASSERT(!node->TsType()->IsTypeError() && node->Function() != nullptr);
     if (util::Helpers::IsAsyncMethod(node) && !node->Function()->IsExternal()) {
         ComposeAsyncImplMethod(checker, node);
     }

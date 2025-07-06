@@ -75,7 +75,7 @@ varbinder::Variable *DebugInfoDeserializer::CreateIrClass(panda_file::File::Enti
     ES2PANDA_ASSERT(program);
 
     const auto *pf = debugInfoPlugin_.GetDebugInfoStorage()->GetPandaFile(pathToSource.Utf8());
-    ES2PANDA_ASSERT(pf);
+    ES2PANDA_ASSERT(pf != nullptr);
 
     // NOTE: may cache the created `ClassDataAccessor`.
     auto cda = panda_file::ClassDataAccessor(*pf, classId);
@@ -145,6 +145,7 @@ varbinder::Variable *DebugInfoDeserializer::CreateIrGlobalVariable(parser::Progr
     varbinder::Variable *var = nullptr;
 
     auto *cda = debugInfoStorage->GetGlobalClassAccessor(pathToSource.Utf8());
+    ES2PANDA_ASSERT(cda != nullptr);
     cda->EnumerateFields([program, varDeclName, pf, &var, checkHelper](panda_file::FieldDataAccessor &fda) {
         // All ETSGLOBAL fields must be static.
         ES2PANDA_ASSERT(fda.IsStatic());
@@ -183,6 +184,7 @@ varbinder::Variable *DebugInfoDeserializer::CreateIrGlobalMethods(ArenaVector<ir
     varbinder::Variable *var = nullptr;
 
     auto *cda = debugInfoPlugin_.GetDebugInfoStorage()->GetGlobalClassAccessor(pathToSource.Utf8());
+    ES2PANDA_ASSERT(cda != nullptr);
     cda->EnumerateMethods([this, &var, &createdMethods, program, methodDeclName,
                            &cda](panda_file::MethodDataAccessor &mda) {
         if (!methodDeclName.Is(mda.GetFullName())) {

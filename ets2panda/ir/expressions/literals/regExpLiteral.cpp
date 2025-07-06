@@ -61,6 +61,7 @@ checker::VerifiedType RegExpLiteral::Check(checker::ETSChecker *checker)
 RegExpLiteral *RegExpLiteral::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     auto *const clone = allocator->New<RegExpLiteral>(pattern_, flags_, flagsStr_);
+    ES2PANDA_ASSERT(clone != nullptr);
     if (parent != nullptr) {
         clone->SetParent(parent);
     }

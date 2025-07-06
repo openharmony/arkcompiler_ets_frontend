@@ -36,6 +36,7 @@ SpreadElement::SpreadElement([[maybe_unused]] Tag const tag, SpreadElement const
 SpreadElement *SpreadElement::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     auto *const clone = allocator->New<SpreadElement>(Tag {}, *this, allocator);
+    ES2PANDA_ASSERT(clone != nullptr);
     if (parent != nullptr) {
         clone->SetParent(parent);
     }

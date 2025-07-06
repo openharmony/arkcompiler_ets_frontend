@@ -134,6 +134,7 @@ const ir::TSQualifiedName *TSQualifiedName::ResolveLeftMostQualifiedName() const
 TSQualifiedName *TSQualifiedName::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     auto *const clone = allocator->New<TSQualifiedName>(Tag {}, *this, allocator);
+    ES2PANDA_ASSERT(clone != nullptr);
     if (parent != nullptr) {
         clone->SetParent(parent);
     }

@@ -67,6 +67,7 @@ FunctionExpression *FunctionExpression::Clone(ArenaAllocator *const allocator, A
 {
     auto *const func = func_->Clone(allocator, nullptr)->AsScriptFunction();
     auto *const clone = allocator->New<FunctionExpression>(func);
+    ES2PANDA_ASSERT(clone != nullptr);
     func->SetParent(clone);
     if (parent != nullptr) {
         clone->SetParent(parent);
