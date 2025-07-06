@@ -126,25 +126,25 @@ function main(): void {
 /* @@? 18:46 Error TypeError: Cannot find type 'HashMap'. */
 /* @@? 19:22 Error TypeError: Cannot find type 'HashMap'. */
 /* @@? 19:50 Error TypeError: Cannot find type 'HashMap'. */
-/* @@? 21:9 Error TypeError: Static property 'IUB' must be accessed through it's class 'StringFasta' */
-/* @@? 22:9 Error TypeError: Static property 'IUB' must be accessed through it's class 'StringFasta' */
-/* @@? 23:9 Error TypeError: Static property 'IUB' must be accessed through it's class 'StringFasta' */
-/* @@? 24:9 Error TypeError: Static property 'IUB' must be accessed through it's class 'StringFasta' */
-/* @@? 25:9 Error TypeError: Static property 'IUB' must be accessed through it's class 'StringFasta' */
-/* @@? 26:9 Error TypeError: Static property 'IUB' must be accessed through it's class 'StringFasta' */
-/* @@? 27:9 Error TypeError: Static property 'IUB' must be accessed through it's class 'StringFasta' */
-/* @@? 28:9 Error TypeError: Static property 'IUB' must be accessed through it's class 'StringFasta' */
-/* @@? 29:9 Error TypeError: Static property 'IUB' must be accessed through it's class 'StringFasta' */
-/* @@? 30:9 Error TypeError: Static property 'IUB' must be accessed through it's class 'StringFasta' */
-/* @@? 31:9 Error TypeError: Static property 'IUB' must be accessed through it's class 'StringFasta' */
-/* @@? 32:9 Error TypeError: Static property 'IUB' must be accessed through it's class 'StringFasta' */
-/* @@? 33:9 Error TypeError: Static property 'IUB' must be accessed through it's class 'StringFasta' */
-/* @@? 34:9 Error TypeError: Static property 'IUB' must be accessed through it's class 'StringFasta' */
-/* @@? 35:9 Error TypeError: Static property 'IUB' must be accessed through it's class 'StringFasta' */
-/* @@? 36:9 Error TypeError: Static property 'HomoSap' must be accessed through it's class 'StringFasta' */
-/* @@? 37:9 Error TypeError: Static property 'HomoSap' must be accessed through it's class 'StringFasta' */
-/* @@? 38:9 Error TypeError: Static property 'HomoSap' must be accessed through it's class 'StringFasta' */
-/* @@? 39:9 Error TypeError: Static property 'HomoSap' must be accessed through it's class 'StringFasta' */
+/* @@? 21:9 Error TypeError: Unresolved reference IUB */
+/* @@? 22:9 Error TypeError: Unresolved reference IUB */
+/* @@? 23:9 Error TypeError: Unresolved reference IUB */
+/* @@? 24:9 Error TypeError: Unresolved reference IUB */
+/* @@? 25:9 Error TypeError: Unresolved reference IUB */
+/* @@? 26:9 Error TypeError: Unresolved reference IUB */
+/* @@? 27:9 Error TypeError: Unresolved reference IUB */
+/* @@? 28:9 Error TypeError: Unresolved reference IUB */
+/* @@? 29:9 Error TypeError: Unresolved reference IUB */
+/* @@? 30:9 Error TypeError: Unresolved reference IUB */
+/* @@? 31:9 Error TypeError: Unresolved reference IUB */
+/* @@? 32:9 Error TypeError: Unresolved reference IUB */
+/* @@? 33:9 Error TypeError: Unresolved reference IUB */
+/* @@? 34:9 Error TypeError: Unresolved reference IUB */
+/* @@? 35:9 Error TypeError: Unresolved reference IUB */
+/* @@? 36:9 Error TypeError: Unresolved reference HomoSap */
+/* @@? 37:9 Error TypeError: Unresolved reference HomoSap */
+/* @@? 38:9 Error TypeError: Unresolved reference HomoSap */
+/* @@? 39:9 Error TypeError: Unresolved reference HomoSap */
 /* @@@ label Error SyntaxError: Unexpected token. A constructor, method, accessor, or property was expected. */
 /* @@? 47:13 Error TypeError: Static property 'last' must be accessed through it's class 'Random' */
 /* @@? 47:21 Error TypeError: Static property 'last' must be accessed through it's class 'Random' */
@@ -171,8 +171,8 @@ function main(): void {
 /* @@? 112:32 Error TypeError: Property 'count' must be accessed through 'this' */
 /* @@? 113:16 Error TypeError: Static property 'fastaRandom' must be accessed through it's class 'StringFasta' */
 /* @@? 113:32 Error TypeError: Property 'count' must be accessed through 'this' */
-/* @@? 113:46 Error TypeError: Static property 'IUB' must be accessed through it's class 'StringFasta' */
+/* @@? 113:46 Error TypeError: Unresolved reference IUB */
 /* @@? 114:16 Error TypeError: Static property 'fastaRandom' must be accessed through it's class 'StringFasta' */
 /* @@? 114:32 Error TypeError: Property 'count' must be accessed through 'this' */
-/* @@? 114:46 Error TypeError: Static property 'HomoSap' must be accessed through it's class 'StringFasta' */
+/* @@? 114:46 Error TypeError: Unresolved reference HomoSap */
 /* @@? 116:36 Error TypeError: 'expected' is a static property of 'StringFasta' */

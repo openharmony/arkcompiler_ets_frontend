@@ -153,7 +153,7 @@ void ETSChecker::WrongContextErrorClassifyByType(ir::Identifier *ident)
 void ETSChecker::NotResolvedError(ir::Identifier *const ident, const varbinder::Variable *classVar,
                                   const ETSObjectType *classType)
 {
-    if (classVar == nullptr) {
+    if (classVar == nullptr || (classVar->TsType() != nullptr && classVar->TsType()->IsTypeError())) {
         LogUnresolvedReferenceError(ident);
         return;
     }
