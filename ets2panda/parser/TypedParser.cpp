@@ -1195,9 +1195,6 @@ ir::Expression *TypedParser::ParseQualifiedName(ExpressionParseFlags flags)
             Lexer()->NextToken();
             break;
         default:
-            if ((flags & ExpressionParseFlags::POTENTIAL_NEW_ARRAY) != 0) {
-                return expr;
-            }
             LogError(diagnostic::ID_EXPECTED);
             return AllocBrokenExpression(Lexer()->GetToken().Loc());
     }
