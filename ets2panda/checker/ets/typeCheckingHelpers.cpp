@@ -477,6 +477,11 @@ Type *ETSChecker::GetTypeOfSetterGetter(varbinder::Variable *const var)
         return getter->ReturnType();
     }
 
+    if (propType->FindSetter()->Params().empty()) {
+        var->SetTsType(GlobalTypeError());
+        return GlobalTypeError();
+    }
+
     return propType->FindSetter()->Params()[0]->TsType();
 }
 
