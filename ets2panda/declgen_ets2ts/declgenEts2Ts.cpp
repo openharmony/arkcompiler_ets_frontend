@@ -489,22 +489,18 @@ void TSDeclGen::GenLiteral(const ir::Literal *literal)
         const auto number = literal->AsNumberLiteral()->Number();
         if (number.IsInt()) {
             OutDts(std::to_string(number.GetInt()));
-            OutTs(std::to_string(number.GetInt()));
             return;
         }
         if (number.IsLong()) {
             OutDts(std::to_string(number.GetLong()));
-            OutTs(std::to_string(number.GetLong()));
             return;
         }
         if (number.IsFloat()) {
             OutDts(std::to_string(number.GetFloat()));
-            OutTs(std::to_string(number.GetFloat()));
             return;
         }
         if (number.IsDouble()) {
             OutDts(std::to_string(number.GetDouble()));
-            OutTs(std::to_string(number.GetDouble()));
             return;
         }
         LogError(diagnostic::UNEXPECTED_NUMBER_LITERAL_TYPE, {}, literal->Start());
@@ -512,7 +508,6 @@ void TSDeclGen::GenLiteral(const ir::Literal *literal)
         const auto string = literal->AsStringLiteral()->ToString();
         importSet_.insert(string);
         OutDts("\"" + string + "\"");
-        OutTs("\"" + string + "\"");
     } else if (literal->IsBooleanLiteral()) {
         OutDts(literal->AsBooleanLiteral()->ToString());
     } else {
@@ -1547,12 +1542,10 @@ void TSDeclGen::GenEnumDeclaration(const ir::ClassProperty *enumMember)
     ProcessIndent();
 
     OutDts(GetKeyIdent(enumMember->Key())->Name());
-    OutTs(GetKeyIdent(enumMember->Key())->Name());
 
     const auto *init = originEnumMember->Init();
     if (init != nullptr) {
         OutDts(" = ");
-        OutTs(" = ");
         if (!init->IsLiteral()) {
             LogError(diagnostic::NOT_LITERAL_ENUM_INITIALIZER, {}, init->Start());
         }
@@ -1560,8 +1553,6 @@ void TSDeclGen::GenEnumDeclaration(const ir::ClassProperty *enumMember)
         GenLiteral(init->AsLiteral());
     }
 
-    OutTs(",");
-    OutEndlTs();
     OutDts(",");
     OutEndlDts();
 }
@@ -1739,8 +1730,6 @@ void TSDeclGen::EmitClassDeclaration(const ir::ClassDefinition *classDef, const 
         OutEndlTs();
     } else if (classDef->IsEnumTransformed()) {
         EmitDeclarationPrefix(classDef, "enum ", className);
-        OutTs("export const enum ", className, " {");
-        OutEndlTs();
     } else if (classDef->IsFromStruct()) {
         EmitDeclarationPrefix(classDef, "struct ", className);
     } else if (classDef->IsAbstract()) {
@@ -1776,9 +1765,9 @@ void TSDeclGen::GenPartName(std::string &partName)
 
 void TSDeclGen::ProcessIndent()
 {
-    if (state_.isInterfaceInNamespace) {
+    if (state_.isInterfaceInNamespace || state_.inEnum) {
         OutDts(GetIndent());
-    } else if (classNode_.hasNestedClass || state_.inNamespace || state_.inEnum) {
+    } else if (classNode_.hasNestedClass || state_.inNamespace) {
         auto indent = GetIndent();
         OutDts(indent);
         OutTs(indent);
@@ -1938,7 +1927,7 @@ void TSDeclGen::GenClassDeclaration(const ir::ClassDeclaration *classDecl)
     }
     if (!state_.inGlobalClass && ShouldEmitDeclarationSymbol(classDef->Ident())) {
         HandleClassDeclarationTypeInfo(classDef, className);
-        if (!classDef->IsNamespaceTransformed() && !classDef->IsEnumTransformed()) {
+        if (!classDef->IsNamespaceTransformed()) {
             EmitClassGlueCode(classDef, className);
         }
         ProcessClassBody(classDef);
@@ -1953,9 +1942,11 @@ void TSDeclGen::GenClassDeclaration(const ir::ClassDeclaration *classDecl)
             return;
         }
         ES2PANDA_ASSERT(classNode_.indentLevel != static_cast<decltype(classNode_.indentLevel)>(-1));
-        if (!state_.isClassInNamespace || state_.inEnum) {
-            state_.inEnum = false;
+        if (!state_.isClassInNamespace) {
             CloseClassBlock(false);
+        }
+        if (state_.inEnum) {
+            state_.inEnum = false;
         }
     }
     if (classDef->IsDefaultExported()) {
