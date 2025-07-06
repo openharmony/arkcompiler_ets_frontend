@@ -681,6 +681,7 @@ ETSObjectType *ETSChecker::GlobalBuiltinBoxType(Type *contents)
         default: {
             auto *base = AsETSObjectType(&GlobalTypesHolder::GlobalBoxBuiltinType);
             auto *substitution = NewSubstitution();
+            ES2PANDA_ASSERT(base != nullptr);
             substitution->emplace(base->TypeArguments()[0]->AsETSTypeParameter(), contents);
             return base->Substitute(Relation(), substitution);
         }

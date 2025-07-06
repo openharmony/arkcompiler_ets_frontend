@@ -234,6 +234,7 @@ void AliveAnalyzer::AnalyzeMethodDef(const ir::MethodDefinition *methodDef)
 
     auto *func = methodDef->Function();
 
+    ES2PANDA_ASSERT(func != nullptr);
     if (func->Body() == nullptr || func->IsProxy()) {
         return;
     }

@@ -82,6 +82,7 @@ void ParserImpl::ParseProgram(ScriptKind kind)
     auto statements = ParseStatementList(StatementParsingFlags::STMT_GLOBAL_LEXICAL);
 
     auto *blockStmt = AllocNode<ir::BlockStatement>(Allocator(), std::move(statements));
+    ES2PANDA_ASSERT(blockStmt);
     blockStmt->SetRange({startLoc, lexer_->GetToken().End()});
 
     program_->SetAst(blockStmt);
@@ -337,6 +338,7 @@ std::tuple<bool, bool, bool> ParserImpl::ParseComputedClassFieldOrIndexSignature
     return {true, false, false};
 }
 
+// CC-OFFNXT(huge_method[C++], G.FUN.01-CPP) solid logic
 ir::Expression *ParserImpl::ParseClassKey(ClassElementDescriptor *desc)
 {
     ir::Expression *propName = nullptr;
@@ -350,6 +352,7 @@ ir::Expression *ParserImpl::ParseClassKey(ClassElementDescriptor *desc)
             ValidateClassKey(desc);
 
             propName = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
+            ES2PANDA_ASSERT(propName);
             propName->SetRange(lexer_->GetToken().Loc());
             propName->AsIdentifier()->SetPrivate(desc->isPrivateIdent);
             break;
@@ -366,6 +369,7 @@ ir::Expression *ParserImpl::ParseClassKey(ClassElementDescriptor *desc)
             }
 
             propName = AllocNode<ir::StringLiteral>(lexer_->GetToken().String());
+            ES2PANDA_ASSERT(propName);
             propName->SetRange(lexer_->GetToken().Loc());
             break;
         }
@@ -377,6 +381,7 @@ ir::Expression *ParserImpl::ParseClassKey(ClassElementDescriptor *desc)
             } else {
                 propName = AllocNode<ir::NumberLiteral>(lexer_->GetToken().GetNumber());
             }
+            ES2PANDA_ASSERT(propName);
 
             propName->SetRange(lexer_->GetToken().Loc());
             break;
@@ -456,6 +461,7 @@ ir::MethodDefinition *ParserImpl::ParseClassMethod(ClassElementDescriptor *desc,
     ir::ScriptFunction *func = ParseFunction(desc->newStatus);
 
     auto *funcExpr = AllocNode<ir::FunctionExpression>(func);
+    ES2PANDA_ASSERT(funcExpr);
     funcExpr->SetRange(func->Range());
 
     if (desc->methodKind == ir::MethodDefinitionKind::SET) {
@@ -481,6 +487,7 @@ ir::ClassElement *ParserImpl::ParseClassProperty(ClassElementDescriptor *desc,
                                                  const ArenaVector<ir::AstNode *> &properties, ir::Expression *propName,
                                                  ir::TypeNode *typeAnnotation)
 {
+    ES2PANDA_ASSERT(propName);
     lexer::SourcePosition propEnd = propName->End();
     ir::ClassElement *property = nullptr;
 
@@ -588,6 +595,7 @@ ir::ClassElement *ParserImpl::ParseClassStaticBlock()
 
     auto *funcExpr = AllocNode<ir::FunctionExpression>(func);
     auto *staticBlock = AllocNode<ir::ClassStaticBlock>(funcExpr, Allocator());
+    ES2PANDA_ASSERT(staticBlock);
     staticBlock->SetRange({startPos, lexer_->GetToken().End()});
 
     lexer_->NextToken();  // eat '}'
@@ -684,7 +692,7 @@ ir::MethodDefinition *ParserImpl::BuildImplicitConstructor(ir::ClassDefinitionMo
 
     auto *ctor = AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::CONSTRUCTOR, key, funcExpr,
                                                  ir::ModifierFlags::NONE, Allocator(), false);
-
+    ES2PANDA_ASSERT(ctor != nullptr);
     const auto rangeImplicitContstuctor = lexer::SourceRange(startLoc, startLoc);
     ctor->IterateRecursively(
         [&rangeImplicitContstuctor](ir::AstNode *node) -> void { node->SetRange(rangeImplicitContstuctor); });
@@ -703,7 +711,9 @@ void ParserImpl::CreateImplicitConstructor(ir::MethodDefinition *&ctor,
 
     ctor = BuildImplicitConstructor(modifiers, startLoc);
     if ((flags & ir::ModifierFlags::DECLARE) != 0) {
-        ctor->Function()->AddFlag(ir::ScriptFunctionFlags::EXTERNAL);
+        auto *ctorFunc = ctor->Function();
+        ES2PANDA_ASSERT(ctorFunc);
+        ctorFunc->AddFlag(ir::ScriptFunctionFlags::EXTERNAL);
     }
 }
 
@@ -789,6 +799,7 @@ ir::ClassDefinition *ParserImpl::ParseClassDefinition(ir::ClassDefinitionModifie
     auto *classDefinition =
         AllocNode<ir::ClassDefinition>(identNode, nullptr, superTypeParams, std::move(implements), ctor, superClass,
                                        std::move(properties), modifiers, flags, GetContext().GetLanguage());
+    ES2PANDA_ASSERT(classDefinition);
     classDefinition->SetInternalName(privateBinding.View());
 
     classDefinition->SetRange(bodyRange);
@@ -939,6 +950,7 @@ std::tuple<bool, ir::BlockStatement *, lexer::SourcePosition, bool> ParserImpl::
     }
 
     ir::BlockStatement *body = ParseBlockStatement();
+    ES2PANDA_ASSERT(body);
 
     return {true, body, body->End(), false};
 }
@@ -1004,6 +1016,7 @@ ir::ScriptFunction *ParserImpl::ParseFunction(ParserStatus newStatus)
                                                 functionContext.Flags(),   // CC-OFFNXT(G.FMT.02-CPP) project code style
                                                 {},                        // CC-OFFNXT(G.FMT.02-CPP) project code style
                                                 context_.GetLanguage()});  // CC-OFF(G.FMT.02-CPP) project code style
+    ES2PANDA_ASSERT(funcNode);
 
     funcNode->SetRange({startLoc, endLoc});
 
@@ -1033,6 +1046,7 @@ ir::SpreadElement *ParserImpl::ParseSpreadElement(ExpressionParseFlags flags)
 
     auto nodeType = inPattern ? ir::AstNodeType::REST_ELEMENT : ir::AstNodeType::SPREAD_ELEMENT;
     auto *spreadElementNode = AllocNode<ir::SpreadElement>(nodeType, Allocator(), argument);
+    ES2PANDA_ASSERT(spreadElementNode);
     spreadElementNode->SetRange({startLocation, argument->End()});
     return spreadElementNode;
 }
@@ -1273,6 +1287,7 @@ ir::Identifier *ParserImpl::ExpectIdentifier([[maybe_unused]] bool isReference, 
     }
 
     auto *ident = AllocNode<ir::Identifier>(tokenName, Allocator());
+    ES2PANDA_ASSERT(ident);
     //  NOTE: here actual token can be changed!
     ident->SetRange({tokenStart, lexer_->GetToken().End()});
     lexer_->NextToken();
@@ -1448,6 +1463,7 @@ ir::Identifier *ParserImpl::AllocBrokenExpression(const lexer::SourcePosition &p
 ir::Identifier *ParserImpl::AllocBrokenExpression(const lexer::SourceRange &range)
 {
     auto *node = AllocNode<ir::Identifier>(Allocator());
+    ES2PANDA_ASSERT(node);
     node->SetRange(range);
     return node;
 }
@@ -1460,6 +1476,7 @@ ir::TypeNode *ParserImpl::AllocBrokenType(const lexer::SourcePosition &pos)
 ir::TypeNode *ParserImpl::AllocBrokenType(const lexer::SourceRange &range)
 {
     auto node = AllocNode<ir::BrokenTypeNode>(Allocator());
+    ES2PANDA_ASSERT(node);
     node->SetRange(range);
     return node;
 }

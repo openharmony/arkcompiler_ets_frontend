@@ -237,9 +237,12 @@ void ETSParser::ApplyJsDocInfoToSpecificNodeType(ir::AstNode *node, ArenaVector<
     }
 
     switch (node->Type()) {
-        case ir::AstNodeType::METHOD_DEFINITION:
-            node->AsMethodDefinition()->Function()->SetJsDocInformation(std::move(jsDocInformation));
+        case ir::AstNodeType::METHOD_DEFINITION: {
+            auto *func = node->AsMethodDefinition()->Function();
+            ES2PANDA_ASSERT(func != nullptr);
+            func->SetJsDocInformation(std::move(jsDocInformation));
             break;
+        }
         case ir::AstNodeType::CLASS_DECLARATION:
             node->AsClassDeclaration()->Definition()->SetJsDocInformation(std::move(jsDocInformation));
             break;

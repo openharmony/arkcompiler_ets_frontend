@@ -35,7 +35,7 @@ Signature *Signature::Substitute(TypeRelation *relation, const Substitution *sub
     auto *allocator = checker->ProgramAllocator();
     bool anyChange = false;
     SignatureInfo *newSigInfo = allocator->New<SignatureInfo>(allocator);
-
+    ES2PANDA_ASSERT(newSigInfo != nullptr);
     if (!signatureInfo_->typeParams.empty()) {
         for (auto *tparam : signatureInfo_->typeParams) {
             auto *newTparam = tparam->Substitute(relation, substitution);
@@ -82,6 +82,7 @@ Signature *Signature::Substitute(TypeRelation *relation, const Substitution *sub
 Signature *Signature::CreateSignatureForSubstitute(ArenaAllocator *allocator, SignatureInfo *sigInfo, Type *returnType)
 {
     auto *result = allocator->New<Signature>(sigInfo, returnType, func_);
+    ES2PANDA_ASSERT(result != nullptr);
     result->flags_ = flags_;
     result->internalName_ = internalName_;
     result->ownerObj_ = ownerObj_;
@@ -124,6 +125,7 @@ Signature *Signature::Copy(ArenaAllocator *allocator, TypeRelation *relation, Gl
     }
 
     auto *const copiedSignature = allocator->New<Signature>(copiedInfo, returnType_, func_);
+    ES2PANDA_ASSERT(copiedSignature != nullptr);
     copiedSignature->flags_ = flags_;
     copiedSignature->internalName_ = internalName_;
     copiedSignature->ownerObj_ = ownerObj_;
@@ -289,6 +291,7 @@ Signature *Signature::ToArrowSignature(ETSChecker *checker)
 {
     auto *allocator = checker->ProgramAllocator();
     auto *sigInfo = allocator->New<SignatureInfo>(signatureInfo_, allocator);
+    ES2PANDA_ASSERT(sigInfo != nullptr);
     for (auto param : sigInfo->params) {
         param->SetTsType(checker->MaybeBoxType(param->TsType()));
     }

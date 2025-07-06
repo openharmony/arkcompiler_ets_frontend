@@ -121,10 +121,14 @@ bool TypeRelation::IsAssignableTo(Type *source, Type *target)
         return Result(true);
     }
 
+    ES2PANDA_ASSERT(source);
+    ES2PANDA_ASSERT(target);
     result_ = CacheLookup(source, target, checker_->AssignableResults(), RelationType::ASSIGNABLE);
     if (result_ == RelationResult::CACHE_MISS) {
         // NOTE: we support assigning T to Readonly<T>, but do not support assigning Readonly<T> to T
         // more details in spec
+        ES2PANDA_ASSERT(source != nullptr);
+        ES2PANDA_ASSERT(target != nullptr);
         if (source->HasTypeFlag(TypeFlag::READONLY) && !target->HasTypeFlag(TypeFlag::READONLY)) {
             result_ = RelationResult::FALSE;
         }

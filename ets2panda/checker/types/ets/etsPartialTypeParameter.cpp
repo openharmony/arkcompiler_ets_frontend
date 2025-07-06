@@ -82,8 +82,13 @@ void ETSPartialTypeParameter::IsSubtypeOf(TypeRelation *relation, Type *target)
 ETSPartialTypeParameter *ETSPartialTypeParameter::Instantiate(ArenaAllocator *allocator, TypeRelation *relation,
                                                               GlobalTypesHolder *globalTypes)
 {
-    return allocator->New<ETSPartialTypeParameter>(
-        GetUnderlying()->Instantiate(allocator, relation, globalTypes)->AsETSTypeParameter(), checker_);
+    auto *underlying = GetUnderlying();
+    ES2PANDA_ASSERT(underlying != nullptr);
+    auto *instantiated = underlying->Instantiate(allocator, relation, globalTypes);
+    ES2PANDA_ASSERT(instantiated != nullptr);
+    auto *typeParam = instantiated->AsETSTypeParameter();
+    ES2PANDA_ASSERT(typeParam != nullptr);
+    return allocator->New<ETSPartialTypeParameter>(typeParam, checker_);
 }
 
 Type *ETSPartialTypeParameter::Substitute(TypeRelation *relation, const Substitution *substitution)

@@ -188,7 +188,7 @@ varbinder::LocalVariable *ETSObjectType::CreateSyntheticVarFromEverySignature(co
     for (auto &s : signatures) {
         funcType->AddCallSignature(s);
     }
-
+    ES2PANDA_ASSERT(res != nullptr);
     res->SetTsType(funcType);
     funcType->SetVariable(res);
 
@@ -915,6 +915,7 @@ varbinder::LocalVariable *ETSObjectType::CopyProperty(varbinder::LocalVariable *
     if (copiedPropType->Variable() == prop) {
         copiedPropType->SetVariable(copiedProp);
     }
+    ES2PANDA_ASSERT(copiedProp != nullptr);
     copiedProp->SetTsType(copiedPropType);
     return copiedProp;
 }
@@ -934,6 +935,7 @@ Type *ETSObjectType::Instantiate(ArenaAllocator *const allocator, TypeRelation *
     auto *const copiedType = checker->CreateETSObjectType(declNode_, flags_);
     ES2PANDA_ASSERT(copiedType->internalName_ == internalName_);
     ES2PANDA_ASSERT(copiedType->name_ == name_);
+    ES2PANDA_ASSERT(copiedType != nullptr);
     copiedType->typeFlags_ = typeFlags_;
     copiedType->RemoveObjectFlag(ETSObjectFlags::CHECKED_COMPATIBLE_ABSTRACTS |
                                  ETSObjectFlags::INCOMPLETE_INSTANTIATION | ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY);
@@ -982,6 +984,7 @@ static varbinder::LocalVariable *CopyPropertyWithTypeArguments(varbinder::LocalV
     if (copiedPropType->Variable() == prop || copiedPropType->Variable() == nullptr) {
         copiedPropType->SetVariable(copiedProp);
     }
+    ES2PANDA_ASSERT(copiedProp != nullptr);
     copiedProp->SetTsType(copiedPropType);
     return copiedProp;
 }
@@ -1032,6 +1035,7 @@ static Substitution *ComputeEffectiveSubstitution(TypeRelation *const relation,
 void ETSObjectType::SetCopiedTypeProperties(TypeRelation *const relation, ETSObjectType *const copiedType,
                                             ArenaVector<Type *> &&newTypeArgs, ETSObjectType *base)
 {
+    ES2PANDA_ASSERT(copiedType != nullptr);
     copiedType->typeFlags_ = typeFlags_;
     copiedType->RemoveObjectFlag(ETSObjectFlags::CHECKED_COMPATIBLE_ABSTRACTS |
                                  ETSObjectFlags::INCOMPLETE_INSTANTIATION | ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY);
