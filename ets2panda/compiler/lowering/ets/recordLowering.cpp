@@ -102,12 +102,8 @@ void RecordLowering::CheckDuplicateKey(KeySetType &keySet, ir::ObjectExpression 
                 ctx->checker->AsETSChecker()->LogError(diagnostic::OBJ_LIT_PROP_NAME_COLLISION, {}, expr->Start());
                 break;
             }
-            case ir::AstNodeType::IDENTIFIER: {
-                ctx->checker->AsETSChecker()->LogError(diagnostic::OBJ_LIT_UNKNOWN_PROP, {}, expr->Start());
-                break;
-            }
             default: {
-                ES2PANDA_UNREACHABLE();
+                ctx->checker->AsETSChecker()->LogError(diagnostic::OBJ_LIT_UNKNOWN_PROP, {}, expr->Start());
                 break;
             }
         }
