@@ -83,26 +83,6 @@
             "suggest": "",
             "rule": "The subclass constructor must call the parent class's parametered constructor (arkts-subclass-must-call-super-constructor-with-args)",
             "severity": "ERROR"
-        },
-        {
-            "line": 77,
-            "column": 9,
-            "endLine": 77,
-            "endColumn": 14,
-            "problem": "BuiltinNoCtorFunc",
-            "suggest": "",
-            "rule": "API is not support ctor signature and func (arkts-builtin-cotr)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 83,
-            "column": 9,
-            "endLine": 83,
-            "endColumn": 14,
-            "problem": "BuiltinNoCtorFunc",
-            "suggest": "",
-            "rule": "API is not support ctor signature and func (arkts-builtin-cotr)",
-            "severity": "ERROR"
         }
     ]
 }

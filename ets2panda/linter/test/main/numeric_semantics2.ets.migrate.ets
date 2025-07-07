@@ -32,9 +32,9 @@ namespace NumericSemanticsDone {
 }
 
 namespace NoNumericSemantics {
-    interface X1 { name: number, __2: number}
-    interface X2 { name: number, _2: number}
-    let x: X1 = {name: 20.0, __2: 30.0} // OK
+    interface X1 { "name": number, __2: number}
+    interface X2 { "name": number, _2: number}
+    let x: X1 = {"name": 20.0, __2: 30.0} // OK
     console.log(x.__2); // OK
 
     let x_fix: X2 = {name: 20.0, _2: 20.0};

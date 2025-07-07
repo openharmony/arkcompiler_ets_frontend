@@ -1946,6 +1946,16 @@
         },
         {
             "line": 194,
+            "column": 14,
+            "endLine": 194,
+            "endColumn": 24,
+            "problem": "NoTsLikeSmartType",
+            "suggest": "",
+            "rule": "Smart type differences (arkts-no-ts-like-smart-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 194,
             "column": 27,
             "endLine": 194,
             "endColumn": 28,

@@ -35,16 +35,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 20,
-            "column": 25,
-            "endLine": 20,
-            "endColumn": 27,
-            "problem": "NoTsLikeSmartType",
-            "suggest": "",
-            "rule": "Smart type differences (arkts-no-ts-like-smart-type)",
-            "severity": "ERROR"
-        },
-        {
             "line": 24,
             "column": 3,
             "endLine": 27,
@@ -92,16 +82,6 @@
             "problem": "GenericCallNoTypeArgs",
             "suggest": "",
             "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 33,
-            "column": 25,
-            "endLine": 33,
-            "endColumn": 27,
-            "problem": "NoTsLikeSmartType",
-            "suggest": "",
-            "rule": "Smart type differences (arkts-no-ts-like-smart-type)",
             "severity": "ERROR"
         },
         {
