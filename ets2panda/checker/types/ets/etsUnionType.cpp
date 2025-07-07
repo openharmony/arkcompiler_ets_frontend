@@ -355,7 +355,6 @@ checker::Type *ETSUnionType::GetAssignableBuiltinType(
 bool ETSUnionType::ExtractType(checker::ETSChecker *checker, checker::Type *source,
                                ArenaVector<Type *> &unionTypes) noexcept
 {
-    std::map<std::uint32_t, ArenaVector<checker::Type *>::const_iterator> numericTypes {};
     source = checker->GetNonConstantType(source);
 
     bool rc = false;
@@ -383,25 +382,12 @@ bool ETSUnionType::ExtractType(checker::ETSChecker *checker, checker::Type *sour
 
         if (checker->Relation()->IsSupertypeOf(constituentType, source)) {
             rc = true;
-        } else if (!rc && constituentType->IsBuiltinNumeric()) {
-            if (auto const id = ETSObjectType::GetPrecedence(checker, constituentType->AsETSObjectType()); id > 0U) {
-                numericTypes.emplace(id, it);
-            }
         }
 
         ++it;
     }
 
-    if (rc) {
-        return true;
-    }
-
-    if (source->IsBuiltinNumeric() && !numericTypes.empty()) {
-        unionTypes.erase((*std::prev(numericTypes.end())).second);
-        return true;
-    }
-
-    return false;
+    return rc;
 }
 
 std::pair<checker::Type *, checker::Type *> ETSUnionType::GetComplimentaryType(ETSChecker *const checker,
