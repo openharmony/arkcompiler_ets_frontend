@@ -427,10 +427,22 @@ static bool ExecuteParsingAndCompiling(const CompilationUnit &unit, public_lib::
     return !context->diagnosticEngine->IsAnyError();
 }
 
+static pandasm::Program *ClearContextAndReturnProgam(public_lib::Context *context, pandasm::Program *program)
+{
+    context->config = nullptr;
+    context->parser = nullptr;
+    context->checker->SetAnalyzer(nullptr);
+    context->checker = nullptr;
+    context->analyzer = nullptr;
+    context->phaseManager = nullptr;
+    context->parserProgram = nullptr;
+    context->emitter = nullptr;
+    return program;
+}
+
 template <typename Parser, typename VarBinder, typename Checker, typename Analyzer, typename AstCompiler,
           typename CodeGen, typename RegSpiller, typename FunctionEmitter, typename Emitter>
-static pandasm::Program *Compile(const CompilationUnit &unit, CompilerImpl *compilerImpl,
-                                 [[maybe_unused]] public_lib::Context *context)
+static pandasm::Program *Compile(const CompilationUnit &unit, CompilerImpl *compilerImpl, public_lib::Context *context)
 {
     auto config = public_lib::ConfigImpl {};
     context->config = &config;
@@ -475,9 +487,9 @@ static pandasm::Program *Compile(const CompilationUnit &unit, CompilerImpl *comp
     context->checker->Initialize(varbinder);
 
     if (!ExecuteParsingAndCompiling(unit, context)) {
-        return nullptr;
+        return ClearContextAndReturnProgam(context, nullptr);
     }
-    return EmitProgram(compilerImpl, context, unit);
+    return ClearContextAndReturnProgam(context, EmitProgram(compilerImpl, context, unit));
 }
 
 pandasm::Program *CompilerImpl::Compile(const CompilationUnit &unit, public_lib::Context *context)

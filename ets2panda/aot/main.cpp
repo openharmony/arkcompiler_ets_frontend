@@ -100,6 +100,15 @@ static int CompileMultipleFiles(es2panda::Compiler &compiler, std::vector<Source
     return overallRes;
 }
 
+static unsigned int ReleaseInputsAndReturn(std::vector<std::string *> &parserInputs, unsigned int returnCode)
+{
+    for (auto *input : parserInputs) {
+        delete input;
+    }
+    parserInputs.clear();
+    return returnCode;
+}
+
 static unsigned int CompileFromConfig(es2panda::Compiler &compiler, util::Options *options,
                                       util::DiagnosticEngine &diagnosticEngine)
 {
@@ -110,6 +119,7 @@ static unsigned int CompileFromConfig(es2panda::Compiler &compiler, util::Option
     }
 
     std::vector<SourceFile> inputs {};
+    std::vector<std::string *> parserInputs;
     unsigned int overallRes = 0;
     for (auto &[src, dst] : compilationList) {
         std::ifstream inputStream(src);
@@ -119,14 +129,14 @@ static unsigned int CompileFromConfig(es2panda::Compiler &compiler, util::Option
         }
         std::stringstream ss;
         ss << inputStream.rdbuf();
-        auto *parserInput = new std::string(ss.str());
+        parserInputs.push_back(new std::string(ss.str()));
         inputStream.close();
-        es2panda::SourceFile input(src, *parserInput, options->IsModule(), std::string_view(dst));
+        es2panda::SourceFile input(src, *parserInputs.back(), options->IsModule(), std::string_view(dst));
         inputs.push_back(input);
     }
 
     if (options->IsPermArena() && (options->GetExtension() == util::gen::extension::ETS)) {
-        return CompileMultipleFiles(compiler, inputs, options, diagnosticEngine);
+        return ReleaseInputsAndReturn(parserInputs, CompileMultipleFiles(compiler, inputs, options, diagnosticEngine));
     }
 
     for (auto &input : inputs) {
@@ -140,7 +150,7 @@ static unsigned int CompileFromConfig(es2panda::Compiler &compiler, util::Option
             overallRes |= static_cast<unsigned>(res);
         }
     }
-    return overallRes;
+    return ReleaseInputsAndReturn(parserInputs, overallRes);
 }
 
 static std::optional<std::vector<util::Plugin>> InitializePlugins(std::vector<std::string> const &names,
