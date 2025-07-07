@@ -251,6 +251,10 @@ ets2panda_add_gtest(lsp_api_test_code_fix_registration CPP_SOURCES
     code_fix_registration_test.cpp
 )
 
+ets2panda_add_gtest(lsp_api_test_fix_return_type_in_async_func CPP_SOURCES
+    fix_return_type_in_async_function_test.cpp
+)
+
 ets2panda_add_gtest(lsp_api_test_fix_abstract_member CPP_SOURCES
     fix_class_doesnt_implement_inherited_abstract_member_test.cpp
 )
