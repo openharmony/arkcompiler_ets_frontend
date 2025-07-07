@@ -460,9 +460,12 @@ std::vector<CompletionEntry> GetCompletionFromTSInterfaceDeclaration(ir::TSInter
             auto extendCom =
                 extendInterf->IsTSInterfaceDeclaration()
                     ? GetCompletionFromTSInterfaceDeclaration(extendInterf->AsTSInterfaceDeclaration(), triggerWord)
+                    : completions;
+            extendCompletions.insert(extendCompletions.end(), extendCom.begin(), extendCom.end());
         }
     }
     auto qualifiedBodies = FilterFromInterfaceBody(bodies, triggerWord);
+    auto res = GetEntriesForTSInterfaceDeclaration(qualifiedBodies);
     res.insert(res.end(), extendCompletions.begin(), extendCompletions.end());
     return res;
 }

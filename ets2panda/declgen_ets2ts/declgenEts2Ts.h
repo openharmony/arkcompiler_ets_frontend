@@ -322,4 +322,3 @@ private:
 }  // namespace ark::es2panda::declgen_ets2ts
 
 #endif  // ES2PANDA_DECLGEN_ETS2TS_H
-

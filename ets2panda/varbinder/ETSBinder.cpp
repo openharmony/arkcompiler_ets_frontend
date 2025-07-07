@@ -1559,9 +1559,4 @@ bool ETSBinder::IsGlobalIdentifier([[maybe_unused]] const util::StringView &str)
     return false;
 }
 
-bool ETSBinder::IsGlobalIdentifier([[maybe_unused]] const util::StringView &str) const
-{
-    return false;
-}
-
 }  // namespace ark::es2panda::varbinder

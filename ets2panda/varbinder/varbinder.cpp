@@ -94,11 +94,6 @@ bool VarBinder::IsGlobalIdentifier(const util::StringView &str) const
     return util::Helpers::IsGlobalIdentifier(str);
 }
 
-bool VarBinder::IsGlobalIdentifier(const util::StringView &str) const
-{
-    return util::Helpers::IsGlobalIdentifier(str);
-}
-
 void VarBinder::IdentifierAnalysis()
 {
     ES2PANDA_ASSERT(program_->Ast());

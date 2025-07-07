@@ -199,11 +199,15 @@ public:
 
     void ThrowError(const lexer::SourcePosition &pos, const diagnostic::DiagnosticKind &kind) const
     {
+        ThrowError(pos, kind, util::DiagnosticMessageParams {});
+    }
+    void ThrowError(const lexer::SourcePosition &pos, const diagnostic::DiagnosticKind &kind,
                     const util::DiagnosticMessageParams &params) const override;
     bool IsGlobalIdentifier(const util::StringView &str) const override;
 
     void SetDefaultImports(ArenaVector<ir::ETSImportDeclaration *> defaultImports) noexcept
     {
+        defaultImports_ = std::move(defaultImports);
     }
 
     void AddDynamicImport(ir::ETSImportDeclaration *import);

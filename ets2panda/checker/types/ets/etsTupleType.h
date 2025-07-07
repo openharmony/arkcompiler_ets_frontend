@@ -48,11 +48,6 @@ public:
         return wrapperType_;
     }
 
-    [[nodiscard]] ETSObjectType *GetWrapperType() const
-    {
-        return wrapperType_;
-    }
-
     [[nodiscard]] Type *GetTypeAtIndex(TupleSizeType index) const;
 
     void ToString(std::stringstream &ss, bool precise) const override;
