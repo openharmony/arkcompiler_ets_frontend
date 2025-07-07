@@ -1,15 +1,20 @@
-#19247
+# Known failures list for  third_lib_js-fastverify-arm64-int
+
+#26315
+jBox2d_test
 jsDiff_test
-
-#21663
 crypto-js_test
+memory-cache_test
 
-#24550
+#24985
+
+
+#18745
+
+#25759
 validator_test
 
-#24592
-dayjs_test
+#27146
+Easyrelpace_test
 
-#24342
-jBox2d_test
 
