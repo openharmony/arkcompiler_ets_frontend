@@ -4352,6 +4352,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (!this.options.arkts2) {
       return;
     }
+    if (ts.isCallExpression(tsCallExpr) && tsCallExpr.expression.kind === ts.SyntaxKind.SuperKeyword) {
+        return;
+    }
     const node = ts.isCallExpression(tsCallExpr) ? tsCallExpr.expression : tsCallExpr.typeName;
     const constructorType = this.tsTypeChecker.getTypeAtLocation(node);
     const callSignatures = constructorType.getCallSignatures();
