@@ -16,8 +16,8 @@
 function check1() {
     let a8 : string|Int[] = "abc"
     let str = "";
-    for (let character : Char|Int of a8) {
-        if (character instanceof Char) {
+    for (let character : string|Int of a8) {
+        if (character instanceof string) {
             str += character;
         }
     }

@@ -158,7 +158,8 @@ ir::Statement *ObjectIteratorLowering::ProcessObjectIterator(public_lib::Context
             declaration->Kind() != ir::VariableDeclaration::VariableDeclarationKind::CONST ? "let " : "const ";
         loopVariableIdent = declaration->Declarators().at(0U)->Id()->AsIdentifier()->Clone(allocator, nullptr);
     } else if (left->IsIdentifier()) {
-        loopVariableIdent = left->AsIdentifier()->Clone(allocator, nullptr);
+        loopVariableIdent = Gensym(allocator);
+        loopVariableIdent->SetName(left->AsIdentifier()->Name());
     } else {
         ES2PANDA_UNREACHABLE();
     }
@@ -191,8 +192,7 @@ ir::Statement *ObjectIteratorLowering::ProcessObjectIterator(public_lib::Context
 bool ObjectIteratorLowering::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
     auto hasIterator = [](checker::Type const *const exprType) -> bool {
-        return exprType != nullptr &&
-               ((exprType->IsETSObjectType() && !exprType->IsETSStringType()) || exprType->IsETSTypeParameter());
+        return exprType != nullptr && (exprType->IsETSObjectType() || exprType->IsETSTypeParameter());
     };
 
     program->Ast()->TransformChildrenRecursively(

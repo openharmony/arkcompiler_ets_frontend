@@ -615,7 +615,7 @@ checker::Type *GetIteratorType(ETSChecker *checker, checker::Type *elemType, ir:
         checker->LogError(diagnostic::ITERATOR_TYPE_ABSENT, {}, left->Start());
         return checker->GlobalTypeError();
     }
-    return iterType;
+    return checker->GetNonConstantType(iterType);
 }
 
 bool CheckArgumentVoidType(checker::Type *&funcReturnType, ETSChecker *checker, const std::string &name,
