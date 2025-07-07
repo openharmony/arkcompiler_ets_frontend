@@ -473,6 +473,30 @@ describe('test for ApiExtractor', function () {
       assert.strictEqual(reservedProperties.size === 0, true);
     });
 
+    it('test for NamespaceExport(export)', function () {
+      const fileList: Set<string> = new Set([
+      'test/ut/utils/oh_modules/NamespaceExport.d.ts'
+      ]);
+      let projectAndLibs = readProjectPropertiesByCollectedPaths(fileList,
+        {
+          mNameObfuscation: {
+            mEnable: true,
+            mReservedProperties: [],
+            mRenameProperties: false,
+            mKeepStringProperty: false,
+            mNameGeneratorType: NameGeneratorType.ORDERED,
+            mReservedNames: [],
+            mReservedToplevelNames: []
+          },
+          mExportObfuscation: true,
+        }, true);
+      let reservedProperties = projectAndLibs.exportNameAndPropSet == undefined? new Set<string> : projectAndLibs.exportNameAndPropSet;
+      let reservedExportNames = projectAndLibs.exportNameSet == undefined? new Set<string> : projectAndLibs.exportNameSet;
+      assert.strictEqual(reservedExportNames.has('Utils'), true);
+      assert.strictEqual(reservedExportNames.size === 1, true);
+      assert.strictEqual(reservedProperties.size === 0, true);
+    });
+
     it('test for module.exports(property + export)', function () {
       let projectAndLibs = readProjectPropertiesByCollectedPaths(fileList,
         {
