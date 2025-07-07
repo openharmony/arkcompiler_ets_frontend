@@ -621,7 +621,7 @@ semantic:
 
 - name: GENERIC_ALIAS_WITHOUT_PARAMS
   id: 155
-  message: "Type alias declaration is generic, but no type parameters were provided"
+  message: "Type alias declaration is generic, but too few type arguments were provided"
 
 - name: NON_GENERIC_ALIAS_WITH_PARAMS
   id: 156
