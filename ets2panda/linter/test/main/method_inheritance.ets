@@ -361,3 +361,14 @@ class BBB3 extends AAA {
   test() { //error
   }
 }
+
+
+abstract class Test1 {
+  abstract test(params: Map<String, Object>): void;
+}
+
+class Test2 extends Test1 {
+  test(params: Map<string, Object>): void { // no Error
+
+  }
+}

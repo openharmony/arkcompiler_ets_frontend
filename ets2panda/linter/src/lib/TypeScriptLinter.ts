@@ -3477,6 +3477,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     // Check if every type in baseType is also present in derivedType
     for (const typeStr of baseTypeSet) {
       if (!derivedTypeSet.has(typeStr)) {
+        if (TypeScriptLinter.areWrapperAndPrimitiveTypesEqual(typeStr, derivedTypeSet)) {
+          continue;
+        }
         return false;
       }
     }
@@ -3494,8 +3497,28 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
     // All types in `fromTypes` should exist in `toTypes` for assignability.
     return fromTypes.every((typeStr) => {
-      return toTypes.has(typeStr);
+      if (toTypes.has(typeStr)) {
+        return true;
+      }
+      return TypeScriptLinter.areWrapperAndPrimitiveTypesEqual(typeStr, toTypes);
     });
+  }
+
+  // Check if a type string has an equivalent primitive/wrapper type in a set
+  private static areWrapperAndPrimitiveTypesEqual(typeStr: string, typeSet: Set<string>): boolean {
+      const typePairs = [
+        ['String', 'string'],
+        ['Number', 'number'],
+        ['Boolean', 'boolean']
+      ];
+
+      for (const [wrapper, primitive] of typePairs) {
+        if ((typeStr === wrapper && typeSet.has(primitive)) || 
+            (typeStr === primitive && typeSet.has(wrapper))) {
+          return true;
+        }
+      }
+      return false;
   }
 
   private isDerivedTypeAssignable(derivedType: ts.Type, baseType: ts.Type): boolean {
@@ -3529,12 +3552,29 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
   // Converts union types into an array of type strings for easy comparison.
   private flattenUnionTypes(type: ts.Type): string[] {
-    if (type.isUnion()) {
-      return type.types.map((t) => {
-        return this.tsTypeChecker.typeToString(t);
-      });
-    }
-    return [this.tsTypeChecker.typeToString(type)];
+      if (type.isUnion()) {
+        return type.types.map((t) => {
+          return TypeScriptLinter.normalizeTypeString(this.tsTypeChecker.typeToString(t));
+        });
+      }
+      return [TypeScriptLinter.normalizeTypeString(this.tsTypeChecker.typeToString(type))];
+  }
+
+  // Normalize type string to handle primitive wrapper types consistently
+  private static normalizeTypeString(typeStr: string): string {
+      // Handle all primitive wrapper types
+      const wrapperToPrimitive: Record<string, string> = {
+        'String': 'string',
+        'Number': 'number',
+        'Boolean': 'boolean'
+      };
+
+      // Replace wrapper types with their primitive counterparts
+      let normalized = typeStr;
+      for (const [wrapper, primitive] of Object.entries(wrapperToPrimitive)) {
+        normalized = normalized.replace(new RegExp(wrapper, 'g'), primitive);
+      }
+      return normalized;
   }
 
   private checkClassImplementsMethod(classDecl: ts.ClassDeclaration, methodName: string): boolean {
