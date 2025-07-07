@@ -28,11 +28,13 @@
 #include "line_column_offset.h"
 #include "public/es2panda_lib.h"
 #include "cancellation_token.h"
+#include "user_preferences.h"
 #include "class_hierarchies.h"
 #include "find_references.h"
 #include "find_rename_locations.h"
 #include "class_hierarchy_info.h"
 #include "completions.h"
+#include "refactors/refactor_types.h"
 #include "applicable_refactors.h"
 #include "todo_comments.h"
 #include "types.h"
@@ -259,22 +261,6 @@ public:
     }
 };
 
-struct RefactorEditInfo {
-private:
-    std::vector<FileTextChanges> fileTextChanges_;
-
-public:
-    explicit RefactorEditInfo(std::vector<FileTextChanges> fileTextChanges = {})
-        : fileTextChanges_(std::move(fileTextChanges))
-    {
-    }
-
-    std::vector<FileTextChanges> &GetFileTextChanges()
-    {
-        return fileTextChanges_;
-    }
-};
-
 struct QuickInfo {
 private:
     std::string kind_;
@@ -494,6 +480,10 @@ struct CodeFixActionInfo : CodeActionInfo {
     std::string fixAllDescription_ = {};
 };
 
+struct CodeFixActionInfoList {
+    std::vector<CodeFixActionInfo> infos_;
+};
+
 struct CodeFixOptions {
     ark::es2panda::lsp::CancellationToken token;
     ark::es2panda::lsp::FormatCodeSettings options;
@@ -502,8 +492,9 @@ struct CodeFixOptions {
 
 typedef struct LSPAPI {
     DefinitionInfo (*getDefinitionAtPosition)(es2panda_Context *context, size_t position);
-    ark::es2panda::lsp::ApplicableRefactorInfo (*getApplicableRefactors)(es2panda_Context *context, const char *kind,
-                                                                         size_t position);
+    std::vector<ark::es2panda::lsp::ApplicableRefactorInfo> (*getApplicableRefactors)(es2panda_Context *context,
+                                                                                      const char *kind,
+                                                                                      size_t position);
     DefinitionInfo (*getImplementationAtPosition)(es2panda_Context *context, size_t position);
     bool (*isPackageModule)(es2panda_Context *context);
     ark::es2panda::lsp::CompletionEntryKind (*getAliasScriptElementKind)(es2panda_Context *context, size_t position);
@@ -512,7 +503,7 @@ typedef struct LSPAPI {
     std::vector<ark::es2panda::lsp::ClassHierarchyItemInfo> (*getClassHierarchiesImpl)(es2panda_Context *context,
                                                                                        const char *fileName,
                                                                                        size_t pos);
-    bool (*getSafeDeleteInfo)(es2panda_Context *context, size_t position, const char *path);
+    bool (*getSafeDeleteInfo)(es2panda_Context *context, size_t position);
     References (*getReferencesAtPosition)(es2panda_Context *context, DeclInfo *declInfo);
     es2panda_AstNode *(*getPrecedingToken)(es2panda_Context *context, const size_t pos);
     std::string (*getCurrentTokenValue)(es2panda_Context *context, size_t position);
@@ -543,8 +534,8 @@ typedef struct LSPAPI {
     ark::es2panda::lsp::CompletionInfo (*getCompletionsAtPosition)(es2panda_Context *context, size_t position);
     ark::es2panda::lsp::ClassHierarchy (*getClassHierarchyInfo)(es2panda_Context *context, size_t position);
     std::vector<TextSpan> (*getBraceMatchingAtPosition)(char const *fileName, size_t position);
-    RefactorEditInfo (*getClassConstructorInfo)(es2panda_Context *context, size_t position,
-                                                const std::vector<std::string> &properties);
+    ark::es2panda::lsp::RefactorEditInfo (*getClassConstructorInfo)(es2panda_Context *context, size_t position,
+                                                                    const std::vector<std::string> &properties);
     std::vector<Location> (*getImplementationLocationAtPosition)(es2panda_Context *context, int position);
     ark::es2panda::lsp::LineAndCharacter (*toLineColumnOffset)(es2panda_Context *context, size_t position);
     std::vector<ark::es2panda::lsp::TodoComment> (*getTodoComments)(
@@ -552,11 +543,12 @@ typedef struct LSPAPI {
         ark::es2panda::lsp::CancellationToken *cancellationToken);
     InlayHintList (*provideInlayHints)(es2panda_Context *context, const TextSpan *span);
     SignatureHelpItems (*getSignatureHelpItems)(es2panda_Context *context, size_t position);
-    std::vector<CodeFixActionInfo> (*getCodeFixesAtPosition)(const char *fileName, size_t start_position,
+    std::vector<CodeFixActionInfo> (*getCodeFixesAtPosition)(es2panda_Context *context, size_t start_position,
                                                              size_t end_position, std::vector<int> &errorCodes,
                                                              CodeFixOptions &codeFixOptions);
     CombinedCodeActionsInfo (*getCombinedCodeFix)(const char *fileName, const std::string &fixId,
                                                   CodeFixOptions &codeFixOptions);
+    TextSpan *(*GetNameOrDottedNameSpan)(es2panda_Context *context, int startPos);
 } LSPAPI;
 CAPI_EXPORT LSPAPI const *GetImpl();
 // NOLINTEND

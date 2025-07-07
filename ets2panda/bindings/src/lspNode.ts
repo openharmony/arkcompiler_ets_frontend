@@ -23,7 +23,7 @@ import { NativePtrDecoder } from './Platform';
 enum HierarchyType { OTHERS, INTERFACE, CLASS };
 
 export enum SetterStyle {
-  METHOD = 0,
+  NONE = 0,
   SETTER,
   GETTER
 }
@@ -35,6 +35,11 @@ export enum AccessModifierStyle {
 }
 
 enum ClassRelationKind { UNKNOWN, INTERFACE, CLASS, FIELD, METHOD, PROPERTY };
+
+export enum ClassDefinitionStyle {
+  FIELD = 0,
+  METHOD
+}
 
 export abstract class LspNode {
   readonly peer: KNativePointer;
@@ -228,30 +233,50 @@ export class LspSymbolDisplayPart extends LspNode {
   readonly kind: String;
 }
 
-export class LspClassMethodItem extends LspNode {
-  constructor(peer: KNativePointer) {
+export class LspClassHierarchyItem extends LspNode {
+  constructor(peer: KNativePointer, style: ClassDefinitionStyle) {
     super(peer);
-    this.functionDetail = unpackString(global.es2panda._getDetailFromClassMethodItem(this.peer));
-    this.setter = global.es2panda._getSetterStyleFromClassMethodItem(this.peer);
-    this.accessModifier = global.es2panda._getAccessModifierStyleFromClassMethodItem(this.peer);
+    this.style = style;
+    this.detail = unpackString(global.es2panda._getDetailFromClassHierarchyItem(this.peer));
+    this.accessModifier = global.es2panda._getAccessModifierStyleFromClassHierarchyItem(this.peer);
   }
-  readonly functionDetail: string;
-  readonly setter: SetterStyle;
+  readonly detail: string;
   readonly accessModifier: AccessModifierStyle;
+  readonly style: ClassDefinitionStyle;
+}
+
+export class LspClassMethodItem extends LspClassHierarchyItem {
+  constructor(peer: KNativePointer) {
+    super(peer, ClassDefinitionStyle.METHOD);
+    this.setter = global.es2panda._getSetterStyleFromClassMethodItem(this.peer);
+  }
+  readonly setter: SetterStyle;
+}
+
+export class LspClassPropertyItem extends LspClassHierarchyItem {
+  constructor(peer: KNativePointer) {
+    super(peer, ClassDefinitionStyle.FIELD);
+  }
 }
 
 export class LspClassHierarchyInfo extends LspNode {
   constructor(peer: KNativePointer) {
     super(peer);
     this.className = unpackString(global.es2panda._getClassNameFromClassHierarchyInfo(this.peer));
-    this.items = new NativePtrDecoder()
-      .decode(global.es2panda._getMethodListFromClassHierarchyInfo(this.peer))
+    this.methodItems = new NativePtrDecoder()
+      .decode(global.es2panda._getMethodItemsFromClassHierarchyInfo(this.peer))
       .map((elPeer: KNativePointer) => {
         return new LspClassMethodItem(elPeer);
       });
+    this.fieldItems = new NativePtrDecoder()
+      .decode(global.es2panda._getPropertyItemsFromClassHierarchyInfo(this.peer))
+      .map((elPeer: KNativePointer) => {
+        return new LspClassPropertyItem(elPeer);
+      });
   }
   readonly className: string;
-  readonly items: LspClassMethodItem[];
+  readonly methodItems: LspClassMethodItem[];
+  readonly fieldItems: LspClassPropertyItem[];
 }
 
 export class LspClassHierarchy extends LspNode {
@@ -464,7 +489,8 @@ export enum LspCompletionEntryKind {
   STRUCT = 22,
   EVENT = 23,
   OPERATOR = 24,
-  TYPE_PARAMETER = 25
+  TYPE_PARAMETER = 25,
+  ALIAS_TYPE = 26
 }
 
 export enum ResolutionStatus {
@@ -644,6 +670,43 @@ export class FileTextChanges extends LspNode {
   readonly textChanges: TextChange[];
 }
 
+export class CodeActionInfo extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.changes = new NativePtrDecoder()
+      .decode(global.es2panda._getFileTextChangesFromCodeActionInfo(peer))
+      .map((elPeer: KNativePointer) => {
+        return new FileTextChanges(elPeer);
+      });
+    this.description = unpackString(global.es2panda._getDescriptionFromCodeActionInfo(peer));
+  }
+  readonly changes: FileTextChanges[];
+  readonly description: String;
+}
+
+export class CodeFixActionInfo extends CodeActionInfo {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.fixName = unpackString(global.es2panda._getFixNameFromCodeFixActionInfo(peer));
+    this.fixId_ = unpackString(global.es2panda._getFixIdFromCodeFixActionInfo(peer));
+    this.fixAllDescription_ = unpackString(global.es2panda._getFixAllDescriptionFromCodeFixActionInfo(peer));
+  }
+  readonly fixName: String;
+  readonly fixId_: String;
+  readonly fixAllDescription_: String;
+}
+
+export class CodeFixActionInfoList extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.codeFixActionInfos = new NativePtrDecoder()
+      .decode(global.es2panda._getCodeFixActionInfos(peer))
+      .map((elPeer: KNativePointer) => {
+        return new CodeFixActionInfo(elPeer);
+      });
+  }
+  readonly codeFixActionInfos: CodeFixActionInfo[];
+}
 
 export class LspFileTextChanges extends LspNode {
   constructor(peer: KNativePointer) {
@@ -681,7 +744,7 @@ export class LspSafeDeleteLocation extends LspNode {
   readonly safeDeleteLocationInfos: LspSafeDeleteLocationInfo[];
 }
 
-export class LspRefactorAction extends LspNode {
+export class RefactorAction extends LspNode {
   constructor(peer: KNativePointer) {
     super(peer);
     this.name = unpackString(global.es2panda._getRefactorActionName(peer));
@@ -693,17 +756,30 @@ export class LspRefactorAction extends LspNode {
   readonly kind: String;
 }
 
-export class LspApplicableRefactorInfo extends LspNode {
+export class ApplicableRefactorItemInfo extends LspNode {
   constructor(peer: KNativePointer) {
     super(peer);
     this.name = unpackString(global.es2panda._getApplicableRefactorName(peer));
     this.description = unpackString(global.es2panda._getApplicableRefactorDescription(peer));
-    this.action = new LspRefactorAction(global.es2panda._getRefactorAction(peer));
+    this.action = new RefactorAction(global.es2panda._getApplicableRefactorAction(peer));
   }
 
   readonly name: String;
   readonly description: String;
-  readonly action: LspRefactorAction;
+  readonly action: RefactorAction;
+}
+
+export class LspApplicableRefactorInfo extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.applicableRefactorInfo = new NativePtrDecoder()
+      .decode(global.es2panda._getApplicableRefactorInfoList(peer))
+      .map((elPeer: KNativePointer) => {
+        return new ApplicableRefactorItemInfo(elPeer);
+      });
+  }
+
+  readonly applicableRefactorInfo: ApplicableRefactorItemInfo[];
 }
 
 export class LspTypeHierarchies extends LspNode {

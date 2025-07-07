@@ -263,6 +263,10 @@ void Recheck(PhaseManager *phaseManager, varbinder::ETSBinder *varBinder, checke
 // NOTE: used to get the declaration from identifier in Plugin API and LSP
 ir::AstNode *DeclarationFromIdentifier(const ir::Identifier *node)
 {
+    if (node == nullptr) {
+        return nullptr;
+    }
+
     auto idVar = node->Variable();
     if (idVar == nullptr) {
         return nullptr;

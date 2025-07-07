@@ -15,60 +15,15 @@
 
 #include <memory>
 #include <unordered_map>
+#include "refactors/refactor_types.h"
 #include "applicable_refactors.h"
+#include "lsp/include/refactor_provider.h"
 #include "refactors/convert_function.h"
 
 namespace ark::es2panda::lsp {
-Refactor::Refactor(const Refactor &other)
-{
-    kinds_.insert(kinds_.end(), other.kinds_.begin(), other.kinds_.end());
-}
 
-Refactor &Refactor::operator=(const Refactor &other)
+std::vector<ApplicableRefactorInfo> GetApplicableRefactorsImpl(const RefactorContext *context)
 {
-    kinds_.insert(kinds_.end(), other.kinds_.begin(), other.kinds_.end());
-    return *this;
-}
-
-Refactor &Refactor::operator=(Refactor &&other)
-{
-    kinds_.insert(kinds_.end(), other.kinds_.begin(), other.kinds_.end());
-    return *this;
-}
-
-Refactor::Refactor(Refactor &&other)
-{
-    kinds_.insert(kinds_.end(), other.kinds_.begin(), other.kinds_.end());
-}
-
-bool Refactor::IsKind(const std::string &kind)
-{
-    for (const std::string &rKind : kinds_) {
-        if (rKind.substr(0, kind.length()) == kind) {
-            return true;
-        }
-    }
-    return false;
-}
-
-void Refactor::AddKind(const std::string &kind)
-{
-    kinds_.push_back(kind);
-}
-
-ApplicableRefactorInfo GetApplicableRefactorsImpl(es2panda_Context *context, const char *kind, size_t position)
-{
-    ApplicableRefactorInfo result;
-    std::unordered_map<std::string, std::shared_ptr<Refactor>> refactors;
-    Refactor *convertFunctionRefactor = new ConvertFunctionRefactor();
-    refactors[std::string(refactor_name::CONVERT_FUNCTION_REFACTOR_NAME)] =
-        std::shared_ptr<Refactor>(convertFunctionRefactor);
-    for (const auto &[refactorName, refactor] : refactors) {
-        if (refactor->IsKind(std::string(kind))) {
-            return refactor->GetAvailableActions(context, std::string(kind), position);
-        }
-    }
-
-    return result;
+    return RefactorProvider::Instance().GetApplicableRefactors(*context);
 }
 }  // namespace ark::es2panda::lsp
