@@ -187,3 +187,5 @@ test262/data/test_es2021/intl402/DisplayNames/options-style-toString-abrupt-thro
 #26628
 test262/data/test_es2021/built-ins/Atomics/compareExchange/name.js
 
+#27389
+test262/data/test_es2021/built-ins/global/S10.2.3_A1.2_T3.js
