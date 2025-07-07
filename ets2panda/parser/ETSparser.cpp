@@ -998,6 +998,10 @@ ir::TypeNode *ETSParser::ParseTypeReference(TypeAnnotationParsingOptions *option
     while (true) {
         auto partPos = Lexer()->GetToken().Start();
         auto [typeName, typeParams] = ParseTypeReferencePart(options);
+        if (typeName == nullptr) {
+            typeName = AllocBrokenExpression(partPos);
+        }
+
         typeRefPart = AllocNode<ir::ETSTypeReferencePart>(typeName, typeParams, typeRefPart, Allocator());
         typeRefPart->SetRange({partPos, Lexer()->GetToken().End()});
 
