@@ -1311,3 +1311,7 @@ syntax:
 - name: MORE_INDEXER
   id: 326
   message: "Only one index signature can exist in a class"
+
+- name: UNSUPPORTED_ENUM_TYPE
+  id: 327
+  message: "Unsupported enum type annotation. Supported enum types are: int, long or double. String is allowed for literal types, not annotations."
