@@ -232,7 +232,7 @@ export class Lsp {
           );
           ensurePathExists(declEtsOutputPath);
           ensurePathExists(etsOutputPath);
-          global.es2pandaPublic._GenerateTsDeclarationsFromContext(ctx, declEtsOutputPath, etsOutputPath, 1, 0);
+          global.es2pandaPublic._GenerateTsDeclarationsFromContext(ctx, declEtsOutputPath, etsOutputPath, 1, 0, '');
         } finally {
           this.destroyContext(cfg, ctx);
         }
@@ -297,7 +297,7 @@ export class Lsp {
       );
       ensurePathExists(declEtsOutputPath);
       ensurePathExists(etsOutputPath);
-      global.es2pandaPublic._GenerateTsDeclarationsFromContext(ctx, declEtsOutputPath, etsOutputPath, 1, 0);
+      global.es2pandaPublic._GenerateTsDeclarationsFromContext(ctx, declEtsOutputPath, etsOutputPath, 1, 0, '');
     } finally {
       this.destroyContext(cfg, ctx);
     }

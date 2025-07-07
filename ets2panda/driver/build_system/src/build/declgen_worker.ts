@@ -18,11 +18,19 @@ import { BuildConfig } from '../types';
 import { Logger } from '../logger';
 import * as fs from 'fs';
 import * as path from 'path';
-import { changeDeclgenFileExtension, ensurePathExists } from '../utils';
-import { 
-  DECL_ETS_SUFFIX, 
-  TS_SUFFIX,
-  KOALA_WRAPPER_PATH_FROM_SDK 
+import {
+  changeDeclgenFileExtension,
+  changeFileExtension,
+  createFileIfNotExists,
+  ensurePathExists
+} from '../utils';
+import {
+  DECL_ETS_SUFFIX,
+  DECL_TS_SUFFIX,
+  KOALA_WRAPPER_PATH_FROM_SDK,
+  STATIC_RECORD_FILE,
+  STATIC_RECORD_FILE_CONTENT,
+  TS_SUFFIX
 } from '../pre_define';
 import { PluginDriver, PluginHook } from '../plugins/plugins_driver';
 
@@ -67,6 +75,18 @@ process.on('message', (message: {
       ensurePathExists(declEtsOutputPath);
       ensurePathExists(etsOutputPath);
 
+      const staticRecordPath = path.join(
+        moduleInfo.declgenV1OutPath as string,
+        STATIC_RECORD_FILE
+      )
+      const declEtsOutputDir = path.dirname(declEtsOutputPath);
+      const staticRecordRelativePath = changeFileExtension(
+        path.relative(declEtsOutputDir, staticRecordPath).replaceAll(/\\/g, '\/'),
+        "",
+        DECL_TS_SUFFIX
+      );
+      createFileIfNotExists(staticRecordPath, STATIC_RECORD_FILE_CONTENT);
+
       arktsGlobal.filePath = fileInfo.filePath;
       arktsGlobal.config = arkts.Config.create([
         '_',
@@ -96,7 +116,8 @@ process.on('message', (message: {
         declEtsOutputPath,
         etsOutputPath,
         false,
-        false
+        false,
+        staticRecordRelativePath
       ); // Generate 1.0 declaration files & 1.0 glue code
       logger.printInfo('declaration files generated');
 

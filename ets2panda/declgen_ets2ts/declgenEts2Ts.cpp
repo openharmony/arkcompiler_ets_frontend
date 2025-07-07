@@ -52,7 +52,6 @@ bool TSDeclGen::Generate()
     CollectIndirectExportDependencies();
     CollectGlueCodeImportSet();
     GenDeclarations();
-    GenOtherDeclarations();
     return true;
 }
 
@@ -337,20 +336,6 @@ void TSDeclGen::GenDeclarations()
     }
 }
 
-void TSDeclGen::GenOtherDeclarations()
-{
-    const std::string recordKey = "Record";
-    const std::string recordStr = R"(
-// generated for static Record
-type Record<K extends keyof any, T> = {
-    [P in K]: T;
-};
-)";
-    if (indirectDependencyObjects_.find(recordKey) != indirectDependencyObjects_.end()) {
-        OutDts(recordStr);
-    }
-}
-
 void TSDeclGen::GenExportNamedDeclarations()
 {
     for (auto *globalStatement : program_->Ast()->Statements()) {
@@ -367,6 +352,11 @@ void TSDeclGen::GenImportDeclarations()
             GenImportDeclaration(globalStatement->AsETSImportDeclaration());
         }
     }
+}
+
+void TSDeclGen::GenImportRecordDeclarations(const std::string &source)
+{
+    OutDts("import type { Record } from \"", source, "\";\n");
 }
 
 template <class T, class CB>
@@ -2525,6 +2515,13 @@ bool GenerateTsDeclarations(checker::ETSChecker *checker, const ark::es2panda::p
 
     std::string combineEts = importOutputEts + outputEts + exportOutputEts;
     std::string combinedDEts = importOutputDEts + outputDEts + exportOutputDEts;
+
+    if (!declBuilder.GetDeclgenOptions().recordFile.empty()) {
+        declBuilder.ResetDtsOutput();
+        declBuilder.GenImportRecordDeclarations(declBuilder.GetDeclgenOptions().recordFile);
+        std::string recordImportOutputDEts = declBuilder.GetDtsOutput();
+        combinedDEts = recordImportOutputDEts + combinedDEts;
+    }
 
     return WriteOutputFiles(declBuilder.GetDeclgenOptions(), combineEts, combinedDEts, checker);
 }
