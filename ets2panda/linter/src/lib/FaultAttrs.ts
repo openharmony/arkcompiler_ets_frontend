@@ -256,6 +256,7 @@ faultsAttrs[FaultID.LimitedStdLibNoDoncurrentDecorator] = new FaultAttributes(35
 faultsAttrs[FaultID.NoNeedStdlibWorker] = new FaultAttributes(357);
 faultsAttrs[FaultID.BuiltinGetOwnPropertyNames] = new FaultAttributes(358);
 faultsAttrs[FaultID.LocalBuilderDecoratorNotSupported] = new FaultAttributes(359);
+faultsAttrs[FaultID.RepeatDisableVirtualScroll] = new FaultAttributes(360);
 faultsAttrs[FaultID.NosparseArray] = new FaultAttributes(370);
 faultsAttrs[FaultID.NoEnumPropAsType] = new FaultAttributes(371);
 faultsAttrs[FaultID.NoTsLikeSmartType] = new FaultAttributes(372);

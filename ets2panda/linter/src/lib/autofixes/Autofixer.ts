@@ -29,7 +29,7 @@ import {
   INSTANCE_IDENTIFIER,
   COMMON_METHOD_IDENTIFIER,
   APPLY_STYLES_IDENTIFIER,
-  CustomDecoratorName,
+  CustomInterfaceName,
   ARKUI_PACKAGE_NAME,
   VALUE_IDENTIFIER,
   INDENT_STEP,
@@ -40,7 +40,9 @@ import {
   PROVIDE_DECORATOR_NAME,
   PROVIDE_ALIAS_PROPERTY_NAME,
   PROVIDE_ALLOW_OVERRIDE_PROPERTY_NAME,
-  NEW_PROP_DECORATOR_SUFFIX
+  NEW_PROP_DECORATOR_SUFFIX,
+  VIRTUAL_SCROLL_IDENTIFIER,
+  DISABLE_VIRTUAL_SCROLL_IDENTIFIER
 } from '../utils/consts/ArkuiConstants';
 import { ES_VALUE } from '../utils/consts/ESObject';
 import type { IncrementDecrementNodeInfo } from '../utils/consts/InteropAPI';
@@ -2904,7 +2906,7 @@ export class Autofixer {
     const newFuncDecl = Autofixer.createFunctionDeclaration(funcDecl, undefined, parameDecl, returnType, newBlock);
     let text = this.printer.printNode(ts.EmitHint.Unspecified, newFuncDecl, funcDecl.getSourceFile());
     if (preserveDecorator) {
-      text = '@' + CustomDecoratorName.AnimatableExtend + this.getNewLine() + text;
+      text = '@' + CustomInterfaceName.AnimatableExtend + this.getNewLine() + text;
     }
     return [{ start: funcDecl.getStart(), end: funcDecl.getEnd(), replacementText: text }];
   }
@@ -3767,7 +3769,7 @@ export class Autofixer {
     const values: ts.Expression[][] = [];
     const statements = block?.statements;
     const type = ts.factory.createTypeReferenceNode(
-      ts.factory.createIdentifier(CustomDecoratorName.CustomStyles),
+      ts.factory.createIdentifier(CustomInterfaceName.CustomStyles),
       undefined
     );
     Autofixer.getParamsAndValues(statements, parameters, values);
@@ -3789,7 +3791,7 @@ export class Autofixer {
       newBlock
     );
     const newModifiers = ts.getModifiers(methodDecl)?.filter((modifier) => {
-      return !(ts.isDecorator(modifier) && TsUtils.getDecoratorName(modifier) === CustomDecoratorName.Styles);
+      return !(ts.isDecorator(modifier) && TsUtils.getDecoratorName(modifier) === CustomInterfaceName.Styles);
     });
     const expr = ts.factory.createPropertyDeclaration(newModifiers, methodDecl.name, undefined, type, arrowFunc);
     needImport.add(COMMON_METHOD_IDENTIFIER);
@@ -3928,7 +3930,7 @@ export class Autofixer {
   fixDataObservation(classDecls: ts.ClassDeclaration[]): Autofix[] | undefined {
     const autofixes: Autofix[] = [];
     classDecls.forEach((classDecl) => {
-      const observedDecorator = ts.factory.createDecorator(ts.factory.createIdentifier(CustomDecoratorName.Observed));
+      const observedDecorator = ts.factory.createDecorator(ts.factory.createIdentifier(CustomInterfaceName.Observed));
       const sourceFile = classDecl.getSourceFile();
       const text = this.printer.printNode(ts.EmitHint.Unspecified, observedDecorator, sourceFile) + this.getNewLine();
       const autofix = { start: classDecl.getStart(), end: classDecl.getStart(), replacementText: text };
@@ -5069,7 +5071,7 @@ export class Autofixer {
 
   fixCustomLayout(node: ts.StructDeclaration): Autofix[] {
     const startPos = Autofixer.getStartPositionWithoutDecorators(node);
-    const decorator = ts.factory.createDecorator(ts.factory.createIdentifier(CustomDecoratorName.CustomLayout));
+    const decorator = ts.factory.createDecorator(ts.factory.createIdentifier(CustomInterfaceName.CustomLayout));
 
     const text = this.getNewLine() + this.printer.printNode(ts.EmitHint.Unspecified, decorator, node.getSourceFile());
     return [{ start: startPos, end: startPos, replacementText: text }];
@@ -5139,5 +5141,39 @@ export class Autofixer {
       end: node.getEnd(),
       replacementText: newText
     }];
+  }
+
+  fixRepeat(stmt: ts.ExpressionStatement): Autofix[] {
+    const newExpr = ts.factory.createCallExpression(ts.factory.createIdentifier(VIRTUAL_SCROLL_IDENTIFIER), undefined, [
+      ts.factory.createObjectLiteralExpression(
+        [
+          ts.factory.createPropertyAssignment(
+            ts.factory.createIdentifier(DISABLE_VIRTUAL_SCROLL_IDENTIFIER),
+            ts.factory.createTrue()
+          )
+        ],
+        false
+      )
+    ]);
+
+    let identifier: ts.Identifier | undefined;
+    const expression = stmt.expression;
+    if (
+      ts.isCallExpression(expression) &&
+      ts.isPropertyAccessExpression(expression.expression) &&
+      ts.isIdentifier(expression.expression.name)
+    ) {
+      identifier = expression.expression.name;
+    }
+
+    const startPos = identifier ? identifier.getStart() : stmt.getStart();
+    const lineAndCharacter = this.sourceFile.getLineAndCharacterOfPosition(startPos);
+    const indent = identifier ? lineAndCharacter.character - 1 : lineAndCharacter.character + INDENT_STEP;
+    const text =
+      this.getNewLine() +
+      ' '.repeat(indent) +
+      '.' +
+      this.printer.printNode(ts.EmitHint.Unspecified, newExpr, stmt.getSourceFile());
+    return [{ start: stmt.getEnd(), end: stmt.getEnd(), replacementText: text }];
   }
 }

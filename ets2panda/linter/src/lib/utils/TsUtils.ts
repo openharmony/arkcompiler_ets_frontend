@@ -3804,4 +3804,27 @@ export class TsUtils {
     const sym = type.getSymbol();
     return !!sym && sym.getName() === 'PromiseLike' && isStdLibrarySymbol(sym);
   }
+
+  static checkStmtHasTargetIdentifier(stmt: ts.ExpressionStatement, target: string): boolean {
+    let current: ts.Node | undefined = stmt.expression;
+
+    while (current) {
+      if (ts.isCallExpression(current)) {
+        current = current.expression;
+        continue;
+      }
+
+      if (ts.isPropertyAccessExpression(current)) {
+        if (current.name.getText() === target) {
+          return true;
+        }
+        current = current.expression;
+        continue;
+      }
+
+      break;
+    }
+
+    return false;
+  }
 }
