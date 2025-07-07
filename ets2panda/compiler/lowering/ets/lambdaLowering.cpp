@@ -32,6 +32,7 @@ struct LambdaInfo {
     ArenaSet<varbinder::Variable *> *capturedVars = nullptr;
     ir::Expression *callReceiver = nullptr;
     bool isFunctionReference = false;
+    checker::ETSObjectType *objType = nullptr;
 };
 
 struct CalleeMethodInfo {
@@ -430,8 +431,10 @@ static void CreateLambdaClassFields(public_lib::Context *ctx, ir::ClassDefinitio
     auto *checker = ctx->checker->AsETSChecker();
     auto props = ArenaVector<ir::AstNode *>(allocator->Adapter());
 
-    checker::Type *objectType =
-        info->calleeClass != nullptr ? info->calleeClass->Definition()->TsType() : info->calleeInterface->TsType();
+    checker::Type *objectType = info->objType != nullptr
+                                    ? info->objType
+                                    : (info->calleeClass != nullptr ? info->calleeClass->Definition()->TsType()
+                                                                    : info->calleeInterface->TsType());
 
     if (info->callReceiver != nullptr) {
         auto *outerThisDeclaration = parser->CreateFormattedClassFieldDefinition(
@@ -465,8 +468,10 @@ static void CreateLambdaClassConstructor(public_lib::Context *ctx, ir::ClassDefi
         params.push_back(param);
     };
 
-    checker::Type *objectType =
-        info->calleeClass != nullptr ? info->calleeClass->Definition()->TsType() : info->calleeInterface->TsType();
+    checker::Type *objectType = info->objType != nullptr
+                                    ? info->objType
+                                    : (info->calleeClass != nullptr ? info->calleeClass->Definition()->TsType()
+                                                                    : info->calleeInterface->TsType());
 
     if (info->callReceiver != nullptr) {
         makeParam("$this", objectType);
@@ -1083,6 +1088,9 @@ static LambdaInfo GenerateLambdaInfoForFunctionReference(public_lib::Context *ct
         ES2PANDA_ASSERT(funcRef->IsMemberExpression());
         info.callReceiver = funcRef->AsMemberExpression()->Object();
     }
+    if (funcRef->IsMemberExpression()) {
+        info.objType = funcRef->AsMemberExpression()->ObjType();
+    }
     return info;
 }
 
@@ -1128,7 +1136,9 @@ static ir::AstNode *ConvertFunctionReference(public_lib::Context *ctx, ir::Expre
     auto *lambdaClass = CreateLambdaClass(ctx, funcRef->TsType()->AsETSFunctionType(), method, &info);
     auto *constructorCall = CreateConstructorCall(ctx, funcRef, lambdaClass, &info);
     ES2PANDA_ASSERT(constructorCall);
-    constructorCall->TsType()->AsETSObjectType()->AddObjectFlag(checker::ETSObjectFlags::FUNCTIONAL_REFERENCE);
+    if (constructorCall->TsType()->IsETSObjectType()) {
+        constructorCall->TsType()->AsETSObjectType()->AddObjectFlag(checker::ETSObjectFlags::FUNCTIONAL_REFERENCE);
+    }
 
     return constructorCall;
 }
