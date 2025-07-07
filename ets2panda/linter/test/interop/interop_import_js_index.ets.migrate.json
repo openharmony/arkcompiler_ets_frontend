@@ -18,7 +18,7 @@
             "line": 16,
             "column": 5,
             "endLine": 16,
-            "endColumn": 72,
+            "endColumn": 74,
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
@@ -28,17 +28,7 @@
             "line": 17,
             "column": 5,
             "endLine": 17,
-            "endColumn": 50,
-            "problem": "AnyType",
-            "suggest": "",
-            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 18,
-            "column": 5,
-            "endLine": 18,
-            "endColumn": 72,
+            "endColumn": 74,
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
@@ -48,16 +38,6 @@
             "line": 19,
             "column": 5,
             "endLine": 19,
-            "endColumn": 50,
-            "problem": "AnyType",
-            "suggest": "",
-            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 21,
-            "column": 5,
-            "endLine": 21,
             "endColumn": 33,
             "problem": "AnyType",
             "suggest": "",
@@ -65,9 +45,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 25,
+            "line": 23,
             "column": 5,
-            "endLine": 25,
+            "endLine": 23,
             "endColumn": 34,
             "problem": "AnyType",
             "suggest": "",
@@ -75,9 +55,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 29,
+            "line": 27,
             "column": 9,
-            "endLine": 29,
+            "endLine": 27,
             "endColumn": 43,
             "problem": "AnyType",
             "suggest": "",
@@ -85,9 +65,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 35,
+            "line": 33,
             "column": 10,
-            "endLine": 35,
+            "endLine": 33,
             "endColumn": 17,
             "problem": "AnyType",
             "suggest": "",

@@ -15,16 +15,13 @@
  
 
 
-let GeneratedImportVar_3 = ESValue.load('./interop_import_js_js');
-let wiki = GeneratedImportVar_3.getProperty('Wiki');
-let GeneratedImportVar_2 = ESValue.load('./interop_import_js_js');
-let Doge = GeneratedImportVar_2.getProperty('Dog');
-let GeneratedImportVar_1 = ESValue.load('./interop_import_js_js');
-let myAaa = GeneratedImportVar_1.getProperty('aaa');
-let ClassA = GeneratedImportVar_1.getProperty('ClassA');
-let Dog = GeneratedImportVar_1.getProperty('Dog');
-let Person = GeneratedImportVar_1.getProperty('Person');
-let Wiki = GeneratedImportVar_1.getProperty('Wiki');
+let wiki = ESValue.load('./interop_import_js_js').getProperty('Wiki');
+let Doge = ESValue.load('./interop_import_js_js').getProperty('Dog');
+let myAaa = ESValue.load('./interop_import_js_js').getProperty('aaa');
+let ClassA = ESValue.load('./interop_import_js_js').getProperty('ClassA');
+let Dog = ESValue.load('./interop_import_js_js').getProperty('Dog');
+let Person = ESValue.load('./interop_import_js_js').getProperty('Person');
+let Wiki = ESValue.load('./interop_import_js_js').getProperty('Wiki');
 
 
 myAaa.invoke().typeOf(); //error

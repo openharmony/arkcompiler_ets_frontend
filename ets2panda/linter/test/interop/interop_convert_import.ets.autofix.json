@@ -43,7 +43,7 @@
                 {
                     "start": 740,
                     "end": 740,
-                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('./interop_convert_import_js.js');\r\nlet foo = GeneratedImportVar_1.getProperty('foo');\r\nlet foo2 = GeneratedImportVar_1.getProperty('foo2');\r\nlet foo3 = GeneratedImportVar_1.getProperty('foo3');\r\nlet foo4 = GeneratedImportVar_1.getProperty('foo4');\r\nlet array_val = GeneratedImportVar_1.getProperty('array_val');\r\nlet null_val = GeneratedImportVar_1.getProperty('null_val');\r\nlet undefined_val = GeneratedImportVar_1.getProperty('undefined_val');\r\n",
+                    "replacementText": "let foo = ESValue.load('./interop_convert_import_js.js').getProperty('foo');\r\nlet foo2 = ESValue.load('./interop_convert_import_js.js').getProperty('foo2');\r\nlet foo3 = ESValue.load('./interop_convert_import_js.js').getProperty('foo3');\r\nlet foo4 = ESValue.load('./interop_convert_import_js.js').getProperty('foo4');\r\nlet array_val = ESValue.load('./interop_convert_import_js.js').getProperty('array_val');\r\nlet null_val = ESValue.load('./interop_convert_import_js.js').getProperty('null_val');\r\nlet undefined_val = ESValue.load('./interop_convert_import_js.js').getProperty('undefined_val');\r\n",
                     "line": 17,
                     "column": 2,
                     "endLine": 17,

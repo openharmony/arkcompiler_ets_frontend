@@ -33,7 +33,7 @@
                 {
                     "start": 663,
                     "end": 663,
-                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('./interop_import_js_compare_js');\nlet foo = GeneratedImportVar_1.getProperty('foo');\nlet m = GeneratedImportVar_1.getProperty('m');\nlet n = GeneratedImportVar_1.getProperty('n');\n",
+                    "replacementText": "let foo = ESValue.load('./interop_import_js_compare_js').getProperty('foo');\nlet m = ESValue.load('./interop_import_js_compare_js').getProperty('m');\nlet n = ESValue.load('./interop_import_js_compare_js').getProperty('n');\n",
                     "line": 17,
                     "column": 1,
                     "endLine": 17,

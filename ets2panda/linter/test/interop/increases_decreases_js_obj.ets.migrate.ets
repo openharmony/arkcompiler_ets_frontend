@@ -12,8 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-let GeneratedImportVar_1 = ESValue.load('./increases_decreases_js_obj_js');
-let foo = GeneratedImportVar_1.getProperty('foo');
+let foo = ESValue.load('./increases_decreases_js_obj_js').getProperty('foo');
 
 let a: number =0.0
 a = foo.getProperty("num").toNumber()
