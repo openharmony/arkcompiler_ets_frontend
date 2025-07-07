@@ -1266,6 +1266,12 @@ void ETSChecker::CheckClassDefinition(ir::ClassDefinition *classDef)
         classType->SuperType()->GetDeclNode()->Check(this);
     }
 
+    if (classType->GetDeclNode() != classDef) {
+        ES2PANDA_ASSERT(IsAnyError());
+        classDef->SetTsType(GlobalTypeError());
+        return;
+    }
+
     auto newStatus = checker::CheckerStatus::IN_CLASS;
     if (Context().ContainingClass() != classType) {
         classType->SetEnclosingType(Context().ContainingClass());
