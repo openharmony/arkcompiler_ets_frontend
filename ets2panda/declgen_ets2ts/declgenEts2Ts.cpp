@@ -54,7 +54,6 @@ bool TSDeclGen::Generate()
     }
     CollectIndirectExportDependencies();
     GenDeclarations();
-    GenOtherDeclarations();
     return true;
 }
 
@@ -359,6 +358,11 @@ void TSDeclGen::GenImportDeclarations()
             GenImportDeclaration(globalStatement->AsETSImportDeclaration());
         }
     }
+}
+
+void TSDeclGen::GenImportRecordDeclarations(const std::string &source)
+{
+    OutDts("import type { Record } from \"", source, "\";\n");
 }
 
 template <class T, class CB>
@@ -2374,9 +2378,35 @@ bool GenerateTsDeclarations(checker::ETSChecker *checker, const ark::es2panda::p
     std::string combineEts = importOutputEts + outputEts;
     std::string combinedDEts = importOutputDEts + outputDEts;
 
-    if (!declBuilder.GetDeclgenOptions().outputDeclEts.empty()) {
-        auto outDtsPath = declBuilder.GetDeclgenOptions().outputDeclEts;
-        if (!WriteToFile(outDtsPath, combinedDEts, checker)) {
+    if (!declBuilder.GetDeclgenOptions().recordFile.empty()) {
+        declBuilder.ResetDtsOutput();
+        declBuilder.GenImportRecordDeclarations(declBuilder.GetDeclgenOptions().recordFile);
+        std::string recordImportOutputDEts = declBuilder.GetDtsOutput();
+    }
+
+    return WriteOutputFiles(declBuilder.GetDeclgenOptions(), combineEts, combinedDEts, checker);
+}
+
+bool ValidateDeclgenOptions(const DeclgenOptions &options, checker::ETSChecker *checker)
+{
+    if ((options.outputDeclEts.empty() && !options.outputEts.empty()) ||
+        (!options.outputDeclEts.empty() && options.outputEts.empty())) {
+        checker->DiagnosticEngine().LogDiagnostic(diagnostic::GENERATE_DYNAMIC_DECLARATIONS,
+                                                  util::DiagnosticMessageParams {});
+        return false;
+    }
+    if (options.outputDeclEts.empty() && options.outputEts.empty()) {
+        checker->DiagnosticEngine().LogDiagnostic(diagnostic::MISSING_OUTPUT_FILE, util::DiagnosticMessageParams {""});
+        return false;
+    }
+    return true;
+}
+
+bool WriteOutputFiles(const DeclgenOptions &options, const std::string &combinedEts, const std::string &combinedDEts,
+                      checker::ETSChecker *checker)
+{
+    if (!options.outputDeclEts.empty()) {
+        if (!WriteToFile(options.outputDeclEts, combinedDEts, checker)) {
             return false;
         }
     }
@@ -2385,7 +2415,6 @@ bool GenerateTsDeclarations(checker::ETSChecker *checker, const ark::es2panda::p
         auto outTsPath = declBuilder.GetDeclgenOptions().outputEts;
         if (!WriteToFile(outTsPath, combineEts, checker)) {
             return false;
-        }
     }
 
     return true;

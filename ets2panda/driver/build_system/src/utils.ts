@@ -88,3 +88,22 @@ export function isSubPathOf(targetPath: string, parentDir: string): boolean {
   const resolvedTarget = toUnixPath(path.resolve(targetPath));
   return resolvedTarget === resolvedParent || resolvedTarget.startsWith(resolvedParent + '/');
 }
+
+export function createFileIfNotExists(filePath: string, content: string): boolean {
+  try {
+    const normalizedPath = path.normalize(filePath);
+    if (fs.existsSync(normalizedPath)) {
+      return false;
+    }
+
+    const dir = path.dirname(normalizedPath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+
+    fs.writeFileSync(normalizedPath, content, { encoding: 'utf-8' });
+    return true;
+  } catch (error) {
+    return false;
+  }
+}

@@ -69,7 +69,8 @@ export class Es2pandaNativeModule {
     config: KPtr,
     outputDeclEts: String,
     outputEts: String,
-    exportAll: KBoolean
+    exportAll: KBoolean,
+    recordFile: String
   ): KPtr {
     throw new Error('Not implemented');
   }

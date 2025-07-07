@@ -255,7 +255,7 @@ struct CAPI_EXPORT es2panda_Impl {
                                                            const char *name, size_t *declsLen);
 
     int (*GenerateTsDeclarationsFromContext)(es2panda_Context *context, const char *outputDeclEts,
-                                             const char *outputEts, bool exportAll);
+                                             const char *outputEts, bool exportAll, const char *recordFile);
     void (*InsertETSImportDeclarationAndParse)(es2panda_Context *context, es2panda_Program *program,
                                                es2panda_AstNode *importDeclaration);
     int (*GenerateStaticDeclarationsFromContext)(es2panda_Context *context, const char *outputPath);
