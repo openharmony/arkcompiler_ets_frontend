@@ -8020,6 +8020,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (!setApiListItem) {
       return;
     }
+    if (TypeScriptLinter.isInterfaceImplementation(errorNode)) {
+      return;
+    }
     const apiNamesArr = [...setApiListItem];
     const hasSameApiName = apiNamesArr.some((apilistItem) => {
       return apilistItem.api_info.api_name === errorNode.getText();
@@ -8047,6 +8050,20 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         this.incrementCounters(errorNode, faultId);
       }
     }
+  }
+
+  static isInterfaceImplementation(node: ts.Node): boolean {
+    const classDeclaration = ts.findAncestor(node, ts.isClassDeclaration);
+    if (!classDeclaration) {
+      return false;
+    }
+
+    if (classDeclaration.heritageClauses) {
+      return classDeclaration.heritageClauses.some((clause) => {
+        return clause.token === ts.SyntaxKind.ImplementsKeyword;
+      });
+    }
+    return false;
   }
 
   private isIdentifierFromSDK(node: ts.Node): boolean {
