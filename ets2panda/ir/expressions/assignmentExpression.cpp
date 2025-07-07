@@ -169,6 +169,7 @@ AssignmentExpression *AssignmentExpression::Clone(ArenaAllocator *const allocato
     auto *const left = left_ != nullptr ? left_->Clone(allocator, nullptr)->AsExpression() : nullptr;
     auto *const right = right_ != nullptr ? right_->Clone(allocator, nullptr)->AsExpression() : nullptr;
     auto *const clone = allocator->New<AssignmentExpression>(Tag {}, *this, left, right);
+    ES2PANDA_ASSERT(clone);
 
     if (parent != nullptr) {
         clone->SetParent(parent);

@@ -64,6 +64,7 @@ checker::Type *ETSKeyofType::GetType(checker::ETSChecker *checker)
     }
 
     auto *typeReference = type_->GetType(checker);
+    ES2PANDA_ASSERT(typeReference);
 
     if (typeReference->IsETSPrimitiveType()) {
         typeReference = checker->MaybeBoxType(typeReference);
@@ -88,6 +89,7 @@ ETSKeyofType *ETSKeyofType::Clone(ArenaAllocator *const allocator, AstNode *cons
 {
     TypeNode *type = type_->Clone(allocator, nullptr);
     ETSKeyofType *clone = allocator->New<ir::ETSKeyofType>(type, allocator);
+    ES2PANDA_ASSERT(clone);
     if (parent != nullptr) {
         clone->SetParent(parent);
     }

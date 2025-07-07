@@ -110,6 +110,7 @@ static void HandleExportDefaultInExportNamedDecl(public_lib::Context *const ctx,
             exports.emplace_back(specifier);
             auto *exportDefaulNamedDecl = allocator->New<ir::ExportNamedDeclaration>(
                 allocator, static_cast<ir::StringLiteral *>(nullptr), std::move(exports));
+            ES2PANDA_ASSERT(exportDefaulNamedDecl);
             exportDefaulNamedDecl->AddModifier(ir::ModifierFlags::DEFAULT_EXPORT);
             exportDefaulNamedDeclarations.push_back(exportDefaulNamedDecl);
             continue;

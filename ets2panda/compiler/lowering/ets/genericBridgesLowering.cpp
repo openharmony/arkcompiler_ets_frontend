@@ -80,12 +80,14 @@ void GenericBridgesPhase::AddGenericBridge(ir::ClassDefinition const *const clas
 {
     auto *parser = context_->parser->AsETSParser();
     std::vector<ir::AstNode *> typeNodes {};
+    ES2PANDA_ASSERT(baseSignature);
     typeNodes.reserve(2U * baseSignature->Params().size() + 2U);
 
     auto const sourceCode = CreateMethodDefinitionString(classDefinition, baseSignature, derivedFunction, typeNodes);
 
     auto *const bridgeMethod =
         parser->CreateFormattedClassMethodDefinition(sourceCode, typeNodes)->AsMethodDefinition();
+    ES2PANDA_ASSERT(bridgeMethod);
     bridgeMethod->AddModifier(methodDefinition->Modifiers());
     bridgeMethod->ClearModifier(ir::ModifierFlags::NATIVE | ir::ModifierFlags::ABSTRACT);
     bridgeMethod->AddAstNodeFlags(methodDefinition->GetAstNodeFlags());
@@ -147,6 +149,7 @@ void GenericBridgesPhase::ProcessScriptFunction(ir::ClassDefinition const *const
 
     //  We are not interested in functions that either don't have type parameters at all
     //  or have type parameters that are not modified in the derived class
+    ES2PANDA_ASSERT(baseFunction);
     auto const *baseSignature1 = baseFunction->Signature()->Substitute(relation, &substitutions.baseConstraints);
     if (baseSignature1 == baseFunction->Signature()) {
         return;
