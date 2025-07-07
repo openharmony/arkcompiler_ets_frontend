@@ -176,11 +176,10 @@ struct Context {
         checkers_.push_back(checker);
     }
 
-    void DestoryCheckers()
+    // NOTE(zhelyapov): It's calling side responsibility to release resources
+    void ClearCheckers()
     {
-        for (auto item : checkers_) {
-            delete item;
-        }
+        checkers_.clear();
     }
 
     checker::SemanticAnalyzer *GetAnalyzer() const;
@@ -190,11 +189,10 @@ struct Context {
         return analyzers_.push_back(analyzer);
     }
 
-    void DestoryAnalyzers()
+    // NOTE(zhelyapov): It's calling side responsibility to release resources
+    void ClearAnalyzers()
     {
-        for (auto item : analyzers_) {
-            delete item;
-        }
+        analyzers_.clear();
     }
 
     void MarkGenAbcForExternal(std::unordered_set<std::string> &genAbcList, public_lib::ExternalSource &extSources);
