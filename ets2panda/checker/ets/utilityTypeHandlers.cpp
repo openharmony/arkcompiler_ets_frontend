@@ -114,6 +114,9 @@ static T *CloneNodeIfNotNullptr(T *node, ArenaAllocator *allocator)
 Type *ETSChecker::CreatePartialType(Type *const typeToBePartial)
 {
     ES2PANDA_ASSERT(typeToBePartial->IsETSReferenceType());
+    if (typeToBePartial->IsTypeError()) {
+        return typeToBePartial;
+    }
 
     if (typeToBePartial->IsETSTypeParameter()) {
         return CreatePartialTypeParameter(typeToBePartial->AsETSTypeParameter());
@@ -839,6 +842,9 @@ Type *ETSChecker::CreatePartialTypeClassDef(ir::ClassDefinition *const partialCl
 
         if (partialSuper == partialType) {
             LogError(diagnostic::CYCLIC_CLASS_SUPER_TYPE, {}, classDef->Start());
+            return partialType;
+        }
+        if (partialSuper->IsTypeError()) {
             return partialType;
         }
         partialType->SetSuperType(partialSuper->AsETSObjectType());
