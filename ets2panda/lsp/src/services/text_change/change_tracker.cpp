@@ -779,14 +779,22 @@ void ChangeTracker::InsertImportSpecifierAtIndex(es2panda_Context *context, ir::
 std::vector<FileTextChanges> ChangeTracker::GetTextChangesFromChanges(std::vector<Change> &changes)
 {
     std::unordered_map<std::string, FileTextChanges> fileChangesMap;
+    auto addChange = [&](const SourceFile *sourceFile, TextRange range, const std::string &newText) {
+        const std::string filePath = std::string(sourceFile->filePath);
+        TextChange c = {{range.pos, range.end - range.pos}, newText};
+
+        auto &fileChange = fileChangesMap[filePath];
+        if (fileChange.fileName.empty()) {
+            fileChange.fileName = filePath;
+        }
+        fileChange.textChanges.push_back(c);
+    };
+
     for (const auto &change : changes) {
-        if (const auto *textChange = std::get_if<ark::es2panda::lsp::ChangeText>(&change)) {
-            TextChange c = {{textChange->range.pos, textChange->range.end - textChange->range.pos}, textChange->text};
-            const std::string &filePath = std::string(textChange->sourceFile->filePath);
-            if (fileChangesMap.find(filePath) == fileChangesMap.end()) {
-                fileChangesMap[filePath].fileName = filePath;
-            }
-            fileChangesMap[filePath].textChanges.push_back(c);
+        if (const auto *textChange = std::get_if<ChangeText>(&change)) {
+            addChange(textChange->sourceFile, textChange->range, textChange->text);
+        } else if (const auto *remove = std::get_if<RemoveNode>(&change)) {
+            addChange(remove->sourceFile, remove->range, "");
         }
     }
 
