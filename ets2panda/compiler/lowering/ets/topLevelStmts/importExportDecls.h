@@ -64,8 +64,7 @@ public:
     void HandleSimpleType(std::set<util::StringView> &exportedStatements, ir::Statement *stmt, util::StringView name);
 
     void VerifySingleExportDefault(const ArenaVector<parser::Program *> &programs);
-    void AddExportFlags(ir::AstNode *node, util::StringView originalFieldName, lexer::SourcePosition startLoc,
-                        bool exportedWithAlias);
+    void AddExportFlags(ir::AstNode *node, util::StringView originalFieldName, bool exportedWithAlias);
     void HandleSelectiveExportWithAlias(util::StringView originalFieldName, util::StringView exportName,
                                         lexer::SourcePosition startLoc);
     void PopulateAliasMap(const ir::ExportNamedDeclaration *decl, const util::StringView &path);

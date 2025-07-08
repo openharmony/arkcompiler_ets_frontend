@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,5 +13,11 @@
  * limitations under the License.
  */
 
-export interface I {}
-export type {/* @@ label */I}
+import { f1, f2, a1, a2, a3, a4 } from "./export_type_several_times_2.ets"
+
+f1()
+f2()
+let c1: a1 = new a1()
+let c2: a2 = new a2()
+c1 = a3
+c2 = a4

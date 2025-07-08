@@ -58,11 +58,6 @@ export default function TestFuncToo(): void {}
 
 /*-----------------*/
 /* @@? 16:10 Error SyntaxError: Cannot find name 'foo' to export. */
-/* @@? 27:14 Error SyntaxError: The given name 'foo2' is already used in another export. */
-/* @@? 27:27 Error SyntaxError: The given name 'foo2' is already used in another export. */
-/* @@? 33:11 Error SyntaxError: Cannot export 'foo3', it was already exported. */
-/* @@? 39:19 Error SyntaxError: Cannot export 'A', it was already exported. */
-/* @@? 46:14 Error SyntaxError: The given name 'MyI' is already used in another export. */
-/* @@? 46:14 Error SyntaxError: Cannot export 'MyI', it was already exported. */
+/* @@? 27:14 Error SyntaxError: Cannot export two different names with the same export alias name 'foo2'. */
 /* @@? 56:16 Error TypeError: Only one default export is allowed in a module */
 /* @@? 57:16 Error TypeError: Only one default export is allowed in a module */

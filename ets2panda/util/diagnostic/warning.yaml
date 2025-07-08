@@ -25,6 +25,10 @@ warning:
   id: 4
   message: "Boost Equality Statement. Change sides of binary expression."
 
+- name: DUPLICATE_EXPORT_ALIASES
+  id: 73
+  message: "Duplicated export aliases for '{}'."
+
 - name: DUPLICATE_SIGS
   id: 12
   message: "Detect duplicate signatures, use '{}{}' to replace"
