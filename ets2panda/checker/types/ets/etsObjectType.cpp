@@ -1335,8 +1335,29 @@ void ETSObjectType::CheckVarianceRecursively(TypeRelation *relation, VarianceFla
         return;
     }
 
-    auto *params = GetDeclNode()->IsClassDefinition() ? GetDeclNode()->AsClassDefinition()->TypeParams()
-                                                      : GetDeclNode()->AsTSInterfaceDeclaration()->TypeParams();
+    // according to the spec(GENERICS chapter), only class/interface/function/
+    // method/lambda and type alias can have type parameters. since
+    // 1. the type of function and method is ETSFunctionType
+    // 2. lambda has been checked above
+    // here we just need check
+    // 1. class
+    // 2. interface
+    // 3. type alias(which will be redirected to its real type)
+    // And all of them should have declarations
+    if (declNode_ == nullptr) {
+        // If the type is not declared, then we do not need to check variance.
+        return;
+    }
+    ir::TSTypeParameterDeclaration *params;
+    if (GetDeclNode()->IsClassDefinition()) {
+        params = GetDeclNode()->AsClassDefinition()->TypeParams();
+    } else if (GetDeclNode()->IsTSInterfaceDeclaration()) {
+        params = GetDeclNode()->AsTSInterfaceDeclaration()->TypeParams();
+    } else {
+        // If the type is not a class or interface or type alias, then we do not need to check variance.
+        return;
+    }
+
     if (params == nullptr) {
         return;
     }
