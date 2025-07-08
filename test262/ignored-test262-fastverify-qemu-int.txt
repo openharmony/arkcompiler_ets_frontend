@@ -1,3 +1,24 @@
+# Known failure list for test262 - fastverify-qemu-int
+
+#26315
+test262/data/test_es2021/intl402/supportedLocalesOf-unicode-extensions-ignored.js
+test262/data/test_es2021/intl402/supportedLocalesOf-consistent-with-resolvedOptions.js
+
+#27146
+test262/data/test_es2021/intl402/DisplayNames/options-type-valid.js
+test262/data/test_es2021/built-ins/Promise/any/resolve-from-reject-catch.js
+test262/data/test_es2021/built-ins/Array/prototype/splice/S15.4.4.12_A6.1_T2.js
+test262/data/test_es2021/intl402/PluralRules/undefined-newtarget-throws.js
+test262/data/test_es2021/intl402/Collator/missing-unicode-ext-value-defaults-to-true.js
+test262/data/test_es2021/intl402/constructors-string-and-single-element-array.js
+test262/data/test_es2021/intl402/supportedLocalesOf-returned-array-elements-are-not-frozen.js
+test262/data/test_es2021/intl402/Collator/prototype/compare/non-normative-sensitivity.js
+test262/data/test_es2021/intl402/Collator/ignore-invalid-unicode-ext-values.js
+test262/data/test_es2021/intl402/Collator/unicode-ext-value-collation.js
+test262/data/test_es2021/intl402/DisplayNames/prototype/resolvedOptions/option-style.js
+test262/data/test_es2021/intl402/NumberFormat/this-value-ignored.js
+test262/data/test_es2021/intl402/DisplayNames/options-style-valid.js
+
 #21819 Test timed out
 test262/data/test_es2021/built-ins/Array/prototype/concat/Array.prototype.concat_large-typed-array.js
 test262/data/test_es2021/built-ins/Array/prototype/concat/Array.prototype.concat_small-typed-array.js
@@ -165,3 +186,6 @@ test262/data/test_es2021/intl402/DisplayNames/options-style-toString-abrupt-thro
 
 #25907
 test262/data/test_es2021/built-ins/Object/create/15.2.3.5-4-194.js
+#26628
+test262/data/test_es2021/built-ins/Atomics/compareExchange/name.js
+

@@ -39,7 +39,8 @@ std::pair<varbinder::Variable *, const ETSObjectType *> ETSChecker::FindVariable
         return {nullptr, nullptr};
     }
     const auto searchFlags = PropertySearchFlags::SEARCH_ALL | PropertySearchFlags::SEARCH_IN_BASE |
-                             PropertySearchFlags::SEARCH_IN_INTERFACES;
+                             PropertySearchFlags::SEARCH_IN_INTERFACES |
+                             PropertySearchFlags::DISALLOW_SYNTHETIC_METHOD_CREATION;
     auto *resolved = classType->GetProperty(name, searchFlags);
     while (classType->EnclosingType() != nullptr && resolved == nullptr) {
         classType = classType->EnclosingType();
@@ -1765,6 +1766,10 @@ Type *ETSChecker::GetReferencedTypeBase(ir::Expression *name)
     }
 
     ES2PANDA_ASSERT(name->IsIdentifier());
+    if (name->AsIdentifier()->Variable() == nullptr) {
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+        VarBinder()->AsETSBinder()->LookupTypeReference(name->AsIdentifier(), false);
+    }
 
     auto *const var = name->AsIdentifier()->Variable();
     ES2PANDA_ASSERT(var != nullptr);

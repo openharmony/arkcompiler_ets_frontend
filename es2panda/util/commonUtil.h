@@ -48,7 +48,6 @@ constexpr char NORMALIZED_OHMURL_PREFIX = '@';
 constexpr char SLASH_TAG = '/';
 constexpr char CHAR_VERTICAL_LINE = '|';
 constexpr char COLON_SEPARATOR = ':';
-constexpr char DOT_SEPARATOR = '.';
 constexpr size_t ORIGINAL_PKG_NAME_POS = 0U;
 constexpr size_t TARGET_PKG_NAME_POS = 1U;
 
