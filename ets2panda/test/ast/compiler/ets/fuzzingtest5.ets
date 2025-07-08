@@ -13,12 +13,11 @@
  * limitations under the License.
  */
 
-importet lock1 = new ArkTSUt../main;
+class A {
+    f() {
+        f = 300
+    }
+}
 
-/* @@? 16:1 Error TypeError: Unresolved reference importet  */
-/* @@? 16:10 Error SyntaxError: Unexpected token 'lock1'.  */
-/* @@? 16:10 Error TypeError: Unresolved reference lock1  */
-/* @@? 16:18 Error TypeError: Bad operand type, the types of the operands must be numeric type.  */
-/* @@? 16:30 Error SyntaxError: Identifier expected.  */
-/* @@? 16:31 Error SyntaxError: Identifier expected.  */
-/* @@? 16:31 Error TypeError: Invalid type reference.  */
+/* @@? 18:9 Error TypeError: Property 'f' must be accessed through 'this' */
+/* @@? 18:13 Error TypeError: Type 'int' cannot be assigned to type '() => void' */
