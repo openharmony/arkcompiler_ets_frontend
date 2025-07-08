@@ -188,9 +188,6 @@ public:
         AstNode::CleanUp();
         signature_ = nullptr;
         uncheckedType_ = nullptr;
-        if (IsTransformedFromTrailingCall()) {
-            RetrieveTrailingBlock();
-        }
     }
 
 private:
@@ -199,19 +196,6 @@ private:
         bool isTrailingCall {false};
         bool isBlockInNewLine {false};
     };
-
-    bool IsTransformedFromTrailingCall()
-    {
-        return !arguments_.empty() && arguments_.back()->IsArrowFunctionExpression() &&
-               arguments_.back()->AsArrowFunctionExpression()->Function()->IsTrailingLambda();
-    }
-
-    void RetrieveTrailingBlock()
-    {
-        SetTrailingBlock(arguments_.back()->AsArrowFunctionExpression()->Function()->Body()->AsBlockStatement());
-        trailingLambdaInfo_.isTrailingCall = false;
-        arguments_.pop_back();
-    }
 
 protected:
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)

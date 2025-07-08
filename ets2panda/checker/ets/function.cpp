@@ -428,13 +428,21 @@ static bool CheckArrowFunctionParamIfNeeded(ETSChecker *checker, Signature *subs
     return true;
 }
 
+// Note: (Issue27688) if lambda is trailing lambda transferred, it must be in recheck.
+// in signature matching, foo(()=>void) should be the same with foo() {}
+static bool HasTransferredTrailingLambda(const ArenaVector<ir::Expression *> &arguments)
+{
+    return !arguments.empty() && arguments.back()->IsArrowFunctionExpression() &&
+           arguments.back()->AsArrowFunctionExpression()->Function()->IsTrailingLambda();
+}
+
 // CC-OFFNXT(huge_method[C++], G.FUN.01-CPP, G.FUD.05) solid logic
 bool ETSChecker::ValidateSignatureRequiredParams(Signature *substitutedSig,
                                                  const ArenaVector<ir::Expression *> &arguments, TypeRelationFlag flags,
                                                  const std::vector<bool> &argTypeInferenceRequired, bool reportError)
 {
     auto commonArity = std::min(arguments.size(), substitutedSig->ArgCount());
-    if ((flags & TypeRelationFlag::NO_CHECK_TRAILING_LAMBDA) != 0) {
+    if ((flags & TypeRelationFlag::NO_CHECK_TRAILING_LAMBDA) != 0 || HasTransferredTrailingLambda(arguments)) {
         commonArity = commonArity - 1;
     }
     for (size_t index = 0; index < commonArity; ++index) {
