@@ -660,6 +660,7 @@ checker::Type *InferReturnType(ETSChecker *checker, ir::ScriptFunction *containi
     //  First (or single) return statement in the function:
     auto *funcReturnType =
         stArgument == nullptr ? checker->GlobalVoidType() : checker->GetNonConstantType(stArgument->Check(checker));
+    ES2PANDA_ASSERT(funcReturnType != nullptr);
     if (funcReturnType->IsTypeError()) {
         containingFunc->Signature()->RemoveSignatureFlag(checker::SignatureFlags::NEED_RETURN_TYPE);
         return funcReturnType;

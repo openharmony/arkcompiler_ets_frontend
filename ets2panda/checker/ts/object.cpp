@@ -152,6 +152,7 @@ void TSChecker::ResolveUnionTypeMembers(UnionType *type)
     }
 
     ObjectType *mergedType = Allocator()->New<ObjectLiteralType>(desc);
+    ES2PANDA_ASSERT(mergedType != nullptr);
     mergedType->AddObjectFlag(ObjectFlags::RESOLVED_MEMBERS);
     type->SetMergedObjectType(mergedType);
 }
@@ -388,6 +389,7 @@ IndexInfo *TSChecker::GetApplicableIndexInfo(Type *type, Type *indexType)
 
 Type *TSChecker::GetPropertyTypeForIndexType(Type *type, Type *indexType)
 {
+    ES2PANDA_ASSERT(type != nullptr);
     if (type->IsArrayType()) {
         return type->AsArrayType()->ElementType();
     }

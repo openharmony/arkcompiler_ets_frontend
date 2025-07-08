@@ -341,6 +341,7 @@ ir::TSModuleDeclaration *TypedParser::ParseModuleOrNamespaceDeclaration(const le
 
     auto *moduleDecl = AllocNode<ir::TSModuleDeclaration>(Allocator(), identNode, body,
                                                           ir::TSModuleDeclaration::ConstructorFlags {false, false});
+    ES2PANDA_ASSERT(moduleDecl != nullptr);
     moduleDecl->SetRange({startLoc, Lexer()->GetToken().End()});
 
     return moduleDecl;
@@ -439,6 +440,7 @@ ir::TypeNode *TypedParser::ParseInterfaceExtendsElement()
     }
 
     auto *typeReference = AllocNode<ir::TSTypeReference>(expr, typeParamInst, Allocator());
+    ES2PANDA_ASSERT(typeReference != nullptr);
     typeReference->SetRange({heritageStart, heritageEnd});
     return typeReference;
 }
@@ -774,7 +776,7 @@ ir::TSTypeParameter *TypedParser::ParseTypeParameter(TypeAnnotationParsingOption
     }
 
     auto *typeParam = AllocNode<ir::TSTypeParameter>(paramIdent, constraint, defaultType, Allocator());
-
+    ES2PANDA_ASSERT(typeParam != nullptr);
     typeParam->SetRange({startLoc, Lexer()->GetToken().End()});
 
     return typeParam;

@@ -972,6 +972,7 @@ void ETSChecker::CheckAmbientAnnotation(ir::AnnotationDeclaration *annoImpl, ir:
 
     for (auto *prop : annoDecl->Properties()) {
         auto *field = prop->AsClassProperty();
+        ES2PANDA_ASSERT(field->Id() != nullptr);
         fieldMap[field->Id()->Name()] = field;
     }
 
@@ -1252,10 +1253,10 @@ void ETSChecker::CheckMultiplePropertiesAnnotation(ir::AnnotationUsage *st, util
 {
     for (auto *it : st->Properties()) {
         auto *param = it->AsClassProperty();
-        auto result = fieldMap.find(param->Id()->Name());
+        auto *id = param->Id();
+        ES2PANDA_ASSERT(id != nullptr);
+        auto result = fieldMap.find(id->Name());
         if (result == fieldMap.end()) {
-            auto *id = param->Id();
-            ES2PANDA_ASSERT(id != nullptr);
             LogError(diagnostic::ANNOT_PROP_UNDEFINED, {id->Name(), baseName}, param->Start());
             continue;
         }
