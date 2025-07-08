@@ -367,6 +367,11 @@ bool Options::DetermineExtension()
             }
             return true;
         }
+        case ScriptExtension::AS:
+        case ScriptExtension::TS: {
+            diagnosticEngine_.LogDiagnostic(diagnostic::UNKNOWN_EXT, util::DiagnosticMessageParams {});
+            return false;
+        }
         default:
             return true;
     }

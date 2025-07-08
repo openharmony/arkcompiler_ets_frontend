@@ -37,7 +37,8 @@ options:
   - ts
   - as
   - ets
-  possible_values: *ScriptExtension
+  possible_values:
+    - ets
 
 - name: module
   type: bool
