@@ -981,11 +981,11 @@ export class Autofixer {
 
     const propertyChain: string[] = [propertyName];
     let current: ts.Node = node;
-    
+
     while (current.parent && ts.isElementAccessExpression(current.parent)) {
       const parentArg = current.parent.argumentExpression;
       if (ts.isStringLiteral(parentArg)) {
-        propertyChain.push(parentArg.text); 
+        propertyChain.push(parentArg.text);
       }
       current = current.parent;
     }
@@ -2468,17 +2468,15 @@ export class Autofixer {
         const prev = allSpecifiers[specIndex - 1];
         start = prev.getEnd();
       }
-      fixes.push({
-        start: start,
-        end: end,
-        replacementText: ''
-      });
+      fixes.push({ start: start, end: end, replacementText: '' });
     }
 
     const alias = specToRemove.name;
-    const original = specToRemove.propertyName ?? specToRemove.name;
-    const replacements = this.replaceIdentifierUsages(alias, original.getText());
-    fixes.push(...replacements);
+    const original = specToRemove.propertyName;
+    if (original) {
+      const replacements = this.replaceIdentifierUsages(alias, original.getText());
+      fixes.push(...replacements);
+    }
     return fixes;
   }
 
@@ -4081,6 +4079,26 @@ export class Autofixer {
     return { replacementText, start: identifier.getStart(), end: identifier.getEnd() };
   }
 
+  fixConcurrencyLock(locksProp: ts.PropertyAccessExpression): Autofix[] | undefined {
+    // 1) Ensure the next property is `.AsyncLock`
+    const asyncLockProp = locksProp.parent;
+    if (!ts.isPropertyAccessExpression(asyncLockProp)) {
+      return undefined;
+    }
+
+    // 2) Find the enclosing `new` expression
+    const newExpr = asyncLockProp.parent;
+    if (!ts.isNewExpression(newExpr)) {
+      return undefined;
+    }
+
+    const className = asyncLockProp.name.getText();
+    const replacement = ts.factory.createNewExpression(ts.factory.createIdentifier(className), undefined, []);
+    const replacementText = this.printer.printNode(ts.EmitHint.Unspecified, replacement, newExpr.getSourceFile());
+
+    return [{ start: newExpr.getStart(), end: newExpr.getEnd(), replacementText }];
+  }
+
   fixSharedArrayBufferConstructor(node: ts.NewExpression): Autofix[] | undefined {
     void this;
 
@@ -4731,13 +4749,13 @@ export class Autofixer {
       `${expr.getText()}${callExpr.questionDotToken.getText()}unsafeCall` :
       `${expr.getText()}.unsafeCall`;
 
-    return [
-      {
-        start: expr.getStart(),
-        end: hasOptionalChain ? callExpr.questionDotToken.getEnd() : expr.getEnd(),
-        replacementText
-      }
-    ];
+    return [{
+      start: expr.getStart(),
+      end: hasOptionalChain ?
+        callExpr.questionDotToken.getEnd() :
+        expr.getEnd(),
+      replacementText
+    }];
   }
 
   private static createBuiltInTypeInitializer(type: ts.TypeReferenceNode): ts.Expression | undefined {
@@ -5152,7 +5170,7 @@ export class Autofixer {
 
   fixNumericPublicStatic(node: ts.PropertyDeclaration): Autofix[] | undefined {
     if (!node?.name || node.type) {
-      return undefined
+      return undefined;
     };
     const typeNode = ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword);
     const modifiers = ts.getModifiers(node) || [];

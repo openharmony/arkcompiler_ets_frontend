@@ -7517,7 +7517,8 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         return;
       }
       if (parent.name.text === ARKTSUTILS_LOCKS_MEMBER) {
-        this.incrementCounters(node, FaultID.LimitedStdLibNoImportConcurrency);
+        const autofix = this.autofixer?.fixConcurrencyLock(parent);
+        this.incrementCounters(node, FaultID.LimitedStdLibNoImportConcurrency, autofix);
       }
     };
 

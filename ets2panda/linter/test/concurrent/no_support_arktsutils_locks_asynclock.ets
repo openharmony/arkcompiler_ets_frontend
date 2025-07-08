@@ -15,6 +15,6 @@
 
 import { ArkTSUtils } from '../main/oh_modules/@kit.ArkTS';
 
-let lock1 = new ArkTSUtils.locks.AsyncLock(); 
+let lock1 = new ArkTSUtils.locks.AsyncLock();
 
-let lock2 = new ArkTSUtils.locks.AsyncLock(); 
+let lock2 = new ArkTSUtils.locks.AsyncLock();

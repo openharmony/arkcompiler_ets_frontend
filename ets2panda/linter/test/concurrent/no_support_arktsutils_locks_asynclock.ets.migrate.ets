@@ -12,9 +12,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 import { ArkTSUtils } from '../main/oh_modules/@kit.ArkTS';
 
-let lock1 = new ArkTSUtils.locks.AsyncLock(); 
+let lock1 = new AsyncLock();
 
-let lock2 = new ArkTSUtils.locks.AsyncLock(); 
+let lock2 = new AsyncLock();
