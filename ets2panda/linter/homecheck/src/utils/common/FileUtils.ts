@@ -67,12 +67,16 @@ export class FileUtils {
         let result: string[] = [];
         for (const filePath of fileList) {
             if (!ignoreGlob?.matchGlob(filePath) && fileGlob.matchGlob(filePath)) {
-                // 读取file文件内容首行，若为屏蔽行则跳过
-                const firstLineText = await this.readLinesFromFile(filePath, 1);
-                if (firstLineText.includes(DisableText.FILE_DISABLE_TEXT)) {
-                    continue;
+                try {
+                    // 读取file文件内容首行，若为屏蔽行则跳过
+                    const firstLineText = await this.readLinesFromFile(filePath, 1);
+                    if (firstLineText.includes(DisableText.FILE_DISABLE_TEXT)) {
+                        continue;
+                    }
+                    result.push(filePath);
+                } catch (e) {
+                    logger.error(e);
                 }
-                result.push(filePath);
             }
         }
         return result;

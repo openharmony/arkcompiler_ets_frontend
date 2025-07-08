@@ -167,10 +167,14 @@ export class Project2Check {
             if (!fs.existsSync(filePath)) {
                 continue;
             }
-            const fileLineList = await FileUtils.readLinesFromFile(filePath);
-            const filtedResult = await filterDisableIssue(fileLineList, [issue], filePath);
-            if (filtedResult.length > 0) {
-                filtedIssues = filtedIssues.concat(filtedResult[0]);
+            try {
+                const fileLineList = await FileUtils.readLinesFromFile(filePath);
+                const filtedResult = await filterDisableIssue(fileLineList, [issue], filePath);
+                if (filtedResult.length > 0) {
+                    filtedIssues = filtedIssues.concat(filtedResult[0]);
+                }
+            } catch (e) {
+                logger.error(e);
             }
         }
         this.issues = filtedIssues;
