@@ -1064,7 +1064,7 @@ void ETSChecker::HandleAnnotationRetention(ir::AnnotationUsage *anno, ir::Annota
 
 void ETSChecker::CheckStandardAnnotation(ir::AnnotationUsage *anno)
 {
-    if (anno->GetBaseName()->Variable() == nullptr) {
+    if (anno->GetBaseName()->Variable() == nullptr || IsTypeError(anno->GetBaseName()->TsType())) {
         return;
     }
     ES2PANDA_ASSERT(anno->GetBaseName()->Variable()->Declaration()->Node()->AsAnnotationDeclaration() != nullptr);
