@@ -2247,4 +2247,3 @@ bool GenerateTsDeclarations(checker::ETSChecker *checker, const ark::es2panda::p
     return true;
 }
 }  // namespace ark::es2panda::declgen_ets2ts
-
