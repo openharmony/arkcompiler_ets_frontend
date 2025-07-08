@@ -1634,7 +1634,7 @@ checker::Type *ETSAnalyzer::Check(ir::ConditionalExpression *expr) const
     checker->Context().CombineSmartCasts(consequentSmartCasts);
 
     if (checker->IsTypeIdenticalTo(consequentType, alternateType)) {
-        expr->SetTsType(checker->GetNonConstantType(consequentType));
+        expr->SetTsType(consequentType);
     } else {
         //  If possible and required update number literal type to the proper value (identical to left-side type)
         if (alternate->IsNumberLiteral() &&
