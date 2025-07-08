@@ -1148,10 +1148,6 @@ syntax:
   id: 283
   message: "Name '{}' cannot be exported and type exported at the same time."
 
-- name: CANNOT_EXPORT_SAME_TYPE_TWICE
-  id: 284
-  message: "Cannot export the same '{}' type twice."
-
 - name: DUPLICATE_PROTO_FIELDS
   id: 285
   message: "Duplicate __proto__ fields are not allowed in object literals"

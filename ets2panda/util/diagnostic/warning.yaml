@@ -28,6 +28,10 @@ warning:
   id: 4
   message: "Boost Equality Statement. Change sides of binary expression."
 
+- name: DUPLICATE_EXPORT_ALIASES
+  id: 73
+  message: "Duplicated export aliases for '{}'."
+
 - name: REPLACE_ASYNC_FUNCTION_WITH_COROUTINE
   id: 5
   message: "Replace asynchronous function with coroutine."

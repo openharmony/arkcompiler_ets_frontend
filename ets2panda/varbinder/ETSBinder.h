@@ -23,6 +23,7 @@
 #include "ir/expressions/identifier.h"
 #include "ir/module/importSpecifier.h"
 #include "ir/statements/annotationDeclaration.h"
+#include "parser/ETSparser.h"
 
 namespace ark::es2panda::ir {
 class ETSImportDeclaration;
@@ -256,8 +257,9 @@ public:
 
     void ResolveReferencesForScopeWithContext(ir::AstNode *node, Scope *scope);
 
-    [[nodiscard]] bool AddSelectiveExportAlias(util::StringView const &path, util::StringView const &key,
-                                               util::StringView const &value, ir::AstNode const *decl) noexcept;
+    [[nodiscard]] bool AddSelectiveExportAlias(parser::ETSParser *parser, util::StringView const &path,
+                                               util::StringView const &key, util::StringView const &value,
+                                               ir::AstNode const *decl) noexcept;
 
     [[nodiscard]] const ModulesToExportedNamesWithAliases &GetSelectiveExportAliasMultimap() const noexcept
     {
