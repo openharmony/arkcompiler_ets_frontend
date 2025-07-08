@@ -25,7 +25,7 @@ bool ClassPrivateContext::AddElement(const ir::ClassElement *elem)
 {
     bool newPropIsStatic = elem->IsStatic();
     auto id = elem->Id();
-    ES2PANDA_ASSERT(id);
+    ES2PANDA_ASSERT(id != nullptr);
     util::StringView newPropName = id->Name();
     ir::MethodDefinitionKind newPropMethodKind = ir::MethodDefinitionKind::METHOD;
 
@@ -64,7 +64,7 @@ bool ClassPrivateContext::FindElement(const ir::Identifier *elem) const
 {
     for (const auto *it : elements_) {
         auto id = it->Id();
-        ES2PANDA_ASSERT(id);
+        ES2PANDA_ASSERT(id != nullptr);
         if (id->Name().Compare(elem->Name()) == 0) {
             return true;
         }

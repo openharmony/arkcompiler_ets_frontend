@@ -185,6 +185,7 @@ varbinder::LocalVariable *ETSObjectType::CreateSyntheticVarFromEverySignature(co
                                                                               varbinder::VariableFlags::METHOD);
 
     ETSFunctionType *funcType = CreateMethodTypeForProp(name);
+    ES2PANDA_ASSERT(funcType != nullptr);
     for (auto &s : signatures) {
         funcType->AddCallSignature(s);
     }

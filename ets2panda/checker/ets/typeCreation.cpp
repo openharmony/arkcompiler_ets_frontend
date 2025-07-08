@@ -253,6 +253,7 @@ Signature *ETSChecker::CreateSignature(SignatureInfo *info, Type *returnType, ir
         return nullptr;
     }
     auto signature = ProgramAllocator()->New<Signature>(info, returnType, nullptr);
+    ES2PANDA_ASSERT(signature != nullptr);
     signature->AddSignatureFlag(ConvertToSignatureFlags(ir::ModifierFlags::NONE, sff));
     // synthetic arrow type signature flags
     auto extraFlags = SignatureFlags::ABSTRACT | SignatureFlags::CALL | SignatureFlags::PUBLIC;
@@ -439,6 +440,7 @@ std::tuple<util::StringView, SignatureInfo *> ETSChecker::CreateBuiltinArraySign
         util::UString param(std::to_string(i), ProgramAllocator());
         auto *paramVar =
             varbinder::Scope::CreateVar(ProgramAllocator(), param.View(), varbinder::VariableFlags::NONE, nullptr);
+        ES2PANDA_ASSERT(paramVar != nullptr);
         paramVar->SetTsType(GlobalIntType());
 
         info->params.push_back(paramVar);

@@ -137,7 +137,7 @@ ir::Expression *TSParser::ParsePotentialAsExpression(ir::Expression *expr)
 
     lexer::SourcePosition startLoc = expr->Start();
     auto *asExpr = AllocNode<ir::TSAsExpression>(expr, typeAnnotation, isConst);
-    ES2PANDA_ASSERT(asExpr);
+    ES2PANDA_ASSERT(asExpr != nullptr);
     asExpr->SetRange({startLoc, Lexer()->GetToken().End()});
 
     if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_AS) {
@@ -170,7 +170,7 @@ ir::AnnotatedExpression *TSParser::ParsePatternElementGetReturnNode(ExpressionPa
         }
         case lexer::TokenType::LITERAL_IDENT: {
             ir::AnnotatedExpression *returnNode = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
-            ES2PANDA_ASSERT(returnNode);
+            ES2PANDA_ASSERT(returnNode != nullptr);
 
             if (returnNode->AsIdentifier()->Decorators().empty()) {
                 returnNode->SetRange(Lexer()->GetToken().Loc());
@@ -330,6 +330,7 @@ ir::Expression *TSParser::ParseModuleReference()
         }
 
         result = AllocNode<ir::StringLiteral>(Lexer()->GetToken().String());
+        ES2PANDA_ASSERT(result != nullptr);
         result->SetRange(Lexer()->GetToken().Loc());
         Lexer()->NextToken();
 
@@ -342,7 +343,7 @@ ir::Expression *TSParser::ParseModuleReference()
         Lexer()->NextToken();  // eat ')'
     } else {
         result = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
-        ES2PANDA_ASSERT(result);
+        ES2PANDA_ASSERT(result != nullptr);
         result->SetRange(Lexer()->GetToken().Loc());
         Lexer()->NextToken();
 
@@ -357,6 +358,7 @@ ir::Expression *TSParser::ParseModuleReference()
 ir::TSTypeReference *TSParser::ParseConstExpression()
 {
     auto *identRef = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
+    ES2PANDA_ASSERT(identRef != nullptr);
     identRef->SetRange(Lexer()->GetToken().Loc());
 
     auto *typeReference = AllocNode<ir::TSTypeReference>(identRef, nullptr, Allocator());
@@ -383,7 +385,7 @@ bool TSParser::ParsePotentialNonNullExpression(ir::Expression **returnExpression
     }
 
     *returnExpression = AllocNode<ir::TSNonNullExpression>(*returnExpression);
-    ES2PANDA_ASSERT(*returnExpression);
+    ES2PANDA_ASSERT(*returnExpression != nullptr);
     // NOLINTNEXTLINE(clang-analyzer-core.CallAndMessage)
     (*returnExpression)->SetRange({startLoc, Lexer()->GetToken().End()});
     Lexer()->NextToken();
@@ -451,7 +453,7 @@ ir::ArrowFunctionExpression *TSParser::ParsePotentialArrowExpression(ir::Express
     switch (Lexer()->GetToken().Type()) {
         case lexer::TokenType::KEYW_FUNCTION: {
             *returnExpression = ParseFunctionExpression(ParserStatus::ASYNC_FUNCTION);
-            ES2PANDA_ASSERT(*returnExpression);
+            ES2PANDA_ASSERT(*returnExpression != nullptr);
             (*returnExpression)->SetStart(startLoc);
             break;
         }

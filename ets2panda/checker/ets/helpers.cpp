@@ -2039,6 +2039,7 @@ Type *ETSChecker::CheckSwitchDiscriminant(ir::Expression *discriminant)
 {
     discriminant->Check(this);
     auto *discriminantType = GetNonConstantType(MaybeUnboxExpression(discriminant));
+    ES2PANDA_ASSERT(discriminantType != nullptr);
     if (!discriminantType->HasTypeFlag(TypeFlag::VALID_SWITCH_TYPE)) {
         if (!(discriminantType->IsETSObjectType() &&
               discriminantType->AsETSObjectType()->HasObjectFlag(
@@ -2421,7 +2422,9 @@ util::StringView ETSChecker::GetHashFromFunctionType(ir::ETSFunctionType *type)
     std::stringstream ss;
     for (auto *p : type->Params()) {
         auto *const param = p->AsETSParameterExpression();
-        param->TypeAnnotation()->GetType(this)->ToString(ss, true);
+        auto *paramType = param->TypeAnnotation()->GetType(this);
+        ES2PANDA_ASSERT(paramType != nullptr);
+        paramType->ToString(ss, true);
         ss << ";";
     }
 
@@ -2435,7 +2438,9 @@ util::StringView ETSChecker::GetHashFromFunctionType(ir::ETSFunctionType *type)
         }
         ss << "extensionFunction;";
     } else {
-        type->ReturnType()->GetType(this)->ToString(ss, true);
+        auto *returnType = type->ReturnType()->GetType(this);
+        ES2PANDA_ASSERT(returnType != nullptr);
+        returnType->ToString(ss, true);
     }
 
     ss << ";";
@@ -2829,6 +2834,7 @@ ir::MethodDefinition *ETSChecker::GenerateDefaultGetterSetter(ir::ClassProperty 
     auto *methodIdent = property->Key()->AsIdentifier()->Clone(checker->ProgramAllocator(), nullptr);
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *funcExpr = checker->ProgramAllocNode<ir::FunctionExpression>(func);
+    CHECK_NOT_NULL(funcExpr);
     funcExpr->SetRange(func->Range());
     func->AddFlag(ir::ScriptFunctionFlags::METHOD);
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
@@ -2838,17 +2844,20 @@ ir::MethodDefinition *ETSChecker::GenerateDefaultGetterSetter(ir::ClassProperty 
     auto *decl = checker->ProgramAllocator()->New<varbinder::FunctionDecl>(
         checker->ProgramAllocator(), property->Key()->AsIdentifier()->Name(), method);
     auto *var = checker->ProgramAllocator()->New<varbinder::LocalVariable>(decl, varbinder::VariableFlags::VAR);
+    CHECK_NOT_NULL(var);
     var->AddFlag(varbinder::VariableFlags::METHOD);
 
     methodIdent->SetVariable(var);
 
-    method->Id()->SetMutator();
-    method->SetRange(field->Range());
     auto *methodId = method->Id();
     CHECK_NOT_NULL(methodId);
+    methodId->SetMutator();
+    method->SetRange(field->Range());
+    auto *methodFunc = method->Function();
+    CHECK_NOT_NULL(methodFunc);
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    method->Function()->SetIdent(methodId->Clone(checker->ProgramAllocator(), nullptr));
-    method->Function()->AddModifier(method->Modifiers());
+    methodFunc->SetIdent(methodId->Clone(checker->ProgramAllocator(), nullptr));
+    methodFunc->AddModifier(method->Modifiers());
     method->SetVariable(var);
     method->SetParent(field->Parent());
 
@@ -3110,6 +3119,7 @@ Type *ETSChecker::GetImportSpecifierObjectType(ir::ETSImportDeclaration *importD
 
 ETSChecker::NamedAccessMeta ETSChecker::FormNamedAccessMetadata(varbinder::Variable const *prop)
 {
+    CHECK_NOT_NULL(prop);
     const auto *field = prop->Declaration()->Node()->AsClassProperty();
     const auto *owner = field->Parent()->AsClassDefinition();
     auto *fieldId = field->Id();

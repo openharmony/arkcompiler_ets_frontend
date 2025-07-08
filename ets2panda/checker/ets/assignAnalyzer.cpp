@@ -532,6 +532,7 @@ static bool IsInitialConstructor(const ir::AstNode *node)
     }
 
     const auto methodDef = node->AsMethodDefinition();
+    ES2PANDA_ASSERT(methodDef != nullptr);
     if (methodDef->Function()->Body() == nullptr || methodDef->Function()->IsExternal()) {
         return false;
     }

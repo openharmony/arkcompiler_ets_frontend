@@ -38,8 +38,8 @@ void ObjectDescriptor::Copy(ArenaAllocator *allocator, ObjectDescriptor *copiedD
     // copy by hand
     for (auto *it : properties) {
         auto *copiedProp = it->Copy(allocator, it->Declaration());
+        ES2PANDA_ASSERT(copiedProp != nullptr);
         copiedProp->SetTsType(it->TsType()->Instantiate(allocator, relation, globalTypes));
-        ES2PANDA_ASSERT(copiedDesc != nullptr);
         copiedDesc->properties.push_back(copiedProp);
     }
 

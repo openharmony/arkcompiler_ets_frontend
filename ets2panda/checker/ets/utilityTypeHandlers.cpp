@@ -232,6 +232,7 @@ ir::ClassProperty *ETSChecker::CreateNullishPropertyFromAccessor(ir::MethodDefin
     ES2PANDA_ASSERT(id != nullptr);
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *ident = id->Clone(ProgramAllocator(), nullptr);
+    ES2PANDA_ASSERT(accessor->Function() != nullptr);
     auto modifierFlag = accessor->Function()->IsGetter() && accessor->Overloads().empty() ? ir::ModifierFlags::READONLY
                                                                                           : ir::ModifierFlags::NONE;
 
@@ -365,6 +366,7 @@ ir::TSTypeParameterDeclaration *ETSChecker::ProcessTypeParamAndGenSubstitution(
             CloneNodeIfNotNullptr(classOrInterfaceDefTypeParam->Constraint(), ProgramAllocator()),
             // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
             CloneNodeIfNotNullptr(classOrInterfaceDefTypeParam->DefaultType(), ProgramAllocator()), ProgramAllocator());
+        ES2PANDA_ASSERT(newTypeParam != nullptr);
         newTypeParams->AddParam(newTypeParam);
         newTypeParam->SetParent(newTypeParams);
         ES2PANDA_ASSERT(likeSubstitution != nullptr);
@@ -404,6 +406,7 @@ ir::TSTypeParameterInstantiation *ETSChecker::CreateNewSuperPartialRefTypeParams
             typeParamRefPart->Name()->SetParent(typeParamRefPart);
             // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
             auto *typeParamRef = ProgramAllocNode<ir::ETSTypeReference>(typeParamRefPart, ProgramAllocator());
+            ES2PANDA_ASSERT(typeParamRef != nullptr);
             typeParamRefPart->SetParent(typeParamRef);
 
             typeParamRef->SetParent(superPartialRefTypeParams);
@@ -463,7 +466,7 @@ void ETSChecker::CreatePartialClassDeclaration(ir::ClassDefinition *const newCla
             // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
             ProgramAllocNode<ir::TSTypeParameterDeclaration>(std::move(typeParams),
                                                              classDef->TypeParams()->RequiredParams());
-
+        ES2PANDA_ASSERT(newTypeParams != nullptr);
         newClassDefinition->SetTypeParams(newTypeParams);
         newTypeParams->SetParent(newClassDefinition);
     }
@@ -475,7 +478,8 @@ void ETSChecker::CreatePartialClassDeclaration(ir::ClassDefinition *const newCla
         // Only handle class properties (members)
         // Method calls on partial classes will make the class not type safe, so we don't copy any methods
         if (prop->IsClassProperty()) {
-            if (prop->AsClassProperty()->Id()->Name().Mutf8().find(compiler::Signatures::PROPERTY, 0) == 0) {
+            if (prop->AsClassProperty()->Id() == nullptr ||
+                prop->AsClassProperty()->Id()->Name().Mutf8().find(compiler::Signatures::PROPERTY, 0) == 0) {
                 continue;
             }
 
@@ -489,6 +493,7 @@ void ETSChecker::CreatePartialClassDeclaration(ir::ClassDefinition *const newCla
             (prop->AsMethodDefinition()->Function()->IsGetter() ||
              prop->AsMethodDefinition()->Function()->IsSetter())) {
             auto *method = prop->AsMethodDefinition();
+            ES2PANDA_ASSERT(method->Id() != nullptr);
             if (newClassDefinition->Scope()->FindLocal(method->Id()->Name(),
                                                        varbinder::ResolveBindingOptions::VARIABLES) != nullptr) {
                 continue;
@@ -613,6 +618,7 @@ ir::TSInterfaceDeclaration *ETSChecker::CreateInterfaceProto(util::StringView na
                                                      Language(Language::Id::ETS)});
 
     const auto classCtx = varbinder::LexicalScope<varbinder::ClassScope>(VarBinder());
+    ES2PANDA_ASSERT(partialInterface != nullptr);
     partialInterface->TypeParams()->SetParent(partialInterface);
     partialInterface->SetScope(classCtx.GetScope());
     partialInterface->SetVariable(var);
@@ -673,6 +679,7 @@ void ETSChecker::CreatePartialTypeInterfaceMethods(ir::TSInterfaceDeclaration *c
         }
 
         for (auto *overload : method->Overloads()) {
+            ES2PANDA_ASSERT(overload->Function() != nullptr);
             if (overload->Function()->IsGetter() || overload->Function()->IsSetter()) {
                 // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
                 addNullishAccessor(CreateNullishAccessor(overload, partialInterface));
@@ -775,6 +782,7 @@ ir::ClassDefinition *ETSChecker::CreateClassPrototype(util::StringView name, par
     // Create class name, and declaration variable
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *const classId = ProgramAllocNode<ir::Identifier>(name, ProgramAllocator());
+    ES2PANDA_ASSERT(classId != nullptr);
     const auto [decl, var] = VarBinder()->NewVarDecl<varbinder::ClassDecl>(classId->Start(), classId->Name());
     classId->SetVariable(var);
 
@@ -784,6 +792,7 @@ ir::ClassDefinition *ETSChecker::CreateClassPrototype(util::StringView name, par
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         ProgramAllocNode<ir::ClassDefinition>(ProgramAllocator(), classId, ir::ClassDefinitionModifiers::DECLARATION,
                                               ir::ModifierFlags::NONE, Language(Language::Id::ETS));
+    ES2PANDA_ASSERT(classDef != nullptr);
     classDef->SetScope(classCtx.GetScope());
     classDef->SetVariable(var);
 
@@ -904,7 +913,7 @@ std::pair<ir::ScriptFunction *, ir::Identifier *> ETSChecker::CreateScriptFuncti
                                                                     ir::ScriptFunctionFlags::CONSTRUCTOR |
                                                                         ir::ScriptFunctionFlags::EXPRESSION,
                                                                     ir::ModifierFlags::PUBLIC});
-
+    ES2PANDA_ASSERT(func != nullptr);
     func->SetScope(scope);
     scope->BindNode(func);
     func->SetIdent(id);
@@ -965,6 +974,7 @@ Type *ETSChecker::GetReadonlyType(Type *type)
     if (type->IsETSArrayType()) {
         ETSArrayType *const clonedArrayType =
             ProgramAllocator()->New<ETSArrayType>(type->AsETSArrayType()->ElementType());
+        ES2PANDA_ASSERT(clonedArrayType != nullptr);
         clonedArrayType->AddTypeFlag(TypeFlag::READONLY);
         return clonedArrayType;
     }

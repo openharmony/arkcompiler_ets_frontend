@@ -528,7 +528,7 @@ ir::TypeNode *TSParser::ParseTypeOperatorOrTypeReference()
         ir::TypeNode *type = ParseTypeAnnotation(&options);
 
         auto *typeOperator = AllocNode<ir::TSTypeOperator>(type, ir::TSOperatorType::KEYOF, Allocator());
-
+        ES2PANDA_ASSERT(typeOperator != nullptr);
         typeOperator->SetRange({typeOperatorStart, type->End()});
 
         return typeOperator;
@@ -693,6 +693,7 @@ ir::TypeNode *TSParser::ParseTypeReferenceOrQuery(bool parseQuery)
                     Lexer()->GetToken().Type() == lexer::TokenType::KEYW_EXTENDS);
 
     ir::Expression *typeName = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
+    ES2PANDA_ASSERT(typeName != nullptr);
     typeName->SetRange(Lexer()->GetToken().Loc());
 
     if (Lexer()->Lookahead() == lexer::LEX_CHAR_LESS_THAN) {

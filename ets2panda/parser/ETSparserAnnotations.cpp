@@ -132,6 +132,7 @@ ArenaVector<ir::AstNode *> ETSParser::ParseAnnotationProperties(ir::ModifierFlag
         }
 
         auto *fieldName = ExpectIdentifier();
+        ES2PANDA_ASSERT(fieldName != nullptr);
         if (fieldName->IsErrorPlaceHolder()) {
             //  Try to recover from error: simplest strategy: only one step ahead.
             //  Probably we can seek for identifier till the enclosing right brace (staring after the next comma?)
@@ -401,6 +402,7 @@ ir::AnnotationUsage *ETSParser::ParseAnnotationUsage()
 
             auto *singleParam = AllocNode<ir::ClassProperty>(singleParamName, initializer, nullptr,
                                                              ir::ModifierFlags::ANNOTATION_USAGE, Allocator(), false);
+            ES2PANDA_ASSERT(singleParam != nullptr);
             singleParam->SetRange(
                 {singleParamName->Start(), initializer != nullptr ? initializer->End() : singleParamName->End()});
             properties.push_back(singleParam);

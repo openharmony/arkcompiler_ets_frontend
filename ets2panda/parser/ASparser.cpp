@@ -578,6 +578,7 @@ ir::TypeNode *ASParser::ParseTypeAnnotationLiteralIdentHelper(ir::TypeNode *type
     ES2PANDA_ASSERT(typeName != nullptr);
     typeName->SetRange(Lexer()->GetToken().Loc());
     type = AllocNode<ir::NamedType>(typeName, Allocator());
+    ES2PANDA_ASSERT(type != nullptr);
     type->SetRange(Lexer()->GetToken().Loc());
     Lexer()->NextToken();
 
@@ -656,6 +657,7 @@ ir::TypeNode *ASParser::ParseTypeAnnotationTokens(ir::TypeNode *type, bool throw
     ES2PANDA_ASSERT(typeName != nullptr);
     typeName->SetRange(Lexer()->GetToken().Loc());
     type = AllocNode<ir::NamedType>(typeName, Allocator());
+    ES2PANDA_ASSERT(type != nullptr);
     type->SetRange(Lexer()->GetToken().Loc());
     Lexer()->NextToken();
     return type;
@@ -893,6 +895,7 @@ ArenaVector<ir::TSInterfaceHeritage *> ASParser::ParseInterfaceExtendsClause()
     ES2PANDA_ASSERT(extendsName != nullptr);
     extendsName->SetRange(Lexer()->GetToken().Loc());
     auto *extendsClause = AllocNode<ir::NamedType>(extendsName, Allocator());
+    ES2PANDA_ASSERT(extendsClause != nullptr);
     extendsClause->SetRange(Lexer()->GetToken().Loc());
     Lexer()->NextToken();
 
@@ -1154,6 +1157,7 @@ ArenaVector<ir::TSClassImplements *> ASParser::ParseClassImplementClause()
         }
 
         auto *impl = AllocNode<ir::TSClassImplements>(current, implTypeParams);
+        ES2PANDA_ASSERT(impl != nullptr);
         impl->SetRange({implementStart, Lexer()->GetToken().End()});
         implements.push_back(impl);
 
