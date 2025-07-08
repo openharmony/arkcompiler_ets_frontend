@@ -17,6 +17,9 @@ import * as fs from 'fs';
 import path from 'path';
 import { IssueReport } from '../../model/Defects';
 import { FileUtils } from '../../Index';
+import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
+
+const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'Disable');
 
 export const DisableText = {
     FILE_DISABLE_TEXT: '\/* homecheck-disable *\/',
@@ -25,23 +28,27 @@ export const DisableText = {
 
 export async function filterDisableIssue(lineList: string[], issues: IssueReport[], filePath: string): Promise<IssueReport[]> {
     let filtedIssues: IssueReport[] = [];
-    for (const issue of issues) {
-        // @migration/arkui-data-observation规则的自动修复是在定义处，存在跨文件场景
-        const actualFilePath = path.normalize(issue.defect.mergeKey.split('%')[0]);
-        if (path.normalize(actualFilePath) !== path.normalize(filePath)) {
-            if (!fs.existsSync(actualFilePath)) {
+    try {
+        for (const issue of issues) {
+            // @migration/arkui-data-observation规则的自动修复是在定义处，存在跨文件场景
+            const actualFilePath = path.normalize(issue.defect.mergeKey.split('%')[0]);
+            if (path.normalize(actualFilePath) !== path.normalize(filePath)) {
+                if (!fs.existsSync(actualFilePath)) {
+                    continue;
+                }
+                lineList = await FileUtils.readLinesFromFile(actualFilePath);
+            }
+            // 有些特殊规则允许返回行列号为0
+            if (issue.defect.reportLine < 0 || issue.defect.reportLine - 1 > lineList.length) {
                 continue;
             }
-            lineList = await FileUtils.readLinesFromFile(actualFilePath);
+            const text = lineList[issue.defect.reportLine - 2];
+            if (!isDisableIssue(text, issue.defect.ruleId)) {
+                filtedIssues.push(issue);
+            }
         }
-        // 有些特殊规则允许返回行列号为0
-        if (issue.defect.reportLine < 0 || issue.defect.reportLine - 1 > lineList.length) {
-            continue;
-        }
-        const text = lineList[issue.defect.reportLine - 2];
-        if (!isDisableIssue(text, issue.defect.ruleId)) {
-            filtedIssues.push(issue);
-        }
+    } catch (e) {
+        logger.error(e);
     }
     return filtedIssues;
 }
