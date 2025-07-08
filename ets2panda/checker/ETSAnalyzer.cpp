@@ -168,12 +168,6 @@ static void HandleNativeAndAsyncMethods(ETSChecker *checker, ir::MethodDefinitio
 {
     auto *scriptFunc = node->Function();
     ES2PANDA_ASSERT(scriptFunc != nullptr);
-    if (node->IsNative() && !node->IsConstructor() && !scriptFunc->IsSetter()) {
-        if (scriptFunc->ReturnTypeAnnotation() == nullptr) {
-            checker->LogError(diagnostic::NATIVE_WITHOUT_RETURN, {}, scriptFunc->Start());
-            node->SetTsType(checker->GlobalTypeError());
-        }
-    }
 
     if (util::Helpers::IsAsyncMethod(node)) {
         if (scriptFunc->ReturnTypeAnnotation() != nullptr) {
@@ -222,10 +216,6 @@ checker::Type *ETSAnalyzer::Check(ir::MethodDefinition *node) const
         return node->TsType();
     };
 
-    if (scriptFunc == nullptr) {
-        checker->LogError(diagnostic::FUNC_EXPR_INVALID, {}, node->Start());
-        return returnErrorType();
-    }
     checker->CheckAnnotations(scriptFunc->Annotations());
     checker->CheckFunctionSignatureAnnotations(scriptFunc->Params(), scriptFunc->TypeParams(),
                                                scriptFunc->ReturnTypeAnnotation());
@@ -279,12 +269,6 @@ void ETSAnalyzer::CheckMethodModifiers(ir::MethodDefinition *node) const
 
     if (node->IsAbstract() && (node->flags_ & notValidInAbstract) != 0U) {
         checker->LogError(diagnostic::ABSTRACT_METHOD_INVALID_MODIFIER, {}, node->Start());
-        node->SetTsType(checker->GlobalTypeError());
-        return;
-    }
-
-    if (node->Function() == nullptr) {
-        checker->LogError(diagnostic::FUNC_EXPR_INVALID, {}, node->Start());
         node->SetTsType(checker->GlobalTypeError());
         return;
     }
@@ -350,10 +334,6 @@ checker::Type *ETSAnalyzer::Check(ir::OverloadDeclaration *node) const
     ES2PANDA_ASSERT(node->Key());
 
     CheckDuplicationInOverloadDeclaration(checker, node);
-
-    if (!node->Key()->IsIdentifier()) {
-        checker->LogError(diagnostic::OVERLOAD_NAME_MUST_BE_IDENTIFIER, {}, node->Key()->Start());
-    }
 
     if (node->IsConstructorOverloadDeclaration()) {
         ES2PANDA_ASSERT(node->Parent()->IsClassDefinition());
@@ -2023,12 +2003,7 @@ checker::Type *ETSAnalyzer::CheckDynamic(ir::ObjectExpression *expr) const
 
 static bool ValidatePreferredType(ETSChecker *checker, ir::ObjectExpression *expr)
 {
-    auto preferredType = expr->PreferredType()->MaybeBaseTypeOfGradualType();
-    if (preferredType == nullptr) {
-        checker->LogError(diagnostic::CLASS_COMPOSITE_UNKNOWN_TYPE, {}, expr->Start());
-        return false;
-    }
-
+    auto preferredType = expr->PreferredType();
     if (preferredType->IsTypeError()) {
         //  Don't need to duplicate error message for a single error.
         return false;
@@ -2349,12 +2324,6 @@ checker::ETSObjectType *ResolveUnionObjectTypeForObjectLiteral(ETSChecker *check
         if (type->IsETSObjectType()) {
             candidateObjectTypes.push_back(type->AsETSObjectType());
         }
-    }
-
-    if (candidateObjectTypes.empty()) {
-        // No ETSObjectTypes in the union at all
-        checker->LogError(diagnostic::CLASS_COMPOSITE_INVALID_TARGET, {expr->PreferredType()}, expr->Start());
-        return nullptr;
     }
 
     std::vector<checker::ETSObjectType *> matchingObjectTypes;
@@ -3219,11 +3188,6 @@ checker::Type *ETSAnalyzer::Check(ir::ForOfStatement *const st) const
     auto [smartCasts, clearFlag] = checker->Context().EnterLoop(*st, std::nullopt);
 
     checker::Type *const exprType = st->Right()->Check(checker)->MaybeBaseTypeOfGradualType();
-    if (exprType == nullptr) {
-        checker->LogError(diagnostic::FOROF_CANT_INFER_SOURCE, {}, st->Right()->Start());
-        return checker->GlobalTypeError();
-    }
-
     checker::Type *elemType = checker->GlobalTypeError();
 
     if (exprType->IsETSStringType()) {
