@@ -53,6 +53,7 @@ class A {
 /* @@? 23:21 Error SyntaxError: Unexpected token 'final'. */
 /* @@? 23:21 Error SyntaxError: Unexpected token, expected ',' or ')'. */
 /* @@? 23:21 Error SyntaxError: Unexpected token 'final'. */
+/* @@? 23:26 Error SyntaxError: Illegal start of CLASS expression. */
 /* @@? 23:39 Error SyntaxError: Expected '{', got ')'. */
 /* @@? 26:2 Error SyntaxError: Unexpected token '}'. */
 /* @@? 27:1 Error SyntaxError: Unexpected token '}'. */

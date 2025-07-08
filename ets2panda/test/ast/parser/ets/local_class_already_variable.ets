@@ -20,4 +20,4 @@ function bar(): void {
   }
 }
 
-/* @@? 18:9 Error TypeError: Variable 'BC' has already been declared.   */
+/* @@? 18:3 Error SyntaxError: Illegal start of CLASS expression. */
