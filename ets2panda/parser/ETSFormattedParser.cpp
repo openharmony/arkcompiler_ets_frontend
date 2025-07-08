@@ -162,7 +162,7 @@ ir::Statement *ETSParser::ParseStatementFormatPlaceholder()
 {
     if (insertingNodes_.empty()) {
         LogError(diagnostic::INSERT_NODE_ABSENT, {}, Lexer()->GetToken().Start());
-        ES2PANDA_UNREACHABLE();
+        return AllocBrokenStatement(Lexer()->GetToken().Start());
     }
 
     ParserImpl::NodeFormatType nodeFormat = GetFormatPlaceholderType();
