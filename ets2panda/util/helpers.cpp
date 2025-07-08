@@ -814,6 +814,24 @@ util::UString Helpers::EscapeHTMLString(ArenaAllocator *allocator, const std::st
     return replaced;
 }
 
+ir::AstNode *Helpers::DerefETSTypeReference(ir::AstNode *node)
+{
+    ES2PANDA_ASSERT(node->IsETSTypeReference());
+    do {
+        auto *name = node->AsETSTypeReference()->Part()->GetIdent();
+
+        ES2PANDA_ASSERT(name->IsIdentifier());
+        auto *var = name->AsIdentifier()->Variable();
+        ES2PANDA_ASSERT(var != nullptr);
+        auto *declNode = var->Declaration()->Node();
+        if (!declNode->IsTSTypeAliasDeclaration()) {
+            return declNode;
+        }
+        node = declNode->AsTSTypeAliasDeclaration()->TypeAnnotation();
+    } while (node->IsETSTypeReference());
+    return node;
+}
+
 bool Helpers::IsAsyncMethod(ir::AstNode const *node)
 {
     if (!node->IsMethodDefinition()) {
