@@ -1097,7 +1097,7 @@ static ir::AstNode *FoldUnaryExpression(const ir::UnaryExpression *unary, public
     }
 
     auto lit = unary->Argument()->AsLiteral();
-    if (lit->IsNumberLiteral() || lit->IsCharLiteral() || lit->IsBooleanLiteral()) {
+    if (lit->IsNumberLiteral() || lit->IsCharLiteral()) {
         return FoldUnaryNumericConstant(unary, context->allocator);
     }
 
@@ -1127,7 +1127,7 @@ static ir::AstNode *FoldTemplateLiteral(ir::TemplateLiteral *expr, ArenaAllocato
     auto quasis = expr->Quasis();
     auto expressions = expr->Expressions();
 
-    if (!quasis[0]->Raw().Empty()) {
+    if (!quasis.empty() && !quasis[0]->Raw().Empty()) {
         result.Append(quasis[0]->Cooked());
     }
 
