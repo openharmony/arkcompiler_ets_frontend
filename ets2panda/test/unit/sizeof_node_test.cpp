@@ -248,6 +248,7 @@ size_t SizeOfNodeTest::SizeOf<ScriptFunction>()
         Align(sizeof(node->funcFlags_)) +
         sizeof(node->signature_) +
         sizeof(node->preferredReturnType_) +
+        sizeof(node->asyncPairFunction_) +
         Align(sizeof(node->lang_)) +
         sizeof(node->returnStatements_);
     // clang-format on

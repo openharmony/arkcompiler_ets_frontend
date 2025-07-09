@@ -511,6 +511,9 @@ static ir::MethodDefinition *CreateCallee(public_lib::Context *ctx, ir::ArrowFun
     cmInfo.calleeName = calleeName;
     cmInfo.body = body;
     cmInfo.forcedReturnType = forcedReturnType;
+    if (lambda->Function()->IsAsyncFunc()) {
+        cmInfo.auxFunctionFlags = ir::ScriptFunctionFlags::ASYNC_IMPL;
+    }
     auto *method = CreateCalleeMethod(ctx, lambda, info, &cmInfo);
 
     if (lambda->Function()->IsAsyncFunc()) {
@@ -521,6 +524,7 @@ static ir::MethodDefinition *CreateCallee(public_lib::Context *ctx, ir::ArrowFun
         cmInfoAsync.auxModifierFlags = ir::ModifierFlags::NATIVE;
         cmInfoAsync.auxFunctionFlags = ir::ScriptFunctionFlags::ASYNC;
         auto *asyncMethod = CreateCalleeMethod(ctx, lambda, info, &cmInfoAsync);
+        asyncMethod->Function()->SetAsyncPairMethod(method->Function());
         return asyncMethod;
     }
 

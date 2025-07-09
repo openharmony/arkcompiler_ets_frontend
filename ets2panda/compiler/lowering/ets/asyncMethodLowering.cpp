@@ -170,6 +170,7 @@ void ComposeAsyncImplMethod(checker::ETSChecker *checker, ir::MethodDefinition *
 
     implMethod->Check(checker);
     node->SetAsyncPairMethod(implMethod);
+    node->Function()->SetAsyncPairMethod(implMethod->Function());
 
     ES2PANDA_ASSERT(node->Function() != nullptr);
     if (node->Function()->IsOverload()) {
