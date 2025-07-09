@@ -48,8 +48,29 @@ static bool CheckProgramSourcesConsistency(parser::Program *program)
     return success;
 }
 
+static void CheckFileHeaderFlag(parser::Program *program)
+{
+    auto &statements = program->Ast()->Statements();
+    if (statements.empty()) {
+        return;
+    }
+
+    if (!statements.front()->IsExpressionStatement()) {
+        return;
+    }
+
+    // If further processing based on "use static" is required later, such as throwing a warning or modifying the node,
+    // perform the operation here.
+    auto *expansion = statements.front()->AsExpressionStatement()->GetExpression();
+    if (expansion->IsStringLiteral() && expansion->AsStringLiteral()->Str() == Signatures::STATIC_PROGRAM_FLAG) {
+        statements.erase(statements.begin());
+        return;
+    }
+}
+
 bool TopLevelStatements::Perform(public_lib::Context *ctx, parser::Program *program)
 {
+    CheckFileHeaderFlag(program);
     auto imports = ImportExportDecls(program->VarBinder()->AsETSBinder(), ctx->parser->AsETSParser());
     imports.ParseDefaultSources();
     if (!CheckProgramSourcesConsistency(program)) {

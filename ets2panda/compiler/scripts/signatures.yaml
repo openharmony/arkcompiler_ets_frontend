@@ -226,6 +226,8 @@ defines:
     ref: UNUSED_ETSGLOBAL_INIT
   - name: 'ETSGLOBAL.main:void;'
     ref: UNUSED_ETSGLOBAL_MAIN
+  - name: 'use static'
+    ref: STATIC_PROGRAM_FLAG
 
 packages:
   - name: 'std.core'
