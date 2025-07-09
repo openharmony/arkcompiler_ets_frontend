@@ -919,7 +919,8 @@ ir::AstNode *ETSParser::ParseInterfaceField()
 
     ir::TypeNode *typeAnnotation = nullptr;
     if (!Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_COLON) &&
-        Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
+        Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT &&
+        Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
         // interfaces3.ets
         LogError(diagnostic::INTERFACE_FIELDS_TYPE_ANNOTATION);
 
