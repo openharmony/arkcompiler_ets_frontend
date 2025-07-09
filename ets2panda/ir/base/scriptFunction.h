@@ -327,6 +327,21 @@ public:
         return GetHistoryNodeAs<ScriptFunction>()->preferredReturnType_;
     }
 
+    void SetAsyncPairMethod(ScriptFunction *asyncPairFunction)
+    {
+        this->GetOrCreateHistoryNodeAs<ScriptFunction>()->asyncPairFunction_ = asyncPairFunction;
+    }
+
+    [[nodiscard]] const ScriptFunction *AsyncPairMethod() const noexcept
+    {
+        return GetHistoryNodeAs<ScriptFunction>()->asyncPairFunction_;
+    }
+
+    [[nodiscard]] ScriptFunction *AsyncPairMethod() noexcept
+    {
+        return GetHistoryNodeAs<ScriptFunction>()->asyncPairFunction_;
+    }
+
     [[nodiscard]] ScriptFunction *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
     void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;
@@ -376,6 +391,7 @@ private:
     checker::Type *preferredReturnType_ {};
     es2panda::Language lang_;
     ArenaVector<ReturnStatement *> returnStatements_;
+    ScriptFunction *asyncPairFunction_;
 };
 }  // namespace ark::es2panda::ir
 
