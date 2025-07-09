@@ -2206,8 +2206,9 @@ void ETSParser::CheckDeclare()
 
 void ETSParser::ValidateOverloadDeclarationModifiers(ir::ModifierFlags modifiers)
 {
-    ir::ModifierFlags allowModifiers =
-        ir::ModifierFlags::STATIC | ir::ModifierFlags::ASYNC | ir::ModifierFlags::ACCESS | ir::ModifierFlags::EXPORTED;
+    ir::ModifierFlags allowModifiers = ir::ModifierFlags::STATIC | ir::ModifierFlags::ASYNC |
+                                       ir::ModifierFlags::ACCESS | ir::ModifierFlags::EXPORTED |
+                                       ir::ModifierFlags::DECLARE;
     if ((modifiers & ~allowModifiers) != 0) {
         LogError(diagnostic::OVERLOAD_MODIFIERS);
     }
