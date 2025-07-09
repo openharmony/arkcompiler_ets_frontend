@@ -27,3 +27,4 @@ static-invoke.ets
 top_level_03.ets
 multisource_inheritance.ets
 as_string.ets
+function_type_with_receiver/extensionFunctionType_return_this.ets
