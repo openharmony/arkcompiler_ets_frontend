@@ -250,7 +250,8 @@ bool ETSTypeAliasType::SubstituteTypeArgs(TypeRelation *const relation, ArenaVec
 
     for (auto *const arg : typeArguments_) {
         auto *const newArg = arg->Substitute(relation, substitution);
-        newTypeArgs.push_back(newArg);
+        ES2PANDA_ASSERT(newArg->IsETSReferenceType());
+        newTypeArgs.emplace_back(newArg);
         anyChange = anyChange || (newArg != arg);
     }
 

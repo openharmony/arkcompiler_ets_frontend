@@ -661,10 +661,8 @@ void ETSGen::BranchIfIsInstance(const ir::AstNode *const node, const VReg srcReg
     }
 
     if (!target->IsETSNeverType()) {
-        // #21835: type-alias in ApparentType
-        TestIsInstanceType(node, std::tie(ifTrue, ifFalse),
-                           target->IsETSTypeAliasType() ? target->AsETSTypeAliasType()->GetTargetType() : target,
-                           srcReg, target->PossiblyETSNull());
+        ES2PANDA_ASSERT(!target->IsETSTypeAliasType());
+        TestIsInstanceType(node, std::tie(ifTrue, ifFalse), target, srcReg, target->PossiblyETSNull());
     }
 
     SetLabel(node, ifFalse);

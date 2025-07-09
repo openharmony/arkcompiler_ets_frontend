@@ -142,7 +142,7 @@ Type *ETSTypeParameter::Substitute([[maybe_unused]] TypeRelation *relation, cons
         return this;
     }
     if (auto repl = substitution->find(GetOriginal()); repl != substitution->end()) {
-        // 22955: The result is sometimes primitve. Can be reproduced for type aliases
+        ES2PANDA_ASSERT(repl->second->IsETSReferenceType());
         return repl->second;
     }
     return this;

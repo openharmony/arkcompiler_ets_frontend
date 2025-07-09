@@ -2624,9 +2624,9 @@ Type *ETSChecker::GetApparentType(Type *type)
         if (type != res) {
             apparentTypes.insert({type, res});
         }
-        apparentTypes.insert({res, res});
-        return res;
+        return apparentTypes.insert({res, res}).first->second;
     };
+
     ES2PANDA_ASSERT(type != nullptr);
     if (type->IsGradualType()) {
         return cached(type->AsGradualType()->GetBaseType());
@@ -2636,6 +2636,17 @@ Type *ETSChecker::GetApparentType(Type *type)
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         return cached(GetApparentType(type->AsETSTypeParameter()->GetConstraintType()));
     }
+
+    if (type->IsETSTypeAliasType()) {
+        //  For the recursive type aliases its target type is not ready at the moment of union type creation
+        //  (and assemblyLUB type constructing).
+        if (auto *targetType = type->AsETSTypeAliasType()->GetTargetType(); targetType != nullptr) {
+            // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+            return cached(GetApparentType(targetType));
+        }
+        return type;
+    }
+
     if (type->IsETSNonNullishType()) {
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         return cached(
