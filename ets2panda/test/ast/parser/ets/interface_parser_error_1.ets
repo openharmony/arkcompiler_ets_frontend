@@ -55,14 +55,15 @@ function mdin() {    let a = new A();
 /* @@? 24:20 Error TypeError: Interface name 'I' used in the wrong context */
 /* @@? 24:22 Error SyntaxError: Unexpected token '{'. */
 /* @@? 25:4 Error TypeError: Unresolved reference reanstructor */
-/* @@? 26:19 Error SyntaxError: Unexpected token '�ls'. */
 /* @@? 26:19 Error SyntaxError: Unexpected token, expected an identifier. */
+/* @@? 26:19 Error SyntaxError: Unexpected token '�ls'. */
 /* @@? 27:5 Error SyntaxError: Unexpected token 'A'. */
 /* @@? 27:7 Error SyntaxError: Unexpected token '{'. */
 /* @@? 28:5 Error SyntaxError: Hard keyword 'constructor' cannot be used as identifier */
 /* @@? 28:5 Error SyntaxError: Identifier expected, got 'constructor'. */
+/* @@? 28:16 Error SyntaxError: Invalid annotation name. */
 /* @@? 28:19 Error SyntaxError: Annotations are not allowed on this type of declaration. */
 /* @@? 29:18 Error SyntaxError: Unexpected token, expected an identifier. */
 /* @@? 31:2 Error SyntaxError: Unexpected token '*'. */
 /* @@? 32:1 Error SyntaxError: Nested functions are not allowed. */
-/* @@? 69:1 Error SyntaxError: Expected '}', got 'end of stream'. */
+/* @@? 70:1 Error SyntaxError: Expected '}', got 'end of stream'. */
