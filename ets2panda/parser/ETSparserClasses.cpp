@@ -1021,7 +1021,8 @@ ir::ModifierFlags ETSParser::ParseInterfaceMethodModifiers()
 ir::TypeNode *ETSParser::ParseInterfaceTypeAnnotation(ir::Identifier *name)
 {
     if (!Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_COLON) &&
-        Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
+        Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT &&
+        Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
         LogError(diagnostic::INTERFACE_FIELDS_TYPE_ANNOTATION);
         Lexer()->GetToken().SetTokenType(lexer::TokenType::PUNCTUATOR_COLON);
         Lexer()->NextToken();
