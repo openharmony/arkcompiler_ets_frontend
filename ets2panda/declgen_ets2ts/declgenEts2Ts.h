@@ -146,6 +146,7 @@ private:
     void GenTypeAliasDeclaration(const ir::TSTypeAliasDeclaration *typeAlias);
     void GenEnumDeclaration(const ir::ClassProperty *enumMember);
     void GenInterfaceDeclaration(const ir::TSInterfaceDeclaration *interfaceDecl);
+    bool GenInterfaceProp(const ir::MethodDefinition *methodDef);
     void GenClassDeclaration(const ir::ClassDeclaration *classDecl);
     void GenMethodDeclaration(const ir::MethodDefinition *methodDef);
     bool GenMethodDeclarationPrefix(const ir::MethodDefinition *methodDef, const ir::Identifier *methodIdent,
@@ -226,6 +227,7 @@ private:
     void HandleTypeArgument(checker::Type *arg, const std::string &typeStr);
 
     void ProcessInterfaceBody(const ir::TSInterfaceBody *body);
+    void ProcessInterfaceMethodDefinition(const ir::MethodDefinition *methodDef);
     void ProcessMethodDefinition(const ir::MethodDefinition *methodDef,
                                  std::unordered_set<std::string> &processedMethods);
 

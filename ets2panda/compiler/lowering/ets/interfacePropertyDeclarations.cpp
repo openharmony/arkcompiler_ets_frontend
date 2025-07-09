@@ -219,7 +219,9 @@ ir::Expression *InterfacePropertyDeclarationsPhase::UpdateInterfaceProperties(pu
             HandleInternalGetterOrSetterMethod(prop);
             continue;
         }
+        auto *originProp = prop->Clone(ctx->allocator, nullptr);
         auto getter = GenerateGetterOrSetter(ctx, varbinder, prop->AsClassProperty(), false);
+        getter->SetOriginalNode(originProp);
 
         auto methodScope = scope->AsClassScope()->InstanceMethodScope();
         auto name = getter->Key()->AsIdentifier()->Name();
