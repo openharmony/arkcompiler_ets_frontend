@@ -9921,9 +9921,32 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (ts.isStringLiteral(indexExpr) || ts.isNumericLiteral(indexExpr)) {
       return true;
     }
-    const type = this.tsTypeChecker.getTypeAtLocation(indexExpr);
-    const typeString = this.tsTypeChecker.typeToString(type);
-    return typeString === 'number' || typeString === 'string';
+    const indexType = this.tsTypeChecker.getTypeAtLocation(indexExpr);
+    const typeString = this.tsTypeChecker.typeToString(indexType);
+    if (typeString === 'number' || typeString === 'string') {
+      return true;
+    }
+    const baseExprSym = this.tsUtils.trueSymbolAtLocation(node.expression);
+    if (indexType.isUnion()) {
+      return indexType.types.some((t) => {
+        return this.isInvalidEnumMemberType(t, baseExprSym);
+      });
+    }
+    return this.isInvalidEnumMemberType(indexType, baseExprSym);
+  }
+
+  private isInvalidEnumMemberType(indexType: ts.Type, baseExprSym: ts.Symbol | undefined): boolean {
+    const indexSym = indexType.getSymbol();
+    if (!indexSym) {
+      return false;
+    }
+    return !indexSym.declarations?.some((decl) => {
+      if (decl && ts.isEnumDeclaration(decl.parent) && ts.isEnumMember(decl)) {
+        const enumDeclSym = this.tsUtils.trueSymbolAtLocation(decl.parent.name);
+        return enumDeclSym === baseExprSym;
+      }
+      return false;
+    });
   }
 
   private handleMakeObserved(node: ts.PropertyAccessExpression): void {
