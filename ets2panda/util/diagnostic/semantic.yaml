@@ -1490,3 +1490,7 @@ semantic:
 - name: CYCLIC_CALLEE
   id: 381
   message: "Circular call function"
+
+- name: INVALID_LAMBDA_PARAMETER
+  id: 395
+  message: "Invalid lambda parameter. Expected: 'identifier(: type)?', 'identifier?(: type)?' or '...identifier(: type)?'."
