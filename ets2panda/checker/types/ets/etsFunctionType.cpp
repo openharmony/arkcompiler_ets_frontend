@@ -75,7 +75,7 @@ static ETSObjectType *FunctionTypeToFunctionalInterfaceType(ETSChecker *checker,
     bool isExtensionHack = signature->HasSignatureFlag(SignatureFlags::EXTENSION_FUNCTION);
 
     if (signature->RestVar() != nullptr) {
-        auto *functionN = checker->GlobalBuiltinFunctionType(arity, true)->AsETSObjectType();
+        auto *functionN = checker->GlobalBuiltinFunctionType(arity, true);
         auto *substitution = checker->NewSubstitution();
         auto *elementType = !signature->RestVar()->TsType()->IsETSTupleType()
                                 ? checker->GetElementTypeOfArray(signature->RestVar()->TsType())
@@ -91,7 +91,7 @@ static ETSObjectType *FunctionTypeToFunctionalInterfaceType(ETSChecker *checker,
         return nullptr;
     }
 
-    auto *funcIface = checker->GlobalBuiltinFunctionType(arity, false)->AsETSObjectType();
+    auto *funcIface = checker->GlobalBuiltinFunctionType(arity, false);
     auto *substitution = checker->NewSubstitution();
 
     for (size_t i = 0; i < arity; i++) {

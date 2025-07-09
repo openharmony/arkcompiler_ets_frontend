@@ -959,6 +959,7 @@ void ETSChecker::CollectSuitableSignaturesForTypeInference(
 
     for (auto *sig : signatures) {
         auto *sigParamType = GetNonNullishType(sig->Params().at(paramIdx)->TsType());
+        ES2PANDA_ASSERT(sigParamType != nullptr);
         if (!sigParamType->IsETSFunctionType()) {
             continue;
         }
@@ -1236,7 +1237,8 @@ static bool CollectOverload(checker::ETSChecker *checker, ir::MethodDefinition *
 
     for (ir::MethodDefinition *const currentFunc : method->Overloads()) {
         ldInfo.isDeclare &= currentFunc->IsDeclare();
-
+        ES2PANDA_ASSERT(currentFunc->Function() != nullptr);
+        ES2PANDA_ASSERT(currentFunc->Id() != nullptr);
         currentFunc->Function()->Id()->SetVariable(currentFunc->Id()->Variable());
         checker->BuildFunctionSignature(currentFunc->Function(), method->IsConstructor());
         if (currentFunc->Function()->Signature() == nullptr) {
@@ -1284,6 +1286,7 @@ checker::Type *ETSChecker::BuildMethodSignature(ir::MethodDefinition *method)
     }
     auto *methodId = method->Id();
     ES2PANDA_ASSERT(methodId != nullptr);
+    ES2PANDA_ASSERT(method->Function() != nullptr);
     method->Function()->Id()->SetVariable(methodId->Variable());
     BuildFunctionSignature(method->Function(), method->IsConstructor());
     if (method->Function()->Signature() == nullptr) {
@@ -1794,6 +1797,7 @@ bool ETSChecker::CheckOverride(Signature *signature, ETSObjectType *site)
 
 void ETSChecker::CheckOverride(Signature *signature)
 {
+    ES2PANDA_ASSERT(signature != nullptr);
     auto *owner = signature->Owner();
     ES2PANDA_ASSERT(owner != nullptr);
     bool isOverriding = false;
@@ -2043,6 +2047,7 @@ ir::MethodDefinition *ETSChecker::CreateMethod(const util::StringView &name, ir:
             // CC-OFFNXT(G.FMT.05-CPP) project codestyle clang format off
             body, ir::FunctionSignature(nullptr, std::move(params), returnType), flags, modifiers});
     // clang-format on
+    ES2PANDA_ASSERT(func != nullptr);
     func->SetScope(scope);
     func->SetIdent(nameId);
     if (body != nullptr && body->IsBlockStatement()) {
@@ -2227,10 +2232,12 @@ ArenaVector<ir::Expression *> ETSChecker::ExtendArgumentsWithFakeLamda(ir::CallE
         ProgramAllocator(),
         ir::ScriptFunction::ScriptFunctionData {body, ir::FunctionSignature(nullptr, std::move(params), nullptr),
                                                 ir::ScriptFunctionFlags::ARROW});
+    ES2PANDA_ASSERT(funcNode != nullptr);
     funcNode->SetScope(funcScope);
     funcScope->BindNode(funcNode);
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *arrowFuncNode = ProgramAllocNode<ir::ArrowFunctionExpression>(funcNode, ProgramAllocator());
+    ES2PANDA_ASSERT(arrowFuncNode != nullptr);
     arrowFuncNode->SetParent(callExpr);
 
     ArenaVector<ir::Expression *> fakeArguments = callExpr->Arguments();

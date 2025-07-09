@@ -98,7 +98,7 @@ void Program::SetPackageInfo(const util::StringView &name, util::ModuleKind kind
 // NOTE(vpukhov): part of ongoing design
 void Program::MaybeTransformToDeclarationModule()
 {
-    ES2PANDA_ASSERT(ast_);
+    ES2PANDA_ASSERT(ast_ != nullptr);
     if (IsPackage() || ast_->Statements().empty()) {
         return;
     }

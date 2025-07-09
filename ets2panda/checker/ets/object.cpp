@@ -585,7 +585,7 @@ static void ResolveDeclaredMethodsOfObject(ETSChecker *checker, const ETSObjectT
 
         auto *method = it->Declaration()->Node()->AsMethodDefinition();
         auto *function = method->Function();
-
+        ES2PANDA_ASSERT(function != nullptr);
         if (function->IsProxy()) {
             continue;
         }
@@ -739,8 +739,10 @@ void ETSChecker::CreateFunctionTypesFromAbstracts(const std::vector<Signature *>
 
 void ETSChecker::ComputeAbstractsFromInterface(ETSObjectType *interfaceType)
 {
-    auto cached = GetCachedComputedAbstracts()->find(interfaceType);
-    if (cached != GetCachedComputedAbstracts()->end()) {
+    auto cachedComputedAbstracts = GetCachedComputedAbstracts();
+    ES2PANDA_ASSERT(cachedComputedAbstracts != nullptr);
+    auto cached = cachedComputedAbstracts->find(interfaceType);
+    if (cached != cachedComputedAbstracts->end()) {
         return;
     }
 
@@ -753,8 +755,8 @@ void ETSChecker::ComputeAbstractsFromInterface(ETSObjectType *interfaceType)
     ArenaUnorderedSet<ETSObjectType *> abstractInheritanceTarget(ProgramAllocator()->Adapter());
 
     for (auto *interface : interfaceType->Interfaces()) {
-        auto found = GetCachedComputedAbstracts()->find(interface);
-        ES2PANDA_ASSERT(found != GetCachedComputedAbstracts()->end());
+        auto found = cachedComputedAbstracts->find(interface);
+        ES2PANDA_ASSERT(found != cachedComputedAbstracts->end());
 
         if (!abstractInheritanceTarget.insert(found->first).second) {
             continue;
@@ -767,7 +769,7 @@ void ETSChecker::ComputeAbstractsFromInterface(ETSObjectType *interfaceType)
         }
     }
 
-    GetCachedComputedAbstracts()->insert({interfaceType, {merged, abstractInheritanceTarget}});
+    cachedComputedAbstracts->insert({interfaceType, {merged, abstractInheritanceTarget}});
 }
 
 ArenaVector<ETSFunctionType *> &ETSChecker::GetAbstractsForClass(ETSObjectType *classType)
@@ -2277,9 +2279,9 @@ void ETSChecker::WarnForEndlessLoopInGetterSetter(const ir::MemberExpression *co
     }
     auto ident = memberExpr->Property()->AsIdentifier();
     auto parent = memberExpr->Parent();
-    while (parent != nullptr &&
-           (!parent->IsMethodDefinition() || (!parent->AsMethodDefinition()->Function()->IsGetter() &&
-                                              !parent->AsMethodDefinition()->Function()->IsSetter()))) {
+    while (parent != nullptr && (!parent->IsMethodDefinition() || parent->AsMethodDefinition()->Function() == nullptr ||
+                                 (!parent->AsMethodDefinition()->Function()->IsGetter() &&
+                                  !parent->AsMethodDefinition()->Function()->IsSetter()))) {
         parent = parent->Parent();
     }
     if (parent != nullptr && parent->AsMethodDefinition()->Function() != nullptr &&

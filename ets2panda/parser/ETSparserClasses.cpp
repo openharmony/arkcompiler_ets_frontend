@@ -455,6 +455,7 @@ ir::TypeNode *ETSParser::ConvertToOptionalUnionType(ir::TypeNode *typeAnno)
     types.push_back(AllocNode<ir::ETSUndefinedType>(Allocator()));
     types.back()->SetRange(typeAnno->Range());
     auto *newTypeAnno = AllocNode<ir::ETSUnionType>(std::move(types), Allocator());
+    ES2PANDA_ASSERT(newTypeAnno != nullptr);
     newTypeAnno->SetRange(typeAnno->Range());
     return newTypeAnno;
 }
@@ -564,6 +565,7 @@ ir::MethodDefinition *ETSParser::ParseClassMethodDefinition(ir::Identifier *meth
 
     auto *method = AllocNode<ir::MethodDefinition>(methodKind, methodName->Clone(Allocator(), nullptr)->AsExpression(),
                                                    funcExpr, modifiers, Allocator(), false);
+    ES2PANDA_ASSERT(method != nullptr);
     method->SetDefaultAccessModifier(isDefault);
     method->SetRange(funcExpr->Range());
     return method;
@@ -1343,6 +1345,7 @@ void ETSParser::CreateImplicitConstructor([[maybe_unused]] ir::MethodDefinition 
     }
 
     auto *methodDef = BuildImplicitConstructor(ir::ClassDefinitionModifiers::SET_CTOR_ID, startLoc);
+    ES2PANDA_ASSERT(methodDef != nullptr);
     if ((flags & ir::ModifierFlags::DECLARE) != 0) {
         auto func = methodDef->Function();
         ES2PANDA_ASSERT(func != nullptr);

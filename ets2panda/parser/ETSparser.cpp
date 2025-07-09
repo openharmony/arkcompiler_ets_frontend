@@ -295,6 +295,7 @@ void ETSParser::ParseParseListElement(const util::ImportPathManager::ParseInfo &
 {
     const auto &importData = parseListElem.importData;
     auto src = importData.HasSpecifiedDeclPath() ? importData.declPath : importData.resolvedSource;
+    ES2PANDA_ASSERT(extSrc != nullptr);
     SourceFile sf {src, extSrc->View().Utf8(), importData.resolvedSource, false, importData.HasSpecifiedDeclPath()};
     parser::Program *newProg = ParseSource(sf);
     ES2PANDA_ASSERT(newProg != nullptr);
@@ -1217,6 +1218,7 @@ ir::ETSImportDeclaration *ETSParser::ParseImportPathBuildImport(ArenaVector<ir::
     ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_STRING);
     auto pathToResolve = Lexer()->GetToken().Ident();
     auto *importPathStringLiteral = AllocNode<ir::StringLiteral>(pathToResolve);
+    ES2PANDA_ASSERT(importPathStringLiteral != nullptr);
     importPathStringLiteral->SetRange(Lexer()->GetToken().Loc());
     Lexer()->NextToken();
     auto importFlags = (GetContext().Status() & parser::ParserStatus::IN_DEFAULT_IMPORTS) != 0U
@@ -1549,6 +1551,7 @@ ir::AstNode *ETSParser::ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> *
     }
 
     auto *specifier = AllocNode<ir::ImportDefaultSpecifier>(imported);
+    ES2PANDA_ASSERT(specifier != nullptr);
     specifier->SetRange({imported->Start(), imported->End()});
     specifiers->push_back(specifier);
 
@@ -2085,7 +2088,6 @@ ir::TSTypeParameter *ETSParser::ParseTypeParameter([[maybe_unused]] TypeAnnotati
 
     auto *typeParam =
         AllocNode<ir::TSTypeParameter>(paramIdent, constraint, defaultType, varianceModifier, Allocator());
-    ES2PANDA_ASSERT(typeParam);
 
     ES2PANDA_ASSERT(typeParam != nullptr);
     ApplyAnnotationsToNode(typeParam, std::move(annotations), saveLoc);
@@ -2237,6 +2239,7 @@ ir::FunctionDeclaration *ETSParser::ParseAccessorWithReceiver(ir::ModifierFlags 
     func->SetIdent(funcIdentNode);
 
     auto *funcDecl = AllocNode<ir::FunctionDeclaration>(Allocator(), func);
+    ES2PANDA_ASSERT(funcDecl != nullptr);
     funcDecl->SetRange(func->Range());
     func->AddModifier(modifiers);
     func->SetStart(startLoc);

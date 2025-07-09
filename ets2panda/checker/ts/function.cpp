@@ -149,8 +149,9 @@ Type *TSChecker::CreateParameterTypeForArrayAssignmentPattern(ir::ArrayExpressio
         return inferredType;
     }
 
-    TupleType *newTuple =
-        inferredTuple->Instantiate(Allocator(), Relation(), GetGlobalTypesHolder())->AsObjectType()->AsTupleType();
+    auto initTuple = inferredTuple->Instantiate(Allocator(), Relation(), GetGlobalTypesHolder());
+    ES2PANDA_ASSERT(initTuple != nullptr);
+    TupleType *newTuple = initTuple->AsObjectType()->AsTupleType();
 
     for (uint32_t index = inferredTuple->FixedLength(); index < arrayPattern->Elements().size(); index++) {
         util::StringView memberIndex = util::Helpers::ToStringView(Allocator(), index);
@@ -392,6 +393,7 @@ std::tuple<varbinder::LocalVariable *, varbinder::LocalVariable *, bool> TSCheck
 
     if (cache) {
         Type *placeholder = Allocator()->New<ArrayType>(GlobalAnyType());
+        ES2PANDA_ASSERT(placeholder != nullptr);
         placeholder->SetVariable(std::get<0>(result));
         param->SetTsType(placeholder);
     }
@@ -609,14 +611,16 @@ void TSChecker::InferFunctionDeclarationType(const varbinder::FunctionDecl *decl
 
     if (descWithOverload->callSignatures.empty()) {
         Type *funcType = CreateFunctionTypeWithSignature(bodyCallSignature);
+        ES2PANDA_ASSERT(funcType != nullptr);
         funcType->SetVariable(funcVar);
         funcVar->SetTsType(funcType);
     }
-
+    ES2PANDA_ASSERT(bodyCallSignature != nullptr);
     bodyCallSignature->SetReturnType(HandleFunctionReturn(bodyDeclaration));
 
     if (!descWithOverload->callSignatures.empty()) {
         Type *funcType = Allocator()->New<FunctionType>(descWithOverload);
+        ES2PANDA_ASSERT(funcType != nullptr);
         funcType->SetVariable(funcVar);
         funcVar->SetTsType(funcType);
 

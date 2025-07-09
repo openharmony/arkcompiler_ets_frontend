@@ -115,7 +115,7 @@ void Signature::ToAssemblerType(std::stringstream &ss) const
 Signature *Signature::Copy(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes)
 {
     SignatureInfo *copiedInfo = allocator->New<SignatureInfo>(signatureInfo_, allocator);
-
+    ES2PANDA_ASSERT(copiedInfo != nullptr);
     for (size_t idx = 0U; idx < signatureInfo_->params.size(); ++idx) {
         auto *const paramType = signatureInfo_->params[idx]->TsType();
         if (paramType->HasTypeFlag(TypeFlag::GENERIC) && paramType->IsETSObjectType()) {
@@ -302,6 +302,7 @@ Signature *Signature::ToArrowSignature(ETSChecker *checker)
     auto *retType = checker->MaybeBoxType(returnType_);
 
     auto *resultSig = allocator->New<Signature>(sigInfo, retType);
+    ES2PANDA_ASSERT(resultSig != nullptr);
     resultSig->flags_ = flags_;
     resultSig->SetOwner(Owner());
     resultSig->SetOwnerVar(OwnerVar());

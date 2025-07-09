@@ -52,6 +52,7 @@ ir::Expression *ETSParser::ParseFunctionParameterExpression(ir::AnnotatedExpress
         auto const lexerPos = Lexer()->Save().Iterator();
         Lexer()->NextToken();  // eat '='
 
+        ES2PANDA_ASSERT(paramIdent != nullptr);
         if (paramIdent->IsRestElement()) {
             LogError(diagnostic::NO_DEFAULT_FOR_REST);
         }
@@ -677,6 +678,7 @@ ir::Expression *ETSParser::ParseNewExpression()
     ParseArgumentsNewExpression(arguments, typeReference);
 
     auto *newExprNode = AllocNode<ir::ETSNewClassInstanceExpression>(typeReference, std::move(arguments));
+    ES2PANDA_ASSERT(newExprNode != nullptr);
     newExprNode->SetRange({start, Lexer()->GetToken().End()});
 
     return newExprNode;

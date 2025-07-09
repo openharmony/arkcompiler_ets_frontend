@@ -103,8 +103,9 @@ void ETSWarningAnalyzer::AnalyzeClassMethodForFinalModifier(const ir::MethodDefi
             if (!potentialDescendant->IsDescendantOf(classAsETSObject)) {
                 continue;
             }
-            const util::StringView bodyMethodName =
-                ETSChecker::GetSignatureFromMethodDefinition(bodyPart->AsMethodDefinition())->Function()->Id()->Name();
+            auto signature = ETSChecker::GetSignatureFromMethodDefinition(bodyPart->AsMethodDefinition());
+            ES2PANDA_ASSERT(signature != nullptr);
+            const util::StringView bodyMethodName = signature->Function()->Id()->Name();
             const auto *func = methodDef->Function();
             ES2PANDA_ASSERT(func != nullptr);
             if (bodyPart->IsOverride() && bodyMethodName != compiler::Signatures::CTOR &&
@@ -212,7 +213,7 @@ void ETSWarningAnalyzer::ETSWarningsProhibitTopLevelStatements(const ir::AstNode
     }
 
     for (const auto *itBody : classDef->Body()) {
-        if (!itBody->IsMethodDefinition() ||
+        if (!itBody->IsMethodDefinition() || itBody->AsMethodDefinition()->Id() == nullptr ||
             itBody->AsMethodDefinition()->Id()->Name() != compiler::Signatures::INIT_METHOD) {
             continue;
         }
