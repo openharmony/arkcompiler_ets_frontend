@@ -1814,6 +1814,11 @@ void ETSChecker::CheckCyclicConstructorCall(Signature *signature)
         return;
     }
 
+    // This is a condition set up to handle error scenarios.
+    if (signature->Function()->Body() == nullptr) {
+        return;
+    }
+
     auto *funcBody = signature->Function()->Body()->AsBlockStatement();
 
     TypeStackElement tse(this, signature, {{diagnostic::RECURSIVE_CTOR}}, signature->Function()->Start());
