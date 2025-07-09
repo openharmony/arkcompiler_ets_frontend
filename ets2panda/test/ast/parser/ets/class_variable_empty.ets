@@ -19,6 +19,9 @@ function main(): void {
     let a: A = new A;
     assertTrue(a != null)
   }
-  assertTrue(/* @@ label */a != null)
+  assertTrue(a != null)
 }
-/* @@@ label Error TypeError: Unresolved reference a  */
+/* @@? 18:5 Error SyntaxError: Illegal start of CLASS expression. */
+/* @@? 19:12 Error TypeError: Cannot find type 'A'. */
+/* @@? 19:20 Error TypeError: Cannot find type 'A'. */
+/* @@? 22:14 Error TypeError: Unresolved reference a  */
