@@ -108,13 +108,11 @@ let mixedBad = { // Not fixable
 interface I {
   m(): void;
 }
-class GeneratedObjectLiteralClass_5 implements I {
-    m() {
-        console.log(100.0);
-    }
-}
-
-let i: I = new GeneratedObjectLiteralClass_5();
+let i: I = {
+  m() { // Fixable
+    console.log(100.0);
+  }
+};
 
 class C {
   m(): void {
@@ -147,7 +145,7 @@ class GeneratedObjectLiteralClass_8 extends C2 {
     x2: number;
     y2: number;
     z2: number;
-    constructor(init: GeneratedObjectLiteralInitInterface_1) {
+    constructor(init: GeneratedObjectLiteralInitInterface_8) {
         super();
         this.x2 = init.x2;
         this.y2 = init.y2;
@@ -156,7 +154,7 @@ class GeneratedObjectLiteralClass_8 extends C2 {
     m() { console.log(1.0); } // Fixable
 }
 
-interface GeneratedObjectLiteralInitInterface_1 {
+interface GeneratedObjectLiteralInitInterface_8 {
     x2: number;
     y2: number;
     z2: number;
@@ -169,9 +167,9 @@ let c2: C2 = new GeneratedObjectLiteralClass_8({
 });
 
 let c22: C2 = {
-  x2: x2, // Fixable
-  y2: y2, // Fixable
-  z2: z2, // Fixable
+  x2, // Fixable
+  y2, // Fixable
+  z2, // Fixable
   m() { console.log(1.0); }, // Not fixable, object has spread property
   ...shorthand // Not fixable
 };
@@ -186,9 +184,9 @@ class C3 {
   constructor(a: number) {}
 }
 let c3: C3 = {
-  x2: x2, // Fixable
-  y2: y2, // Fixable
-  z2: z2, // Fixable
+  x2, // Fixable
+  y2, // Fixable
+  z2, // Fixable
   m() { console.log(1.0); } // Not fixable, class type has constructor with parameters
 };
 
@@ -310,14 +308,14 @@ interface I4 {
   map: Map<string, string>;
 }
 let map:Map<string,string> = new Map<string,string>();
-let i4: I4 = {map: map};
+let i4: I4 = {map};
 
 class C6 {
   map1: Map<string, string> = new Map<string,string>();
 }
 
 let map1:Map<string,string> = new Map<string,string>();
-let c6: C6 = {map1: map1};
+let c6: C6 = {map1};
 
 // Namespace typed object literals
 namespace X {
@@ -338,16 +336,14 @@ class GeneratedObjectLiteralClass_11 extends X.C {
     }
 }
 
-class GeneratedObjectLiteralClass_12 implements X.I {
-    m(): void {
-        console.log("I");
-    }
-}
-
 function test() {
   let c: X.C = new GeneratedObjectLiteralClass_11()
 
-  let i: X.I = new GeneratedObjectLiteralClass_12()
+  let i: X.I = {
+    m(): void {
+      console.log("I");
+    }
+  }
 }
 
 class FooBarBaz {
@@ -360,4 +356,29 @@ function baz(fooBar: Map<string, Object>) {
 }
 
 function baz2(fooBarBaz: FooBarBaz) {
+}
+
+class JJ {
+    mm?: Map<string, Object>
+    aa?: string
+}
+const mm: Map<string,Object> = new Map<string, Object>();
+let nn: JJ = {mm} // no error
+
+
+class DD {
+    tt?: Map<number, Object>
+    gg?: string
+}
+const tt: Map<string,Object> = new Map<string, Object>();
+let gg: DD = {tt: tt} // error
+
+interface Q {
+    a:number;
+    foo():void;
+}
+
+let w: Q = {
+    a:1.0,
+    foo(){} // no error
 }

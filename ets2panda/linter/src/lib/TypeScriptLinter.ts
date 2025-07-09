@@ -651,11 +651,43 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
 
     for (const prop of invalidProps) {
-      const autofix = ts.isShorthandPropertyAssignment(prop) ?
-        this.autofixer?.fixShorthandPropertyAssignment(prop) :
-        objLiteralAutofix;
-      this.incrementCounters(prop, FaultID.ObjectLiteralProperty, autofix);
+      if (objectLiteralType) {
+        const typeDecl = TsUtils.getDeclaration(objectLiteralType.getSymbol());
+        if (typeDecl && ts.isInterfaceDeclaration(typeDecl) && ts.isMethodDeclaration(prop)) {
+          continue;
+        }
+      }
+      if (ts.isShorthandPropertyAssignment(prop)) {
+        if (this.checkShorthandInObjectLiteral(prop, objectLiteralType)) {
+          const autofix = this.autofixer?.fixShorthandPropertyAssignment(prop);
+          this.incrementCounters(prop, FaultID.ObjectLiteralProperty, autofix);
+        }
+      } else {
+        this.incrementCounters(prop, FaultID.ObjectLiteralProperty, objLiteralAutofix);
+      }
     }
+  }
+
+  private checkShorthandInObjectLiteral(prop: ts.ShorthandPropertyAssignment, type: ts.Type | undefined): boolean {
+    if (!type) {
+      return true;
+    }
+    const propName = prop.name.text;
+    const expectedProp = type.getProperty(propName);
+    if (!expectedProp) {
+      return false;
+    }
+    const expectedPropType = this.tsTypeChecker.getTypeOfSymbolAtLocation(expectedProp, prop.name);
+    const symbol = this.tsTypeChecker.getSymbolAtLocation(prop.name);
+    const varDecl = symbol?.valueDeclaration;
+    if (!varDecl) {
+      return false;
+    }
+    const actualType = this.tsTypeChecker.getTypeAtLocation(varDecl);
+    if (!this.isTypeAssignable(actualType, expectedPropType)) {
+      return true;
+    }
+    return false;
   }
 
   private handleArrayLiteralExpression(node: ts.Node): void {
