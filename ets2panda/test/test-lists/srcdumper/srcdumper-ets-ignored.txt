@@ -161,6 +161,11 @@ runtime/ets/import_declare_type_alias.ets
 runtime/ets/StringFasta.ets
 runtime/ets/struct-identifier.ets
 runtime/ets/struct-init2.ets
+runtime/ets/too_many_async.ets
+runtime/ets/too_many_await.ets
+runtime/ets/too_many_left_brace.ets
+runtime/ets/too_many_left_square_brackets.ets
+runtime/ets/too_many_new_expr.ets
 ast/compiler/ets/DeclareIndexerTest.ets
 ast/parser/ets/import_tests/import_class_with_static_field/import_class_with_static_field.ets
 
