@@ -20,5 +20,6 @@ const b = a.map(function (e) {
     return e * 2;
 });
 
-/* @@? 16:2 Error SyntaxError: Unexpected token 'function'. */
-/* @@? 19:17 Error SyntaxError: Unexpected token 'function'. */
+/* @@? 16:2 Error SyntaxError: Function expressions are not supported, use arrow functions instead */
+/* @@? 19:17 Error SyntaxError: Function expressions are not supported, use arrow functions instead */
+/* @@? 19:28 Error SyntaxError: Parameter declaration should have an explicit type annotation. */

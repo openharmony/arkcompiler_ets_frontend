@@ -1231,3 +1231,7 @@ syntax:
 - name: DEEP_NESTING
   id: 305
   message: "Maximum allowed nesting level exceeded."
+
+- name: FUNC_EXPR
+  id: 306
+  message: "Function expressions are not supported, use arrow functions instead"

@@ -365,6 +365,11 @@ ir::Expression *ETSParser::ParsePrimaryExpression(ExpressionParseFlags flags)
             ParseTypeAliasDeclaration();  // Try to parse type alias and drop the result.
             return AllocBrokenExpression(rangeToken);
         }
+        case lexer::TokenType::KEYW_FUNCTION: {
+            LogError(diagnostic::FUNC_EXPR);
+            ParseFunctionDeclaration(true, ir::ModifierFlags::NONE);
+            return AllocBrokenExpression(Lexer()->GetToken().Loc());
+        }
         case lexer::TokenType::PUNCTUATOR_FORMAT: {
             return ParseExpressionFormatPlaceholder();
         }
@@ -687,6 +692,11 @@ ir::Expression *ETSParser::ParseNewExpression()
 ir::Expression *ETSParser::ParseAsyncExpression()
 {
     Lexer()->NextToken();  // eat 'async'
+    if (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_FUNCTION) {
+        LogError(diagnostic::FUNC_EXPR);
+        ParseFunctionDeclaration(true, ir::ModifierFlags::NONE);
+        return AllocBrokenExpression(Lexer()->GetToken().Loc());
+    }
     if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS ||
         !IsArrowFunctionExpressionStart()) {
         LogExpectedToken(lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
