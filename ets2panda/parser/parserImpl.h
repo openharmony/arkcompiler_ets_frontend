@@ -26,6 +26,7 @@
 #include "parser/program/program.h"
 #include "util/diagnosticEngine.h"
 #include "util/helpers.h"
+#include "util/recursiveGuard.h"
 
 namespace ark::es2panda::lexer {
 class RegExpParser;
@@ -572,6 +573,11 @@ protected:
                    const std::function<bool()> &parseElement, lexer::SourcePosition *sourceEnd = nullptr,
                    bool allowTrailingSep = false);
 
+    RecursiveContext &RecursiveCtx()
+    {
+        return recursiveCtx_;
+    }
+
 private:
     bool GetCanBeForInOf(ir::Expression *leftNode, ir::AstNode *initNode);
     Program *program_;
@@ -582,6 +588,7 @@ private:
     const util::Options *options_;
     util::DiagnosticEngine &diagnosticEngine_;
     public_lib::Context *ctx_ {nullptr};
+    RecursiveContext recursiveCtx_;
 };
 }  // namespace ark::es2panda::parser
 

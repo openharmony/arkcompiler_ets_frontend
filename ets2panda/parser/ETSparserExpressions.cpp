@@ -317,26 +317,20 @@ ir::Expression *ETSParser::ParsePrimaryExpressionWithLiterals(ExpressionParseFla
     }
 }
 
-// This function is used to handle the left parenthesis in the expression parsing.
-ir::Expression *HandleLeftParanthesis(ETSParser *parser, ExpressionParseFlags flags)
-{
-    TrackRecursive trackRecursive(parser->recursiveCtx_);
-    if (!trackRecursive) {
-        parser->LogError(diagnostic::DEEP_NESTING);
-        while (parser->Lexer()->GetToken().Type() != lexer::TokenType::EOS) {
-            parser->Lexer()->NextToken();
-        }
-        return parser->AllocBrokenExpression(parser->Lexer()->GetToken().Loc());
-    }
-    return parser->ParseCoverParenthesizedExpressionAndArrowParameterList(flags);
-}
-
 // NOLINTNEXTLINE(google-default-arguments)
 ir::Expression *ETSParser::ParsePrimaryExpression(ExpressionParseFlags flags)
 {
+    TrackRecursive trackRecursive(RecursiveCtx());
+    if (!trackRecursive) {
+        LogError(diagnostic::DEEP_NESTING);
+        while (Lexer()->GetToken().Type() != lexer::TokenType::EOS) {
+            Lexer()->NextToken();
+        }
+        return AllocBrokenExpression(Lexer()->GetToken().Loc());
+    }
     switch (Lexer()->GetToken().Type()) {
         case lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS: {
-            return HandleLeftParanthesis(this, flags);
+            return ParseCoverParenthesizedExpressionAndArrowParameterList(flags);
         }
         case lexer::TokenType::KEYW_THIS: {
             return ParseThisExpression();
