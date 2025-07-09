@@ -43,6 +43,7 @@ import { ANONYMOUS_METHOD_PREFIX, CALL_SIGNATURE_NAME, DEFAULT_ARK_CLASS_NAME, D
 import { ArkSignatureBuilder } from './ArkSignatureBuilder';
 import { IRUtils } from '../../common/IRUtils';
 import { ArkErrorCode } from '../../common/ArkError';
+import { FullPosition } from '../../base/Position';
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.ARKANALYZER, 'ArkMethodBuilder');
 
@@ -98,7 +99,8 @@ export function buildArkMethodFromArkClass(
     // build methodDeclareSignatures and methodSignature as well as corresponding positions
     const methodName = buildMethodName(methodNode, declaringClass, sourceFile, declaringMethod);
     const methodParameters: MethodParameter[] = [];
-    buildParameters(methodNode.parameters, mtd, sourceFile).forEach(parameter => {
+    let paramsPosition: Map<string, FullPosition> = new Map<string, FullPosition>();
+    buildParameters(methodNode.parameters, mtd, sourceFile, paramsPosition).forEach(parameter => {
         buildGenericType(parameter.getType(), mtd);
         methodParameters.push(parameter);
     });
@@ -114,6 +116,7 @@ export function buildArkMethodFromArkClass(
         mtd.setLine(line + 1);
         mtd.setColumn(character + 1);
         let bodyBuilder = new BodyBuilder(mtd.getSignature(), methodNode, mtd, sourceFile);
+        bodyBuilder.setParamsPositions(paramsPosition);
         mtd.setBodyBuilder(bodyBuilder);
     } else {
         mtd.setDeclareSignatures(methodSignature);

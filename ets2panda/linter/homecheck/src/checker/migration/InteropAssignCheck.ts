@@ -93,7 +93,7 @@ export class InteropAssignCheck implements BaseChecker {
         }
     }
 
-    private checkPassToFunction(target: ArkMethod, scene: Scene) {
+    private checkPassToFunction(target: ArkMethod, scene: Scene): void {
         const callsites = this.cg.getInvokeStmtByMethod(target.getSignature());
         callsites
             .filter(cs => cs.getCfg().getDeclaringMethod().getLanguage() === Language.ARKTS1_1)
@@ -132,7 +132,7 @@ export class InteropAssignCheck implements BaseChecker {
         return unclear || cls;
     }
 
-    private checkAssignToField(target: ArkMethod, scene: Scene) {
+    private checkAssignToField(target: ArkMethod, scene: Scene): void {
         const assigns: Stmt[] = this.collectAssignToObjectField(target, scene);
         if (assigns.length > 0) {
             DVFGHelper.buildSingleDVFG(target, scene);

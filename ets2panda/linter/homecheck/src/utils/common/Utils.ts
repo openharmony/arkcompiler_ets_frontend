@@ -14,6 +14,8 @@
  */
 import Logger, { LOG_LEVEL, LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
 import { Command, OptionValues } from 'commander';
+import {SceneConfig, Sdk} from "arkanalyzer/lib/Config";
+import {Scene} from "arkanalyzer";
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'Utils');
 
@@ -84,11 +86,22 @@ export class Utils {
         }
         return colA - colB;
     }
+
+    public static generateSceneForEts2SDK(sdks: Sdk[]): Scene {
+        const sceneConfig: SceneConfig = new SceneConfig();
+        sceneConfig.buildConfig('ets2SDK', '', sdks);
+        sceneConfig.getOptions().enableBuiltIn = false;
+
+        const scene = new Scene();
+        scene.buildSceneFromProjectDir(sceneConfig);
+        return scene;
+    }
 }
 
 export type WarnInfo = {
     line: number,
     startCol: number,
+    endLine?: number,
     endCol: number,
-    filePath: string
+    filePath: string,
 };

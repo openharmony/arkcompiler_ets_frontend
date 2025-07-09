@@ -22,6 +22,8 @@ import { BasicBlock } from './BasicBlock';
 import Logger, { LOG_MODULE_TYPE } from '../../utils/logger';
 import { ArkStaticInvokeExpr } from '../base/Expr';
 import { Value } from '../base/Value';
+import { AbstractFieldRef } from '../base/Ref';
+
 const logger = Logger.getLogger(LOG_MODULE_TYPE.ARKANALYZER, 'BasicBlock');
 
 /**
@@ -172,6 +174,14 @@ export class Cfg {
         } else if (value instanceof ArkStaticInvokeExpr) {
             for (let local of locals) {
                 if (local.getName() === value.getMethodSignature().getMethodSubSignature().getMethodName()) {
+                    local.addUsedStmt(stmt);
+                    return;
+                }
+            }
+        } else if (value instanceof AbstractFieldRef) {
+            // here is used for adding this stmt to array/tuple index local, such as a = arr[i]
+            for (const local of locals) {
+                if (local.getName() === value.getFieldName()) {
                     local.addUsedStmt(stmt);
                     return;
                 }

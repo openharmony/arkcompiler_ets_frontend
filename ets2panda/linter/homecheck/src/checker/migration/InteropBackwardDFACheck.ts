@@ -123,7 +123,7 @@ export class InteropBackwardDFACheck implements BaseChecker {
         }
     };
 
-    private collectImportedVar(importVarMap: Map<string, Language>, file: ArkFile, scene: Scene) {
+    private collectImportedVar(importVarMap: Map<string, Language>, file: ArkFile, scene: Scene): void {
         file.getImportInfos().forEach(importInfo => {
             const exportInfo = importInfo.getLazyExportInfo();
             if (exportInfo === null) {
@@ -142,7 +142,7 @@ export class InteropBackwardDFACheck implements BaseChecker {
         });
     }
 
-    private collectTopLevelVar(topLevelVarMap: Map<string, Stmt[]>, file: ArkFile, scene: Scene) {
+    private collectTopLevelVar(topLevelVarMap: Map<string, Stmt[]>, file: ArkFile, scene: Scene): void {
         const defaultMethod = file.getDefaultClass().getDefaultArkMethod();
         if (defaultMethod) {
             DVFGHelper.buildSingleDVFG(defaultMethod, scene);
@@ -219,7 +219,7 @@ export class InteropBackwardDFACheck implements BaseChecker {
         }
     }
 
-    private reportIssue(objDefInfo: ObjDefInfo, apiLang: Language, isReflect: boolean) {
+    private reportIssue(objDefInfo: ObjDefInfo, apiLang: Language, isReflect: boolean): void {
         const problemStmt = objDefInfo.problemStmt;
         const problemStmtMtd = problemStmt.getCfg().getDeclaringMethod();
         const problemStmtLang = problemStmtMtd?.getLanguage();
