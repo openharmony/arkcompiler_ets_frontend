@@ -29,13 +29,15 @@ config("libes2panda_public_config") {
   include_dirs = [
     "$target_gen_dir",
     "$target_gen_dir/include",
-    "//third_party/icu/icu4c/source/common",
-    "//third_party/icu/icu4c/source/i18n",
-    "//third_party/icu/icu4c/source",
     "$ark_es2panda_root",
   ]
   if (ark_standalone_build || ark_static_standalone_build) {
-    include_dirs += [ "$target_gen_dir/generated" ]
+    include_dirs += [ 
+      "$target_gen_dir/generated",
+      "//third_party/icu/icu4c/source/common",
+      "//third_party/icu/icu4c/source/i18n",
+      "//third_party/icu/icu4c/source",
+    ]
   }
 }
 
