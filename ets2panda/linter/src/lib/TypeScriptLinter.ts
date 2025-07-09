@@ -10231,6 +10231,14 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (!this.options.arkts2) {
       return;
     }
+ 
+    if (ts.isIdentifier(tsCallExpr.expression)) {
+      const funcName = tsCallExpr.expression.text;
+      if (funcName === 'setTimeout') {
+        return;
+      }
+    }
+
     const isContinue =
       ts.isCallExpression(tsCallExpr) &&
       ts.isIdentifier(tsCallExpr.expression) &&

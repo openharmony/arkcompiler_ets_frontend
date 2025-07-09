@@ -162,3 +162,10 @@ class AA {
     }
   }
 }
+
+
+function sleep<T = void>(ms: number): PromiseLike {
+  return new Promise(
+    (resolve: (value: T | PromiseLike) => void): number => setTimeout(resolve, ms)
+  );
+}
