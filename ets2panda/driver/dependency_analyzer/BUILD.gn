@@ -51,11 +51,14 @@ ohos_executable("dependency_analyzer") {
   }
 
   external_deps = [
+    "runtime_core:assembler_headers",
     "runtime_core:libarktsassembler_package",
     "runtime_core:libarktsbase_package",
     "runtime_core:libarktsbytecodeopt_package",
     "runtime_core:libarktscompiler_package",
     "runtime_core:libarktsfile_package",
+    "runtime_core:libpandabase_headers",
+    "runtime_core:libpandafile_headers",
     sdk_libc_secshared_dep,
   ]
 
