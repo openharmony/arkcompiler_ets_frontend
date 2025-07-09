@@ -762,7 +762,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (!ts.isNewExpression(parent)) {
       return false;
     }
-    const newExpr = parent as ts.NewExpression;
+    const newExpr = parent;
     const typeName = newExpr.expression.getText();
 
     return TYPED_ARRAYS.includes(typeName) || BUILTIN_CONSTRUCTORS.includes(typeName);
@@ -3728,19 +3728,18 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
   // Check if a type string has an equivalent primitive/wrapper type in a set
   private static areWrapperAndPrimitiveTypesEqual(typeStr: string, typeSet: Set<string>): boolean {
-      const typePairs = [
-        ['String', 'string'],
-        ['Number', 'number'],
-        ['Boolean', 'boolean']
-      ];
+    const typePairs = [
+      ['String', 'string'],
+      ['Number', 'number'],
+      ['Boolean', 'boolean']
+    ];
 
-      for (const [wrapper, primitive] of typePairs) {
-        if ((typeStr === wrapper && typeSet.has(primitive)) || 
-            (typeStr === primitive && typeSet.has(wrapper))) {
-          return true;
-        }
+    for (const [wrapper, primitive] of typePairs) {
+      if (typeStr === wrapper && typeSet.has(primitive) || typeStr === primitive && typeSet.has(wrapper)) {
+        return true;
       }
-      return false;
+    }
+    return false;
   }
 
   private isDerivedTypeAssignable(derivedType: ts.Type, baseType: ts.Type): boolean {
@@ -3779,29 +3778,29 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
   // Converts union types into an array of type strings for easy comparison.
   private flattenUnionTypes(type: ts.Type): string[] {
-      if (type.isUnion()) {
-        return type.types.map((t) => {
-          return TypeScriptLinter.normalizeTypeString(this.tsTypeChecker.typeToString(t));
-        });
-      }
-      return [TypeScriptLinter.normalizeTypeString(this.tsTypeChecker.typeToString(type))];
+    if (type.isUnion()) {
+      return type.types.map((t) => {
+        return TypeScriptLinter.normalizeTypeString(this.tsTypeChecker.typeToString(t));
+      });
+    }
+    return [TypeScriptLinter.normalizeTypeString(this.tsTypeChecker.typeToString(type))];
   }
 
   // Normalize type string to handle primitive wrapper types consistently
   private static normalizeTypeString(typeStr: string): string {
-      // Handle all primitive wrapper types
-      const wrapperToPrimitive: Record<string, string> = {
-        'String': 'string',
-        'Number': 'number',
-        'Boolean': 'boolean'
-      };
+    // Handle all primitive wrapper types
+    const wrapperToPrimitive: Record<string, string> = {
+      String: 'string',
+      Number: 'number',
+      Boolean: 'boolean'
+    };
 
-      // Replace wrapper types with their primitive counterparts
-      let normalized = typeStr;
-      for (const [wrapper, primitive] of Object.entries(wrapperToPrimitive)) {
-        normalized = normalized.replace(new RegExp(wrapper, 'g'), primitive);
-      }
-      return normalized;
+    // Replace wrapper types with their primitive counterparts
+    let normalized = typeStr;
+    for (const [wrapper, primitive] of Object.entries(wrapperToPrimitive)) {
+      normalized = normalized.replace(new RegExp(wrapper, 'g'), primitive);
+    }
+    return normalized;
   }
 
   private checkClassImplementsMethod(classDecl: ts.ClassDeclaration, methodName: string): boolean {
@@ -4640,7 +4639,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
     if (ts.isCallExpression(tsCallExpr) && tsCallExpr.expression.kind === ts.SyntaxKind.SuperKeyword) {
-        return;
+      return;
     }
     const node = ts.isCallExpression(tsCallExpr) ? tsCallExpr.expression : tsCallExpr.typeName;
     const constructorType = this.tsTypeChecker.getTypeAtLocation(node);
@@ -11435,7 +11434,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return false;
     }
 
-    const ifStatement = accessExpr.parent.parent.parent as ts.IfStatement;
+    const ifStatement = accessExpr.parent.parent.parent;
 
     if (!ts.isBinaryExpression(ifStatement.expression)) {
       return false;

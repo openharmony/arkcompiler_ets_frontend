@@ -46,12 +46,8 @@ export const BUILTIN_DISABLE_CALLSIGNATURE = [
   'URIError'
 ];
 
-export const BUILTIN_CONSTRUCTORS = [
-  'Boolean',
-  'Number',
-  'Object',
-  'String'
-];
+export const BUILTIN_CONSTRUCTORS = ['Boolean', 'Number', 'Object', 'String'];
+
 
 export const COLLECTION_TYPES = new Set([
   'Map',

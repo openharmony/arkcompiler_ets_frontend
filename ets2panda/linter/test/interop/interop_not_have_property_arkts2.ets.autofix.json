@@ -431,7 +431,7 @@
                 {
                     "start": 1005,
                     "end": 1031,
-                    "replacementText": "machine.name.areStrictlyEqual(\"machine\")",
+                    "replacementText": "machine.getProperty(\"name\").areStrictlyEqual(\"machine\")",
                     "line": 32,
                     "column": 12,
                     "endLine": 32,
@@ -515,7 +515,7 @@
                 {
                     "start": 1173,
                     "end": 1190,
-                    "replacementText": "user.id.areStrictlyEqual(\"Bob\")",
+                    "replacementText": "user.getProperty(\"id\").areStrictlyEqual(\"Bob\")",
                     "line": 37,
                     "column": 12,
                     "endLine": 37,
@@ -620,7 +620,7 @@
                 {
                     "start": 1312,
                     "end": 1326,
-                    "replacementText": "user.id.areStrictlyEqual(10)",
+                    "replacementText": "user.getProperty(\"id\").areStrictlyEqual(10)",
                     "line": 42,
                     "column": 8,
                     "endLine": 42,
@@ -725,7 +725,7 @@
                 {
                     "start": 1454,
                     "end": 1470,
-                    "replacementText": "user.id.areStrictlyEqual(123n)",
+                    "replacementText": "user.getProperty(\"id\").areStrictlyEqual(123n)",
                     "line": 47,
                     "column": 12,
                     "endLine": 47,
@@ -809,7 +809,7 @@
                 {
                     "start": 1601,
                     "end": 1617,
-                    "replacementText": "user.id.areStrictlyEqual(true)",
+                    "replacementText": "user.getProperty(\"id\").areStrictlyEqual(true)",
                     "line": 52,
                     "column": 12,
                     "endLine": 52,
@@ -914,7 +914,7 @@
                 {
                     "start": 1758,
                     "end": 1784,
-                    "replacementText": "machine.name.areStrictlyEqual(\"machine\")",
+                    "replacementText": "machine.getProperty(\"name\").areStrictlyEqual(\"machine\")",
                     "line": 57,
                     "column": 12,
                     "endLine": 57,
@@ -998,7 +998,7 @@
                 {
                     "start": 1929,
                     "end": 1957,
-                    "replacementText": "employee.name.areStrictlyEqual(\"employee\")",
+                    "replacementText": "employee.getProperty(\"name\").areStrictlyEqual(\"employee\")",
                     "line": 62,
                     "column": 12,
                     "endLine": 62,

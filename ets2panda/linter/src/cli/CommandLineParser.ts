@@ -206,57 +206,56 @@ function formCommandLineOptions(parsedCmd: ParsedCommand): CommandLineOptions {
 }
 
 function processRuleConfig(commandLineOptions: CommandLineOptions, options: OptionValues): void {
-    const configureRulePath = getConfigureRulePath(options);
-    const configuredRulesMap = getRulesFromConfig(configureRulePath);
-    const arkTSRulesMap = extractRuleTags(cookBookTag);
-    commandLineOptions.linterOptions.ruleConfigTags = getConfiguredRuleTags(arkTSRulesMap, configuredRulesMap);
+  const configureRulePath = getConfigureRulePath(options);
+  const configuredRulesMap = getRulesFromConfig(configureRulePath);
+  const arkTSRulesMap = extractRuleTags(cookBookTag);
+  commandLineOptions.linterOptions.ruleConfigTags = getConfiguredRuleTags(arkTSRulesMap, configuredRulesMap);
 }
 
-function getConfigureRulePath(options: OptionValues) : string {
-    if (!options.ruleConfig) {
-      return getDefaultConfigurePath();
-    } else {
-       const stats = fs.statSync(path.normalize(options.ruleConfig));
-      if (!stats.isFile()) {
-        Logger.error(`The file at ${options.ruleConfigPath} path does not exist! 
+function getConfigureRulePath(options: OptionValues): string {
+  if (!options.ruleConfig) {
+    return getDefaultConfigurePath();
+  }
+  const stats = fs.statSync(path.normalize(options.ruleConfig));
+  if (!stats.isFile()) {
+    Logger.error(`The file at ${options.ruleConfigPath} path does not exist! 
           And will use the default configure rule`);
-        return getDefaultConfigurePath();
-      } else {
-        return options.ruleConfig;
-      }
-    }
+    return getDefaultConfigurePath();
+  }
+  return options.ruleConfig;
 }
 
-function getDefaultConfigurePath() : string {
+function getDefaultConfigurePath(): string {
   const defaultConfigPath = path.join(process.cwd(), 'rule-config.json');
   try {
     fs.accessSync(defaultConfigPath, fs.constants.F_OK);
   } catch (error: any) {
     if (error.code === 'ENOENT') {
-      Logger.error(`The default rule configuration file does not exist, please add the file named rule-config.json in the migration-helper folder!`);
+      Logger.error(
+        'The default rule configuration file does not exist, please add the file named rule-config.json in the migration-helper folder!'
+      );
       process.exit(1);
     }
   }
   return defaultConfigPath;
 }
 
-
 function processAutofixRuleConfig(commandLineOptions: CommandLineOptions, options: OptionValues): void {
-    if (options.ruleConfig) {
-      return;
-    }
-    const autofixConfigureRulePath = options.autofixRuleConfig;
-    if (!autofixConfigureRulePath || autofixConfigureRulePath.length === 0) {
-      return;
-    }
-    const stats = fs.statSync(path.normalize(options.autofixRuleConfig));
-    if (!stats.isFile()) {
-      Logger.error(`The file at ${options.autofixRuleConfig} path does not exist!`);
-      return;
-    } 
-    const configuredRulesMap = getRulesFromConfig(autofixConfigureRulePath);
-    const arkTSRulesMap = extractRuleTags(cookBookTag);
-    commandLineOptions.linterOptions.autofixRuleConfigTags = getConfiguredRuleTags(arkTSRulesMap, configuredRulesMap);
+  if (options.ruleConfig) {
+    return;
+  }
+  const autofixConfigureRulePath = options.autofixRuleConfig;
+  if (!autofixConfigureRulePath || autofixConfigureRulePath.length === 0) {
+    return;
+  }
+  const stats = fs.statSync(path.normalize(options.autofixRuleConfig));
+  if (!stats.isFile()) {
+    Logger.error(`The file at ${options.autofixRuleConfig} path does not exist!`);
+    return;
+  }
+  const configuredRulesMap = getRulesFromConfig(autofixConfigureRulePath);
+  const arkTSRulesMap = extractRuleTags(cookBookTag);
+  commandLineOptions.linterOptions.autofixRuleConfigTags = getConfiguredRuleTags(arkTSRulesMap, configuredRulesMap);
 }
 
 function createCommand(): Command {
@@ -342,11 +341,11 @@ function processResponseFiles(parsedCmd: ParsedCommand): void {
   const rspFiles = parsedCmd.args.responseFiles;
   for (const rspFile of rspFiles) {
     try {
-      const rspArgs = fs
-        .readFileSync(rspFile)
-        .toString()
-        .split('\n')
-        .filter((e) => {
+      const rspArgs = fs.
+        readFileSync(rspFile).
+        toString().
+        split('\n').
+        filter((e) => {
           return e.trimEnd();
         });
       const cmdArgs = ['dummy', 'dummy'];

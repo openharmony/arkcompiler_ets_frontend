@@ -1051,7 +1051,7 @@
                 {
                     "start": 1831,
                     "end": 1858,
-                    "replacementText": "orange.isVegetable1.areStrictlyEqual(123)",
+                    "replacementText": "orange.getProperty(\"isVegetable1\").areStrictlyEqual(123)",
                     "line": 84,
                     "column": 5,
                     "endLine": 84,

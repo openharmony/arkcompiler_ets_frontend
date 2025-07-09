@@ -4664,7 +4664,7 @@ export class Autofixer {
 
   fixImportClause(tsImportClause: ts.ImportClause): Autofix[] {
     void this;
-    const replacementText = tsImportClause.getText().replace(/\blazy\b\s*/, "");
+    const replacementText = tsImportClause.getText().replace(/\blazy\b\s*/, '');
     return [{ start: tsImportClause.getStart(), end: tsImportClause.getEnd(), replacementText }];
   }
 
@@ -4679,6 +4679,21 @@ export class Autofixer {
     return undefined;
   }
 
+  createInteropPropertyAccess(exp: ts.Expression): string {
+    let text: string;
+    if (!ts.isPropertyAccessExpression(exp)) {
+      text = exp.getText();
+      return text;
+    }
+    const statements = ts.factory.createCallExpression(
+      ts.factory.createPropertyAccessExpression(exp.expression, ts.factory.createIdentifier(GET_PROPERTY)),
+      undefined,
+      [ts.factory.createStringLiteral(exp.name.getText())]
+    );
+    text = this.printer.printNode(ts.EmitHint.Unspecified, statements, exp.getSourceFile());
+    return text;
+  }
+
   replaceInteropEqualityOperator(
     tsBinaryExpr: ts.BinaryExpression,
     binaryOperator: ts.BinaryOperator
@@ -4689,14 +4704,20 @@ export class Autofixer {
     }
 
     const tsLhsExpr = tsBinaryExpr.left;
+    const left = this.createInteropPropertyAccess(tsLhsExpr);
     const tsRhsExpr = tsBinaryExpr.right;
+    const right = this.createInteropPropertyAccess(tsRhsExpr);
+    if (!left || !right) {
+      return undefined;
+    }
+
     const callExpression = ts.factory.createCallExpression(
       ts.factory.createPropertyAccessExpression(
-        ts.factory.createIdentifier(tsLhsExpr.getText()),
+        ts.factory.createIdentifier(left),
         ts.factory.createIdentifier(info.functionName)
       ),
       undefined,
-      [ts.factory.createIdentifier(tsRhsExpr.getText())]
+      [ts.factory.createIdentifier(right)]
     );
 
     let text = this.printer.printNode(ts.EmitHint.Unspecified, callExpression, tsBinaryExpr.getSourceFile());
@@ -5175,7 +5196,7 @@ export class Autofixer {
   fixNumericPublicStatic(node: ts.PropertyDeclaration): Autofix[] | undefined {
     if (!node?.name || node.type) {
       return undefined;
-    };
+    }
     const typeNode = ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword);
     const modifiers = ts.getModifiers(node) || [];
     const updatedProperty = ts.factory.updatePropertyDeclaration(
@@ -5188,11 +5209,13 @@ export class Autofixer {
     );
 
     const newText = this.printer.printNode(ts.EmitHint.Unspecified, updatedProperty, node.getSourceFile());
-    return [{
-      start: node.getStart(),
-      end: node.getEnd(),
-      replacementText: newText
-    }];
+    return [
+      {
+        start: node.getStart(),
+        end: node.getEnd(),
+        replacementText: newText
+      }
+    ];
   }
 
   fixRepeat(stmt: ts.ExpressionStatement): Autofix[] {
