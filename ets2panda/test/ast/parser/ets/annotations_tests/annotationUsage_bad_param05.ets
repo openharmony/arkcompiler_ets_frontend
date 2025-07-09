@@ -22,4 +22,4 @@
 class B{}
 
 /* @@@ label Error SyntaxError: Invalid value for annotation field, expected a constant literal.  */
-/* @@? 21:40 Error TypeError: type String has no property named s */
+/* @@@ label Error TypeError: Invalid value for annotation field, expected a constant literal.  */
