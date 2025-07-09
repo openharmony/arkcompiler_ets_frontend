@@ -51,7 +51,7 @@ void CheckExtensionIsShadowedInCurrentClassOrInterface(checker::ETSChecker *chec
 
     // check if there are class and interfaces' instance methods with the same name as extensions.
     auto *const methodVariable = objType->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>(methodName);
-    if (methodVariable == nullptr) {
+    if (methodVariable == nullptr || methodVariable->TsType()->IsTypeError()) {
         return;
     }
 
