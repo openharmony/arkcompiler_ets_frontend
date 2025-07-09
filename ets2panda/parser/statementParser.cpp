@@ -1164,6 +1164,7 @@ ir::SwitchCaseStatement *ParserImpl::ParseSwitchCaseStatement(bool *seenDefault)
         default: {
             LogError(diagnostic::UNEXPECTED_TOKEN_PARAM_EXPECTED_CASE_OR_DEFAULT,
                      {lexer::TokenToString(lexer_->GetToken().Type())});
+            testExpr = AllocBrokenExpression(caseStartLoc);
         }
     }
 
