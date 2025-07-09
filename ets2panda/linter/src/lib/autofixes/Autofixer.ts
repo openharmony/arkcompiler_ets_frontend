@@ -61,7 +61,6 @@ import {
   LENGTH,
   IS_INSTANCE_OF
 } from '../utils/consts/InteropAPI';
-import { ESLIB_SHAREDARRAYBUFFER } from '../utils/consts/ConcurrentAPI';
 
 const UNDEFINED_NAME = 'undefined';
 
@@ -3471,6 +3470,119 @@ export class Autofixer {
     return [{ start: expression.getStart(), end: expression.getEnd(), replacementText }];
   }
 
+  /**
+   * Convert a JS-imported `for...of` over an array into an indexed `for` loop.
+   *
+   * @param forOf - The `ForOfStatement` node to transform.
+   */
+  applyForOfJsArrayFix(forOf: ts.ForOfStatement): Autofix[] | undefined {
+    const loopDecl = (forOf.initializer as ts.VariableDeclarationList).declarations[0];
+    const elementName = (loopDecl.name as ts.Identifier).text;
+
+    const indexName = TsUtils.generateUniqueName(this.tmpVariableNameGenerator, forOf.getSourceFile()) ?? '_i';
+
+    const fixes: Autofix[] = [];
+    fixes.push(this.buildForOfHeaderFix(forOf, indexName));
+    fixes.push(...this.buildForOfBodyFixes(forOf, elementName, indexName));
+    return fixes.length > 0 ? fixes : undefined;
+  }
+
+  /**
+   * Build an Autofix for replacing the for-of loop header.
+   */
+  private buildForOfHeaderFix(forOf: ts.ForOfStatement, indexName: string): Autofix {
+    const arrText = forOf.expression.getText();
+
+    const initializer = ts.factory.createVariableDeclarationList(
+      [
+        ts.factory.createVariableDeclaration(
+          ts.factory.createIdentifier(indexName),
+          undefined,
+          undefined,
+          ts.factory.createNumericLiteral('0')
+        )
+      ],
+      ts.NodeFlags.Let
+    );
+
+    // condition: i < arr.getProperty('length').toNumber()
+    const condition = ts.factory.createBinaryExpression(
+      ts.factory.createIdentifier(indexName),
+      ts.SyntaxKind.LessThanToken,
+      ts.factory.createCallExpression(
+        ts.factory.createPropertyAccessExpression(
+          ts.factory.createCallExpression(
+            ts.factory.createPropertyAccessExpression(
+              ts.factory.createIdentifier(arrText),
+              ts.factory.createIdentifier(GET_PROPERTY)
+            ),
+            undefined,
+            [ts.factory.createStringLiteral(LENGTH, true)]
+          ),
+          ts.factory.createIdentifier('toNumber')
+        ),
+        undefined,
+        []
+      )
+    );
+
+    const incrementor = ts.factory.createPrefixUnaryExpression(
+      ts.SyntaxKind.PlusPlusToken,
+      ts.factory.createIdentifier(indexName)
+    );
+
+    return this.createReplacementTextForOfHeader(forOf, initializer, condition, incrementor);
+  }
+
+  private createReplacementTextForOfHeader(
+    forOf: ts.ForOfStatement,
+    initializer: ts.VariableDeclarationList,
+    condition: ts.BinaryExpression,
+    incrementor: ts.PrefixUnaryExpression
+  ): Autofix {
+    // Render just the "(initializer; condition; incrementor)" text:
+    const replacementText = [
+      this.printer.printNode(ts.EmitHint.Unspecified, initializer, forOf.getSourceFile()),
+      '; ',
+      this.printer.printNode(ts.EmitHint.Unspecified, condition, forOf.getSourceFile()),
+      '; ',
+      this.printer.printNode(ts.EmitHint.Unspecified, incrementor, forOf.getSourceFile())
+    ].join('');
+
+    return { start: forOf.initializer.getStart(), end: forOf.expression.getEnd(), replacementText };
+  }
+
+  /**
+   * Build fixes for replacing loop-variable references inside the for-of body.
+   */
+  private buildForOfBodyFixes(forOf: ts.ForOfStatement, elementName: string, indexName: string): Autofix[] {
+    const fixes: Autofix[] = [];
+    const arrExpr = forOf.expression;
+
+    const visit = (node: ts.Node): void => {
+      if (ts.isIdentifier(node) && node.text === elementName) {
+        const callExpr = ts.factory.createCallExpression(
+          ts.factory.createPropertyAccessExpression(
+            ts.factory.createIdentifier(arrExpr.getText()),
+            ts.factory.createIdentifier(GET_PROPERTY)
+          ),
+          undefined,
+          [ts.factory.createIdentifier(indexName)]
+        );
+
+        // Print and append proper conversion suffix
+        const printed = this.printer.printNode(ts.EmitHint.Unspecified, callExpr, forOf.getSourceFile());
+        const replacementText = printed + this.utils.findTypeOfNodeForConversion(node);
+
+        fixes.push({ start: node.getStart(), end: node.getEnd(), replacementText });
+      }
+      ts.forEachChild(node, visit);
+    };
+
+    visit(forOf.statement);
+    return fixes;
+  }
+
   fixInteropInstantiateExpression(
     express: ts.NewExpression,
     args: ts.NodeArray<ts.Expression> | undefined
@@ -4054,31 +4166,6 @@ export class Autofixer {
     return [{ replacementText, start, end }];
   }
 
-  /**
-   * Replace each loop‐variable reference (e.g. `element`) with
-   * `array.getProperty(i)` plus appropriate conversion.
-   *
-   * @param identifier The Identifier node of the loop variable usage.
-   * @param arrayName  The name of the array being iterated.
-   */
-  fixInteropArrayElementUsage(identifier: ts.Identifier, arrayName: string): Autofix {
-    // arr.getProperty(i)
-    const callExpr = ts.factory.createCallExpression(
-      ts.factory.createPropertyAccessExpression(
-        ts.factory.createIdentifier(arrayName),
-        ts.factory.createIdentifier(GET_PROPERTY)
-      ),
-      undefined,
-      [ts.factory.createIdentifier('i')]
-    );
-
-    // Print and append proper conversion suffix
-    const printed = this.printer.printNode(ts.EmitHint.Unspecified, callExpr, identifier.getSourceFile());
-    const replacementText = printed + this.utils.findTypeOfNodeForConversion(identifier);
-
-    return { replacementText, start: identifier.getStart(), end: identifier.getEnd() };
-  }
-
   fixConcurrencyLock(locksProp: ts.PropertyAccessExpression): Autofix[] | undefined {
     // 1) Ensure the next property is `.AsyncLock`
     const asyncLockProp = locksProp.parent;
@@ -4098,90 +4185,7 @@ export class Autofixer {
 
     return [{ start: newExpr.getStart(), end: newExpr.getEnd(), replacementText }];
   }
-
-  fixSharedArrayBufferConstructor(node: ts.NewExpression): Autofix[] | undefined {
-    void this;
-
-    // Ensure it's a constructor call to SharedArrayBuffer
-    if (!ts.isIdentifier(node.expression) || node.expression.text !== ESLIB_SHAREDARRAYBUFFER) {
-      return undefined;
-    }
-
-    // Construct replacement
-    const replacementText = 'ArrayBuffer';
-
-    return [{ replacementText, start: node.expression.getStart(), end: node.expression.getEnd() }];
-  }
-
-  fixSharedArrayBufferTypeReference(node: ts.TypeReferenceNode): Autofix[] | undefined {
-    void this;
-
-    if (!ts.isIdentifier(node.typeName) || node.typeName.text !== ESLIB_SHAREDARRAYBUFFER) {
-      return undefined;
-    }
-
-    const replacementText = 'ArrayBuffer';
-
-    return [{ replacementText, start: node.getStart(), end: node.getEnd() }];
-  }
-
-  /**
-   * Converts a `for...of` over an interop array into
-   * an index-based `for` loop using `getProperty("length")`.
-   *
-   * @param node The `ForOfStatement` node to fix.
-   * @returns A single Autofix for the loop header replacement.
-   */
-  fixInteropArrayForOf(node: ts.ForOfStatement): Autofix {
-    const iterableName = node.expression.getText();
-
-    const initializer = ts.factory.createVariableDeclarationList(
-      [
-        ts.factory.createVariableDeclaration(
-          ts.factory.createIdentifier('i'),
-          undefined,
-          undefined,
-          ts.factory.createNumericLiteral('0')
-        )
-      ],
-      ts.NodeFlags.Let
-    );
-
-    const lengthAccess = ts.factory.createCallExpression(
-      ts.factory.createPropertyAccessExpression(
-        ts.factory.createIdentifier(iterableName),
-        ts.factory.createIdentifier(GET_PROPERTY)
-      ),
-      undefined,
-      [ts.factory.createStringLiteral(LENGTH)]
-    );
-    const condition = ts.factory.createBinaryExpression(
-      ts.factory.createIdentifier('i'),
-      ts.SyntaxKind.LessThanToken,
-      lengthAccess
-    );
-
-    const incrementor = ts.factory.createPrefixUnaryExpression(
-      ts.SyntaxKind.PlusPlusToken,
-      ts.factory.createIdentifier('i')
-    );
-
-    // Render just the "(initializer; condition; incrementor)" text:
-    const headerText = [
-      this.printer.printNode(ts.EmitHint.Unspecified, initializer, node.getSourceFile()),
-      '; ',
-      this.printer.printNode(ts.EmitHint.Unspecified, condition, node.getSourceFile()),
-      '; ',
-      this.printer.printNode(ts.EmitHint.Unspecified, incrementor, node.getSourceFile())
-    ].join('');
-
-    // Only replace from the start of the initializer to the end of the 'of' expression
-    const start = node.initializer.getStart();
-    const end = node.expression.getEnd();
-
-    return { start, end, replacementText: headerText };
-  }
-
+  
   fixAppStorageCallExpression(callExpr: ts.CallExpression): Autofix[] | undefined {
     const varDecl = Autofixer.findParentVariableDeclaration(callExpr);
     if (!varDecl || varDecl.type) {

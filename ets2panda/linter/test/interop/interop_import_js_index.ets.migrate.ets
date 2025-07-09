@@ -30,8 +30,8 @@ for (let i: number = 0.0; i < arr1.getProperty("length"); ++i) {
     console.log(arr1.getProperty(i).toNumber()+'');  //error
 }
 
-for (let element of arr1) {  //error
-  if (element == 8.0) {
+for (let tmp_1: number = 0.0; tmp_1 < arr1.getProperty('length').toNumber(); ++tmp_1) {  //error
+  if (arr1.getProperty(tmp_1).toNumber() == 8.0) {
     console.log("hi");
   }
 }

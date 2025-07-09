@@ -9114,7 +9114,8 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
 
-    this.incrementCounters(node, FaultID.InteropJsObjectTraverseJsInstance);
+    const autofix = this.autofixer?.applyForOfJsArrayFix(node);
+    this.incrementCounters(node, FaultID.InteropJsObjectTraverseJsInstance, autofix);
   }
 
   private checkStdLibConcurrencyImport(importDeclaration: ts.ImportDeclaration): void {
