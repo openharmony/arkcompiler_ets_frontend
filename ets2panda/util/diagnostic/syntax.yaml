@@ -456,6 +456,10 @@ syntax:
   id: 111
   message: "Export declarations are not permitted in a namespace."
 
+- name: INVALID_ANNOTATION_NAME
+  id: 329
+  message: "Invalid annotation name."
+
 - name: UNEXPECTED_TOKEN_ID
   id: 112
   message: "Unexpected token, expected an identifier."
