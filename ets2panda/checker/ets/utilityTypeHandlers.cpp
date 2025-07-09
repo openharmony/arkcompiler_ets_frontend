@@ -884,6 +884,9 @@ Type *ETSChecker::CreatePartialTypeClassDef(ir::ClassDefinition *const partialCl
             LogError(diagnostic::CYCLIC_CLASS_SUPER_TYPE, {}, classDef->Start());
             return partialType;
         }
+        if (partialSuper->IsTypeError()) {
+            return partialType;
+        }
         partialType->SetSuperType(partialSuper->AsETSObjectType());
     }
 
