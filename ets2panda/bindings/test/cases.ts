@@ -145,6 +145,10 @@ export const testCases: TestCases = {
   getRenameInfo: {
     expectedFilePath: resolveTestPath('test/expected/getRenameInfo.json'),
     '1': [resolveTestPath('test/testcases/getRenameInfo/getRenameInfo1.ets'), 615]
+  },
+  entry: {
+    expectedFilePath: '',
+    '1': [resolveTestPath('test/testcases/entry/Index.ets'), 615]
   }
 };
 
