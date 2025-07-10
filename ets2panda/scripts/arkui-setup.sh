@@ -13,6 +13,7 @@
 # limitations under the License.
 
 set -ex
+set -o pipefail
 
 function about() {
     cat <<-ENDHELP
@@ -38,6 +39,10 @@ while [ -n "$1" ]; do
         -h | --help)
             about
             exit 0
+            ;;
+        --demo)
+            DEMO="${2}"
+            shift 2
             ;;
         --nexus-repo)
             NEXUS_REPO="${2}"
@@ -66,7 +71,7 @@ fi
 
 HUAWEI_MIRROR="${HUAWEI_MIRROR:-https://repo.huaweicloud.com/repository/npm/}"
 KOALA_REGISTRY="${KOALA_REGISTRY:-https://$NEXUS_REPO/repository/koala-npm/}"
-NINJA_OPTIONS="-j ${NPROC_PER_JOB}"
+export NINJA_OPTIONS="-j ${NPROC_PER_JOB}"
 
 retry() {
   local -r -i max_attempts="$1"; shift
@@ -125,6 +130,7 @@ npm config set package-lock false
 npm config set strict-ssl false
 npm config set registry "${HUAWEI_MIRROR}"
 npm config set @koalaui:registry "${KOALA_REGISTRY}"
+npm config set @idlizer:registry "${KOALA_REGISTRY}"
 npm config set @panda:registry "https://$NEXUS_REPO/repository/koala-npm/"
 npm config set @ohos:registry "https://repo.harmonyos.com/npm/"
 if [ -z "${KOALA_REPO}" ] ; then
@@ -134,15 +140,71 @@ fi
 npm install -d
 
 pushd incremental/tools/panda/ || exit 1
-if [ -z "${PANDA_SDK_TARBALL}" ] ; then
-npm run panda:sdk:install
+if [ -z "${PANDA_SDK_HOST_TARBALL}" ] ; then
+    npm run panda:sdk:install
 else
-npm install "${PANDA_SDK_TARBALL}"
+    npm install "${PANDA_SDK_HOST_TARBALL}"
+    if [ -n "${PANDA_SDK_DEV_TARBALL}" ] ; then
+        npm install "${PANDA_SDK_DEV_TARBALL}"
+    else
+        echo "PANDA_SDK_DEV_TARBALL is not set, skipping!"
+    fi
 fi
 popd >/dev/null 2>&1 || exit 1
 
-pushd arkoala-arkts || exit 1
-npm install -d
+function run_script() {
+    npm run $1 | tee out.txt
+    if [ -n "$(grep 'Error:' out.txt)" ] ; then
+        exit 1
+    fi
+}
+
+export ENABLE_BUILD_CACHE=0
+
+# Compile libarkts
+pushd ui2abc/libarkts || exit 1
+run_script "regenerate"
+run_script "compile --prefix ../fast-arktsc"
+run_script "run"
 popd >/dev/null 2>&1 || exit 1
 
-return 0
+# Compile memo-plugin, ui-plugins
+
+# need to fix ui2abc tests
+# run_script "all --prefix ui2abc"
+run_script "build:all --prefix ui2abc"
+
+# Compile arkui implementations
+run_script "build:arkui-common:inc:ui2abc --prefix arkoala-arkts/arkui-common"
+
+run_script "build:m3:recheck --prefix arkoala-arkts/arkui"
+# rm -rf arkoala-arkts/arkui/build*
+# run_script "build:m3:restart --prefix arkoala-arkts/arkui"
+
+# Compile UI plugin
+run_script "compile --prefix ui2abc/ui-plugins"
+
+# Compile and executable tests for UI DSL
+run_script "build:deps:m3 --prefix ets-tests"
+
+if [ -z "${DEMO}" ] ; then
+    echo "Just compiled ArkUI, but no demo specified."
+    exit 1
+fi
+
+case "${DEMO}" in
+    "shopping")
+        run_script "run:node --prefix arkoala-arkts/shopping/user"
+        ;;
+    "trivial")
+        run_script "run --prefix arkoala-arkts/trivial/user"
+        ;;
+    "empty")
+        ;;
+    *)
+        echo "Unknown demo" "${DEMO}"
+        exit 1
+        ;;
+esac
+
+echo "ArkUI ${DEMO} demo completed successfully."
