@@ -13,5 +13,26 @@
         "See the License for the specific language governing permissions and",
         "limitations under the License."
     ],
-    "result": []
+    "result": [
+        {
+            "line": 39,
+            "column": 74,
+            "endLine": 39,
+            "endColumn": 81,
+            "problem": "NoTsLikeSmartType",
+            "suggest": "",
+            "rule": "Smart type differences (arkts-no-ts-like-smart-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 39,
+            "column": 83,
+            "endLine": 39,
+            "endColumn": 85,
+            "problem": "NoTsLikeSmartType",
+            "suggest": "",
+            "rule": "Smart type differences (arkts-no-ts-like-smart-type)",
+            "severity": "ERROR"
+        }
+    ]
 }
