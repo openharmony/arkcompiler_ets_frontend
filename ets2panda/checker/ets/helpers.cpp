@@ -626,6 +626,7 @@ void ETSChecker::InferAliasLambdaType(ir::TypeNode *localTypeAnnotation, ir::Arr
 checker::Type *ETSChecker::FixOptionalVariableType(varbinder::Variable *const bindingVar, ir::ModifierFlags flags)
 {
     if ((flags & ir::ModifierFlags::OPTIONAL) != 0) {
+        ES2PANDA_ASSERT(bindingVar != nullptr);
         auto *variableType = bindingVar->TsType() != nullptr ? bindingVar->TsType() : GlobalTypeError();
         bindingVar->SetTsType(
             !variableType->IsTypeError() ? CreateETSUnionType({GlobalETSUndefinedType(), variableType}) : variableType);

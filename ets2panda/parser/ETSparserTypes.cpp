@@ -178,6 +178,7 @@ ir::TypeNode *ETSParser::ParseWildcardType(TypeAnnotationParsingOptions *options
     ir::ETSTypeReference *typeReference = nullptr;
     if (!isUnboundOut) {
         auto reference = ParseTypeReference(options);
+        ES2PANDA_ASSERT(reference != nullptr);
         typeReference = reference->AsETSTypeReference();
     }
 

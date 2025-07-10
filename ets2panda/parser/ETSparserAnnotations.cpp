@@ -392,6 +392,7 @@ ir::AnnotationUsage *ETSParser::ParseAnnotationUsage()
         } else if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
             // handle single field annotation
             auto *singleParamName = AllocNode<ir::Identifier>(compiler::Signatures::ANNOTATION_KEY_VALUE, Allocator());
+            ES2PANDA_ASSERT(singleParamName != nullptr);
             singleParamName->SetRange({Lexer()->GetToken().Start(), Lexer()->GetToken().End()});
 
             const auto savePos = Lexer()->GetToken().Start();

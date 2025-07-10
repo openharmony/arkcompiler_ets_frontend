@@ -161,6 +161,7 @@ bool TypeRelation::IsComparableTo(Type *source, Type *target)
 
         result_ = RelationResult::FALSE;
         target->Compare(this, source);
+        ES2PANDA_ASSERT(source != nullptr);
         auto key = RelationHolder::MakeKey(source->Id(), target->Id());
         checker_->ComparableResults().Insert(key, {result_, RelationType::COMPARABLE});
     }

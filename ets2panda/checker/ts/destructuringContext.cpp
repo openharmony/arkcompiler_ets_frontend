@@ -332,6 +332,7 @@ Type *ArrayDestructuringContext::CreateTupleTypeForRest(TupleType *tuple)
         ES2PANDA_ASSERT(memberVar != nullptr);
         memberVar->SetTsType(tupleElementType);
         elementFlags.push_back(memberFlag);
+        ES2PANDA_ASSERT(desc != nullptr);
         desc->properties.push_back(memberVar);
 
         index_++;

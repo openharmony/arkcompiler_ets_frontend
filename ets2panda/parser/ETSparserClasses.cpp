@@ -421,6 +421,7 @@ ir::TypeNode *ETSParser::ConvertToOptionalUnionType(ir::TypeNode *typeAnno)
         types.push_back(AllocNode<ir::ETSUndefinedType>(Allocator()));
         types.back()->SetRange(typeAnno->Range());
         auto *newTypeAnno = AllocNode<ir::ETSUnionType>(std::move(types), Allocator());
+        ES2PANDA_ASSERT(newTypeAnno != nullptr);
         newTypeAnno->SetRange(typeAnno->Range());
         return newTypeAnno;
     }
@@ -596,6 +597,7 @@ ir::MethodDefinition *ETSParser::ParseClassMethodDefinition(ir::Identifier *meth
     funcExpr->SetRange(func->Range());
     func->AddModifier(modifiers);
 
+    ES2PANDA_ASSERT(methodName->Clone(Allocator(), nullptr) != nullptr);
     auto *method = AllocNode<ir::MethodDefinition>(methodKind, methodName->Clone(Allocator(), nullptr)->AsExpression(),
                                                    funcExpr, modifiers, Allocator(), false);
     ES2PANDA_ASSERT(method != nullptr);
@@ -634,6 +636,7 @@ ir::MethodDefinition *ETSParser::ParseClassMethod(ClassElementDescriptor *desc,
     auto *method =
         AllocNode<ir::MethodDefinition>(desc->methodKind, propName->Clone(Allocator(), nullptr)->AsExpression(),
                                         funcExpr, desc->modifiers, Allocator(), desc->isComputed);
+    ES2PANDA_ASSERT(method != nullptr);
     method->SetRange(funcExpr->Range());
 
     return method;
@@ -841,13 +844,16 @@ ir::MethodDefinition *ETSParser::ParseClassGetterSetterMethod(const ArenaVector<
 
     lexer::SourcePosition propEnd = methodName->End();
     ir::MethodDefinition *method = ParseClassMethod(&desc, properties, methodName, &propEnd);
+    ES2PANDA_ASSERT(method != nullptr);
     method->SetDefaultAccessModifier(isDefault);
-    method->Function()->AddModifier(desc.modifiers);
+    auto *func = method->Function();
+    ES2PANDA_ASSERT(func != nullptr);
+    func->AddModifier(desc.modifiers);
     method->SetRange({desc.propStart, propEnd});
     if (desc.methodKind == ir::MethodDefinitionKind::GET) {
-        method->Function()->AddFlag(ir::ScriptFunctionFlags::GETTER);
+        func->AddFlag(ir::ScriptFunctionFlags::GETTER);
     } else {
-        method->Function()->AddFlag(ir::ScriptFunctionFlags::SETTER);
+        func->AddFlag(ir::ScriptFunctionFlags::SETTER);
     }
 
     return method;
@@ -864,23 +870,25 @@ ir::MethodDefinition *ETSParser::ParseInterfaceGetterSetterMethod(const ir::Modi
         return nullptr;
     }
     method->AddModifier(ir::ModifierFlags::PUBLIC);
-    auto id = method->Id();
+    auto *id = method->Id();
+    auto *func = method->Function();
     ES2PANDA_ASSERT(id != nullptr);
+    ES2PANDA_ASSERT(func != nullptr);
     if (methodKind == ir::MethodDefinitionKind::GET) {
         id->SetAccessor();
-        method->Function()->AddFlag(ir::ScriptFunctionFlags::GETTER);
+        func->AddFlag(ir::ScriptFunctionFlags::GETTER);
     } else {
         id->SetMutator();
-        method->Function()->AddFlag(ir::ScriptFunctionFlags::SETTER);
+        func->AddFlag(ir::ScriptFunctionFlags::SETTER);
     }
     method->AddModifier(ir::ModifierFlags::PUBLIC);
 
-    method->Function()->SetIdent(id->Clone(Allocator(), nullptr));
-    method->Function()->AddModifier(method->Modifiers());
+    func->SetIdent(id->Clone(Allocator(), nullptr));
+    func->AddModifier(method->Modifiers());
 
-    bool hasReturn = method->Function()->ReturnTypeAnnotation() != nullptr;
+    bool hasReturn = func->ReturnTypeAnnotation() != nullptr;
     if (hasReturn && methodKind == ir::MethodDefinitionKind::SET) {
-        LogError(diagnostic::SETTER_NO_RETURN_TYPE, {}, method->Function()->Range().start);
+        LogError(diagnostic::SETTER_NO_RETURN_TYPE, {}, func->Range().start);
     }
 
     return method;
@@ -1109,6 +1117,7 @@ ir::AstNode *ETSParser::ParseInterfaceField()
         return AllocBrokenExpression(Lexer()->GetToken().Start());
     }
 
+    ES2PANDA_ASSERT(name != nullptr);
     name->SetRange(Lexer()->GetToken().Loc());
     Lexer()->NextToken();
     bool optionalField = false;
@@ -1178,6 +1187,7 @@ ir::MethodDefinition *ETSParser::ParseInterfaceMethod(ir::ModifierFlags flags, i
         name = AllocBrokenExpression(Lexer()->GetToken().Loc());
     } else {
         name = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
+        ES2PANDA_ASSERT(name != nullptr);
         name->SetRange(Lexer()->GetToken().Loc());
         Lexer()->NextToken();
     }
@@ -1226,8 +1236,10 @@ ir::MethodDefinition *ETSParser::ParseInterfaceMethod(ir::ModifierFlags flags, i
     func->AddFlag(ir::ScriptFunctionFlags::METHOD);
 
     func->SetIdent(name);
+    ES2PANDA_ASSERT(name->Clone(Allocator(), nullptr) != nullptr);
     auto *method = AllocNode<ir::MethodDefinition>(methodKind, name->Clone(Allocator(), nullptr)->AsExpression(),
                                                    funcExpr, flags, Allocator(), false);
+    ES2PANDA_ASSERT(method != nullptr);
     method->SetRange(funcExpr->Range());
 
     ConsumeSemicolon(method);
