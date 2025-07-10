@@ -323,7 +323,7 @@ ir::Statement *ETSParser::ParseTryStatement()
 
     if (catchClauses.empty() && finalizer == nullptr) {
         LogError(diagnostic::MISSING_CATCH_OR_FINALLY_AFTER_TRY, {}, startLoc);
-        return nullptr;
+        return AllocBrokenStatement(startLoc);
     }
 
     lexer::SourcePosition endLoc = finalizer != nullptr ? finalizer->End() : catchClauses.back()->End();
