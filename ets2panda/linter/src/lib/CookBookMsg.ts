@@ -373,6 +373,8 @@ cookBookTag[358] =
 cookBookTag[359] = '"@LocalBuilder" Decorator is not supported (arkui-no-localbuilder-decorator)';
 cookBookTag[360] =
   '"Repeat" natively supports virtual scrolling capability in ArkTS1.2, so the default virtual scrolling should be disabled (arkui-repeat-disable-default-virtualscroll)';
+cookBookTag[361] =
+  'When using "WrappedBuilder" and "wrapBuilder", generics are required and must be declared as arrow function (arkui-wrapbuilder-require-arrow-func-generic)';
 cookBookTag[370] = 'Sparse array is not supported in ArkTS1.2 (arkts-no-sparse-array)';
 cookBookTag[371] = 'Enum elements cannot be types in ArkTS1.2 (arkts-no-enum-prop-as-type)';
 cookBookTag[372] = 'Smart type differences (arkts-no-ts-like-smart-type)';

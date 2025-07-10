@@ -109,13 +109,13 @@ struct Index {
       })
       Star({
         value: this.value,
-        $value: value => {
+        $value: (value: number) => {
             this.value = value;
         }
       })
       MyCard({
         str: this.str,
-        $str: value => {
+        $str: (value: string) => {
             this.str = value;
         }
       })

@@ -4618,6 +4618,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   private handleCallExpressionForUI(node: ts.CallExpression): void {
     this.handleStateStyles(node);
     this.handleCallExpressionForRepeat(node);
+    this.handleNodeForWrappedBuilder(node);
   }
 
   handleNoTsLikeFunctionCall(callExpr: ts.CallExpression): void {
@@ -5278,7 +5279,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
   private handleNewExpression(node: ts.Node): void {
     const tsNewExpr = node as ts.NewExpression;
-
+    this.handleNodeForWrappedBuilder(tsNewExpr);
     this.checkForInterfaceInitialization(tsNewExpr);
     this.handleSharedArrayBuffer(tsNewExpr);
     this.handleSdkGlobalApi(tsNewExpr);
@@ -5656,12 +5657,11 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
   private handleTypeReference(node: ts.Node): void {
     const typeRef = node as ts.TypeReferenceNode;
-
     this.handleBuiltinCtorCallSignature(typeRef);
     this.handleSharedArrayBuffer(typeRef);
     this.handleSdkGlobalApi(typeRef);
-
     this.handleSdkConstructorIface(typeRef);
+    this.handleNodeForWrappedBuilder(typeRef);
 
     const isESValue = TsUtils.isEsValueType(typeRef);
     const isPossiblyValidContext = TsUtils.isEsValuePossiblyAllowed(typeRef);
@@ -7071,7 +7071,12 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
 
-    const autofix = this.autofixer?.fixCustomBidirectionalBinding(originalExpr, currentParam, customParam);
+    const decl = this.tsUtils.getDeclarationNode(currentParam);
+    if (!decl || !ts.isPropertyDeclaration(decl)) {
+      return;
+    }
+
+    const autofix = this.autofixer?.fixCustomBidirectionalBinding(originalExpr, decl.type, currentParam, customParam);
     this.incrementCounters(firstExpr, FaultID.DoubleExclaBindingNotSupported, autofix);
   }
 
@@ -11570,6 +11575,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     });
     return hasOutOfBound;
   }
+
   private handleCallExpressionForRepeat(node: ts.CallExpression): void {
     if (!this.options.arkts2) {
       return;
@@ -11590,5 +11596,23 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
     const autofix = this.autofixer?.fixRepeat(stmt);
     this.incrementCounters(node, FaultID.RepeatDisableVirtualScroll, autofix);
+  }
+
+  private handleNodeForWrappedBuilder(node: ts.Node): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    if (
+      ts.isTypeReferenceNode(node) && this.isTargetInterface(node.typeName, CustomInterfaceName.WrappedBuilder) ||
+      ts.isNewExpression(node) && this.isTargetInterface(node.expression, CustomInterfaceName.WrappedBuilder) ||
+      ts.isCallExpression(node) && this.isTargetInterface(node.expression, CustomInterfaceName.wrapBuilder)
+    ) {
+      this.incrementCounters(node, FaultID.WrappedBuilderGenericNeedArrowFunc);
+    }
+  }
+
+  private isTargetInterface(node: ts.Node, targetName: string): boolean {
+    return ts.isIdentifier(node) && node.getText() === targetName && !this.isDeclarationInSameFile(node);
   }
 }

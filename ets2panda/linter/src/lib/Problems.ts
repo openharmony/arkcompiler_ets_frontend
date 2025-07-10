@@ -257,6 +257,7 @@ export enum FaultID {
   StateStylesBlockNeedArrowFunc,
   PromiseVoidNeedResolveArg,
   RepeatDisableVirtualScroll,
+  WrappedBuilderGenericNeedArrowFunc,
   // this should always be last enum
   LAST_ID
 }

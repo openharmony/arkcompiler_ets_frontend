@@ -257,3 +257,4 @@ faultDesc[FaultID.PropNeedCallMethodForDeepCopy] = 'Deep copy needs to call the 
 faultDesc[FaultID.StateStylesBlockNeedArrowFunc] = 'StateStyles needs arrow function block';
 faultDesc[FaultID.PromiseVoidNeedResolveArg] = 'Promise<void>constructor only supports using resolve (undefined)';
 faultDesc[FaultID.RepeatDisableVirtualScroll] = '"Repeat" disable default "virtualScroll"';
+faultDesc[FaultID.WrappedBuilderGenericNeedArrowFunc] = 'Generic of "WrappedBuilder" does not support parameter list';
