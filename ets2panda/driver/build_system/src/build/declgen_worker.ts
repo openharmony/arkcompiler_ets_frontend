@@ -18,7 +18,7 @@ import { BuildConfig } from '../types';
 import { Logger } from '../logger';
 import * as fs from 'fs';
 import * as path from 'path';
-import { changeDeclgenFileExtension, ensurePathExists } from '../utils';
+import { changeFileExtension, ensurePathExists } from '../utils';
 import { 
   DECL_ETS_SUFFIX, 
   TS_SUFFIX,
@@ -56,13 +56,13 @@ process.on('message', (message: {
         moduleInfo.packageName,
         filePathFromModuleRoot
       );
-      declEtsOutputPath = changeDeclgenFileExtension(declEtsOutputPath, DECL_ETS_SUFFIX);
+      declEtsOutputPath = changeFileExtension(declEtsOutputPath, DECL_ETS_SUFFIX);
       let etsOutputPath: string = path.join(
         moduleInfo.declgenBridgeCodePath as string,
         moduleInfo.packageName,
         filePathFromModuleRoot
       );
-      etsOutputPath = changeDeclgenFileExtension(etsOutputPath, TS_SUFFIX);
+      etsOutputPath = changeFileExtension(etsOutputPath, TS_SUFFIX);
 
       ensurePathExists(declEtsOutputPath);
       ensurePathExists(etsOutputPath);
@@ -78,15 +78,14 @@ process.on('message', (message: {
       ]).peer;
       arktsGlobal.compilerContext = arkts.Context.createFromString(source);
       pluginDriver.getPluginContext().setArkTSProgram(arktsGlobal.compilerContext.program);
-      const skipDeclCheck = buildConfig?.skipDeclCheck as boolean ?? true;
 
-      arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_PARSED, arktsGlobal.compilerContext.peer, skipDeclCheck);
+      arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_PARSED, arktsGlobal.compilerContext.peer, true);
 
       let ast = arkts.EtsScript.fromContext();
       pluginDriver.getPluginContext().setArkTSAst(ast);
       pluginDriver.runPluginHook(PluginHook.PARSED);
 
-      arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_CHECKED, arktsGlobal.compilerContext.peer, skipDeclCheck);
+      arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_CHECKED, arktsGlobal.compilerContext.peer, true);
 
       ast = arkts.EtsScript.fromContext();
       pluginDriver.getPluginContext().setArkTSAst(ast);
