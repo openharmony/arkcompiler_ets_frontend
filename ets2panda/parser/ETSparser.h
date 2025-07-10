@@ -229,6 +229,7 @@ private:
     ir::ModifierFlags ParseClassModifiers();
     ir::ModifierFlags ParseInterfaceMethodModifiers();
     ir::AstNode *ParseInterfaceField();
+    void ParseIndexedSignature();
     ir::TypeNode *ParseInterfaceTypeAnnotation(ir::Identifier *name);
     void ParseInterfaceModifiers(ir::ModifierFlags &fieldModifiers, bool &optionalField);
     ir::OverloadDeclaration *ParseInterfaceOverload(ir::ModifierFlags modifiers);
