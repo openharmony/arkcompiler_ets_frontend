@@ -69,6 +69,7 @@ static void TransformFunction(public_lib::Context *ctx, ir::ScriptFunction *func
         }
         if (param->AsETSParameterExpression()->TypeAnnotation() == nullptr) {  // #23134
             ES2PANDA_ASSERT(ctx->diagnosticEngine->IsAnyError());
+            param->AsETSParameterExpression()->SetInitializer(nullptr);
             continue;
         }
         defaultParams.push_back(param->AsETSParameterExpression());

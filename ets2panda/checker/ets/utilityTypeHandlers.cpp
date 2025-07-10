@@ -513,6 +513,35 @@ void ETSChecker::CreatePartialClassDeclaration(ir::ClassDefinition *const newCla
     newClassDefinition->Variable()->SetTsType(nullptr);
 }
 
+static void SetupFunctionParams(ir::ScriptFunction *function, varbinder::FunctionParamScope *paramScope,
+                                checker::ETSChecker *checker)
+{
+    for (auto *params : function->Params()) {
+        auto *paramExpr = params->AsETSParameterExpression();
+        if (paramExpr->Ident()->TypeAnnotation() == nullptr) {
+            paramExpr->Ident()->SetTsTypeAnnotation(nullptr);
+        } else {
+            auto *unionType =
+                // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+                checker->ProgramAllocNode<ir::ETSUnionType>(
+                    ArenaVector<ir::TypeNode *>(
+                        {paramExpr->Ident()->TypeAnnotation(),
+                         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+                         checker->ProgramAllocNode<ir::ETSUndefinedType>(checker->ProgramAllocator())},
+                        checker->ProgramAllocator()->Adapter()),
+                    checker->ProgramAllocator());
+            paramExpr->Ident()->SetTsTypeAnnotation(unionType);
+            unionType->SetParent(paramExpr->Ident());
+        }
+        auto [paramVar, node] = paramScope->AddParamDecl(checker->ProgramAllocator(), checker->VarBinder(), paramExpr);
+        if (node != nullptr) {
+            checker->VarBinder()->ThrowRedeclaration(node->Start(), paramVar->Name(), paramVar->Declaration()->Type());
+        }
+
+        paramExpr->SetVariable(paramVar);
+    }
+}
+
 // CC-OFFNXT(huge_method[C++], G.FUN.01-CPP) solid logic
 ir::MethodDefinition *ETSChecker::CreateNullishAccessor(ir::MethodDefinition *const accessor,
                                                         ir::TSInterfaceDeclaration *interface)
@@ -560,27 +589,8 @@ ir::MethodDefinition *ETSChecker::CreateNullishAccessor(ir::MethodDefinition *co
                                         ProgramAllocator()->Adapter()),
             ProgramAllocator()));
     } else {
-        for (auto *params : function->Params()) {
-            auto *paramExpr = params->AsETSParameterExpression();
-
-            auto *unionType =
-                // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-                ProgramAllocNode<ir::ETSUnionType>(
-                    ArenaVector<ir::TypeNode *>({paramExpr->Ident()->TypeAnnotation(),
-                                                 // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-                                                 ProgramAllocNode<ir::ETSUndefinedType>(ProgramAllocator())},
-                                                ProgramAllocator()->Adapter()),
-                    ProgramAllocator());
-            paramExpr->Ident()->SetTsTypeAnnotation(unionType);
-            unionType->SetParent(paramExpr->Ident());
-
-            auto [paramVar, node] = paramScope->AddParamDecl(ProgramAllocator(), VarBinder(), paramExpr);
-            if (node != nullptr) {
-                VarBinder()->ThrowRedeclaration(node->Start(), paramVar->Name(), paramVar->Declaration()->Type());
-            }
-
-            paramExpr->SetVariable(paramVar);
-        }
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+        SetupFunctionParams(function, paramScope, this);
     }
 
     nullishAccessor->SetOverloads(ArenaVector<ir::MethodDefinition *>(ProgramAllocator()->Adapter()));
