@@ -127,7 +127,7 @@ protected:
 
     ir::VariableDeclaratorFlag GetFlag(VariableParsingFlags flags);
 
-    void ValidateAccessor(ExpressionParseFlags flags, lexer::TokenFlags currentTokenFlags);
+    void ValidateAccessor(ExpressionParseFlags flags);
     void CheckPropertyKeyAsyncModifier(ParserStatus *methodStatus);
     ir::Property *ParseShorthandProperty(const lexer::LexerPosition *startPos);
     void ParseGeneratorPropertyModifier(ExpressionParseFlags flags, ParserStatus *methodStatus);

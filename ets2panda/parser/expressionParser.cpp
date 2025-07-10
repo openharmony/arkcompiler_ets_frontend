@@ -857,10 +857,6 @@ ir::MetaProperty *ParserImpl::ParsePotentialNewTarget()
                 LogError(diagnostic::NEW_TARGET_IS_NOT_ALLOWED);
             }
 
-            if ((lexer_->GetToken().Flags() & lexer::TokenFlags::HAS_ESCAPE) != 0) {
-                LogError(diagnostic::NEW_TARGET_WITH_ESCAPED_CHARS);
-            }
-
             auto *metaProperty = AllocNode<ir::MetaProperty>(ir::MetaProperty::MetaPropertyKind::NEW_TARGET);
             ES2PANDA_ASSERT(metaProperty != nullptr);
             metaProperty->SetRange(loc);
@@ -1923,14 +1919,10 @@ static bool IsShorthandDelimiter(char32_t cp)
     }
 }
 
-void ParserImpl::ValidateAccessor(ExpressionParseFlags flags, lexer::TokenFlags currentTokenFlags)
+void ParserImpl::ValidateAccessor(ExpressionParseFlags flags)
 {
     if ((flags & ExpressionParseFlags::MUST_BE_PATTERN) != 0) {
         LogError(diagnostic::UNEXPECTED_TOKEN);
-    }
-
-    if ((currentTokenFlags & lexer::TokenFlags::HAS_ESCAPE) != 0) {
-        LogError(diagnostic::KEYWORD_CONTAINS_ESCAPED_CHARS);
     }
 }
 
@@ -2004,12 +1996,11 @@ bool ParserImpl::ParsePropertyModifiers(ExpressionParseFlags flags, ir::Property
         *methodStatus |= ParserStatus::GENERATOR_FUNCTION;
     }
 
-    lexer::TokenFlags currentTokenFlags = lexer_->GetToken().Flags();
     char32_t nextCp = lexer_->Lookahead();
     lexer::TokenType keywordType = lexer_->GetToken().KeywordType();
     // Parse getter property
     if (keywordType == lexer::TokenType::KEYW_GET && !IsAccessorDelimiter(nextCp)) {
-        ValidateAccessor(flags, currentTokenFlags);
+        ValidateAccessor(flags);
 
         *propertyKind = ir::PropertyKind::GET;
         lexer_->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);
@@ -2019,7 +2010,7 @@ bool ParserImpl::ParsePropertyModifiers(ExpressionParseFlags flags, ir::Property
 
     // Parse setter property
     if (keywordType == lexer::TokenType::KEYW_SET && !IsAccessorDelimiter(nextCp)) {
-        ValidateAccessor(flags, currentTokenFlags);
+        ValidateAccessor(flags);
 
         *propertyKind = ir::PropertyKind::SET;
         lexer_->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);
