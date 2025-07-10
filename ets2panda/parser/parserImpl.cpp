@@ -964,6 +964,11 @@ FunctionSignature ParserImpl::ParseFunctionSignature(ParserStatus status)
 {
     ir::TSTypeParameterDeclaration *typeParamDecl = ParseFunctionTypeParameters();
 
+    // Check if constructor has type parameters
+    if ((status & ParserStatus::CONSTRUCTOR_FUNCTION) != 0 && typeParamDecl != nullptr) {
+        LogError(diagnostic::CONSTRUCTOR_TYPE_PARAMETERS);
+    }
+
     if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS) {
         auto parameter = (status & ParserStatus::ARROW_FUNCTION) != 0 ? ParseFunctionParameter() : nullptr;
         if (parameter != nullptr) {
