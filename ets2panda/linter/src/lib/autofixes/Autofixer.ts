@@ -63,6 +63,7 @@ import {
 } from '../utils/consts/InteropAPI';
 import path from 'node:path';
 import { isStdLibrarySymbol } from '../utils/functions/IsStdLibrary';
+import { propertyAccessReplacements, identifierReplacements } from '../utils/consts/DeprecatedApi';
 
 const UNDEFINED_NAME = 'undefined';
 
@@ -5359,5 +5360,92 @@ export class Autofixer {
       '.' +
       this.printer.printNode(ts.EmitHint.Unspecified, newExpr, stmt.getSourceFile());
     return [{ start: stmt.getEnd(), end: stmt.getEnd(), replacementText: text }];
+  }
+
+  fixDeprecatedApiForCallExpression(callExpr: ts.CallExpression): Autofix[] | undefined {
+    const createUIContextAccess = (methodName: string): ts.Node => {
+      return ts.factory.createPropertyAccessExpression(
+        ts.factory.createCallExpression(ts.factory.createIdentifier('getUIContext'), undefined, []),
+        ts.factory.createIdentifier(methodName)
+      );
+    };
+
+    if (ts.isPropertyAccessExpression(callExpr.expression)) {
+      const fullName = `${callExpr.expression.expression.getText()}.${callExpr.expression.name.getText()}`;
+      const methodName = propertyAccessReplacements.get(fullName);
+      if (methodName) {
+        const newExpression = createUIContextAccess(methodName);
+        const newText = this.printer.printNode(ts.EmitHint.Unspecified, newExpression, callExpr.getSourceFile());
+        return [
+          {
+            start: callExpr.expression.getStart(),
+            end: callExpr.expression.getEnd(),
+            replacementText: newText
+          }
+        ];
+      }
+    }
+
+    if (ts.isIdentifier(callExpr.expression)) {
+      const identifierText = callExpr.expression.getText();
+      const methodName = identifierReplacements.get(identifierText);
+
+      if (methodName) {
+        const newExpression = createUIContextAccess(methodName);
+        const newText = this.printer.printNode(ts.EmitHint.Unspecified, newExpression, callExpr.getSourceFile());
+        return [
+          {
+            start: callExpr.expression.getStart(),
+            end: callExpr.expression.getEnd(),
+            replacementText: newText
+          }
+        ];
+      }
+    }
+
+    return undefined;
+  }
+
+  fixSpecialDeprecatedApiForCallExpression(callExpr: ts.CallExpression, name: ts.Identifier): Autofix[] | undefined {
+    if (name.getText() !== 'clip' || !ts.isNewExpression(callExpr.arguments[0])) {
+      return undefined;
+    }
+
+    const shapeMap = {
+      Circle: 'CircleShape',
+      Path: 'PathShape',
+      Ellipse: 'EllipseShape',
+      Rect: 'RectShape'
+    } as const;
+
+    const argsExpr = callExpr.arguments[0].arguments;
+    const constructorName = callExpr.arguments[0].expression.getText();
+
+    if (
+      ts.isPropertyAccessExpression(callExpr.expression) &&
+      callExpr.expression.name.text === 'clip' &&
+      constructorName in shapeMap
+    ) {
+      const shapeType = shapeMap[constructorName as keyof typeof shapeMap];
+      const newExpression = ts.factory.createCallExpression(
+        ts.factory.createPropertyAccessExpression(
+          callExpr.expression.expression,
+          ts.factory.createIdentifier('clipShape')
+        ),
+        undefined,
+        [ts.factory.createNewExpression(ts.factory.createIdentifier(shapeType), undefined, argsExpr)]
+      );
+
+      const newText = this.printer.printNode(ts.EmitHint.Unspecified, newExpression, callExpr.getSourceFile());
+      return [
+        {
+          start: callExpr.getStart(),
+          end: callExpr.getEnd(),
+          replacementText: newText
+        }
+      ];
+    }
+
+    return undefined;
   }
 }

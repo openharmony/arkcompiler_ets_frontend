@@ -258,6 +258,7 @@ export enum FaultID {
   PromiseVoidNeedResolveArg,
   RepeatDisableVirtualScroll,
   WrappedBuilderGenericNeedArrowFunc,
+  NoDeprecatedApi,
   // this should always be last enum
   LAST_ID
 }

@@ -58,8 +58,8 @@
     "arkts-numeric-bigint-compare",
     "arkts-only-support-decimal-bigint-literal",
     "arkts-unsupport-operator",
-	"arkts-no-duplicate-function-name",
-	"arkts-subclass-must-call-super-constructor-with-args"
+	  "arkts-no-duplicate-function-name",
+	  "arkts-subclass-must-call-super-constructor-with-args"
   ],
   "interop": [
     "arkts-interop-js2s-inherit-js-class",
@@ -116,7 +116,8 @@
     "arkui-no-localbuilder-decorator",
     "arkui-statestyles-block-need-arrow-func",
     "arkui-repeat-disable-default-virtualscroll",
-    "arkui-wrapbuilder-require-arrow-func-generic"
+    "arkui-wrapbuilder-require-arrow-func-generic",
+    "arkui-no-deprecated-api"
   ],
   "builtin": [
     "arkts-builtin-thisArgs",
