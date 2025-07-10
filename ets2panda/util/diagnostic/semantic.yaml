@@ -497,6 +497,7 @@ semantic:
 - name: EXTENSION_ACCESSOR_INVALID_CALL
   id: 59
   message: "Extension accessor can't be used as a method call or function call."
+  code_fix_ids: [RemoveAccidetalCallParentheses]
 
 - name: EXTENSION_FUNC_NAME_CONFLICT_WITH_METH
   id: 81
