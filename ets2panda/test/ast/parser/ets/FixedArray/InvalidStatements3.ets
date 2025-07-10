@@ -60,4 +60,4 @@ for (let i = 1 in [0, 1, 2]) {}
 /* @@? 38:13 Error SyntaxError: Unexpected token '@'. */
 /* @@? 38:14 Error TypeError: Cannot find type 'annotate'. */
 /* @@? 42:16 Error SyntaxError: for-in loop variable declaration may not have an initializer. */
-/* @@? 42:16 Error SyntaxError: Unexpected token 'in'. */
+/* @@? 42:16 Error SyntaxError: 'for ... in' loop is not supported, please use regular 'for' or 'for ... of ...' loop to iterate through arrays and iterable objects. */

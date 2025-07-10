@@ -213,6 +213,11 @@ syntax:
   id: 307
   message: "'export = ...' syntax is not supported, use regular import/export instead!"
 
+- name: ERROR_ARKTS_NO_FOR_IN_LOOP
+  id: 6987
+  message: "'for ... in' loop is not supported, please use regular 'for' or 'for ... of ...' loop to iterate through arrays
+    and iterable objects."
+
 - name: ERROR_ARKTS_NO_IMPORT_ASSERTIONS
   id: 313
   message: "Import assertion is not supported, please use the ordinary import syntax instead!"

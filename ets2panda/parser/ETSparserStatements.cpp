@@ -323,7 +323,7 @@ bool ETSParser::ValidateLabeledStatement(lexer::TokenType type)
 
 bool ETSParser::ValidateForInStatement()
 {
-    LogUnexpectedToken(lexer::TokenType::KEYW_IN);
+    LogError(diagnostic::ERROR_ARKTS_NO_FOR_IN_LOOP);
     return false;
 }
 
