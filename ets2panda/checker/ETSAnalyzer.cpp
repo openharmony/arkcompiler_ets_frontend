@@ -2004,7 +2004,12 @@ checker::Type *ETSAnalyzer::CheckDynamic(ir::ObjectExpression *expr) const
 
 static bool ValidatePreferredType(ETSChecker *checker, ir::ObjectExpression *expr)
 {
-    auto preferredType = expr->PreferredType();
+    auto preferredType = expr->PreferredType()->MaybeBaseTypeOfGradualType();
+    if (preferredType == nullptr) {
+        checker->LogError(diagnostic::CLASS_COMPOSITE_UNKNOWN_TYPE, {}, expr->Start());
+        return false;
+    }
+
     if (preferredType->IsTypeError()) {
         //  Don't need to duplicate error message for a single error.
         return false;

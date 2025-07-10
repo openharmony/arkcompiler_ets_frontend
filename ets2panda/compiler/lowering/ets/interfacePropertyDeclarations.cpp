@@ -125,7 +125,8 @@ ir::MethodDefinition *InterfacePropertyDeclarationsPhase::GenerateGetterOrSetter
         ctx->Allocator(), ir::ScriptFunction::ScriptFunctionData {
                               nullptr, std::move(signature),  // CC-OFF(G.FMT.02) project code style
                               // CC-OFFNXT(G.FMT.02) project code style
-                              isSetter ? ir::ScriptFunctionFlags::SETTER : ir::ScriptFunctionFlags::GETTER, flags});
+                              isSetter ? ir::ScriptFunctionFlags::SETTER : ir::ScriptFunctionFlags::GETTER, flags,
+                              classScope->Node()->AsTSInterfaceDeclaration()->Language()});
 
     func->SetRange(field->Range());
     func->SetScope(functionScope);
