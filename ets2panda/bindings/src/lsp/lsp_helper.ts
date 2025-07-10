@@ -146,8 +146,8 @@ export class Lsp {
   }
 
   private getFileSource(filePath: string): string {
-    const getSource = this.filesMap.get(filePath) || this.getFileContent(filePath);
-    if (!getSource) {
+    const getSource = this.filesMap.get(filePath) || this.getFileContent(filePath) || fs.readFileSync(filePath, 'utf8');
+    if (getSource === undefined) {
       throw new Error(`File content not found for path: ${filePath}`);
     }
     return getSource.replace(/\r\n/g, '\n');

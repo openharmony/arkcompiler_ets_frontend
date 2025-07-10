@@ -63,6 +63,10 @@ export const testCases: TestCases = {
     expectedFilePath: resolveTestPath('test/expected/getFileReferences.json'),
     '1': [resolveTestPath('test/testcases/getFileReferences/getFileReferences1_export.ets')]
   },
+  getFileSource: {
+    expectedFilePath: resolveTestPath('test/expected/getFileSource.json'),
+    '1': [resolveTestPath('test/testcases/getFileSource/getFileSource1.ets')]
+  },
   getReferencesAtPosition: {
     expectedFilePath: resolveTestPath('test/expected/getReferencesAtPosition.json'),
     '1': [resolveTestPath('test/testcases/getReferencesAtPosition/getReferencesAtPosition1.ets'), 613],
