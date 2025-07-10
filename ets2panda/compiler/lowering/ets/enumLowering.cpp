@@ -278,6 +278,7 @@ ir::ClassDeclaration *EnumLoweringPhase::CreateClass(ir::TSEnumDeclaration *cons
 
     if (enumDecl->IsExported()) {
         classDecl->AddModifier(ir::ModifierFlags::EXPORT);
+        program_->GlobalClass()->AddToExportedClasses(classDecl);
     } else if (enumDecl->IsDefaultExported()) {
         classDecl->AddModifier(ir::ModifierFlags::DEFAULT_EXPORT);
     }
