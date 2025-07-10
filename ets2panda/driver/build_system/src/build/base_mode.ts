@@ -1011,6 +1011,7 @@ export abstract class BaseMode {
     });
     return JSON.parse(jsonStr);
   }
+
   setupCluster(cluster: Cluster, options: SetupClusterOptions): void {
     const {
       clearExitListeners,
