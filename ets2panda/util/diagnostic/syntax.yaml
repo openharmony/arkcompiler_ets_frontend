@@ -993,6 +993,10 @@ syntax:
   id: 287
   message: "Unexpected return value."
 
+- name: RE_EXPORTING_LOCAL_BINDINGS_IS_NOT_ALLOWED
+  id: 138237
+  message: "Re-exporting local bindings is not allowed"
+
 - name: SETTER_FORMAL_PARAMS
   id: 63
   message: "Setter must have exactly one formal parameter."
