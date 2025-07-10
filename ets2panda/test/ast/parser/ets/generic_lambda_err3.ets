@@ -13,14 +13,26 @@
  * limitations under the License.
  */
 
+
 let foo1 = <T>
 let foo2 = <T>()
+let foo3 = <T>;
+let foo4 = <T>();
 function main() {
-    let foo3 = <T>
-    let foo4 = <T>()
+    let foo5 = <T>
+    let foo6 = <T>()
 }
 
-/* @@? 17:1 Error SyntaxError: Unexpected token, expected '('. */
-/* @@? 18:1 Error SyntaxError: Unexpected token, expected '=>'. */
-/* @@? 20:5 Error SyntaxError: Unexpected token, expected '('. */
-/* @@? 21:1 Error SyntaxError: Unexpected token, expected '=>'. */
+/* @@? 18:1 Error SyntaxError: Unexpected token, expected '('. */
+/* @@? 18:5 Error SyntaxError: Unexpected token 'foo2'. */
+/* @@? 18:5 Error TypeError: Unresolved reference foo2 */
+/* @@? 19:1 Error SyntaxError: Unexpected token, expected '=>'. */
+/* @@? 19:5 Error SyntaxError: Unexpected token 'foo3'. */
+/* @@? 19:5 Error TypeError: Unresolved reference foo3 */
+/* @@? 19:15 Error SyntaxError: Unexpected token, expected '('. */
+/* @@? 20:17 Error SyntaxError: Unexpected token, expected '=>'. */
+/* @@? 23:5 Error SyntaxError: Unexpected token, expected '('. */
+/* @@? 23:9 Error SyntaxError: Unexpected token 'foo6'. */
+/* @@? 23:9 Error TypeError: Unresolved reference foo6 */
+/* @@? 24:1 Error SyntaxError: Unexpected token, expected '=>'. */
+/* @@? 39:1 Error SyntaxError: Expected '}', got 'end of stream'. */

@@ -786,21 +786,30 @@ ir::Expression *ETSParser::ParseExpression(ExpressionParseFlags flags)
     if (Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_AT)) {
         annotations = ParseAnnotations(false);
     }
-    auto savedPos = Lexer()->GetToken().Start();
+    const auto savedPosition = Lexer()->Save();
+    const auto start = Lexer()->GetToken().Start();
     if (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_YIELD &&
         (flags & ExpressionParseFlags::DISALLOW_YIELD) == 0U) {
         ir::YieldExpression *yieldExpr = ParseYieldExpression();
 
         return ParsePotentialExpressionSequence(yieldExpr, flags);
     }
-
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
-        ir::Expression *expr = ParseGenericArrowFunction(true);
-        if (expr == nullptr) {
-            return AllocBrokenExpression(Lexer()->GetToken().Loc());
+        const auto arrowStart = DiagnosticEngine().Save();
+        if (ir::Expression *expr = ParseGenericArrowFunction(true); expr != nullptr && !expr->IsBrokenExpression()) {
+            return expr;
         }
-
-        return expr;
+        const auto afterArrow = DiagnosticEngine().Save();
+        Lexer()->Rewind(savedPosition);
+        if (const ir::Expression *typeAssertion = ParseTypeAssertion(); typeAssertion != nullptr) {
+            DiagnosticEngine().UndoRange(arrowStart, afterArrow);
+            LogError(diagnostic::TS_TYPE_ASSERTION, util::DiagnosticMessageParams {}, start);
+            ES2PANDA_ASSERT(DiagnosticEngine().IsAnyError());
+            return AllocBrokenExpression(typeAssertion->Range());
+        }
+        DiagnosticEngine().Rollback(afterArrow);
+        ES2PANDA_ASSERT(DiagnosticEngine().IsAnyError());
+        return AllocBrokenExpression(lexer::SourceRange {start, Lexer()->GetToken().End()});
     }
 
     ir::Expression *unaryExpressionNode = ParseUnaryOrPrefixUpdateExpression(flags);
@@ -809,7 +818,7 @@ ir::Expression *ETSParser::ParseExpression(ExpressionParseFlags flags)
     }
 
     ir::Expression *assignmentExpression = ParseAssignmentExpression(unaryExpressionNode, flags);
-    ApplyAnnotationsToNode(assignmentExpression, std::move(annotations), savedPos);
+    ApplyAnnotationsToNode(assignmentExpression, std::move(annotations), start);
 
     if (Lexer()->GetToken().NewLine()) {
         return assignmentExpression;
