@@ -63,6 +63,7 @@ void ProcessCheckerNode(ETSChecker *checker, ir::AstNode *node)
         // however right now checker do it when called on ClassDefinition
         auto method = node->AsMethodDefinition();
         auto func = method->Value()->AsFunctionExpression()->Function();
+        ES2PANDA_ASSERT(method->Id() != nullptr);
         func->Id()->SetVariable(method->Id()->Variable());
     }
     ScopeContext checkerScope(checker, scope);

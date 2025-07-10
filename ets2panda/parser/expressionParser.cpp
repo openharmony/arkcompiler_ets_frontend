@@ -114,7 +114,7 @@ ir::YieldExpression *ParserImpl::ParseYieldExpression()
     }
 
     auto *yieldNode = AllocNode<ir::YieldExpression>(argument, isDelegate);
-    ES2PANDA_ASSERT(yieldNode);
+    ES2PANDA_ASSERT(yieldNode != nullptr);
     yieldNode->SetRange({startLoc, endLoc});
 
     return yieldNode;
@@ -209,7 +209,7 @@ ir::ArrayExpression *ParserImpl::ParseArrayExpression(ExpressionParseFlags flags
     auto nodeType = inPattern ? ir::AstNodeType::ARRAY_PATTERN : ir::AstNodeType::ARRAY_EXPRESSION;
     auto *arrayExpressionNode =
         AllocNode<ir::ArrayExpression>(nodeType, std::move(elements), Allocator(), trailingComma);
-    ES2PANDA_ASSERT(arrayExpressionNode);
+    ES2PANDA_ASSERT(arrayExpressionNode != nullptr);
     arrayExpressionNode->SetRange({startLoc, endLoc});
 
     if (inPattern) {
@@ -344,6 +344,7 @@ ir::ArrowFunctionExpression *ParserImpl::ParseArrowFunctionExpressionBody(ArrowF
                         {},
                         context_.GetLanguage()});
     // clang-format on
+    ES2PANDA_ASSERT(funcNode != nullptr);
     funcNode->SetRange({desc->startLoc, endLoc});
 
     auto *arrowFuncNode = AllocNode<ir::ArrowFunctionExpression>(funcNode, Allocator());
@@ -584,7 +585,7 @@ ir::Expression *ParserImpl::CreateBinaryAssignmentExpression(ir::Expression *ass
 
     auto *binaryAssignmentExpression =
         AllocNode<ir::AssignmentExpression>(lhsExpression, assignmentExpression, tokenType);
-    ES2PANDA_ASSERT(binaryAssignmentExpression);
+    ES2PANDA_ASSERT(binaryAssignmentExpression != nullptr);
 
     binaryAssignmentExpression->SetRange({lhsExpression->Start(), assignmentExpression->End()});
     return binaryAssignmentExpression;
@@ -600,7 +601,7 @@ ir::Expression *ParserImpl::ParseAssignmentExpression(ir::Expression *lhsExpress
             ir::Expression *consequent = ParseAssignmentExpressionHelper();
             ir::Expression *alternate = ParseExpression();
             auto *conditionalExpr = AllocNode<ir::ConditionalExpression>(lhsExpression, consequent, alternate);
-            ES2PANDA_ASSERT(conditionalExpr);
+            ES2PANDA_ASSERT(conditionalExpr != nullptr);
             conditionalExpr->SetRange({lhsExpression->Start(), alternate->End()});
             return conditionalExpr;
         }
@@ -714,7 +715,7 @@ ir::Expression *ParserImpl::ParseAssignmentEqualExpression(const lexer::TokenTyp
 
             auto *binaryAssignmentExpression =
                 AllocNode<ir::AssignmentExpression>(lhsExpression, assignmentExpression, tokenType);
-            ES2PANDA_ASSERT(binaryAssignmentExpression);
+            ES2PANDA_ASSERT(binaryAssignmentExpression != nullptr);
 
             binaryAssignmentExpression->SetRange({lhsExpression->Start(), assignmentExpression->End()});
             return binaryAssignmentExpression;
@@ -755,6 +756,7 @@ ir::TemplateLiteral *ParserImpl::ParseTemplateLiteral()
         const auto templateStr = lexer_->ScanTemplateString();
         if (templateStr.validSequence) {
             auto *const element = AllocNode<ir::TemplateElement>(templateStr.str.View(), cooked);
+            ES2PANDA_ASSERT(element != nullptr);
             element->SetRange({lexer::SourcePosition {startPos.Iterator().Index(), startPos.Line(), GetProgram()},
                                lexer::SourcePosition {templateStr.end, lexer_->Line(), GetProgram()}});
             quasis.push_back(element);
@@ -805,7 +807,7 @@ ir::Expression *ParserImpl::ParseNewExpression()
     if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS) {
         lexer::SourcePosition endLoc = callee->End();
         auto *newExprNode = AllocNode<ir::NewExpression>(callee, std::move(arguments));
-        ES2PANDA_ASSERT(newExprNode);
+        ES2PANDA_ASSERT(newExprNode != nullptr);
         newExprNode->SetRange({start, endLoc});
 
         return newExprNode;
@@ -831,7 +833,7 @@ ir::Expression *ParserImpl::ParseNewExpression()
         &endLoc, true);
 
     auto *newExprNode = AllocNode<ir::NewExpression>(callee, std::move(arguments));
-    ES2PANDA_ASSERT(newExprNode);
+    ES2PANDA_ASSERT(newExprNode != nullptr);
     newExprNode->SetRange({start, endLoc});
 
     return newExprNode;
@@ -860,7 +862,7 @@ ir::MetaProperty *ParserImpl::ParsePotentialNewTarget()
             }
 
             auto *metaProperty = AllocNode<ir::MetaProperty>(ir::MetaProperty::MetaPropertyKind::NEW_TARGET);
-            ES2PANDA_ASSERT(metaProperty);
+            ES2PANDA_ASSERT(metaProperty != nullptr);
             metaProperty->SetRange(loc);
             lexer_->NextToken();
             return metaProperty;
@@ -873,7 +875,7 @@ ir::MetaProperty *ParserImpl::ParsePotentialNewTarget()
 ir::Identifier *ParserImpl::ParsePrimaryExpressionIdent([[maybe_unused]] ExpressionParseFlags flags)
 {
     auto *identNode = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
-    ES2PANDA_ASSERT(identNode);
+    ES2PANDA_ASSERT(identNode != nullptr);
     identNode->SetRange(lexer_->GetToken().Loc());
 
     lexer_->NextToken();
@@ -886,7 +888,7 @@ ir::BooleanLiteral *ParserImpl::ParseBooleanLiteral()
                     lexer_->GetToken().Type() == lexer::TokenType::LITERAL_FALSE);
 
     auto *booleanNode = AllocNode<ir::BooleanLiteral>(lexer_->GetToken().Type() == lexer::TokenType::LITERAL_TRUE);
-    ES2PANDA_ASSERT(booleanNode);
+    ES2PANDA_ASSERT(booleanNode != nullptr);
     booleanNode->SetRange(lexer_->GetToken().Loc());
 
     lexer_->NextToken();
@@ -897,7 +899,7 @@ ir::NullLiteral *ParserImpl::ParseNullLiteral()
 {
     ES2PANDA_ASSERT(lexer_->GetToken().Type() == lexer::TokenType::LITERAL_NULL);
     auto *nullNode = AllocNode<ir::NullLiteral>();
-    ES2PANDA_ASSERT(nullNode);
+    ES2PANDA_ASSERT(nullNode != nullptr);
     nullNode->SetRange(lexer_->GetToken().Loc());
 
     lexer_->NextToken();
@@ -916,7 +918,7 @@ ir::Literal *ParserImpl::ParseNumberLiteral()
         numberNode = AllocNode<ir::NumberLiteral>(lexer_->GetToken().GetNumber());
     }
 
-    ES2PANDA_ASSERT(numberNode);
+    ES2PANDA_ASSERT(numberNode != nullptr);
     numberNode->SetRange(lexer_->GetToken().Loc());
 
     lexer_->NextToken();
@@ -928,7 +930,7 @@ ir::CharLiteral *ParserImpl::ParseCharLiteral()
     ES2PANDA_ASSERT(lexer_->GetToken().Type() == lexer::TokenType::LITERAL_CHAR);
 
     auto *charNode = AllocNode<ir::CharLiteral>(lexer_->GetToken().Utf16());
-    ES2PANDA_ASSERT(charNode);
+    ES2PANDA_ASSERT(charNode != nullptr);
     charNode->SetRange(lexer_->GetToken().Loc());
 
     lexer_->NextToken();
@@ -940,7 +942,7 @@ ir::StringLiteral *ParserImpl::ParseStringLiteral()
     ES2PANDA_ASSERT(lexer_->GetToken().Type() == lexer::TokenType::LITERAL_STRING);
 
     auto *stringNode = AllocNode<ir::StringLiteral>(lexer_->GetToken().String());
-    ES2PANDA_ASSERT(stringNode);
+    ES2PANDA_ASSERT(stringNode != nullptr);
     stringNode->SetRange(lexer_->GetToken().Loc());
 
     lexer_->NextToken();
@@ -951,7 +953,7 @@ ir::UndefinedLiteral *ParserImpl::ParseUndefinedLiteral()
 {
     ES2PANDA_ASSERT(lexer_->GetToken().Type() == lexer::TokenType::KEYW_UNDEFINED);
     auto *undefinedNode = AllocNode<ir::UndefinedLiteral>();
-    ES2PANDA_ASSERT(undefinedNode);
+    ES2PANDA_ASSERT(undefinedNode != nullptr);
     undefinedNode->SetRange(lexer_->GetToken().Loc());
 
     lexer_->NextToken();
@@ -983,7 +985,7 @@ ir::RegExpLiteral *ParserImpl::ParseRegularExpression()
     reParser.ParsePattern();
 
     auto *regexpNode = AllocNode<ir::RegExpLiteral>(regexp.patternStr, regexp.flags, regexp.flagsStr);
-    ES2PANDA_ASSERT(regexpNode);
+    ES2PANDA_ASSERT(regexpNode != nullptr);
     regexpNode->SetRange(lexer_->GetToken().Loc());
 
     lexer_->NextToken();
@@ -995,7 +997,7 @@ ir::SuperExpression *ParserImpl::ParseSuperExpression()
     ES2PANDA_ASSERT(lexer_->GetToken().Type() == lexer::TokenType::KEYW_SUPER);
 
     auto *superExprNode = AllocNode<ir::SuperExpression>();
-    ES2PANDA_ASSERT(superExprNode);
+    ES2PANDA_ASSERT(superExprNode != nullptr);
     superExprNode->SetRange(lexer_->GetToken().Loc());
 
     lexer_->NextToken();  // eat super
@@ -1044,7 +1046,7 @@ ir::Expression *ParserImpl::ParseHashMaskOperator()
     }
 
     auto *privateIdent = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
-    ES2PANDA_ASSERT(privateIdent);
+    ES2PANDA_ASSERT(privateIdent != nullptr);
     privateIdent->SetPrivate(true);
     lexer_->NextToken();
 
@@ -1066,7 +1068,7 @@ ir::Expression *ParserImpl::ParseClassExpression()
     }
 
     auto *classExpr = AllocNode<ir::ClassExpression>(classDefinition);
-    ES2PANDA_ASSERT(classExpr);
+    ES2PANDA_ASSERT(classExpr != nullptr);
     classExpr->SetRange({startLoc, classDefinition->End()});
 
     return classExpr;
@@ -1305,7 +1307,7 @@ void ParserImpl::CreateAmendedBinaryExpression(ir::Expression *const left, ir::E
     amended->SetParent(nullptr);  // Next line overwrite parent
     auto *binaryExpr = AllocNode<ir::BinaryExpression>(left, amended, operatorType);
 
-    ES2PANDA_ASSERT(binaryExpr);
+    ES2PANDA_ASSERT(binaryExpr != nullptr);
     binaryExpr->SetRange({left->Start(), amended->End()});
     SetAmendedChildExpression(right, binaryExpr);
 }
@@ -1364,7 +1366,7 @@ ir::Expression *ParserImpl::ParseBinaryExpression(ir::Expression *left, const le
         }
         const lexer::SourcePosition &endPos = rightExpr->End();
         rightExpr = AllocNode<ir::BinaryExpression>(left, rightExpr, operatorType);
-        ES2PANDA_ASSERT(rightExpr);
+        ES2PANDA_ASSERT(rightExpr != nullptr);
         rightExpr->SetRange({left->Start(), endPos});
     }
 
@@ -1430,7 +1432,7 @@ ir::CallExpression *ParserImpl::ParseCallExpression(ir::Expression *callee, bool
             callExpr =
                 AllocNode<ir::CallExpression>(callee, std::move(arguments), nullptr, isOptionalChain, trailingComma);
         }
-        ES2PANDA_ASSERT(callExpr);
+        ES2PANDA_ASSERT(callExpr != nullptr);
 
         callExpr->SetRange({callee->Start(), endLoc});
         isOptionalChain = false;
@@ -1463,12 +1465,13 @@ ir::Expression *ParserImpl::ParseOptionalChain(ir::Expression *leftSideExpr)
     const auto tokenType = lexer_->GetToken().Type();
     if (tokenType == lexer::TokenType::LITERAL_IDENT) {
         auto *identNode = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
+        ES2PANDA_ASSERT(identNode != nullptr);
         identNode->SetPrivate(isPrivate);
         identNode->SetRange(lexer_->GetToken().Loc());
 
         returnExpression = AllocNode<ir::MemberExpression>(leftSideExpr, identNode,
                                                            ir::MemberExpressionKind::PROPERTY_ACCESS, false, true);
-        ES2PANDA_ASSERT(returnExpression);
+        ES2PANDA_ASSERT(returnExpression != nullptr);
         returnExpression->SetRange({leftSideExpr->Start(), identNode->End()});
         lexer_->NextToken();
     }
@@ -1485,7 +1488,7 @@ ir::Expression *ParserImpl::ParseOptionalChain(ir::Expression *leftSideExpr)
 
         returnExpression = AllocNode<ir::MemberExpression>(leftSideExpr, propertyNode,
                                                            ir::MemberExpressionKind::ELEMENT_ACCESS, true, true);
-        ES2PANDA_ASSERT(returnExpression);
+        ES2PANDA_ASSERT(returnExpression != nullptr);
         returnExpression->SetRange({leftSideExpr->Start(), endLoc});
         lexer_->NextToken();
     }
@@ -1509,7 +1512,7 @@ ir::ArrowFunctionExpression *ParserImpl::ParsePotentialArrowExpression(ir::Expre
     switch (lexer_->GetToken().Type()) {
         case lexer::TokenType::KEYW_FUNCTION: {
             *returnExpression = ParseFunctionExpression(ParserStatus::ASYNC_FUNCTION);
-            ES2PANDA_ASSERT(returnExpression);
+            ES2PANDA_ASSERT(returnExpression != nullptr);
             (*returnExpression)->SetStart(startLoc);
             break;
         }
@@ -1585,7 +1588,7 @@ ir::MemberExpression *ParserImpl::ParseElementAccess(ir::Expression *primaryExpr
 
     auto *memberExpr = AllocNode<ir::MemberExpression>(primaryExpr, propertyNode,
                                                        ir::MemberExpressionKind::ELEMENT_ACCESS, true, isOptional);
-    ES2PANDA_ASSERT(memberExpr);
+    ES2PANDA_ASSERT(memberExpr != nullptr);
     memberExpr->SetRange({primaryExpr->Start(), lexer_->GetToken().End()});
     lexer_->NextToken();
     return memberExpr;
@@ -1599,14 +1602,14 @@ ir::MemberExpression *ParserImpl::ParsePrivatePropertyAccess(ir::Expression *pri
     ValidatePrivateIdentifier();
 
     auto *privateIdent = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
-    ES2PANDA_ASSERT(privateIdent);
+    ES2PANDA_ASSERT(privateIdent != nullptr);
     privateIdent->SetRange({memberStart, lexer_->GetToken().End()});
     privateIdent->SetPrivate(true);
     lexer_->NextToken();
 
     auto *memberExpr = AllocNode<ir::MemberExpression>(primaryExpr, privateIdent,
                                                        ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
-    ES2PANDA_ASSERT(memberExpr);
+    ES2PANDA_ASSERT(memberExpr != nullptr);
     memberExpr->SetRange({primaryExpr->Start(), privateIdent->End()});
     return memberExpr;
 }
@@ -1616,7 +1619,7 @@ ir::MemberExpression *ParserImpl::ParsePropertyAccess(ir::Expression *primaryExp
     ir::Identifier *ident = ExpectIdentifier(true);
     auto *memberExpr = AllocNode<ir::MemberExpression>(primaryExpr, ident, ir::MemberExpressionKind::PROPERTY_ACCESS,
                                                        false, isOptional);
-    ES2PANDA_ASSERT(memberExpr);
+    ES2PANDA_ASSERT(memberExpr != nullptr);
     memberExpr->SetRange({primaryExpr->Start(), ident->End()});
 
     return memberExpr;
@@ -1679,11 +1682,11 @@ ir::Expression *ParserImpl::ParsePostPrimaryExpressionBackTick(ir::Expression *r
                                                                const lexer::SourcePosition startLoc)
 {
     ir::TemplateLiteral *propertyNode = ParseTemplateLiteral();
-    ES2PANDA_ASSERT(propertyNode);
+    ES2PANDA_ASSERT(propertyNode != nullptr);
     lexer::SourcePosition endLoc = propertyNode->End();
 
     returnExpression = AllocNode<ir::TaggedTemplateExpression>(returnExpression, propertyNode, nullptr);
-    ES2PANDA_ASSERT(returnExpression);
+    ES2PANDA_ASSERT(returnExpression != nullptr);
     returnExpression->SetRange({startLoc, endLoc});
 
     return returnExpression;
@@ -1744,7 +1747,7 @@ ir::Expression *ParserImpl::SetupChainExpr(ir::Expression *const top, lexer::Sou
 
     lexer::SourcePosition endLoc = expr->End();
     auto chain = AllocNode<ir::ChainExpression>(expr);
-    ES2PANDA_ASSERT(chain);
+    ES2PANDA_ASSERT(chain != nullptr);
     chain->SetRange({startLoc, endLoc});
 
     if (expr == top) {
@@ -1793,7 +1796,7 @@ ir::Expression *ParserImpl::ParseMemberExpression(bool ignoreCallExpression, Exp
 
         returnExpression = AllocNode<ir::UpdateExpression>(returnExpression, lexer_->GetToken().Type(), false);
 
-        ES2PANDA_ASSERT(returnExpression);
+        ES2PANDA_ASSERT(returnExpression != nullptr);
         returnExpression->SetRange({start, lexer_->GetToken().End()});
         lexer_->NextToken();
     }
@@ -1844,7 +1847,7 @@ ir::Expression *ParserImpl::ParsePatternElement(ExpressionParseFlags flags, bool
     ir::Expression *rightNode = ParseExpression();
     auto *assignmentExpression = AllocNode<ir::AssignmentExpression>(
         ir::AstNodeType::ASSIGNMENT_PATTERN, returnNode, rightNode, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
-    ES2PANDA_ASSERT(assignmentExpression);
+    ES2PANDA_ASSERT(assignmentExpression != nullptr);
     assignmentExpression->SetRange({returnNode->Start(), rightNode->End()});
 
     return assignmentExpression;
@@ -1951,7 +1954,7 @@ ir::Property *ParserImpl::ParseShorthandProperty(const lexer::LexerPosition *sta
     const util::StringView &ident = lexer_->GetToken().Ident();
 
     auto *key = AllocNode<ir::Identifier>(ident, Allocator());
-    ES2PANDA_ASSERT(key);
+    ES2PANDA_ASSERT(key != nullptr);
     key->SetRange(lexer_->GetToken().Loc());
 
     ir::Expression *value = AllocNode<ir::Identifier>(ident, Allocator());
@@ -1969,6 +1972,7 @@ ir::Property *ParserImpl::ParseShorthandProperty(const lexer::LexerPosition *sta
 
         auto *assignmentExpression = AllocNode<ir::AssignmentExpression>(
             ir::AstNodeType::ASSIGNMENT_PATTERN, value, rightNode, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+        ES2PANDA_ASSERT(assignmentExpression != nullptr);
         assignmentExpression->SetRange({value->Start(), rightNode->End()});
         end = rightNode->End();
         value = assignmentExpression;
@@ -1978,7 +1982,7 @@ ir::Property *ParserImpl::ParseShorthandProperty(const lexer::LexerPosition *sta
     }
 
     auto *returnProperty = AllocNode<ir::Property>(key, value);
-    ES2PANDA_ASSERT(returnProperty);
+    ES2PANDA_ASSERT(returnProperty != nullptr);
     returnProperty->SetRange({start, end});
 
     return returnProperty;
@@ -2045,7 +2049,7 @@ ir::Expression *ParserImpl::ParsePropertyKey(ExpressionParseFlags flags)
         case lexer::TokenType::LITERAL_IDENT: {
             const util::StringView &ident = lexer_->GetToken().Ident();
             key = AllocNode<ir::Identifier>(ident, Allocator());
-            ES2PANDA_ASSERT(key);
+            ES2PANDA_ASSERT(key != nullptr);
             key->SetRange(lexer_->GetToken().Loc());
             lexer_->NextToken();
             return key;
@@ -2053,7 +2057,7 @@ ir::Expression *ParserImpl::ParsePropertyKey(ExpressionParseFlags flags)
         case lexer::TokenType::LITERAL_STRING: {
             const util::StringView &string = lexer_->GetToken().String();
             key = AllocNode<ir::StringLiteral>(string);
-            ES2PANDA_ASSERT(key);
+            ES2PANDA_ASSERT(key != nullptr);
             key->SetRange(lexer_->GetToken().Loc());
             lexer_->NextToken();
             return key;
@@ -2064,7 +2068,7 @@ ir::Expression *ParserImpl::ParsePropertyKey(ExpressionParseFlags flags)
             } else {
                 key = AllocNode<ir::NumberLiteral>(lexer_->GetToken().GetNumber());
             }
-            ES2PANDA_ASSERT(key);
+            ES2PANDA_ASSERT(key != nullptr);
             key->SetRange(lexer_->GetToken().Loc());
             lexer_->NextToken();
             return key;
@@ -2130,12 +2134,13 @@ ir::Expression *ParserImpl::ParsePropertyValue(const ir::PropertyKind *propertyK
     }
 
     ir::ScriptFunction *methodDefinitonNode = ParseFunction(newStatus);
+    ES2PANDA_ASSERT(methodDefinitonNode != nullptr);
     methodDefinitonNode->AddFlag(ir::ScriptFunctionFlags::METHOD);
 
     size_t paramsSize = methodDefinitonNode->Params().size();
 
     auto *value = AllocNode<ir::FunctionExpression>(methodDefinitonNode);
-    ES2PANDA_ASSERT(value);
+    ES2PANDA_ASSERT(value != nullptr);
     value->SetRange(methodDefinitonNode->Range());
 
     if (*propertyKind == ir::PropertyKind::SET && paramsSize != 1) {
@@ -2185,12 +2190,12 @@ ir::Expression *ParserImpl::ParsePropertyDefinition([[maybe_unused]] ExpressionP
     }
 
     ir::Expression *value = ParsePropertyValue(&propertyKind, &methodStatus, flags);
-    ES2PANDA_ASSERT(value);
+    ES2PANDA_ASSERT(value != nullptr);
     lexer::SourcePosition end = value->End();
 
     auto *returnProperty =
         AllocNode<ir::Property>(propertyKind, key, value, methodStatus != ParserStatus::NO_OPTS, isComputed);
-    ES2PANDA_ASSERT(returnProperty);
+    ES2PANDA_ASSERT(returnProperty != nullptr);
     returnProperty->SetRange({start, end});
 
     return returnProperty;
@@ -2266,7 +2271,7 @@ ir::ObjectExpression *ParserImpl::ParseObjectExpression(ExpressionParseFlags fla
     auto nodeType = inPattern ? ir::AstNodeType::OBJECT_PATTERN : ir::AstNodeType::OBJECT_EXPRESSION;
     auto *objectExpression =
         AllocNode<ir::ObjectExpression>(nodeType, Allocator(), std::move(properties), trailingComma);
-    ES2PANDA_ASSERT(objectExpression);
+    ES2PANDA_ASSERT(objectExpression != nullptr);
     objectExpression->SetRange({start, lexer_->GetToken().End()});
     lexer_->NextToken();
 
@@ -2313,7 +2318,7 @@ ir::SequenceExpression *ParserImpl::ParseSequenceExpression(ir::Expression *star
 
     lexer::SourcePosition end = sequence.back()->End();
     auto *sequenceNode = AllocNode<ir::SequenceExpression>(std::move(sequence));
-    ES2PANDA_ASSERT(sequenceNode);
+    ES2PANDA_ASSERT(sequenceNode != nullptr);
     sequenceNode->SetRange({start, end});
 
     return sequenceNode;
@@ -2405,7 +2410,7 @@ ir::Expression *ParserImpl::ParseImportExpression()
         }
 
         auto *metaProperty = AllocNode<ir::MetaProperty>(ir::MetaProperty::MetaPropertyKind::IMPORT_META);
-        ES2PANDA_ASSERT(metaProperty);
+        ES2PANDA_ASSERT(metaProperty != nullptr);
         metaProperty->SetRange({startLoc, endLoc});
 
         lexer_->NextToken();
@@ -2458,7 +2463,7 @@ ir::FunctionExpression *ParserImpl::ParseFunctionExpression(ParserStatus newStat
     functionNode->SetStart(startLoc);
 
     auto *funcExpr = AllocNode<ir::FunctionExpression>(ident, functionNode);
-    ES2PANDA_ASSERT(funcExpr);
+    ES2PANDA_ASSERT(funcExpr != nullptr);
     funcExpr->SetRange(functionNode->Range());
 
     return funcExpr;

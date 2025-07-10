@@ -154,7 +154,7 @@ void DestructuringContext::HandleAssignmentPattern(ir::AssignmentExpression *ass
     if (!checker_->HasStatus(CheckerStatus::IN_CONST_CONTEXT)) {
         defaultType = checker_->GetBaseTypeOfLiteralType(defaultType);
     }
-
+    ES2PANDA_ASSERT(defaultType != nullptr);
     if (validateDefault && assignmentPattern->Right()->IsObjectExpression() &&
         assignmentPattern->Left()->IsObjectPattern()) {
         ValidateObjectLiteralType(defaultType->AsObjectType(), assignmentPattern->Left()->AsObjectPattern());
@@ -560,6 +560,7 @@ Type *ObjectDestructuringContext::CreateObjectTypeForRest(ObjectType *objType)
         if (!it->HasFlag(varbinder::VariableFlags::INFERRED_IN_PATTERN)) {
             auto *memberVar =
                 varbinder::Scope::CreateVar(checker_->Allocator(), it->Name(), varbinder::VariableFlags::NONE, nullptr);
+            ES2PANDA_ASSERT(memberVar != nullptr);
             memberVar->SetTsType(it->TsType());
             memberVar->AddFlag(it->Flags());
             ES2PANDA_ASSERT(desc != nullptr);
@@ -568,6 +569,7 @@ Type *ObjectDestructuringContext::CreateObjectTypeForRest(ObjectType *objType)
     }
 
     Type *returnType = checker_->Allocator()->New<ObjectLiteralType>(desc);
+    ES2PANDA_ASSERT(returnType != nullptr);
     returnType->AsObjectType()->AddObjectFlag(ObjectFlags::RESOLVED_MEMBERS);
     return returnType;
 }

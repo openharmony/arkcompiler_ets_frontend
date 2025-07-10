@@ -77,7 +77,7 @@ static ETSObjectType *FunctionTypeToFunctionalInterfaceType(ETSChecker *checker,
 
     if (signature->RestVar() != nullptr) {
         auto nPosParams = signature->Params().size();
-        auto *functionN = checker->GlobalBuiltinFunctionType(nPosParams, true)->AsETSObjectType();
+        auto *functionN = checker->GlobalBuiltinFunctionType(nPosParams, true);
         auto substitution = Substitution {};
         for (size_t i = 0; i < nPosParams; i++) {
             substitution.emplace(functionN->TypeArguments()[i]->AsETSTypeParameter(),
@@ -102,7 +102,7 @@ static ETSObjectType *FunctionTypeToFunctionalInterfaceType(ETSChecker *checker,
         return nullptr;
     }
 
-    auto *funcIface = checker->GlobalBuiltinFunctionType(arity, false)->AsETSObjectType();
+    auto *funcIface = checker->GlobalBuiltinFunctionType(arity, false);
     auto substitution = Substitution {};
 
     for (size_t i = 0; i < arity; i++) {
