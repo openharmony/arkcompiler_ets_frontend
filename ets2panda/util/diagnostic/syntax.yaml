@@ -1195,3 +1195,7 @@ syntax:
 - name: DEEP_NESTING
   id: 306
   message: "Maximum allowed nesting level exceeded."
+
+- name: DEFAULT_PARAM_IN_DECLARE
+  id: 382
+  message: "A parameter initializer is only allowed in a function or constructor implementation."
