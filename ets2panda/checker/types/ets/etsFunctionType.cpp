@@ -80,6 +80,8 @@ static ETSObjectType *FunctionTypeToFunctionalInterfaceType(ETSChecker *checker,
         auto *elementType = !signature->RestVar()->TsType()->IsETSTupleType()
                                 ? checker->GetElementTypeOfArray(signature->RestVar()->TsType())
                                 : checker->GlobalETSAnyType();
+        ES2PANDA_ASSERT(functionN != nullptr);
+        ES2PANDA_ASSERT(substitution != nullptr);
         substitution->emplace(functionN->TypeArguments()[0]->AsETSTypeParameter(), checker->MaybeBoxType(elementType));
         return functionN->Substitute(checker->Relation(), substitution, true, isExtensionHack);
     }
@@ -94,6 +96,8 @@ static ETSObjectType *FunctionTypeToFunctionalInterfaceType(ETSChecker *checker,
     auto *funcIface = checker->GlobalBuiltinFunctionType(arity, false);
     auto *substitution = checker->NewSubstitution();
 
+    ES2PANDA_ASSERT(funcIface != nullptr);
+    ES2PANDA_ASSERT(substitution != nullptr);
     for (size_t i = 0; i < arity; i++) {
         substitution->emplace(funcIface->TypeArguments()[i]->AsETSTypeParameter(),
                               checker->MaybeBoxType(signature->Params()[i]->TsType()));

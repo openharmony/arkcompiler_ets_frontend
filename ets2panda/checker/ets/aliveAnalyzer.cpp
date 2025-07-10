@@ -242,7 +242,9 @@ void AliveAnalyzer::AnalyzeMethodDef(const ir::MethodDefinition *methodDef)
     status_ = LivenessStatus::ALIVE;
     AnalyzeStat(func->Body());
     ES2PANDA_ASSERT(methodDef->TsType() && methodDef->TsType()->IsETSFunctionType());
-    const auto *returnType = methodDef->TsType()->AsETSFunctionType()->FindSignature(func)->ReturnType();
+    const auto *signature = methodDef->TsType()->AsETSFunctionType()->FindSignature(func);
+    ES2PANDA_ASSERT(signature != nullptr);
+    const auto *returnType = signature->ReturnType();
     const auto isVoid = returnType->IsETSVoidType() || returnType == checker_->GlobalVoidType();
 
     auto isPromiseVoid = false;
@@ -255,8 +257,9 @@ void AliveAnalyzer::AnalyzeMethodDef(const ir::MethodDefinition *methodDef)
     }
 
     if (status_ == LivenessStatus::ALIVE && !isVoid && !isPromiseVoid) {
-        ES2PANDA_ASSERT(methodDef->Function() != nullptr);
-        if (!methodDef->Function()->HasReturnStatement()) {
+        auto *fuction = methodDef->Function();
+        ES2PANDA_ASSERT(fuction != nullptr);
+        if (!fuction->HasReturnStatement()) {
             if (!util::Helpers::IsAsyncMethod(methodDef)) {
                 checker_->LogError(diagnostic::MISSING_RETURN_STMT, {}, func->Start());
                 ClearPendingExits();

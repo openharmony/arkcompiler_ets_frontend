@@ -378,6 +378,7 @@ checker::Type *ETSAnalyzer::Check(ir::ETSFunctionType *node) const
     checker->CheckFunctionSignatureAnnotations(node->Params(), node->TypeParams(), node->ReturnType());
 
     auto *signatureInfo = checker->ComposeSignatureInfo(node->TypeParams(), node->Params());
+    ES2PANDA_ASSERT(signatureInfo != nullptr);
     auto *returnType = node->IsExtensionFunction() && node->ReturnType()->IsTSThisType()
                            ? signatureInfo->params.front()->TsType()
                            : checker->ComposeReturnType(node->ReturnType(), node->IsAsync());
@@ -1226,6 +1227,7 @@ checker::Type *ETSAnalyzer::Check(ir::AwaitExpression *expr) const
     }
 
     checker::Type *argType = checker->GetApparentType(expr->argument_->Check(checker));
+    ES2PANDA_ASSERT(argType != nullptr);
     ArenaVector<Type *> awaitedTypes(checker->ProgramAllocator()->Adapter());
 
     if (argType->IsETSUnionType()) {
@@ -1724,6 +1726,7 @@ checker::Type *ETSAnalyzer::Check(ir::Identifier *expr) const
         }
     }
 
+    ES2PANDA_ASSERT(identType != nullptr);
     expr->SetTsType(identType);
     if (!identType->IsTypeError()) {
         checker->Context().CheckIdentifierSmartCastCondition(expr);
@@ -1836,6 +1839,7 @@ checker::Type *ETSAnalyzer::Check(ir::MemberExpression *expr) const
     auto *baseType = checker->GetNonConstantType(checker->GetApparentType(expr->Object()->Check(checker)));
     //  Note: don't use possible smart cast to null-like types.
     //        Such situation should be correctly resolved in the subsequent lowering.
+    ES2PANDA_ASSERT(baseType != nullptr);
     if (baseType->DefinitelyETSNullish() && expr->Object()->IsIdentifier()) {
         baseType = expr->Object()->AsIdentifier()->Variable()->TsType();
     }
@@ -2589,7 +2593,7 @@ checker::Type *ETSAnalyzer::Check(ir::UnaryExpression *expr) const
         switch (expr->OperatorType()) {
             case lexer::TokenType::PUNCTUATOR_MINUS: {
                 checker::Type *type = checker->CreateETSBigIntLiteralType(argType->AsETSBigIntType()->GetValue());
-
+                ES2PANDA_ASSERT(type != nullptr);
                 // We do not need this const anymore as we are negating the bigint object in runtime
                 type->RemoveTypeFlag(checker::TypeFlag::CONSTANT);
                 expr->argument_->SetTsType(type);
@@ -2919,7 +2923,10 @@ checker::Type *ETSAnalyzer::Check(ir::AnnotationUsage *st) const
     ArenaUnorderedMap<util::StringView, ir::ClassProperty *> fieldMap {checker->ProgramAllocator()->Adapter()};
     for (auto *it : annoDecl->Properties()) {
         auto *field = it->AsClassProperty();
-        fieldMap.insert(std::make_pair(field->Id()->Name(), field));
+        ES2PANDA_ASSERT(field != nullptr);
+        auto *id = field->Id();
+        ES2PANDA_ASSERT(id != nullptr);
+        fieldMap.insert(std::make_pair(id->Name(), field));
     }
 
     if (annoDecl->Properties().size() < st->Properties().size()) {
@@ -3176,6 +3183,7 @@ bool ETSAnalyzer::CheckInferredFunctionReturnType(ir::ReturnStatement *st, ir::S
     if (containingFunc->ReturnTypeAnnotation() != nullptr) {
         if (containingFunc->IsAsyncFunc()) {
             auto *promiseType = containingFunc->ReturnTypeAnnotation()->GetType(checker);
+            ES2PANDA_ASSERT(promiseType != nullptr);
             if (!promiseType->IsETSObjectType() || promiseType->AsETSObjectType()->TypeArguments().size() != 1) {
                 return false;
             }
@@ -3270,6 +3278,7 @@ checker::Type *ETSAnalyzer::Check(ir::ReturnStatement *st) const
     ir::AstNode *ancestor = util::Helpers::FindAncestorGivenByType(st, ir::AstNodeType::SCRIPT_FUNCTION);
     ES2PANDA_ASSERT(ancestor && ancestor->IsScriptFunction());
 
+    ES2PANDA_ASSERT(ancestor != nullptr);
     auto *containingFunc = ancestor->AsScriptFunction();
     containingFunc->AddFlag(ir::ScriptFunctionFlags::HAS_RETURN);
 
@@ -3513,6 +3522,7 @@ checker::Type *ETSAnalyzer::Check(ir::TSAsExpression *expr) const
 
     checker->CheckAnnotations(expr->TypeAnnotation()->Annotations());
     auto *const targetType = expr->TypeAnnotation()->AsTypeNode()->GetType(checker);
+    ES2PANDA_ASSERT(targetType != nullptr);
     if (targetType->IsTypeError()) {
         return checker->InvalidateType(expr);
     }

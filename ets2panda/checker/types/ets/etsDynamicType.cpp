@@ -30,6 +30,7 @@ varbinder::LocalVariable *ETSDynamicType::GetPropertyDynamic(const util::StringV
 
     varbinder::LocalVariable *var = varbinder::Scope::CreateVar<varbinder::PropertyDecl>(
         Allocator(), name, varbinder::VariableFlags::BUILTIN_TYPE, nullptr);
+    ES2PANDA_ASSERT(var != nullptr);
     var->SetTsType(checker->GlobalBuiltinDynamicType(lang_));
     propertiesCache_.emplace(name, var);
 

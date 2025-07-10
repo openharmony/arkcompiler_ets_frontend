@@ -345,6 +345,7 @@ ir::ArrowFunctionExpression *ParserImpl::ParseArrowFunctionExpressionBody(ArrowF
     funcNode->SetRange({desc->startLoc, endLoc});
 
     auto *arrowFuncNode = AllocNode<ir::ArrowFunctionExpression>(funcNode, Allocator());
+    ES2PANDA_ASSERT(arrowFuncNode != nullptr);
     arrowFuncNode->SetRange(funcNode->Range());
 
     return arrowFuncNode;
@@ -2369,7 +2370,7 @@ ir::Expression *ParserImpl::ParseUnaryOrPrefixUpdateExpression(ExpressionParseFl
         returnExpr = AllocNode<ir::UnaryExpression>(argument, operatorType);
     }
 
-    ES2PANDA_ASSERT(returnExpr);
+    ES2PANDA_ASSERT(returnExpr != nullptr);
     returnExpr->SetRange({start, end});
 
     return returnExpr;
@@ -2415,6 +2416,7 @@ ir::Expression *ParserImpl::ParseImportExpression()
     ExpectToken(lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS);
 
     auto *importExpression = AllocNode<ir::ImportExpression>(source);
+    ES2PANDA_ASSERT(importExpression != nullptr);
     importExpression->SetRange({startLoc, endImportLoc});
 
     return importExpression;
@@ -2450,6 +2452,7 @@ ir::FunctionExpression *ParserImpl::ParseFunctionExpression(ParserStatus newStat
     }
 
     ir::ScriptFunction *functionNode = ParseFunction(newStatus);
+    ES2PANDA_ASSERT(functionNode != nullptr);
     functionNode->SetStart(startLoc);
 
     auto *funcExpr = AllocNode<ir::FunctionExpression>(ident, functionNode);

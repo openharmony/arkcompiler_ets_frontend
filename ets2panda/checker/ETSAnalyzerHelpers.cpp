@@ -516,6 +516,7 @@ void ProcessExclamationMark(ETSChecker *checker, ir::UnaryExpression *expr, chec
 {
     if (checker->IsNullLikeOrVoidExpression(expr->Argument())) {
         auto tsType = checker->CreateETSBooleanType(true);
+        CHECK_NOT_NULL(tsType);
         tsType->AddTypeFlag(checker::TypeFlag::CONSTANT);
         expr->SetTsType(tsType);
         return;

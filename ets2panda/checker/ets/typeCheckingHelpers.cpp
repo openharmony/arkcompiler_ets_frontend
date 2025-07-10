@@ -576,6 +576,7 @@ Type *ETSChecker::GetTypeOfVariable(varbinder::Variable *const var)
     // NOTE: kbaladurin. forbid usage of imported entities as types without declarations
     if (VarBinder()->AsETSBinder()->IsDynamicModuleVariable(var)) {
         auto *importData = VarBinder()->AsETSBinder()->DynamicImportDataForVar(var);
+        ES2PANDA_ASSERT(importData != nullptr);
         if (importData->import->IsPureDynamic()) {
             return GlobalBuiltinDynamicType(importData->import->Language());
         }

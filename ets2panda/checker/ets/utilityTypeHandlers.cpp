@@ -240,6 +240,7 @@ ir::ClassProperty *ETSChecker::CreateNullishPropertyFromAccessor(ir::MethodDefin
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         ProgramAllocator()->New<ir::ClassProperty>(ident, nullptr, nullptr, modifierFlag, ProgramAllocator(), false);
 
+    ES2PANDA_ASSERT(prop != nullptr);
     prop->SetParent(newClassDefinition);
     ident->SetParent(prop);
 
