@@ -92,7 +92,7 @@ import {
   DOUBLE_DOLLAR_IDENTIFIER,
   THIS_IDENTIFIER,
   STATE_STYLES,
-  CustomDecoratorName,
+  CustomInterfaceName,
   observedDecoratorName,
   skipImportDecoratorName,
   ENTRY_DECORATOR_NAME,
@@ -104,7 +104,8 @@ import {
   PropDecoratorName,
   PropFunctionName,
   StorageTypeName,
-  customLayoutFunctionName
+  customLayoutFunctionName,
+  VIRTUAL_SCROLL_IDENTIFIER
 } from './utils/consts/ArkuiConstants';
 import { arkuiImportList } from './utils/consts/ArkuiImportList';
 import type { IdentifierAndArguments, ForbidenAPICheckResult } from './utils/consts/InteropAPI';
@@ -4386,7 +4387,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   private handleCallExpression(node: ts.Node): void {
     const tsCallExpr = node as ts.CallExpression;
     this.checkSdkAbilityLifecycleMonitor(tsCallExpr);
-    this.handleStateStyles(tsCallExpr);
+    this.handleCallExpressionForUI(tsCallExpr);
     this.handleBuiltinCtorCallSignature(tsCallExpr);
     this.handleSdkConstructorIfaceForCallExpression(tsCallExpr);
     if (this.options.arkts2 && tsCallExpr.typeArguments !== undefined) {
@@ -4426,6 +4427,11 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleSdkGlobalApi(tsCallExpr);
     this.handleObjectLiteralAssignmentToClass(tsCallExpr);
     this.checkRestrictedAPICall(tsCallExpr);
+  }
+
+  private handleCallExpressionForUI(node: ts.CallExpression): void {
+    this.handleStateStyles(node);
+    this.handleCallExpressionForRepeat(node);
   }
 
   handleNoTsLikeFunctionCall(callExpr: ts.CallExpression): void {
@@ -6904,10 +6910,10 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
 
     if (ts.isCallExpression(node.expression) && ts.isIdentifier(node.expression.expression)) {
-      if (node.expression.expression.text === CustomDecoratorName.Extend) {
+      if (node.expression.expression.text === CustomInterfaceName.Extend) {
         const autofix = this.autofixer?.fixExtendDecorator(node, false, this.interfacesNeedToImport);
         this.incrementCounters(node.parent, FaultID.ExtendDecoratorNotSupported, autofix);
-      } else if (node.expression.expression.text === CustomDecoratorName.AnimatableExtend) {
+      } else if (node.expression.expression.text === CustomInterfaceName.AnimatableExtend) {
         const autofix = this.autofixer?.fixExtendDecorator(node, true, this.interfacesNeedToImport);
         this.incrementCounters(node.parent, FaultID.AnimatableExtendDecoratorTransform, autofix);
       }
@@ -7279,10 +7285,10 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   }
 
   private static isWrappedByExtendDecorator(node: ts.Identifier): boolean {
-    const wrappedSkipComponents = new Set<string>([CustomDecoratorName.AnimatableExtend, CustomDecoratorName.Extend]);
+    const wrappedSkipComponents = new Set<string>([CustomInterfaceName.AnimatableExtend, CustomInterfaceName.Extend]);
     if (ts.isCallExpression(node.parent)) {
       const expr = node.parent.expression;
-      if (wrappedSkipComponents.has(expr.getText()) && node.getText() !== CustomDecoratorName.AnimatableExtend) {
+      if (wrappedSkipComponents.has(expr.getText()) && node.getText() !== CustomInterfaceName.AnimatableExtend) {
         return true;
       }
     }
@@ -7381,7 +7387,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
 
-    if (!ts.isIdentifier(node.expression) || node.expression.text !== CustomDecoratorName.Styles) {
+    if (!ts.isIdentifier(node.expression) || node.expression.text !== CustomInterfaceName.Styles) {
       return;
     }
 
@@ -7565,7 +7571,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return true;
     });
     if (filteredClassDecls.length !== 0) {
-      this.interfacesNeedToImport.add(CustomDecoratorName.Observed);
+      this.interfacesNeedToImport.add(CustomInterfaceName.Observed);
     }
     const autofix = this.autofixer?.fixDataObservation(filteredClassDecls);
     this.incrementCounters(node, FaultID.DataObservation, autofix);
@@ -7627,7 +7633,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   private static hasObservedDecorator(classDecl: ts.ClassDeclaration): boolean {
     return (
       ts.getDecorators(classDecl)?.some((decorator) => {
-        return decorator.getText() === '@' + CustomDecoratorName.Observed;
+        return decorator.getText() === '@' + CustomInterfaceName.Observed;
       }) ?? false
     );
   }
@@ -9434,7 +9440,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
     const decoratorName = node.expression.getText();
-    if (decoratorName === CustomDecoratorName.LocalBuilder) {
+    if (decoratorName === CustomInterfaceName.LocalBuilder) {
       const autofix = this.autofixer?.fixBuilderDecorators(node);
       this.incrementCounters(node, FaultID.LocalBuilderDecoratorNotSupported, autofix);
     }
@@ -10014,7 +10020,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (decorators) {
       for (const decorator of decorators) {
         const decoratorName = TsUtils.getDecoratorName(decorator);
-        if (decoratorName && decoratorName === CustomDecoratorName.CustomLayout) {
+        if (decoratorName && decoratorName === CustomInterfaceName.CustomLayout) {
           return;
         }
       }
@@ -11001,5 +11007,27 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
 
     return false;
+  }
+
+  private handleCallExpressionForRepeat(node: ts.CallExpression): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    if (
+      !ts.isIdentifier(node.expression) ||
+      node.expression.getText() !== CustomInterfaceName.Repeat ||
+      this.isDeclarationInSameFile(node.expression)
+    ) {
+      return;
+    }
+
+    const stmt = ts.findAncestor(node, ts.isExpressionStatement);
+    if (!stmt || TsUtils.checkStmtHasTargetIdentifier(stmt, VIRTUAL_SCROLL_IDENTIFIER)) {
+      return;
+    }
+
+    const autofix = this.autofixer?.fixRepeat(stmt);
+    this.incrementCounters(node, FaultID.RepeatDisableVirtualScroll, autofix);
   }
 }
