@@ -426,7 +426,7 @@ bool ETSChecker::IsClassStaticMethod(checker::ETSObjectType *objType, checker::S
 
     // Bugs: these types do not appear as a valid TypeKind, as the TypeKind has more then one bit set
     [[maybe_unused]] static constexpr auto NOT_A_TYPE_KIND = TypeFlag::ETS_DYNAMIC_FLAG;
-
+    CHECK_NOT_NULL(type);
     auto res = static_cast<checker::TypeFlag>(type->TypeFlags() & ~(TO_CLEAR));
     ES2PANDA_ASSERT_POS(res == TypeFlag::NONE || helpers::math::IsPowerOfTwo(res & ~(NOT_A_TYPE_KIND)),
                         ark::es2panda::GetPositionForDiagnostic());

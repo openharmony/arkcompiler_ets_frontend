@@ -788,6 +788,7 @@ void ETSGen::IsInstanceDynamic(const ir::BinaryExpression *const node, const VRe
 void ETSGen::TestIsInstanceConstituent(const ir::AstNode *const node, std::tuple<Label *, Label *> label,
                                        checker::Type const *target, bool acceptNull)
 {
+    ES2PANDA_ASSERT(target != nullptr);
     ES2PANDA_ASSERT(!target->IsETSDynamicType());
     auto [ifTrue, ifFalse] = label;
 
@@ -859,6 +860,7 @@ void ETSGen::BranchIfIsInstance(const ir::AstNode *const node, const VReg srcReg
 void ETSGen::IsInstance(const ir::AstNode *const node, const VReg srcReg, const checker::Type *target)
 {
     target = Checker()->GetApparentType(target);
+    ES2PANDA_ASSERT(target != nullptr);
     ES2PANDA_ASSERT(target->IsETSReferenceType() && GetAccumulatorType() != nullptr);
 
     if (target->IsETSAnyType()) {  // should be IsSupertypeOf(target, source)
@@ -886,6 +888,7 @@ void ETSGen::IsInstance(const ir::AstNode *const node, const VReg srcReg, const 
 // isinstance can only be used for Object and [] types, ensure source is not null!
 void ETSGen::InternalIsInstance(const ir::AstNode *node, const es2panda::checker::Type *target)
 {
+    ES2PANDA_ASSERT(target != nullptr);
     ES2PANDA_ASSERT(target->IsETSObjectType() || target->IsETSArrayType());
     if (!IsNullUnsafeObjectType(target)) {
         EmitIsInstance(node, ToAssemblerType(target));
@@ -898,6 +901,7 @@ void ETSGen::InternalIsInstance(const ir::AstNode *node, const es2panda::checker
 // checkcast can only be used for Object and [] types, ensure source is not nullish!
 void ETSGen::InternalCheckCast(const ir::AstNode *node, const es2panda::checker::Type *target)
 {
+    ES2PANDA_ASSERT(target != nullptr);
     ES2PANDA_ASSERT(target->IsETSObjectType() || target->IsETSArrayType() || target->IsETSTupleType());
     if (!IsNullUnsafeObjectType(target)) {
         EmitCheckCast(node, ToAssemblerType(target));
@@ -908,6 +912,7 @@ void ETSGen::InternalCheckCast(const ir::AstNode *node, const es2panda::checker:
 // optimized specialization for object and [] targets
 void ETSGen::CheckedReferenceNarrowingObject(const ir::AstNode *node, const checker::Type *target)
 {
+    ES2PANDA_ASSERT(target != nullptr);
     ES2PANDA_ASSERT(target->IsETSObjectType() || target->IsETSArrayType() || target->IsETSTupleType());
     const RegScope rs(this);
     const auto srcReg = AllocReg();
@@ -946,6 +951,7 @@ void ETSGen::CheckedReferenceNarrowingObject(const ir::AstNode *node, const chec
 // Implemented on top of the runtime type system, do not relax checks, do not introduce new types
 void ETSGen::CheckedReferenceNarrowing(const ir::AstNode *node, const checker::Type *target)
 {
+    ES2PANDA_ASSERT(target != nullptr);
     // NOTE(vpukhov): #19701 void refactoring
     if (target->IsETSVoidType()) {
         SetAccumulatorType(target);
@@ -953,8 +959,8 @@ void ETSGen::CheckedReferenceNarrowing(const ir::AstNode *node, const checker::T
     }
 
     target = Checker()->GetApparentType(target);
+    ES2PANDA_ASSERT(target != nullptr);
     ES2PANDA_ASSERT(target->IsETSReferenceType());
-
     if (target->IsETSAnyType()) {  // should be IsSupertypeOf(target, source)
         SetAccumulatorType(target);
         return;
@@ -1050,6 +1056,7 @@ void ETSGen::ApplyConversionCast(const ir::AstNode *node, const checker::Type *t
         case checker::TypeFlag::ETS_ARRAY:
         case checker::TypeFlag::ETS_OBJECT:
         case checker::TypeFlag::ETS_TYPE_PARAMETER: {
+            ES2PANDA_ASSERT(GetAccumulatorType() != nullptr);
             if (GetAccumulatorType() != nullptr && GetAccumulatorType()->IsETSDynamicType()) {
                 CastDynamicToObject(node, targetType);
             }
@@ -1676,6 +1683,7 @@ void ETSGen::CastToInt(const ir::AstNode *node)
 
 void ETSGen::CastToReftype(const ir::AstNode *const node, const checker::Type *const targetType, const bool unchecked)
 {
+    ES2PANDA_ASSERT(GetAccumulatorType() != nullptr);
     ES2PANDA_ASSERT(GetAccumulatorType()->IsETSReferenceType());
 
     const auto *const sourceType = GetAccumulatorType();
@@ -1741,6 +1749,7 @@ void ETSGen::CastDynamicToObject(const ir::AstNode *node, const checker::Type *t
     if (targetType->IsETSArrayType() || targetType->IsETSObjectType() || targetType->IsETSTypeParameter() ||
         targetType->IsETSUnionType() || targetType->IsETSFunctionType() || targetType->DefinitelyETSNullish() ||
         targetType->IsETSTupleType() || targetType->IsETSAnyType()) {
+        ES2PANDA_ASSERT(GetAccumulatorType() != nullptr);
         auto lang = GetAccumulatorType()->AsETSDynamicType()->Language();
         auto methodName = compiler::Signatures::Dynamic::GetObjectBuiltin(lang);
 
@@ -1809,6 +1818,7 @@ void ETSGen::CastToDynamic(const ir::AstNode *node, const checker::ETSDynamicTyp
             }
             [[fallthrough]];
         case checker::TypeFlag::FUNCTION:
+            ES2PANDA_ASSERT(GetAccumulatorType() != nullptr);
             ES2PANDA_ASSERT(!GetAccumulatorType()->IsETSMethodType());
             [[fallthrough]];
         case checker::TypeFlag::ETS_ARRAY:
