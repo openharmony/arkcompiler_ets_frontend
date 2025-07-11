@@ -210,6 +210,7 @@ ir::AstNode *ETSParser::ParseAnnotationProperty(ir::Identifier *fieldName, ir::M
 
     if (initializer != nullptr && !ValidAnnotationValue(initializer)) {
         LogError(diagnostic::INVALID_VAL_ANNOTATION_FIELD, {}, savePos);
+        initializer = AllocBrokenExpression(savePos);
     }
 
     memberModifiers |= ir::ModifierFlags::PUBLIC;
