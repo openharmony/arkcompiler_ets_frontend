@@ -1733,7 +1733,10 @@ bool ETSChecker::ValidateTupleIndexFromEtsObject(const ETSTupleType *const tuple
     if (expr->Property() == nullptr || expr->Property()->Variable() == nullptr ||
         expr->Property()->Variable()->Declaration() == nullptr ||
         expr->Property()->Variable()->Declaration()->Node() == nullptr ||
-        expr->Property()->Variable()->Declaration()->Node()->AsClassElement() == nullptr) {
+        !(expr->Property()->Variable()->Declaration()->Node()->IsMethodDefinition() ||
+          expr->Property()->Variable()->Declaration()->Node()->IsClassProperty() ||
+          expr->Property()->Variable()->Declaration()->Node()->IsClassStaticBlock() ||
+          expr->Property()->Variable()->Declaration()->Node()->IsOverloadDeclaration())) {
         LogError(diagnostic::TUPLE_INDEX_NONCONST, {}, expr->Start());
         return false;
     }
