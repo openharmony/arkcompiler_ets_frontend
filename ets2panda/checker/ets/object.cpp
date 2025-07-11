@@ -112,7 +112,7 @@ static bool CheckFunctionDecl(varbinder::LocalVariable *child, varbinder::LocalV
         return false;
     }
     ES2PANDA_ASSERT(child->Declaration()->Type() == parent->Declaration()->Type());
-    if (!child->TsType()->IsETSMethodType()) {
+    if (!child->TsType()->IsETSMethodType() || !parent->TsType()->IsETSMethodType()) {
         return true;
     }
 
