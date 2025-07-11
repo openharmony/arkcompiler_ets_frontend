@@ -62,6 +62,7 @@
 #include "lexer/lexer.h"
 #include "lexer/token/letters.h"
 #include "lexer/token/sourceLocation.h"
+#include "util/recursiveGuard.h"
 #include "util/ustring.h"
 #include "generated/diagnostic.h"
 
@@ -90,6 +91,14 @@ ir::Statement *ParserImpl::ParseStatementLiteralIdentHelper(StatementParsingFlag
 // NOLINTNEXTLINE(google-default-arguments)
 ir::Statement *ParserImpl::ParseStatementPunctuatorsHelper(StatementParsingFlags flags)
 {
+    TrackRecursive trackRecursive(RecursiveCtx());
+    if (!trackRecursive) {
+        LogError(diagnostic::DEEP_NESTING);
+        while (Lexer()->GetToken().Type() != lexer::TokenType::EOS) {
+            Lexer()->NextToken();
+        }
+        return AllocBrokenStatement(Lexer()->GetToken().Loc());
+    }
     switch (lexer_->GetToken().Type()) {
         case lexer::TokenType::PUNCTUATOR_LEFT_BRACE:
             return ParseBlockStatement();
