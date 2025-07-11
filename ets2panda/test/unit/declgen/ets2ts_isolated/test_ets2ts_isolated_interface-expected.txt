@@ -1,0 +1,10 @@
+export declare interface User {
+    id: number;
+    name: string;
+    age?: number | undefined;
+    readonly apiUrl: string;
+}
+export declare interface Animal {
+    name: string;
+    makeSound(): void;
+}
