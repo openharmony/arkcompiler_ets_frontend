@@ -308,7 +308,7 @@ ir::ClassDeclaration *EnumLoweringPhase::CreateClass(ir::TSEnumDeclaration *cons
         Allocator(), ident,
         flags.isLocal ? baseClassDefinitionFlag | ir::ClassDefinitionModifiers::LOCAL : baseClassDefinitionFlag,
         enumDecl->IsDeclare() ? ir::ModifierFlags::FINAL | ir::ModifierFlags::DECLARE : ir::ModifierFlags::FINAL,
-        Language(Language::Id::ETS));
+        enumDecl->Language());
 
     classDef->SetSuper(superClass);
     auto *classDecl = AllocNode<ir::ClassDeclaration>(classDef, Allocator());

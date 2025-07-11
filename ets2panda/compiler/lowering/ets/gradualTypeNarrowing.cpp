@@ -89,6 +89,10 @@ void GradualTypeNarrowing::NarrowGradualType(ir::AstNode *node)
     if (typedNode->TsType() != nullptr) {
         typedNode->SetTsType(TransformType(typedNode->TsType(), typeTransformFunc));
     }
+    if (typedNode->IsBinaryExpression()) {
+        typedNode->AsBinaryExpression()->SetOperationType(
+            TransformType(typedNode->AsBinaryExpression()->OperationType(), typeTransformFunc));
+    }
 
     auto var = node->Variable();
     if (var != nullptr && var->TsType() != nullptr) {

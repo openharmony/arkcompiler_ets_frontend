@@ -35,13 +35,13 @@ std::string_view InterfaceObjectLiteralLowering::Name() const
 static inline bool IsInterfaceType(const checker::Type *type)
 {
     return type != nullptr && type->IsETSObjectType() &&
-           type->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::INTERFACE) && !type->IsETSAnyType();
+           type->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::INTERFACE) && !type->IsGradualType();
 }
 
 static inline bool IsAbstractClassType(const checker::Type *type)
 {
     return type != nullptr && type->IsETSObjectType() &&
-           type->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::ABSTRACT) && !type->IsETSAnyType();
+           type->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::ABSTRACT) && !type->IsGradualType();
 }
 
 static ir::AstNode *CreateAnonClassImplCtor(public_lib::Context *ctx, ArenaVector<ReadonlyFieldHolder> &readonlyFields)

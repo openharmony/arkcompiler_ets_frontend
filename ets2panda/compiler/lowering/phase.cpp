@@ -132,7 +132,6 @@ std::vector<Phase *> GetETSPhaseList()
         new PluginPhase {g_pluginsAfterCheck, ES2PANDA_STATE_CHECKED, &util::Plugin::AfterCheck},
         // new ConvertPrimitiveCastMethodCall,
         new DynamicImport,
-        new GradualTypeNarrowing,
         new AnnotationCopyPostLowering,
         new AsyncMethodLowering,
         new DeclareOverloadLowering,
@@ -161,6 +160,7 @@ std::vector<Phase *> GetETSPhaseList()
         new OptionalArgumentsLowering, // #22952 could be moved to earlier phase
         new GenericBridgesPhase,
         new TypeFromLowering,
+        new GradualTypeNarrowing,
         new PrimitiveConversionPhase,
         new UnboxPhase,
         // pluginsAfterLowerings has to come at the very end, nothing should go after it

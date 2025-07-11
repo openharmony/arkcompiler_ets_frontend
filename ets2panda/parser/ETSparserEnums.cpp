@@ -192,11 +192,13 @@ ir::TSEnumDeclaration *ETSParser::ParseEnumMembers(ir::Identifier *const key, co
     if (typeAnnotation == nullptr) {
         enumDeclaration = AllocNode<ir::TSEnumDeclaration>(
             Allocator(), key, std::move(members),
-            ir::TSEnumDeclaration::ConstructorFlags {isConst, isStatic, InAmbientContext()});
+            ir::TSEnumDeclaration::ConstructorFlags {isConst, isStatic, InAmbientContext()},
+            GetContext().GetLanguage());
     } else {
         enumDeclaration = AllocNode<ir::TSEnumDeclaration>(
             Allocator(), key, std::move(members),
-            ir::TSEnumDeclaration::ConstructorFlags {isConst, isStatic, InAmbientContext()}, typeAnnotation);
+            ir::TSEnumDeclaration::ConstructorFlags {isConst, isStatic, InAmbientContext()}, typeAnnotation,
+            GetContext().GetLanguage());
     }
 
     ES2PANDA_ASSERT(enumDeclaration != nullptr);

@@ -409,8 +409,9 @@ parser::Program *ScopedDebugInfoPlugin::CreateEmptyProgram(std::string_view sour
     program->SetSource({sourceFilePath, "", globalProgram_->SourceFileFolder().Utf8(), true, false});
     program->SetPackageInfo(moduleName, util::ModuleKind::MODULE);
     auto *emptyIdent = allocator->New<ir::Identifier>("", allocator);
+    auto lang = program->IsDeclForDynamicStaticInterop() ? Language(Language::Id::JS) : Language(Language::Id::ETS);
     auto *etsModule = allocator->New<ir::ETSModule>(allocator, ArenaVector<ir::Statement *>(allocator->Adapter()),
-                                                    emptyIdent, ir::ModuleFlag::ETSSCRIPT, program);
+                                                    emptyIdent, ir::ModuleFlag::ETSSCRIPT, lang, program);
     program->SetAst(etsModule);
 
     helpers::AddExternalProgram(globalProgram_, program, moduleName);

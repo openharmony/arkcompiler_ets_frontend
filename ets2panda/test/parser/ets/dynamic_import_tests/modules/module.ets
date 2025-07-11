@@ -35,3 +35,9 @@ export declare interface I {
 export declare abstract class Animal {
     abstract move(): void
 }
+
+export declare class C {
+    s:string
+}
+
+export declare type requiredC = Required<C>

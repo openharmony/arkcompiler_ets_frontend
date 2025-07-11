@@ -1071,7 +1071,7 @@ Type *ETSChecker::HandleRequiredType(Type *typeToBeRequired)
 
     typeToBeRequired = typeToBeRequired->Clone(this);
 
-    MakePropertiesNonNullish(typeToBeRequired->AsETSObjectType());
+    MakePropertiesNonNullish(typeToBeRequired->MaybeBaseTypeOfGradualType()->AsETSObjectType());
 
     return typeToBeRequired;
 }

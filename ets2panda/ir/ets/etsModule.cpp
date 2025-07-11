@@ -57,7 +57,7 @@ void ETSModule::Dump(ir::SrcDumper *dumper) const
 ETSModule *ETSModule::Construct(ArenaAllocator *allocator)
 {
     ArenaVector<Statement *> statementList(allocator->Adapter());
-    return allocator->New<ETSModule>(allocator, std::move(statementList), nullptr, ModuleFlag::NONE, nullptr);
+    return allocator->New<ETSModule>(allocator, std::move(statementList), nullptr, ModuleFlag::NONE, lang_, nullptr);
 }
 
 void ETSModule::CopyTo(AstNode *other) const

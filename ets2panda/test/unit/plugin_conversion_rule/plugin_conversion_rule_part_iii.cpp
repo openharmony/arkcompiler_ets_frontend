@@ -22,7 +22,7 @@ TEST_F(PluginConversionRuleUnitTest, ParserProgramPtrInputParameter)
 {
     std::string targetCAPI {R"(
     /* explicit ETSModule(ArenaAllocator *allocator, ArenaVector<Statement *> &&statementList, Identifier *ident,
-                       ModuleFlag flag, parser::Program *program) */
+                       ModuleFlag flag, Language lang, parser::Program *program) */
     extern "C" es2panda_AstNode *CreateETSModule([[maybe_unused]] es2panda_Context *context,
     [[maybe_unused]] es2panda_AstNode **statementList, size_t statementListLen,
     [[maybe_unused]] es2panda_AstNode *ident, [[maybe_unused]] Es2pandaModuleFlag flag,
@@ -39,11 +39,12 @@ TEST_F(PluginConversionRuleUnitTest, ParserProgramPtrInputParameter)
         }
         auto *identE2p = reinterpret_cast<ir::Identifier *>(ident);
         auto flagE2p = E2pToIrModuleFlag(flag);
+        ark::es2panda::Language langE2p {Language::Id::ETS};
         auto *programE2p =  reinterpret_cast<parser::Program *>(program);
         auto *ctx = reinterpret_cast<Context *>(context);
         auto *ctxAllocator = ctx->allocator;
         auto *astNode = (ctxAllocator->New<ir::ETSModule>(allocatorE2p, std::move(statementListArenaVector),
-            identE2p, flagE2p, programE2p));
+            identE2p, flagE2p, langE2p, programE2p));
         astNode->AddAstNodeFlags(ir::AstNodeFlags::NOCLEANUP);
         return reinterpret_cast<es2panda_AstNode *>(astNode);
     })"};

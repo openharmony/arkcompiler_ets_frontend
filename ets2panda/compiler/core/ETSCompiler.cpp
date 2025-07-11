@@ -708,8 +708,7 @@ void ETSCompiler::CompileAny(const ir::CallExpression *expr, const ir::Expressio
     } else {
         etsg->CallAnyThis(expr, memberExpr->Property()->AsIdentifier(), expr->Arguments(), objReg);
     }
-    auto returnType = expr->Signature()->ReturnType();
-    etsg->EmitAnyCheckCast(expr, returnType);
+    etsg->EmitAnyCheckCast(expr, expr->TsType());
 }
 
 void ETSCompiler::EmitCall(const ir::CallExpression *expr, compiler::VReg &calleeReg,

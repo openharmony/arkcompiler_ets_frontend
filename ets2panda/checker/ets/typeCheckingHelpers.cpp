@@ -89,7 +89,8 @@ bool ETSChecker::CheckNonNullish(ir::Expression const *expr)
 Type *ETSChecker::GetNonNullishType(Type *type)
 {
     if (type->IsGradualType()) {
-        return GetNonNullishType(type->AsGradualType()->GetBaseType());
+        return CreateGradualType(GetNonNullishType(type->AsGradualType()->GetBaseType()),
+                                 type->AsGradualType()->Language());
     }
     if (type->DefinitelyNotETSNullish()) {
         return type;
