@@ -364,4 +364,13 @@ ir::Statement *ETSParser::ParseStructStatement([[maybe_unused]] StatementParsing
     return AllocBrokenStatement(rangeStruct);
 }
 
+// NOLINTNEXTLINE(google-default-arguments)
+ir::Statement *ETSParser::ParseInterfaceStatement([[maybe_unused]] StatementParsingFlags flags)
+{
+    auto &rangeClass = Lexer()->GetToken().Loc();
+    LogError(diagnostic::ILLEGAL_START_STRUCT_CLASS, {"INTERFACE"}, Lexer()->GetToken().Start());
+    ParseInterfaceDeclaration(false);
+    return AllocBrokenStatement(rangeClass);
+}
+
 }  // namespace ark::es2panda::parser

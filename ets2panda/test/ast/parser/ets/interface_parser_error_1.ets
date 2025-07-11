@@ -42,6 +42,7 @@ function mdin() {    let a = new A();
 /* @@? 18:15 Error SyntaxError: Unexpected token ':'. */
 /* @@? 18:15 Error SyntaxError: Unexpected token ':'. */
 /* @@? 18:15 Error SyntaxError: Unexpected token ':'. */
+/* @@? 20:9 Error SyntaxError: Illegal start of INTERFACE expression. */
 /* @@? 21:13 Error SyntaxError: Identifier expected. */
 /* @@? 21:21 Error SyntaxError: Unexpected token, expected ','. */
 /* @@? 21:21 Error SyntaxError: Unexpected token, expected 'private' or identifier. */
@@ -56,7 +57,7 @@ function mdin() {    let a = new A();
 /* @@? 25:17 Error SyntaxError: Unexpected token 'implements'. */
 /* @@? 25:17 Error SyntaxError: Unexpected token 'implements'. */
 /* @@? 25:17 Error SyntaxError: Unexpected token 'implements'. */
-/* @@? 25:28 Error TypeError: Interface name 'I' used in the wrong context */
+/* @@? 25:28 Error TypeError: Unresolved reference I */
 /* @@? 25:30 Error SyntaxError: Unexpected token '{'. */
 /* @@? 26:13 Error TypeError: Unresolved reference reanstructor */
 /* @@? 27:27 Error SyntaxError: Unexpected token, expected an identifier. */
@@ -71,8 +72,8 @@ function mdin() {    let a = new A();
 /* @@? 32:2 Error SyntaxError: Unexpected token '*'. */
 /* @@? 33:1 Error SyntaxError: Nested functions are not allowed. */
 /* @@? 33:1 Error SyntaxError: Unexpected token 'function'. */
-/* @@? 78:60 Error SyntaxError: Expected '}', got 'eos'. */
-/* @@? 78:60 Error SyntaxError: Expected '}', got 'eos'. */
-/* @@? 78:60 Error SyntaxError: Expected '}', got 'eos'. */
-/* @@? 78:60 Error SyntaxError: Expected '}', got 'eos'. */
-/* @@? 78:60 Error SyntaxError: Expected '}', got 'eos'. */
+/* @@? 80:1 Error SyntaxError: Expected '}', got 'eos'. */
+/* @@? 80:1 Error SyntaxError: Expected '}', got 'eos'. */
+/* @@? 80:1 Error SyntaxError: Expected '}', got 'eos'. */
+/* @@? 80:1 Error SyntaxError: Expected '}', got 'eos'. */
+/* @@? 80:1 Error SyntaxError: Expected '}', got 'eos'. */
