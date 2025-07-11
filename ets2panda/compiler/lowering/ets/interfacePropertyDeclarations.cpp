@@ -85,6 +85,7 @@ ir::FunctionSignature InterfacePropertyDeclarationsPhase::GenerateGetterOrSetter
         InitScopesPhaseETS::RunExternalNode(paramIdent, varbinder);
 
         auto *const paramExpression = ctx->AllocNode<ir::ETSParameterExpression>(paramIdent, false, ctx->Allocator());
+        ES2PANDA_ASSERT(paramExpression != nullptr);
         paramExpression->SetRange(paramIdent->Range());
         auto [paramVar, node] = paramScope->AddParamDecl(ctx->Allocator(), varbinder, paramExpression);
         if (node != nullptr) {
@@ -108,6 +109,7 @@ ir::MethodDefinition *InterfacePropertyDeclarationsPhase::GenerateGetterOrSetter
     auto classScope = NearestScope(field);
     auto *paramScope = ctx->Allocator()->New<varbinder::FunctionParamScope>(ctx->Allocator(), classScope);
     auto *functionScope = ctx->Allocator()->New<varbinder::FunctionScope>(ctx->Allocator(), paramScope);
+    ES2PANDA_ASSERT(functionScope != nullptr);
 
     functionScope->BindParamScope(paramScope);
     paramScope->BindFunctionScope(functionScope);
@@ -253,6 +255,7 @@ ir::Expression *InterfacePropertyDeclarationsPhase::UpdateInterfaceProperties(pu
     }
 
     auto newInterface = ctx->AllocNode<ir::TSInterfaceBody>(std::move(newPropertyList));
+    ES2PANDA_ASSERT(newInterface != nullptr);
     newInterface->SetRange(interface->Range());
     newInterface->SetParent(interface->Parent());
 
