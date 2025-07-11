@@ -353,7 +353,7 @@
                 "loc": {
                   "start": {
                     "line": 21,
-                    "column": 21,
+                    "column": 14,
                     "program": "getter_setter_access_modifiers.ets"
                   },
                   "end": {
@@ -368,7 +368,7 @@
             "loc": {
               "start": {
                 "line": 20,
-                "column": 21,
+                "column": 14,
                 "program": "getter_setter_access_modifiers.ets"
               },
               "end": {
@@ -597,7 +597,7 @@
                 "loc": {
                   "start": {
                     "line": 23,
-                    "column": 23,
+                    "column": 14,
                     "program": "getter_setter_access_modifiers.ets"
                   },
                   "end": {
@@ -612,7 +612,7 @@
             "loc": {
               "start": {
                 "line": 22,
-                "column": 23,
+                "column": 14,
                 "program": "getter_setter_access_modifiers.ets"
               },
               "end": {
@@ -1347,7 +1347,7 @@
                 "loc": {
                   "start": {
                     "line": 35,
-                    "column": 21,
+                    "column": 14,
                     "program": "getter_setter_access_modifiers.ets"
                   },
                   "end": {
@@ -1362,7 +1362,7 @@
             "loc": {
               "start": {
                 "line": 31,
-                "column": 21,
+                "column": 14,
                 "program": "getter_setter_access_modifiers.ets"
               },
               "end": {
@@ -1786,7 +1786,7 @@
                 "loc": {
                   "start": {
                     "line": 43,
-                    "column": 23,
+                    "column": 14,
                     "program": "getter_setter_access_modifiers.ets"
                   },
                   "end": {
@@ -1801,7 +1801,7 @@
             "loc": {
               "start": {
                 "line": 39,
-                "column": 23,
+                "column": 14,
                 "program": "getter_setter_access_modifiers.ets"
               },
               "end": {

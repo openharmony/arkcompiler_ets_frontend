@@ -825,6 +825,7 @@ ir::MethodDefinition *ETSParser::ParseClassGetterSetterMethod(const ArenaVector<
     ClassElementDescriptor desc(Allocator());
     desc.methodKind = Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_GET ? ir::MethodDefinitionKind::GET
                                                                                       : ir::MethodDefinitionKind::SET;
+    desc.propStart = Lexer()->GetToken().Start();
     Lexer()->NextToken();  // eat get/set
     auto *methodName = ExpectIdentifier();
     ES2PANDA_ASSERT(methodName != nullptr);
@@ -836,7 +837,6 @@ ir::MethodDefinition *ETSParser::ParseClassGetterSetterMethod(const ArenaVector<
 
     desc.newStatus = ParserStatus::ALLOW_SUPER;
     desc.hasSuperClass = (modifiers & ir::ClassDefinitionModifiers::HAS_SUPER) != 0U;
-    desc.propStart = Lexer()->GetToken().Start();
     desc.modifiers = memberModifiers;
 
     lexer::SourcePosition propEnd = methodName->End();
