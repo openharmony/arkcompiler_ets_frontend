@@ -59,7 +59,8 @@ varbinder::Variable *ETSChecker::FindVariableInGlobal(const ir::Identifier *cons
 bool ETSChecker::IsVariableStatic(const varbinder::Variable *var)
 {
     if (var->HasFlag(varbinder::VariableFlags::METHOD)) {
-        return var->TsType()->AsETSFunctionType()->CallSignatures()[0]->HasSignatureFlag(SignatureFlags::STATIC);
+        return var->TsType()->IsETSFunctionType() &&
+               var->TsType()->AsETSFunctionType()->CallSignatures()[0]->HasSignatureFlag(SignatureFlags::STATIC);
     }
     return var->HasFlag(varbinder::VariableFlags::STATIC);
 }

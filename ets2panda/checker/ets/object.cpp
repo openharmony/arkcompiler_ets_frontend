@@ -82,7 +82,7 @@ static bool CheckGetterSetterDecl(varbinder::LocalVariable const *child, varbind
 static bool CheckFunctionDecl(varbinder::LocalVariable *child, varbinder::LocalVariable *parent)
 {
     ES2PANDA_ASSERT(child->Declaration()->Type() == parent->Declaration()->Type());
-    if (!child->TsType()->IsETSFunctionType()) {
+    if (!child->TsType()->IsETSFunctionType() || !parent->TsType()->IsETSFunctionType()) {
         return true;
     }
 
