@@ -119,6 +119,11 @@ Identifier *AnnotationUsage::GetBaseName() const
         return expr_->AsIdentifier();
     }
     auto *part = expr_->AsETSTypeReference()->Part();
+    if (part->Name()->IsIdentifier()) {
+        ES2PANDA_ASSERT(part->Name()->AsIdentifier()->Name().Is(ERROR_LITERAL));
+        return part->Name()->AsIdentifier();
+    }
+
     return part->Name()->AsTSQualifiedName()->Right();
 }
 }  // namespace ark::es2panda::ir
