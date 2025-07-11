@@ -156,4 +156,15 @@ export const testCases: TestCases = {
   }
 };
 
+export const testSingleModuleCases: TestCases = {
+  generateDeclFile: {
+    expectedFilePath: resolveTestPath('test/expected/generateDeclFile.json'),
+    '1': []
+  },
+  modifyDeclFile: {
+    expectedFilePath: resolveTestPath('test/expected/modifyDeclFile.json'),
+    '1': [resolveTestPath('test/testcases/modifyDeclFile/entry/index.ets')]
+  }
+};
+
 export const getSpanOfEnclosingCommentTests = testCases.getSpanOfEnclosingComment;

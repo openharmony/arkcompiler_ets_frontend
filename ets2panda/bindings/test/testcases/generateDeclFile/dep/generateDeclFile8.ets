@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,39 @@
  * limitations under the License.
  */
 
-export const ARKTSCONFIG_JSON_FILE: string = 'arktsconfig.json';
-
-export enum LANGUAGE_VERSION {
-  ARKTS_1_2 = '1.2',
-  ARKTS_1_1 = '1.1',
-  ARKTS_HYBRID = 'hybrid'
+function func06(): void {
+  EtsStepArkTest();
 }
 
-export const DECL_ETS_SUFFIX: string = '.d.ets';
-export const PANDA_SDK_PATH_FROM_SDK: string = './build-tools/ets2panda';
-export const SYSTEM_SDK_PATH_FROM_SDK: string = './';
-export const EXTERNAL_API_PATH_FROM_SDK: string = '../../../hms/ets/ets1.2';
-export const DEFAULT_CACHE_DIR: string = './.idea/.deveco';
-export const ETS_SUFFIX: string = '.ets';
-export const TS_SUFFIX: string = '.ts';
+function func05(): void {
+  func06();
+  EtsStepArkTest();
+}
+
+function func04(): void {
+  func05();
+  EtsStepArkTest();
+}
+
+function func03(): void {
+  let id = 0;
+  for (let i = 0; i < 10; ++i) {
+    id++
+  }
+  func04();
+  EtsStepArkTest();
+}
+
+function func02(): void {
+  func03();
+  EtsStepArkTest();
+}
+
+function func01(): void {
+  func02();
+  EtsStepArkTest();
+}
+
+function main(argc:string[]): void {
+  func01();
+}

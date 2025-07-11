@@ -74,9 +74,13 @@ import { NativePtrDecoder } from '../common/Platform';
 import { Worker as ThreadWorker } from 'worker_threads';
 import { ensurePathExists } from '../common/utils';
 import * as child_process from 'child_process';
-import { DECL_ETS_SUFFIX, DEFAULT_CACHE_DIR } from '../common/preDefine';
+import { DECL_ETS_SUFFIX, DEFAULT_CACHE_DIR, TS_SUFFIX } from '../common/preDefine';
 import * as crypto from 'crypto';
 import * as os from 'os';
+import {
+  changeDeclgenFileExtension,
+  getModuleNameAndPath
+} from '../common/utils';
 
 const ets2pandaCmdPrefix = ['-', '--extension', 'ets', '--arktsconfig'];
 
@@ -121,6 +125,7 @@ export class Lsp {
     this.moduleInfos = generateArkTsConfigs(this.buildConfigs);
     this.pathConfig = pathConfig;
     PluginDriver.getInstance().initPlugins(Object.values(this.buildConfigs)[0]);
+    this.generateDeclFile();
   }
 
   // Partially update for new file
@@ -151,6 +156,158 @@ export class Lsp {
       throw new Error(`File content not found for path: ${filePath}`);
     }
     return getSource.replace(/\r\n/g, '\n');
+  }
+
+  generateDeclFile(): void {
+    let lspDriverHelper = new LspDriverHelper();
+    for (const [moduleName, buildConfig] of Object.entries(this.buildConfigs)) {
+      if (!buildConfig.enableDeclgenEts2Ts) {
+        continue;
+      }
+      if (!buildConfig.declgenOutDir || buildConfig.declgenOutDir === '') {
+        return;
+      }
+      buildConfig.compileFiles.forEach((compilefilePath: string) => {
+        if (!this.moduleInfos.hasOwnProperty(compilefilePath)) {
+          return;
+        }
+        let sourceFilePath = path.resolve(compilefilePath);
+        const moduleInfo = this.moduleInfos[compilefilePath];
+        let arktsconfig = moduleInfo.arktsConfigFile;
+        let ets2pandaCmd = ets2pandaCmdPrefix.concat(arktsconfig);
+        let localCfg = lspDriverHelper.createCfg(ets2pandaCmd, sourceFilePath, this.pandaLibPath);
+        const source = this.getFileSource(compilefilePath);
+        let localCtx = lspDriverHelper.createCtx(source, compilefilePath, localCfg);
+        PluginDriver.getInstance().getPluginContext().setContextPtr(localCtx);
+        lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_PARSED);
+        PluginDriver.getInstance().runPluginHook(PluginHook.PARSED);
+        lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_CHECKED);
+        // declgen file
+        let modulePath: string = path.relative(buildConfig.moduleRootPath, compilefilePath);
+        let declOut: string = '';
+        let declBridgeOut: string = '';
+        if (!moduleInfo.declgenV1OutPath) {
+          declOut = path.join(buildConfig.declgenOutDir, moduleName);
+        }
+        if (!moduleInfo.declgenBridgeCodePath) {
+          declBridgeOut = path.join(buildConfig.declgenOutDir, moduleName);
+        }
+        let declEtsOutputPath: string = changeDeclgenFileExtension(
+          path.join(moduleInfo.declgenV1OutPath ?? declOut, modulePath),
+          DECL_ETS_SUFFIX
+        );
+        let etsOutputPath: string = changeDeclgenFileExtension(
+          path.join(moduleInfo.declgenBridgeCodePath ?? declBridgeOut, modulePath),
+          TS_SUFFIX
+        );
+        ensurePathExists(declEtsOutputPath);
+        ensurePathExists(etsOutputPath);
+        global.es2pandaPublic._GenerateTsDeclarationsFromContext(
+          localCtx,
+          declEtsOutputPath,
+          etsOutputPath,
+          1,
+          0
+        );
+        let declfilePath = path.resolve(declEtsOutputPath);
+        let declgLocalCfg = lspDriverHelper.createCfg(ets2pandaCmd, declfilePath, this.pandaLibPath);
+        const declgSource = this.getFileSource(declfilePath);
+        let declgLocalCtx = lspDriverHelper.createCtx(declgSource, declfilePath, declgLocalCfg);
+        PluginDriver.getInstance().getPluginContext().setContextPtr(declgLocalCtx);
+        lspDriverHelper.proceedToState(declgLocalCtx, Es2pandaContextState.ES2PANDA_STATE_PARSED);
+        PluginDriver.getInstance().runPluginHook(PluginHook.PARSED);
+        lspDriverHelper.proceedToState(declgLocalCtx, Es2pandaContextState.ES2PANDA_STATE_CHECKED);
+        // clean and destroy
+        PluginDriver.getInstance().runPluginHook(PluginHook.CLEAN);
+        lspDriverHelper.destroyContext(localCtx);
+        lspDriverHelper.destroyContext(declgLocalCtx);
+      });
+    }
+  }
+
+  modifyDeclFile(modifyFilePath: string, arktsConfigFile?: string): void {
+    // source file
+    let lspDriverHelper = new LspDriverHelper();
+    let sourceFilePath = path.resolve(modifyFilePath.valueOf());
+    let moduleInfo: ModuleInfo;
+    if (this.moduleInfos.hasOwnProperty(sourceFilePath)) {
+      moduleInfo = this.moduleInfos[sourceFilePath];
+    } else {
+      const [newModuleName, newModuleRootPath] = getModuleNameAndPath(modifyFilePath, this.pathConfig.projectPath);
+      if (newModuleName && newModuleName !== '' && newModuleRootPath && newModuleRootPath !== '') {
+        moduleInfo = {
+          packageName: newModuleName,
+          moduleRootPath: newModuleRootPath,
+          moduleType: '',
+          entryFile: '',
+          arktsConfigFile: arktsConfigFile ?? '',
+          compileFiles: [],
+          declgenV1OutPath: '',
+          declgenBridgeCodePath: '',
+          staticDepModuleInfos: [],
+          dynamicDepModuleInfos: [],
+          language: ''
+        };
+      } else {
+        return;
+      }
+    }
+    const moduleName = moduleInfo.packageName;
+    const moduleRootPath = moduleInfo.moduleRootPath;
+    if (!this.buildConfigs.hasOwnProperty(moduleName)) {
+      return;
+    }
+    const buildConfig = this.buildConfigs[moduleName];
+    if (!buildConfig.enableDeclgenEts2Ts) {
+      return;
+    }
+    let arktsconfig = moduleInfo.arktsConfigFile;
+    let ets2pandaCmd = ets2pandaCmdPrefix.concat(arktsconfig);
+    let localCfg = lspDriverHelper.createCfg(ets2pandaCmd, sourceFilePath, this.pandaLibPath);
+    const source = this.getFileSource(sourceFilePath);
+    let localCtx = lspDriverHelper.createCtx(source, sourceFilePath, localCfg);
+    PluginDriver.getInstance().getPluginContext().setContextPtr(localCtx);
+    lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_PARSED);
+    PluginDriver.getInstance().runPluginHook(PluginHook.PARSED);
+    lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_CHECKED);
+    // declgen file
+    let declOut: string = '';
+    let declBridgeOut: string = '';
+    if (!moduleInfo.declgenV1OutPath) {
+      declOut = path.join(buildConfig.declgenOutDir, moduleName);
+    }
+    if (!moduleInfo.declgenBridgeCodePath) {
+      declBridgeOut = path.join(buildConfig.declgenOutDir, moduleName);
+    }
+    let filePathFromModuleRoot: string = path.relative(moduleRootPath, modifyFilePath);
+    let declEtsOutputPath: string = changeDeclgenFileExtension(
+      path.join(moduleInfo.declgenV1OutPath ?? declOut, filePathFromModuleRoot),
+      DECL_ETS_SUFFIX
+    );
+    let etsOutputPath: string = changeDeclgenFileExtension(
+      path.join(moduleInfo.declgenBridgeCodePath ?? declBridgeOut, filePathFromModuleRoot),
+      TS_SUFFIX
+    );
+    ensurePathExists(declEtsOutputPath);
+    ensurePathExists(etsOutputPath);
+    global.es2pandaPublic._GenerateTsDeclarationsFromContext(
+      localCtx,
+      declEtsOutputPath,
+      etsOutputPath,
+      1,
+      0
+    );
+    let filePath = path.resolve(declEtsOutputPath);
+    let declgLocalCfg = lspDriverHelper.createCfg(ets2pandaCmd, filePath, this.pandaLibPath);
+    const declgSource = this.getFileSource(filePath);
+    let declgLocalCtx = lspDriverHelper.createCtx(declgSource, filePath, declgLocalCfg);
+    PluginDriver.getInstance().getPluginContext().setContextPtr(declgLocalCtx);
+    lspDriverHelper.proceedToState(declgLocalCtx, Es2pandaContextState.ES2PANDA_STATE_PARSED);
+    PluginDriver.getInstance().runPluginHook(PluginHook.PARSED);
+    lspDriverHelper.proceedToState(declgLocalCtx, Es2pandaContextState.ES2PANDA_STATE_CHECKED);
+    lspDriverHelper.destroyContext(declgLocalCtx);
+    PluginDriver.getInstance().runPluginHook(PluginHook.CLEAN);
+    lspDriverHelper.destroyContext(localCtx);
   }
 
   getDefinitionAtPosition(filename: String, offset: number): LspDefinitionData {
