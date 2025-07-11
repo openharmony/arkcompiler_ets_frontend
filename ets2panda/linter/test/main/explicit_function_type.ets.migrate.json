@@ -25,13 +25,13 @@
             "severity": "ERROR"
         },
         {
-            "line": 79,
-            "column": 11,
-            "endLine": 79,
-            "endColumn": 19,
-            "problem": "ClassAsObjectError",
+            "line": 96,
+            "column": 17,
+            "endLine": 96,
+            "endColumn": 29,
+            "problem": "MethodInheritRule",
             "suggest": "",
-            "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
+            "rule": "Overridden method parameters and return types must respect type inheritance principles (arkts-method-inherit-rule)",
             "severity": "ERROR"
         },
         {
@@ -115,6 +115,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 133,
+            "column": 10,
+            "endLine": 133,
+            "endColumn": 11,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 150,
             "column": 16,
             "endLine": 150,
@@ -152,6 +162,26 @@
             "problem": "RuntimeArrayCheck",
             "suggest": "",
             "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 182,
+            "column": 1,
+            "endLine": 182,
+            "endColumn": 26,
+            "problem": "ExplicitFunctionType",
+            "suggest": "",
+            "rule": "The function type should be explicit (arkts-no-ts-like-function-call)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 184,
+            "column": 1,
+            "endLine": 184,
+            "endColumn": 22,
+            "problem": "ExplicitFunctionType",
+            "suggest": "",
+            "rule": "The function type should be explicit (arkts-no-ts-like-function-call)",
             "severity": "ERROR"
         }
     ]

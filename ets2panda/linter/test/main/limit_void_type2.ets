@@ -13,5 +13,14 @@
  * limitations under the License.
  */
 
-export const ARKTS_WHITE_API_PATH_TEXTSTYLE = 'component/styled_string.d.ts';
-export const COMMON_UNION_MEMBER_ACCESS_WHITELIST = new Set(['ArrayBufferLike', 'IteratorResult']);
+export let unionVoidVal = (()=>{
+  return undefined;
+})() as void;
+export function undefinedFooFun(){
+  return undefined;
+}
+export function func3Void(): void { }
+export function fun4undefined(): undefined | boolean { }
+export function fun5String(): string {
+  return '';
+}

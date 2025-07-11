@@ -1270,26 +1270,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 108,
-            "column": 17,
-            "endLine": 108,
-            "endColumn": 40,
-            "problem": "AvoidUnionTypes",
-            "suggest": "",
-            "rule": "Avoid using union types (arkts-common-union-member-access)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 112,
-            "column": 15,
-            "endLine": 112,
-            "endColumn": 38,
-            "problem": "AvoidUnionTypes",
-            "suggest": "",
-            "rule": "Avoid using union types (arkts-common-union-member-access)",
-            "severity": "ERROR"
-        },
-        {
             "line": 117,
             "column": 20,
             "endLine": 117,
@@ -1317,26 +1297,6 @@
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 118,
-            "column": 15,
-            "endLine": 118,
-            "endColumn": 36,
-            "problem": "AvoidUnionTypes",
-            "suggest": "",
-            "rule": "Avoid using union types (arkts-common-union-member-access)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 121,
-            "column": 13,
-            "endLine": 121,
-            "endColumn": 34,
-            "problem": "AvoidUnionTypes",
-            "suggest": "",
-            "rule": "Avoid using union types (arkts-common-union-member-access)",
             "severity": "ERROR"
         },
         {

@@ -12,6 +12,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import type { ClassDeclaration } from 'typescript';
 
-export const ARKTS_WHITE_API_PATH_TEXTSTYLE = 'component/styled_string.d.ts';
-export const COMMON_UNION_MEMBER_ACCESS_WHITELIST = new Set(['ArrayBufferLike', 'IteratorResult']);
+export enum ExtendedIdentifierType {
+  UNKNOWN,
+  CLASS,
+  ERROR
+}
+
+export type ExtendedIdentifierInfo =
+  | {
+    type: ExtendedIdentifierType.UNKNOWN | ExtendedIdentifierType.ERROR;
+  }
+  | { type: ExtendedIdentifierType.CLASS; decl: ClassDeclaration };
+
+export type ConstructorParameter = {
+  name: string;
+  isOptional: boolean;
+  type: string;
+};
+
+export type ParameterName = string;
+
+export type BaseClassConstructorInfo = Set<ConstructorParameter[]> | undefined;

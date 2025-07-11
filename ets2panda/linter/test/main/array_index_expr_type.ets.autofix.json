@@ -824,27 +824,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 39,
-            "column": 7,
-            "endLine": 39,
-            "endColumn": 14,
-            "problem": "ArrayIndexExprType",
-            "autofix": [
-                {
-                    "start": 1201,
-                    "end": 1208,
-                    "replacementText": "index_1 as int",
-                    "line": 39,
-                    "column": 7,
-                    "endLine": 39,
-                    "endColumn": 14
-                }
-            ],
-            "suggest": "",
-            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
-            "severity": "ERROR"
-        },
-        {
             "line": 40,
             "column": 1,
             "endLine": 40,
@@ -852,27 +831,6 @@
             "problem": "RuntimeArrayCheck",
             "suggest": "",
             "rule": "Array bound not checked. (arkts-runtime-array-check)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 40,
-            "column": 7,
-            "endLine": 40,
-            "endColumn": 14,
-            "problem": "ArrayIndexExprType",
-            "autofix": [
-                {
-                    "start": 1217,
-                    "end": 1224,
-                    "replacementText": "index_2 as int",
-                    "line": 40,
-                    "column": 7,
-                    "endLine": 40,
-                    "endColumn": 14
-                }
-            ],
-            "suggest": "",
-            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
             "severity": "ERROR"
         },
         {
@@ -1320,17 +1278,6 @@
             "endLine": 65,
             "endColumn": 9,
             "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 1669,
-                    "end": 1670,
-                    "replacementText": "0.0",
-                    "line": 65,
-                    "column": 8,
-                    "endLine": 65,
-                    "endColumn": 9
-                }
-            ],
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
@@ -1810,6 +1757,194 @@
             ],
             "suggest": "",
             "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 96,
+            "column": 29,
+            "endLine": 96,
+            "endColumn": 38,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 97,
+            "column": 29,
+            "endLine": 97,
+            "endColumn": 30,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 2137,
+                    "end": 2138,
+                    "replacementText": "0.0",
+                    "line": 97,
+                    "column": 29,
+                    "endLine": 97,
+                    "endColumn": 30
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 98,
+            "column": 13,
+            "endLine": 98,
+            "endColumn": 28,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 2154,
+                    "end": 2169,
+                    "replacementText": "array: number[] = [1, 2, 3]",
+                    "line": 98,
+                    "column": 13,
+                    "endLine": 98,
+                    "endColumn": 28
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 98,
+            "column": 22,
+            "endLine": 98,
+            "endColumn": 23,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 2163,
+                    "end": 2164,
+                    "replacementText": "1.0",
+                    "line": 98,
+                    "column": 22,
+                    "endLine": 98,
+                    "endColumn": 23
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 98,
+            "column": 24,
+            "endLine": 98,
+            "endColumn": 25,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 2165,
+                    "end": 2166,
+                    "replacementText": "2.0",
+                    "line": 98,
+                    "column": 24,
+                    "endLine": 98,
+                    "endColumn": 25
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 98,
+            "column": 26,
+            "endLine": 98,
+            "endColumn": 27,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 2167,
+                    "end": 2168,
+                    "replacementText": "3.0",
+                    "line": 98,
+                    "column": 26,
+                    "endLine": 98,
+                    "endColumn": 27
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 99,
+            "column": 9,
+            "endLine": 99,
+            "endColumn": 30,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 99,
+            "column": 15,
+            "endLine": 99,
+            "endColumn": 29,
+            "problem": "ArrayIndexExprType",
+            "autofix": [
+                {
+                    "start": 2185,
+                    "end": 2199,
+                    "replacementText": "this.testIndex as int",
+                    "line": 99,
+                    "column": 15,
+                    "endLine": 99,
+                    "endColumn": 29
+                }
+            ],
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 91,
+            "column": 2,
+            "endLine": 91,
+            "endColumn": 11,
+            "problem": "UIInterfaceImport",
+            "autofix": [
+                {
+                    "start": 603,
+                    "end": 603,
+                    "replacementText": "\n\nimport {\n  Component,\n  Link,\n} from '@kit.ArkUI';",
+                    "line": 93,
+                    "column": 4,
+                    "endLine": 93,
+                    "endColumn": 8
+                }
+            ],
+            "suggest": "",
+            "rule": "The ArkUI interface \"Component\" should be imported before it is used (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 93,
+            "column": 4,
+            "endLine": 93,
+            "endColumn": 8,
+            "problem": "UIInterfaceImport",
+            "autofix": [
+                {
+                    "start": 603,
+                    "end": 603,
+                    "replacementText": "\n\nimport {\n  Component,\n  Link,\n} from '@kit.ArkUI';",
+                    "line": 93,
+                    "column": 4,
+                    "endLine": 93,
+                    "endColumn": 8
+                }
+            ],
+            "suggest": "",
+            "rule": "The ArkUI interface \"Link\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         }
     ]

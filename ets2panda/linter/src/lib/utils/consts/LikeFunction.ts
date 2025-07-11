@@ -14,3 +14,5 @@
  */
 
 export const LIKE_FUNCTION = 'Function';
+
+export const LIKE_FUNCTION_CONSTRUCTOR = 'FunctionConstructor';

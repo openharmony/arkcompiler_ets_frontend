@@ -13,5 +13,11 @@
  * limitations under the License.
  */
 
-export const ARKTS_WHITE_API_PATH_TEXTSTYLE = 'component/styled_string.d.ts';
-export const COMMON_UNION_MEMBER_ACCESS_WHITELIST = new Set(['ArrayBufferLike', 'IteratorResult']);
+import { MapKit } from './oh_modules/@ohos.util.HashMap';
+
+let hashMap = new MapKit.HashMap<number, string>();
+let res = hashMap.keys();
+for (let i = 0; i < hashMap.length; i++) {
+  let result = hashMap.hasKey(res.next().value!);
+  result = hashMap.hasKey(res.next().value);
+}
