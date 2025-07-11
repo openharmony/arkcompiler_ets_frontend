@@ -1127,16 +1127,13 @@ static ir::AstNode *FoldTemplateLiteral(ir::TemplateLiteral *expr, ArenaAllocato
     auto quasis = expr->Quasis();
     auto expressions = expr->Expressions();
 
-    if (!quasis.empty() && !quasis[0]->Raw().Empty()) {
-        result.Append(quasis[0]->Cooked());
-    }
-
-    auto const num = expressions.size();
-    std::size_t i = 0U;
-    while (i < num) {
-        result.Append(litToString(expressions[i]->AsLiteral()));
-        if (!quasis[++i]->Raw().Empty()) {
+    auto const num = std::max(expressions.size(), quasis.size());
+    for (std::size_t i = 0U; i < num; i++) {
+        if (i < quasis.size()) {
             result.Append(quasis[i]->Cooked());
+        }
+        if (i < expressions.size()) {
+            result.Append(litToString(expressions[i]->AsLiteral()));
         }
     }
 
