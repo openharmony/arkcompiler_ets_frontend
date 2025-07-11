@@ -24,30 +24,30 @@ const b: Record<number, (x: string) => number> = {
     [(():number => +("bar"))()]: (y: string):number => y.length
 };
 
-/* @@? 21:21 Error TypeError: Bad operand type, the type of the operand must be numeric type.  */
-/* @@? 21:34 Error SyntaxError: Unexpected token.  */
-/* @@? 21:34 Error SyntaxError: Unexpected token 'function'.  */
-/* @@? 21:43 Error SyntaxError: Unexpected token.  */
-/* @@? 21:44 Error SyntaxError: Unexpected token.  */
-/* @@? 21:44 Error TypeError: Unresolved reference y  */
-/* @@? 21:45 Error SyntaxError: Unexpected token.  */
-/* @@? 21:47 Error TypeError: Type 'String' is not compatible with type 'Double' at index 1  */
-/* @@? 21:47 Error TypeError: Type name 'string' used in the wrong context  */
-/* @@? 21:53 Error SyntaxError: Unexpected token, expected ':'.  */
-/* @@? 21:54 Error SyntaxError: Unexpected token ':'.  */
-/* @@? 21:54 Error SyntaxError: Unexpected token.  */
-/* @@? 21:56 Error TypeError: Type name 'number' used in the wrong context  */
-/* @@? 21:63 Error SyntaxError: Unexpected token, expected ':'.  */
-/* @@? 22:9 Error SyntaxError: Unexpected token.  */
-/* @@? 22:9 Error SyntaxError: Unexpected token 'return'.  */
-/* @@? 22:17 Error SyntaxError: Unexpected token, expected ':'.  */
-/* @@? 22:18 Error TypeError: Unresolved reference length  */
-/* @@? 22:24 Error SyntaxError: Unexpected token.  */
-/* @@? 23:5 Error SyntaxError: Unexpected token '}'.  */
-/* @@? 23:6 Error SyntaxError: Unexpected token ','.  */
-/* @@? 23:6 Error SyntaxError: Unexpected token ','.  */
-/* @@? 24:21 Error TypeError: Bad operand type, the type of the operand must be numeric type.  */
-/* @@? 24:32 Error SyntaxError: Unexpected token ':'.  */
-/* @@? 24:32 Error SyntaxError: Unexpected token ':'.  */
-/* @@? 24:32 Error SyntaxError: Unexpected token ':'.  */
-/* @@? 25:1 Error SyntaxError: Unexpected token '}'.  */
+/* @@? 16:35 Error TypeError: need to specify target type for class composite */
+/* @@? 17:5 Error SyntaxError: Unexpected token. */
+/* @@? 17:6 Error SyntaxError: Unexpected token, expected ':'. */
+/* @@? 17:22 Error SyntaxError: Unexpected token. */
+/* @@? 17:25 Error SyntaxError: Unexpected token ']'. */
+/* @@? 17:25 Error SyntaxError: Unexpected token ']'. */
+/* @@? 17:25 Error SyntaxError: Unexpected token ']'. */
+/* @@? 17:26 Error SyntaxError: Unexpected token ':'. */
+/* @@? 17:26 Error SyntaxError: Unexpected token ':'. */
+/* @@? 18:1 Error SyntaxError: Unexpected token '}'. */
+/* @@? 20:50 Error TypeError: need to specify target type for class composite */
+/* @@? 21:5 Error SyntaxError: Unexpected token. */
+/* @@? 21:6 Error SyntaxError: Unexpected token, expected ':'. */
+/* @@? 21:28 Error SyntaxError: Unexpected token. */
+/* @@? 21:31 Error SyntaxError: Unexpected token ']'. */
+/* @@? 21:31 Error SyntaxError: Unexpected token ']'. */
+/* @@? 21:31 Error SyntaxError: Unexpected token ']'. */
+/* @@? 21:32 Error SyntaxError: Unexpected token ':'. */
+/* @@? 21:32 Error SyntaxError: Unexpected token ':'. */
+/* @@? 21:43 Error SyntaxError: Unexpected token, expected an identifier. */
+/* @@? 23:6 Error SyntaxError: Unexpected token ','. */
+/* @@? 23:6 Error SyntaxError: Unexpected token ','. */
+/* @@? 24:21 Error TypeError: Bad operand type, the type of the operand must be numeric type. */
+/* @@? 24:32 Error SyntaxError: Unexpected token ':'. */
+/* @@? 24:32 Error SyntaxError: Unexpected token ':'. */
+/* @@? 24:32 Error SyntaxError: Unexpected token ':'. */
+/* @@? 25:1 Error SyntaxError: Unexpected token '}'. */

@@ -234,6 +234,44 @@ ir::Expression *ETSParser::ParsePropertyDefinition(ExpressionParseFlags flags)
     return returnProperty;
 }
 
+ir::Expression *ETSParser::ParsePropertyKey([[maybe_unused]] ExpressionParseFlags flags)
+{
+    ir::Expression *key = nullptr;
+
+    switch (Lexer()->GetToken().Type()) {
+        case lexer::TokenType::LITERAL_IDENT: {
+            const util::StringView &ident = Lexer()->GetToken().Ident();
+            key = AllocNode<ir::Identifier>(ident, Allocator());
+            key->SetRange(Lexer()->GetToken().Loc());
+            Lexer()->NextToken();
+            return key;
+        }
+        case lexer::TokenType::LITERAL_STRING: {
+            const util::StringView &string = Lexer()->GetToken().String();
+            key = AllocNode<ir::StringLiteral>(string);
+            key->SetRange(Lexer()->GetToken().Loc());
+            Lexer()->NextToken();
+            return key;
+        }
+        case lexer::TokenType::LITERAL_NUMBER: {
+            if ((Lexer()->GetToken().Flags() & lexer::TokenFlags::NUMBER_BIGINT) != 0) {
+                key = AllocNode<ir::BigIntLiteral>(Lexer()->GetToken().BigInt());
+            } else {
+                key = AllocNode<ir::NumberLiteral>(Lexer()->GetToken().GetNumber());
+            }
+            key->SetRange(Lexer()->GetToken().Loc());
+            Lexer()->NextToken();
+            return key;
+        }
+        default: {
+            const auto &rangeToken = Lexer()->GetToken().Loc();
+            LogError(diagnostic::UNEXPECTED_TOKEN);
+            Lexer()->NextToken();
+            return AllocBrokenExpression(rangeToken);
+        }
+    }
+}
+
 // NOLINTNEXTLINE(google-default-arguments)
 ir::Expression *ETSParser::ParseDefaultPrimaryExpression(ExpressionParseFlags flags)
 {
