@@ -452,10 +452,13 @@ ir::TypeNode *ETSParser::ParseThisType(TypeAnnotationParsingOptions *options)
     bool parseReturnType = (*options & TypeAnnotationParsingOptions::RETURN_TYPE) != 0;
     bool isExtensionFunction = (GetContext().Status() & ParserStatus::HAS_RECEIVER) != 0;
     bool isInUnion = (*options & TypeAnnotationParsingOptions::DISALLOW_UNION) != 0;
+    bool isInstance = (*options & TypeAnnotationParsingOptions::INSTANCEOF) != 0;
     if (isExtensionFunction) {
         if (reportErr && (!IsSimpleReturnThis(Lexer()->GetToken()) || isInUnion)) {
             LogError(diagnostic::THIS_IN_NON_STATIC_METHOD, {}, startPos);
         }
+    } else if (reportErr && (isInstance)) {
+        LogError(diagnostic::INVALID_RIGHT_INSTANCEOF, {}, startPos);
     } else if (reportErr && (!allowThisType || !parseReturnType || isArrowFunc)) {
         LogError(diagnostic::THIS_IN_NON_STATIC_METHOD, {}, startPos);
     }
