@@ -285,19 +285,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 267,
-            "column": 3,
-            "endLine": 267,
-            "endColumn": 9,
-            "problem": "ObjectLiteralProperty",
-            "suggest": "",
-            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 274,
+            "line": 272,
             "column": 1,
-            "endLine": 276,
+            "endLine": 274,
             "endColumn": 2,
             "problem": "MissingSuperCall",
             "suggest": "",
@@ -305,9 +295,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 286,
+            "line": 284,
             "column": 1,
-            "endLine": 288,
+            "endLine": 286,
             "endColumn": 2,
             "problem": "MissingSuperCall",
             "suggest": "",
@@ -335,9 +325,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 303,
+            "line": 301,
             "column": 1,
-            "endLine": 305,
+            "endLine": 303,
             "endColumn": 2,
             "problem": "MissingSuperCall",
             "suggest": "",

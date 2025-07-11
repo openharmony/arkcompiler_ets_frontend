@@ -209,16 +209,6 @@
             "column": 12,
             "endLine": 92,
             "endColumn": 20,
-            "problem": "IncompationbleFunctionType",
-            "suggest": "",
-            "rule": "Stricter assignments into variables of function type (arkts-incompatible-function-types)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 92,
-            "column": 12,
-            "endLine": 92,
-            "endColumn": 20,
             "problem": "StructuralIdentity",
             "suggest": "",
             "rule": "Structural typing is not supported (arkts-no-structural-typing)",
