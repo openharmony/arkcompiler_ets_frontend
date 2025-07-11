@@ -14,6 +14,7 @@
  */
 
 #include "etsAnyType.h"
+#include <cstddef>
 
 #include "checker/ETSchecker.h"
 #include "checker/ets/conversion.h"
@@ -62,6 +63,7 @@ void ETSAnyType::Cast(TypeRelation *relation, Type *target)
 
     if (relation->ApplyUnboxing()) {
         auto *const boxedTarget = relation->GetChecker()->AsETSChecker()->MaybeBoxInRelation(target);
+        ES2PANDA_ASSERT(boxedTarget != nullptr);
         conversion::Unboxing(relation, boxedTarget->AsETSObjectType());
         relation->Result(true);
     }

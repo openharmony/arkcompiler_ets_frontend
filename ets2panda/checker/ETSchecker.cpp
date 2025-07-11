@@ -433,6 +433,7 @@ bool ETSChecker::IsClassStaticMethod(checker::ETSObjectType *objType, checker::S
                                      TypeFlag::ETS_STRING_ENUM | TypeFlag::READONLY | TypeFlag::BIGINT_LITERAL |
                                      TypeFlag::ETS_TYPE_ALIAS | TypeFlag::TYPE_ERROR;
 
+    CHECK_NOT_NULL(type);
     auto res = static_cast<checker::TypeFlag>(type->TypeFlags() & ~(TO_CLEAR));
     ES2PANDA_ASSERT_POS(res == TypeFlag::NONE || helpers::math::IsPowerOfTwo(res & ~(TypeFlag::NONE)),
                         ark::es2panda::GetPositionForDiagnostic());
