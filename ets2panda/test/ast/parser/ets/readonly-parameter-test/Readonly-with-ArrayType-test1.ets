@@ -19,5 +19,5 @@ function foo (p: int[]) {
 let x: Readonly<int[]> = []
 /* @@ label */foo(/* @@ label1 */x)
 
-/* @@@ label1 Error TypeError: Type 'readonly int[]' is not compatible with type 'int[]' at index 1 */
-/* @@@ label Error TypeError: No matching call signature for foo(readonly int[]) */
+/* @@@ label Error TypeError: No matching call signature for foo(readonly Array<Int>) */
+/* @@@ label1 Error TypeError: Type 'readonly Array<Int>' is not compatible with type 'Array<Int>' at index 1 */

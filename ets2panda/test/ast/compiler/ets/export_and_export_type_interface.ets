@@ -16,4 +16,4 @@
 export interface I {}
 export type {/* @@ label */I}
 
-/* @@@ label Error SyntaxError: Name 'I' cannot be exported and type exported at the same time.  */
+/* @@@ label Error SyntaxError: Cannot export 'I', it was already exported.  */

@@ -32,6 +32,7 @@ public:
     bool IsCancellationRequested();
     bool ThrottledCancellationCheck();
     CancellationToken(time_t designatedThrottleTime, HostCancellationToken *hostCancellationToken);
+    CancellationToken() : lastCancellationTime_(0), throttleTime_(0), host_(nullptr) {}
 
 private:
     time_t lastCancellationTime_;

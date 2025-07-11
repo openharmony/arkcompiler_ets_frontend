@@ -18,9 +18,9 @@
 }
 
 // annotations for elementType of array
-let array: @Anno @Anno FixedArray<FixedArray<Int>>
-let deepArray: @Anno @Anno FixedArray<FixedArray<FixedArray<FixedArray<FixedArray<Number>>>>>
+let array: @Anno @Anno Int[][]
+let deepArray: @Anno @Anno Number[][][][][]
 
 
-/* @@? 21:19 Error TypeError: Duplicate annotations are not allowed. The annotation 'Anno' has already been applied to this element.  */
-/* @@? 22:23 Error TypeError: Duplicate annotations are not allowed. The annotation 'Anno' has already been applied to this element.  */
+/* @@? 21:29 Error TypeError: Duplicate annotations are not allowed. The annotation 'Anno' has already been applied to this element.  */
+/* @@? 22:42 Error TypeError: Duplicate annotations are not allowed. The annotation 'Anno' has already been applied to this element.  */

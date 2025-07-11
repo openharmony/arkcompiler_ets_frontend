@@ -26,15 +26,15 @@ class A_class {
         class LocalClass implements LocalInterface {
             override method () { 
                 console.log ("Instance field = " + this.field + " par = " + parameter + " loc = " +  local ) 
-                assertEQ(this.field, "`instance method instance field value`")
-                assertEQ(parameter, 42)
-                assertEQ(local, "instance local")
+                arktest.assertEQ(this.field, "`instance method instance field value`")
+                arktest.assertEQ(parameter, 42)
+                arktest.assertEQ(local, "instance local")
 
             }
             field: string = "`instance method instance field value`"
             static s_method () { 
                 console.log ("Static field = " + LocalClass.s_field)
-                assertEQ(LocalClass.s_field, "`instance method class/static field value`")
+                arktest.assertEQ(LocalClass.s_field, "`instance method class/static field value`")
             }
             static s_field: string = "`instance method class/static field value`"
         }
@@ -54,14 +54,14 @@ class A_class {
         class LocalClass implements LocalInterface {
             override method () { 
                 console.log ("Instance field = " + this.field + " par = " + parameter + " loc = " +  local) 
-                assertEQ(this.field, "`static method instance field value`")
-                assertEQ(parameter, 72)
-                assertEQ(local, "class/static local")
+                arktest.assertEQ(this.field, "`static method instance field value`")
+                arktest.assertEQ(parameter, 72)
+                arktest.assertEQ(local, "class/static local")
             }
             field: string = "`static method instance field value`"
             static s_method () { 
                 console.log ("Static field = " + LocalClass.s_field) 
-                assertEQ(LocalClass.s_field, "`static method class/static field value`")
+                arktest.assertEQ(LocalClass.s_field, "`static method class/static field value`")
             }
             static s_field: string = "`static method class/static field value`"
         }

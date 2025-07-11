@@ -80,12 +80,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "union_types_3.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "union_types_3.ets"
                     }
                   }
                 },
@@ -93,12 +93,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "union_types_3.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "union_types_3.ets"
                   }
                 }
               },
@@ -106,12 +106,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "union_types_3.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "union_types_3.ets"
                 }
               }
             },
@@ -347,9 +347,43 @@
                       "expression": {
                         "type": "CallExpression",
                         "callee": {
-                          "type": "Identifier",
-                          "name": "assertEQ",
-                          "decorators": [],
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "Identifier",
+                            "name": "arktest",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 18,
+                                "column": 5,
+                                "program": "union_types_3.ets"
+                              },
+                              "end": {
+                                "line": 18,
+                                "column": 12,
+                                "program": "union_types_3.ets"
+                              }
+                            }
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "assertEQ",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 18,
+                                "column": 13,
+                                "program": "union_types_3.ets"
+                              },
+                              "end": {
+                                "line": 18,
+                                "column": 21,
+                                "program": "union_types_3.ets"
+                              }
+                            }
+                          },
+                          "computed": false,
+                          "optional": false,
                           "loc": {
                             "start": {
                               "line": 18,
@@ -358,7 +392,7 @@
                             },
                             "end": {
                               "line": 18,
-                              "column": 13,
+                              "column": 21,
                               "program": "union_types_3.ets"
                             }
                           }
@@ -376,12 +410,12 @@
                                 "loc": {
                                   "start": {
                                     "line": 18,
-                                    "column": 15,
+                                    "column": 23,
                                     "program": "union_types_3.ets"
                                   },
                                   "end": {
                                     "line": 18,
-                                    "column": 17,
+                                    "column": 25,
                                     "program": "union_types_3.ets"
                                   }
                                 }
@@ -391,12 +425,12 @@
                                 "loc": {
                                   "start": {
                                     "line": 18,
-                                    "column": 21,
+                                    "column": 29,
                                     "program": "union_types_3.ets"
                                   },
                                   "end": {
                                     "line": 18,
-                                    "column": 24,
+                                    "column": 32,
                                     "program": "union_types_3.ets"
                                   }
                                 }
@@ -404,12 +438,12 @@
                               "loc": {
                                 "start": {
                                   "line": 18,
-                                  "column": 14,
+                                  "column": 22,
                                   "program": "union_types_3.ets"
                                 },
                                 "end": {
                                   "line": 18,
-                                  "column": 25,
+                                  "column": 33,
                                   "program": "union_types_3.ets"
                                 }
                               }
@@ -420,12 +454,12 @@
                               "loc": {
                                 "start": {
                                   "line": 18,
-                                  "column": 28,
+                                  "column": 36,
                                   "program": "union_types_3.ets"
                                 },
                                 "end": {
                                   "line": 18,
-                                  "column": 29,
+                                  "column": 37,
                                   "program": "union_types_3.ets"
                                 }
                               }
@@ -433,12 +467,12 @@
                             "loc": {
                               "start": {
                                 "line": 18,
-                                "column": 14,
+                                "column": 22,
                                 "program": "union_types_3.ets"
                               },
                               "end": {
                                 "line": 18,
-                                "column": 29,
+                                "column": 37,
                                 "program": "union_types_3.ets"
                               }
                             }
@@ -449,12 +483,12 @@
                             "loc": {
                               "start": {
                                 "line": 18,
-                                "column": 31,
+                                "column": 39,
                                 "program": "union_types_3.ets"
                               },
                               "end": {
                                 "line": 18,
-                                "column": 32,
+                                "column": 40,
                                 "program": "union_types_3.ets"
                               }
                             }
@@ -465,12 +499,12 @@
                             "loc": {
                               "start": {
                                 "line": 18,
-                                "column": 34,
+                                "column": 42,
                                 "program": "union_types_3.ets"
                               },
                               "end": {
                                 "line": 18,
-                                "column": 52,
+                                "column": 60,
                                 "program": "union_types_3.ets"
                               }
                             }
@@ -485,7 +519,7 @@
                           },
                           "end": {
                             "line": 18,
-                            "column": 53,
+                            "column": 61,
                             "program": "union_types_3.ets"
                           }
                         }
@@ -498,7 +532,7 @@
                         },
                         "end": {
                           "line": 18,
-                          "column": 54,
+                          "column": 62,
                           "program": "union_types_3.ets"
                         }
                       }
@@ -572,9 +606,43 @@
                       "expression": {
                         "type": "CallExpression",
                         "callee": {
-                          "type": "Identifier",
-                          "name": "assertEQ",
-                          "decorators": [],
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "Identifier",
+                            "name": "arktest",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 20,
+                                "column": 5,
+                                "program": "union_types_3.ets"
+                              },
+                              "end": {
+                                "line": 20,
+                                "column": 12,
+                                "program": "union_types_3.ets"
+                              }
+                            }
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "assertEQ",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 20,
+                                "column": 13,
+                                "program": "union_types_3.ets"
+                              },
+                              "end": {
+                                "line": 20,
+                                "column": 21,
+                                "program": "union_types_3.ets"
+                              }
+                            }
+                          },
+                          "computed": false,
+                          "optional": false,
                           "loc": {
                             "start": {
                               "line": 20,
@@ -583,7 +651,7 @@
                             },
                             "end": {
                               "line": 20,
-                              "column": 13,
+                              "column": 21,
                               "program": "union_types_3.ets"
                             }
                           }
@@ -601,12 +669,12 @@
                                 "loc": {
                                   "start": {
                                     "line": 20,
-                                    "column": 15,
+                                    "column": 23,
                                     "program": "union_types_3.ets"
                                   },
                                   "end": {
                                     "line": 20,
-                                    "column": 17,
+                                    "column": 25,
                                     "program": "union_types_3.ets"
                                   }
                                 }
@@ -616,12 +684,12 @@
                                 "loc": {
                                   "start": {
                                     "line": 20,
-                                    "column": 21,
+                                    "column": 29,
                                     "program": "union_types_3.ets"
                                   },
                                   "end": {
                                     "line": 20,
-                                    "column": 24,
+                                    "column": 32,
                                     "program": "union_types_3.ets"
                                   }
                                 }
@@ -629,12 +697,12 @@
                               "loc": {
                                 "start": {
                                   "line": 20,
-                                  "column": 14,
+                                  "column": 22,
                                   "program": "union_types_3.ets"
                                 },
                                 "end": {
                                   "line": 20,
-                                  "column": 25,
+                                  "column": 33,
                                   "program": "union_types_3.ets"
                                 }
                               }
@@ -645,12 +713,12 @@
                               "loc": {
                                 "start": {
                                   "line": 20,
-                                  "column": 28,
+                                  "column": 36,
                                   "program": "union_types_3.ets"
                                 },
                                 "end": {
                                   "line": 20,
-                                  "column": 29,
+                                  "column": 37,
                                   "program": "union_types_3.ets"
                                 }
                               }
@@ -658,12 +726,12 @@
                             "loc": {
                               "start": {
                                 "line": 20,
-                                "column": 14,
+                                "column": 22,
                                 "program": "union_types_3.ets"
                               },
                               "end": {
                                 "line": 20,
-                                "column": 29,
+                                "column": 37,
                                 "program": "union_types_3.ets"
                               }
                             }
@@ -674,12 +742,12 @@
                             "loc": {
                               "start": {
                                 "line": 20,
-                                "column": 31,
+                                "column": 39,
                                 "program": "union_types_3.ets"
                               },
                               "end": {
                                 "line": 20,
-                                "column": 33,
+                                "column": 41,
                                 "program": "union_types_3.ets"
                               }
                             }
@@ -690,12 +758,12 @@
                             "loc": {
                               "start": {
                                 "line": 20,
-                                "column": 35,
+                                "column": 43,
                                 "program": "union_types_3.ets"
                               },
                               "end": {
                                 "line": 20,
-                                "column": 54,
+                                "column": 62,
                                 "program": "union_types_3.ets"
                               }
                             }
@@ -710,7 +778,7 @@
                           },
                           "end": {
                             "line": 20,
-                            "column": 55,
+                            "column": 63,
                             "program": "union_types_3.ets"
                           }
                         }
@@ -723,7 +791,7 @@
                         },
                         "end": {
                           "line": 20,
-                          "column": 56,
+                          "column": 64,
                           "program": "union_types_3.ets"
                         }
                       }
@@ -797,9 +865,43 @@
                       "expression": {
                         "type": "CallExpression",
                         "callee": {
-                          "type": "Identifier",
-                          "name": "assertEQ",
-                          "decorators": [],
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "Identifier",
+                            "name": "arktest",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 22,
+                                "column": 5,
+                                "program": "union_types_3.ets"
+                              },
+                              "end": {
+                                "line": 22,
+                                "column": 12,
+                                "program": "union_types_3.ets"
+                              }
+                            }
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "assertEQ",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 22,
+                                "column": 13,
+                                "program": "union_types_3.ets"
+                              },
+                              "end": {
+                                "line": 22,
+                                "column": 21,
+                                "program": "union_types_3.ets"
+                              }
+                            }
+                          },
+                          "computed": false,
+                          "optional": false,
                           "loc": {
                             "start": {
                               "line": 22,
@@ -808,7 +910,7 @@
                             },
                             "end": {
                               "line": 22,
-                              "column": 13,
+                              "column": 21,
                               "program": "union_types_3.ets"
                             }
                           }
@@ -823,12 +925,12 @@
                               "loc": {
                                 "start": {
                                   "line": 22,
-                                  "column": 15,
+                                  "column": 23,
                                   "program": "union_types_3.ets"
                                 },
                                 "end": {
                                   "line": 22,
-                                  "column": 17,
+                                  "column": 25,
                                   "program": "union_types_3.ets"
                                 }
                               }
@@ -838,12 +940,12 @@
                               "loc": {
                                 "start": {
                                   "line": 22,
-                                  "column": 21,
+                                  "column": 29,
                                   "program": "union_types_3.ets"
                                 },
                                 "end": {
                                   "line": 22,
-                                  "column": 28,
+                                  "column": 36,
                                   "program": "union_types_3.ets"
                                 }
                               }
@@ -851,12 +953,12 @@
                             "loc": {
                               "start": {
                                 "line": 22,
-                                "column": 14,
+                                "column": 22,
                                 "program": "union_types_3.ets"
                               },
                               "end": {
                                 "line": 22,
-                                "column": 29,
+                                "column": 37,
                                 "program": "union_types_3.ets"
                               }
                             }
@@ -867,12 +969,12 @@
                             "loc": {
                               "start": {
                                 "line": 22,
-                                "column": 31,
+                                "column": 39,
                                 "program": "union_types_3.ets"
                               },
                               "end": {
                                 "line": 22,
-                                "column": 35,
+                                "column": 43,
                                 "program": "union_types_3.ets"
                               }
                             }
@@ -883,12 +985,12 @@
                             "loc": {
                               "start": {
                                 "line": 22,
-                                "column": 37,
+                                "column": 45,
                                 "program": "union_types_3.ets"
                               },
                               "end": {
                                 "line": 22,
-                                "column": 58,
+                                "column": 66,
                                 "program": "union_types_3.ets"
                               }
                             }
@@ -903,7 +1005,7 @@
                           },
                           "end": {
                             "line": 22,
-                            "column": 59,
+                            "column": 67,
                             "program": "union_types_3.ets"
                           }
                         }
@@ -916,7 +1018,7 @@
                         },
                         "end": {
                           "line": 22,
-                          "column": 60,
+                          "column": 68,
                           "program": "union_types_3.ets"
                         }
                       }
@@ -990,9 +1092,43 @@
                       "expression": {
                         "type": "CallExpression",
                         "callee": {
-                          "type": "Identifier",
-                          "name": "assertTrue",
-                          "decorators": [],
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "Identifier",
+                            "name": "arktest",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 24,
+                                "column": 5,
+                                "program": "union_types_3.ets"
+                              },
+                              "end": {
+                                "line": 24,
+                                "column": 12,
+                                "program": "union_types_3.ets"
+                              }
+                            }
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "assertTrue",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 24,
+                                "column": 13,
+                                "program": "union_types_3.ets"
+                              },
+                              "end": {
+                                "line": 24,
+                                "column": 23,
+                                "program": "union_types_3.ets"
+                              }
+                            }
+                          },
+                          "computed": false,
+                          "optional": false,
                           "loc": {
                             "start": {
                               "line": 24,
@@ -1001,7 +1137,7 @@
                             },
                             "end": {
                               "line": 24,
-                              "column": 15,
+                              "column": 23,
                               "program": "union_types_3.ets"
                             }
                           }
@@ -1023,12 +1159,12 @@
                                     "loc": {
                                       "start": {
                                         "line": 24,
-                                        "column": 18,
+                                        "column": 26,
                                         "program": "union_types_3.ets"
                                       },
                                       "end": {
                                         "line": 24,
-                                        "column": 20,
+                                        "column": 28,
                                         "program": "union_types_3.ets"
                                       }
                                     }
@@ -1044,12 +1180,12 @@
                                         "loc": {
                                           "start": {
                                             "line": 24,
-                                            "column": 24,
+                                            "column": 32,
                                             "program": "union_types_3.ets"
                                           },
                                           "end": {
                                             "line": 24,
-                                            "column": 30,
+                                            "column": 38,
                                             "program": "union_types_3.ets"
                                           }
                                         }
@@ -1057,12 +1193,12 @@
                                       "loc": {
                                         "start": {
                                           "line": 24,
-                                          "column": 24,
+                                          "column": 32,
                                           "program": "union_types_3.ets"
                                         },
                                         "end": {
                                           "line": 24,
-                                          "column": 31,
+                                          "column": 39,
                                           "program": "union_types_3.ets"
                                         }
                                       }
@@ -1070,12 +1206,12 @@
                                     "loc": {
                                       "start": {
                                         "line": 24,
-                                        "column": 24,
+                                        "column": 32,
                                         "program": "union_types_3.ets"
                                       },
                                       "end": {
                                         "line": 24,
-                                        "column": 31,
+                                        "column": 39,
                                         "program": "union_types_3.ets"
                                       }
                                     }
@@ -1083,12 +1219,12 @@
                                   "loc": {
                                     "start": {
                                       "line": 24,
-                                      "column": 17,
+                                      "column": 25,
                                       "program": "union_types_3.ets"
                                     },
                                     "end": {
                                       "line": 24,
-                                      "column": 31,
+                                      "column": 39,
                                       "program": "union_types_3.ets"
                                     }
                                   }
@@ -1099,12 +1235,12 @@
                                   "loc": {
                                     "start": {
                                       "line": 24,
-                                      "column": 34,
+                                      "column": 42,
                                       "program": "union_types_3.ets"
                                     },
                                     "end": {
                                       "line": 24,
-                                      "column": 40,
+                                      "column": 48,
                                       "program": "union_types_3.ets"
                                     }
                                   }
@@ -1112,12 +1248,12 @@
                                 "loc": {
                                   "start": {
                                     "line": 24,
-                                    "column": 16,
+                                    "column": 24,
                                     "program": "union_types_3.ets"
                                   },
                                   "end": {
                                     "line": 24,
-                                    "column": 41,
+                                    "column": 49,
                                     "program": "union_types_3.ets"
                                   }
                                 }
@@ -1129,12 +1265,12 @@
                                 "loc": {
                                   "start": {
                                     "line": 24,
-                                    "column": 42,
+                                    "column": 50,
                                     "program": "union_types_3.ets"
                                   },
                                   "end": {
                                     "line": 24,
-                                    "column": 48,
+                                    "column": 56,
                                     "program": "union_types_3.ets"
                                   }
                                 }
@@ -1144,12 +1280,12 @@
                               "loc": {
                                 "start": {
                                   "line": 24,
-                                  "column": 16,
+                                  "column": 24,
                                   "program": "union_types_3.ets"
                                 },
                                 "end": {
                                   "line": 24,
-                                  "column": 48,
+                                  "column": 56,
                                   "program": "union_types_3.ets"
                                 }
                               }
@@ -1161,12 +1297,12 @@
                                 "loc": {
                                   "start": {
                                     "line": 24,
-                                    "column": 49,
+                                    "column": 57,
                                     "program": "union_types_3.ets"
                                   },
                                   "end": {
                                     "line": 24,
-                                    "column": 59,
+                                    "column": 67,
                                     "program": "union_types_3.ets"
                                   }
                                 }
@@ -1176,12 +1312,12 @@
                             "loc": {
                               "start": {
                                 "line": 24,
-                                "column": 16,
+                                "column": 24,
                                 "program": "union_types_3.ets"
                               },
                               "end": {
                                 "line": 24,
-                                "column": 60,
+                                "column": 68,
                                 "program": "union_types_3.ets"
                               }
                             }
@@ -1192,12 +1328,12 @@
                             "loc": {
                               "start": {
                                 "line": 24,
-                                "column": 62,
+                                "column": 70,
                                 "program": "union_types_3.ets"
                               },
                               "end": {
                                 "line": 24,
-                                "column": 89,
+                                "column": 97,
                                 "program": "union_types_3.ets"
                               }
                             }
@@ -1212,7 +1348,7 @@
                           },
                           "end": {
                             "line": 24,
-                            "column": 90,
+                            "column": 98,
                             "program": "union_types_3.ets"
                           }
                         }
@@ -1225,7 +1361,7 @@
                         },
                         "end": {
                           "line": 24,
-                          "column": 91,
+                          "column": 99,
                           "program": "union_types_3.ets"
                         }
                       }
@@ -1465,9 +1601,43 @@
                             "expression": {
                               "type": "CallExpression",
                               "callee": {
-                                "type": "Identifier",
-                                "name": "assertTrue",
-                                "decorators": [],
+                                "type": "MemberExpression",
+                                "object": {
+                                  "type": "Identifier",
+                                  "name": "arktest",
+                                  "decorators": [],
+                                  "loc": {
+                                    "start": {
+                                      "line": 27,
+                                      "column": 9,
+                                      "program": "union_types_3.ets"
+                                    },
+                                    "end": {
+                                      "line": 27,
+                                      "column": 16,
+                                      "program": "union_types_3.ets"
+                                    }
+                                  }
+                                },
+                                "property": {
+                                  "type": "Identifier",
+                                  "name": "assertTrue",
+                                  "decorators": [],
+                                  "loc": {
+                                    "start": {
+                                      "line": 27,
+                                      "column": 17,
+                                      "program": "union_types_3.ets"
+                                    },
+                                    "end": {
+                                      "line": 27,
+                                      "column": 27,
+                                      "program": "union_types_3.ets"
+                                    }
+                                  }
+                                },
+                                "computed": false,
+                                "optional": false,
                                 "loc": {
                                   "start": {
                                     "line": 27,
@@ -1476,7 +1646,7 @@
                                   },
                                   "end": {
                                     "line": 27,
-                                    "column": 19,
+                                    "column": 27,
                                     "program": "union_types_3.ets"
                                   }
                                 }
@@ -1495,12 +1665,12 @@
                                         "loc": {
                                           "start": {
                                             "line": 27,
-                                            "column": 21,
+                                            "column": 29,
                                             "program": "union_types_3.ets"
                                           },
                                           "end": {
                                             "line": 27,
-                                            "column": 23,
+                                            "column": 31,
                                             "program": "union_types_3.ets"
                                           }
                                         }
@@ -1516,12 +1686,12 @@
                                             "loc": {
                                               "start": {
                                                 "line": 27,
-                                                "column": 27,
+                                                "column": 35,
                                                 "program": "union_types_3.ets"
                                               },
                                               "end": {
                                                 "line": 27,
-                                                "column": 33,
+                                                "column": 41,
                                                 "program": "union_types_3.ets"
                                               }
                                             }
@@ -1529,12 +1699,12 @@
                                           "loc": {
                                             "start": {
                                               "line": 27,
-                                              "column": 27,
+                                              "column": 35,
                                               "program": "union_types_3.ets"
                                             },
                                             "end": {
                                               "line": 27,
-                                              "column": 34,
+                                              "column": 42,
                                               "program": "union_types_3.ets"
                                             }
                                           }
@@ -1542,12 +1712,12 @@
                                         "loc": {
                                           "start": {
                                             "line": 27,
-                                            "column": 27,
+                                            "column": 35,
                                             "program": "union_types_3.ets"
                                           },
                                           "end": {
                                             "line": 27,
-                                            "column": 34,
+                                            "column": 42,
                                             "program": "union_types_3.ets"
                                           }
                                         }
@@ -1555,12 +1725,12 @@
                                       "loc": {
                                         "start": {
                                           "line": 27,
-                                          "column": 20,
+                                          "column": 28,
                                           "program": "union_types_3.ets"
                                         },
                                         "end": {
                                           "line": 27,
-                                          "column": 34,
+                                          "column": 42,
                                           "program": "union_types_3.ets"
                                         }
                                       }
@@ -1572,12 +1742,12 @@
                                       "loc": {
                                         "start": {
                                           "line": 27,
-                                          "column": 35,
+                                          "column": 43,
                                           "program": "union_types_3.ets"
                                         },
                                         "end": {
                                           "line": 27,
-                                          "column": 41,
+                                          "column": 49,
                                           "program": "union_types_3.ets"
                                         }
                                       }
@@ -1587,12 +1757,12 @@
                                     "loc": {
                                       "start": {
                                         "line": 27,
-                                        "column": 20,
+                                        "column": 28,
                                         "program": "union_types_3.ets"
                                       },
                                       "end": {
                                         "line": 27,
-                                        "column": 41,
+                                        "column": 49,
                                         "program": "union_types_3.ets"
                                       }
                                     }
@@ -1604,12 +1774,12 @@
                                       "loc": {
                                         "start": {
                                           "line": 27,
-                                          "column": 42,
+                                          "column": 50,
                                           "program": "union_types_3.ets"
                                         },
                                         "end": {
                                           "line": 27,
-                                          "column": 47,
+                                          "column": 55,
                                           "program": "union_types_3.ets"
                                         }
                                       }
@@ -1619,12 +1789,12 @@
                                   "loc": {
                                     "start": {
                                       "line": 27,
-                                      "column": 20,
+                                      "column": 28,
                                       "program": "union_types_3.ets"
                                     },
                                     "end": {
                                       "line": 27,
-                                      "column": 48,
+                                      "column": 56,
                                       "program": "union_types_3.ets"
                                     }
                                   }
@@ -1635,12 +1805,12 @@
                                   "loc": {
                                     "start": {
                                       "line": 27,
-                                      "column": 50,
+                                      "column": 58,
                                       "program": "union_types_3.ets"
                                     },
                                     "end": {
                                       "line": 27,
-                                      "column": 72,
+                                      "column": 80,
                                       "program": "union_types_3.ets"
                                     }
                                   }
@@ -1655,7 +1825,7 @@
                                 },
                                 "end": {
                                   "line": 27,
-                                  "column": 73,
+                                  "column": 81,
                                   "program": "union_types_3.ets"
                                 }
                               }
@@ -1668,7 +1838,7 @@
                               },
                               "end": {
                                 "line": 27,
-                                "column": 74,
+                                "column": 82,
                                 "program": "union_types_3.ets"
                               }
                             }
@@ -1881,9 +2051,43 @@
                       "expression": {
                         "type": "CallExpression",
                         "callee": {
-                          "type": "Identifier",
-                          "name": "assertEQ",
-                          "decorators": [],
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "Identifier",
+                            "name": "arktest",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 30,
+                                "column": 5,
+                                "program": "union_types_3.ets"
+                              },
+                              "end": {
+                                "line": 30,
+                                "column": 12,
+                                "program": "union_types_3.ets"
+                              }
+                            }
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "assertEQ",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 30,
+                                "column": 13,
+                                "program": "union_types_3.ets"
+                              },
+                              "end": {
+                                "line": 30,
+                                "column": 21,
+                                "program": "union_types_3.ets"
+                              }
+                            }
+                          },
+                          "computed": false,
+                          "optional": false,
                           "loc": {
                             "start": {
                               "line": 30,
@@ -1892,7 +2096,7 @@
                             },
                             "end": {
                               "line": 30,
-                              "column": 13,
+                              "column": 21,
                               "program": "union_types_3.ets"
                             }
                           }
@@ -1907,12 +2111,12 @@
                               "loc": {
                                 "start": {
                                   "line": 30,
-                                  "column": 15,
+                                  "column": 23,
                                   "program": "union_types_3.ets"
                                 },
                                 "end": {
                                   "line": 30,
-                                  "column": 17,
+                                  "column": 25,
                                   "program": "union_types_3.ets"
                                 }
                               }
@@ -1922,12 +2126,12 @@
                               "loc": {
                                 "start": {
                                   "line": 30,
-                                  "column": 21,
+                                  "column": 29,
                                   "program": "union_types_3.ets"
                                 },
                                 "end": {
                                   "line": 30,
-                                  "column": 28,
+                                  "column": 36,
                                   "program": "union_types_3.ets"
                                 }
                               }
@@ -1935,12 +2139,12 @@
                             "loc": {
                               "start": {
                                 "line": 30,
-                                "column": 14,
+                                "column": 22,
                                 "program": "union_types_3.ets"
                               },
                               "end": {
                                 "line": 30,
-                                "column": 29,
+                                "column": 37,
                                 "program": "union_types_3.ets"
                               }
                             }
@@ -1951,12 +2155,12 @@
                             "loc": {
                               "start": {
                                 "line": 30,
-                                "column": 31,
+                                "column": 39,
                                 "program": "union_types_3.ets"
                               },
                               "end": {
                                 "line": 30,
-                                "column": 35,
+                                "column": 43,
                                 "program": "union_types_3.ets"
                               }
                             }
@@ -1967,12 +2171,12 @@
                             "loc": {
                               "start": {
                                 "line": 30,
-                                "column": 37,
+                                "column": 45,
                                 "program": "union_types_3.ets"
                               },
                               "end": {
                                 "line": 30,
-                                "column": 60,
+                                "column": 68,
                                 "program": "union_types_3.ets"
                               }
                             }
@@ -1987,7 +2191,7 @@
                           },
                           "end": {
                             "line": 30,
-                            "column": 61,
+                            "column": 69,
                             "program": "union_types_3.ets"
                           }
                         }
@@ -2000,7 +2204,7 @@
                         },
                         "end": {
                           "line": 30,
-                          "column": 62,
+                          "column": 70,
                           "program": "union_types_3.ets"
                         }
                       }
@@ -2185,9 +2389,43 @@
                       "expression": {
                         "type": "CallExpression",
                         "callee": {
-                          "type": "Identifier",
-                          "name": "assertEQ",
-                          "decorators": [],
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "Identifier",
+                            "name": "arktest",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 33,
+                                "column": 5,
+                                "program": "union_types_3.ets"
+                              },
+                              "end": {
+                                "line": 33,
+                                "column": 12,
+                                "program": "union_types_3.ets"
+                              }
+                            }
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "assertEQ",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 33,
+                                "column": 13,
+                                "program": "union_types_3.ets"
+                              },
+                              "end": {
+                                "line": 33,
+                                "column": 21,
+                                "program": "union_types_3.ets"
+                              }
+                            }
+                          },
+                          "computed": false,
+                          "optional": false,
                           "loc": {
                             "start": {
                               "line": 33,
@@ -2196,7 +2434,7 @@
                             },
                             "end": {
                               "line": 33,
-                              "column": 13,
+                              "column": 21,
                               "program": "union_types_3.ets"
                             }
                           }
@@ -2211,12 +2449,12 @@
                               "loc": {
                                 "start": {
                                   "line": 33,
-                                  "column": 15,
+                                  "column": 23,
                                   "program": "union_types_3.ets"
                                 },
                                 "end": {
                                   "line": 33,
-                                  "column": 17,
+                                  "column": 25,
                                   "program": "union_types_3.ets"
                                 }
                               }
@@ -2232,12 +2470,12 @@
                                   "loc": {
                                     "start": {
                                       "line": 33,
-                                      "column": 21,
+                                      "column": 29,
                                       "program": "union_types_3.ets"
                                     },
                                     "end": {
                                       "line": 33,
-                                      "column": 27,
+                                      "column": 35,
                                       "program": "union_types_3.ets"
                                     }
                                   }
@@ -2245,12 +2483,12 @@
                                 "loc": {
                                   "start": {
                                     "line": 33,
-                                    "column": 21,
+                                    "column": 29,
                                     "program": "union_types_3.ets"
                                   },
                                   "end": {
                                     "line": 33,
-                                    "column": 28,
+                                    "column": 36,
                                     "program": "union_types_3.ets"
                                   }
                                 }
@@ -2258,12 +2496,12 @@
                               "loc": {
                                 "start": {
                                   "line": 33,
-                                  "column": 21,
+                                  "column": 29,
                                   "program": "union_types_3.ets"
                                 },
                                 "end": {
                                   "line": 33,
-                                  "column": 28,
+                                  "column": 36,
                                   "program": "union_types_3.ets"
                                 }
                               }
@@ -2271,12 +2509,12 @@
                             "loc": {
                               "start": {
                                 "line": 33,
-                                "column": 14,
+                                "column": 22,
                                 "program": "union_types_3.ets"
                               },
                               "end": {
                                 "line": 33,
-                                "column": 28,
+                                "column": 36,
                                 "program": "union_types_3.ets"
                               }
                             }
@@ -2287,12 +2525,12 @@
                             "loc": {
                               "start": {
                                 "line": 33,
-                                "column": 30,
+                                "column": 38,
                                 "program": "union_types_3.ets"
                               },
                               "end": {
                                 "line": 33,
-                                "column": 34,
+                                "column": 42,
                                 "program": "union_types_3.ets"
                               }
                             }
@@ -2303,12 +2541,12 @@
                             "loc": {
                               "start": {
                                 "line": 33,
-                                "column": 36,
+                                "column": 44,
                                 "program": "union_types_3.ets"
                               },
                               "end": {
                                 "line": 33,
-                                "column": 59,
+                                "column": 67,
                                 "program": "union_types_3.ets"
                               }
                             }
@@ -2323,7 +2561,7 @@
                           },
                           "end": {
                             "line": 33,
-                            "column": 60,
+                            "column": 68,
                             "program": "union_types_3.ets"
                           }
                         }
@@ -2336,7 +2574,7 @@
                         },
                         "end": {
                           "line": 33,
-                          "column": 61,
+                          "column": 69,
                           "program": "union_types_3.ets"
                         }
                       }

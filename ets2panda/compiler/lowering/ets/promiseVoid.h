@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -31,9 +31,9 @@ public:
     bool PostconditionForModule(public_lib::Context *ctx, const parser::Program *program) override;
 
 private:
-    ir::BlockStatement *HandleAsyncScriptFunctionBody(checker::ETSChecker *checker, ir::BlockStatement *body);
+    ir::BlockStatement *HandleAsyncScriptFunctionBody(public_lib::Context *ctx, ir::BlockStatement *body);
     void SetRangeRecursively(ir::TypeNode *node, const lexer::SourceRange &loc);
-    ir::TypeNode *CreatePromiseVoidType(checker::ETSChecker *checker, const lexer::SourceRange &loc);
+    ir::TypeNode *CreatePromiseVoidType(public_lib::Context *ctx, const lexer::SourceRange &loc);
 };
 
 }  // namespace ark::es2panda::compiler

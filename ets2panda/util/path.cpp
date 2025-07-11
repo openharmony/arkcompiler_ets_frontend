@@ -116,9 +116,7 @@ void Path::InitializeAbsoluteParentFolder()
 
     int position = absolutePath_.Mutf8().find_last_of(PATH_DELIMITER);
 
-    if (!absolutePath_.Empty()) {
-        absoluteParentFolder_ = absolutePath_.Substr(0, position);
-    }
+    absoluteParentFolder_ = absolutePath_.Substr(0, position);
 }
 
 void Path::InitializeParentFolder()

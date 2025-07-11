@@ -18,9 +18,9 @@
    authorName: string = "Jim"
    authorAge: number = 35
    testBool: boolean = false
-   reviewers: FixedArray<string> = ["Bob", "Jim", "Tom"]
-   reviewersAge: FixedArray<number> = [18, 21, -32]
-   testBools: FixedArray<boolean> = [false, true, false]
+   reviewers: string[] = ["Bob", "Jim", "Tom"]
+   reviewersAge: number[] = [18, 21, -32]
+   testBools: boolean[] = [false, true, false]
 }
 
 // Annotation use:

@@ -15,7 +15,7 @@
 
 function main() : void
 {
-    foo();
+    /* @@ label */foo();
 }
 
 function foo(a : int, b : int = 10) : int
@@ -28,4 +28,5 @@ function foo(a : int) : int
     return a;
 }
 
-/* @@? 18:5 Error TypeError: No matching call signature  */
+/* @@@ label Error TypeError: Expected 1 arguments, got 0. */              
+/* @@@ label Error TypeError: No matching call signature  */

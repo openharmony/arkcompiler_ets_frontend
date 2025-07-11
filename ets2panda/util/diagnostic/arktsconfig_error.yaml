@@ -44,7 +44,7 @@ arkts_config_error:
   id: 8
   message: Invalid {} value for '{}' with key '{}'
 
-- name: DUPLICATED_DYNAMIC_PATH
+- name: DUPLICATED_DEPENDENCIES
   id: 9
   message: Duplicated dynamic path '{}' for key '{}'
 
@@ -76,6 +76,10 @@ arkts_config_error:
   id: 16
   message: Invalid destination file
 
-- name: INVALID_DYNAMIC_PATH
+- name: INVALID_PATH
   id: 17
-  message: Invalid dynamic path '{}'
+  message: Invalid path for '{}' in dependencies
+
+- name: DEPENDENCIES_ABSOLUTE
+  id: 18
+  message: "Don't use absolute path '{}' as key in 'dependencies'"

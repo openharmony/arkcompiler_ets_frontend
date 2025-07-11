@@ -65,10 +65,14 @@ void ETSChecker::ValidateCallExpressionIdentifier(ir::Identifier *const ident, T
 
     ES2PANDA_ASSERT(ident->Variable() != nullptr);
     if (ident->Variable()->Declaration()->Node() != nullptr &&
+        ident->Variable()->Declaration()->Node()->IsOverloadDeclaration()) {
+        return;
+    }
+    if (ident->Variable()->Declaration()->Node() != nullptr &&
         ident->Variable()->Declaration()->Node()->IsImportNamespaceSpecifier()) {
         std::ignore = TypeError(ident->Variable(), diagnostic::NAMESPACE_CALL, {ident->ToString()}, ident->Start());
     }
-    if (type->IsETSFunctionType() || type->IsETSDynamicType()) {
+    if (type->IsETSFunctionType()) {
         return;
     }
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
@@ -129,7 +133,8 @@ bool ETSChecker::ValidateBinaryExpressionIdentifier(ir::Identifier *const ident,
     const auto *const binaryExpr = ident->Parent()->AsBinaryExpression();
     bool isFinished = false;
 
-    if (binaryExpr->OperatorType() == lexer::TokenType::KEYW_INSTANCEOF && binaryExpr->Left() == ident) {
+    bool isInstanceOfKeyword = binaryExpr->OperatorType() == lexer::TokenType::KEYW_INSTANCEOF;
+    if (isInstanceOfKeyword && binaryExpr->Left() == ident) {
         if (!IsReferenceType(type)) {
             std::ignore =
                 TypeError(ident->Variable(), diagnostic::INSTANCEOF_NONOBJECT, {ident->Name()}, ident->Start());
@@ -144,6 +149,10 @@ bool ETSChecker::ValidateBinaryExpressionIdentifier(ir::Identifier *const ident,
             WrongContextErrorClassifyByType(ident);
         }
         isFinished = true;
+    }
+    if (isInstanceOfKeyword && ident->Variable()->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE |
+                                                          varbinder::VariableFlags::TYPE_ALIAS)) {
+        LogError(diagnostic::WRONG_LEFT_OF_INSTANCEOF, {}, ident->Start());
     }
     return isFinished;
 }
@@ -174,7 +183,10 @@ void ETSChecker::ValidateResolvedIdentifier(ir::Identifier *const ident)
             if (ValidateBinaryExpressionIdentifier(ident, resolvedType)) {
                 return;
             }
-            [[fallthrough]];
+            if (resolved != nullptr && !resolved->Declaration()->PossibleTDZ() && !resolvedType->IsETSFunctionType()) {
+                WrongContextErrorClassifyByType(ident);
+            }
+            break;
         case ir::AstNodeType::UPDATE_EXPRESSION:
         case ir::AstNodeType::UNARY_EXPRESSION:
             if (resolved != nullptr && !resolved->Declaration()->PossibleTDZ()) {
@@ -191,21 +203,6 @@ void ETSChecker::ValidateResolvedIdentifier(ir::Identifier *const ident)
     }
 }
 
-bool ETSChecker::ValidateAnnotationPropertyType(checker::Type *type)
-{
-    if (type == nullptr || type->IsTypeError()) {
-        ES2PANDA_ASSERT(IsAnyError());
-        return false;
-    }
-
-    if (type->IsETSArrayType()) {
-        return ValidateAnnotationPropertyType(type->AsETSArrayType()->ElementType());
-    }
-
-    return type->HasTypeFlag(TypeFlag::ETS_NUMERIC | TypeFlag::ETS_ENUM | TypeFlag::ETS_BOOLEAN) ||
-           type->IsETSStringType();
-}
-
 void ETSChecker::ValidateUnaryOperatorOperand(varbinder::Variable *variable)
 {
     if (IsVariableGetterSetter(variable)) {
@@ -214,8 +211,10 @@ void ETSChecker::ValidateUnaryOperatorOperand(varbinder::Variable *variable)
 
     if (variable->Declaration()->IsConstDecl() || variable->Declaration()->IsReadonlyDecl()) {
         std::string_view fieldType = variable->Declaration()->IsConstDecl() ? "constant" : "readonly";
-        if (HasStatus(CheckerStatus::IN_CONSTRUCTOR | CheckerStatus::IN_STATIC_BLOCK) &&
-            !variable->HasFlag(varbinder::VariableFlags::EXPLICIT_INIT_REQUIRED)) {
+        if ((HasStatus(CheckerStatus::IN_CONSTRUCTOR | CheckerStatus::IN_STATIC_BLOCK) &&
+             !variable->HasFlag(varbinder::VariableFlags::EXPLICIT_INIT_REQUIRED)) ||
+            (variable->HasFlag(varbinder::VariableFlags::INIT_IN_STATIC_BLOCK) &&
+             variable->HasFlag(varbinder::VariableFlags::INITIALIZED))) {
             std::ignore = TypeError(variable, diagnostic::FIELD_REASSIGNMENT, {fieldType, variable->Name()},
                                     variable->Declaration()->Node()->Start());
             return;
@@ -223,6 +222,10 @@ void ETSChecker::ValidateUnaryOperatorOperand(varbinder::Variable *variable)
         if (!HasStatus(CheckerStatus::IN_CONSTRUCTOR | CheckerStatus::IN_STATIC_BLOCK)) {
             std::ignore = TypeError(variable, diagnostic::FIELD_ASSIGN_TYPE_MISMATCH, {fieldType, variable->Name()},
                                     variable->Declaration()->Node()->Start());
+        }
+
+        if (variable->HasFlag(varbinder::VariableFlags::INIT_IN_STATIC_BLOCK)) {
+            variable->AddFlag(varbinder::VariableFlags::INITIALIZED);
         }
     }
 }
@@ -273,7 +276,7 @@ void ETSChecker::ValidateGenericTypeAliasForClonedNode(ir::TSTypeAliasDeclaratio
 
             ir::TypeNode *typeParamType = nullptr;
 
-            if (exactTypeParams->Params().size() > typeParamIdx) {
+            if (exactTypeParams != nullptr && exactTypeParams->Params().size() > typeParamIdx) {
                 typeParamType = exactTypeParams->Params().at(typeParamIdx);
             } else {
                 typeParamType = typeAliasNode->TypeParams()->Params().at(typeParamIdx)->DefaultType();

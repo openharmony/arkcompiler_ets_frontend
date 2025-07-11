@@ -499,12 +499,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "assignNullableFromMethodToNullableParam.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "assignNullableFromMethodToNullableParam.ets"
                     }
                   }
                 },
@@ -512,12 +512,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "assignNullableFromMethodToNullableParam.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "assignNullableFromMethodToNullableParam.ets"
                   }
                 }
               },
@@ -525,12 +525,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "assignNullableFromMethodToNullableParam.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "assignNullableFromMethodToNullableParam.ets"
                 }
               }
             },

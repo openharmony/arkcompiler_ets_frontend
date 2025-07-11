@@ -1070,12 +1070,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "test-type-alias-call6.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "test-type-alias-call6.ets"
                     }
                   }
                 },
@@ -1083,12 +1083,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "test-type-alias-call6.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "test-type-alias-call6.ets"
                   }
                 }
               },
@@ -1096,12 +1096,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "test-type-alias-call6.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "test-type-alias-call6.ets"
                 }
               }
             },
@@ -1176,12 +1176,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "test-type-alias-call6.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "test-type-alias-call6.ets"
                     }
                   }
                 },
@@ -1189,12 +1189,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "test-type-alias-call6.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "test-type-alias-call6.ets"
                   }
                 }
               },
@@ -1202,12 +1202,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "test-type-alias-call6.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "test-type-alias-call6.ets"
                 }
               }
             },

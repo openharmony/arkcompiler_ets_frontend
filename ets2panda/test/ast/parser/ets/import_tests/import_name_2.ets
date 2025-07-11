@@ -19,5 +19,4 @@ import {foo, flt} from "import_tests/packages";
 let x = foo(dbl);
 
 /* @@? 19:13 Error TypeError: Unresolved reference dbl  */
-/* @@? 19:13 Error TypeError: Unresolved reference dbl  */
 

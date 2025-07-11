@@ -21,7 +21,6 @@ function main(): void {
 }
 
 /* @@? 20:10 Error TypeError: Unresolved reference x */
-/* @@? 28:1 Error SyntaxError: Unexpected token, expected ',' or ')'. */
-/* @@? 28:1 Error SyntaxError: Unexpected token, expected ')'. */
-/* @@? 28:1 Error SyntaxError: Unexpected token, expected ',' or ')'. */
-/* @@? 28:1 Error SyntaxError: Expected '}', got 'eos'. */
+/* @@? 27:1 Error SyntaxError: Unexpected token, expected ',' or ')'. */
+/* @@? 27:1 Error SyntaxError: Unexpected token, expected ')'. */
+/* @@? 27:1 Error SyntaxError: Expected '}', got 'end of stream'. */

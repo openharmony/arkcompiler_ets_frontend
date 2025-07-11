@@ -80,12 +80,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "tupleIndexWithNumbers.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "tupleIndexWithNumbers.ets"
                     }
                   }
                 },
@@ -93,12 +93,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "tupleIndexWithNumbers.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "tupleIndexWithNumbers.ets"
                   }
                 }
               },
@@ -106,12 +106,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "tupleIndexWithNumbers.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "tupleIndexWithNumbers.ets"
                 }
               }
             },
@@ -574,9 +574,8 @@
                             }
                           },
                           "property": {
-                            "type": "Identifier",
-                            "name": "index1",
-                            "decorators": [],
+                            "type": "NumberLiteral",
+                            "value": 1,
                             "loc": {
                               "start": {
                                 "line": 21,
@@ -672,9 +671,8 @@
                             }
                           },
                           "property": {
-                            "type": "Identifier",
-                            "name": "index2",
-                            "decorators": [],
+                            "type": "NumberLiteral",
+                            "value": 1,
                             "loc": {
                               "start": {
                                 "line": 22,

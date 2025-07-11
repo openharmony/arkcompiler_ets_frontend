@@ -19,35 +19,104 @@
 #include "checker/ETSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
+#include "utils/arena_containers.h"
 
 namespace ark::es2panda::ir {
+
+void VariableDeclaration::EmplaceDecorators(Decorator *source)
+{
+    auto newNode = this->GetOrCreateHistoryNodeAs<VariableDeclaration>();
+    newNode->decorators_.emplace_back(source);
+}
+
+void VariableDeclaration::ClearDecorators()
+{
+    auto newNode = this->GetOrCreateHistoryNodeAs<VariableDeclaration>();
+    newNode->decorators_.clear();
+}
+
+void VariableDeclaration::SetValueDecorators(Decorator *source, size_t index)
+{
+    auto newNode = this->GetOrCreateHistoryNodeAs<VariableDeclaration>();
+    auto &arenaVector = newNode->decorators_;
+    ES2PANDA_ASSERT(arenaVector.size() > index);
+    arenaVector[index] = source;
+}
+
+[[nodiscard]] const ArenaVector<Decorator *> &VariableDeclaration::Decorators()
+{
+    auto newNode = this->GetHistoryNodeAs<VariableDeclaration>();
+    return newNode->decorators_;
+}
+
+[[nodiscard]] ArenaVector<Decorator *> &VariableDeclaration::DecoratorsForUpdate()
+{
+    auto newNode = this->GetOrCreateHistoryNodeAs<VariableDeclaration>();
+    return newNode->decorators_;
+}
+
+void VariableDeclaration::EmplaceDeclarators(VariableDeclarator *source)
+{
+    auto newNode = this->GetOrCreateHistoryNodeAs<VariableDeclaration>();
+    newNode->declarators_.emplace_back(source);
+}
+
+void VariableDeclaration::ClearDeclarators()
+{
+    auto newNode = this->GetOrCreateHistoryNodeAs<VariableDeclaration>();
+    newNode->declarators_.clear();
+}
+
+void VariableDeclaration::SetValueDeclarators(VariableDeclarator *source, size_t index)
+{
+    auto newNode = this->GetOrCreateHistoryNodeAs<VariableDeclaration>();
+    auto &arenaVector = newNode->declarators_;
+    ES2PANDA_ASSERT(arenaVector.size() > index);
+    arenaVector[index] = source;
+}
+
+[[nodiscard]] const ArenaVector<VariableDeclarator *> &VariableDeclaration::Declarators()
+{
+    auto newNode = this->GetHistoryNodeAs<VariableDeclaration>();
+    return newNode->declarators_;
+}
+
+[[nodiscard]] ArenaVector<VariableDeclarator *> &VariableDeclaration::DeclaratorsForUpdate()
+{
+    auto newNode = this->GetOrCreateHistoryNodeAs<VariableDeclaration>();
+    return newNode->declarators_;
+}
+
 void VariableDeclaration::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    for (auto *&it : VectorIterationGuard(decorators_)) {
-        if (auto *transformedNode = cb(it); it != transformedNode) {
-            it->SetTransformedNode(transformationName, transformedNode);
-            it = transformedNode->AsDecorator();
+    auto const &decorators = Decorators();
+    for (size_t index = 0; index < decorators.size(); ++index) {
+        if (auto *transformedNode = cb(decorators[index]); decorators[index] != transformedNode) {
+            decorators[index]->SetTransformedNode(transformationName, transformedNode);
+            SetValueDecorators(transformedNode->AsDecorator(), index);
         }
     }
 
-    for (auto *&it : VectorIterationGuard(Annotations())) {
-        if (auto *transformedNode = cb(it); it != transformedNode) {
-            it->SetTransformedNode(transformationName, transformedNode);
-            it = transformedNode->AsAnnotationUsage();
+    auto const &annotations = Annotations();
+    for (size_t index = 0; index < annotations.size(); ++index) {
+        if (auto *transformedNode = cb(annotations[index]); annotations[index] != transformedNode) {
+            annotations[index]->SetTransformedNode(transformationName, transformedNode);
+            SetValueAnnotations(transformedNode->AsAnnotationUsage(), index);
         }
     }
 
-    for (auto *&it : VectorIterationGuard(declarators_)) {
-        if (auto *transformedNode = cb(it); it != transformedNode) {
-            it->SetTransformedNode(transformationName, transformedNode);
-            it = transformedNode->AsVariableDeclarator();
+    auto const &declarators = Declarators();
+    for (size_t index = 0; index < declarators.size(); ++index) {
+        if (auto *transformedNode = cb(declarators[index]); declarators[index] != transformedNode) {
+            declarators[index]->SetTransformedNode(transformationName, transformedNode);
+            SetValueDeclarators(transformedNode->AsVariableDeclarator(), index);
         }
     }
 }
 
 void VariableDeclaration::Iterate(const NodeTraverser &cb) const
 {
-    for (auto *it : VectorIterationGuard(decorators_)) {
+    for (auto *it : VectorIterationGuard(Decorators())) {
         cb(it);
     }
 
@@ -55,7 +124,7 @@ void VariableDeclaration::Iterate(const NodeTraverser &cb) const
         cb(it);
     }
 
-    for (auto *it : VectorIterationGuard(declarators_)) {
+    for (auto *it : VectorIterationGuard(Declarators())) {
         cb(it);
     }
 }
@@ -64,7 +133,7 @@ void VariableDeclaration::Dump(ir::AstDumper *dumper) const
 {
     const char *kind = nullptr;
 
-    switch (kind_) {
+    switch (Kind()) {
         case VariableDeclarationKind::CONST: {
             kind = "const";
             break;
@@ -83,9 +152,9 @@ void VariableDeclaration::Dump(ir::AstDumper *dumper) const
     }
 
     dumper->Add({{"type", "VariableDeclaration"},
-                 {"declarations", declarators_},
+                 {"declarations", Declarators()},
                  {"kind", kind},
-                 {"decorators", AstDumper::Optional(decorators_)},
+                 {"decorators", AstDumper::Optional(Decorators())},
                  {"annotations", AstDumper::Optional(Annotations())},
                  {"declare", AstDumper::Optional(IsDeclare())}});
 }
@@ -100,7 +169,7 @@ void VariableDeclaration::Dump(ir::SrcDumper *dumper) const
         dumper->Add("declare ");
     }
 
-    switch (kind_) {
+    switch (Kind()) {
         case VariableDeclarationKind::CONST:
             dumper->Add("const ");
             break;
@@ -114,22 +183,24 @@ void VariableDeclaration::Dump(ir::SrcDumper *dumper) const
             ES2PANDA_UNREACHABLE();
     }
 
-    for (auto declarator : declarators_) {
+    for (auto declarator : Declarators()) {
         declarator->Dump(dumper);
-        if (declarator != declarators_.back()) {
+        if (declarator != Declarators().back()) {
             dumper->Add(", ");
         }
     }
 
-    if ((parent_ != nullptr) &&
-        (parent_->IsBlockStatement() || parent_->IsBlockExpression() || parent_->IsSwitchCaseStatement())) {
+    auto const parent = Parent();
+    if ((parent != nullptr) &&
+        (parent->IsBlockStatement() || parent->IsBlockExpression() || parent->IsSwitchCaseStatement())) {
         dumper->Add(";");
     }
 }
 
 VariableDeclaration::VariableDeclaration([[maybe_unused]] Tag const tag, VariableDeclaration const &other,
                                          ArenaAllocator *const allocator)
-    : AnnotationAllowed<Statement>(static_cast<AnnotationAllowed<Statement> const &>(other)),
+    : JsDocAllowed<AnnotationAllowed<Statement>>(static_cast<JsDocAllowed<AnnotationAllowed<Statement>> const &>(other),
+                                                 allocator),
       kind_(other.kind_),
       decorators_(allocator->Adapter()),
       declarators_(allocator->Adapter())
@@ -143,6 +214,33 @@ VariableDeclaration::VariableDeclaration([[maybe_unused]] Tag const tag, Variabl
         declarators_.emplace_back(d->Clone(allocator, nullptr)->AsVariableDeclarator());
         declarators_.back()->SetParent(this);
     }
+
+    InitHistory();
+}
+
+VariableDeclaration::VariableDeclaration([[maybe_unused]] Tag const tag, VariableDeclaration const &other,
+                                         ArenaAllocator *const allocator, AstNodeHistory *history)
+    : JsDocAllowed<AnnotationAllowed<Statement>>(
+          static_cast<JsDocAllowed<AnnotationAllowed<Statement>> const &>(other)),
+      kind_(other.kind_),
+      decorators_(allocator->Adapter()),
+      declarators_(allocator->Adapter())
+{
+    for (auto const &d : other.decorators_) {
+        decorators_.emplace_back(d->Clone(allocator, nullptr));
+        decorators_.back()->SetParent(this);
+    }
+
+    for (auto const &d : other.declarators_) {
+        declarators_.emplace_back(d->Clone(allocator, nullptr)->AsVariableDeclarator());
+        declarators_.back()->SetParent(this);
+    }
+
+    if (history != nullptr) {
+        history_ = history;
+    } else {
+        InitHistory();
+    }
 }
 
 VariableDeclaration *VariableDeclaration::Clone(ArenaAllocator *const allocator, AstNode *const parent)
@@ -151,7 +249,7 @@ VariableDeclaration *VariableDeclaration::Clone(ArenaAllocator *const allocator,
     if (parent != nullptr) {
         clone->SetParent(parent);
     }
-    clone->SetRange(range_);
+    clone->SetRange(Range());
     return clone;
 }
 
@@ -174,4 +272,22 @@ checker::VerifiedType VariableDeclaration::Check([[maybe_unused]] checker::ETSCh
 {
     return {this, checker->GetAnalyzer()->Check(this)};
 }
+
+VariableDeclaration *VariableDeclaration::Construct(ArenaAllocator *allocator)
+{
+    ArenaVector<VariableDeclarator *> declarators(allocator->Adapter());
+    return allocator->New<VariableDeclaration>(VariableDeclarationKind::LET, allocator, std::move(declarators));
+}
+
+void VariableDeclaration::CopyTo(AstNode *other) const
+{
+    auto otherImpl = other->AsVariableDeclaration();
+
+    otherImpl->kind_ = kind_;
+    otherImpl->decorators_ = decorators_;
+    otherImpl->declarators_ = declarators_;
+
+    JsDocAllowed<AnnotationAllowed<Statement>>::CopyTo(other);
+}
+
 }  // namespace ark::es2panda::ir

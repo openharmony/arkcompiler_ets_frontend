@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-export { /* @@ label */foo };
+export { foo };
 
 function bar(): int {
     return 1;
@@ -24,45 +24,45 @@ function foo2(): void {}
 class TestClass {}
 
 export {foo2}
-export type {TestClass as /* @@ label1 */foo2}
+export type {TestClass as foo2}
 
 /*-----------------*/
 export default function foo3(): void {}
 
 export {
-  foo3 as /* @@ label2 */bar
+  foo3 as bar
 }
 
 /*-----------------*/
 export class A {}
 
-export type {A as /* @@ label3 */AA};
+export type {A as AA};
 
 /*-----------------*/
 interface I {}
 
 export type {I}
 export type MyI = I
-export type {/* @@ label4 */MyI}
+export type {MyI}
 /*-----------------*/
 
 function f(){
     return 1;
 }
 
-export type {/* @@ label5 */f}
+export type {f}
 /*-----------------*/
 
-export default /* @@ label6 */function TestFunc(): void {}
-export default /* @@ label7 */function TestFuncToo(): void {}
+export default function TestFunc(): void {}
+export default function TestFuncToo(): void {}
 
 /*-----------------*/
-/* @@@ label6 Error TypeError: Only one default export is allowed in a module  */
-/* @@@ label7 Error TypeError: Only one default export is allowed in a module  */
-/* @@@ label3 Error SyntaxError: Name 'A' cannot be exported and type exported at the same time.  */
-/* @@@ label4 Error SyntaxError: Cannot export the same 'MyI' type twice.  */
-/* @@@ label5 Error SyntaxError: Can only type export class or interface.  */
-/* @@@ label1 Error SyntaxError: The given name 'foo2' is already used in another export.  */
-/* @@@ label1 Error SyntaxError: The given name 'foo2' is already used in another export.  */
-/* @@@ label2 Error SyntaxError: Cannot export 'foo3', it was already exported.  */
-/* @@@ label Error SyntaxError: Cannot find name 'foo' to export.  */
+/* @@? 16:10 Error SyntaxError: Cannot find name 'foo' to export. */
+/* @@? 27:14 Error SyntaxError: The given name 'foo2' is already used in another export. */
+/* @@? 27:27 Error SyntaxError: The given name 'foo2' is already used in another export. */
+/* @@? 33:11 Error SyntaxError: Cannot export 'foo3', it was already exported. */
+/* @@? 39:19 Error SyntaxError: Cannot export 'A', it was already exported. */
+/* @@? 46:14 Error SyntaxError: The given name 'MyI' is already used in another export. */
+/* @@? 46:14 Error SyntaxError: Cannot export 'MyI', it was already exported. */
+/* @@? 56:16 Error TypeError: Only one default export is allowed in a module */
+/* @@? 57:16 Error TypeError: Only one default export is allowed in a module */

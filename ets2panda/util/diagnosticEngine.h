@@ -34,6 +34,7 @@ public:
     virtual ~DiagnosticPrinter() = default;
 
     virtual void Print(const DiagnosticBase &diagnostic) const = 0;
+    virtual void Print(const DiagnosticBase &diagnostic, std::ostream &out) const = 0;
 };
 
 class CLIDiagnosticPrinter : public DiagnosticPrinter {
@@ -44,9 +45,12 @@ public:
     ~CLIDiagnosticPrinter() override = default;
 
     void Print(const DiagnosticBase &diagnostic) const override;
+    void Print(const DiagnosticBase &diagnostic, std::ostream &out) const override;
 };
 
-using DiagnosticStorage = std::vector<std::unique_ptr<DiagnosticBase>>;
+using DiagnosticStorage = std::vector<std::shared_ptr<DiagnosticBase>>;
+
+using DiagnosticCheckpoint = std::array<size_t, DiagnosticType::COUNT>;
 
 class DiagnosticEngine {
 public:
@@ -58,19 +62,37 @@ public:
     NO_MOVE_SEMANTIC(DiagnosticEngine);
     ~DiagnosticEngine()
     {
-        FlushDiagnostic();
         g_diagnosticEngine = nullptr;
     }
 
     // NOTE(schernykh): should be removed
     const DiagnosticBase &GetAnyError() const;
 
+    DiagnosticCheckpoint Save() const;
+
+    void Rollback(const DiagnosticCheckpoint &checkpoint);
+
+    void UndoRange(const DiagnosticCheckpoint &from, const DiagnosticCheckpoint &to);
+
     [[nodiscard]] bool IsAnyError() const noexcept;
+
+    template <typename... T>
+    Suggestion *CreateSuggestion(T &&...args)
+    {
+        return CreateDiagnostic<Suggestion>(std::forward<T>(args)...);
+    }
 
     template <typename... T>
     void LogDiagnostic(T &&...args)
     {
         LogDiagnostic<Diagnostic>(std::forward<T>(args)...);
+    }
+
+    void ClearDiagnostics()
+    {
+        for (auto &it : diagnostics_) {
+            it.clear();
+        }
     }
 
     // NOTE(schernykh): should be removed
@@ -94,11 +116,6 @@ public:
     {
         LogThrowableDiagnostic(DiagnosticType::FATAL, std::forward<T>(args)...);
     }
-    template <typename... T>
-    void LogWarning(T &&...args)
-    {
-        LogThrowableDiagnostic(DiagnosticType::WARNING, std::forward<T>(args)...);
-    }
 
     // NOTE(schernykh): should not be able from ETS
     template <typename... T>
@@ -118,6 +135,7 @@ public:
     }
 
     void FlushDiagnostic();
+    std::string PrintAndFlushErrorDiagnostic();
     void SetWError(bool wError)
     {
         wError_ = wError;
@@ -129,11 +147,18 @@ public:
 
 private:
     template <typename DIAGNOSTIC, typename... T>
-    void LogDiagnostic(T &&...args)
+    DIAGNOSTIC *CreateDiagnostic(T &&...args)
     {
         auto diag = std::make_unique<DIAGNOSTIC>(std::forward<T>(args)...);
         auto type = diag->Type();
         diagnostics_[type].push_back(std::move(diag));
+        return reinterpret_cast<DIAGNOSTIC *>(diagnostics_[type].back().get());
+    }
+
+    template <typename DIAGNOSTIC, typename... T>
+    void LogDiagnostic(T &&...args)
+    {
+        CreateDiagnostic<DIAGNOSTIC>(std::forward<T>(args)...);
     }
 
     template <typename... T>
@@ -151,6 +176,7 @@ private:
 
     bool IsError(DiagnosticType type) const;
     DiagnosticStorage GetAllDiagnostic();
+    DiagnosticStorage GetErrorDiagnostic();
     void WriteLog(const DiagnosticBase &error);
 
 private:

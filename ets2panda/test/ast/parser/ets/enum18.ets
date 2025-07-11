@@ -19,5 +19,5 @@ enum InvalidInitTypeEnum {
   Blue
 }
 
-/* @@@ label Error SyntaxError: Invalid enum initialization value  */
-/* @@? 19:7 Error SyntaxError: Invalid enum initialization value  */
+/* @@@ label Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type.  */
+/* @@? 19:7 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type.  */

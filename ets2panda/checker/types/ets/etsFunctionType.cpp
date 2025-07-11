@@ -15,6 +15,7 @@
 
 #include "checker/ETSchecker.h"
 #include "checker/types/globalTypesHolder.h"
+#include "compiler/lowering/phase.h"
 
 namespace ark::es2panda::checker {
 
@@ -22,8 +23,8 @@ ETSFunctionType::ETSFunctionType([[maybe_unused]] ETSChecker *checker, util::Str
                                  ArenaVector<Signature *> &&signatures)
     : Type(TypeFlag::FUNCTION | TypeFlag::ETS_METHOD),
       callSignatures_(std::move(signatures)),
-      extensionFunctionSigs_(ArenaVector<Signature *>(checker->Allocator()->Adapter())),
-      extensionAccessorSigs_(ArenaVector<Signature *>(checker->Allocator()->Adapter())),
+      extensionFunctionSigs_(ArenaVector<Signature *>(checker->ProgramAllocator()->Adapter())),
+      extensionAccessorSigs_(ArenaVector<Signature *>(checker->ProgramAllocator()->Adapter())),
       name_(name)
 {
     auto flag = TypeFlag::NONE;
@@ -41,9 +42,9 @@ ETSFunctionType::ETSFunctionType([[maybe_unused]] ETSChecker *checker, util::Str
 
 ETSFunctionType::ETSFunctionType(ETSChecker *checker, Signature *signature)
     : Type(TypeFlag::FUNCTION),
-      callSignatures_({{signature->ToArrowSignature(checker)}, checker->Allocator()->Adapter()}),
-      extensionFunctionSigs_(ArenaVector<Signature *>(checker->Allocator()->Adapter())),
-      extensionAccessorSigs_(ArenaVector<Signature *>(checker->Allocator()->Adapter())),
+      callSignatures_({{signature->ToArrowSignature(checker)}, checker->ProgramAllocator()->Adapter()}),
+      extensionFunctionSigs_(ArenaVector<Signature *>(checker->ProgramAllocator()->Adapter())),
+      extensionAccessorSigs_(ArenaVector<Signature *>(checker->ProgramAllocator()->Adapter())),
       name_(""),
       assemblerName_(checker->GlobalBuiltinFunctionType(signature->MinArgCount(), signature->HasRestParameter())
                          ->AsETSObjectType()
@@ -71,11 +72,23 @@ static ETSObjectType *FunctionTypeToFunctionalInterfaceType(ETSChecker *checker,
     bool isExtensionHack = signature->HasSignatureFlag(SignatureFlags::EXTENSION_FUNCTION);
 
     if (signature->RestVar() != nullptr) {
-        auto *functionN = checker->GlobalBuiltinFunctionType(arity, true)->AsETSObjectType();
-        auto *substitution = checker->NewSubstitution();
-        substitution->emplace(functionN->TypeArguments()[0]->AsETSTypeParameter(),
-                              checker->MaybeBoxType(signature->RestVar()->TsType()->AsETSArrayType()->ElementType()));
-        return functionN->Substitute(checker->Relation(), substitution, true, isExtensionHack);
+        auto nPosParams = signature->Params().size();
+        auto *functionN = checker->GlobalBuiltinFunctionType(nPosParams, true)->AsETSObjectType();
+        auto substitution = Substitution {};
+        for (size_t i = 0; i < nPosParams; i++) {
+            substitution.emplace(functionN->TypeArguments()[i]->AsETSTypeParameter(),
+                                 checker->MaybeBoxType(signature->Params()[i]->TsType()));
+        }
+        auto *elementType = !signature->RestVar()->TsType()->IsETSTupleType()
+                                ? checker->GetElementTypeOfArray(signature->RestVar()->TsType())
+                                : checker->GlobalETSAnyType();
+        substitution.emplace(functionN->TypeArguments()[nPosParams]->AsETSTypeParameter(),
+                             checker->MaybeBoxType(elementType));
+        substitution.emplace(functionN->TypeArguments()[nPosParams + 1]->AsETSTypeParameter(),
+                             checker->MaybeBoxType(signature->ReturnType()));
+        auto result = functionN->Substitute(checker->Relation(), &substitution, true, isExtensionHack);
+        result->AddObjectFlag(checker::ETSObjectFlags::FUNCTIONAL);
+        return result;
     }
 
     ES2PANDA_ASSERT(arity >= signature->MinArgCount() && arity <= signature->ArgCount());
@@ -86,29 +99,36 @@ static ETSObjectType *FunctionTypeToFunctionalInterfaceType(ETSChecker *checker,
     }
 
     auto *funcIface = checker->GlobalBuiltinFunctionType(arity, false)->AsETSObjectType();
-    auto *substitution = checker->NewSubstitution();
+    auto substitution = Substitution {};
 
     for (size_t i = 0; i < arity; i++) {
-        substitution->emplace(funcIface->TypeArguments()[i]->AsETSTypeParameter(),
-                              checker->MaybeBoxType(signature->Params()[i]->TsType()));
+        substitution.emplace(funcIface->TypeArguments()[i]->AsETSTypeParameter(),
+                             checker->MaybeBoxType(signature->Params()[i]->TsType()));
     }
-    substitution->emplace(funcIface->TypeArguments()[arity]->AsETSTypeParameter(),
-                          checker->MaybeBoxType(signature->ReturnType()));
-    auto result = funcIface->Substitute(checker->Relation(), substitution, true, isExtensionHack);
+    substitution.emplace(funcIface->TypeArguments()[arity]->AsETSTypeParameter(),
+                         checker->MaybeBoxType(signature->ReturnType()));
+    auto result = funcIface->Substitute(checker->Relation(), &substitution, true, isExtensionHack);
 
     if (signature->HasSignatureFlag(SignatureFlags::THIS_RETURN_TYPE)) {
         HackThisParameterInExtensionFunctionInvoke(result, arity);
     }
+
+    result->AddObjectFlag(checker::ETSObjectFlags::FUNCTIONAL);
     return result;
 }
 
 ETSObjectType *ETSFunctionType::ArrowToFunctionalInterface(ETSChecker *checker)
 {
-    auto &cached = arrowToFuncInterface_;
-    if (LIKELY(cached != nullptr)) {
-        return cached;
+    auto &cached = compiler::GetPhaseManager()->Context()->GetChecker()->AsETSChecker()->GetArrowToFuncInterfaces();
+
+    auto found = cached.find(this);
+    if (LIKELY(found != cached.end())) {
+        return found->second;
     }
-    return cached = FunctionTypeToFunctionalInterfaceType(checker, ArrowSignature(), ArrowSignature()->MinArgCount());
+    return cached
+        .emplace(this,
+                 FunctionTypeToFunctionalInterfaceType(checker, ArrowSignature(), ArrowSignature()->MinArgCount()))
+        .first->second;
 }
 
 ETSObjectType *ETSFunctionType::ArrowToFunctionalInterfaceDesiredArity(ETSChecker *checker, size_t arity)
@@ -121,13 +141,15 @@ ETSObjectType *ETSFunctionType::ArrowToFunctionalInterfaceDesiredArity(ETSChecke
 
 ETSFunctionType *ETSFunctionType::MethodToArrow(ETSChecker *checker)
 {
-    auto &cached = invokeToArrowSignature_;
-    if (LIKELY(cached != nullptr)) {
-        return cached;
+    auto &cached = compiler::GetPhaseManager()->Context()->GetChecker()->AsETSChecker()->GetInvokeToArrowSignatures();
+
+    auto found = cached.find(this);
+    if (LIKELY(found != cached.end())) {
+        return found->second;
     }
 
     ES2PANDA_ASSERT(!IsETSArrowType() && CallSignatures().size() == 1);
-    return cached = checker->CreateETSArrowType(CallSignatures()[0]);
+    return cached.emplace(this, checker->CreateETSArrowType(CallSignatures()[0])).first->second;
 }
 
 void ETSFunctionType::AddCallSignature(Signature *signature)
@@ -157,12 +179,12 @@ static inline void AssertNoMethodsInFunctionRelation([[maybe_unused]] Type *left
 static Signature *EnhanceSignatureSubstitution(TypeRelation *relation, Signature *super, Signature *sub)
 {
     auto checker = relation->GetChecker()->AsETSChecker();
-    auto *substitution = checker->NewSubstitution();
+    auto substitution = Substitution {};
 
-    auto const enhance = [checker, sub, substitution](Type *param, Type *arg) {
-        return checker->EnhanceSubstitutionForType(sub->GetSignatureInfo()->typeParams, param, arg, substitution);
+    auto const enhance = [checker, sub, &substitution](Type *param, Type *arg) {
+        return checker->EnhanceSubstitutionForType(sub->GetSignatureInfo()->typeParams, param, arg, &substitution);
     };
-    for (size_t ix = 0; ix < super->MinArgCount(); ix++) {
+    for (size_t ix = 0; ix < sub->ArgCount(); ix++) {
         if (!enhance(sub->GetSignatureInfo()->params[ix]->TsType(), super->GetSignatureInfo()->params[ix]->TsType())) {
             return nullptr;
         }
@@ -172,14 +194,7 @@ static Signature *EnhanceSignatureSubstitution(TypeRelation *relation, Signature
             return nullptr;
         }
     }
-    return sub->Substitute(relation, substitution);
-}
-
-static uint8_t SignatureThrowKindToOrder(Signature *sig)
-{
-    return sig->HasSignatureFlag(SignatureFlags::THROWS)     ? 0U
-           : sig->HasSignatureFlag(SignatureFlags::RETHROWS) ? 1U
-                                                             : 2U;
+    return sub->Substitute(relation, &substitution);
 }
 
 static bool SignatureIsSupertypeOf(TypeRelation *relation, Signature *super, Signature *sub)
@@ -208,7 +223,7 @@ static bool SignatureIsSupertypeOf(TypeRelation *relation, Signature *super, Sig
     if (!relation->IsSupertypeOf(super->ReturnType(), sub->ReturnType())) {
         return false;
     }
-    return SignatureThrowKindToOrder(super) <= SignatureThrowKindToOrder(sub);
+    return true;
 }
 
 static ETSFunctionType *CoerceToArrowType(TypeRelation *relation, Type *type)
@@ -240,16 +255,6 @@ void ETSFunctionType::Identical(TypeRelation *relation, Type *other)
 bool ETSFunctionType::AssignmentSource(TypeRelation *relation, Type *target)
 {
     AssertNoMethodsInFunctionRelation(this, target);
-
-    // this should be defined by the dynamic type itself
-    if (target->IsETSDynamicType()) {
-        ES2PANDA_ASSERT(relation->GetNode() != nullptr);
-        if (relation->GetNode()->IsArrowFunctionExpression()) {
-            ES2PANDA_ASSERT(callSignatures_.size() == 1 && ArrowSignature()->HasSignatureFlag(SignatureFlags::CALL));
-            return relation->Result(true);
-        }
-        return relation->Result(false);
-    }
 
     return relation->IsSupertypeOf(target, this);
 }
@@ -292,7 +297,7 @@ ETSFunctionType *ETSFunctionType::Substitute(TypeRelation *relation, const Subst
 {
     if (substitution != nullptr && !substitution->empty()) {
         auto *const checker = relation->GetChecker()->AsETSChecker();
-        auto *const allocator = checker->Allocator();
+        auto *const allocator = checker->ProgramAllocator();
 
         auto signatures = ArenaVector<Signature *>(allocator->Adapter());
         bool anyChange = false;
@@ -332,8 +337,11 @@ void ETSFunctionType::CastTarget(TypeRelation *relation, Type *source)
         relation->RemoveFlags(TypeRelationFlag::UNCHECKED_CAST);
         return;
     }
-
-    relation->Result(relation->InCastingContext());
+    if (relation->InCastingContext() && relation->IsSupertypeOf(source, this)) {
+        relation->RemoveFlags(TypeRelationFlag::UNCHECKED_CAST);
+        return;
+    }
+    relation->Result(false);
 }
 
 void ETSFunctionType::IsSubtypeOf(TypeRelation *relation, Type *target)

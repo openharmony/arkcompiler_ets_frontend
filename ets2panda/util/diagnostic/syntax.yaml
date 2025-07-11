@@ -146,7 +146,7 @@ syntax:
 
 - name: MULTIPLE_STATIC_BLOCK
   id: 34
-  message: "Only one static block is allowed."
+  message: "Only one static block is allowed in one namespace or class."
 
 - name: INVALID_ENUM_TYPE
   id: 35
@@ -516,9 +516,9 @@ syntax:
   id: 126
   message: "Variable declaration expected."
 
-- name: ENUM_MUST_HAVE_ONE_CONST
+- name: CONFLICTING_FIELD_MODIFIERS
   id: 127
-  message: "An enum must have at least one enum constant."
+  message: "Conflicting modifiers '!' and '?' on field."
 
 - name: VALUE_IS_NOT_SET
   id: 128
@@ -1102,7 +1102,7 @@ syntax:
 
 - name: DIVISION_BY_ZERO
   id: 273
-  message: "Division by zero are not allowed in Enum or Annotation."
+  message: "Division by zero is not allowed."
 
 - name: UNSUPPORTED_OPERATOR_FOR_STRING
   id: 274
@@ -1187,11 +1187,127 @@ syntax:
 - name: MISSING_INIT_FOR_CONST_PACKAGE_PROP
   id: 294
   message: "Missing initialization for const package property"
-  
+
 - name: PREDEFINED_TYPE_AS_IDENTIFIER
   id: 295
   message: "{} is a predefined type, cannot be used as an identifier"
 
+- name: EXPORT_WITHOUT_DECLARE_IN_DECL_MODULE
+  id: 296
+  message: "Export keyword without declare shouldn't be used in declaration module."
+
+- name: ERROR_ARKTS_NO_VAR
+  id: 297
+  message: "'var' keyword is not supported. Use 'let' instead."
+
+- name: ERROR_ARKTS_NO_PRIVATE_IDENTIFIERS
+  id: 298
+  message: "Use 'private' keyword to declare an identifier as private."
+
+- name: ERROR_ARKTS_NO_DEBUGGER_STATEMENT
+  id: 299
+  message: "Debugger statement is not supported!"
+
+- name: MISSING_LOOP_BODY
+  id: 300
+  message: "Missing body in {} statement"
+
+- name: MISSING_LOOP_CONDITION
+  id: 301
+  message: "Missing condition in {} statement"
+
+- name: PRIVATE_FIELD_MISMATCH
+  id: 302
+  message: "Private field '{}' must be declared in an enclosing class"
+
+- name: STATIC_LATE_INITIALIZATION_FIELD_INVALID_MODIFIER
+  id: 303
+  message: "Late-initialized field cannot be defined as static."
+
+- name: LATE_INITIALIZATION_FIELD_HAS_DEFAULT_VALUE
+  id: 304
+  message: "Late-initialized field cannot have default value."
+
 - name: DEEP_NESTING
-  id: 306
+  id: 305
   message: "Maximum allowed nesting level exceeded."
+
+- name: OPTIONAL_VARIABLE
+  id: 306
+  message: "Optional variable is deprecated and no longer supported."
+
+- name: ERROR_ARKTS_NO_EXPORT_ASSIGNMENT
+  id: 307
+  message: "'export = ...' syntax is not supported, use regular import/export instead!"
+
+- name: ERROR_ARKTS_NO_AMBIENT_DECLS
+  id: 308
+  message: "Ambient module declaration is not supported!"
+
+- name: TYPEOF_IN_ANNOTATION
+  id: 309
+  message: "Result of 'typeof' operator is not supported to be used as type annotation."
+
+- name: WRONG_LEFT_OF_INSTANCEOF
+  id: 310
+  message: "The left operand of 'instanceof' operator cannot be a type."
+
+- name: AS_CONST_USAGE
+  id: 311
+  message: "'as const' assertion is not supported."
+
+- name: ERROR_ARKTS_NO_REQUIRE
+  id: 312
+  message: "Importing by 'require' and 'import' assignment is not supported, use 'import * as ... from ...' form instead!"
+
+- name: ERROR_ARKTS_NO_IMPORT_ASSERTIONS
+  id: 313
+  message: "Import assertion is not supported, please use the ordinary import syntax instead!"
+
+- name: GENERATOR_FUNCTION
+  id: 314
+  message: "Generator functions are not supported, please use async/await mechanism for multitasking"
+
+- name: LITERAL_VALUE_IDENT
+  id: 315
+  message: "Number, string or computed value property name '{}' is not allowed, use classes to access data by property names that are identifiers"
+
+- name: HARD_KEYWORD_IDENT
+  id: 316
+  message: "Hard keyword '{}' cannot be used as identifier"
+
+- name: NOT_AS_OBJECT
+  id: 318
+  message: "{} cannot be used as object."
+
+- name: FIELD_IN_PARAM
+  id: 319
+  message: "Declaring fields in parameter list is not supported"
+
+- name: FUNC_EXPR
+  id: 320
+  message: "Function expressions are not supported, use arrow functions instead"
+
+- name: ONLY_STRING_LITERAL_IN_INIT_MODULE
+  id: 321
+  message: "initModule() only accept string literal as argument."
+
+- name: INIT_MODULE_DECLARATION_POSITION
+  id: 322
+  message: "initModule() must only be called immediately after the import statement, and before any other declarations or statements."
+
+- name: OVERLOAD_MODIFIERS
+  id: 323
+  message: "Overload Declaration only allow use modifier 'static' | 'async'."
+
+- name: CLASS_INTERFACE_METHOD_OVERLOADED_NAME_MUST_IDENT
+  id: 324
+  message: "The overloaded method name in class/interface method overload declaration must be identifier."
+
+- name: FUNCTION_OVERLOADED_NAME_MUST_QUALIFIED_NAME
+  id: 325
+  message: "The overloaded method name in function overload declaration must be qualified name."
+
+- name: MORE_INDEXER
+  id: 326
+  message: "Only one index signature can exist in a class"

@@ -14,7 +14,6 @@
  */
 
 #include "objectLiteralLowering.h"
-
 #include "checker/ETSchecker.h"
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "compiler/lowering/util.h"
@@ -38,11 +37,7 @@ static void MaybeAllowConstAssign(checker::Type *targetType, ArenaVector<ir::Sta
         }
 
         auto *const assignmentExpr = stmt->AsExpressionStatement()->GetExpression()->AsAssignmentExpression();
-        auto *const variable = assignmentExpr->Left()->AsMemberExpression()->Property()->AsIdentifier()->Variable();
-
-        if (variable != nullptr && variable->HasFlag(varbinder::VariableFlags::READONLY)) {
-            assignmentExpr->SetIgnoreConstAssign();
-        }
+        assignmentExpr->SetIgnoreConstAssign();
     }
 }
 
@@ -118,14 +113,14 @@ static bool CheckReadonlyAndUpdateCtorArgs(const ir::Identifier *key, ir::Expres
     return true;
 }
 
-static void PopulateCtorArgumentsFromMap(checker::ETSChecker *checker, ir::ObjectExpression *objExpr,
+static void PopulateCtorArgumentsFromMap(public_lib::Context *ctx, ir::ObjectExpression *objExpr,
                                          ArenaVector<ir::Expression *> &ctorArguments,
                                          std::map<util::StringView, ir::Expression *> &ctorArgumentsMap)
 {
     if (ctorArgumentsMap.empty()) {
         return;
     }
-    auto *const allocator = checker->Allocator();
+    auto *const allocator = ctx->Allocator();
     auto *const classType = objExpr->TsType()->AsETSObjectType();
 
     for (auto param : classType->ConstructSignatures().front()->Params()) {
@@ -134,6 +129,11 @@ static void PopulateCtorArgumentsFromMap(checker::ETSChecker *checker, ir::Objec
             ctorArguments.push_back(allocator->New<ir::UndefinedLiteral>());
             continue;
         }
+        if (ctorArgument == nullptr && param->TsType()->PossiblyETSUndefined()) {
+            ctorArguments.push_back(allocator->New<ir::UndefinedLiteral>());
+            continue;
+        }
+        ES2PANDA_ASSERT(ctorArgument != nullptr);
         ctorArguments.push_back(ctorArgument);
     }
 }
@@ -162,12 +162,12 @@ static void SetInstanceArguments(ArenaVector<ir::Statement *> &statements, Arena
     instance->SetArguments(std::move(ctorArguments));
 }
 
-static void GenerateNewStatements(checker::ETSChecker *checker, ir::ObjectExpression *objExpr, std::stringstream &ss,
+static void GenerateNewStatements(public_lib::Context *ctx, ir::ObjectExpression *objExpr, std::stringstream &ss,
                                   std::vector<ir::AstNode *> &newStmts,
                                   std::deque<ir::BlockExpression *> &nestedBlckExprs,
                                   ArenaVector<ir::Expression *> &ctorArguments)
 {
-    auto *const allocator = checker->Allocator();
+    auto *const allocator = ctx->Allocator();
 
     auto *const classType = objExpr->TsType()->AsETSObjectType();
 
@@ -178,7 +178,7 @@ static void GenerateNewStatements(checker::ETSChecker *checker, ir::ObjectExpres
 
     // Generating: let <genSym>: <TsType> = new <TsType>();
     auto *genSymIdent = Gensym(allocator);
-    auto *type = checker->AllocNode<ir::OpaqueTypeNode>(classType, allocator);
+    auto *type = ctx->AllocNode<ir::OpaqueTypeNode>(classType, allocator);
     ss << "let @@I" << addNode(genSymIdent) << ": @@T" << addNode(type) << " = new @@T"
        << addNode(type->Clone(allocator, nullptr)) << "();" << std::endl;
 
@@ -197,7 +197,7 @@ static void GenerateNewStatements(checker::ETSChecker *checker, ir::ObjectExpres
     for (auto *propExpr : objExpr->Properties()) {
         //  Skip possibly invalid properties:
         if (!propExpr->IsProperty()) {
-            ES2PANDA_ASSERT(checker->IsAnyError());
+            ES2PANDA_ASSERT(ctx->GetChecker()->AsETSChecker()->IsAnyError());
             continue;
         }
 
@@ -208,7 +208,7 @@ static void GenerateNewStatements(checker::ETSChecker *checker, ir::ObjectExpres
         //  Processing of possible invalid property key
         ir::Identifier *keyIdent;
         if (key->IsStringLiteral()) {
-            keyIdent = checker->AllocNode<ir::Identifier>(key->AsStringLiteral()->Str(), allocator);
+            keyIdent = ctx->AllocNode<ir::Identifier>(key->AsStringLiteral()->Str(), allocator);
         } else if (key->IsIdentifier()) {
             keyIdent = key->AsIdentifier();
         } else {
@@ -233,7 +233,7 @@ static void GenerateNewStatements(checker::ETSChecker *checker, ir::ObjectExpres
         }
     }
 
-    PopulateCtorArgumentsFromMap(checker, objExpr, ctorArguments, ctorArgumentsMap);
+    PopulateCtorArgumentsFromMap(ctx, objExpr, ctorArguments, ctorArgumentsMap);
 
     ss << "(@@I" << addNode(genSymIdent->Clone(allocator, nullptr)) << ");" << std::endl;
 }
@@ -254,11 +254,11 @@ static ir::AstNode *HandleObjectLiteralLowering(public_lib::Context *ctx, ir::Ob
         return objExpr;
     }
 
-    auto *const checker = ctx->checker->AsETSChecker();
+    auto *const checker = ctx->GetChecker()->AsETSChecker();
     auto *const parser = ctx->parser->AsETSParser();
-    auto *const varbinder = ctx->checker->VarBinder()->AsETSBinder();
+    auto *const varbinder = ctx->GetChecker()->VarBinder()->AsETSBinder();
 
-    checker->AsETSChecker()->CheckObjectLiteralKeys(objExpr->Properties());
+    checker->CheckObjectLiteralKeys(objExpr->Properties());
 
     std::stringstream ss;
     // Double-ended queue for storing nested block expressions that have already been processed earlier
@@ -266,7 +266,7 @@ static ir::AstNode *HandleObjectLiteralLowering(public_lib::Context *ctx, ir::Ob
     std::vector<ir::AstNode *> newStmts;
     ArenaVector<ir::Expression *> ctorArguments(checker->Allocator()->Adapter());
 
-    GenerateNewStatements(checker, objExpr, ss, newStmts, nestedBlckExprs, ctorArguments);
+    GenerateNewStatements(ctx, objExpr, ss, newStmts, nestedBlckExprs, ctorArguments);
 
     auto *loweringResult = parser->CreateFormattedExpression(ss.str(), newStmts);
 
@@ -301,8 +301,7 @@ bool ObjectLiteralLowering::PerformForModule(public_lib::Context *ctx, parser::P
             // Skip processing invalid and dynamic objects
             if (ast->IsObjectExpression()) {
                 auto *exprType = ast->AsObjectExpression()->TsType();
-                if (exprType != nullptr && exprType->IsETSObjectType() &&
-                    !exprType->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::DYNAMIC)) {
+                if (exprType != nullptr && exprType->IsETSObjectType()) {
                     return HandleObjectLiteralLowering(ctx, ast->AsObjectExpression());
                 }
             }
@@ -318,8 +317,7 @@ bool ObjectLiteralLowering::PostconditionForModule([[maybe_unused]] public_lib::
 {
     // In all object literal contexts (except dynamic) a substitution should take place
     return !program->Ast()->IsAnyChild([](const ir::AstNode *ast) -> bool {
-        return ast->IsObjectExpression() &&
-               !ast->AsObjectExpression()->TsType()->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::DYNAMIC);
+        return ast->IsObjectExpression() && ast->AsObjectExpression()->TsType()->IsETSObjectType();
     });
 }
 

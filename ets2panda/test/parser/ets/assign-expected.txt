@@ -143,40 +143,40 @@
                   ],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1,
-                      "program": null
+                      "line": 16,
+                      "column": 5,
+                      "program": "assign.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1,
-                      "program": null
+                      "line": 16,
+                      "column": 10,
+                      "program": "assign.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1,
-                    "program": null
+                    "line": 16,
+                    "column": 5,
+                    "program": "assign.ets"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1,
-                    "program": null
+                    "line": 16,
+                    "column": 10,
+                    "program": "assign.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1,
-                  "program": null
+                  "line": 16,
+                  "column": 5,
+                  "program": "assign.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1,
-                  "program": null
+                  "line": 16,
+                  "column": 10,
+                  "program": "assign.ets"
                 }
               }
             },
@@ -184,13 +184,13 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
-                "column": 1,
+                "line": 16,
+                "column": 5,
                 "program": "assign.ets"
               },
               "end": {
-                "line": 1,
-                "column": 1,
+                "line": 16,
+                "column": 10,
                 "program": "assign.ets"
               }
             }
@@ -397,9 +397,8 @@
                           }
                         },
                         "right": {
-                          "type": "Identifier",
-                          "name": "b",
-                          "decorators": [],
+                          "type": "NumberLiteral",
+                          "value": 1,
                           "loc": {
                             "start": {
                               "line": 20,

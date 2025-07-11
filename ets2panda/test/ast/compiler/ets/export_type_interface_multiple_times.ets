@@ -17,6 +17,7 @@ interface I {}
 
 export type {I}
 export type MyI = I
-export type {/* @@ label */MyI}
+export type {MyI}
 
-/* @@@ label Error SyntaxError: Cannot export the same 'MyI' type twice.  */
+/* @@? 20:14 Error SyntaxError: The given name 'MyI' is already used in another export. */
+/* @@? 20:14 Error SyntaxError: Cannot export 'MyI', it was already exported. */

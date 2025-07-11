@@ -13,7 +13,24 @@
  * limitations under the License.
  */
 
-import { Entry, Component, Column, Builder, ForEach, Text, BuilderParam, State, SizeResult, GeometryInfo, Layoutable, ConstraintSizeOptions, Measurable, MeasureResult } from '@kit.ArkUI';
+import { CustomLayout } from '@kit.ArkUI';
+
+import {
+  Entry,
+  Component,
+  Column,
+  Builder,
+  ForEach,
+  Text,
+  BuilderParam,
+  State,
+  SizeResult,
+  GeometryInfo,
+  Layoutable,
+  ConstraintSizeOptions,
+  Measurable,
+  MeasureResult,
+} from '@kit.ArkUI';
 
 @Entry
 @Component
@@ -22,38 +39,39 @@ struct Index {
     Column() {
       CustomLayout1({ builder: ColumnChildren })
       CustomLayout2({ builder: ColumnChildren })
+      CustomLayout3({ builder: ColumnChildren })
     }
   }
 }
 
 @Builder
 function ColumnChildren() {
-  ForEach([1, 2, 3], (index: number) => { //暂不支持lazyForEach的写法
+  ForEach([1.0, 2.0, 3.0], (index: number) => { //暂不支持lazyForEach的写法
     Text('S' + index)
-      .fontSize(30)
-      .width(100)
-      .height(100)
-      .borderWidth(2)
-      .offset({ x: 10, y: 20 })
+      .fontSize(30.0)
+      .width(100.0)
+      .height(100.0)
+      .borderWidth(2.0)
+      .offset({ x: 10.0, y: 20.0 })
   })
 }
 
 @Component
-@Layoutable
+@CustomLayout
 struct CustomLayout1 {
   @Builder
   doNothingBuilder() {
   };
 
   @BuilderParam builder: () => void = this.doNothingBuilder;
-  @State startSize: number = 100;
+  @State startSize: number = 100.0;
   result: SizeResult = {
-    width: 0,
-    height: 0
+    width: 0.0,
+    height: 0.0
   };
 
   onPlaceChildren(selfLayoutInfo: GeometryInfo, children: Array<Layoutable>, constraint: ConstraintSizeOptions) {
-    let startPos: number = 300;
+    let startPos: number = 300.0;
     children.forEach((child) => {
       let pos: number = startPos - child.measureResult.height;
       child.layout({ x: pos, y: pos })
@@ -66,28 +84,28 @@ struct CustomLayout1 {
 }
 
 @Component
-@Layoutable
+@CustomLayout
 struct CustomLayout2 {
   @Builder
   doNothingBuilder() {
   };
 
   @BuilderParam builder: () => void = this.doNothingBuilder;
-  @State startSize: number = 100;
+  @State startSize: number = 100.0;
   result: SizeResult = {
-    width: 0,
-    height: 0
+    width: 0.0,
+    height: 0.0
   };
 
   onMeasureSize(selfLayoutInfo: GeometryInfo, children: Array<Measurable>, constraint: ConstraintSizeOptions) {
-    let size: number = 100;
+    let size: number = 100.0;
     children.forEach((child) => {
       let result: MeasureResult = child.measure({ minHeight: size, minWidth: size, maxWidth: size, maxHeight: size })
-      size += result.width / 2
+      size += result.width / 2.0
       ;
     })
-    this.result.width = 100;
-    this.result.height = 400;
+    this.result.width = 100.0;
+    this.result.height = 400.0;
     return this.result;
   }
 
@@ -97,8 +115,46 @@ struct CustomLayout2 {
 }
 
 @Component
+@CustomLayout
 struct CustomLayout3 {
-  build {
+  @Builder
+  doNothingBuilder() {
+  };
+
+  @BuilderParam builder: () => void = this.doNothingBuilder;
+  @State startSize: number = 100.0;
+  result: SizeResult = {
+    width: 0.0,
+    height: 0.0
+  };
+
+  onMeasureSize(selfLayoutInfo: GeometryInfo, children: Array<Measurable>, constraint: ConstraintSizeOptions) {
+    let size: number = 100.0;
+    children.forEach((child) => {
+      let result: MeasureResult = child.measure({ minHeight: size, minWidth: size, maxWidth: size, maxHeight: size })
+      size += result.width / 2.0;
+    })
+    this.result.width = 100.0;
+    this.result.height = 400.0;
+    return this.result;
+  }
+
+  onPlaceChildren(selfLayoutInfo: GeometryInfo, children: Array<Layoutable>, constraint: ConstraintSizeOptions) {
+    let startPos: number = 300.0;
+    children.forEach((child) => {
+      let pos: number = startPos - child.measureResult.height;
+      child.layout({ x: pos, y: pos })
+    })
+  }
+
+  build() {
+    this.builder()
+  }
+}
+
+@Component
+struct CustomLayout4 {
+  build() {
 
   }
 }

@@ -16,25 +16,25 @@
 package mypackage;
 
 function ClassTypeTest(a0: C1){
-    assertEQ(C1.stmemb, "c1_stmemb")
-    assertEQ(a0.memb, 2)
-    assertEQ(a0.bar(), 3)
-    assertEQ(a0.baz(), 4)
+    arktest.assertEQ(C1.stmemb, "c1_stmemb")
+    arktest.assertEQ(a0.memb, 2)
+    arktest.assertEQ(a0.bar(), 3)
+    arktest.assertEQ(a0.baz(), 4)
 }
 
 function main(): void {
     ClassTypeTest(new C1());
     let locVar: mytype = new A();
-    assertEQ(locVar.aMemb, 5)
-    assertEQ(globVar1, 7)
-    // NOTE (mmartin): Enable this assert, when correct initialization order of global variables is well defined for packages
-    // assertEQ(globVar2, 7)
+    arktest.assertEQ(locVar.aMemb, 5)
+    arktest.assertEQ(globVar1, 7)
+    arktest.assertEQ(globVar2, 7)
 }
 
-// NOTE (mmartin): Merge these when correct initialization order of global variables is well defined for packages
 let globVar2: number;
-globVar2 = globVar1;
+static {
+    globVar2 = globVar1;
+}
 
 function func2(a0: number): void {
-    assertEQ(a0, 6)
+    arktest.assertEQ(a0, 6)
 }

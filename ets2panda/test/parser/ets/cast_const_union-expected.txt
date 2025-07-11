@@ -207,40 +207,40 @@
                   ],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1,
-                      "program": null
+                      "line": 16,
+                      "column": 5,
+                      "program": "cast_const_union.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1,
-                      "program": null
+                      "line": 18,
+                      "column": 9,
+                      "program": "cast_const_union.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1,
-                    "program": null
+                    "line": 16,
+                    "column": 5,
+                    "program": "cast_const_union.ets"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1,
-                    "program": null
+                    "line": 18,
+                    "column": 9,
+                    "program": "cast_const_union.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1,
-                  "program": null
+                  "line": 16,
+                  "column": 5,
+                  "program": "cast_const_union.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1,
-                  "program": null
+                  "line": 18,
+                  "column": 9,
+                  "program": "cast_const_union.ets"
                 }
               }
             },
@@ -248,13 +248,13 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
-                "column": 1,
+                "line": 16,
+                "column": 5,
                 "program": "cast_const_union.ets"
               },
               "end": {
-                "line": 1,
-                "column": 1,
+                "line": 18,
+                "column": 9,
                 "program": "cast_const_union.ets"
               }
             }
@@ -628,9 +628,43 @@
                       "expression": {
                         "type": "CallExpression",
                         "callee": {
-                          "type": "Identifier",
-                          "name": "assertEQ",
-                          "decorators": [],
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "Identifier",
+                            "name": "arktest",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 20,
+                                "column": 5,
+                                "program": "cast_const_union.ets"
+                              },
+                              "end": {
+                                "line": 20,
+                                "column": 12,
+                                "program": "cast_const_union.ets"
+                              }
+                            }
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "assertEQ",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 20,
+                                "column": 13,
+                                "program": "cast_const_union.ets"
+                              },
+                              "end": {
+                                "line": 20,
+                                "column": 21,
+                                "program": "cast_const_union.ets"
+                              }
+                            }
+                          },
+                          "computed": false,
+                          "optional": false,
                           "loc": {
                             "start": {
                               "line": 20,
@@ -639,7 +673,7 @@
                             },
                             "end": {
                               "line": 20,
-                              "column": 13,
+                              "column": 21,
                               "program": "cast_const_union.ets"
                             }
                           }
@@ -654,12 +688,12 @@
                               "loc": {
                                 "start": {
                                   "line": 20,
-                                  "column": 14,
+                                  "column": 22,
                                   "program": "cast_const_union.ets"
                                 },
                                 "end": {
                                   "line": 20,
-                                  "column": 15,
+                                  "column": 23,
                                   "program": "cast_const_union.ets"
                                 }
                               }
@@ -675,12 +709,12 @@
                                   "loc": {
                                     "start": {
                                       "line": 20,
-                                      "column": 19,
+                                      "column": 27,
                                       "program": "cast_const_union.ets"
                                     },
                                     "end": {
                                       "line": 20,
-                                      "column": 25,
+                                      "column": 33,
                                       "program": "cast_const_union.ets"
                                     }
                                   }
@@ -688,12 +722,12 @@
                                 "loc": {
                                   "start": {
                                     "line": 20,
-                                    "column": 19,
+                                    "column": 27,
                                     "program": "cast_const_union.ets"
                                   },
                                   "end": {
                                     "line": 20,
-                                    "column": 26,
+                                    "column": 34,
                                     "program": "cast_const_union.ets"
                                   }
                                 }
@@ -701,12 +735,12 @@
                               "loc": {
                                 "start": {
                                   "line": 20,
-                                  "column": 19,
+                                  "column": 27,
                                   "program": "cast_const_union.ets"
                                 },
                                 "end": {
                                   "line": 20,
-                                  "column": 26,
+                                  "column": 34,
                                   "program": "cast_const_union.ets"
                                 }
                               }
@@ -714,12 +748,12 @@
                             "loc": {
                               "start": {
                                 "line": 20,
-                                "column": 14,
+                                "column": 22,
                                 "program": "cast_const_union.ets"
                               },
                               "end": {
                                 "line": 20,
-                                "column": 15,
+                                "column": 23,
                                 "program": "cast_const_union.ets"
                               }
                             }
@@ -730,12 +764,12 @@
                             "loc": {
                               "start": {
                                 "line": 20,
-                                "column": 27,
+                                "column": 35,
                                 "program": "cast_const_union.ets"
                               },
                               "end": {
                                 "line": 20,
-                                "column": 35,
+                                "column": 43,
                                 "program": "cast_const_union.ets"
                               }
                             }
@@ -750,7 +784,7 @@
                           },
                           "end": {
                             "line": 20,
-                            "column": 36,
+                            "column": 44,
                             "program": "cast_const_union.ets"
                           }
                         }
@@ -763,7 +797,7 @@
                         },
                         "end": {
                           "line": 20,
-                          "column": 37,
+                          "column": 45,
                           "program": "cast_const_union.ets"
                         }
                       }

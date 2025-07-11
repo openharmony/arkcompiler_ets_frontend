@@ -20,5 +20,5 @@ declare namespace /* @@ label */^/* @@ label1 */a {
 
 /* @@@ label Error SyntaxError: Unexpected token, expected an identifier. */
 /* @@@ label1 Error SyntaxError: Unexpected token, expected '{'. */
-/* @@@ label2 Error SyntaxError: Expected '}', got 'eos'. */
+/* @@@ label2 Error SyntaxError: Expected '}', got 'end of stream'. */
 /* @@ label2 */

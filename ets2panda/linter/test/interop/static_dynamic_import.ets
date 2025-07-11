@@ -12,7 +12,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use static'
 
 let arkTsMod = await import('./test_files/dummy_arkts1_file');
 let tsModule  = await import('./test_files/dummy_ts_file');

@@ -35,12 +35,6 @@ std::string GetFullRecordName(const panda_file::File &pf, const panda_file::File
     return type.GetPandasmName();
 }
 
-bool EndsWith(std::string_view str, std::string_view suffix)
-{
-    auto pos = str.rfind(suffix);
-    return pos != std::string::npos && (str.size() - pos) == suffix.size();
-}
-
 }  // namespace
 
 ImportExportTable::ImportExportTable(ArenaAllocator *allocator)
@@ -69,10 +63,13 @@ void DebugInfoStorage::LoadFileDebugInfo(std::string_view pfPath)
             continue;
         }
 
-        auto recordName = GetFullRecordName(*pf, classId);
-        if (!EndsWith(recordName, compiler::Signatures::ETS_GLOBAL)) {
+        panda_file::ClassDataAccessor cda(*pf, classId);
+        bool isModule = false;
+        cda.EnumerateAnnotation(ANNOTATION_MODULE.data(), [&isModule](auto &) { return (isModule = true); });
+        if (!isModule) {
             continue;
         }
+        auto recordName = GetFullRecordName(*pf, classId);
 
         std::string_view moduleName = helpers::SplitRecordName(recordName).first;
         auto *debugInfo = allocator_->New<FileDebugInfo>(std::move(pf), classId, moduleName);

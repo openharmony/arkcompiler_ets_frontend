@@ -23,11 +23,11 @@ class A {
     }
 }
 function foo(a: int, ...p: boolean[]): int {
-    return a + p.length
+    return Double.toInt(a + p.length)
 }
 
 function main() {
     // use this expression
     let a: A = new A([false, false], [true, true])
-    assertEQ(a.meth(), 46)
+    arktest.assertEQ(a.meth(), 46)
 }

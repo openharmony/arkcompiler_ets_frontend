@@ -20,11 +20,97 @@
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
+#include "mem/arena_allocator.h"
+#include "utils/arena_containers.h"
 
 namespace ark::es2panda::ir {
 
+void ScriptFunction::SetBody(AstNode *body)
+{
+    this->GetOrCreateHistoryNodeAs<ScriptFunction>()->body_ = body;
+}
+
+void ScriptFunction::SetSignature(checker::Signature *signature)
+{
+    this->GetOrCreateHistoryNodeAs<ScriptFunction>()->signature_ = signature;
+}
+
+void ScriptFunction::SetScope(varbinder::FunctionScope *scope)
+{
+    this->GetOrCreateHistoryNodeAs<ScriptFunction>()->scope_ = scope;
+}
+
+void ScriptFunction::SetPreferredReturnType(checker::Type *preferredReturnType)
+{
+    this->GetOrCreateHistoryNodeAs<ScriptFunction>()->preferredReturnType_ = preferredReturnType;
+}
+
+void ScriptFunction::EmplaceParams(Expression *params)
+{
+    auto newNode = this->GetOrCreateHistoryNodeAs<ScriptFunction>();
+    newNode->irSignature_.Params().emplace_back(params);
+}
+
+void ScriptFunction::ClearParams()
+{
+    auto newNode = this->GetOrCreateHistoryNodeAs<ScriptFunction>();
+    newNode->irSignature_.Params().clear();
+}
+
+void ScriptFunction::SetValueParams(Expression *params, size_t index)
+{
+    auto newNode = this->GetOrCreateHistoryNodeAs<ScriptFunction>();
+    auto &arenaVector = newNode->irSignature_.Params();
+    ES2PANDA_ASSERT(arenaVector.size() > index);
+    arenaVector[index] = params;
+}
+
+[[nodiscard]] const ArenaVector<Expression *> &ScriptFunction::Params()
+{
+    auto newNode = this->GetHistoryNodeAs<ScriptFunction>();
+    return newNode->irSignature_.Params();
+}
+
+[[nodiscard]] ArenaVector<Expression *> &ScriptFunction::ParamsForUpdate()
+{
+    auto newNode = this->GetOrCreateHistoryNodeAs<ScriptFunction>();
+    return newNode->irSignature_.Params();
+}
+
+void ScriptFunction::EmplaceReturnStatements(ReturnStatement *returnStatements)
+{
+    auto newNode = this->GetOrCreateHistoryNodeAs<ScriptFunction>();
+    newNode->returnStatements_.emplace_back(returnStatements);
+}
+
+void ScriptFunction::ClearReturnStatements()
+{
+    auto newNode = this->GetOrCreateHistoryNodeAs<ScriptFunction>();
+    newNode->returnStatements_.clear();
+}
+
+void ScriptFunction::SetValueReturnStatements(ReturnStatement *returnStatements, size_t index)
+{
+    auto newNode = this->GetOrCreateHistoryNodeAs<ScriptFunction>();
+    auto &arenaVector = newNode->returnStatements_;
+    ES2PANDA_ASSERT(arenaVector.size() > index);
+    arenaVector[index] = returnStatements;
+}
+
+[[nodiscard]] const ArenaVector<ReturnStatement *> &ScriptFunction::ReturnStatements()
+{
+    auto newNode = this->GetHistoryNodeAs<ScriptFunction>();
+    return newNode->returnStatements_;
+}
+
+[[nodiscard]] ArenaVector<ReturnStatement *> &ScriptFunction::ReturnStatementsForUpdate()
+{
+    auto newNode = this->GetOrCreateHistoryNodeAs<ScriptFunction>();
+    return newNode->returnStatements_;
+}
+
 ScriptFunction::ScriptFunction(ArenaAllocator *allocator, ScriptFunctionData &&data)
-    : AnnotationAllowed<AstNode>(AstNodeType::SCRIPT_FUNCTION, data.flags, allocator),
+    : JsDocAllowed<AnnotationAllowed<AstNode>>(AstNodeType::SCRIPT_FUNCTION, data.flags, allocator),
       irSignature_(std::move(data.signature)),
       body_(data.body),
       funcFlags_(data.funcFlags),
@@ -42,13 +128,40 @@ ScriptFunction::ScriptFunction(ArenaAllocator *allocator, ScriptFunctionData &&d
     if (auto *typeParams = irSignature_.TypeParams(); typeParams != nullptr) {
         typeParams->SetParent(this);
     }
+    InitHistory();
+}
+
+ScriptFunction::ScriptFunction(ArenaAllocator *allocator, ScriptFunctionData &&data, AstNodeHistory *history)
+    : JsDocAllowed<AnnotationAllowed<AstNode>>(AstNodeType::SCRIPT_FUNCTION, data.flags, allocator),
+      irSignature_(std::move(data.signature)),
+      body_(data.body),
+      funcFlags_(data.funcFlags),
+      lang_(data.lang),
+      returnStatements_(allocator->Adapter())
+{
+    for (auto *param : irSignature_.Params()) {
+        param->SetParent(this);
+    }
+
+    if (auto *returnType = irSignature_.ReturnType(); returnType != nullptr) {
+        returnType->SetParent(this);
+    }
+
+    if (auto *typeParams = irSignature_.TypeParams(); typeParams != nullptr) {
+        typeParams->SetParent(this);
+    }
+    if (history != nullptr) {
+        history_ = history;
+    } else {
+        InitHistory();
+    }
 }
 
 std::size_t ScriptFunction::FormalParamsLength() const noexcept
 {
     std::size_t length = 0U;
 
-    for (const auto *param : irSignature_.Params()) {
+    for (const auto *param : Params()) {
         if (param->IsRestElement() || param->IsAssignmentPattern()) {
             break;
         }
@@ -61,8 +174,8 @@ std::size_t ScriptFunction::FormalParamsLength() const noexcept
 
 void ScriptFunction::SetIdent(Identifier *id) noexcept
 {
-    id_ = id;
-    id_->SetParent(this);
+    this->GetOrCreateHistoryNodeAs<ScriptFunction>()->id_ = id;
+    id->SetParent(this);
 }
 
 ScriptFunction *ScriptFunction::Clone(ArenaAllocator *allocator, AstNode *parent)
@@ -78,7 +191,7 @@ ScriptFunction *ScriptFunction::Clone(ArenaAllocator *allocator, AstNode *parent
     auto *res = util::NodeAllocator::ForceSetParent<ScriptFunction>(
         allocator, allocator,
         ScriptFunctionData {
-            body_ != nullptr ? body_->Clone(allocator, nullptr) : nullptr,
+            Body() != nullptr ? Body()->Clone(allocator, nullptr) : nullptr,
             FunctionSignature {
                 TypeParams() != nullptr ? TypeParams()->Clone(allocator, nullptr)->AsTSTypeParameterDeclaration()
                                         : nullptr,
@@ -86,7 +199,7 @@ ScriptFunction *ScriptFunction::Clone(ArenaAllocator *allocator, AstNode *parent
                 ReturnTypeAnnotation() != nullptr ? ReturnTypeAnnotation()->Clone(allocator, nullptr)->AsTypeNode()
                                                   : nullptr,
                 HasReceiver()},
-            funcFlags_, flags_, lang_});
+            Flags(), Modifiers(), Language()});
     res->SetParent(parent);
     res->SetAnnotations(std::move(annotationUsages));
     return res;
@@ -94,38 +207,38 @@ ScriptFunction *ScriptFunction::Clone(ArenaAllocator *allocator, AstNode *parent
 
 void ScriptFunction::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
-    if (id_ != nullptr) {
-        if (auto *transformedNode = cb(id_); id_ != transformedNode) {
-            id_->SetTransformedNode(transformationName, transformedNode);
-            id_ = transformedNode->AsIdentifier();
+    auto const id = Id();
+    if (id != nullptr) {
+        if (auto *transformedNode = cb(id); id != transformedNode) {
+            id->SetTransformedNode(transformationName, transformedNode);
+            SetIdent(transformedNode->AsIdentifier());
         }
     }
 
-    irSignature_.TransformChildren(cb, transformationName);
+    GetOrCreateHistoryNode()->AsScriptFunction()->irSignature_.TransformChildren(cb, transformationName);
 
-    if (body_ != nullptr) {
-        if (auto *transformedNode = cb(body_); body_ != transformedNode) {
-            body_->SetTransformedNode(transformationName, transformedNode);
-            body_ = transformedNode;
+    auto const &body = Body();
+    if (body != nullptr) {
+        if (auto *transformedNode = cb(body); body != transformedNode) {
+            body->SetTransformedNode(transformationName, transformedNode);
+            SetBody(transformedNode);
         }
     }
 
-    for (auto *&it : VectorIterationGuard(Annotations())) {
-        if (auto *transformedNode = cb(it); it != transformedNode) {
-            it->SetTransformedNode(transformationName, transformedNode);
-            it = transformedNode->AsAnnotationUsage();
-        }
-    }
+    TransformAnnotations(cb, transformationName);
 }
 
 void ScriptFunction::Iterate(const NodeTraverser &cb) const
 {
-    if (id_ != nullptr) {
-        cb(id_);
+    auto id = GetHistoryNode()->AsScriptFunction()->id_;
+    if (id != nullptr) {
+        cb(id);
     }
-    irSignature_.Iterate(cb);
-    if (body_ != nullptr) {
-        cb(body_);
+    GetHistoryNode()->AsScriptFunction()->irSignature_.Iterate(cb);
+
+    auto body = GetHistoryNode()->AsScriptFunction()->body_;
+    if (body != nullptr) {
+        cb(body);
     }
     for (auto *it : VectorIterationGuard(Annotations())) {
         cb(it);
@@ -134,7 +247,8 @@ void ScriptFunction::Iterate(const NodeTraverser &cb) const
 
 void ScriptFunction::SetReturnTypeAnnotation(TypeNode *node) noexcept
 {
-    irSignature_.SetReturnType(node);
+    auto newNode = GetOrCreateHistoryNode()->AsScriptFunction();
+    newNode->irSignature_.SetReturnType(node);
     if (node != nullptr) {
         node->SetParent(this);
     }
@@ -142,24 +256,42 @@ void ScriptFunction::SetReturnTypeAnnotation(TypeNode *node) noexcept
 
 void ScriptFunction::Dump(ir::AstDumper *dumper) const
 {
-    const char *throwMarker = nullptr;
-    if (IsThrowing()) {
-        throwMarker = "throws";
-    } else if (IsRethrowing()) {
-        throwMarker = "rethrows";
-    }
     dumper->Add({{"type", "ScriptFunction"},
-                 {"id", AstDumper::Nullish(id_)},
+                 {"id", AstDumper::Nullish(Id())},
                  {"generator", IsGenerator()},
                  {"async", IsAsyncFunc()},
-                 {"expression", ((funcFlags_ & ir::ScriptFunctionFlags::EXPRESSION) != 0)},
-                 {"params", irSignature_.Params()},
-                 {"returnType", AstDumper::Optional(irSignature_.ReturnType())},
-                 {"typeParameters", AstDumper::Optional(irSignature_.TypeParams())},
+                 {"expression", ((Flags() & ir::ScriptFunctionFlags::EXPRESSION) != 0)},
+                 {"params", Params()},
+                 {"returnType", AstDumper::Optional(ReturnTypeAnnotation())},
+                 {"typeParameters", AstDumper::Optional(TypeParams())},
                  {"declare", AstDumper::Optional(IsDeclare())},
-                 {"body", AstDumper::Optional(body_)},
-                 {"annotations", AstDumper::Optional(Annotations())},
-                 {"throwMarker", AstDumper::Optional(throwMarker)}});
+                 {"body", AstDumper::Optional(Body())},
+                 {"annotations", AstDumper::Optional(Annotations())}});
+}
+
+void ScriptFunction::DumpCheckerTypeForDeclGen(ir::SrcDumper *dumper) const
+{
+    if (!dumper->IsDeclgen()) {
+        return;
+    }
+
+    if (IsConstructor()) {
+        return;
+    }
+
+    if (Signature() == nullptr) {
+        return;
+    }
+
+    if (Signature()->ReturnType() == nullptr) {
+        return;
+    }
+
+    auto typeStr = Signature()->ReturnType()->ToString();
+    dumper->Add(": ");
+    dumper->Add(typeStr);
+
+    dumper->PushTask([dumper, typeStr] { dumper->DumpNode(typeStr); });
 }
 
 void ScriptFunction::Dump(ir::SrcDumper *dumper) const
@@ -177,36 +309,46 @@ void ScriptFunction::Dump(ir::SrcDumper *dumper) const
         }
     }
     dumper->Add(")");
-    if (ReturnTypeAnnotation() != nullptr) {
+    if (ReturnTypeAnnotation() != nullptr && !dumper->IsDeclgen()) {
         dumper->Add(": ");
         ReturnTypeAnnotation()->Dump(dumper);
     }
+    DumpCheckerTypeForDeclGen(dumper);
+    if (dumper->IsDeclgen()) {
+        dumper->Add(";");
+        dumper->Endl();
+        return;
+    }
+    DumpBody(dumper);
+}
 
-    if (IsThrowing()) {
-        dumper->Add(" throws");
-    } else if (IsRethrowing()) {
-        dumper->Add(" rethrows");
+void ScriptFunction::DumpBody(ir::SrcDumper *dumper) const
+{
+    if (!HasBody()) {
+        dumper->Endl();
+        return;
     }
 
-    if (HasBody()) {
-        if (IsArrow()) {
-            dumper->Add(" =>");
-        }
-        if (body_->IsBlockStatement()) {
-            dumper->Add(" {");
-            if (!body_->AsBlockStatement()->Statements().empty()) {
-                dumper->IncrIndent();
-                dumper->Endl();
-                body_->Dump(dumper);
-                dumper->DecrIndent();
-                dumper->Endl();
-            }
-            dumper->Add("}");
-        } else {
-            dumper->Add(" ");
+    if (IsArrow()) {
+        dumper->Add(" =>");
+    }
+
+    if (body_->IsBlockStatement()) {
+        dumper->Add(" {");
+        const auto &statements = body_->AsBlockStatement()->Statements();
+        if (!statements.empty()) {
+            dumper->IncrIndent();
+            dumper->Endl();
             body_->Dump(dumper);
+            dumper->DecrIndent();
+            dumper->Endl();
         }
+        dumper->Add("}");
+    } else {
+        dumper->Add(" ");
+        body_->Dump(dumper);
     }
+
     if (!IsArrow()) {
         dumper->Endl();
     }
@@ -230,4 +372,32 @@ checker::VerifiedType ScriptFunction::Check(checker::ETSChecker *checker)
 {
     return {this, checker->GetAnalyzer()->Check(this)};
 }
+
+ScriptFunction *ScriptFunction::Construct(ArenaAllocator *allocator)
+{
+    auto adapter = allocator->Adapter();
+    return allocator->New<ScriptFunction>(
+        allocator,
+        ScriptFunctionData {nullptr, FunctionSignature(nullptr, ArenaVector<Expression *>(adapter), nullptr)});
+}
+
+void ScriptFunction::CopyTo(AstNode *other) const
+{
+    auto otherImpl = other->AsScriptFunction();
+
+    otherImpl->id_ = id_;
+
+    otherImpl->irSignature_.CopyFrom(irSignature_);
+
+    otherImpl->body_ = body_;
+    otherImpl->scope_ = scope_;
+    otherImpl->funcFlags_ = funcFlags_;
+    otherImpl->signature_ = signature_;
+    otherImpl->preferredReturnType_ = preferredReturnType_;
+    otherImpl->lang_ = lang_;
+    otherImpl->returnStatements_ = returnStatements_;
+
+    JsDocAllowed<AnnotationAllowed<AstNode>>::CopyTo(other);
+}
+
 }  // namespace ark::es2panda::ir

@@ -73,6 +73,7 @@
     _(UNDEFINED_LITERAL, UndefinedLiteral)                                                \
     _(NUMBER_LITERAL, NumberLiteral)                                                      \
     _(OMITTED_EXPRESSION, OmittedExpression)                                              \
+    _(OVERLOAD_DECLARATION, OverloadDeclaration)                                          \
     _(PREFIX_ASSERTION_EXPRESSION, PrefixAssertionExpression)                             \
     _(PROPERTY, Property)                                                                 \
     _(REGEXP_LITERAL, RegExpLiteral)                                                      \
@@ -81,10 +82,12 @@
     _(SCRIPT_FUNCTION, ScriptFunction)                                                    \
     _(SEQUENCE_EXPRESSION, SequenceExpression)                                            \
     _(STRING_LITERAL, StringLiteral)                                                      \
+    _(ETS_NON_NULLISH_TYPE, ETSNonNullishTypeNode)                                        \
     _(ETS_NULL_TYPE, ETSNullType)                                                         \
     _(ETS_UNDEFINED_TYPE, ETSUndefinedType)                                               \
     _(ETS_NEVER_TYPE, ETSNeverType)                                                       \
     _(ETS_STRING_LITERAL_TYPE, ETSStringLiteralType)                                      \
+    _(ETS_INTRINSIC_NODE_TYPE, ETSIntrinsicNode)                                          \
     _(ETS_FUNCTION_TYPE, ETSFunctionType)                                                 \
     _(ETS_WILDCARD_TYPE, ETSWildcardType)                                                 \
     _(ETS_PRIMITIVE_TYPE, ETSPrimitiveType)                                               \
@@ -94,7 +97,6 @@
     _(ETS_TYPE_REFERENCE_PART, ETSTypeReferencePart)                                      \
     _(ETS_UNION_TYPE, ETSUnionType)                                                       \
     _(ETS_KEYOF_TYPE, ETSKeyofType)                                                       \
-    _(ETS_LAUNCH_EXPRESSION, ETSLaunchExpression)                                         \
     _(ETS_NEW_ARRAY_INSTANCE_EXPRESSION, ETSNewArrayInstanceExpression)                   \
     _(ETS_NEW_MULTI_DIM_ARRAY_INSTANCE_EXPRESSION, ETSNewMultiDimArrayInstanceExpression) \
     _(ETS_NEW_CLASS_INSTANCE_EXPRESSION, ETSNewClassInstanceExpression)                   \

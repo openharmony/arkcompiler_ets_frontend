@@ -25,11 +25,9 @@ let sector: float
   };
 }
 
-/* @@? 20:12 Error TypeError: Target type for class composite needs to be an object type, found 'float' */
+/* @@? 20:12 Error TypeError: key in class composite should be either identifier or string literal */
 /* @@? 23:19 Error SyntaxError: Unexpected token, expected ')'. */
 /* @@? 23:20 Error SyntaxError: Unexpected token. */
-/* @@? 23:21 Error SyntaxError: Unexpected token ','. */
-/* @@? 23:21 Error SyntaxError: Unexpected token ','. */
 /* @@? 23:21 Error SyntaxError: Unexpected token ','. */
 /* @@? 24:16 Error SyntaxError: Label must be followed by a loop statement. */
 /* @@? 26:1 Error SyntaxError: Unexpected token '}'. */

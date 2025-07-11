@@ -15,38 +15,46 @@
 
 import path from 'path';
 import {
-    ArkMethod,
+    AbstractFieldRef,
     ArkAssignStmt,
-    FieldSignature,
-    Stmt,
-    Scene,
-    Value,
-    DVFGBuilder,
-    ArkInstanceOfExpr,
-    CallGraph,
-    ArkParameterRef,
-    ArkInstanceFieldRef,
-    ArkNamespace,
-    Local,
     ArkCastExpr,
-    ClassType,
-    classSignatureCompare,
     ArkField,
-    fileSignatureCompare,
-    Cfg,
-    BasicBlock,
     ArkIfStmt,
+    ArkInstanceFieldRef,
+    ArkInstanceOfExpr,
+    ArkMethod,
+    ArkNamespace,
+    ArkNormalBinopExpr,
+    ArkParameterRef,
     ArkUnopExpr,
+    BasicBlock,
+    CallGraph,
+    Cfg,
+    ClassSignature,
+    classSignatureCompare,
+    ClassType,
+    DVFGBuilder,
+    FieldSignature,
+    fileSignatureCompare,
+    LineColPosition,
+    Local,
+    NormalBinaryOperator,
+    RelationalBinaryOperator,
+    Scene,
+    Stmt,
+    UnaryOperator,
+    Value,
 } from 'arkanalyzer/lib';
 import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
 import { BaseChecker, BaseMetaData } from '../BaseChecker';
-import { Rule, Defects, MatcherCallback } from '../../Index';
+import { Defects, MatcherCallback, Rule } from '../../Index';
 import { IssueReport } from '../../model/Defects';
 import { DVFG, DVFGNode } from 'arkanalyzer/lib/VFG/DVFG';
-import { CALL_DEPTH_LIMIT, getGlobalsDefineInDefaultMethod, GlobalCallGraphHelper } from './Utils';
-import { WarnInfo } from '../../utils/common/Utils';
+import { CALL_DEPTH_LIMIT, getGlobalsDefineInDefaultMethod, getLineAndColumn, GlobalCallGraphHelper } from './Utils';
 import { ClassCategory } from 'arkanalyzer/lib/core/model/ArkClass';
 import { Language } from 'arkanalyzer/lib/core/model/ArkFile';
+import { BooleanConstant, NumberConstant } from 'arkanalyzer/lib/core/base/Constant';
+import { ArkClass, NumberType } from 'arkanalyzer';
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'NoTSLikeAsCheck');
 const gMetaData: BaseMetaData = {
@@ -55,11 +63,18 @@ const gMetaData: BaseMetaData = {
     description: '',
 };
 
+enum TypeAssuranceCondition {
+    Positive,
+    Negative,
+    NotExist,
+}
+
 export class NoTSLikeAsCheck implements BaseChecker {
     readonly metaData: BaseMetaData = gMetaData;
     public rule: Rule;
     public defects: Defects[] = [];
     public issues: IssueReport[] = [];
+    private scene: Scene;
     private cg: CallGraph;
     private dvfg: DVFG;
     private dvfgBuilder: DVFGBuilder;
@@ -74,6 +89,7 @@ export class NoTSLikeAsCheck implements BaseChecker {
     }
 
     public check = (scene: Scene): void => {
+        this.scene = scene;
         this.cg = GlobalCallGraphHelper.getCGInstance(scene);
 
         this.dvfg = new DVFG(this.cg);
@@ -91,58 +107,38 @@ export class NoTSLikeAsCheck implements BaseChecker {
                 globalVarMap = getGlobalsDefineInDefaultMethod(defaultMethod);
             }
             for (let clazz of arkFile.getClasses()) {
-                for (let field of clazz.getFields()) {
-                    this.processClassField(field, globalVarMap, scene);
-                }
-                for (let mtd of clazz.getMethods()) {
-                    this.processArkMethod(mtd, globalVarMap, scene);
-                }
+                this.processClass(clazz, globalVarMap);
             }
             for (let namespace of arkFile.getAllNamespacesUnderThisFile()) {
-                this.processNameSpace(namespace, globalVarMap, scene);
+                this.processNameSpace(namespace, globalVarMap);
             }
         }
     };
 
-    public processNameSpace(namespace: ArkNamespace, globalVarMap: Map<string, Stmt[]>, scene: Scene): void {
+    public processClass(arkClass: ArkClass, globalVarMap: Map<string, Stmt[]>): void {
+        for (let field of arkClass.getFields()) {
+            this.processClassField(field, globalVarMap);
+        }
+        for (let mtd of arkClass.getMethods()) {
+            this.processArkMethod(mtd, globalVarMap);
+        }
+    }
+
+    public processNameSpace(namespace: ArkNamespace, globalVarMap: Map<string, Stmt[]>): void {
         for (let ns of namespace.getNamespaces()) {
-            this.processNameSpace(ns, globalVarMap, scene);
+            this.processNameSpace(ns, globalVarMap);
         }
         for (let clazz of namespace.getClasses()) {
-            for (let field of clazz.getFields()) {
-                this.processClassField(field, globalVarMap, scene);
-            }
-            for (let mtd of clazz.getMethods()) {
-                this.processArkMethod(mtd, globalVarMap, scene);
-            }
+            this.processClass(clazz, globalVarMap);
         }
     }
 
-    public processClassField(field: ArkField, globalVarMap: Map<string, Stmt[]>, scene: Scene): void {
-        const stmts = field.getInitializer();
-        for (const stmt of stmts) {
-            const castExpr = this.getCastExpr(stmt);
-            if (castExpr === null) {
-                continue;
-            }
-            // 判断cast类型断言的类型是否是class，非class的场景不在本规则检查范围内
-            if (!(castExpr.getType() instanceof ClassType)) {
-                continue;
-            }
-            let checkAll = { value: true };
-            let visited: Set<Stmt> = new Set();
-            const result = this.checkFromStmt(stmt, scene, globalVarMap, checkAll, visited);
-            if (result !== null) {
-                this.addIssueReport(stmt, castExpr, result);
-            } else {
-                if (!checkAll.value) {
-                    this.addIssueReport(stmt, castExpr);
-                }
-            }
-        }
+    public processClassField(field: ArkField, globalVarMap: Map<string, Stmt[]>): void {
+        const instInit = field.getDeclaringArkClass().getInstanceInitMethod();
+        this.processArkMethod(instInit, globalVarMap);
     }
 
-    public processArkMethod(target: ArkMethod, globalVarMap: Map<string, Stmt[]>, scene: Scene): void {
+    public processArkMethod(target: ArkMethod, globalVarMap: Map<string, Stmt[]>): void {
         const stmts = target.getBody()?.getCfg().getStmts() ?? [];
         for (const stmt of stmts) {
             // cast表达式所在语句为sink点，从该点开始进行逆向数据流分析
@@ -150,6 +146,13 @@ export class NoTSLikeAsCheck implements BaseChecker {
             if (castExpr === null) {
                 continue;
             }
+
+            // 判断是否为cast表达式的自增自减运算，属于告警场景之一
+            if (this.isCastExprWithIncrementDecrement(stmt)) {
+                this.addIssueReport(stmt, castExpr, undefined, true);
+                continue;
+            }
+
             // 判断cast类型断言的类型是否是class，非class的场景不在本规则检查范围内
             if (!(castExpr.getType() instanceof ClassType)) {
                 continue;
@@ -164,7 +167,7 @@ export class NoTSLikeAsCheck implements BaseChecker {
 
             let checkAll = { value: true };
             let visited: Set<Stmt> = new Set();
-            const result = this.checkFromStmt(stmt, scene, globalVarMap, checkAll, visited);
+            const result = this.checkFromStmt(stmt, globalVarMap, checkAll, visited);
             if (result !== null) {
                 this.addIssueReport(stmt, castExpr, result);
             } else {
@@ -175,27 +178,81 @@ export class NoTSLikeAsCheck implements BaseChecker {
         }
     }
 
+    private isCastExprWithIncrementDecrement(stmt: Stmt): boolean {
+        if (!(stmt instanceof ArkAssignStmt) || !(stmt.getRightOp() instanceof ArkCastExpr)) {
+            return false;
+        }
+        const castLocal = stmt.getLeftOp();
+        if (!(castLocal instanceof Local)) {
+            return false;
+        }
+        // 判断是否为自增或自减语句，需要判断used stmt是否至少包含%0 = %0 + 1 和 castExpr = %0两条语句，不新增临时变量
+        // 非自增或自减语句，used stmt中仅包含%1 = %0 + 1
+        const usedStmts = castLocal.getUsedStmts();
+        if (usedStmts.length !== 2) {
+            return false;
+        }
+        let selfAssignFlag = false;
+        let assignBackFlag = false;
+        for (const usedStmt of usedStmts) {
+            if (!(usedStmt instanceof ArkAssignStmt)) {
+                return false;
+            }
+            const leftOp = usedStmt.getLeftOp();
+            const rightOp = usedStmt.getRightOp();
+            if (leftOp instanceof Local) {
+                if (leftOp !== castLocal) {
+                    return false;
+                }
+                if (!(rightOp instanceof ArkNormalBinopExpr)) {
+                    return false;
+                }
+                const op1 = rightOp.getOp1();
+                const op2 = rightOp.getOp2();
+                const operator = rightOp.getOperator();
+                if (op1 !== castLocal) {
+                    return false;
+                }
+                if (operator !== NormalBinaryOperator.Addition && operator !== NormalBinaryOperator.Subtraction) {
+                    return false;
+                }
+                if (!(op2 instanceof NumberConstant) || !(op2.getType() instanceof NumberType) || op2.getValue() !== '1') {
+                    return false;
+                }
+                selfAssignFlag = true;
+            }
+            if (leftOp instanceof ArkCastExpr) {
+                if (leftOp !== stmt.getRightOp()) {
+                    return false;
+                }
+                if (rightOp !== castLocal) {
+                    return false;
+                }
+                assignBackFlag = true;
+            }
+        }
+        return selfAssignFlag && assignBackFlag;
+    }
+
     private hasCheckedWithInstanceof(cfg: Cfg, stmt: Stmt): boolean {
         const castExpr = this.getCastExpr(stmt);
         if (castExpr === null) {
             return false;
         }
         for (const block of cfg.getBlocks()) {
-            // 这里仅判断了cast op是否进行了instanceof判断，如果op是由op1赋值，op1进行了instanceof判断，此处不认为是做了有效检查
-            // TODO: 还需进行复杂条件中包含类型守卫判断的情况，涉及&&，||等的复合
-            const positiveCheck = this.isCastExprWithTypeAssurancePositive(block, castExpr);
-            const negativeCheck = this.isCastExprWithTypeAssuranceNegative(block, castExpr);
-            if (!(positiveCheck || negativeCheck)) {
+            // 这里仅判断了cast op是否进行了instanceof判断，如果op是由op1赋值，op1进行了instanceof判断，此处不认为是做了有效检查，因为此赋值链可能很长且中途发生类型变化，极易判断错误
+            const checkRes = this.checkTypeAssuranceInBasicBlock(block, castExpr);
+            if (checkRes === TypeAssuranceCondition.NotExist) {
                 continue;
             }
             let checkedBB: Set<number> = new Set<number>();
             let needCheckBB: number[] = [];
             checkedBB.add(block.getId());
             const allSuccessors = block.getSuccessors();
-            if (allSuccessors.length > 0 && positiveCheck) {
+            if (allSuccessors.length > 0 && checkRes === TypeAssuranceCondition.Positive) {
                 needCheckBB.push(allSuccessors[0].getId());
             }
-            if (allSuccessors.length > 1 && negativeCheck) {
+            if (allSuccessors.length > 1 && checkRes === TypeAssuranceCondition.Negative) {
                 needCheckBB.push(allSuccessors[1].getId());
             }
             while (needCheckBB.length > 0) {
@@ -221,6 +278,100 @@ export class NoTSLikeAsCheck implements BaseChecker {
         return false;
     }
 
+    private checkTypeAssuranceInBasicBlock(bb: BasicBlock, castExpr: ArkCastExpr): TypeAssuranceCondition {
+        for (const stmt of bb.getStmts()) {
+            if (!(stmt instanceof ArkIfStmt)) {
+                continue;
+            }
+            const conditionExpr = stmt.getConditionExpr();
+            const op1 = conditionExpr.getOp1();
+            const op2 = conditionExpr.getOp2();
+            const operator = conditionExpr.getOperator();
+            // 对于if (i instanceof A)这种条件语句，op1总是临时变量，op2总是false，操作符总是！=
+            if (!(op1 instanceof Local && op2 instanceof BooleanConstant && op2.getValue() === 'false' && operator === RelationalBinaryOperator.InEquality)) {
+                break;
+            }
+            return this.checkTypeAssuranceWithLocal(op1, castExpr, stmt.getOriginPositionInfo(), true);
+        }
+        return TypeAssuranceCondition.NotExist;
+    }
+
+    private checkTypeAssuranceWithLocal(operand: Local, castExpr: ArkCastExpr, ifStmtPos: LineColPosition, shouldBe: boolean): TypeAssuranceCondition {
+        const declaringStmt = operand.getDeclaringStmt();
+        if (declaringStmt === null) {
+            return TypeAssuranceCondition.NotExist;
+        }
+        // if语句中的所有条件遵从三地址码原则拆分成多个语句时，所有语句的位置信息是一致的，不一致时表示是条件语句之前的赋值或声明情况，不在本判断范围内
+        const stmtPos = declaringStmt.getOriginPositionInfo();
+        if (stmtPos.getLineNo() !== ifStmtPos.getLineNo() || stmtPos.getColNo() !== ifStmtPos.getColNo()) {
+            return TypeAssuranceCondition.NotExist;
+        }
+        if (!(declaringStmt instanceof ArkAssignStmt)) {
+            return TypeAssuranceCondition.NotExist;
+        }
+        const rightOp = declaringStmt.getRightOp();
+        if (rightOp instanceof ArkInstanceOfExpr) {
+            if (this.isTypeAssuranceMatchCast(rightOp, castExpr)) {
+                if (shouldBe) {
+                    return TypeAssuranceCondition.Positive;
+                } else {
+                    return TypeAssuranceCondition.Negative;
+                }
+            }
+            return TypeAssuranceCondition.NotExist;
+        }
+        if (rightOp instanceof ArkUnopExpr && rightOp.getOperator() === UnaryOperator.LogicalNot) {
+            const unaryOp = rightOp.getOp();
+            if (unaryOp instanceof Local) {
+                return this.checkTypeAssuranceWithLocal(unaryOp, castExpr, ifStmtPos, !shouldBe);
+            }
+            return TypeAssuranceCondition.NotExist;
+        }
+        if (rightOp instanceof ArkNormalBinopExpr) {
+            const op1 = rightOp.getOp1();
+            const op2 = rightOp.getOp2();
+            const operator = rightOp.getOperator();
+            // 这里仅判断&&和||两种逻辑运算符的场景，其他场景在包含类型守卫判断的条件语句中不常见，暂不考虑
+            let res: TypeAssuranceCondition;
+            if (operator === NormalBinaryOperator.LogicalAnd) {
+                if (op1 instanceof Local) {
+                    res = this.checkTypeAssuranceWithLocal(op1, castExpr, ifStmtPos, shouldBe);
+                    if (res !== TypeAssuranceCondition.NotExist) {
+                        return res;
+                    }
+                }
+                if (op2 instanceof Local) {
+                    res = this.checkTypeAssuranceWithLocal(op2, castExpr, ifStmtPos, shouldBe);
+                    if (res !== TypeAssuranceCondition.NotExist) {
+                        return res;
+                    }
+                }
+                return TypeAssuranceCondition.NotExist;
+            }
+            if (operator === NormalBinaryOperator.LogicalOr) {
+                // a or b，不论a或b里是类型守卫判断，均无法保证分支中的类型明确
+                if (shouldBe) {
+                    return TypeAssuranceCondition.NotExist;
+                }
+            }
+        }
+        return TypeAssuranceCondition.NotExist;
+    }
+
+    private isTypeAssuranceMatchCast(instanceOfExpr: ArkInstanceOfExpr, castExpr: ArkCastExpr): boolean {
+        const castOp = castExpr.getOp();
+        const castType = castExpr.getType();
+        const instanceofType = instanceOfExpr.getCheckType();
+        if (castType.getTypeString() !== instanceofType.getTypeString()) {
+            return false;
+        }
+        const instanceofOp = instanceOfExpr.getOp();
+        if (!(castOp instanceof Local && instanceofOp instanceof Local)) {
+            return false;
+        }
+        return castOp.getName() === instanceofOp.getName();
+    }
+
     private isStmtInBlock(stmt: Stmt, block: BasicBlock): boolean {
         for (const s of block.getStmts()) {
             if (s === stmt) {
@@ -240,116 +391,7 @@ export class NoTSLikeAsCheck implements BaseChecker {
         return null;
     }
 
-    private isCastExprWithTypeAssurancePositive(bb: BasicBlock, castExpr: ArkCastExpr): boolean {
-        for (const stmt of bb.getStmts()) {
-            if (!(stmt instanceof ArkIfStmt)) {
-                continue;
-            }
-            const conditionExpr = stmt.getConditionExpr();
-            const op1 = conditionExpr.getOp1();
-            const op2 = conditionExpr.getOp2();
-            if (op1 instanceof Local) {
-                const declareStmt = op1.getDeclaringStmt();
-                if (declareStmt !== null && this.isStmtWithTypeAssurancePositive(declareStmt, castExpr)) {
-                    return true;
-                }
-            }
-            if (op2 instanceof Local) {
-                const declareStmt = op2.getDeclaringStmt();
-                if (declareStmt !== null && this.isStmtWithTypeAssurancePositive(declareStmt, castExpr)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    private isCastExprWithTypeAssuranceNegative(bb: BasicBlock, castExpr: ArkCastExpr): boolean {
-        for (const stmt of bb.getStmts()) {
-            if (!(stmt instanceof ArkIfStmt)) {
-                continue;
-            }
-            const conditionExpr = stmt.getConditionExpr();
-            const op1 = conditionExpr.getOp1();
-            const op2 = conditionExpr.getOp2();
-            if (op1 instanceof Local) {
-                const declareStmt = op1.getDeclaringStmt();
-                if (declareStmt !== null && this.isStmtWithTypeAssuranceNegative(declareStmt, castExpr)) {
-                    return true;
-                }
-            }
-            if (op2 instanceof Local) {
-                const declareStmt = op2.getDeclaringStmt();
-                if (declareStmt !== null && this.isStmtWithTypeAssuranceNegative(declareStmt, castExpr)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    private isStmtWithTypeAssurancePositive(declareStmt: Stmt, castExpr: ArkCastExpr): boolean {
-        if (!(declareStmt instanceof ArkAssignStmt)) {
-            return false;
-        }
-        const rightOp = declareStmt.getRightOp();
-        if (!(rightOp instanceof ArkInstanceOfExpr)) {
-            return false;
-        }
-        const castOp = castExpr.getOp();
-        const castType = castExpr.getType();
-        const instanceofType = rightOp.getCheckType();
-        if (castType.getTypeString() !== instanceofType.getTypeString()) {
-            return false;
-        }
-        const instanceofOp = rightOp.getOp();
-        if (!(castOp instanceof Local && instanceofOp instanceof Local)) {
-            return false;
-        }
-        return castOp.getName() === instanceofOp.getName();
-    }
-
-    private isStmtWithTypeAssuranceNegative(declareStmt: Stmt, castExpr: ArkCastExpr): boolean {
-        if (!(declareStmt instanceof ArkAssignStmt)) {
-            return false;
-        }
-        const rightOp = declareStmt.getRightOp();
-        if (!(rightOp instanceof ArkUnopExpr && rightOp.getOperator() === '!')) {
-            return false;
-        }
-        const unaryOp = rightOp.getOp();
-        if (!(unaryOp instanceof Local)) {
-            return false;
-        }
-        const unaryOpDeclareStmt = unaryOp.getDeclaringStmt();
-        if (unaryOpDeclareStmt === null || !(unaryOpDeclareStmt instanceof ArkAssignStmt)) {
-            return false;
-        }
-        const unaryOpRightOp = unaryOpDeclareStmt.getRightOp();
-        if (!(unaryOpRightOp instanceof ArkInstanceOfExpr)) {
-            return false;
-        }
-        const castOp = castExpr.getOp();
-        const castType = castExpr.getType();
-        const instanceofType = unaryOpRightOp.getCheckType();
-        if (castType.getTypeString() !== instanceofType.getTypeString()) {
-            return false;
-        }
-        const instanceofOp = unaryOpRightOp.getOp();
-        if (!(castOp instanceof Local && instanceofOp instanceof Local)) {
-            return false;
-        }
-        return castOp.getName() === instanceofOp.getName();
-    }
-
-    private checkFromStmt(
-        stmt: Stmt,
-        scene: Scene,
-        globalVarMap: Map<string, Stmt[]>,
-        checkAll: { value: boolean },
-        visited: Set<Stmt>,
-        depth: number = 0
-    ): Stmt | null {
+    private checkFromStmt(stmt: Stmt, globalVarMap: Map<string, Stmt[]>, checkAll: { value: boolean }, visited: Set<Stmt>, depth: number = 0): Stmt | null {
         if (depth > CALL_DEPTH_LIMIT) {
             checkAll.value = false;
             return null;
@@ -363,8 +405,13 @@ export class NoTSLikeAsCheck implements BaseChecker {
                 continue;
             }
             visited.add(currentStmt);
-            if (this.isWithInterfaceAnnotation(currentStmt, scene)) {
+            if (this.isWithInterfaceAnnotation(currentStmt)) {
                 return currentStmt;
+            }
+
+            const fieldDeclareStmt = this.isCastOpFieldWithInterfaceType(currentStmt);
+            if (fieldDeclareStmt) {
+                return fieldDeclareStmt;
             }
             const gv = this.checkIfCastOpIsGlobalVar(currentStmt);
             if (gv) {
@@ -392,7 +439,7 @@ export class NoTSLikeAsCheck implements BaseChecker {
                 }
                 const returnStmts = declaringMtd.getReturnStmt();
                 for (const stmt of returnStmts) {
-                    const res = this.checkFromStmt(stmt, scene, globalVarMap, checkAll, visited, depth + 1);
+                    const res = this.checkFromStmt(stmt, globalVarMap, checkAll, visited, depth + 1);
                     if (res !== null) {
                         return res;
                     }
@@ -401,13 +448,11 @@ export class NoTSLikeAsCheck implements BaseChecker {
             const paramRef = this.isFromParameter(currentStmt);
             if (paramRef) {
                 const paramIdx = paramRef.getIndex();
-                const callsites = this.cg.getInvokeStmtByMethod(
-                    currentStmt.getCfg().getDeclaringMethod().getSignature()
-                );
+                const callsites = this.cg.getInvokeStmtByMethod(currentStmt.getCfg().getDeclaringMethod().getSignature());
                 this.processCallsites(callsites);
                 const argDefs = this.collectArgDefs(paramIdx, callsites);
                 for (const stmt of argDefs) {
-                    const res = this.checkFromStmt(stmt, scene, globalVarMap, checkAll, visited, depth + 1);
+                    const res = this.checkFromStmt(stmt, globalVarMap, checkAll, visited, depth + 1);
                     if (res !== null) {
                         return res;
                     }
@@ -416,6 +461,34 @@ export class NoTSLikeAsCheck implements BaseChecker {
             current.getIncomingEdge().forEach(e => worklist.push(e.getSrcNode() as DVFGNode));
         }
         return null;
+    }
+
+    private isCastOpFieldWithInterfaceType(stmt: Stmt): Stmt | undefined {
+        const obj = this.getCastOp(stmt);
+        if (obj === null || !(obj instanceof Local)) {
+            return undefined;
+        }
+        const declaringStmt = obj.getDeclaringStmt();
+        if (declaringStmt === null || !(declaringStmt instanceof ArkAssignStmt)) {
+            return undefined;
+        }
+        const rightOp = declaringStmt.getRightOp();
+        if (!(rightOp instanceof AbstractFieldRef)) {
+            return undefined;
+        }
+        const fieldDeclaring = rightOp.getFieldSignature().getDeclaringSignature();
+        if (fieldDeclaring instanceof ClassSignature) {
+            const field = this.scene.getClass(fieldDeclaring)?.getField(rightOp.getFieldSignature());
+            if (!field) {
+                return undefined;
+            }
+            const fieldInitializer = field.getInitializer();
+            const lastStmt = fieldInitializer[fieldInitializer.length - 1];
+            if (this.isWithInterfaceAnnotation(lastStmt)) {
+                return lastStmt;
+            }
+        }
+        return undefined;
     }
 
     private checkIfCastOpIsGlobalVar(stmt: Stmt): Local | undefined {
@@ -462,7 +535,7 @@ export class NoTSLikeAsCheck implements BaseChecker {
     }
 
     // 判断语句是否为赋值语句，且左值的类型注解为Interface，右值的类型与左值不一样
-    private isWithInterfaceAnnotation(stmt: Stmt, scene: Scene): boolean {
+    private isWithInterfaceAnnotation(stmt: Stmt): boolean {
         if (!(stmt instanceof ArkAssignStmt)) {
             return false;
         }
@@ -470,7 +543,7 @@ export class NoTSLikeAsCheck implements BaseChecker {
         if (!(leftOpType instanceof ClassType)) {
             return false;
         }
-        const leftOpTypeclass = scene.getClass(leftOpType.getClassSignature());
+        const leftOpTypeclass = this.scene.getClass(leftOpType.getClassSignature());
         if (leftOpTypeclass === null) {
             return false;
         }
@@ -532,15 +605,17 @@ export class NoTSLikeAsCheck implements BaseChecker {
         });
     }
 
-    private addIssueReport(stmt: Stmt, operand: ArkCastExpr, relatedStmt?: Stmt): void {
+    private addIssueReport(stmt: Stmt, operand: ArkCastExpr, relatedStmt?: Stmt, incrementCase: boolean = false): void {
         const severity = this.rule.alert ?? this.metaData.severity;
-        const warnInfo = this.getLineAndColumn(stmt, operand);
+        const warnInfo = getLineAndColumn(stmt, operand);
         const problem = 'As';
         const descPrefix = 'The value in type assertion is assigned by value with interface annotation';
         let desc = `(${this.rule.ruleId.replace('@migration/', '')})`;
 
-        if (relatedStmt === undefined) {
-            desc = `Can not find all assignments of the value in type assertion, please check it manually ` + desc;
+        if (incrementCase) {
+            desc = 'Can not use neither increment nor decrement with cast expression ' + desc;
+        } else if (relatedStmt === undefined) {
+            desc = `Can not check when function call chain depth exceeds ${CALL_DEPTH_LIMIT}, please check it manually ` + desc;
         } else {
             const sinkFile = stmt.getCfg().getDeclaringMethod().getDeclaringArkFile();
             const relatedFile = relatedStmt.getCfg().getDeclaringMethod().getDeclaringArkFile();
@@ -550,6 +625,7 @@ export class NoTSLikeAsCheck implements BaseChecker {
                 desc = `${descPrefix} in file ${path.normalize(relatedFile.getName())}: ${relatedStmt.getOriginPositionInfo().getLineNo()} ` + desc;
             }
         }
+
         let defects = new Defects(
             warnInfo.line,
             warnInfo.startCol,
@@ -565,20 +641,5 @@ export class NoTSLikeAsCheck implements BaseChecker {
             false
         );
         this.issues.push(new IssueReport(defects, undefined));
-    }
-
-    private getLineAndColumn(stmt: Stmt, operand: Value): WarnInfo {
-        const arkFile = stmt.getCfg()?.getDeclaringMethod().getDeclaringArkFile();
-        const originPosition = stmt.getOperandOriginalPosition(operand);
-        if (arkFile && originPosition) {
-            const originPath = arkFile.getFilePath();
-            const line = originPosition.getFirstLine();
-            const startCol = originPosition.getFirstCol();
-            const endCol = startCol;
-            return { line, startCol, endCol, filePath: originPath };
-        } else {
-            logger.debug('ArkFile is null.');
-        }
-        return { line: -1, startCol: -1, endCol: -1, filePath: '' };
     }
 }

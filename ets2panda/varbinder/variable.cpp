@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -33,6 +33,8 @@ LocalVariable::LocalVariable(VariableFlags flags) : Variable(flags) {}
 
 const util::StringView &Variable::Name() const
 {
+    // Synthetic var has no decl_
+    ES2PANDA_ASSERT(decl_ != nullptr);
     return decl_->Name();
 }
 

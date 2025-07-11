@@ -40,10 +40,6 @@ semantic:
   id: 7
   message: Cannot use array creation expression with type parameter.
 
-- name: NOT_COND_TYPE
-  id: 8
-  message: "Condition must be of possible condition type"
-
 - name: VOID_IN_LOGIC
   id: 9
   message: "An expression of type 'void' cannot be tested for truthiness"
@@ -111,6 +107,7 @@ semantic:
 - name: ASSIGNMENT_INVALID_LHS
   id: 25
   message: "Invalid left-hand side of assignment expression"
+  code_fix_ids: [FixConvertConstToLet]
 
 - name: ABSTRACT_CALL
   id: 26
@@ -123,10 +120,6 @@ semantic:
 - name: TEMPLATE_COUNT_MISMATCH
   id: 28
   message: "Invalid string template expression"
-
-- name: ASSERT_NOT_LOGICAL
-  id: 29
-  message: "Bad operand type, the type of the operand must be boolean type."
 
 - name: ASSERT_MESSAGE_NOT_STRING
   id: 30
@@ -260,7 +253,7 @@ semantic:
   id: 62
   message: "need to specify target type for class composite"
 
-- name: CKASS_COMPOSITE_INVALID_TARGET
+- name: CLASS_COMPOSITE_INVALID_TARGET
   id: 63
   message: "Target type for class composite needs to be an object type, found '{}'"
 
@@ -549,7 +542,7 @@ semantic:
 
 - name: MAIN_PARAM_NOT_ARR_OF_STRING
   id: 135
-  message: "Only 'string[]' type argument is allowed."
+  message: "Only 'FixedArray<string>' type argument is allowed."
 
 - name: OVERRIDE_DOESNT_OVERRIDE
   id: 136
@@ -629,7 +622,7 @@ semantic:
 
 - name: GENERIC_ALIAS_WITHOUT_PARAMS
   id: 155
-  message: "Type alias declaration is generic, but no type parameters were provided"
+  message: "Type alias declaration is generic, but too few type arguments were provided"
 
 - name: NON_GENERIC_ALIAS_WITH_PARAMS
   id: 156
@@ -766,6 +759,7 @@ semantic:
 - name: MISSING_OVERRIDE_OF_ABSTRACT_METH
   id: 190
   message: "{} is not abstract and does not override abstract method {}{} in {}"
+  code_fix_ids: [FixClassNotImplementingInheritedMembers]
 
 - name: LOCAL_CLASS_INVALID_CTX
   id: 191
@@ -915,9 +909,9 @@ semantic:
   id: 227
   message: "Array element at index {} with type '{}' is not compatible with the target array element type '{}'"
 
-- name: INIT_NOT_ASSIGNABLE
+- name: TYPEARG_TYPEPARAM_SUBTYPING
   id: 228
-  message: "Type {} is not assignable to constraint type {}"
+  message: "Type argument '{}' should be a subtype of '{}'-constraint"
 
 - name: OVERLOADED_FUNCTION_REFERENCE
   id: 229
@@ -1157,7 +1151,7 @@ semantic:
 
 - name: NO_PARAMLESS_CTOR
   id: 291
-  message: "type {} has no parameterless constructor"
+  message: "Type {} has no parameterless constructor. Initialization with literals is not supported if the type has no parameterless constructor. Declare the parameterless constructor explicitly or remove parametered constructors!"
 
 - name: EXPR_NONCONSTRUCTIBLE
   id: 292
@@ -1346,3 +1340,230 @@ semantic:
 - name: READONLY_PROPERTY_REASSIGN
   id: 338
   message: "The 'Readonly' property cannot be reassigned."
+
+- name: ILLEGAL_NON_NULLISH_TYPE
+  id: 339
+  message: "Only type parameters can be used as a nonnullish type"
+
+- name: ERROR_ARKTS_NO_LITERAL_INITIALIZATION_WITHOUT_PARAMETERLESS_CONSTRUCTOR
+  id: 340
+  message: "Initialization with literals is not supported if the type has no parameterless constructor. Declare the parameterless constructor explicitly or remove parametered constructors!"
+
+- name: ERROR_ARKTS_NO_DECLARATION_MERGING
+  id: 341
+  message: "Merging declarations is not supported, please keep all definitions of classes, interfaces and enums compact in the codebase!"
+
+- name: ERROR_ARKTS_NO_ENUM_MIXED_TYPES
+  id: 342
+  message: "Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type."
+
+- name: ERROR_ARKTS_NO_PROPERTIES_BY_INDEX
+  id: 343
+  message: "Indexed signatures are not allowed. Use arrays instead!"
+
+- name: CONSTANT_FLOATING_POINT_COVERSION
+  id: 344
+  message: "Floating-point value cannot be converted"
+
+- name: CONSTANT_VALUE_OUT_OF_RANGE
+  id: 345
+  message: "Value is out of range"
+
+- name: WRONG_OPERAND_TYPE_FOR_BINARY_EXPRESSION
+  id: 346
+  message: "Wrong type of operands for binary expression"
+
+- name: WRONG_OPERAND_TYPE_FOR_UNARY_EXPRESSION
+  id: 347
+  message: "Wrong operand type for unary expression"
+
+- name: UNION_METHOD_SIGNATURE
+  id: 348
+  message: "Union constituent types should have only one common method signature."
+
+- name: REDEFINITION
+  id: 349
+  message: "{} '{}' is already defined."
+
+- name: REDEFINITION_DIFF_TYPE
+  id: 350
+  message: "{} '{}' is already defined with different type."
+
+- name: VARIABLE_REDECLARED
+  id: 351
+  message: "Variable '{}' has already been declared."
+
+- name: DEFAULT_DYNAMIC_IMPORT
+  id: 352
+  message: "Default import is currently not implemented in dynamic import"
+
+- name: DEFAULT_EXPORT_DIRECT_IMPORTED
+  id: 353
+  message: "Use the default import syntax to import a default exported element"
+
+- name: IMPORTING_NONEXPORTED_TYPE
+  id: 354
+  message: "Cannot import '{}', imported type imports only exported types."
+
+- name: IMPORTED_NOT_EXPORTED
+  id: 355
+  message: "Imported element not exported '{}'"
+
+- name: IMPORT_NOT_FOUND
+  id: 356
+  message: "Cannot find imported element '{}'"
+
+- name: IMPORT_RENAMES_ANNOTATION
+  id: 357
+  message: "Can not rename annotation '{}' in export or import statements."
+
+- name: DEFAULT_IMPORT_NOT_FOUND
+  id: 358
+  message: "Cannot find default imported element in the target"
+
+- name: MODULE_INDEX_MISSING
+  id: 359
+  message: "Cannot find index.[ets|ts] or package module in folder: {}"
+
+- name: IMPORT_NOT_FOUND_2
+  id: 360
+  message: "Cannot find import: {}"
+
+- name: EXPORT_INCORRECT
+  id: 361
+  message: "Incorrect export '{}'"
+
+- name: AMBIGUOUS_EXPORT
+  id: 362
+  message: "Ambiguous export '{}'"
+
+- name: CONST_WITHOUT_INIT
+  id: 363
+  message: "Missing initializer in const declaration"
+
+- name: UNEXPECTED_STRUCT
+  id: 364
+  message: "Structs are only used to define UI components, it should be translated at 'plugin after parser' phase."
+
+- name: TEMPORAL_DEADZONE
+  id: 365
+  message: "Variable '{}' is accessed before it's initialization."
+
+- name: INVALID_CAPTURE
+  id: 366
+  message: "Cannot capture variable '{}'."
+
+- name: INVALID_EXPORT
+  id: 367
+  message: "Invalid exported binding"
+
+- name: NOT_IMPLEMENTED
+  id: 368
+  message: "not implemented"
+
+- name: ID_REDECLARED
+  id: 369
+  message: "Identifier '{}' has already been declared."
+
+- name: MERGED_DECLS
+  id: 370
+  message: "Merging declarations is not supported, please keep all definitions of classes, interfaces and enums compact in the codebase!"
+
+- name: TYPE_NOT_FOUND
+  id: 371
+  message: "Cannot find type '{}'."
+
+- name: INTERFACE_REDECLARED
+  id: 372
+  message: "Interface redeclaration is not allowed"
+
+- name: OVERLOADED_MAIN
+  id: 373
+  message: "Main overload is not enabled"
+
+- name: MULTIPLE_DEFAULT_EXPORTS
+  id: 374
+  message: "Only one default export is allowed in a module"
+
+- name: USE_BEFORE_INIT
+  id: 375
+  message: "{} '{}' is used before being assigned."
+
+- name: LATE_INITIALIZATION_FIELD_HAS_INVALID_TYPE
+  id: 376
+  message: "Late-initialized field cannot be nullish types or possibly nullish types."
+
+- name: SUPER_NOT_ACCESSIBLE
+  id: 377
+  message: "Class field '{}' defined by the parent class is not accessible in the child class via super."
+
+- name: INTERFACE_EXTENDS_CLASS
+  id: 378
+  message: "Interfaces cannot extend classes, only other interfaces."
+- name: CYCLIC_TYPE_OF
+  id: 379
+  message: "Circular type of reference"
+
+- name: CYCLIC_CLASS_SUPER_TYPE
+  id: 380
+  message: "Class's super type is itself"
+
+- name: CYCLIC_CALLEE
+  id: 381
+  message: "Circular call function"
+
+- name: DYMANIC_INIT_WITH_OBJEXPR
+  id: 382
+  message: "Dymanic Type {} cannot be initialize with an object expression"
+
+- name: OVERLOAD_NAME_MUST_BE_IDENTIFIER
+  id: 383
+  message: "The name of overload declaration should be an identifier."
+
+- name: OVERLOADED_NAME_MUST_FUNCTION
+  id: 384
+  message: "overloaded name must refer to an accessible method."
+
+- name: DUPLICATE_OVERLOADED_NAME
+  id: 385
+  message: "Duplicate overloaded method."
+
+- name: OVERLOAD_SAME_ACCESS_MODIFIERS
+  id: 386
+  message: "Overload alias and overloaded method name must have exactly the same modifiers (public, private, protected)."
+
+- name: OVERLOAD_SAME_ACCESS_MODIFIERS_STATIC_ASYNC
+  id: 387
+  message: "Overload alias and overloaded method name must have exactly the same modifiers (static, async)."
+
+- name: OVERLOAD_MUST_BOTH_CONSTRUCT
+  id: 388
+  message: "The overload alias and the overloaded method must either both be constructors or both be non-constructors."
+
+- name: OVERLOADED_NAME_REFER_TO_OVERLOAD_FUNCTION
+  id: 389
+  message: "The overloaded name '{}' can't refer to a function with overload signatures."
+
+- name: OVERLOADED_NAME_MUST_ALSO_EXPORTED
+  id: 390
+  message: "Overload alias is exported, then overload functions must also be exported."
+
+- name: OVERLOADED_UNION_CALL
+  id: 391
+  message: "Overload declaration cannot be called by union."
+
+- name: OVERLOAD_MODIFIERS_ABSTRACT 
+  id: 392
+  message: "overload declaration cannot contain abstract methods."
+  
+- name: INVALID_RECORD_PROPERTY
+  id: 393
+  message: "Invalid record property"
+
+- name: METHOD_ASSIGNMENT
+  id: 394
+  message: "Class methods cannot be overwritten."
+
+- name: INVALID_LAMBDA_PARAMETER
+  id: 395
+  message: "Invalid lambda parameter. Expected: 'identifier(: type)?', 'identifier?(: type)?' or '...identifier(: type)?'."

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,33 +23,45 @@
 #include "ir/ts/tsTypeParameter.h"
 
 namespace ark::es2panda::ir {
+
+void TSTypeParameterDeclaration::SetScope(varbinder::LocalScope *source)
+{
+    this->GetOrCreateHistoryNodeAs<TSTypeParameterDeclaration>()->scope_ = source;
+}
+
+void TSTypeParameterDeclaration::SetRequiredParams(size_t source)
+{
+    this->GetOrCreateHistoryNodeAs<TSTypeParameterDeclaration>()->requiredParams_ = source;
+}
+
 void TSTypeParameterDeclaration::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    for (auto *&it : VectorIterationGuard(params_)) {
-        if (auto *transformedNode = cb(it); it != transformedNode) {
-            it->SetTransformedNode(transformationName, transformedNode);
-            it = transformedNode->AsTSTypeParameter();
+    auto const params = Params();
+    for (size_t ix = 0; ix < params.size(); ix++) {
+        if (auto *transformedNode = cb(params[ix]); params[ix] != transformedNode) {
+            params[ix]->SetTransformedNode(transformationName, transformedNode);
+            SetValueParams(transformedNode->AsTSTypeParameter(), ix);
         }
     }
 }
 
 void TSTypeParameterDeclaration::Iterate(const NodeTraverser &cb) const
 {
-    for (auto *it : VectorIterationGuard(params_)) {
+    for (auto *it : VectorIterationGuard(Params())) {
         cb(it);
     }
 }
 
 void TSTypeParameterDeclaration::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "TSTypeParameterDeclaration"}, {"params", params_}});
+    dumper->Add({{"type", "TSTypeParameterDeclaration"}, {"params", Params()}});
 }
 
 void TSTypeParameterDeclaration::Dump(ir::SrcDumper *dumper) const
 {
-    for (auto param : params_) {
+    for (auto param : Params()) {
         param->Dump(dumper);
-        if (param != params_.back()) {
+        if (param != Params().back()) {
             dumper->Add(", ");
         }
     }
@@ -73,4 +85,37 @@ checker::VerifiedType TSTypeParameterDeclaration::Check([[maybe_unused]] checker
 {
     return {this, checker->GetAnalyzer()->Check(this)};
 }
+
+TSTypeParameterDeclaration *TSTypeParameterDeclaration::Construct(ArenaAllocator *allocator)
+{
+    ArenaVector<TSTypeParameter *> params(allocator->Adapter());
+    return allocator->New<TSTypeParameterDeclaration>(std::move(params), 0);
+}
+
+TSTypeParameterDeclaration *TSTypeParameterDeclaration::Clone(ArenaAllocator *allocator, AstNode *parent)
+{
+    ArenaVector<TSTypeParameter *> params(allocator->Adapter());
+    for (auto *param : params_) {
+        params.push_back(param->Clone(allocator, this)->AsTSTypeParameter());
+    }
+
+    auto *const clone = allocator->New<TSTypeParameterDeclaration>(std::move(params), requiredParams_);
+    if (parent != nullptr) {
+        clone->SetParent(parent);
+    }
+    clone->SetRange(range_.GetRange());
+    return clone;
+}
+
+void TSTypeParameterDeclaration::CopyTo(AstNode *other) const
+{
+    auto otherImpl = other->AsTSTypeParameterDeclaration();
+
+    otherImpl->params_ = params_;
+    otherImpl->scope_ = scope_;
+    otherImpl->requiredParams_ = requiredParams_;
+
+    Expression::CopyTo(other);
+}
+
 }  // namespace ark::es2panda::ir

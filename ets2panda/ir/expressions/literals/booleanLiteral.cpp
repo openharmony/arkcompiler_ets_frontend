@@ -65,6 +65,7 @@ BooleanLiteral *BooleanLiteral::Clone(ArenaAllocator *const allocator, AstNode *
         clone->SetParent(parent);
     }
     clone->SetRange(Range());
+    clone->SetFolded(IsFolded());
     return clone;
 }
 

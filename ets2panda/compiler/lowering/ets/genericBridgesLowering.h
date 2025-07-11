@@ -31,9 +31,9 @@ public:
 
 private:
     struct Substitutions {
-        checker::Substitution *derivedSubstitutions = nullptr;
-        checker::Substitution *baseConstraints = nullptr;
-        checker::Substitution *derivedConstraints = nullptr;
+        checker::Substitution derivedSubstitutions {};
+        checker::Substitution baseConstraints {};
+        checker::Substitution derivedConstraints {};
     };
 
     ir::ClassDefinition *ProcessClassDefinition(ir::ClassDefinition *classDefinition) const;
@@ -54,7 +54,7 @@ private:
                                ir::MethodDefinition *derivedMethod, Substitutions const &substitutions) const;
 
     void AddGenericBridge(ir::ClassDefinition const *classDefinition, ir::MethodDefinition *methodDefinition,
-                          checker::Signature const *baseSignature, ir::ScriptFunction const *derivedFunction) const;
+                          checker::Signature const *baseSignature, ir::ScriptFunction *derivedFunction) const;
 
     std::string CreateMethodDefinitionString(ir::ClassDefinition const *classDefinition,
                                              checker::Signature const *baseSignature,

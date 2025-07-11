@@ -289,7 +289,6 @@
                             }
                           }
                         },
-                        "throwMarker": "throws",
                         "loc": {
                           "start": {
                             "line": 17,
@@ -337,7 +336,7 @@
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 73,
+                      "column": 66,
                       "program": "generic_function_call_5.ets"
                     },
                     "end": {
@@ -644,12 +643,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "generic_function_call_5.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "generic_function_call_5.ets"
                     }
                   }
                 },
@@ -657,12 +656,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "generic_function_call_5.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "generic_function_call_5.ets"
                   }
                 }
               },
@@ -670,12 +669,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "generic_function_call_5.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "generic_function_call_5.ets"
                 }
               }
             },
@@ -750,12 +749,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "generic_function_call_5.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "generic_function_call_5.ets"
                     }
                   }
                 },
@@ -763,12 +762,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "generic_function_call_5.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "generic_function_call_5.ets"
                   }
                 }
               },
@@ -776,12 +775,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "generic_function_call_5.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "generic_function_call_5.ets"
                 }
               }
             },

@@ -33,18 +33,18 @@
 #include "ir/ts/tsEnumDeclaration.h"
 #include "ir/ts/tsEnumMember.h"
 #include "checker/types/ets/types.h"
-
+#include "checker/types/gradualType.h"
 namespace ark::es2panda::compiler {
 
 // #22952: this should have been done in lowering
 void ETSFunction::CallImplicitCtor(ETSGen *etsg)
 {
     RegScope rs(etsg);
-    auto *superType = etsg->ContainingObjectType()->SuperType();
-
+    auto *type = etsg->ContainingObjectType()->SuperType();
+    auto superType =
+        type->IsGradualType() ? type->AsGradualType()->GetBaseType()->AsETSObjectType() : type->AsETSObjectType();
     if (superType == nullptr) {
         etsg->CallExact(etsg->RootNode(), Signatures::BUILTIN_OBJECT_CTOR, etsg->GetThisReg());
-
         return;
     }
 

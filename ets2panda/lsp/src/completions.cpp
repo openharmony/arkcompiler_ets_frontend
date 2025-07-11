@@ -54,8 +54,87 @@ std::vector<CompletionEntry> GetKeywordCompletions(const std::string &input)
     std::vector<CompletionEntry> completions;
 
     for (const auto &entry : allKeywords) {
-        if (entry.GetName().find(ToLowerCase(input)) == 0) {
+        if (ToLowerCase(entry.GetName()).find(ToLowerCase(input)) == 0) {
             completions.push_back(entry);
+        }
+    }
+    return completions;
+}
+
+CompletionEntry GetDeclarationEntry(ir::AstNode *node)
+{
+    if (node == nullptr) {
+        return CompletionEntry();
+    }
+    // GetClassPropertyName function could get name of ClassDeclaration
+    if (node->IsClassDeclaration()) {
+        return CompletionEntry(GetClassPropertyName(node), CompletionEntryKind::CLASS,
+                               std::string(sort_text::GLOBALS_OR_KEYWORDS));
+    }
+    if (node->IsTSInterfaceDeclaration()) {
+        if (node->AsTSInterfaceDeclaration()->Id() == nullptr) {
+            return CompletionEntry();
+        }
+        return CompletionEntry(std::string(node->AsTSInterfaceDeclaration()->Id()->Name()),
+                               CompletionEntryKind::INTERFACE, std::string(sort_text::GLOBALS_OR_KEYWORDS));
+    }
+    if (node->IsMethodDefinition()) {
+        if (node->AsMethodDefinition()->Key() == nullptr && !node->AsMethodDefinition()->Key()->IsIdentifier()) {
+            return CompletionEntry();
+        }
+        return CompletionEntry(std::string(node->AsMethodDefinition()->Key()->AsIdentifier()->Name()),
+                               CompletionEntryKind::METHOD, std::string(sort_text::GLOBALS_OR_KEYWORDS));
+    }
+    if (node->IsClassProperty()) {
+        return CompletionEntry(GetClassPropertyName(node), CompletionEntryKind::PROPERTY,
+                               std::string(sort_text::GLOBALS_OR_KEYWORDS));
+    }
+    if (node->IsETSStructDeclaration()) {
+        if (node->AsETSStructDeclaration()->Definition() == nullptr) {
+            return CompletionEntry();
+        }
+        if (node->AsETSStructDeclaration()->Definition()->Ident() == nullptr) {
+            return CompletionEntry();
+        }
+        return CompletionEntry(std::string(node->AsETSStructDeclaration()->Definition()->Ident()->Name()),
+                               CompletionEntryKind::STRUCT, std::string(sort_text::GLOBALS_OR_KEYWORDS));
+    }
+    return CompletionEntry();
+}
+
+std::vector<CompletionEntry> GetExportsFromProgram(parser::Program *program)
+{
+    std::vector<CompletionEntry> exportEntries;
+    auto ast = program->Ast();
+    auto collectExportNames = [&exportEntries](ir::AstNode *node) {
+        if (node->IsExported()) {
+            auto entry = GetDeclarationEntry(node);
+            if (!entry.GetName().empty()) {
+                exportEntries.emplace_back(entry);
+            }
+        }
+    };
+    ast->IterateRecursivelyPreorder(collectExportNames);
+
+    return exportEntries;
+}
+
+std::vector<CompletionEntry> GetSystemInterfaceCompletions(const std::string &input, parser::Program *program)
+{
+    std::vector<CompletionEntry> allExternalSourceExports;
+    std::vector<CompletionEntry> completions;
+    for (auto [_, programList] : program->ExternalSources()) {
+        for (auto prog : programList) {
+            auto exports = GetExportsFromProgram(prog);
+            if (!exports.empty()) {
+                allExternalSourceExports.insert(allExternalSourceExports.end(), exports.begin(), exports.end());
+            }
+        }
+    }
+
+    for (const auto &entry : allExternalSourceExports) {
+        if (ToLowerCase(entry.GetName()).find(ToLowerCase(input)) == 0) {
+            completions.emplace_back(entry);
         }
     }
     return completions;
@@ -224,17 +303,9 @@ ir::AstNode *GetClassDefinitionFromClassProperty(ir::AstNode *node)
         return nullptr;
     }
     auto value = node->AsClassProperty()->Value();
-    if (value != nullptr && value->IsETSNewClassInstanceExpression() &&
-        value->AsETSNewClassInstanceExpression()->GetTypeRef() != nullptr &&
-        value->AsETSNewClassInstanceExpression()->GetTypeRef()->IsETSTypeReference()) {
-        auto typeReferencePart = value->AsETSNewClassInstanceExpression()->GetTypeRef()->AsETSTypeReference()->Part();
-        if (typeReferencePart == nullptr) {
-            return nullptr;
-        }
-        auto id = typeReferencePart->Name();
-        if (id != nullptr && id->IsIdentifier()) {
-            return compiler::DeclarationFromIdentifier(id->AsIdentifier());
-        }
+    auto ident = GetIdentFromNewClassExprPart(value);
+    if (ident != nullptr) {
+        return compiler::DeclarationFromIdentifier(ident);
     }
     auto type = node->AsClassProperty()->TypeAnnotation();
     if (type != nullptr && type->IsETSTypeReference()) {
@@ -345,12 +416,19 @@ std::vector<CompletionEntry> GetCompletionFromClassDefinition(ir::ClassDefinitio
     return res;
 }
 
-ir::AstNode *GetIdentifierFromTSInterfaceHeritage(ir::TSInterfaceHeritage *extend)
+ir::AstNode *GetIdentifierFromTSInterfaceHeritage(ir::AstNode *node)
 {
-    if (extend == nullptr) {
+    if (node == nullptr) {
         return nullptr;
     }
-    auto expr = extend->Expr();
+    ir::AstNode *expr = nullptr;
+    if (node->IsTSInterfaceHeritage()) {
+        expr = node->AsTSInterfaceHeritage()->Expr();
+    } else if (node->IsTSClassImplements()) {
+        expr = node->AsTSClassImplements()->Expr();
+    } else {
+        return nullptr;
+    }
     if (expr == nullptr) {
         return nullptr;
     }
@@ -376,6 +454,9 @@ std::vector<CompletionEntry> GetCompletionFromTSInterfaceDeclaration(ir::TSInter
         auto ident = GetIdentifierFromTSInterfaceHeritage(extend);
         if (ident != nullptr && ident->IsIdentifier()) {
             auto extendInterf = compiler::DeclarationFromIdentifier(ident->AsIdentifier());
+            if (extendInterf == nullptr) {
+                continue;
+            }
             auto extendCom =
                 extendInterf->IsTSInterfaceDeclaration()
                     ? GetCompletionFromTSInterfaceDeclaration(extendInterf->AsTSInterfaceDeclaration(), triggerWord)
@@ -393,11 +474,11 @@ std::vector<CompletionEntry> GetCompletionFromMethodDefinition(ir::MethodDefinit
                                                                const std::string &triggerWord)
 {
     auto value = decl->AsMethodDefinition()->Value();
-    if (value == nullptr && !value->IsFunctionExpression()) {
+    if (value == nullptr || !value->IsFunctionExpression()) {
         return {};
     }
     auto func = value->AsFunctionExpression()->Function();
-    if (func == nullptr && func->ReturnTypeAnnotation() == nullptr) {
+    if (func == nullptr || func->ReturnTypeAnnotation() == nullptr) {
         return {};
     }
     auto returnType = func->ReturnTypeAnnotation();
@@ -426,6 +507,70 @@ ir::AstNode *GetIndentifierFromCallExpression(ir::AstNode *node)
     return callee;
 }
 
+util::StringView GetNameFromDefinition(ir::AstNode *preNode)
+{
+    if (preNode == nullptr || !preNode->IsClassDefinition()) {
+        return "";
+    }
+    auto ident = preNode->AsClassDefinition()->Ident();
+    if (ident == nullptr) {
+        return "";
+    }
+    return ident->Name();
+}
+
+bool IsDeclarationNameDefined(util::StringView name)
+{
+    static const std::unordered_set<util::StringView> IGNORED_NAMES = {"ETSGLOBAL"};
+    return IGNORED_NAMES.find(name) == IGNORED_NAMES.end();
+}
+
+bool IsDefinedClassOrStruct(ir::AstNode *preNode)
+{
+    if (preNode == nullptr) {
+        return false;
+    }
+    if (!preNode->IsClassDeclaration() && !preNode->IsETSStructDeclaration()) {
+        return false;
+    }
+    if (preNode->IsClassDeclaration()) {
+        return IsDeclarationNameDefined(GetNameFromDefinition(preNode->AsClassDeclaration()->Definition()));
+    }
+    if (preNode->IsETSStructDeclaration()) {
+        return IsDeclarationNameDefined(GetNameFromDefinition(preNode->AsETSStructDeclaration()->Definition()));
+    }
+    return false;
+}
+
+ir::AstNode *GetDefinitionOfThisExpression(ir::AstNode *preNode)
+{
+    if (preNode == nullptr || !preNode->IsThisExpression()) {
+        return nullptr;
+    }
+    while (preNode->Parent() != nullptr) {
+        preNode = preNode->Parent();
+        if (preNode->IsClassDeclaration() && IsDefinedClassOrStruct(preNode)) {
+            return preNode->AsClassDeclaration()->Definition();
+        }
+        if (preNode->IsETSStructDeclaration() && IsDefinedClassOrStruct(preNode)) {
+            return preNode->AsETSStructDeclaration()->Definition();
+        }
+    }
+    return nullptr;
+}
+
+std::vector<CompletionEntry> GetCompletionFromThisExpression(ir::AstNode *preNode, const std::string &triggerWord)
+{
+    if (preNode == nullptr || !preNode->IsThisExpression()) {
+        return {};
+    }
+    auto def = GetDefinitionOfThisExpression(preNode);
+    if (def == nullptr || !def->IsClassDefinition()) {
+        return {};
+    }
+    return GetCompletionFromClassDefinition(def->AsClassDefinition(), triggerWord);
+}
+
 std::vector<CompletionEntry> GetPropertyCompletions(ir::AstNode *preNode, const std::string &triggerWord)
 {
     std::vector<CompletionEntry> completions;
@@ -434,6 +579,9 @@ std::vector<CompletionEntry> GetPropertyCompletions(ir::AstNode *preNode, const 
     }
     if (preNode->IsCallExpression()) {
         preNode = GetIndentifierFromCallExpression(preNode);
+    }
+    if (preNode->IsThisExpression()) {
+        return GetCompletionFromThisExpression(preNode, triggerWord);
     }
     if (!preNode->IsIdentifier()) {
         return completions;
@@ -488,7 +636,7 @@ std::string GetDeclName(const ir::AstNode *decl)
 bool IsGlobalVar(const ir::AstNode *node)
 {
     return node->IsClassProperty() && node->Parent()->IsClassDefinition() &&
-           node->Parent()->AsClassDefinition()->Ident()->AsIdentifier()->Name() == compiler::Signatures::ETS_GLOBAL;
+           node->Parent()->AsClassDefinition()->IsGlobal();
 }
 
 bool IsVariableOfKind(const ir::Identifier *node, ir::VariableDeclaration::VariableDeclarationKind kind)
@@ -615,8 +763,6 @@ std::vector<CompletionEntry> GetGlobalCompletions(es2panda_Context *context, siz
     auto prefix = GetCurrentTokenValueImpl(context, position);
     auto decls = GetDeclByScopePath(scopePath, position, allocator);
     std::vector<CompletionEntry> completions;
-    auto keywordCompletions = GetKeywordCompletions(prefix);
-    completions.insert(completions.end(), keywordCompletions.begin(), keywordCompletions.end());
 
     for (auto decl : decls) {
         auto entry = InitEntry(decl);
@@ -626,6 +772,12 @@ std::vector<CompletionEntry> GetGlobalCompletions(es2panda_Context *context, siz
         entry = ProcessAutoImportForEntry(entry);
         completions.push_back(entry);
     }
+
+    auto keywordCompletions = GetKeywordCompletions(prefix);
+    completions.insert(completions.end(), keywordCompletions.begin(), keywordCompletions.end());
+    auto systemInterfaceCompletions = GetSystemInterfaceCompletions(prefix, ctx->parserProgram);
+    completions.insert(completions.end(), systemInterfaceCompletions.begin(), systemInterfaceCompletions.end());
+
     return completions;
 }
 

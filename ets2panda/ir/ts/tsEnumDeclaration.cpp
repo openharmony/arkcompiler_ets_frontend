@@ -14,6 +14,7 @@
  */
 
 #include "tsEnumDeclaration.h"
+#include <cstddef>
 
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
@@ -21,39 +22,60 @@
 #include "util/helpers.h"
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
+#include "utils/arena_containers.h"
 
 namespace ark::es2panda::ir {
+
+void TSEnumDeclaration::SetInternalName(util::StringView internalName)
+{
+    this->GetOrCreateHistoryNodeAs<TSEnumDeclaration>()->internalName_ = internalName;
+}
+
+void TSEnumDeclaration::SetBoxedClass(ClassDefinition *boxedClass)
+{
+    this->GetOrCreateHistoryNodeAs<TSEnumDeclaration>()->boxedClass_ = boxedClass;
+}
+
+void TSEnumDeclaration::SetKey(Identifier *key)
+{
+    this->GetOrCreateHistoryNodeAs<TSEnumDeclaration>()->key_ = key;
+}
+
 void TSEnumDeclaration::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    for (auto *&it : VectorIterationGuard(decorators_)) {
-        if (auto *transformedNode = cb(it); it != transformedNode) {
-            it->SetTransformedNode(transformationName, transformedNode);
-            it = transformedNode->AsDecorator();
+    auto const &decorators = Decorators();
+    for (size_t ix = 0; ix < decorators.size(); ix++) {
+        if (auto *transformedNode = cb(decorators[ix]); decorators[ix] != transformedNode) {
+            decorators[ix]->SetTransformedNode(transformationName, transformedNode);
+            SetValueDecorators(transformedNode->AsDecorator(), ix);
         }
     }
 
-    if (auto *transformedNode = cb(key_); key_ != transformedNode) {
-        key_->SetTransformedNode(transformationName, transformedNode);
-        key_ = transformedNode->AsIdentifier();
+    auto const key = Key();
+    if (auto *transformedNode = cb(key); key != transformedNode) {
+        key->SetTransformedNode(transformationName, transformedNode);
+        SetKey(transformedNode->AsIdentifier());
     }
 
-    for (auto *&it : VectorIterationGuard(members_)) {
-        if (auto *transformedNode = cb(it); it != transformedNode) {
-            it->SetTransformedNode(transformationName, transformedNode);
-            it = transformedNode;
+    auto const &members = Members();
+    for (size_t ix = 0; ix < members.size(); ix++) {
+        if (auto *transformedNode = cb(members[ix]); members[ix] != transformedNode) {
+            members[ix]->SetTransformedNode(transformationName, transformedNode);
+            SetValueMembers(transformedNode->AsDecorator(), ix);
         }
     }
 }
 
 void TSEnumDeclaration::Iterate(const NodeTraverser &cb) const
 {
-    for (auto *it : VectorIterationGuard(decorators_)) {
+    for (auto *it : VectorIterationGuard(Decorators())) {
         cb(it);
     }
 
-    cb(key_);
+    auto const key = GetHistoryNode()->AsTSEnumDeclaration()->key_;
+    cb(key);
 
-    for (auto *it : VectorIterationGuard(members_)) {
+    for (auto *it : VectorIterationGuard(Members())) {
         cb(it);
     }
 }
@@ -61,29 +83,57 @@ void TSEnumDeclaration::Iterate(const NodeTraverser &cb) const
 void TSEnumDeclaration::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "TSEnumDeclaration"},
-                 {"decorators", AstDumper::Optional(decorators_)},
-                 {"id", key_},
-                 {"members", members_},
-                 {"const", isConst_},
+                 {"decorators", AstDumper::Optional(Decorators())},
+                 {"id", Key()},
+                 {"members", Members()},
+                 {"const", IsConst()},
                  {"declare", IsDeclare()}});
+}
+
+bool TSEnumDeclaration::RegisterUnexportedForDeclGen(ir::SrcDumper *dumper) const
+{
+    if (!dumper->IsDeclgen()) {
+        return false;
+    }
+
+    if (dumper->IsIndirectDepPhase()) {
+        return false;
+    }
+
+    if (key_->Parent()->IsDefaultExported() || key_->Parent()->IsExported()) {
+        return false;
+    }
+
+    auto name = key_->AsIdentifier()->Name().Mutf8();
+    dumper->AddNode(name, this);
+    return true;
 }
 
 void TSEnumDeclaration::Dump(ir::SrcDumper *dumper) const
 {
     ES2PANDA_ASSERT(isConst_ == false);
     ES2PANDA_ASSERT(key_ != nullptr);
-    if (IsDeclare()) {
+    if (RegisterUnexportedForDeclGen(dumper)) {
+        return;
+    }
+    if (key_->Parent()->IsExported() && dumper->IsDeclgen()) {
+        dumper->Add("export ");
+    } else if (key_->Parent()->IsDefaultExported() && dumper->IsDeclgen()) {
+        dumper->Add("export default ");
+    }
+    if (IsDeclare() || dumper->IsDeclgen()) {
         dumper->Add("declare ");
     }
     dumper->Add("enum ");
-    key_->Dump(dumper);
+    Key()->Dump(dumper);
     dumper->Add(" {");
-    if (!members_.empty()) {
+    auto const members = Members();
+    if (!members.empty()) {
         dumper->IncrIndent();
         dumper->Endl();
-        for (auto member : members_) {
+        for (auto member : members) {
             member->Dump(dumper);
-            if (member != members_.back()) {
+            if (member != members.back()) {
                 dumper->Add(",");
                 dumper->Endl();
             }
@@ -136,4 +186,79 @@ checker::VerifiedType TSEnumDeclaration::Check(checker::ETSChecker *const checke
 {
     return {this, checker->GetAnalyzer()->Check(this)};
 }
+
+TSEnumDeclaration *TSEnumDeclaration::Construct(ArenaAllocator *allocator)
+{
+    ArenaVector<AstNode *> members(allocator->Adapter());
+    return allocator->New<TSEnumDeclaration>(allocator, nullptr, std::move(members),
+                                             ConstructorFlags {false, false, false});
+}
+
+void TSEnumDeclaration::CopyTo(AstNode *other) const
+{
+    auto otherImpl = other->AsTSEnumDeclaration();
+
+    otherImpl->scope_ = scope_;
+    otherImpl->decorators_ = decorators_;
+    otherImpl->key_ = key_;
+    otherImpl->members_ = members_;
+    otherImpl->internalName_ = internalName_;
+    otherImpl->boxedClass_ = boxedClass_;
+    otherImpl->isConst_ = isConst_;
+
+    TypedStatement::CopyTo(other);
+}
+
+void TSEnumDeclaration::EmplaceDecorators(Decorator *source)
+{
+    auto newNode = this->GetOrCreateHistoryNodeAs<TSEnumDeclaration>();
+    newNode->decorators_.emplace_back(source);
+}
+
+void TSEnumDeclaration::ClearDecorators()
+{
+    auto newNode = this->GetOrCreateHistoryNodeAs<TSEnumDeclaration>();
+    newNode->decorators_.clear();
+}
+
+void TSEnumDeclaration::SetValueDecorators(Decorator *source, size_t index)
+{
+    auto newNode = this->GetOrCreateHistoryNodeAs<TSEnumDeclaration>();
+    auto &arenaVector = newNode->decorators_;
+    ES2PANDA_ASSERT(arenaVector.size() > index);
+    arenaVector[index] = source;
+}
+
+[[nodiscard]] ArenaVector<Decorator *> &TSEnumDeclaration::DecoratorsForUpdate()
+{
+    auto newNode = this->GetOrCreateHistoryNodeAs<TSEnumDeclaration>();
+    return newNode->decorators_;
+}
+
+void TSEnumDeclaration::EmplaceMembers(AstNode *source)
+{
+    auto newNode = this->GetOrCreateHistoryNodeAs<TSEnumDeclaration>();
+    newNode->members_.emplace_back(source);
+}
+
+void TSEnumDeclaration::ClearMembers()
+{
+    auto newNode = this->GetOrCreateHistoryNodeAs<TSEnumDeclaration>();
+    newNode->members_.clear();
+}
+
+void TSEnumDeclaration::SetValueMembers(AstNode *source, size_t index)
+{
+    auto newNode = this->GetOrCreateHistoryNodeAs<TSEnumDeclaration>();
+    auto &arenaVector = newNode->members_;
+    ES2PANDA_ASSERT(arenaVector.size() > index);
+    arenaVector[index] = source;
+}
+
+[[nodiscard]] ArenaVector<AstNode *> &TSEnumDeclaration::MembersForUpdate()
+{
+    auto newNode = this->GetOrCreateHistoryNodeAs<TSEnumDeclaration>();
+    return newNode->members_;
+}
+
 }  // namespace ark::es2panda::ir

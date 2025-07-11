@@ -13,12 +13,14 @@
  * limitations under the License.
  */
 
+import {launch} from "std/concurrency"
+
 class Base {
-    public  foo(): void {}
+    public foo(): void {}
 }
 
 class Derived extends Base {
     override foo(): void {
-        launch super.foo();
+        launch<void, () => void>(super.foo);
     }
 }

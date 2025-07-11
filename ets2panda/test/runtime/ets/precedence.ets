@@ -20,8 +20,8 @@ function main() : void {
 function testAsAndDiv() : void {
   let i : int = 1
   let f : float
-  f = i as float / 2
-  assertEQ(f, 0.5)
-  f = i / 2 as float
-  assertEQ(f, 0.0)
+  f = Int.toFloat(i) / 2
+  arktest.assertEQ(f, 0.5)
+  f = Int.toFloat(i / 2)
+  arktest.assertEQ(f, 0.0)
 }

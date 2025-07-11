@@ -105,8 +105,12 @@ export class File2Check {
     }
 
     public async checkDisable(): Promise<void> {
-        const fileLineList = await FileUtils.readLinesFromFile(this.arkFile.getFilePath());
-        this.issues = await filterDisableIssue(fileLineList, this.issues, this.arkFile.getFilePath());
+        try {
+            const fileLineList = await FileUtils.readLinesFromFile(this.arkFile.getFilePath());
+            this.issues = await filterDisableIssue(fileLineList, this.issues, this.arkFile.getFilePath());
+        } catch (e) {
+            logger.error(e);
+        }
     }
 
     public async run(): Promise<void> {

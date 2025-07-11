@@ -33,20 +33,22 @@ static constexpr char const FORMAT_NEW_ARRAY_EXPRESSION[] =
     "  throw new TypeError(\"Fractional part of index expression should be zero.\");"
     "};"
     "(@@E5);";
-static constexpr char const CAST_NEW_DIMENSION_EXPRESSION[] = "@@I1 as int";
-static constexpr char const CAST_OLD_DIMENSION_EXPRESSION[] = "(@@E1) as int";
+static constexpr char const CAST_NEW_DIMENSION_EXPRESSION[] = "(@@I1).toInt()";
+static constexpr char const CAST_OLD_DIMENSION_EXPRESSION[] = "(@@E1).toInt()";
 // NOLINTEND(modernize-avoid-c-arrays)
 
 ir::Expression *ExpandBracketsPhase::ProcessNewArrayInstanceExpression(
-    parser::ETSParser *parser, checker::ETSChecker *checker,
-    ir::ETSNewArrayInstanceExpression *newInstanceExpression) const
+    public_lib::Context *ctx, ir::ETSNewArrayInstanceExpression *newInstanceExpression) const
 {
+    auto *const parser = ctx->parser->AsETSParser();
+    ES2PANDA_ASSERT(parser != nullptr);
+    auto *const checker = ctx->GetChecker()->AsETSChecker();
+    ES2PANDA_ASSERT(checker != nullptr);
     auto *dimension = newInstanceExpression->Dimension();
     auto *dimType = dimension->TsType();
-    if (auto *unboxed = checker->MaybeUnboxInRelation(dimType); unboxed != nullptr) {
-        dimType = unboxed;
-    }
-    if (dimType == nullptr || !dimType->HasTypeFlag(checker::TypeFlag::ETS_FLOATING_POINT)) {
+    ES2PANDA_ASSERT(dimType->IsETSObjectType());
+
+    if (!dimType->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::BUILTIN_FLOATING_POINT)) {
         return newInstanceExpression;
     }
 
@@ -57,8 +59,8 @@ ir::Expression *ExpandBracketsPhase::ProcessNewArrayInstanceExpression(
     }
     auto expressionCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(checker->VarBinder(), scope);
 
-    auto const identName = GenName(checker->Allocator());
-    auto *exprType = checker->AllocNode<ir::OpaqueTypeNode>(dimType, checker->Allocator());
+    auto const identName = GenName(ctx->Allocator());
+    auto *exprType = ctx->AllocNode<ir::OpaqueTypeNode>(dimType, ctx->Allocator());
     auto *const newInstanceParent = newInstanceExpression->Parent();
 
     auto *blockExpression = parser->CreateFormattedExpression(FORMAT_NEW_ARRAY_EXPRESSION, identName, exprType,
@@ -77,9 +79,12 @@ ir::Expression *ExpandBracketsPhase::ProcessNewArrayInstanceExpression(
 }
 
 ir::Expression *ExpandBracketsPhase::ProcessNewMultiDimArrayInstanceExpression(
-    parser::ETSParser *parser, checker::ETSChecker *checker,
-    ir::ETSNewMultiDimArrayInstanceExpression *newInstanceExpression) const
+    public_lib::Context *ctx, ir::ETSNewMultiDimArrayInstanceExpression *newInstanceExpression) const
 {
+    auto *const parser = ctx->parser->AsETSParser();
+    ES2PANDA_ASSERT(parser != nullptr);
+    auto *const checker = ctx->GetChecker()->AsETSChecker();
+    ES2PANDA_ASSERT(checker != nullptr);
     ir::BlockExpression *returnExpression = nullptr;
 
     auto *scope = NearestScope(newInstanceExpression);
@@ -92,10 +97,8 @@ ir::Expression *ExpandBracketsPhase::ProcessNewMultiDimArrayInstanceExpression(
     for (std::size_t i = 0U; i < newInstanceExpression->Dimensions().size(); ++i) {
         auto *dimension = newInstanceExpression->Dimensions()[i];
         auto *dimType = dimension->TsType();
-        if (auto *unboxed = checker->MaybeUnboxInRelation(dimType); unboxed != nullptr) {
-            dimType = unboxed;
-        }
-        if (dimType == nullptr || !dimType->HasTypeFlag(checker::TypeFlag::ETS_FLOATING_POINT)) {
+        ES2PANDA_ASSERT(dimType->IsETSObjectType());
+        if (!dimType->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::BUILTIN_FLOATING_POINT)) {
             continue;
         }
 
@@ -104,8 +107,8 @@ ir::Expression *ExpandBracketsPhase::ProcessNewMultiDimArrayInstanceExpression(
             castedDimension->SetParent(newInstanceExpression);
             newInstanceExpression->Dimensions()[i] = castedDimension;
         } else {
-            auto const identName = GenName(checker->Allocator());
-            auto *exprType = checker->AllocNode<ir::OpaqueTypeNode>(dimType, checker->Allocator());
+            auto const identName = GenName(ctx->Allocator());
+            auto *exprType = ctx->AllocNode<ir::OpaqueTypeNode>(dimType, ctx->Allocator());
 
             auto *blockExpression = parser
                                         ->CreateFormattedExpression(FORMAT_NEW_MULTI_DIM_ARRAY_EXPRESSION, identName,
@@ -125,7 +128,7 @@ ir::Expression *ExpandBracketsPhase::ProcessNewMultiDimArrayInstanceExpression(
     }
 
     if (returnExpression != nullptr) {
-        return CreateNewMultiDimArrayInstanceExpression(checker, newInstanceExpression, returnExpression);
+        return CreateNewMultiDimArrayInstanceExpression(ctx, newInstanceExpression, returnExpression);
     }
 
     return newInstanceExpression;
@@ -133,13 +136,14 @@ ir::Expression *ExpandBracketsPhase::ProcessNewMultiDimArrayInstanceExpression(
 
 //  NOTE: Just to reduce the size of 'ProcessNewMultiDimArrayInstanceExpression' method
 ir::Expression *ExpandBracketsPhase::CreateNewMultiDimArrayInstanceExpression(
-    checker::ETSChecker *checker, ir::ETSNewMultiDimArrayInstanceExpression *newInstanceExpression,
+    public_lib::Context *ctx, ir::ETSNewMultiDimArrayInstanceExpression *newInstanceExpression,
     ir::BlockExpression *blockExpression) const
 {
     blockExpression->SetParent(newInstanceExpression->Parent());
     newInstanceExpression->SetTsType(nullptr);
-    blockExpression->AddStatement(checker->AllocNode<ir::ExpressionStatement>(newInstanceExpression));
+    blockExpression->AddStatement(ctx->AllocNode<ir::ExpressionStatement>(newInstanceExpression));
 
+    auto *checker = ctx->GetChecker()->AsETSChecker();
     InitScopesPhaseETS::RunExternalNode(blockExpression, checker->VarBinder());
     checker->VarBinder()->AsETSBinder()->ResolveReferencesForScope(blockExpression, NearestScope(blockExpression));
     blockExpression->Check(checker);
@@ -149,21 +153,14 @@ ir::Expression *ExpandBracketsPhase::CreateNewMultiDimArrayInstanceExpression(
 
 bool ExpandBracketsPhase::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
-    auto *const parser = ctx->parser->AsETSParser();
-    ES2PANDA_ASSERT(parser != nullptr);
-    auto *const checker = ctx->checker->AsETSChecker();
-    ES2PANDA_ASSERT(checker != nullptr);
-
     program->Ast()->TransformChildrenRecursively(
-        // CC-OFFNXT(G.FMT.14-CPP) project code style
-        [this, parser, checker](ir::AstNode *const ast) -> ir::AstNode * {
+        [this, ctx](checker::AstNodePtr const ast) -> checker::AstNodePtr {
             if (ast->IsETSNewArrayInstanceExpression()) {
-                return ProcessNewArrayInstanceExpression(parser, checker, ast->AsETSNewArrayInstanceExpression());
+                return ProcessNewArrayInstanceExpression(ctx, ast->AsETSNewArrayInstanceExpression());
             }
 
             if (ast->IsETSNewMultiDimArrayInstanceExpression()) {
-                return ProcessNewMultiDimArrayInstanceExpression(parser, checker,
-                                                                 ast->AsETSNewMultiDimArrayInstanceExpression());
+                return ProcessNewMultiDimArrayInstanceExpression(ctx, ast->AsETSNewMultiDimArrayInstanceExpression());
             }
 
             return ast;

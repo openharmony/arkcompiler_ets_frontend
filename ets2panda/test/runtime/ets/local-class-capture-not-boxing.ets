@@ -56,7 +56,7 @@ class GlobalClass
         let l_short : short = 3;
         let l_int : int = 4;
         let l_long : long = 5;
-        let l_float : float = 6.0;
+        let l_float : float = 6.0f;
         let l_double : double = 7.0;
         let l_boolean : boolean = false;
         let l_char : char = c'x';
@@ -93,46 +93,46 @@ class GlobalClass
 
             static local_s_method(lp : int) : void 
             {
-                assertEQ(lp, 30)
-                assertEQ(LocalClassNotBoxing.local_s_field, 200)
+                arktest.assertEQ(lp, 30)
+                arktest.assertEQ(LocalClassNotBoxing.local_s_field, 200)
             } 
 
             local_method(lp : int) : void 
             {
                 // Parameter
-                assertEQ(lp, 40)
+                arktest.assertEQ(lp, 40)
                 // Local class object field
-                assertEQ(this.local_field, 100)
+                arktest.assertEQ(this.local_field, 100)
                 // Local class static field
-                assertEQ(LocalClassNotBoxing.local_s_field, 200)
+                arktest.assertEQ(LocalClassNotBoxing.local_s_field, 200)
                 // Predefined value types
-                assertEQ(l_number, 1)
-                assertEQ(l_byte, 2)
-                assertEQ(l_short, 3)
-                assertEQ(l_int, 4)
-                assertEQ(l_long, 5)
-                assertEQ(l_float, 6)
-                assertEQ(l_double, 7)
-                assertEQ(l_boolean, false)
-                assertEQ(l_char, c'x')
+                arktest.assertEQ(l_number, 1)
+                arktest.assertEQ(l_byte, 2)
+                arktest.assertEQ(l_short, 3)
+                arktest.assertEQ(l_int, 4)
+                arktest.assertEQ(l_long, 5)
+                arktest.assertEQ(l_float, 6)
+                arktest.assertEQ(l_double, 7)
+                arktest.assertEQ(l_boolean, false)
+                arktest.assertEQ(l_char, c'x')
                 // User defined value type
-                assertEQ(l_enum, UserEnumType.Red)
+                arktest.assertEQ(l_enum, UserEnumType.Red)
                 // Predefined reference types
-                assertEQ(l_Number, Number.valueOf(11))
-                assertEQ(l_Byte, Byte.valueOf(12 as byte))
-                assertEQ(l_Short, Short.valueOf(13 as short))
-                assertEQ(l_Int, Int.valueOf(14 as int))
-                assertEQ(l_Long, Long.valueOf(15 as long))
-                assertEQ(l_Float, Float.valueOf(16 as float))
-                assertEQ(l_Double, Double.valueOf(17 as double))
-                assertEQ(l_Boolean, Boolean.valueOf(false))
-                assertEQ(l_Char, Char.valueOf(c'X'))
-                assertEQ(l_string, "something")
-                assertEQ(l_String, "Something")
-                assertEQ(l_array, g_array)
-                assertEQ(l_Array, g_Array)
-                assertEQ(l_Object, g_Object)
-                assertEQ(l_Class, g_Class)
+                arktest.assertEQ(l_Number, Number.valueOf(11))
+                arktest.assertEQ(l_Byte, Byte.valueOf(12 as byte))
+                arktest.assertEQ(l_Short, Short.valueOf(13 as short))
+                arktest.assertEQ(l_Int, Int.valueOf(14 as int))
+                arktest.assertEQ(l_Long, Long.valueOf(15 as long))
+                arktest.assertEQ(l_Float, Float.valueOf(16 as float))
+                arktest.assertEQ(l_Double, Double.valueOf(17 as double))
+                arktest.assertEQ(l_Boolean, Boolean.valueOf(false))
+                arktest.assertEQ(l_Char, Char.valueOf(c'X'))
+                arktest.assertEQ(l_string, "something")
+                arktest.assertEQ(l_String, "Something")
+                arktest.assertEQ(l_array, g_array)
+                arktest.assertEQ(l_Array, g_Array)
+                arktest.assertEQ(l_Object, g_Object)
+                arktest.assertEQ(l_Class, g_Class)
             }
         };
 

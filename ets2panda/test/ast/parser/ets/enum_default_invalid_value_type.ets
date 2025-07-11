@@ -27,6 +27,6 @@ enum C {
 }
 
 
-/* @@? 17:9 Error SyntaxError: Invalid enum initialization value */
-/* @@? 21:9 Error SyntaxError: Invalid enum initialization value */
-/* @@? 26:9 Error SyntaxError: Invalid enum initialization value */
+/* @@? 17:9 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type. */
+/* @@? 21:9 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type. */
+/* @@? 26:9 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type. */

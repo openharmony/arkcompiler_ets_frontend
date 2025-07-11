@@ -15,6 +15,16 @@
     ],
     "result": [
         {
+            "line": 20,
+            "column": 1,
+            "endLine": 20,
+            "endColumn": 12,
+            "problem": "LimitedStdLibNoDoncurrentDecorator",
+            "suggest": "",
+            "rule": "Usage of standard library is restricted(arkts-limited-stdlib-no-concurrent-decorator)",
+            "severity": "ERROR"
+        },
+        {
             "line": 23,
             "column": 32,
             "endLine": 23,

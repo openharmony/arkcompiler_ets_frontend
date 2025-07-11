@@ -20,4 +20,5 @@ function bar(): void {
   }
 }
 
-/* @@? 18:9 Error TypeError: Variable 'BC' has already been declared.   */
+/* @@? 18:9 Error TypeError: Variable 'BC' has already been declared. */
+/* @@? 18:9 Error TypeError: Merging declarations is not supported, please keep all definitions of classes, interfaces and enums compact in the codebase!   */

@@ -82,7 +82,7 @@ ir::ETSModule *ETSParser::ParseNamespaceImp(ir::ModifierFlags flags)
         if ((flags & ir::ModifierFlags::DECLARE) != 0) {
             child->AddModifier(ir::ModifierFlags::DECLARE);
         }
-        parent->Statements().emplace_back(child);
+        parent->AddStatement(child);
         parent = child;
     }
     ExpectToken(lexer::TokenType::PUNCTUATOR_LEFT_BRACE);
@@ -97,7 +97,9 @@ ir::ETSModule *ETSParser::ParseNamespaceImp(ir::ModifierFlags flags)
             continue;
         }
         auto st = ParseTopLevelStatement();
-        statements.emplace_back(st);
+        if (st != nullptr) {
+            statements.emplace_back(st);
+        }
     }
     Lexer()->NextToken();
     if (child != nullptr) {

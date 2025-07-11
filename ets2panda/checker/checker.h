@@ -18,6 +18,7 @@
 
 #include "checker/checkerContext.h"
 #include "checker/SemanticAnalyzer.h"
+#include "checker/types/globalTypesHolder.h"
 #include "util/diagnosticEngine.h"
 
 namespace ark::es2panda::util {
@@ -32,7 +33,7 @@ namespace ark::es2panda::ir {
 class AstNode;
 class Expression;
 class BlockStatement;
-enum class AstNodeType;
+enum class AstNodeType : uint8_t;
 }  // namespace ark::es2panda::ir
 
 namespace ark::es2panda::varbinder {
@@ -49,6 +50,7 @@ namespace ark::es2panda::checker {
 class ETSChecker;
 class InterfaceType;
 class GlobalTypesHolder;
+class SemanticAnalyzer;
 
 using StringLiteralPool = std::unordered_map<util::StringView, Type *>;
 using NumberLiteralPool = std::unordered_map<double, Type *>;
@@ -62,15 +64,16 @@ using ArgRange = std::pair<uint32_t, uint32_t>;
 
 class Checker {
 public:
-    explicit Checker(util::DiagnosticEngine &diagnosticEngine);
+    explicit Checker(ThreadSafeArenaAllocator *allocator, util::DiagnosticEngine &diagnosticEngine,
+                     ThreadSafeArenaAllocator *programAllocator = nullptr);
     virtual ~Checker() = default;
 
     NO_COPY_SEMANTIC(Checker);
     NO_MOVE_SEMANTIC(Checker);
 
-    [[nodiscard]] ArenaAllocator *Allocator() noexcept
+    [[nodiscard]] ThreadSafeArenaAllocator *Allocator() noexcept
     {
-        return &allocator_;
+        return allocator_;
     }
 
     [[nodiscard]] varbinder::Scope *Scope() const noexcept
@@ -103,9 +106,19 @@ public:
         return relation_;
     }
 
+    void InitGlobalTypes()
+    {
+        globalTypes_ = ProgramAllocator()->New<GlobalTypesHolder>(ProgramAllocator());
+    }
+
     [[nodiscard]] GlobalTypesHolder *GetGlobalTypesHolder() const noexcept
     {
         return globalTypes_;
+    }
+
+    void SetGlobalTypesHolder(GlobalTypesHolder *globalTypes)
+    {
+        globalTypes_ = globalTypes;
     }
 
     [[nodiscard]] RelationHolder &IdenticalResults() noexcept
@@ -171,8 +184,13 @@ public:
                   const lexer::SourcePosition &pos);
     void LogError(const diagnostic::DiagnosticKind &diagnostic, const lexer::SourcePosition &pos);
     void LogTypeError(std::string_view message, const lexer::SourcePosition &pos);
-    void Warning(std::string_view message, const lexer::SourcePosition &pos) const;
-    void ReportWarning(const util::DiagnosticMessageParams &list, const lexer::SourcePosition &pos);
+    void LogTypeError(const util::DiagnosticMessageParams &list, const lexer::SourcePosition &pos);
+    void LogDiagnostic(const diagnostic::DiagnosticKind &kind, const util::DiagnosticMessageParams &list,
+                       const lexer::SourcePosition &pos);
+    void LogDiagnostic(const diagnostic::DiagnosticKind &kind, const lexer::SourcePosition &pos)
+    {
+        LogDiagnostic(kind, {}, pos);
+    }
 
     bool IsTypeIdenticalTo(Type *source, Type *target);
     bool IsTypeIdenticalTo(Type *source, Type *target, const diagnostic::DiagnosticKind &diagKind,
@@ -216,14 +234,22 @@ public:
 
     virtual void CleanUp();
 
+    [[nodiscard]] ThreadSafeArenaAllocator *ProgramAllocator()
+    {
+        return programAllocator_ == nullptr ? allocator_ : programAllocator_;
+    }
+
+    bool IsDeclForDynamicStaticInterop() const;
+
 protected:
     parser::Program *Program() const;
     void SetProgram(parser::Program *program);
 
 private:
-    ArenaAllocator allocator_;
+    ThreadSafeArenaAllocator *allocator_;
+    ThreadSafeArenaAllocator *programAllocator_ {nullptr};
     CheckerContext context_;
-    GlobalTypesHolder *globalTypes_;
+    GlobalTypesHolder *globalTypes_ {nullptr};
     TypeRelation *relation_;
     SemanticAnalyzer *analyzer_ {};
     varbinder::VarBinder *varbinder_ {};
@@ -231,11 +257,11 @@ private:
     varbinder::Scope *scope_ {};
     util::DiagnosticEngine &diagnosticEngine_;
 
-    RelationHolder identicalResults_ {{}, RelationType::IDENTICAL};
-    RelationHolder assignableResults_ {{}, RelationType::ASSIGNABLE};
-    RelationHolder comparableResults_ {{}, RelationType::COMPARABLE};
-    RelationHolder uncheckedCastableResults_ {{}, RelationType::UNCHECKED_CASTABLE};
-    RelationHolder supertypeResults_ {{}, RelationType::SUPERTYPE};
+    RelationHolder identicalResults_ {Allocator()};
+    RelationHolder assignableResults_ {Allocator()};
+    RelationHolder comparableResults_ {Allocator()};
+    RelationHolder uncheckedCastableResults_ {Allocator()};
+    RelationHolder supertypeResults_ {Allocator()};
 
     std::unordered_map<const void *, Type *> typeStack_;
     std::unordered_set<Type *> namedTypeStack_;
@@ -455,6 +481,42 @@ public:
 
 private:
     Type *type_ {};
+};
+
+class SignatureMatchContext {
+public:
+    explicit SignatureMatchContext(Checker *checker, util::DiagnosticType diagnosticKind, bool isLogError = true)
+        : diagnosticEngine_(checker->DiagnosticEngine()),
+          diagnosticCheckpoint_(),
+          diagnosticKind_(diagnosticKind),
+          isLogError_(isLogError)
+    {
+        diagnosticCheckpoint_ = diagnosticEngine_.Save();
+    }
+
+    bool ValidSignatureMatchStatus()
+    {
+        std::array<size_t, util::DiagnosticType::COUNT> diagnosticCheckpoint = diagnosticEngine_.Save();
+        return diagnosticCheckpoint_[diagnosticKind_] == diagnosticCheckpoint[diagnosticKind_];
+    }
+
+    ~SignatureMatchContext()
+    {
+        if (isLogError_) {
+            return;
+        }
+
+        diagnosticEngine_.Rollback(diagnosticCheckpoint_);
+    }
+
+    NO_COPY_SEMANTIC(SignatureMatchContext);
+    NO_MOVE_SEMANTIC(SignatureMatchContext);
+
+private:
+    util::DiagnosticEngine &diagnosticEngine_;
+    std::array<size_t, util::DiagnosticType::COUNT> diagnosticCheckpoint_;
+    util::DiagnosticType diagnosticKind_;
+    bool isLogError_;
 };
 
 }  // namespace ark::es2panda::checker

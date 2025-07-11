@@ -725,12 +725,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "identifierReference4.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "identifierReference4.ets"
                     }
                   }
                 },
@@ -738,12 +738,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "identifierReference4.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "identifierReference4.ets"
                   }
                 }
               },
@@ -751,12 +751,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "identifierReference4.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "identifierReference4.ets"
                 }
               }
             },
@@ -894,40 +894,40 @@
                   ],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1,
-                      "program": null
+                      "line": 16,
+                      "column": 5,
+                      "program": "identifierReference4.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1,
-                      "program": null
+                      "line": 16,
+                      "column": 16,
+                      "program": "identifierReference4.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1,
-                    "program": null
+                    "line": 16,
+                    "column": 5,
+                    "program": "identifierReference4.ets"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1,
-                    "program": null
+                    "line": 16,
+                    "column": 16,
+                    "program": "identifierReference4.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1,
-                  "program": null
+                  "line": 16,
+                  "column": 5,
+                  "program": "identifierReference4.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1,
-                  "program": null
+                  "line": 16,
+                  "column": 16,
+                  "program": "identifierReference4.ets"
                 }
               }
             },
@@ -935,13 +935,13 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
-                "column": 1,
+                "line": 16,
+                "column": 5,
                 "program": "identifierReference4.ets"
               },
               "end": {
-                "line": 1,
-                "column": 1,
+                "line": 16,
+                "column": 16,
                 "program": "identifierReference4.ets"
               }
             }

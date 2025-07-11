@@ -37,6 +37,10 @@ class Options;
 class SourcePositionHelper;
 }  // namespace ark::es2panda::util
 
+namespace ark::es2panda::public_lib {
+struct Context;
+}  // namespace ark::es2panda::public_lib
+
 namespace ark::es2panda::parser {
 using ENUMBITOPS_OPERATORS;
 
@@ -100,6 +104,16 @@ public:
     }
 
     lexer::SourcePosition GetPositionForDiagnostic() const;
+
+    void SetContext(public_lib::Context *ctx)
+    {
+        ctx_ = ctx;
+    }
+
+    public_lib::Context *Context()
+    {
+        return ctx_;
+    }
 
 protected:
     virtual void ParseProgram(ScriptKind kind);
@@ -410,6 +424,7 @@ protected:
 
     virtual ir::AnnotatedExpression *ParseVariableDeclaratorKey(VariableParsingFlags flags);
     virtual ir::Statement *ParseAnnotationsInStatement(StatementParsingFlags flags);
+    virtual ir::Statement *ParseInitModuleStatement(StatementParsingFlags flags);
     virtual ir::VariableDeclarator *ParseVariableDeclarator(ir::Expression *init, lexer::SourcePosition startLoc,
                                                             VariableParsingFlags flags);
     virtual ir::VariableDeclarator *ParseVariableDeclaratorInitializer(ir::Expression *init, VariableParsingFlags flags,
@@ -458,11 +473,6 @@ protected:
     virtual ir::TypeNode *ParseFunctionReturnType([[maybe_unused]] ParserStatus status)
     {
         return nullptr;
-    }
-
-    virtual ir::ScriptFunctionFlags ParseFunctionThrowMarker([[maybe_unused]] const bool isRethrowsAllowed)
-    {
-        return ir::ScriptFunctionFlags::NONE;
     }
 
     using NodeFormatType = std::tuple<bool, char, std::size_t>;
@@ -569,6 +579,7 @@ private:
     lexer::Lexer *lexer_ {};
     const util::Options *options_;
     util::DiagnosticEngine &diagnosticEngine_;
+    public_lib::Context *ctx_ {nullptr};
 };
 }  // namespace ark::es2panda::parser
 

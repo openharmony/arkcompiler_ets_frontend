@@ -18,7 +18,15 @@
 }
 
 abstract class Abstract {
-    instance_field: number = -1
+    private _instance_field: number = -1
+
+    get instance_field(): number{
+        return this._instance_field;
+    }
+
+    set instance_field(v: number) {
+        this._instance_field = v;
+    }
 }
 
 class Base extends Abstract {
@@ -36,6 +44,6 @@ class Derived extends Base implements Interface {
 
 function main() {
     let d = new Derived
-    assertEQ(d.method(), 0 )
-    assertEQ(d.instance_field, -2)
+    arktest.assertEQ(d.method(), 0 )
+    arktest.assertEQ(d.instance_field, -2)
 }

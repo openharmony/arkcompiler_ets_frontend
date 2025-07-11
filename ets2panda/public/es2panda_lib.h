@@ -43,6 +43,7 @@ extern "C" {
 
 typedef struct es2panda_Config es2panda_Config;
 typedef struct es2panda_Context es2panda_Context;
+typedef struct es2panda_GlobalContext es2panda_GlobalContext;
 
 typedef struct es2panda_variantDoubleCharArrayBool {
     int index;
@@ -128,10 +129,21 @@ typedef struct es2panda_OverloadInfo {
     bool returnVoid;
 } es2panda_OverloadInfo;
 
+typedef struct es2panda_JsDocRecord {
+    char *name;
+    char *param;
+    char *comment;
+} es2panda_JsDocRecord;
+
+typedef struct es2panda_JsDocInfo {
+    char **strings;
+    es2panda_JsDocRecord **jsDocRecords;
+    size_t len;
+} es2panda_JsDocInfo;
+
 enum es2panda_ContextState {
     ES2PANDA_STATE_NEW,
     ES2PANDA_STATE_PARSED,
-    ES2PANDA_STATE_SCOPE_INITED,
     ES2PANDA_STATE_BOUND,
     ES2PANDA_STATE_CHECKED,
     ES2PANDA_STATE_LOWERED,
@@ -140,6 +152,23 @@ enum es2panda_ContextState {
 
     ES2PANDA_STATE_ERROR
 };
+
+typedef struct es2panda_SuggestionInfo {
+    const es2panda_DiagnosticKind *kind;
+    const char **args;
+    size_t argc;
+    const char *substitutionCode;
+} es2panda_SuggestionInfo;
+
+typedef struct es2panda_DiagnosticInfo {
+    const es2panda_DiagnosticKind *kind;
+    const char **args;
+    size_t argc;
+} es2panda_DiagnosticInfo;
+
+enum es2panda_PluginDiagnosticType { ES2PANDA_PLUGIN_WARNING, ES2PANDA_PLUGIN_ERROR, ES2PANDA_PLUGIN_SUGGESTION };
+
+typedef enum es2panda_PluginDiagnosticType es2panda_PluginDiagnosticType;
 typedef enum es2panda_ContextState es2panda_ContextState;
 // CC-OFFNXT(G.INC.08) project code style
 #include "generated/es2panda_lib/es2panda_lib_enums.inc"
@@ -147,14 +176,29 @@ typedef enum es2panda_ContextState es2panda_ContextState;
 struct CAPI_EXPORT es2panda_Impl {
     int version;
 
+    void (*MemInitialize)();
+    void (*MemFinalize)();
+
     es2panda_Config *(*CreateConfig)(int argc, char const *const *argv);
     void (*DestroyConfig)(es2panda_Config *config);
+    char const *(*GetAllErrorMessages)(es2panda_Context *context);
     const es2panda_Options *(*ConfigGetOptions)(es2panda_Config *config);
 
     es2panda_Context *(*CreateContextFromFile)(es2panda_Config *config, char const *source_file_name);
+    es2panda_Context *(*CreateCacheContextFromFile)(es2panda_Config *config, char const *source_file_name,
+                                                    es2panda_GlobalContext *globalContext, bool isExternal);
     es2panda_Context *(*CreateContextFromString)(es2panda_Config *config, const char *source, char const *file_name);
+    es2panda_Context *(*CreateCacheContextFromString)(es2panda_Config *config, const char *source,
+                                                      char const *file_name, es2panda_GlobalContext *globalContext,
+                                                      bool isExternal);
+    es2panda_Context *(*CreateContextGenerateAbcForExternalSourceFiles)(es2panda_Config *config, int fileNamesCount,
+                                                                        char const *const *fileNames);
     es2panda_Context *(*ProceedToState)(es2panda_Context *context, es2panda_ContextState state);  // context is consumed
     void (*DestroyContext)(es2panda_Context *context);
+
+    es2panda_GlobalContext *(*CreateGlobalContext)(es2panda_Config *config, const char **externalFileList,
+                                                   size_t fileNum, bool LspUsage);
+    void (*DestroyGlobalContext)(es2panda_GlobalContext *globalContext);
 
     es2panda_ContextState (*ContextState)(es2panda_Context *context);
     char const *(*ContextErrorMessage)(es2panda_Context *context);
@@ -183,6 +227,7 @@ struct CAPI_EXPORT es2panda_Impl {
     CREATE_UPDATE_NUMBER_LITERAL_IMPL(3, float);
 
 #undef CREATE_UPDATE_NUMBER_LITERAL_IMPL
+    const char *(*NumberLiteralStrConst)(es2panda_Context *context, es2panda_AstNode *classInstance);
 
     void *(*AllocMemory)(es2panda_Context *context, size_t numberOfElements, size_t sizeOfElement);
     es2panda_SourcePosition *(*CreateSourcePosition)(es2panda_Context *context, size_t index, size_t line);
@@ -192,25 +237,45 @@ struct CAPI_EXPORT es2panda_Impl {
     size_t (*SourcePositionLine)(es2panda_Context *context, es2panda_SourcePosition *position);
     es2panda_SourcePosition *(*SourceRangeStart)(es2panda_Context *context, es2panda_SourceRange *range);
     es2panda_SourcePosition *(*SourceRangeEnd)(es2panda_Context *context, es2panda_SourceRange *range);
-    const es2panda_DiagnosticKind *(*CreateDiagnosticKind)(es2panda_Context *context, const char *dmessage);
+    const es2panda_DiagnosticKind *(*CreateDiagnosticKind)(es2panda_Context *context, const char *dmessage,
+                                                           es2panda_PluginDiagnosticType etype);
+    es2panda_DiagnosticInfo *(*CreateDiagnosticInfo)(es2panda_Context *context, const es2panda_DiagnosticKind *kind,
+                                                     const char **args, size_t argc);
+    es2panda_SuggestionInfo *(*CreateSuggestionInfo)(es2panda_Context *context, const es2panda_DiagnosticKind *kind,
+                                                     const char **args, size_t argc, const char *substitutionCode);
+    void (*LogDiagnosticWithSuggestion)(es2panda_Context *context, const es2panda_DiagnosticInfo *diagnosticInfo,
+                                        const es2panda_SuggestionInfo *suggestionInfo, es2panda_SourceRange *range);
     void (*LogDiagnostic)(es2panda_Context *context, const es2panda_DiagnosticKind *kind, const char **args,
                           size_t argc, es2panda_SourcePosition *pos);
     const es2panda_DiagnosticStorage *(*GetSemanticErrors)(es2panda_Context *context);
     const es2panda_DiagnosticStorage *(*GetSyntaxErrors)(es2panda_Context *context);
     const es2panda_DiagnosticStorage *(*GetPluginErrors)(es2panda_Context *context);
     const es2panda_DiagnosticStorage *(*GetWarnings)(es2panda_Context *context);
+    bool (*IsAnyError)(es2panda_Context *context);
     es2panda_Scope *(*AstNodeFindNearestScope)(es2panda_Context *ctx, es2panda_AstNode *node);
     es2panda_Scope *(*AstNodeRebind)(es2panda_Context *ctx, es2panda_AstNode *node);
     void (*AstNodeRecheck)(es2panda_Context *ctx, es2panda_AstNode *node);
     Es2pandaEnum (*Es2pandaEnumFromString)(es2panda_Context *ctx, const char *str);
     char *(*Es2pandaEnumToString)(es2panda_Context *ctx, Es2pandaEnum id);
     es2panda_AstNode *(*DeclarationFromIdentifier)(es2panda_Context *ctx, es2panda_AstNode *node);
+    es2panda_AstNode *(*FirstDeclarationByNameFromNode)(es2panda_Context *ctx, const es2panda_AstNode *node,
+                                                        const char *name);
+    es2panda_AstNode *(*FirstDeclarationByNameFromProgram)(es2panda_Context *ctx, const es2panda_Program *program,
+                                                           const char *name);
+    es2panda_AstNode **(*AllDeclarationsByNameFromNode)(es2panda_Context *ctx, const es2panda_AstNode *node,
+                                                        const char *name, size_t *declsLen);
+    es2panda_AstNode **(*AllDeclarationsByNameFromProgram)(es2panda_Context *ctx, const es2panda_Program *program,
+                                                           const char *name, size_t *declsLen);
 
     int (*GenerateTsDeclarationsFromContext)(es2panda_Context *context, const char *outputDeclEts,
-                                             const char *outputEts, bool exportAll);
+                                             const char *outputEts, bool exportAll, bool isolated);
     void (*InsertETSImportDeclarationAndParse)(es2panda_Context *context, es2panda_Program *program,
                                                es2panda_AstNode *importDeclaration);
+    int (*GenerateStaticDeclarationsFromContext)(es2panda_Context *context, const char *outputPath);
 
+    void (*InvalidateFileCache)(es2panda_GlobalContext *globalContext, const char *fileName);
+    void (*RemoveFileCache)(es2panda_GlobalContext *globalContext, const char *fileName);
+    void (*AddFileCache)(es2panda_GlobalContext *globalContext, const char *fileName);
 // CC-OFFNXT(G.INC.08) project code style
 #include "generated/es2panda_lib/es2panda_lib_decl.inc"
 };

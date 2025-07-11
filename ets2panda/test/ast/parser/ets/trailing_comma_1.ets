@@ -39,6 +39,10 @@ foo(,)
 /* @@? 24:15 Error SyntaxError: Unexpected token, expected an identifier. */
 /* @@? 24:15 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
 /* @@? 28:12 Error SyntaxError: Unexpected token ','. */
+/* @@? 28:14 Error SyntaxError: Unexpected token, expected ',' or ']'. */
+/* @@? 28:14 Error SyntaxError: Unexpected token '2'. */
+/* @@? 28:15 Error SyntaxError: Unexpected token ','. */
+/* @@? 28:16 Error SyntaxError: Unexpected token ']'. */
 /* @@? 30:5 Error TypeError: Indexed access is not supported for such expression type. */
 /* @@? 31:1 Error TypeError: No matching call signature for foo(a[0], a[1], ...a) */
 /* @@? 31:5 Error TypeError: Indexed access is not supported for such expression type. */
@@ -46,16 +50,20 @@ foo(,)
 /* @@? 31:17 Error TypeError: Spread argument for the rest parameter can be only one. */
 /* @@? 32:5 Error TypeError: Indexed access is not supported for such expression type. */
 /* @@? 32:10 Error SyntaxError: Unexpected token ','. */
+/* @@? 32:11 Error SyntaxError: Unexpected token, expected ',' or ')'. */
+/* @@? 32:11 Error SyntaxError: Unexpected token 'a'. */
 /* @@? 32:11 Error TypeError: Indexed access is not supported for such expression type. */
+/* @@? 32:15 Error SyntaxError: Unexpected token ')'. */
 /* @@? 33:5 Error TypeError: Indexed access is not supported for such expression type. */
 /* @@? 33:10 Error SyntaxError: Unexpected token ','. */
 /* @@? 34:5 Error SyntaxError: Unexpected token ','. */
+/* @@? 34:6 Error SyntaxError: Unexpected token 'a'. */
+/* @@? 34:6 Error SyntaxError: Unexpected token, expected ',' or ')'. */
 /* @@? 34:6 Error TypeError: Indexed access is not supported for such expression type. */
+/* @@? 34:10 Error SyntaxError: Unexpected token ')'. */
 /* @@? 35:5 Error TypeError: Indexed access is not supported for such expression type. */
 /* @@? 35:10 Error SyntaxError: Unexpected token 'a'. */
 /* @@? 35:10 Error SyntaxError: Unexpected token, expected ',' or ')'. */
 /* @@? 35:10 Error TypeError: Indexed access is not supported for such expression type. */
-/* @@? 35:14 Error SyntaxError: Unexpected token ')'. */
-/* @@? 35:14 Error SyntaxError: Unexpected token ')'. */
 /* @@? 35:14 Error SyntaxError: Unexpected token ')'. */
 /* @@? 36:5 Error SyntaxError: Unexpected token ','. */

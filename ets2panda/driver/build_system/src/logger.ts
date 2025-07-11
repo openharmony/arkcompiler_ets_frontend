@@ -22,6 +22,7 @@ import {
 export class Logger {
   private static instance: Logger | undefined;
   private loggerMap: { [key in SubsystemCode]?: ILogger };
+  private hasErrorOccurred: boolean = false;
 
   private constructor(projectConfig: BuildConfig) {
     if (typeof projectConfig.getHvigorConsoleLogger !== 'function') {
@@ -63,11 +64,13 @@ export class Logger {
   }
 
   public printError(error: LogData): void {
+    this.hasErrorOccurred = true;
     const logger: ILogger = this.getLoggerFromErrorCode(error.code);
     logger.printError(error);
   }
 
   public printErrorAndExit(error: LogData): void {
+    this.hasErrorOccurred = true;
     const logger: ILogger = this.getLoggerFromErrorCode(error.code);
     logger.printErrorAndExit(error);
   }
@@ -90,6 +93,14 @@ export class Logger {
       throw new Error('Invalid subsystemCode.');
     }
     return this.loggerMap[subsystemCode];
+  }
+
+  public hasErrors(): boolean {
+    return this.hasErrorOccurred;
+  }
+
+  public resetErrorFlag(): void {
+    this.hasErrorOccurred = false;
   }
 }
 

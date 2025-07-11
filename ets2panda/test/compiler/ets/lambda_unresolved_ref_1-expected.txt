@@ -798,12 +798,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "lambda_unresolved_ref_1.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "lambda_unresolved_ref_1.ets"
                     }
                   }
                 },
@@ -811,12 +811,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "lambda_unresolved_ref_1.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "lambda_unresolved_ref_1.ets"
                   }
                 }
               },
@@ -824,12 +824,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "lambda_unresolved_ref_1.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "lambda_unresolved_ref_1.ets"
                 }
               }
             },
@@ -903,55 +903,103 @@
                       "type": "Identifier",
                       "name": "arr",
                       "typeAnnotation": {
-                        "type": "TSArrayType",
-                        "elementType": {
-                          "type": "ETSTypeReference",
-                          "part": {
-                            "type": "ETSTypeReferencePart",
-                            "name": {
-                              "type": "Identifier",
-                              "name": "Object",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 23,
-                                  "column": 19,
-                                  "program": "lambda_unresolved_ref_1.ets"
-                                },
-                                "end": {
-                                  "line": 23,
-                                  "column": 25,
-                                  "program": "lambda_unresolved_ref_1.ets"
-                                }
-                              }
-                            },
+                        "type": "ETSTypeReference",
+                        "part": {
+                          "type": "ETSTypeReferencePart",
+                          "name": {
+                            "type": "Identifier",
+                            "name": "Array",
+                            "decorators": [],
                             "loc": {
                               "start": {
-                                "line": 23,
-                                "column": 19,
+                                "line": 1,
+                                "column": 1,
                                 "program": "lambda_unresolved_ref_1.ets"
                               },
                               "end": {
-                                "line": 23,
-                                "column": 26,
+                                "line": 1,
+                                "column": 3,
+                                "program": "lambda_unresolved_ref_1.ets"
+                              }
+                            }
+                          },
+                          "typeParams": {
+                            "type": "TSTypeParameterInstantiation",
+                            "params": [
+                              {
+                                "type": "ETSTypeReference",
+                                "part": {
+                                  "type": "ETSTypeReferencePart",
+                                  "name": {
+                                    "type": "Identifier",
+                                    "name": "Object",
+                                    "decorators": [],
+                                    "loc": {
+                                      "start": {
+                                        "line": 1,
+                                        "column": 3,
+                                        "program": "lambda_unresolved_ref_1.ets"
+                                      },
+                                      "end": {
+                                        "line": 1,
+                                        "column": 3,
+                                        "program": "lambda_unresolved_ref_1.ets"
+                                      }
+                                    }
+                                  },
+                                  "loc": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "lambda_unresolved_ref_1.ets"
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "lambda_unresolved_ref_1.ets"
+                                    }
+                                  }
+                                },
+                                "loc": {
+                                  "start": {
+                                    "line": 1,
+                                    "column": 3,
+                                    "program": "lambda_unresolved_ref_1.ets"
+                                  },
+                                  "end": {
+                                    "line": 1,
+                                    "column": 3,
+                                    "program": "lambda_unresolved_ref_1.ets"
+                                  }
+                                }
+                              }
+                            ],
+                            "loc": {
+                              "start": {
+                                "line": 1,
+                                "column": 3,
+                                "program": "lambda_unresolved_ref_1.ets"
+                              },
+                              "end": {
+                                "line": 1,
+                                "column": 3,
                                 "program": "lambda_unresolved_ref_1.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
-                              "line": 23,
-                              "column": 19,
+                              "line": 1,
+                              "column": 1,
                               "program": "lambda_unresolved_ref_1.ets"
                             },
                             "end": {
-                              "line": 23,
-                              "column": 26,
+                              "line": 1,
+                              "column": 3,
                               "program": "lambda_unresolved_ref_1.ets"
                             }
                           }
                         },
-                        "annotations": [],
                         "loc": {
                           "start": {
                             "line": 23,
@@ -1550,55 +1598,103 @@
                       "type": "Identifier",
                       "name": "arr",
                       "typeAnnotation": {
-                        "type": "TSArrayType",
-                        "elementType": {
-                          "type": "ETSTypeReference",
-                          "part": {
-                            "type": "ETSTypeReferencePart",
-                            "name": {
-                              "type": "Identifier",
-                              "name": "Object",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 30,
-                                  "column": 20,
-                                  "program": "lambda_unresolved_ref_1.ets"
-                                },
-                                "end": {
-                                  "line": 30,
-                                  "column": 26,
-                                  "program": "lambda_unresolved_ref_1.ets"
-                                }
-                              }
-                            },
+                        "type": "ETSTypeReference",
+                        "part": {
+                          "type": "ETSTypeReferencePart",
+                          "name": {
+                            "type": "Identifier",
+                            "name": "Array",
+                            "decorators": [],
                             "loc": {
                               "start": {
-                                "line": 30,
-                                "column": 20,
+                                "line": 1,
+                                "column": 1,
                                 "program": "lambda_unresolved_ref_1.ets"
                               },
                               "end": {
-                                "line": 30,
-                                "column": 27,
+                                "line": 1,
+                                "column": 3,
+                                "program": "lambda_unresolved_ref_1.ets"
+                              }
+                            }
+                          },
+                          "typeParams": {
+                            "type": "TSTypeParameterInstantiation",
+                            "params": [
+                              {
+                                "type": "ETSTypeReference",
+                                "part": {
+                                  "type": "ETSTypeReferencePart",
+                                  "name": {
+                                    "type": "Identifier",
+                                    "name": "Object",
+                                    "decorators": [],
+                                    "loc": {
+                                      "start": {
+                                        "line": 1,
+                                        "column": 3,
+                                        "program": "lambda_unresolved_ref_1.ets"
+                                      },
+                                      "end": {
+                                        "line": 1,
+                                        "column": 3,
+                                        "program": "lambda_unresolved_ref_1.ets"
+                                      }
+                                    }
+                                  },
+                                  "loc": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "lambda_unresolved_ref_1.ets"
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "lambda_unresolved_ref_1.ets"
+                                    }
+                                  }
+                                },
+                                "loc": {
+                                  "start": {
+                                    "line": 1,
+                                    "column": 3,
+                                    "program": "lambda_unresolved_ref_1.ets"
+                                  },
+                                  "end": {
+                                    "line": 1,
+                                    "column": 3,
+                                    "program": "lambda_unresolved_ref_1.ets"
+                                  }
+                                }
+                              }
+                            ],
+                            "loc": {
+                              "start": {
+                                "line": 1,
+                                "column": 3,
+                                "program": "lambda_unresolved_ref_1.ets"
+                              },
+                              "end": {
+                                "line": 1,
+                                "column": 3,
                                 "program": "lambda_unresolved_ref_1.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
-                              "line": 30,
-                              "column": 20,
+                              "line": 1,
+                              "column": 1,
                               "program": "lambda_unresolved_ref_1.ets"
                             },
                             "end": {
-                              "line": 30,
-                              "column": 27,
+                              "line": 1,
+                              "column": 3,
                               "program": "lambda_unresolved_ref_1.ets"
                             }
                           }
                         },
-                        "annotations": [],
                         "loc": {
                           "start": {
                             "line": 30,
@@ -2284,23 +2380,71 @@
                             "type": "Identifier",
                             "name": "arr",
                             "typeAnnotation": {
-                              "type": "TSArrayType",
-                              "elementType": {
-                                "type": "ETSPrimitiveType",
+                              "type": "ETSTypeReference",
+                              "part": {
+                                "type": "ETSTypeReferencePart",
+                                "name": {
+                                  "type": "Identifier",
+                                  "name": "Array",
+                                  "decorators": [],
+                                  "loc": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 1,
+                                      "program": "lambda_unresolved_ref_1.ets"
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "lambda_unresolved_ref_1.ets"
+                                    }
+                                  }
+                                },
+                                "typeParams": {
+                                  "type": "TSTypeParameterInstantiation",
+                                  "params": [
+                                    {
+                                      "type": "ETSPrimitiveType",
+                                      "loc": {
+                                        "start": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "lambda_unresolved_ref_1.ets"
+                                        },
+                                        "end": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "lambda_unresolved_ref_1.ets"
+                                        }
+                                      }
+                                    }
+                                  ],
+                                  "loc": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "lambda_unresolved_ref_1.ets"
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "lambda_unresolved_ref_1.ets"
+                                    }
+                                  }
+                                },
                                 "loc": {
                                   "start": {
-                                    "line": 40,
-                                    "column": 11,
+                                    "line": 1,
+                                    "column": 1,
                                     "program": "lambda_unresolved_ref_1.ets"
                                   },
                                   "end": {
-                                    "line": 40,
-                                    "column": 16,
+                                    "line": 1,
+                                    "column": 3,
                                     "program": "lambda_unresolved_ref_1.ets"
                                   }
                                 }
                               },
-                              "annotations": [],
                               "loc": {
                                 "start": {
                                   "line": 40,
@@ -2669,43 +2813,77 @@
                                         }
                                       },
                                       "right": {
-                                        "type": "TSAsExpression",
-                                        "expression": {
-                                          "type": "BinaryExpression",
-                                          "operator": "+",
-                                          "left": {
+                                        "type": "CallExpression",
+                                        "callee": {
+                                          "type": "MemberExpression",
+                                          "object": {
+                                            "type": "BinaryExpression",
+                                            "operator": "+",
+                                            "left": {
+                                              "type": "Identifier",
+                                              "name": "v",
+                                              "decorators": [],
+                                              "loc": {
+                                                "start": {
+                                                  "line": 42,
+                                                  "column": 19,
+                                                  "program": "lambda_unresolved_ref_1.ets"
+                                                },
+                                                "end": {
+                                                  "line": 42,
+                                                  "column": 20,
+                                                  "program": "lambda_unresolved_ref_1.ets"
+                                                }
+                                              }
+                                            },
+                                            "right": {
+                                              "type": "NumberLiteral",
+                                              "value": 1,
+                                              "loc": {
+                                                "start": {
+                                                  "line": 42,
+                                                  "column": 23,
+                                                  "program": "lambda_unresolved_ref_1.ets"
+                                                },
+                                                "end": {
+                                                  "line": 42,
+                                                  "column": 24,
+                                                  "program": "lambda_unresolved_ref_1.ets"
+                                                }
+                                              }
+                                            },
+                                            "loc": {
+                                              "start": {
+                                                "line": 42,
+                                                "column": 18,
+                                                "program": "lambda_unresolved_ref_1.ets"
+                                              },
+                                              "end": {
+                                                "line": 42,
+                                                "column": 25,
+                                                "program": "lambda_unresolved_ref_1.ets"
+                                              }
+                                            }
+                                          },
+                                          "property": {
                                             "type": "Identifier",
-                                            "name": "v",
+                                            "name": "toShort",
                                             "decorators": [],
                                             "loc": {
                                               "start": {
                                                 "line": 42,
-                                                "column": 19,
+                                                "column": 26,
                                                 "program": "lambda_unresolved_ref_1.ets"
                                               },
                                               "end": {
                                                 "line": 42,
-                                                "column": 20,
+                                                "column": 33,
                                                 "program": "lambda_unresolved_ref_1.ets"
                                               }
                                             }
                                           },
-                                          "right": {
-                                            "type": "NumberLiteral",
-                                            "value": 1,
-                                            "loc": {
-                                              "start": {
-                                                "line": 42,
-                                                "column": 23,
-                                                "program": "lambda_unresolved_ref_1.ets"
-                                              },
-                                              "end": {
-                                                "line": 42,
-                                                "column": 24,
-                                                "program": "lambda_unresolved_ref_1.ets"
-                                              }
-                                            }
-                                          },
+                                          "computed": false,
+                                          "optional": false,
                                           "loc": {
                                             "start": {
                                               "line": 42,
@@ -2714,26 +2892,13 @@
                                             },
                                             "end": {
                                               "line": 42,
-                                              "column": 25,
+                                              "column": 33,
                                               "program": "lambda_unresolved_ref_1.ets"
                                             }
                                           }
                                         },
-                                        "typeAnnotation": {
-                                          "type": "ETSPrimitiveType",
-                                          "loc": {
-                                            "start": {
-                                              "line": 42,
-                                              "column": 29,
-                                              "program": "lambda_unresolved_ref_1.ets"
-                                            },
-                                            "end": {
-                                              "line": 42,
-                                              "column": 34,
-                                              "program": "lambda_unresolved_ref_1.ets"
-                                            }
-                                          }
-                                        },
+                                        "arguments": [],
+                                        "optional": false,
                                         "loc": {
                                           "start": {
                                             "line": 42,
@@ -2742,7 +2907,7 @@
                                           },
                                           "end": {
                                             "line": 42,
-                                            "column": 25,
+                                            "column": 35,
                                             "program": "lambda_unresolved_ref_1.ets"
                                           }
                                         }
@@ -2755,7 +2920,7 @@
                                         },
                                         "end": {
                                           "line": 42,
-                                          "column": 25,
+                                          "column": 35,
                                           "program": "lambda_unresolved_ref_1.ets"
                                         }
                                       }
@@ -2768,7 +2933,7 @@
                                       },
                                       "end": {
                                         "line": 42,
-                                        "column": 35,
+                                        "column": 36,
                                         "program": "lambda_unresolved_ref_1.ets"
                                       }
                                     }
@@ -3218,23 +3383,71 @@
                             "type": "Identifier",
                             "name": "arr",
                             "typeAnnotation": {
-                              "type": "TSArrayType",
-                              "elementType": {
-                                "type": "ETSPrimitiveType",
+                              "type": "ETSTypeReference",
+                              "part": {
+                                "type": "ETSTypeReferencePart",
+                                "name": {
+                                  "type": "Identifier",
+                                  "name": "Array",
+                                  "decorators": [],
+                                  "loc": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 1,
+                                      "program": "lambda_unresolved_ref_1.ets"
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "lambda_unresolved_ref_1.ets"
+                                    }
+                                  }
+                                },
+                                "typeParams": {
+                                  "type": "TSTypeParameterInstantiation",
+                                  "params": [
+                                    {
+                                      "type": "ETSPrimitiveType",
+                                      "loc": {
+                                        "start": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "lambda_unresolved_ref_1.ets"
+                                        },
+                                        "end": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "lambda_unresolved_ref_1.ets"
+                                        }
+                                      }
+                                    }
+                                  ],
+                                  "loc": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "lambda_unresolved_ref_1.ets"
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "lambda_unresolved_ref_1.ets"
+                                    }
+                                  }
+                                },
                                 "loc": {
                                   "start": {
-                                    "line": 51,
-                                    "column": 14,
+                                    "line": 1,
+                                    "column": 1,
                                     "program": "lambda_unresolved_ref_1.ets"
                                   },
                                   "end": {
-                                    "line": 51,
-                                    "column": 19,
+                                    "line": 1,
+                                    "column": 3,
                                     "program": "lambda_unresolved_ref_1.ets"
                                   }
                                 }
                               },
-                              "annotations": [],
                               "loc": {
                                 "start": {
                                   "line": 51,
@@ -3603,43 +3816,77 @@
                                         }
                                       },
                                       "right": {
-                                        "type": "TSAsExpression",
-                                        "expression": {
-                                          "type": "BinaryExpression",
-                                          "operator": "+",
-                                          "left": {
+                                        "type": "CallExpression",
+                                        "callee": {
+                                          "type": "MemberExpression",
+                                          "object": {
+                                            "type": "BinaryExpression",
+                                            "operator": "+",
+                                            "left": {
+                                              "type": "Identifier",
+                                              "name": "v",
+                                              "decorators": [],
+                                              "loc": {
+                                                "start": {
+                                                  "line": 53,
+                                                  "column": 19,
+                                                  "program": "lambda_unresolved_ref_1.ets"
+                                                },
+                                                "end": {
+                                                  "line": 53,
+                                                  "column": 20,
+                                                  "program": "lambda_unresolved_ref_1.ets"
+                                                }
+                                              }
+                                            },
+                                            "right": {
+                                              "type": "NumberLiteral",
+                                              "value": 1,
+                                              "loc": {
+                                                "start": {
+                                                  "line": 53,
+                                                  "column": 23,
+                                                  "program": "lambda_unresolved_ref_1.ets"
+                                                },
+                                                "end": {
+                                                  "line": 53,
+                                                  "column": 24,
+                                                  "program": "lambda_unresolved_ref_1.ets"
+                                                }
+                                              }
+                                            },
+                                            "loc": {
+                                              "start": {
+                                                "line": 53,
+                                                "column": 18,
+                                                "program": "lambda_unresolved_ref_1.ets"
+                                              },
+                                              "end": {
+                                                "line": 53,
+                                                "column": 25,
+                                                "program": "lambda_unresolved_ref_1.ets"
+                                              }
+                                            }
+                                          },
+                                          "property": {
                                             "type": "Identifier",
-                                            "name": "v",
+                                            "name": "toShort",
                                             "decorators": [],
                                             "loc": {
                                               "start": {
                                                 "line": 53,
-                                                "column": 19,
+                                                "column": 26,
                                                 "program": "lambda_unresolved_ref_1.ets"
                                               },
                                               "end": {
                                                 "line": 53,
-                                                "column": 20,
+                                                "column": 33,
                                                 "program": "lambda_unresolved_ref_1.ets"
                                               }
                                             }
                                           },
-                                          "right": {
-                                            "type": "NumberLiteral",
-                                            "value": 1,
-                                            "loc": {
-                                              "start": {
-                                                "line": 53,
-                                                "column": 23,
-                                                "program": "lambda_unresolved_ref_1.ets"
-                                              },
-                                              "end": {
-                                                "line": 53,
-                                                "column": 24,
-                                                "program": "lambda_unresolved_ref_1.ets"
-                                              }
-                                            }
-                                          },
+                                          "computed": false,
+                                          "optional": false,
                                           "loc": {
                                             "start": {
                                               "line": 53,
@@ -3648,26 +3895,13 @@
                                             },
                                             "end": {
                                               "line": 53,
-                                              "column": 25,
+                                              "column": 33,
                                               "program": "lambda_unresolved_ref_1.ets"
                                             }
                                           }
                                         },
-                                        "typeAnnotation": {
-                                          "type": "ETSPrimitiveType",
-                                          "loc": {
-                                            "start": {
-                                              "line": 53,
-                                              "column": 29,
-                                              "program": "lambda_unresolved_ref_1.ets"
-                                            },
-                                            "end": {
-                                              "line": 53,
-                                              "column": 34,
-                                              "program": "lambda_unresolved_ref_1.ets"
-                                            }
-                                          }
-                                        },
+                                        "arguments": [],
+                                        "optional": false,
                                         "loc": {
                                           "start": {
                                             "line": 53,
@@ -3676,7 +3910,7 @@
                                           },
                                           "end": {
                                             "line": 53,
-                                            "column": 25,
+                                            "column": 35,
                                             "program": "lambda_unresolved_ref_1.ets"
                                           }
                                         }
@@ -3689,7 +3923,7 @@
                                         },
                                         "end": {
                                           "line": 53,
-                                          "column": 25,
+                                          "column": 35,
                                           "program": "lambda_unresolved_ref_1.ets"
                                         }
                                       }
@@ -3702,7 +3936,7 @@
                                       },
                                       "end": {
                                         "line": 53,
-                                        "column": 35,
+                                        "column": 36,
                                         "program": "lambda_unresolved_ref_1.ets"
                                       }
                                     }

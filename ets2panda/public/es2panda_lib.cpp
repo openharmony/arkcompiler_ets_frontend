@@ -27,14 +27,12 @@
 #include "checker/ETSAnalyzer.h"
 #include "checker/ETSchecker.h"
 #include "compiler/core/compileQueue.h"
+#include "compiler/core/compilerImpl.h"
 #include "compiler/core/ETSCompiler.h"
 #include "compiler/core/ETSemitter.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/regSpiller.h"
 #include "compiler/lowering/phase.h"
-#include "compiler/lowering/checkerPhase.h"
-#include "compiler/lowering/resolveIdentifiers.h"
-#include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "ir/astNode.h"
 #include "ir/expressions/arrowFunctionExpression.h"
 #include "ir/ts/tsAsExpression.h"
@@ -202,6 +200,37 @@ __attribute__((unused)) es2panda_OverloadInfo OverloadInfoToE2p(const ir::Overlo
     return es2pandaOverloadInfo;
 }
 
+__attribute__((unused)) ir::JsDocRecord JsDocRecordToE2p(const es2panda_JsDocRecord *jsDocRecord)
+{
+    return ir::JsDocRecord(jsDocRecord->name, jsDocRecord->param, jsDocRecord->comment);
+}
+
+__attribute__((unused)) es2panda_JsDocRecord *JsDocRecordFromE2p(ArenaAllocator *allocator,
+                                                                 const ir::JsDocRecord &jsDocRecord)
+{
+    es2panda_JsDocRecord *res = allocator->New<es2panda_JsDocRecord>();
+    res->name = StringViewToCString(allocator, jsDocRecord.name);
+    res->param = StringViewToCString(allocator, jsDocRecord.param);
+    res->comment = StringViewToCString(allocator, jsDocRecord.comment);
+    return res;
+}
+
+__attribute__((unused)) es2panda_JsDocInfo *JsDocInfoFromE2p(ArenaAllocator *allocator, const ir::JsDocInfo &jsDocInfo)
+{
+    size_t jsDocInfoLen = jsDocInfo.size();
+    es2panda_JsDocInfo *res = allocator->New<es2panda_JsDocInfo>();
+    res->len = jsDocInfoLen;
+    res->strings = allocator->New<char *[]>(jsDocInfoLen);
+    res->jsDocRecords = allocator->New<es2panda_JsDocRecord *[]>(jsDocInfoLen);
+    size_t i = 0;
+    for (const auto &[key, value] : jsDocInfo) {
+        res->strings[i] = StringViewToCString(allocator, key);
+        res->jsDocRecords[i] = JsDocRecordFromE2p(allocator, value);
+        ++i;
+    };
+    return res;
+}
+
 __attribute__((unused)) char const *ArenaStrdup(ArenaAllocator *allocator, char const *src)
 {
     size_t len = strlen(src);
@@ -214,10 +243,24 @@ __attribute__((unused)) char const *ArenaStrdup(ArenaAllocator *allocator, char 
     return res;
 }
 
-extern "C" es2panda_Config *CreateConfig(int args, char const *const *argv)
+extern "C" void MemInitialize()
 {
+    if (mem::MemConfig::IsInitialized()) {
+        return;
+    }
     mem::MemConfig::Initialize(0, 0, COMPILER_SIZE, 0, 0, 0);
     PoolManager::Initialize(PoolType::MMAP);
+}
+
+extern "C" void MemFinalize()
+{
+    PoolManager::Finalize();
+    mem::MemConfig::Finalize();
+}
+
+extern "C" es2panda_Config *CreateConfig(int args, char const *const *argv)
+{
+    MemInitialize();
     auto diagnosticEngine = new util::DiagnosticEngine();
     auto *options = new util::Options(argv[0], *diagnosticEngine);
     if (!options->Parse(Span(argv, args))) {
@@ -235,17 +278,32 @@ extern "C" es2panda_Config *CreateConfig(int args, char const *const *argv)
 
 extern "C" void DestroyConfig(es2panda_Config *config)
 {
-    PoolManager::Finalize();
-    mem::MemConfig::Finalize();
-
     auto *cfg = reinterpret_cast<ConfigImpl *>(config);
     if (cfg == nullptr) {
         return;
     }
 
     delete cfg->options;
+    cfg->diagnosticEngine->FlushDiagnostic();
     delete cfg->diagnosticEngine;
     delete cfg;
+}
+
+extern "C" __attribute__((unused)) char const *GetAllErrorMessages(es2panda_Context *context)
+{
+    auto *ctx = reinterpret_cast<Context *>(context);
+    ES2PANDA_ASSERT(ctx != nullptr);
+    ES2PANDA_ASSERT(ctx->config != nullptr);
+    ES2PANDA_ASSERT(ctx->allocator != nullptr);
+    auto *cfg = reinterpret_cast<ConfigImpl *>(ctx->config);
+    ES2PANDA_ASSERT(cfg != nullptr);
+    ES2PANDA_ASSERT(cfg->diagnosticEngine != nullptr);
+    auto allMessages = cfg->diagnosticEngine->PrintAndFlushErrorDiagnostic();
+    size_t bufferSize = allMessages.length() + 1;
+    char *cStringMessages = reinterpret_cast<char *>(ctx->allocator->Alloc(bufferSize));
+    [[maybe_unused]] auto err = memcpy_s(cStringMessages, bufferSize, allMessages.c_str(), bufferSize);
+    ES2PANDA_ASSERT(err == EOK);
+    return cStringMessages;
 }
 
 extern "C" const es2panda_Options *ConfigGetOptions(es2panda_Config *config)
@@ -265,78 +323,223 @@ static void CompileJob(public_lib::Context *context, varbinder::FunctionScope *s
     funcEmitter.Generate();
 }
 
-__attribute__((unused)) static es2panda_Context *CreateContext(es2panda_Config *config, std::string &&source,
-                                                               const char *fileName)
+static void GenerateStdLibCache(es2panda_Config *config, GlobalContext *globalContext, bool LspUsage);
+
+extern "C" __attribute__((unused)) es2panda_GlobalContext *CreateGlobalContext(es2panda_Config *config,
+                                                                               const char **externalFileList,
+                                                                               size_t fileNum, bool LspUsage)
+{
+    auto *globalContext = new GlobalContext;
+    for (size_t i = 0; i < fileNum; i++) {
+        auto fileName = externalFileList[i];
+        auto globalAllocator = new ThreadSafeArenaAllocator(SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
+        globalContext->cachedExternalPrograms.emplace(fileName, nullptr);
+        globalContext->externalProgramAllocators.emplace(fileName, globalAllocator);
+    }
+
+    GenerateStdLibCache(config, globalContext, LspUsage);
+
+    return reinterpret_cast<es2panda_GlobalContext *>(globalContext);
+}
+
+extern "C" __attribute__((unused)) void RemoveFileCache(es2panda_GlobalContext *globalContext, const char *fileName)
+{
+    auto globalCtx = reinterpret_cast<GlobalContext *>(globalContext);
+    ES2PANDA_ASSERT(globalCtx->cachedExternalPrograms.count(fileName) == 1);
+    globalCtx->cachedExternalPrograms.erase(fileName);
+    delete globalCtx->externalProgramAllocators[fileName];
+    globalCtx->externalProgramAllocators.erase(fileName);
+}
+
+extern "C" __attribute__((unused)) void AddFileCache(es2panda_GlobalContext *globalContext, const char *fileName)
+{
+    auto globalCtx = reinterpret_cast<GlobalContext *>(globalContext);
+    ES2PANDA_ASSERT(globalCtx->cachedExternalPrograms.count(fileName) == 0);
+    auto globalAllocator = new ThreadSafeArenaAllocator(SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
+    globalCtx->cachedExternalPrograms.emplace(fileName, nullptr);
+    globalCtx->externalProgramAllocators.emplace(fileName, globalAllocator);
+}
+
+extern "C" __attribute__((unused)) void InvalidateFileCache(es2panda_GlobalContext *globalContext, const char *fileName)
+{
+    RemoveFileCache(globalContext, fileName);
+    AddFileCache(globalContext, fileName);
+}
+
+static void InitializeContext(Context *res)
+{
+    res->phaseManager = new compiler::PhaseManager(res, ScriptExtension::ETS, res->allocator);
+    res->queue = new compiler::CompileQueue(res->config->options->GetThread());
+
+    auto *varbinder = res->allocator->New<varbinder::ETSBinder>(res->allocator);
+    res->parserProgram = res->allocator->New<parser::Program>(res->allocator, varbinder);
+    res->parser = new parser::ETSParser(res->parserProgram, *res->config->options, *res->diagnosticEngine,
+                                        parser::ParserStatus::NO_OPTS);
+    res->parser->SetContext(res);
+
+    res->PushChecker(res->allocator->New<checker::ETSChecker>(res->allocator, *res->diagnosticEngine, res->allocator));
+    res->PushAnalyzer(res->allocator->New<checker::ETSAnalyzer>(res->GetChecker()));
+    res->GetChecker()->SetAnalyzer(res->GetAnalyzer());
+
+    varbinder->SetProgram(res->parserProgram);
+    varbinder->SetContext(res);
+    res->codeGenCb = CompileJob;
+    res->emitter = new compiler::ETSEmitter(res);
+    res->program = nullptr;
+    res->state = ES2PANDA_STATE_NEW;
+}
+
+static Context *InitContext(es2panda_Config *config)
 {
     auto *cfg = reinterpret_cast<ConfigImpl *>(config);
     auto *res = new Context;
-    res->input = std::move(source);
-    res->sourceFileName = fileName;
-    res->config = cfg;
-
+    res->compiledByCapi = true;
     if (cfg == nullptr) {
         res->errorMessage = "Config is nullptr.";
         res->state = ES2PANDA_STATE_ERROR;
-        return reinterpret_cast<es2panda_Context *>(res);
+        return res;
     }
 
     if (cfg->options->GetExtension() != ScriptExtension::ETS) {
         res->errorMessage = "Invalid extension. Plugin API supports only ETS.";
         res->state = ES2PANDA_STATE_ERROR;
-        return reinterpret_cast<es2panda_Context *>(res);
+        res->diagnosticEngine = cfg->diagnosticEngine;
+        return res;
     }
 
-    res->sourceFile = new SourceFile(res->sourceFileName, res->input, cfg->options->IsModule());
-    res->allocator = new ArenaAllocator(SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
-    res->queue = new compiler::CompileQueue(cfg->options->GetThread());
-
-    auto *varbinder = res->allocator->New<varbinder::ETSBinder>(res->allocator);
-    res->parserProgram = new parser::Program(res->allocator, varbinder);
+    res->config = cfg;
     res->diagnosticEngine = cfg->diagnosticEngine;
-    res->parser =
-        new parser::ETSParser(res->parserProgram, *cfg->options, *cfg->diagnosticEngine, parser::ParserStatus::NO_OPTS);
-    res->checker = new checker::ETSChecker(*res->diagnosticEngine);
-    res->analyzer = new checker::ETSAnalyzer(res->checker);
-    res->checker->SetAnalyzer(res->analyzer);
+    return res;
+}
 
-    varbinder->SetProgram(res->parserProgram);
+__attribute__((unused)) static es2panda_Context *CreateContext(es2panda_Config *config, std::string &&source,
+                                                               const char *fileName,
+                                                               es2panda_GlobalContext *globalContext, bool isExternal,
+                                                               bool genStdLib)
+{
+    auto res = InitContext(config);
+    if (res->state == ES2PANDA_STATE_ERROR) {
+        return reinterpret_cast<es2panda_Context *>(res);
+    }
+    auto *cfg = reinterpret_cast<ConfigImpl *>(config);
 
-    varbinder->SetContext(res);
-    res->codeGenCb = CompileJob;
-    res->phaseManager = new compiler::PhaseManager(ScriptExtension::ETS, res->allocator);
-    res->emitter = new compiler::ETSEmitter(res);
-    res->program = nullptr;
-    res->state = ES2PANDA_STATE_NEW;
+    res->isExternal = isExternal;
+    res->globalContext = reinterpret_cast<GlobalContext *>(globalContext);
+
+    res->input = std::move(source);
+    res->sourceFileName = fileName;
+    res->sourceFile = new SourceFile(res->sourceFileName, res->input, cfg->options->IsModule());
+    if (isExternal) {
+        ir::EnableContextHistory();
+        ES2PANDA_ASSERT(res->globalContext != nullptr);
+        if (genStdLib) {
+            ES2PANDA_ASSERT(res->globalContext->stdLibAllocator != nullptr);
+            res->allocator = res->globalContext->stdLibAllocator;
+        } else {
+            ES2PANDA_ASSERT(res->globalContext->externalProgramAllocators.count(fileName) != 0);
+            res->allocator =
+                reinterpret_cast<ThreadSafeArenaAllocator *>(res->globalContext->externalProgramAllocators[fileName]);
+        }
+    } else {
+        ir::DisableContextHistory();
+        res->allocator = new ThreadSafeArenaAllocator(SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
+    }
+
+    InitializeContext(res);
     return reinterpret_cast<es2panda_Context *>(res);
+}
+
+__attribute__((unused)) static std::stringstream ReadFile(char const *sourceFileName, Context *&res)
+{
+    std::ifstream inputStream;
+    inputStream.open(sourceFileName);
+    if (inputStream.fail()) {
+        res = new Context;
+        res->errorMessage = "Failed to open file: ";
+        res->errorMessage.append(sourceFileName);
+    }
+    std::stringstream ss;
+    ss << inputStream.rdbuf();
+    if (inputStream.fail()) {
+        res = new Context;
+        res->errorMessage = "Failed to read file: ";
+        res->errorMessage.append(sourceFileName);
+    }
+    return ss;
+}
+
+extern "C" __attribute__((unused)) es2panda_Context *CreateCacheContextFromFile(es2panda_Config *config,
+                                                                                char const *sourceFileName,
+                                                                                es2panda_GlobalContext *globalContext,
+                                                                                bool isExternal)
+{
+    Context *res = nullptr;
+    auto ss = ReadFile(sourceFileName, res);
+    if (res != nullptr) {
+        return reinterpret_cast<es2panda_Context *>(res);
+    }
+    return CreateContext(config, ss.str(), sourceFileName, globalContext, isExternal, false);
 }
 
 extern "C" __attribute__((unused)) es2panda_Context *CreateContextFromFile(es2panda_Config *config,
                                                                            char const *sourceFileName)
 {
-    std::ifstream inputStream;
-    inputStream.open(sourceFileName);
-    if (inputStream.fail()) {
-        auto *res = new Context;
-        res->errorMessage = "Failed to open file: ";
-        res->errorMessage.append(sourceFileName);
+    Context *res = nullptr;
+    auto ss = ReadFile(sourceFileName, res);
+    if (res != nullptr) {
         return reinterpret_cast<es2panda_Context *>(res);
+        ;
     }
-    std::stringstream ss;
-    ss << inputStream.rdbuf();
-    if (inputStream.fail()) {
-        auto *res = new Context;
-        res->errorMessage = "Failed to read file: ";
-        res->errorMessage.append(sourceFileName);
-        return reinterpret_cast<es2panda_Context *>(res);
-    }
-    return CreateContext(config, ss.str(), sourceFileName);
+
+    return CreateContext(config, ss.str(), sourceFileName, nullptr, false, false);
+}
+
+extern "C" __attribute__((unused)) es2panda_Context *CreateCacheContextFromString(es2panda_Config *config,
+                                                                                  const char *source,
+                                                                                  char const *fileName,
+                                                                                  es2panda_GlobalContext *globalContext,
+                                                                                  bool isExternal)
+{
+    return CreateContext(config, std::string(source), fileName, globalContext, isExternal, false);
+}
+
+extern "C" __attribute__((unused)) es2panda_Context *CreateContextFromMultiFile(es2panda_Config *config,
+                                                                                char const *sourceFileNames)
+{
+    return CreateContext(config, "", sourceFileNames, nullptr, false, false);
 }
 
 extern "C" __attribute__((unused)) es2panda_Context *CreateContextFromString(es2panda_Config *config,
                                                                              const char *source, char const *fileName)
 {
     // NOTE: gogabr. avoid copying source.
-    return CreateContext(config, std::string(source), fileName);
+    return CreateContext(config, std::string(source), fileName, nullptr, false, false);
+}
+
+extern __attribute__((unused)) es2panda_Context *CreateContextGenerateAbcForExternalSourceFiles(
+    es2panda_Config *config, int fileNamesCount, char const *const *fileNames)
+{
+    auto res = InitContext(config);
+    if (res->state == ES2PANDA_STATE_ERROR) {
+        return reinterpret_cast<es2panda_Context *>(res);
+    }
+    auto *cfg = reinterpret_cast<ConfigImpl *>(config);
+
+    ES2PANDA_ASSERT(cfg->options->IsSimultaneous());
+    for (size_t i = 0; i < static_cast<size_t>(fileNamesCount); ++i) {
+        const char *cName = *(fileNames + i);
+        std::string fileName(cName);
+        res->sourceFileNames.emplace_back(std::move(fileName));
+    }
+
+    res->input = "";
+    res->sourceFileName = "";
+    res->sourceFile = new SourceFile(res->sourceFileName, res->input, cfg->options->IsModule());
+    ir::DisableContextHistory();
+    res->allocator = new ThreadSafeArenaAllocator(SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
+
+    InitializeContext(res);
+    return reinterpret_cast<es2panda_Context *>(res);
 }
 
 __attribute__((unused)) static Context *Parse(Context *ctx)
@@ -347,16 +550,42 @@ __attribute__((unused)) static Context *Parse(Context *ctx)
         return ctx;
     }
 
-    ctx->phaseManager->Restart();
-    ctx->parser->ParseScript(*ctx->sourceFile,
-                             ctx->config->options->GetCompilationMode() == CompilationMode::GEN_STD_LIB);
-    ctx->state = !ctx->diagnosticEngine->IsAnyError() ? ES2PANDA_STATE_PARSED : ES2PANDA_STATE_ERROR;
+    ctx->phaseManager->Reset();
+
+    if (ctx->isExternal && ctx->allocator != ctx->globalContext->stdLibAllocator) {
+        ctx->sourceFileNames.emplace_back(ctx->sourceFileName);
+        parser::ETSParser::AddGenExtenralSourceToParseList(ctx);
+    } else if (ctx->config->options->IsSimultaneous()) {
+        parser::ETSParser::AddGenExtenralSourceToParseList(ctx);
+        std::unordered_set<std::string> sourceFileNamesSet(ctx->sourceFileNames.begin(), ctx->sourceFileNames.end());
+        ctx->MarkGenAbcForExternal(sourceFileNamesSet, ctx->parserProgram->ExternalSources());
+    } else {
+        ctx->parser->ParseScript(*ctx->sourceFile,
+                                 ctx->config->options->GetCompilationMode() == CompilationMode::GEN_STD_LIB);
+    }
+    ctx->state = ES2PANDA_STATE_PARSED;
+    ctx->phaseManager->SetCurrentPhaseIdToAfterParse();
     return ctx;
+}
+
+__attribute__((unused)) static bool SetProgramGenAbc(Context *ctx, const char *path)
+{
+    util::StringView pathView(path);
+    public_lib::Context *context = reinterpret_cast<public_lib::Context *>(ctx);
+    for (auto &[_, extPrograms] : context->externalSources) {
+        (void)_;
+        for (auto *prog : extPrograms) {
+            if (prog->AbsoluteName() == pathView) {
+                prog->SetGenAbcForExternalSources();
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 __attribute__((unused)) static Context *Bind(Context *ctx)
 {
-    // NOTE: Remove duplicated code in all phases
     if (ctx->state < ES2PANDA_STATE_PARSED) {
         ctx = Parse(ctx);
     }
@@ -366,12 +595,12 @@ __attribute__((unused)) static Context *Bind(Context *ctx)
 
     ES2PANDA_ASSERT(ctx->state == ES2PANDA_STATE_PARSED);
     while (auto phase = ctx->phaseManager->NextPhase()) {
-        phase->Apply(ctx, ctx->parserProgram);
-        if (phase->Name() == compiler::ResolveIdentifiers::NAME) {
+        if (phase->Name() == "plugins-after-bind") {
             break;
         }
+        phase->Apply(ctx, ctx->parserProgram);
     }
-    ctx->state = !ctx->diagnosticEngine->IsAnyError() ? ES2PANDA_STATE_BOUND : ES2PANDA_STATE_ERROR;
+    ctx->state = ES2PANDA_STATE_BOUND;
     return ctx;
 }
 
@@ -387,13 +616,35 @@ __attribute__((unused)) static Context *Check(Context *ctx)
 
     ES2PANDA_ASSERT(ctx->state >= ES2PANDA_STATE_PARSED && ctx->state < ES2PANDA_STATE_CHECKED);
     while (auto phase = ctx->phaseManager->NextPhase()) {
-        phase->Apply(ctx, ctx->parserProgram);
-        if (phase->Name() == compiler::CheckerPhase::NAME) {
+        if (phase->Name() == "plugins-after-check") {
             break;
         }
+        phase->Apply(ctx, ctx->parserProgram);
     }
+    ctx->phaseManager->SetCurrentPhaseIdToAfterCheck();
     ctx->state = !ctx->diagnosticEngine->IsAnyError() ? ES2PANDA_STATE_CHECKED : ES2PANDA_STATE_ERROR;
     return ctx;
+}
+
+__attribute__((unused)) static void SaveCache(Context *ctx)
+{
+    if (ctx->allocator == ctx->globalContext->stdLibAllocator) {
+        return;
+    }
+    ES2PANDA_ASSERT(ctx->globalContext != nullptr &&
+                    ctx->globalContext->cachedExternalPrograms.count(ctx->sourceFileName) != 0);
+    ctx->globalContext->cachedExternalPrograms[ctx->sourceFileName] = &(ctx->parserProgram->ExternalSources());
+
+    // cycle dependencies
+    for (auto &[_, extPrograms] : ctx->parserProgram->ExternalSources()) {
+        for (auto extProgram : extPrograms) {
+            auto absPath = std::string {extProgram->AbsoluteName()};
+            auto &cacheMap = ctx->globalContext->cachedExternalPrograms;
+            if (cacheMap.count(absPath) == 1 && cacheMap[absPath] == nullptr) {
+                cacheMap[absPath] = &(ctx->parserProgram->ExternalSources());
+            }
+        }
+    }
 }
 
 __attribute__((unused)) static Context *Lower(Context *ctx)
@@ -411,6 +662,18 @@ __attribute__((unused)) static Context *Lower(Context *ctx)
         phase->Apply(ctx, ctx->parserProgram);
     }
     ctx->state = !ctx->diagnosticEngine->IsAnyError() ? ES2PANDA_STATE_LOWERED : ES2PANDA_STATE_ERROR;
+
+    for (auto &[_, extPrograms] : ctx->parserProgram->ExternalSources()) {
+        for (auto &extProgram : extPrograms) {
+            if (!extProgram->IsASTLowered()) {
+                extProgram->MarkASTAsLowered();
+            }
+        }
+    }
+    if (ctx->isExternal) {
+        SaveCache(ctx);
+    }
+
     return ctx;
 }
 
@@ -498,6 +761,7 @@ extern "C" __attribute__((unused)) es2panda_Context *ProceedToState(es2panda_Con
             ctx->state = ES2PANDA_STATE_ERROR;
             break;
     }
+
     return reinterpret_cast<es2panda_Context *>(ctx);
 }
 
@@ -506,15 +770,25 @@ extern "C" __attribute__((unused)) void DestroyContext(es2panda_Context *context
     auto *ctx = reinterpret_cast<Context *>(context);
     delete ctx->program;
     delete ctx->emitter;
-    delete ctx->analyzer;
-    delete ctx->checker;
     delete ctx->parser;
-    delete ctx->parserProgram;
     delete ctx->queue;
-    delete ctx->allocator;
     delete ctx->sourceFile;
     delete ctx->phaseManager;
+    if (!ctx->isExternal) {
+        delete ctx->allocator;
+    }
     delete ctx;
+}
+
+extern "C" __attribute__((unused)) void DestroyGlobalContext(es2panda_GlobalContext *globalContext)
+{
+    auto *globalCtx = reinterpret_cast<GlobalContext *>(globalContext);
+    for (auto [_, alloctor] : globalCtx->externalProgramAllocators) {
+        delete alloctor;
+    }
+
+    delete globalCtx->stdLibAllocator;
+    delete globalCtx;
 }
 
 extern "C" __attribute__((unused)) es2panda_ContextState ContextState(es2panda_Context *context)
@@ -614,6 +888,12 @@ es2panda_AstNode *UpdateNumberLiteral(es2panda_Context *ctx, es2panda_AstNode *o
     return reinterpret_cast<es2panda_AstNode *>(node);
 }
 
+extern "C" const char *NumberLiteralStrConst(es2panda_Context *context, es2panda_AstNode *classInstance)
+{
+    auto str = reinterpret_cast<const ir::NumberLiteral *>(classInstance)->Str();
+    return StringViewToCString(reinterpret_cast<Context *>(context)->allocator, str);
+}
+
 extern "C" void *AllocMemory(es2panda_Context *context, size_t numberOfElements, size_t sizeOfElement)
 {
     auto *allocator = reinterpret_cast<Context *>(context)->allocator;
@@ -637,12 +917,67 @@ extern "C" es2panda_SourceRange *CreateSourceRange(es2panda_Context *context, es
     return reinterpret_cast<es2panda_SourceRange *>(allocator->New<lexer::SourceRange>(startE2p, endE2p));
 }
 
-extern "C" const es2panda_DiagnosticKind *CreateDiagnosticKind(es2panda_Context *context, const char *dmessage)
+extern "C" const es2panda_DiagnosticKind *CreateDiagnosticKind(es2panda_Context *context, const char *dmessage,
+                                                               es2panda_PluginDiagnosticType etype)
 {
     auto ctx = reinterpret_cast<Context *>(context);
     auto id = ctx->config->diagnosticKindStorage.size() + 1;
-    ctx->config->diagnosticKindStorage.emplace_back(util::DiagnosticType::PLUGIN, id, dmessage);
+    auto type = util::DiagnosticType::SUGGESTION;
+    if (etype == ES2PANDA_PLUGIN_WARNING) {
+        type = util::DiagnosticType::PLUGIN_WARNING;
+    } else if (etype == ES2PANDA_PLUGIN_ERROR) {
+        type = util::DiagnosticType::PLUGIN_ERROR;
+    }
+    ctx->config->diagnosticKindStorage.emplace_back(type, id, dmessage);
     return reinterpret_cast<const es2panda_DiagnosticKind *>(&ctx->config->diagnosticKindStorage.back());
+}
+
+extern "C" es2panda_DiagnosticInfo *CreateDiagnosticInfo(es2panda_Context *context, const es2panda_DiagnosticKind *kind,
+                                                         const char **args, size_t argc)
+{
+    auto *allocator = reinterpret_cast<Context *>(context)->allocator;
+    auto diagnosticInfo = allocator->New<es2panda_DiagnosticInfo>();
+    diagnosticInfo->kind = kind;
+    diagnosticInfo->args = args;
+    diagnosticInfo->argc = argc;
+    return diagnosticInfo;
+}
+
+extern "C" es2panda_SuggestionInfo *CreateSuggestionInfo(es2panda_Context *context, const es2panda_DiagnosticKind *kind,
+                                                         const char **args, size_t argc, const char *substitutionCode)
+{
+    auto *allocator = reinterpret_cast<Context *>(context)->allocator;
+    auto suggestionInfo = allocator->New<es2panda_SuggestionInfo>();
+    suggestionInfo->kind = kind;
+    suggestionInfo->args = args;
+    suggestionInfo->argc = argc;
+    suggestionInfo->substitutionCode = substitutionCode;
+    return suggestionInfo;
+}
+
+extern "C" void LogDiagnosticWithSuggestion(es2panda_Context *context, const es2panda_DiagnosticInfo *diagnosticInfo,
+                                            const es2panda_SuggestionInfo *suggestionInfo, es2panda_SourceRange *range)
+{
+    auto ctx = reinterpret_cast<Context *>(context);
+    auto diagnostickind = reinterpret_cast<const diagnostic::DiagnosticKind *>(diagnosticInfo->kind);
+    auto suggestionkind = reinterpret_cast<const diagnostic::DiagnosticKind *>(suggestionInfo->kind);
+    util::DiagnosticMessageParams diagnosticParams;
+    for (size_t i = 0; i < diagnosticInfo->argc; ++i) {
+        diagnosticParams.push_back(diagnosticInfo->args[i]);
+    }
+
+    std::vector<std::string> suggestionParams;
+
+    for (size_t i = 0; i < suggestionInfo->argc; ++i) {
+        suggestionParams.push_back(suggestionInfo->args[i]);
+    }
+
+    auto *allocator = reinterpret_cast<Context *>(context)->allocator;
+    auto E2pRange = reinterpret_cast<lexer::SourceRange *>(range);
+    auto posE2p = allocator->New<lexer::SourcePosition>(E2pRange->start);
+    auto suggestion = ctx->diagnosticEngine->CreateSuggestion(suggestionkind, suggestionParams,
+                                                              suggestionInfo->substitutionCode, E2pRange);
+    ctx->diagnosticEngine->LogDiagnostic(*diagnostickind, diagnosticParams, *posE2p, suggestion);
 }
 
 extern "C" void LogDiagnostic(es2panda_Context *context, const es2panda_DiagnosticKind *ekind, const char **args,
@@ -677,12 +1012,22 @@ extern "C" const es2panda_DiagnosticStorage *GetSyntaxErrors(es2panda_Context *c
 
 extern "C" const es2panda_DiagnosticStorage *GetPluginErrors(es2panda_Context *context)
 {
-    return GetDiagnostics(context, util::DiagnosticType::PLUGIN);
+    return GetDiagnostics(context, util::DiagnosticType::PLUGIN_ERROR);
+}
+
+extern "C" const es2panda_DiagnosticStorage *GetPluginWarnings(es2panda_Context *context)
+{
+    return GetDiagnostics(context, util::DiagnosticType::PLUGIN_WARNING);
 }
 
 extern "C" const es2panda_DiagnosticStorage *GetWarnings(es2panda_Context *context)
 {
     return GetDiagnostics(context, util::DiagnosticType::WARNING);
+}
+
+extern "C" bool IsAnyError(es2panda_Context *context)
+{
+    return reinterpret_cast<Context *>(context)->diagnosticEngine->IsAnyError();
 }
 
 extern "C" size_t SourcePositionIndex([[maybe_unused]] es2panda_Context *context, es2panda_SourcePosition *position)
@@ -737,7 +1082,7 @@ extern "C" void AstNodeRecheck(es2panda_Context *ctx, es2panda_AstNode *node)
     auto E2pNode = reinterpret_cast<ir::AstNode *>(node);
     auto context = reinterpret_cast<Context *>(ctx);
     auto varbinder = context->parserProgram->VarBinder()->AsETSBinder();
-    auto checker = context->checker->AsETSChecker();
+    auto checker = context->GetChecker()->AsETSChecker();
     auto phaseManager = context->phaseManager;
     if (E2pNode->IsScriptFunction() ||
         E2pNode->FindChild([](ir::AstNode *n) { return n->IsScriptFunction(); }) != nullptr) {
@@ -769,20 +1114,161 @@ extern "C" es2panda_AstNode *DeclarationFromIdentifier([[maybe_unused]] es2panda
     return reinterpret_cast<es2panda_AstNode *>(compiler::DeclarationFromIdentifier(E2pNode));
 }
 
+extern "C" es2panda_AstNode *FirstDeclarationByNameFromNode([[maybe_unused]] es2panda_Context *ctx,
+                                                            const es2panda_AstNode *node, const char *name)
+{
+    if (node == nullptr) {
+        return nullptr;
+    }
+
+    util::StringView nameE2p {name};
+    ir::AstNode *res = reinterpret_cast<const ir::AstNode *>(node)->FindChild([&nameE2p](const ir::AstNode *ast) {
+        if (ast != nullptr && ast->IsMethodDefinition() && ast->AsMethodDefinition()->Key() != nullptr &&
+            ast->AsMethodDefinition()->Key()->IsIdentifier() &&
+            ast->AsMethodDefinition()->Key()->AsIdentifier()->Name() == nameE2p) {
+            return true;
+        }
+
+        return false;
+    });
+
+    return reinterpret_cast<es2panda_AstNode *>(res);
+}
+
+extern "C" es2panda_AstNode *FirstDeclarationByNameFromProgram([[maybe_unused]] es2panda_Context *ctx,
+                                                               const es2panda_Program *program, const char *name)
+{
+    if (program == nullptr) {
+        return nullptr;
+    }
+
+    auto programE2p = reinterpret_cast<const parser::Program *>(program);
+    es2panda_AstNode *res =
+        FirstDeclarationByNameFromNode(ctx, reinterpret_cast<const es2panda_AstNode *>(programE2p->Ast()), name);
+    if (res != nullptr) {
+        return res;
+    }
+
+    for (const auto &ext_source : programE2p->DirectExternalSources()) {
+        for (const auto *ext_program : ext_source.second) {
+            if (ext_program != nullptr) {
+                res = FirstDeclarationByNameFromNode(
+                    ctx, reinterpret_cast<const es2panda_AstNode *>(ext_program->Ast()), name);
+            }
+            if (res != nullptr) {
+                return res;
+            }
+        }
+    }
+
+    return nullptr;
+}
+
+static ArenaSet<ir::AstNode *> AllDeclarationsByNameFromNodeHelper(ArenaAllocator *const allocator,
+                                                                   const ir::AstNode *node,
+                                                                   const util::StringView &name)
+{
+    auto result = ArenaSet<ir::AstNode *> {allocator->Adapter()};
+
+    if (node == nullptr) {
+        return result;
+    }
+
+    node->IterateRecursively([&result, &name](ir::AstNode *ast) {
+        if (ast != nullptr && ast->IsMethodDefinition() && ast->AsMethodDefinition()->Key() != nullptr &&
+            ast->AsMethodDefinition()->Key()->IsIdentifier() &&
+            ast->AsMethodDefinition()->Key()->AsIdentifier()->Name() == name) {
+            result.insert(ast);
+        }
+    });
+
+    return result;
+}
+
+extern "C" es2panda_AstNode **AllDeclarationsByNameFromNode([[maybe_unused]] es2panda_Context *ctx,
+                                                            const es2panda_AstNode *node, const char *name,
+                                                            size_t *declsLen)
+{
+    util::StringView nameE2p {name};
+    auto nodeE2p = reinterpret_cast<const ir::AstNode *>(node);
+    auto allocator = reinterpret_cast<Context *>(ctx)->allocator;
+    auto result = AllDeclarationsByNameFromNodeHelper(allocator, nodeE2p, nameE2p);
+    *declsLen = result.size();
+    auto apiRes = allocator->New<es2panda_AstNode *[]>(*declsLen);
+    size_t i = 0;
+    for (auto elem : result) {
+        auto toPush = reinterpret_cast<es2panda_AstNode *>(elem);
+        apiRes[i++] = toPush;
+    };
+    return apiRes;
+}
+
+extern "C" es2panda_AstNode **AllDeclarationsByNameFromProgram([[maybe_unused]] es2panda_Context *ctx,
+                                                               const es2panda_Program *program, const char *name,
+                                                               size_t *declsLen)
+{
+    auto allocator = reinterpret_cast<Context *>(ctx)->allocator;
+    if (program == nullptr) {
+        *declsLen = 0;
+        return allocator->New<es2panda_AstNode *[]>(0);
+    }
+
+    util::StringView nameE2p {name};
+    auto programE2p = reinterpret_cast<const parser::Program *>(program);
+    auto result = ArenaSet<ir::AstNode *> {allocator->Adapter()};
+
+    ArenaSet<ir::AstNode *> res = AllDeclarationsByNameFromNodeHelper(allocator, programE2p->Ast(), nameE2p);
+    result.insert(res.begin(), res.end());
+
+    for (const auto &ext_source : programE2p->DirectExternalSources()) {
+        for (const auto *ext_program : ext_source.second) {
+            if (ext_program != nullptr) {
+                res = AllDeclarationsByNameFromNodeHelper(allocator, ext_program->Ast(), nameE2p);
+                result.insert(res.begin(), res.end());
+            }
+        }
+    }
+
+    *declsLen = result.size();
+    auto apiRes = allocator->New<es2panda_AstNode *[]>(*declsLen);
+    size_t i = 0;
+    for (auto elem : result) {
+        auto toPush = reinterpret_cast<es2panda_AstNode *>(elem);
+        apiRes[i++] = toPush;
+    };
+
+    return apiRes;
+}
+
 extern "C" __attribute__((unused)) int GenerateTsDeclarationsFromContext(es2panda_Context *ctx,
                                                                          const char *outputDeclEts,
-                                                                         const char *outputEts, bool exportAll)
+                                                                         const char *outputEts, bool exportAll,
+                                                                         bool isolated)
 {
     auto *ctxImpl = reinterpret_cast<Context *>(ctx);
-    auto *checker = reinterpret_cast<ark::es2panda::checker::ETSChecker *>(ctxImpl->checker);
+    auto *checker = reinterpret_cast<ark::es2panda::checker::ETSChecker *>(ctxImpl->GetChecker());
 
     ark::es2panda::declgen_ets2ts::DeclgenOptions declgenOptions;
     declgenOptions.exportAll = exportAll;
     declgenOptions.outputDeclEts = outputDeclEts ? outputDeclEts : "";
     declgenOptions.outputEts = outputEts ? outputEts : "";
+    declgenOptions.isolated = isolated;
 
     return ark::es2panda::declgen_ets2ts::GenerateTsDeclarations(checker, ctxImpl->parserProgram, declgenOptions) ? 0
                                                                                                                   : 1;
+}
+
+// Will be removed after binary import support is fully implemented.
+extern "C" __attribute__((unused)) int GenerateStaticDeclarationsFromContext(es2panda_Context *ctx,
+                                                                             const char *outputPath)
+{
+    auto *ctxImpl = reinterpret_cast<Context *>(ctx);
+    if (ctxImpl->state != ES2PANDA_STATE_CHECKED) {
+        return 1;
+    }
+    compiler::HandleGenerateDecl(*ctxImpl->parserProgram, *ctxImpl->diagnosticEngine, outputPath);
+
+    return ctxImpl->diagnosticEngine->IsAnyError() ? 1 : 0;
 }
 
 extern "C" void InsertETSImportDeclarationAndParse(es2panda_Context *context, es2panda_Program *program,
@@ -791,8 +1277,10 @@ extern "C" void InsertETSImportDeclarationAndParse(es2panda_Context *context, es
     auto *ctx = reinterpret_cast<Context *>(context);
     auto *parserProgram = reinterpret_cast<parser::Program *>(program);
     auto *importDeclE2p = reinterpret_cast<ir::ETSImportDeclaration *>(importDeclaration);
+    importDeclE2p->AddAstNodeFlags(ir::AstNodeFlags::NOCLEANUP);
 
-    parserProgram->Ast()->Statements().insert(parserProgram->Ast()->Statements().begin(), importDeclE2p);
+    auto &stmt = parserProgram->Ast()->StatementsForUpdates();
+    stmt.insert(stmt.begin(), importDeclE2p);
     importDeclE2p->SetParent(parserProgram->Ast());
 
     ctx->parser->AsETSParser()->AddExternalSource(ctx->parser->AsETSParser()->ParseSources());
@@ -802,16 +1290,43 @@ extern "C" void InsertETSImportDeclarationAndParse(es2panda_Context *context, es
     }
 }
 
+__attribute__((unused)) static void GenerateStdLibCache(es2panda_Config *config, GlobalContext *globalContext,
+                                                        bool LspUsage)
+{
+    auto cfg = reinterpret_cast<ConfigImpl *>(config);
+    globalContext->stdLibAllocator = new ThreadSafeArenaAllocator(SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
+    auto ctx = CreateContext(config, std::move(""), cfg->options->SourceFileName().c_str(),
+                             reinterpret_cast<es2panda_GlobalContext *>(globalContext), true, true);
+    ProceedToState(ctx, es2panda_ContextState::ES2PANDA_STATE_CHECKED);
+    if (!LspUsage) {
+        AstNodeRecheck(ctx,
+                       reinterpret_cast<es2panda_AstNode *>(reinterpret_cast<Context *>(ctx)->parserProgram->Ast()));
+        AstNodeRecheck(ctx,
+                       reinterpret_cast<es2panda_AstNode *>(reinterpret_cast<Context *>(ctx)->parserProgram->Ast()));
+    }
+    ProceedToState(ctx, es2panda_ContextState::ES2PANDA_STATE_LOWERED);
+    globalContext->stdLibAstCache = &(reinterpret_cast<Context *>(ctx)->parserProgram->ExternalSources());
+    DestroyContext(ctx);
+}
+
 es2panda_Impl g_impl = {
     ES2PANDA_LIB_VERSION,
 
+    MemInitialize,
+    MemFinalize,
     CreateConfig,
     DestroyConfig,
+    GetAllErrorMessages,
     ConfigGetOptions,
     CreateContextFromFile,
+    CreateCacheContextFromFile,
     CreateContextFromString,
+    CreateCacheContextFromString,
+    CreateContextGenerateAbcForExternalSourceFiles,
     ProceedToState,
     DestroyContext,
+    CreateGlobalContext,
+    DestroyGlobalContext,
     ContextState,
     ContextErrorMessage,
     ContextProgram,
@@ -830,6 +1345,7 @@ es2panda_Impl g_impl = {
     UpdateNumberLiteral<double>,
     CreateNumberLiteral<float>,
     UpdateNumberLiteral<float>,
+    NumberLiteralStrConst,
     AllocMemory,
     CreateSourcePosition,
     CreateSourceRange,
@@ -838,19 +1354,31 @@ es2panda_Impl g_impl = {
     SourceRangeStart,
     SourceRangeEnd,
     CreateDiagnosticKind,
+    CreateDiagnosticInfo,
+    CreateSuggestionInfo,
+    LogDiagnosticWithSuggestion,
     LogDiagnostic,
     GetSemanticErrors,
     GetSyntaxErrors,
     GetPluginErrors,
     GetWarnings,
+    IsAnyError,
     AstNodeFindNearestScope,
     AstNodeRebind,
     AstNodeRecheck,
     Es2pandaEnumFromString,
     Es2pandaEnumToString,
     DeclarationFromIdentifier,
+    FirstDeclarationByNameFromNode,
+    FirstDeclarationByNameFromProgram,
+    AllDeclarationsByNameFromNode,
+    AllDeclarationsByNameFromProgram,
     GenerateTsDeclarationsFromContext,
     InsertETSImportDeclarationAndParse,
+    GenerateStaticDeclarationsFromContext,
+    InvalidateFileCache,
+    RemoveFileCache,
+    AddFileCache,
 
 #include "generated/es2panda_lib/es2panda_lib_list.inc"
 

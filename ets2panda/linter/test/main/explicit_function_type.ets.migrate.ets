@@ -18,7 +18,7 @@ let h1: Function = new Function('return 42'); //  NOT OK
 let g2 = () => { }; // OK
 let h2 = new Function('return 42'); //  NOT OK
 let j1 = () => {}; // OK
-let f2 = (x: number) => x + 1; // OK
+let f2 = (x: number) => x + 1.0; // OK
 
 
 type F<R> = () => R;
@@ -26,7 +26,7 @@ type F1<P, R> = (p: P) => R;
 type F2<P1, P2, R> = (p1: P1, p2: P2) => R;
 
 let f3: F<void> = () => {}; // OK
-let g3: F<number> = () => 42; // OK
+let g3: F<number> = () => 42.0; // OK
 let h3: F1<string, number> = (s: string) => s.length; // OK
 let i: F2<number, string, boolean> = (n: number, s: string) => s.length > n; // OK
 
@@ -54,7 +54,7 @@ class D5 implements C5 {
 }
 
 function run6(fn: Function) {
-  fn.unSafeCall();
+  fn.unsafeCall();
 }
 
 function getFunction8(): Function {
@@ -90,7 +90,7 @@ class I25 {
 }
 class I25_1 extends I25 {
   constructor() {
-    super(2)
+    super(2.0)
   }
 
   override foo3(fn: Function): void {
@@ -115,7 +115,7 @@ function foo33(par1: number, par2: boolean, par3: string, par4: [string, Array<F
   console.log("ArkTs foo33")
 }
 
-let array34 = [Function, 1, 2, 3];
+let array34 = [Function, 1.0, 2.0, 3.0];
 
 class L36 {
   foo1();
@@ -125,21 +125,21 @@ class L36 {
   }
 }
 
-let tup38:[['arkts'|Function, 1|true, false], string[], Function] = [['arkts', 1, false], ['arkts1', 'arkts2'], tup38_1];
+let tup38:[['arkts'|Function, 1.0|true, false], string[], Function] = [['arkts', 1.0, false], ['arkts1', 'arkts2'], tup38_1];
 
 //枚举
 enum E39 {
   Function,
-  BLUE = 1,
+  BLUE = 1.0,
   YELLOW
 }
 
 //回调参数不明确
 function handleEvent41(callback: Function) {
-  callback.unSafeCall("event", Date.now());
+  callback.unsafeCall("event", Date.now());
 }
 
-let fn43: Function = (x: number) => x + 1;
+let fn43: Function = (x: number) => x + 1.0;
 function process43(input: number): Function {
   if (typeof input === "string") return fn43;
   if (typeof input === "number") return fn43;
@@ -157,19 +157,24 @@ const fetchData44: Function = async (url: string) => {
 
 //高阶函数
 function compose45(...fns: Function[]): Function {
-  return fns.reduce((prev, curr) => (...args: Function[]) => curr.unSafeCall(prev.unSafeCall(...args)) as Function);
+  return fns.reduce((prev, curr) => (...args: Function[]) => curr.unsafeCall(prev.unsafeCall(...args)) as Function);
 }
 
 export let add: (a: number, b: number) => number;
 export let add1: (a: string) => object;
 
-f1.unSafeCall();
+f1.unsafeCall();
 
 class AB3 {
   fn3: Function = () => {};
 }
 let ab3 = new AB3();
-ab3.fn3.unSafeCall();
+ab3.fn3.unsafeCall();
 
 const fn29: Function[] = [];
-fn29[1].unSafeCall();
+fn29[1].unsafeCall();
+
+SysApiWrapper.setTimeout = (handler: Function | string, delay?: number): number => {
+  (handler as Function)?.unsafeCall();
+  return Math.random();
+}

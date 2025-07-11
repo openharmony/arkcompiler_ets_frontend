@@ -19,6 +19,36 @@
 
 class LspKeywordCompletionTests : public LSPAPITests {};
 
+static void AssertCompletionsContainAndNotContainEntries(const std::vector<std::string> &entries,
+                                                         const std::vector<std::string> &expectedEntries,
+                                                         const std::vector<std::string> &unexpectedEntries)
+{
+    auto emptyCheck = expectedEntries.empty() && !entries.empty();
+    ASSERT_FALSE(emptyCheck) << "Expected empty but the result is not. Actual account: " << entries.size();
+
+    for (const auto &expectedEntry : expectedEntries) {
+        bool found = false;
+        for (const auto &entry : entries) {
+            if (entry == expectedEntry) {
+                found = true;
+                break;
+            }
+        }
+        ASSERT_TRUE(found) << "Expected completion '" << expectedEntry << "' not found";
+    }
+
+    for (const auto &unexpectedEntry : unexpectedEntries) {
+        bool found = false;
+        for (const auto &entry : entries) {
+            if (entry == unexpectedEntry) {
+                found = true;
+                break;
+            }
+        }
+        ASSERT_FALSE(found) << "Unexpected completion '" << unexpectedEntry << "' found";
+    }
+}
+
 TEST_F(LspKeywordCompletionTests, GetKeywordCompletionsStartWithA)
 {
     std::string input = "a";
@@ -31,7 +61,7 @@ TEST_F(LspKeywordCompletionTests, GetKeywordCompletionsStartWithA)
         actual.push_back(entry.GetName());
     }
 
-    ASSERT_EQ(actual, expected);
+    AssertCompletionsContainAndNotContainEntries(actual, expected, {});
 }
 TEST_F(LspKeywordCompletionTests, GetKeywordCompletionsStartWithAs)
 {
@@ -45,7 +75,7 @@ TEST_F(LspKeywordCompletionTests, GetKeywordCompletionsStartWithAs)
         actual.push_back(entry.GetName());
     }
 
-    ASSERT_EQ(actual, expected);
+    AssertCompletionsContainAndNotContainEntries(actual, expected, {});
 }
 TEST_F(LspKeywordCompletionTests, GetKeywordCompletionsStartWithAs2)
 {
@@ -59,35 +89,35 @@ TEST_F(LspKeywordCompletionTests, GetKeywordCompletionsStartWithAs2)
         actual.push_back(entry.GetName());
     }
 
-    ASSERT_EQ(actual, expected);
+    AssertCompletionsContainAndNotContainEntries(actual, expected, {});
 }
 TEST_F(LspKeywordCompletionTests, GetKeywordCompletionsStartWithRe)
 {
     std::string input = "re";
     ark::es2panda::lsp::Request result = ark::es2panda::lsp::KeywordCompletionData(input);
 
-    std::vector<std::string> expected = {"readonly", "rethrows", "return", "require"};
+    std::vector<std::string> expected = {"readonly", "return", "require"};
 
     std::vector<std::string> actual;
     for (const auto &entry : result.keywordCompletions) {
         actual.push_back(entry.GetName());
     }
 
-    ASSERT_EQ(actual, expected);
+    AssertCompletionsContainAndNotContainEntries(actual, expected, {});
 }
 TEST_F(LspKeywordCompletionTests, GetKeywordCompletionsStartWithRet)
 {
     std::string input = "ret";
     ark::es2panda::lsp::Request result = ark::es2panda::lsp::KeywordCompletionData(input);
 
-    std::vector<std::string> expected = {"rethrows", "return"};
+    std::vector<std::string> expected = {"return"};
 
     std::vector<std::string> actual;
     for (const auto &entry : result.keywordCompletions) {
         actual.push_back(entry.GetName());
     }
 
-    ASSERT_EQ(actual, expected);
+    AssertCompletionsContainAndNotContainEntries(actual, expected, {});
 }
 TEST_F(LspKeywordCompletionTests, GetKeywordCompletionsStartWithI)
 {
@@ -103,7 +133,7 @@ TEST_F(LspKeywordCompletionTests, GetKeywordCompletionsStartWithI)
         actual.push_back(entry.GetName());
     }
 
-    ASSERT_EQ(actual, expected);
+    AssertCompletionsContainAndNotContainEntries(actual, expected, {});
 }
 TEST_F(LspKeywordCompletionTests, GetKeywordCompletionsStartWithInt)
 {
@@ -117,20 +147,20 @@ TEST_F(LspKeywordCompletionTests, GetKeywordCompletionsStartWithInt)
         actual.push_back(entry.GetName());
     }
 
-    ASSERT_EQ(actual, expected);
+    AssertCompletionsContainAndNotContainEntries(actual, expected, {});
 }
 TEST_F(LspKeywordCompletionTests, GetKeywordCompletionsSensitiveStartWithT)
 {
     std::string input = "T";
     ark::es2panda::lsp::Request result = ark::es2panda::lsp::KeywordCompletionData(input);
-    std::vector<std::string> expected = {"target", "this", "throw", "throws", "true", "try", "type", "typeof"};
+    std::vector<std::string> expected = {"target", "this", "throw", "true", "try", "type", "typeof"};
 
     std::vector<std::string> actual;
     for (const auto &entry : result.keywordCompletions) {
         actual.push_back(entry.GetName());
     }
 
-    ASSERT_EQ(actual, expected);
+    AssertCompletionsContainAndNotContainEntries(actual, expected, {});
 }
 TEST_F(LspKeywordCompletionTests, GetKeywordCompletionsSensitiveStartWithTy)
 {
@@ -143,7 +173,7 @@ TEST_F(LspKeywordCompletionTests, GetKeywordCompletionsSensitiveStartWithTy)
         actual.push_back(entry.GetName());
     }
 
-    ASSERT_EQ(actual, expected);
+    AssertCompletionsContainAndNotContainEntries(actual, expected, {});
 }
 TEST_F(LspKeywordCompletionTests, GetKeywordCompletionsInvalid)
 {

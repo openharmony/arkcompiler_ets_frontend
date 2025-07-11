@@ -21,6 +21,6 @@ import {myvar2} from "./package_module"
 export let a: String = "SubpackageA";
 
 /* @@? 18:1 Error SyntaxError: Package module cannot import from a file in it's own package.  */
-/* @@? 19:1 Error SyntaxError: Package module cannot import from a file in it's own package.  */
 /* @@? 18:21 Error TypeError: Cannot find import: ./package_module  */
+/* @@? 19:1 Error SyntaxError: Package module cannot import from a file in it's own package.  */
 /* @@? 19:22 Error TypeError: Cannot find import: ./package_module  */

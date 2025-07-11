@@ -219,3 +219,30 @@ namespace quarantine {
       int: int
   }
 }
+class StringBuilder {
+}
+
+class Map {
+}
+
+let _if = null;
+let _import = null;
+let _export = null;
+let _await = null;
+let _arguments = null;
+let _eval = null;
+let _default = null;
+let _as = null;
+
+export {
+_if as if,
+_import as import,
+_export as export,
+_await as await,
+_arguments as arguments,
+_eval as eval,
+_default as default,
+_as as as
+};
+
+let a = 1;

@@ -17,8 +17,8 @@ function main(): void {
   {
     class A {}
     let a: A = new A;
-    assertTrue(a != null)
+    arktest.assertTrue(a != null)
   }
-  assertTrue(/* @@ label */a != null)
+  arktest.assertTrue(/* @@ label */a != null)
 }
 /* @@@ label Error TypeError: Unresolved reference a  */

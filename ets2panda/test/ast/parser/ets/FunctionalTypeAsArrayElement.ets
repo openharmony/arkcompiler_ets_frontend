@@ -19,4 +19,4 @@ function main(){
     ]
 }
 
-/* @@@ label Error TypeError: Expected type for array literal should be an array type, got () => int[]  */
+/* @@? 17:38 Error TypeError: Type 'Array<() => Int>' cannot be assigned to type '() => Array<Int>' */

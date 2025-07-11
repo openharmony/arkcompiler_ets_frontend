@@ -14,10 +14,10 @@
  */
 
 function foo<T, U>(p: T, q: U): T|U {
-    return p!.toString() > q!.toString() ? p : q
+    return (p! as object).toString() > (q! as object).toString() ? p : q
 }
 
 function main() {
     let v = foo(1.0, 11.0)
-    assertEQ(v as number, 11.0)
+    arktest.assertEQ(v as number, 11.0)
 }

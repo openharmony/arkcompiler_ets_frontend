@@ -15,7 +15,7 @@
 
 let isPrime: int[] = new int[[]][[]
 
-/* @@? 16:22 Error TypeError: Type 'int[][]' cannot be assigned to type 'int[]' */
+/* @@? 16:22 Error TypeError: Type 'Array<Array<Int>>' cannot be assigned to type 'Array<Int>' */
 /* @@? 16:30 Error TypeError: Can't resolve array type */
 /* @@? 16:34 Error TypeError: Can't resolve array type */
-/* @@? 22:1 Error SyntaxError: Expected ']', got 'eos'. */
+/* @@? 22:1 Error SyntaxError: Expected ']', got 'end of stream'. */

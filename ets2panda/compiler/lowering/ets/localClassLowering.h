@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -43,7 +43,7 @@ protected:
                           ArenaUnorderedMap<ir::ClassDefinition *, ArenaSet<varbinder::Variable *>> &capturedVarsMap,
                           ir::ClassDefinition *classDef);
 
-    ir::ETSParameterExpression *CreateParam(checker::ETSChecker *const checker, varbinder::FunctionParamScope *scope,
+    ir::ETSParameterExpression *CreateParam(public_lib::Context *ctx, varbinder::FunctionParamScope *scope,
                                             util::StringView name, checker::Type *type);
 };
 

@@ -14,8 +14,8 @@
       "limitations under the License."
   ],
   "mode": {
-    "autofix": "",
+    "autofix": "--arkts-2",
     "arkts2": "",
-    "migrate": ""
+    "migrate": "--arkts-2"
   }
 }

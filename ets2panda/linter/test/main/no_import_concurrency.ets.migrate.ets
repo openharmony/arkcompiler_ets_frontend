@@ -16,10 +16,28 @@
 
 import { foo, util } from '@ohos.taskpool';
 import { anyClass } from '@kit.ArkTS'; //legal
-import foo2, { fooClass } from '@ohos.taskpool'; //legal
-import { roo } from '@kit.ArkTS';
+import { fooClass } from '@ohos.taskpool'; //legal
+import defaultImport, { roo } from '@kit.ArkTS';
 import koo from '@kit.ArkTS';
-import doo, { too } from '@kit.ArkTS';
-import fooke from '@ohos.process'; //legal
+import doo, { fooModule as fooAs, too } from '@kit.ArkTS';
+import bbbb from '@kit.ArkTS';
 
 
+
+
+
+
+
+taskpool.getTaskPoolInfo()
+
+function concurrency () {
+    const aaa: number = 123.0;
+    console.log(aaa);
+}
+
+process.isIsolatedProcess();
+taskpool.cancel();
+ArkTSUtils.locks.AsyncLock
+collections.Set()
+collections.Set()
+fooAs.getFoo();

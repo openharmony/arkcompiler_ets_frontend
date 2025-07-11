@@ -24,5 +24,5 @@ enum ColorC {
     Green = /* @@ label1 */ColorB.Green
 }
 
-/* @@@ label Error SyntaxError: Invalid enum initialization value */
-/* @@@ label1 Error SyntaxError: Invalid enum initialization value */
+/* @@? 20:27 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type. */
+/* @@? 24:28 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type. */

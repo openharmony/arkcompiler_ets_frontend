@@ -1,0 +1,124 @@
+slotNum = 0x2
+.language ECMAScript
+.function any .#~A=#A(any a0, any a1, any a2, any a3) {
+label_1: 
+label_0: 
+	lda a3
+	stobjbyname 0x0, a, a2
+	lda a2
+	return
+label_2: 
+}
+
+slotNum = 0x3
+.language ECMAScript
+.function any .#~A>#foo(any a0, any a1, any a2, any a3) {
+label_1: 
+label_0: 
+	tryldglobalbyname 0x0, print
+	callarg1 0x1, a3
+	returnundefined
+label_2: 
+}
+
+slotNum = 0x3
+.language ECMAScript
+.function any .func_main_0(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldhole
+	sta v0
+	defineclasswithbuffer 0x0, .#~A=#A, _2, 0x1, v0
+	ldobjbyname 0x1, prototype
+	returnundefined
+label_2: 
+}
+
+
+======> literal array buffer <======
+------------------------------------
+slot _0
+------------------------------------
+slot _1
+{
+  index: 0
+    tag: 2
+    val: 0
+},
+{
+  index: 1
+    tag: 2
+    val: 0
+},
+{
+  index: 2
+    tag: 2
+    val: 0
+},
+{
+  index: 3
+    tag: 2
+    val: 0
+},
+{
+  index: 4
+    tag: 2
+    val: 0
+},
+{
+  index: 5
+    tag: 2
+    val: 0
+},
+------------------------------------
+slot _2
+{
+  index: 0
+    tag: 0
+    val: 5
+},
+{
+  index: 1
+    tag: 5
+    val: foo
+},
+{
+  index: 2
+    tag: 0
+    val: 6
+},
+{
+  index: 3
+    tag: 6
+    val: .#~A>#foo
+},
+{
+  index: 4
+    tag: 0
+    val: 9
+},
+{
+  index: 5
+    tag: 9
+    val: 1
+},
+{
+  index: 6
+    tag: 0
+    val: 2
+},
+{
+  index: 7
+    tag: 2
+    val: 1
+},
+{
+  index: 8
+    tag: 0
+    val: 28
+},
+{
+  index: 9
+    tag: 28
+    val: L<packagename>/src/main/ets/<filepath>/I;
+},

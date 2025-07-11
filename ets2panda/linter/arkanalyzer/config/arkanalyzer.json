@@ -7,15 +7,20 @@
     ".d.ts"
   ],
   "enableLeadingComments": false,
+  "enableBuiltIn": true,
   "ignoreFileNames": [
     "oh_modules",
     "node_modules",
     "build-tools",
-    "hvigorfile.ts"
+    "hvigorfile.ts",
+    "hvigorfile.js",
+    "hvigor-wrapper.js"
   ],
   "sdkGlobalFolders": [
     "component",
-    "@internal"
+    "@internal",
+    "ohos-typescript",
+    "dist"
   ],
   "tsconfig": "tsconfig.json"
 }

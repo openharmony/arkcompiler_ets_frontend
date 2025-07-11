@@ -17,5 +17,5 @@
 function main(): void {
     enum Color { Red=3, Green=45, Blue=2  }
     let i : int = 3 + Color.Green;
-    assertEQ(i, 48)
+    arktest.assertEQ(i, 48)
 }

@@ -23,4 +23,3 @@ function main() {
 
 /* @@? 17:25 Error TypeError: Expected initializer for parameter b.  */
 /* @@? 1:1 Error SyntaxError: Required parameter follows default parameter(s). */
-/* @@? 1:1 Error SyntaxError: Required parameter follows default parameter(s). */

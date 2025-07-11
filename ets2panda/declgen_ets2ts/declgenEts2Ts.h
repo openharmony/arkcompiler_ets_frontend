@@ -22,11 +22,13 @@
 #include "libpandabase/utils/arena_containers.h"
 #include "util/options.h"
 #include "util/diagnosticEngine.h"
+#include "isolatedDeclgenChecker.h"
 
 namespace ark::es2panda::declgen_ets2ts {
 
 struct DeclgenOptions {
     bool exportAll = false;
+    bool isolated = false;
     std::string outputDeclEts;
     std::string outputEts;
 };
@@ -37,8 +39,10 @@ bool GenerateTsDeclarations(checker::ETSChecker *checker, const ark::es2panda::p
 
 class TSDeclGen {
 public:
-    TSDeclGen(checker::ETSChecker *checker, const ark::es2panda::parser::Program *program)
+    TSDeclGen(checker::ETSChecker *checker, declgen::IsolatedDeclgenChecker *isolatedDeclgenChecker,
+              const ark::es2panda::parser::Program *program)
         : checker_(checker),
+          isolatedDeclgenChecker_(isolatedDeclgenChecker),
           program_(program),
           diagnosticEngine_(checker->DiagnosticEngine()),
           allocator_(SpaceType::SPACE_TYPE_COMPILER, nullptr, true),
@@ -96,6 +100,7 @@ private:
 
     void GenType(const checker::Type *checkerType);
     void GenFunctionType(const checker::ETSFunctionType *functionType, const ir::MethodDefinition *methodDef = nullptr);
+    void SplitUnionTypes(std::string &unionTypeString);
     void ProcessFunctionReturnType(const checker::Signature *sig);
     bool ProcessTSQualifiedName(const ir::ETSTypeReference *typeReference);
     void ProcessETSTypeReferenceType(const ir::ETSTypeReference *typeReference,
@@ -106,6 +111,7 @@ private:
     void ProcessETSTuple(const ir::ETSTuple *etsTuple);
     void ProcessETSUnionType(const ir::ETSUnionType *etsUnionType);
     void ProcessTSArrayType(const ir::TSArrayType *tsArrayType);
+    void ProcessETSFunctionType(const ir::ETSFunctionType *etsFunction);
 
     void GenObjectType(const checker::ETSObjectType *objectType);
     void GenUnionType(const checker::ETSUnionType *unionType);
@@ -116,12 +122,27 @@ private:
 
     void GenImportDeclaration(const ir::ETSImportDeclaration *importDeclaration);
     void GenNamespaceImport(const ir::AstNode *specifier, const std::string &source);
-    void GenDefaultImport(const ir::AstNode *specifier, const std::string &source, const std::string &typeStr);
+    void GenDefaultImport(const ir::AstNode *specifier, const std::string &source, bool isTypeKind = false);
     void GenNamedImports(const ir::ETSImportDeclaration *importDeclaration,
-                         const ArenaVector<ir::AstNode *> &specifiers, const std::string &source,
-                         const std::string &typeStr);
-    void GenSingleNamedImport(ir::AstNode *specifier, const ir::ETSImportDeclaration *importDeclaration);
+                         const ArenaVector<ir::AstNode *> &specifiers, bool isTypeKind = false);
+    void GenDtsImportStatement(std::vector<ir::AstNode *> &specifiers,
+                               const ir::ETSImportDeclaration *importDeclaration, bool isTypeKind = false);
+    void GenTsImportStatement(std::vector<ir::AstNode *> &specifiers, const ir::ETSImportDeclaration *importDeclaration,
+                              bool isInterface = false);
+    void GenSingleNamedImport(ir::AstNode *specifier, const ir::ETSImportDeclaration *importDeclaration,
+                              bool isGlueCode = false);
     void GenReExportDeclaration(const ir::ETSReExportDeclaration *reExportDeclaration);
+    bool GenNamespaceReExportDeclaration(const ir::AstNode *specifier,
+                                         const ir::ETSImportDeclaration *importDeclaration);
+    void SeparateInterfaceSpecifiers(const ArenaVector<ir::AstNode *> &specifiers,
+                                     std::vector<ir::AstNode *> &interfaceSpecifiers,
+                                     std::vector<ir::AstNode *> &normalSpecifiers);
+    void GenDtsReExportStatement(const ArenaVector<ir::AstNode *> &specifiers,
+                                 const ir::ETSImportDeclaration *importDeclaration, bool isTypeKind = false);
+    void GenTsReExportStatement(const std::vector<ir::AstNode *> &specifiers,
+                                const ir::ETSImportDeclaration *importDeclaration, bool isInterface = false);
+    void GenSingleNamedReExport(ir::AstNode *specifier, const ir::ETSImportDeclaration *importDeclaration,
+                                bool isGlueCode = false);
     void GenTypeAliasDeclaration(const ir::TSTypeAliasDeclaration *typeAlias);
     void GenEnumDeclaration(const ir::ClassProperty *enumMember);
     void GenInterfaceDeclaration(const ir::TSInterfaceDeclaration *interfaceDecl);
@@ -152,7 +173,8 @@ private:
     bool ShouldEmitDeclarationSymbol(const ir::Identifier *symbol);
 
     template <class T, class CB>
-    void GenSeparated(const T &container, const CB &cb, const char *separator = ", ", bool isReExport = false);
+    void GenSeparated(const T &container, const CB &cb, const char *separator = ", ", bool isReExport = false,
+                      bool isDtsExport = true);
 
     void PrepareClassDeclaration(const ir::ClassDefinition *classDef);
     bool ShouldSkipMethodDeclaration(const ir::MethodDefinition *methodDef);
@@ -185,6 +207,7 @@ private:
     void ProcessInterfacesDependencies(const ArenaVector<checker::ETSObjectType *> &interfaces);
     void AddObjectDependencies(const util::StringView &typeName, const std::string &alias = "");
     void GenDeclarations();
+    void GenOtherDeclarations();
     void CloseClassBlock(const bool isDts);
 
     void EmitDeclarationPrefix(const ir::ClassDefinition *classDef, const std::string &typeName,
@@ -206,8 +229,8 @@ private:
     void ProcessMethodDefinition(const ir::MethodDefinition *methodDef,
                                  std::unordered_set<std::string> &processedMethods);
 
-    void ProcessMethodsFromInterfaces(const std::unordered_set<std::string> &processedMethods,
-                                      const ir::ClassDefinition *classDef);
+    void ProcessMethodsFromInterfaces(std::unordered_set<std::string> &processedMethods,
+                                      const ArenaVector<checker::ETSObjectType *> &interfaces);
 
     void OutDts() {}
 
@@ -285,6 +308,7 @@ private:
     std::stringstream outputDts_;
     std::stringstream outputTs_;
     checker::ETSChecker *checker_ {};
+    declgen::IsolatedDeclgenChecker *isolatedDeclgenChecker_ {};
     const ark::es2panda::parser::Program *program_ {};
     util::DiagnosticEngine &diagnosticEngine_;
     ArenaAllocator allocator_;

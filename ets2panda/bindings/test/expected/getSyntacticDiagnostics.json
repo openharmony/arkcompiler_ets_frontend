@@ -93,16 +93,16 @@
         }
       },
       {
-        "message": "Unexpected token ':'.",
-        "source": "*ERROR_LITERAL*",
+        "message": "Unexpected token 'number'.",
+        "source": "number",
         "range": {
           "start": {
             "line": 16,
-            "character": 14
+            "character": 16
           },
           "end": {
             "line": 16,
-            "character": 15
+            "character": 22
           }
         },
         "tags": [],
@@ -159,16 +159,16 @@
         }
       },
       {
-        "message": "Unexpected token ','.",
-        "source": "*ERROR_LITERAL*",
+        "message": "Unexpected token 'b'.",
+        "source": "",
         "range": {
           "start": {
             "line": 16,
-            "character": 22
+            "character": 24
           },
           "end": {
             "line": 16,
-            "character": 23
+            "character": 24
           }
         },
         "tags": [],
@@ -247,16 +247,16 @@
         }
       },
       {
-        "message": "Unexpected token ')'.",
-        "source": "*ERROR_LITERAL*",
+        "message": "Unexpected token '{'.",
+        "source": "{\n  return ((a) + (b));\n}",
         "range": {
           "start": {
             "line": 16,
-            "character": 33
+            "character": 35
           },
           "end": {
-            "line": 16,
-            "character": 34
+            "line": 18,
+            "character": 2
           }
         },
         "tags": [],

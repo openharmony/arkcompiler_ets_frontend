@@ -74,6 +74,11 @@ options:
   default: false
   description: Print names of files that are part of compilation
 
+- name: parse-jsdoc
+  type: bool
+  default: false
+  description: Enable the ability to parse jsdoc
+
 # Compiler
 - name: dump-assembly
   type: bool
@@ -90,14 +95,9 @@ options:
   default: false
   description: Dump debug info
 
-- name: with-export-table
-  type: bool
-  default: false
-  description: enable abc file with export table info
-
 - name: opt-level
   type: int
-  default: 0
+  default: 1
   description: Compiler optimization level
   range: 0-2
 
@@ -165,6 +165,23 @@ options:
     default: []
     description: Paths to evaluation mode (.abc) files, must be accessible
     delimiter: ":"
+
+- name: generate-decl
+  description: Input static file and generate static declaration files
+  sub_options:
+  - name: enabled
+    type: bool
+    default: false
+    description: Whether to enable static declaration file generation
+  - name: path
+    type: std::string
+    default: ""
+    description: Output path for generated static declaration files
+
+- name: emit-declaration
+  type: bool
+  default: false
+  description: Emit declaration to .abc file
 
 - name: thread
   type: int
@@ -352,3 +369,18 @@ options:
   type: arg_list_t
   default: []
   description: Bytecode optimizer's compiler arguments
+
+- name: perm-arena
+  type: bool
+  default: false
+  description: Place AST trees in permanent arena
+
+- name: dump-perf-metrics
+  type: bool
+  default: false
+  description: Dump es2panda performance metrics
+
+- name: simultaneous 
+  type: bool
+  default: false
+  description: compile all the files to abc in once.

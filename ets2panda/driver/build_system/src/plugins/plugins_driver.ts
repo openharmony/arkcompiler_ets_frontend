@@ -20,6 +20,7 @@ import {
 } from '../logger';
 import { BuildConfig } from '../types';
 import { ErrorCode } from '../error_code';
+import { FileManager } from './FileManager';
 
 export enum PluginHook {
   NEW = 'afterNew',
@@ -69,11 +70,15 @@ class PluginContext {
   private ast: object | undefined;
   private program: object | undefined;
   private projectConfig: object | undefined;
+  private fileManager: FileManager | undefined;
+  private contextPtr: number | undefined;
 
   constructor() {
     this.ast = undefined;
     this.program = undefined;
     this.projectConfig = undefined;
+    this.fileManager = undefined;
+    this.contextPtr = undefined;
   }
 
   public setArkTSAst(ast: object): void {
@@ -93,20 +98,30 @@ class PluginContext {
   }
 
   public setProjectConfig(projectConfig: object): void {
-    if (this.projectConfig) {
-      const logData: LogData = LogDataFactory.newInstance(
-        ErrorCode.BUILDSYSTEM_PLUGIN_CONTEXT_RESET_PROJECT_CONFIG,
-        'Trying to reset projectConfig in PluginContext, abort compiling.',
-        'projectConfig in PluginContext can only be set once.'
-      );
-      Logger.getInstance().printErrorAndExit(logData);
-      return;
-    }
     this.projectConfig = projectConfig;
   }
 
   public getProjectConfig(): object | undefined {
     return this.projectConfig;
+  }
+
+  public setFileManager(projectConfig: BuildConfig): void {
+    if (!this.fileManager) {
+      FileManager.init(projectConfig);
+      this.fileManager = FileManager.getInstance();
+    }
+  }
+
+  public getFileManager(): FileManager | undefined{
+    return this.fileManager;
+  }
+
+  public setContextPtr(ptr: number): void {
+    this.contextPtr = ptr;
+  }
+
+  public getContextPtr(): number | undefined {
+      return this.contextPtr;
   }
 }
 
@@ -173,6 +188,7 @@ export class PluginDriver {
     });
 
     this.context.setProjectConfig(projectConfig);
+    this.context.setFileManager(projectConfig);
   }
 
   private getPlugins(hook: PluginHook) : PluginExecutor[] | undefined {

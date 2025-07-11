@@ -73,7 +73,9 @@ enum class ParserStatus : uint64_t {
 
     DEPENDENCY_ANALYZER_MODE = 1ULL << 39ULL,
 
-    STATIC_BLOCK = 1ULL << 40ULL
+    STATIC_BLOCK = 1ULL << 40ULL,
+    ALLOW_JS_DOC_START = 1ULL << 41ULL,
+    IN_PACKAGE = 1ULL << 42ULL,
 };
 
 }  // namespace ark::es2panda::parser
@@ -91,6 +93,8 @@ public:
 
     explicit ParserContext(const Program *program, ParserStatus status);
 
+    explicit ParserContext(const Program *program, ParserStatus status, bool isEnableJsdoc);
+
     explicit ParserContext(ParserContext *current, ParserStatus newStatus, util::StringView label = "")
         : program_(current->program_), prev_(current), label_(label), lang_(current->lang_)
     {
@@ -99,6 +103,7 @@ public:
                           ParserStatus::ALLOW_THIS_TYPE | ParserStatus::IN_CLASS_BODY | ParserStatus::FUNCTION |
                           ParserStatus::IN_AMBIENT_CONTEXT);
         status_ = currentStatus | newStatus;
+        isEnableJsdoc_ = prev_->isEnableJsdoc_;
     }
 
     DEFAULT_COPY_SEMANTIC(ParserContext);
@@ -185,6 +190,11 @@ public:
         return formattingFileName_;
     }
 
+    [[nodiscard]] bool IsEnableJsdocParse() const noexcept
+    {
+        return isEnableJsdoc_;
+    }
+
     template <typename T>
     void SetFormattingFileName(T &&fileName)
     {
@@ -198,6 +208,7 @@ private:
     util::StringView label_ {};
     std::string_view formattingFileName_ {DEFAULT_SOURCE_FILE};
     Language lang_;
+    bool isEnableJsdoc_ {false};
 };
 }  // namespace ark::es2panda::parser
 

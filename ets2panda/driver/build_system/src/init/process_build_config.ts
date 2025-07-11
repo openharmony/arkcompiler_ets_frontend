@@ -24,7 +24,8 @@ import {
 import { PluginDriver } from '../plugins/plugins_driver';
 import {
   KOALA_WRAPPER_PATH_FROM_SDK,
-  PANDA_SDK_PATH_FROM_SDK
+  PANDA_SDK_PATH_FROM_SDK,
+  PROJECT_BUILD_CONFIG_FILE
 } from '../pre_define';
 import {
   LogData,
@@ -32,19 +33,61 @@ import {
   Logger
 } from '../logger';
 import { ErrorCode } from '../error_code';
-import { BuildConfig } from '../types';
+import {
+  BuildConfig,
+  BUILD_MODE,
+  AliasConfig
+} from '../types';
 
 export function processBuildConfig(projectConfig: BuildConfig): BuildConfig {
-  let buildConfig: BuildConfig = { ...projectConfig };
+  let buildConfig: BuildConfig = { 
+    ...projectConfig,
+    isBuildConfigModified: false 
+  };
   let buildSdkPath: string = buildConfig.buildSdkPath as string;
   buildConfig.pandaSdkPath = buildConfig.pandaSdkPath ?? path.resolve(buildSdkPath, PANDA_SDK_PATH_FROM_SDK);
-
+  /**
+   * ets2panda guys require remove debug param
+   * it contain some bugs.
+   */
+  buildConfig.buildMode = BUILD_MODE.RELEASE;
+  checkCacheProjectConfig(buildConfig);
   initPlatformSpecificConfig(buildConfig);
   initBuildEnv(buildConfig);
   initKoalaWrapper(buildConfig);
   PluginDriver.getInstance().initPlugins(buildConfig);
-
+  initAliasConfig(buildConfig);
+  initInteropSDKInfo(buildConfig);
   return buildConfig;
+}
+
+function checkCacheProjectConfig(buildConfig: BuildConfig): void {
+  const cachePath = buildConfig.cachePath as string;
+  const projectionConfigPath = path.join(cachePath, PROJECT_BUILD_CONFIG_FILE);
+  const logger: Logger = Logger.getInstance();
+
+  if (!fs.existsSync(cachePath)) {
+    fs.mkdirSync(cachePath, { recursive: true });
+  }
+
+  if (!fs.existsSync(projectionConfigPath)) {
+    fs.writeFileSync(projectionConfigPath, JSON.stringify(buildConfig, null, '\t'));
+  } else {
+    const existingConfig = JSON.parse(fs.readFileSync(projectionConfigPath, 'utf8'));
+    if (!areConfigsEqual(existingConfig, buildConfig)) {
+      buildConfig.isBuildConfigModified = true;
+      fs.writeFileSync(projectionConfigPath, JSON.stringify(buildConfig, null, '\t'));
+    } else {
+      buildConfig.isBuildConfigModified = false;
+      logger.printInfo('projectionConfig.json is up to date.');
+    }
+  }
+}
+
+function areConfigsEqual(config1: BuildConfig, config2: BuildConfig): boolean {
+  const { isBuildConfigModified: _, compileFiles: __, ...rest1 } = config1;
+  const { isBuildConfigModified: ___, compileFiles: ____, ...rest2 } = config2;
+  return JSON.stringify(rest1) === JSON.stringify(rest2);
 }
 
 function initPlatformSpecificConfig(buildConfig: BuildConfig): void {
@@ -52,10 +95,12 @@ function initPlatformSpecificConfig(buildConfig: BuildConfig): void {
   const logger: Logger = Logger.getInstance();
   if (isWindows()) {
     buildConfig.abcLinkerPath = path.join(pandaSdkPath, 'bin', 'ark_link.exe');
+    buildConfig.dependencyAnalyzerPath = path.join(pandaSdkPath, 'bin', 'dependency_analyzer.exe');
   }
 
   if (isMac() || isLinux()) {
     buildConfig.abcLinkerPath = path.join(pandaSdkPath, 'bin', 'ark_link');
+    buildConfig.dependencyAnalyzerPath = path.join(pandaSdkPath, 'bin', 'dependency_analyzer');
   }
 
   if (!fs.existsSync(buildConfig.abcLinkerPath as string)) {
@@ -64,6 +109,16 @@ function initPlatformSpecificConfig(buildConfig: BuildConfig): void {
       'Ark_link not found in path.',
       '',
       buildConfig.abcLinkerPath as string
+    );
+    logger.printError(logData);
+  }
+
+  if (!buildConfig.frameworkMode && !fs.existsSync(buildConfig.dependencyAnalyzerPath as string)) {
+    const logData: LogData = LogDataFactory.newInstance(
+      ErrorCode.BUILDSYSTEM_Dependency_Analyzer_NOT_FOUND_FAIL,
+      'Dependency_analyzer not found in path.',
+      '',
+      buildConfig.dependencyAnalyzerPath as string
     );
     logger.printError(logData);
   }
@@ -84,8 +139,64 @@ export function initBuildEnv(buildConfig: BuildConfig): void {
 }
 
 function initKoalaWrapper(buildConfig: BuildConfig): void {
-  let koalaWrapperPath: string = path.resolve(buildConfig.buildSdkPath as string, KOALA_WRAPPER_PATH_FROM_SDK);
+  let koalaWrapperPath: string = process.env.KOALA_WRAPPER_PATH ?? path.resolve(buildConfig.buildSdkPath as string, KOALA_WRAPPER_PATH_FROM_SDK);
   const { arkts, arktsGlobal } = require(koalaWrapperPath);
   buildConfig.arkts = arkts;
   buildConfig.arktsGlobal = arktsGlobal;
+  buildConfig.arktsGlobal.es2panda._SetUpSoPath(buildConfig.pandaSdkPath);
+}
+
+function initAliasConfig(buildConfig: BuildConfig): void {
+  buildConfig.aliasConfig = new Map();
+  buildConfig.aliasPaths = buildConfig.aliasPaths instanceof Map
+    ? buildConfig.aliasPaths
+    : new Map(Object.entries(buildConfig.aliasPaths || {}));
+
+  if (buildConfig.aliasPaths.size === 0) {
+    return;
+  }
+  for (const [pkgName, filePath] of buildConfig.aliasPaths) {
+    const rawContent = fs.readFileSync(filePath, 'utf-8');
+    const jsonData = JSON.parse(rawContent);
+    const pkgAliasMap = new Map<string, AliasConfig>();
+
+    for (const [aliasKey, config] of Object.entries(jsonData)) {
+      if (typeof config !== 'object' || config === null ||
+        !('originalAPIName' in config) || !('isStatic' in config)) {
+        const logData: LogData = LogDataFactory.newInstance(
+          ErrorCode.BUILDSYSTEM_INIT_ALIAS_CONFIG_FAILED,
+          'Init Alias Config Failed',
+          `Invalid AliasConfig format in ${pkgName} -> ${aliasKey}`
+        );
+        Logger.getInstance().printErrorAndExit(logData);
+      }
+
+      const aliasConfig = config as AliasConfig;
+      pkgAliasMap.set(aliasKey, {
+        originalAPIName: aliasConfig.originalAPIName,
+        isStatic: aliasConfig.isStatic
+      });
+    }
+
+    buildConfig.aliasConfig.set(pkgName, pkgAliasMap);
+  }
+}
+
+function initInteropSDKInfo(buildConfig: BuildConfig): void {
+  buildConfig.interopSDKPaths = new Set();
+
+  const dynamicInteroSDKBasePath =
+    process.env.dynamicInteroSDKBasePath ||
+    buildConfig.dynamicInteroSDKBasePath ||
+    path.resolve(buildConfig.buildSdkPath as string, "../ets1.1/build-tools/interop");
+
+  const arktsPath = path.resolve(dynamicInteroSDKBasePath, './arkts');
+  const apiPath = path.resolve(dynamicInteroSDKBasePath, './api');
+
+  if (fs.existsSync(arktsPath)) {
+    buildConfig.interopSDKPaths.add(arktsPath);
+  }
+  if (fs.existsSync(apiPath)) {
+    buildConfig.interopSDKPaths.add(apiPath);
+  }
 }

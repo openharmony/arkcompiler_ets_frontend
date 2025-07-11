@@ -13,13 +13,13 @@
  * limitations under the License.
  */
 
- function foo(...x: string[]) {
+ function foo(...x: FixedArray<string>) {
     return 1;
 }
 
-function foo(...x: int[]) {
+function foo(...x: FixedArray<int>) {
     return 2;
 }
 
-assertEQ(foo("bar"), 1)
-assertEQ(foo(1), 2)
+arktest.assertEQ(foo("bar"), 1)
+arktest.assertEQ(foo(1), 2)

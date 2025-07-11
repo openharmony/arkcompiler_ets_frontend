@@ -14,10 +14,31 @@
  */
 
 import { Constant } from '../../core/base/Constant';
-import { ArkInstanceInvokeExpr, ArkNewArrayExpr, ArkNewExpr, ArkStaticInvokeExpr, NormalBinaryOperator } from '../../core/base/Expr';
+import {
+    ArkInstanceInvokeExpr,
+    ArkNewArrayExpr,
+    ArkNewExpr,
+    ArkStaticInvokeExpr,
+    NormalBinaryOperator
+} from '../../core/base/Expr';
 import { Local } from '../../core/base/Local';
-import { ArkArrayRef, ArkInstanceFieldRef, ArkParameterRef, ArkStaticFieldRef, ClosureFieldRef } from '../../core/base/Ref';
-import { ArkAliasTypeDefineStmt, ArkAssignStmt, ArkIfStmt, ArkInvokeStmt, ArkReturnStmt, ArkReturnVoidStmt, ArkThrowStmt, Stmt } from '../../core/base/Stmt';
+import {
+    ArkArrayRef,
+    ArkInstanceFieldRef,
+    ArkParameterRef,
+    ArkStaticFieldRef,
+    ClosureFieldRef
+} from '../../core/base/Ref';
+import {
+    ArkAliasTypeDefineStmt,
+    ArkAssignStmt,
+    ArkIfStmt,
+    ArkInvokeStmt,
+    ArkReturnStmt,
+    ArkReturnVoidStmt,
+    ArkThrowStmt,
+    Stmt
+} from '../../core/base/Stmt';
 import { AliasType, ClassType, Type } from '../../core/base/Type';
 import { Value } from '../../core/base/Value';
 import { BasicBlock } from '../../core/graph/BasicBlock';
@@ -166,7 +187,7 @@ export class SourceAssignStmt extends SourceStmt {
             return;
         }
 
-        this.leftCode = this.transformer.valueToString(this.leftOp);
+        this.leftCode = this.transformer.valueToString(this.leftOp, true);
 
         if (this.leftOp instanceof Local && this.rightOp instanceof ArkNewExpr) {
             this.transferRightNewExpr();
@@ -380,8 +401,8 @@ export class SourceInvokeStmt extends SourceStmt {
                 isAttr = PrinterUtils.isComponentIfElseInvoke(invokeExpr);
             }
         } else if (invokeExpr instanceof ArkInstanceInvokeExpr) {
-            code = this.transformer.instanceInvokeExprToString(invokeExpr);
             isAttr = PrinterUtils.isComponentAttributeInvoke(invokeExpr);
+            code = this.transformer.instanceInvokeExprToString(invokeExpr, isAttr);
         }
 
         if (code.length > 0 && !isAttr) {
@@ -511,7 +532,7 @@ export class SourceWhileStmt extends SourceStmt {
             return false;
         }
 
-        if (iterator.getMethodSignature().getMethodSubSignature().getMethodName() !== 'iterator') {
+        if (iterator.getMethodSignature().getMethodSubSignature().getMethodName() !== 'Symbol.iterator') {
             return false;
         }
 

@@ -1,5 +1,5 @@
 {
-    "result": [
+"result": [
         {
             "line": 17,
             "column": 17,
@@ -43,6 +43,16 @@
         {
             "line": 25,
             "column": 14,
+            "endLine": 25,
+            "endColumn": 19,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 25,
+            "column": 18,
             "endLine": 25,
             "endColumn": 19,
             "problem": "NumericSemantics",
@@ -231,6 +241,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 57,
+            "column": 28,
+            "endLine": 57,
+            "endColumn": 29,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 58,
             "column": 45,
             "endLine": 58,
@@ -238,6 +258,16 @@
             "problem": "ArgumentsObject",
             "suggest": "",
             "rule": "Special arguments object inside functions are not supported (arkts-no-arguments-obj)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 65,
+            "column": 3,
+            "endLine": 65,
+            "endColumn": 12,
+            "problem": "InvalidIdentifier",
+            "suggest": "",
+            "rule": "This keyword cannot be used as identifiers (arkts-invalid-identifier)",
             "severity": "ERROR"
         },
         {

@@ -1,6 +1,6 @@
 {
     "copyright": [
-        "Copyright (c) 2025 Huawei Device Co., Ltd.",
+        "Copyright (c) 2023-2025 Huawei Device Co., Ltd.",
         "Licensed under the Apache License, Version 2.0 (the 'License');",
         "you may not use this file except in compliance with the License.",
         "You may obtain a copy of the License at",
@@ -24,12 +24,20 @@
                 {
                     "start": 637,
                     "end": 637,
-                    "replacementText": "class GeneratedObjectLiteralClass_1 {\n    m() { console.log(1); } // Error, fixable\n}\n\n"
+                    "replacementText": "class GeneratedObjectLiteralClass_1 {\n    m() { console.log(1); } // Error, fixable\n}\n\n",
+                    "line": 17,
+                    "column": 14,
+                    "endLine": 17,
+                    "endColumn": 15
                 },
                 {
                     "start": 650,
                     "end": 697,
-                    "replacementText": "new GeneratedObjectLiteralClass_1()"
+                    "replacementText": "new GeneratedObjectLiteralClass_1()",
+                    "line": 17,
+                    "column": 14,
+                    "endLine": 17,
+                    "endColumn": 15
                 }
             ],
             "suggest": "",
@@ -47,6 +55,27 @@
             "severity": "ERROR"
         },
         {
+            "line": 18,
+            "column": 21,
+            "endLine": 18,
+            "endColumn": 22,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 672,
+                    "end": 673,
+                    "replacementText": "1.0",
+                    "line": 18,
+                    "column": 21,
+                    "endLine": 18,
+                    "endColumn": 22
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 21,
             "column": 17,
             "endLine": 21,
@@ -56,12 +85,20 @@
                 {
                     "start": 700,
                     "end": 700,
-                    "replacementText": "class GeneratedObjectLiteralClass_2 {\n    get property() { return 2; } // Error, fixable\n}\n\n"
+                    "replacementText": "class GeneratedObjectLiteralClass_2 {\n    get property() { return 2; } // Error, fixable\n}\n\n",
+                    "line": 21,
+                    "column": 17,
+                    "endLine": 21,
+                    "endColumn": 18
                 },
                 {
                     "start": 716,
                     "end": 768,
-                    "replacementText": "new GeneratedObjectLiteralClass_2()"
+                    "replacementText": "new GeneratedObjectLiteralClass_2()",
+                    "line": 21,
+                    "column": 17,
+                    "endLine": 21,
+                    "endColumn": 18
                 }
             ],
             "suggest": "",
@@ -79,6 +116,27 @@
             "severity": "ERROR"
         },
         {
+            "line": 22,
+            "column": 27,
+            "endLine": 22,
+            "endColumn": 28,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 744,
+                    "end": 745,
+                    "replacementText": "2.0",
+                    "line": 22,
+                    "column": 27,
+                    "endLine": 22,
+                    "endColumn": 28
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 25,
             "column": 17,
             "endLine": 25,
@@ -88,12 +146,20 @@
                 {
                     "start": 771,
                     "end": 771,
-                    "replacementText": "class GeneratedObjectLiteralClass_3 {\n    set property(value: number) {\n        console.log(value);\n    }\n}\n\n"
+                    "replacementText": "class GeneratedObjectLiteralClass_3 {\n    set property(value: number) {\n        console.log(value);\n    }\n}\n\n",
+                    "line": 25,
+                    "column": 17,
+                    "endLine": 25,
+                    "endColumn": 18
                 },
                 {
                     "start": 787,
                     "end": 868,
-                    "replacementText": "new GeneratedObjectLiteralClass_3()"
+                    "replacementText": "new GeneratedObjectLiteralClass_3()",
+                    "line": 25,
+                    "column": 17,
+                    "endLine": 25,
+                    "endColumn": 18
                 }
             ],
             "suggest": "",
@@ -120,7 +186,32 @@
                 {
                     "start": 875,
                     "end": 880,
-                    "replacementText": "x: number = 1"
+                    "replacementText": "x: number = 1",
+                    "line": 31,
+                    "column": 5,
+                    "endLine": 31,
+                    "endColumn": 10
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 31,
+            "column": 9,
+            "endLine": 31,
+            "endColumn": 10,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 879,
+                    "end": 880,
+                    "replacementText": "1.0",
+                    "line": 31,
+                    "column": 9,
+                    "endLine": 31,
+                    "endColumn": 10
                 }
             ],
             "suggest": "",
@@ -147,7 +238,11 @@
                 {
                     "start": 922,
                     "end": 923,
-                    "replacementText": "x: x"
+                    "replacementText": "x: x",
+                    "line": 34,
+                    "column": 3,
+                    "endLine": 34,
+                    "endColumn": 4
                 }
             ],
             "suggest": "",
@@ -164,7 +259,11 @@
                 {
                     "start": 945,
                     "end": 946,
-                    "replacementText": "y: y"
+                    "replacementText": "y: y",
+                    "line": 35,
+                    "column": 3,
+                    "endLine": 35,
+                    "endColumn": 4
                 }
             ],
             "suggest": "",
@@ -181,7 +280,11 @@
                 {
                     "start": 968,
                     "end": 969,
-                    "replacementText": "z: z"
+                    "replacementText": "z: z",
+                    "line": 36,
+                    "column": 3,
+                    "endLine": 36,
+                    "endColumn": 4
                 }
             ],
             "suggest": "",
@@ -228,12 +331,20 @@
                 {
                     "start": 1048,
                     "end": 1048,
-                    "replacementText": "class GeneratedObjectLiteralClass_4 {\n    a: string;\n    b: number;\n    c: number[];\n    x: number;\n    y: string;\n    constructor(init: GeneratedObjectLiteralInitInterface_4) {\n        this.a = init.a;\n        this.b = init.b;\n        this.c = init.c;\n        this.x = init.x;\n        this.y = init.y;\n    }\n    method() {\n        console.log(42);\n    }\n    get property() {\n        return 0;\n    }\n    set property(value: number) {\n        if (value < 0) {\n            throw new Error('Bad value');\n        }\n    }\n}\n\ninterface GeneratedObjectLiteralInitInterface_4 {\n    a: string;\n    b: number;\n    c: number[];\n    x: number;\n    y: string;\n}\n\n"
+                    "replacementText": "class GeneratedObjectLiteralClass_4 {\n    a: string;\n    b: number;\n    c: number[];\n    x: number;\n    y: string;\n    constructor(init: GeneratedObjectLiteralInitInterface_4) {\n        this.a = init.a;\n        this.b = init.b;\n        this.c = init.c;\n        this.x = init.x;\n        this.y = init.y;\n    }\n    method() {\n        console.log(42);\n    }\n    get property() {\n        return 0;\n    }\n    set property(value: number) {\n        if (value < 0) {\n            throw new Error('Bad value');\n        }\n    }\n}\n\ninterface GeneratedObjectLiteralInitInterface_4 {\n    a: string;\n    b: number;\n    c: number[];\n    x: number;\n    y: string;\n}\n\n",
+                    "line": 43,
+                    "column": 13,
+                    "endLine": 43,
+                    "endColumn": 14
                 },
                 {
                     "start": 1060,
                     "end": 1344,
-                    "replacementText": "new GeneratedObjectLiteralClass_4({\n    a: \"foo\",\n    b: 42,\n    c: [1, 2, 3],\n    x: x,\n    y: y\n})"
+                    "replacementText": "new GeneratedObjectLiteralClass_4({\n    a: \"foo\",\n    b: 42,\n    c: [1, 2, 3],\n    x: x,\n    y: y\n})",
+                    "line": 43,
+                    "column": 13,
+                    "endLine": 43,
+                    "endColumn": 14
                 }
             ],
             "suggest": "",
@@ -250,7 +361,11 @@
                 {
                     "start": 1112,
                     "end": 1113,
-                    "replacementText": "x: x"
+                    "replacementText": "x: x",
+                    "line": 47,
+                    "column": 3,
+                    "endLine": 47,
+                    "endColumn": 4
                 }
             ],
             "suggest": "",
@@ -267,7 +382,11 @@
                 {
                     "start": 1126,
                     "end": 1127,
-                    "replacementText": "y: y"
+                    "replacementText": "y: y",
+                    "line": 48,
+                    "column": 3,
+                    "endLine": 48,
+                    "endColumn": 4
                 }
             ],
             "suggest": "",
@@ -305,6 +424,153 @@
             "severity": "ERROR"
         },
         {
+            "line": 45,
+            "column": 6,
+            "endLine": 45,
+            "endColumn": 8,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1090,
+                    "end": 1092,
+                    "replacementText": "42.0",
+                    "line": 45,
+                    "column": 6,
+                    "endLine": 45,
+                    "endColumn": 8
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 46,
+            "column": 7,
+            "endLine": 46,
+            "endColumn": 8,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1100,
+                    "end": 1101,
+                    "replacementText": "1.0",
+                    "line": 46,
+                    "column": 7,
+                    "endLine": 46,
+                    "endColumn": 8
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 46,
+            "column": 10,
+            "endLine": 46,
+            "endColumn": 11,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1103,
+                    "end": 1104,
+                    "replacementText": "2.0",
+                    "line": 46,
+                    "column": 10,
+                    "endLine": 46,
+                    "endColumn": 11
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 46,
+            "column": 13,
+            "endLine": 46,
+            "endColumn": 14,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1106,
+                    "end": 1107,
+                    "replacementText": "3.0",
+                    "line": 46,
+                    "column": 13,
+                    "endLine": 46,
+                    "endColumn": 14
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 51,
+            "column": 17,
+            "endLine": 51,
+            "endColumn": 19,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1177,
+                    "end": 1179,
+                    "replacementText": "42.0",
+                    "line": 51,
+                    "column": 17,
+                    "endLine": 51,
+                    "endColumn": 19
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 55,
+            "column": 12,
+            "endLine": 55,
+            "endColumn": 13,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1226,
+                    "end": 1227,
+                    "replacementText": "0.0",
+                    "line": 55,
+                    "column": 12,
+                    "endLine": 55,
+                    "endColumn": 13
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 59,
+            "column": 17,
+            "endLine": 59,
+            "endColumn": 18,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1292,
+                    "end": 1293,
+                    "replacementText": "0.0",
+                    "line": 59,
+                    "column": 17,
+                    "endLine": 59,
+                    "endColumn": 18
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 65,
             "column": 5,
             "endLine": 65,
@@ -314,7 +580,32 @@
                 {
                     "start": 1351,
                     "end": 1357,
-                    "replacementText": "x2: number = 1"
+                    "replacementText": "x2: number = 1",
+                    "line": 65,
+                    "column": 5,
+                    "endLine": 65,
+                    "endColumn": 11
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 65,
+            "column": 10,
+            "endLine": 65,
+            "endColumn": 11,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1356,
+                    "end": 1357,
+                    "replacementText": "1.0",
+                    "line": 65,
+                    "column": 10,
+                    "endLine": 65,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
@@ -331,7 +622,32 @@
                 {
                     "start": 1359,
                     "end": 1365,
-                    "replacementText": "y2: number = 2"
+                    "replacementText": "y2: number = 2",
+                    "line": 65,
+                    "column": 13,
+                    "endLine": 65,
+                    "endColumn": 19
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 65,
+            "column": 18,
+            "endLine": 65,
+            "endColumn": 19,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1364,
+                    "end": 1365,
+                    "replacementText": "2.0",
+                    "line": 65,
+                    "column": 18,
+                    "endLine": 65,
+                    "endColumn": 19
                 }
             ],
             "suggest": "",
@@ -348,7 +664,32 @@
                 {
                     "start": 1367,
                     "end": 1373,
-                    "replacementText": "z2: number = 3"
+                    "replacementText": "z2: number = 3",
+                    "line": 65,
+                    "column": 21,
+                    "endLine": 65,
+                    "endColumn": 27
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 65,
+            "column": 26,
+            "endLine": 65,
+            "endColumn": 27,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1372,
+                    "end": 1373,
+                    "replacementText": "3.0",
+                    "line": 65,
+                    "column": 26,
+                    "endLine": 65,
+                    "endColumn": 27
                 }
             ],
             "suggest": "",
@@ -375,7 +716,11 @@
                 {
                     "start": 1425,
                     "end": 1427,
-                    "replacementText": "x2: x2"
+                    "replacementText": "x2: x2",
+                    "line": 69,
+                    "column": 3,
+                    "endLine": 69,
+                    "endColumn": 5
                 }
             ],
             "suggest": "",
@@ -392,7 +737,11 @@
                 {
                     "start": 1449,
                     "end": 1451,
-                    "replacementText": "y2: y2"
+                    "replacementText": "y2: y2",
+                    "line": 70,
+                    "column": 3,
+                    "endLine": 70,
+                    "endColumn": 5
                 }
             ],
             "suggest": "",
@@ -409,7 +758,11 @@
                 {
                     "start": 1473,
                     "end": 1475,
-                    "replacementText": "z2: z2"
+                    "replacementText": "z2: z2",
+                    "line": 71,
+                    "column": 3,
+                    "endLine": 71,
+                    "endColumn": 5
                 }
             ],
             "suggest": "",
@@ -434,6 +787,48 @@
             "problem": "ObjectLiteralProperty",
             "suggest": "",
             "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 67,
+            "column": 6,
+            "endLine": 67,
+            "endColumn": 7,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1412,
+                    "end": 1413,
+                    "replacementText": "1.0",
+                    "line": 67,
+                    "column": 6,
+                    "endLine": 67,
+                    "endColumn": 7
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 68,
+            "column": 6,
+            "endLine": 68,
+            "endColumn": 7,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1420,
+                    "end": 1421,
+                    "replacementText": "2.0",
+                    "line": 68,
+                    "column": 6,
+                    "endLine": 68,
+                    "endColumn": 7
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -466,16 +861,66 @@
                 {
                     "start": 1599,
                     "end": 1599,
-                    "replacementText": "class GeneratedObjectLiteralClass_5 implements I {\n    m() {\n        console.log(100);\n    }\n}\n\n"
+                    "replacementText": "class GeneratedObjectLiteralClass_5 implements I {\n    m() {\n        console.log(100);\n    }\n}\n\n",
+                    "line": 81,
+                    "column": 3,
+                    "endLine": 83,
+                    "endColumn": 4
                 },
                 {
                     "start": 1610,
                     "end": 1658,
-                    "replacementText": "new GeneratedObjectLiteralClass_5()"
+                    "replacementText": "new GeneratedObjectLiteralClass_5()",
+                    "line": 81,
+                    "column": 3,
+                    "endLine": 83,
+                    "endColumn": 4
                 }
             ],
             "suggest": "",
             "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 82,
+            "column": 17,
+            "endLine": 82,
+            "endColumn": 20,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1647,
+                    "end": 1650,
+                    "replacementText": "100.0",
+                    "line": 82,
+                    "column": 17,
+                    "endLine": 82,
+                    "endColumn": 20
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 88,
+            "column": 17,
+            "endLine": 88,
+            "endColumn": 20,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1701,
+                    "end": 1704,
+                    "replacementText": "200.0",
+                    "line": 88,
+                    "column": 17,
+                    "endLine": 88,
+                    "endColumn": 20
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -498,16 +943,45 @@
                 {
                     "start": 1713,
                     "end": 1713,
-                    "replacementText": "class GeneratedObjectLiteralClass_6 extends C {\n    m(): void {\n        console.log(300);\n    }\n}\n\n"
+                    "replacementText": "class GeneratedObjectLiteralClass_6 extends C {\n    m(): void {\n        console.log(300);\n    }\n}\n\n",
+                    "line": 92,
+                    "column": 3,
+                    "endLine": 94,
+                    "endColumn": 4
                 },
                 {
                     "start": 1724,
                     "end": 1778,
-                    "replacementText": "new GeneratedObjectLiteralClass_6()"
+                    "replacementText": "new GeneratedObjectLiteralClass_6()",
+                    "line": 92,
+                    "column": 3,
+                    "endLine": 94,
+                    "endColumn": 4
                 }
             ],
             "suggest": "",
             "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 93,
+            "column": 17,
+            "endLine": 93,
+            "endColumn": 20,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1767,
+                    "end": 1770,
+                    "replacementText": "300.0",
+                    "line": 93,
+                    "column": 17,
+                    "endLine": 93,
+                    "endColumn": 20
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -530,16 +1004,45 @@
                 {
                     "start": 1803,
                     "end": 1803,
-                    "replacementText": "class GeneratedObjectLiteralClass_7 extends C {\n    m() { console.log(300); } // Fixable\n}\n\n"
+                    "replacementText": "class GeneratedObjectLiteralClass_7 extends C {\n    m() { console.log(300); } // Fixable\n}\n\n",
+                    "line": 99,
+                    "column": 3,
+                    "endLine": 99,
+                    "endColumn": 28
                 },
                 {
                     "start": 1807,
                     "end": 1849,
-                    "replacementText": "new GeneratedObjectLiteralClass_7()"
+                    "replacementText": "new GeneratedObjectLiteralClass_7()",
+                    "line": 99,
+                    "column": 3,
+                    "endLine": 99,
+                    "endColumn": 28
                 }
             ],
             "suggest": "",
             "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 99,
+            "column": 21,
+            "endLine": 99,
+            "endColumn": 24,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1829,
+                    "end": 1832,
+                    "replacementText": "300.0",
+                    "line": 99,
+                    "column": 21,
+                    "endLine": 99,
+                    "endColumn": 24
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -552,7 +1055,32 @@
                 {
                     "start": 1866,
                     "end": 1874,
-                    "replacementText": "x2: number = 10;"
+                    "replacementText": "x2: number = 10;",
+                    "line": 103,
+                    "column": 3,
+                    "endLine": 103,
+                    "endColumn": 11
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 103,
+            "column": 8,
+            "endLine": 103,
+            "endColumn": 10,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1871,
+                    "end": 1873,
+                    "replacementText": "10.0",
+                    "line": 103,
+                    "column": 8,
+                    "endLine": 103,
+                    "endColumn": 10
                 }
             ],
             "suggest": "",
@@ -569,7 +1097,32 @@
                 {
                     "start": 1877,
                     "end": 1885,
-                    "replacementText": "y2: number = 20;"
+                    "replacementText": "y2: number = 20;",
+                    "line": 104,
+                    "column": 3,
+                    "endLine": 104,
+                    "endColumn": 11
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 104,
+            "column": 8,
+            "endLine": 104,
+            "endColumn": 10,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1882,
+                    "end": 1884,
+                    "replacementText": "20.0",
+                    "line": 104,
+                    "column": 8,
+                    "endLine": 104,
+                    "endColumn": 10
                 }
             ],
             "suggest": "",
@@ -586,7 +1139,32 @@
                 {
                     "start": 1888,
                     "end": 1896,
-                    "replacementText": "z2: number = 30;"
+                    "replacementText": "z2: number = 30;",
+                    "line": 105,
+                    "column": 3,
+                    "endLine": 105,
+                    "endColumn": 11
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 105,
+            "column": 8,
+            "endLine": 105,
+            "endColumn": 10,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1893,
+                    "end": 1895,
+                    "replacementText": "30.0",
+                    "line": 105,
+                    "column": 8,
+                    "endLine": 105,
+                    "endColumn": 10
                 }
             ],
             "suggest": "",
@@ -613,7 +1191,11 @@
                 {
                     "start": 1926,
                     "end": 1928,
-                    "replacementText": "x2: x2"
+                    "replacementText": "x2: x2",
+                    "line": 110,
+                    "column": 3,
+                    "endLine": 110,
+                    "endColumn": 5
                 }
             ],
             "suggest": "",
@@ -630,7 +1212,11 @@
                 {
                     "start": 1943,
                     "end": 1945,
-                    "replacementText": "y2: y2"
+                    "replacementText": "y2: y2",
+                    "line": 111,
+                    "column": 3,
+                    "endLine": 111,
+                    "endColumn": 5
                 }
             ],
             "suggest": "",
@@ -647,7 +1233,11 @@
                 {
                     "start": 1960,
                     "end": 1962,
-                    "replacementText": "z2: z2"
+                    "replacementText": "z2: z2",
+                    "line": 112,
+                    "column": 3,
+                    "endLine": 112,
+                    "endColumn": 5
                 }
             ],
             "suggest": "",
@@ -664,16 +1254,45 @@
                 {
                     "start": 1909,
                     "end": 1909,
-                    "replacementText": "class GeneratedObjectLiteralClass_8 extends C2 {\n    x2: number;\n    y2: number;\n    z2: number;\n    constructor(init: GeneratedObjectLiteralInitInterface_8) {\n        super();\n        this.x2 = init.x2;\n        this.y2 = init.y2;\n        this.z2 = init.z2;\n    }\n    m() { console.log(1); } // Fixable\n}\n\ninterface GeneratedObjectLiteralInitInterface_8 {\n    x2: number;\n    y2: number;\n    z2: number;\n}\n\n"
+                    "replacementText": "class GeneratedObjectLiteralClass_8 extends C2 {\n    x2: number;\n    y2: number;\n    z2: number;\n    constructor(init: GeneratedObjectLiteralInitInterface_8) {\n        super();\n        this.x2 = init.x2;\n        this.y2 = init.y2;\n        this.z2 = init.z2;\n    }\n    m() { console.log(1); } // Fixable\n}\n\ninterface GeneratedObjectLiteralInitInterface_8 {\n    x2: number;\n    y2: number;\n    z2: number;\n}\n\n",
+                    "line": 113,
+                    "column": 3,
+                    "endLine": 113,
+                    "endColumn": 26
                 },
                 {
                     "start": 1922,
                     "end": 2013,
-                    "replacementText": "new GeneratedObjectLiteralClass_8({\n    x2: x2,\n    y2: y2,\n    z2: z2\n})"
+                    "replacementText": "new GeneratedObjectLiteralClass_8({\n    x2: x2,\n    y2: y2,\n    z2: z2\n})",
+                    "line": 113,
+                    "column": 3,
+                    "endLine": 113,
+                    "endColumn": 26
                 }
             ],
             "suggest": "",
             "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 113,
+            "column": 21,
+            "endLine": 113,
+            "endColumn": 22,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1995,
+                    "end": 1996,
+                    "replacementText": "1.0",
+                    "line": 113,
+                    "column": 21,
+                    "endLine": 113,
+                    "endColumn": 22
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -696,7 +1315,11 @@
                 {
                     "start": 2034,
                     "end": 2036,
-                    "replacementText": "x2: x2"
+                    "replacementText": "x2: x2",
+                    "line": 117,
+                    "column": 3,
+                    "endLine": 117,
+                    "endColumn": 5
                 }
             ],
             "suggest": "",
@@ -713,7 +1336,11 @@
                 {
                     "start": 2051,
                     "end": 2053,
-                    "replacementText": "y2: y2"
+                    "replacementText": "y2: y2",
+                    "line": 118,
+                    "column": 3,
+                    "endLine": 118,
+                    "endColumn": 5
                 }
             ],
             "suggest": "",
@@ -730,7 +1357,11 @@
                 {
                     "start": 2068,
                     "end": 2070,
-                    "replacementText": "z2: z2"
+                    "replacementText": "z2: z2",
+                    "line": 119,
+                    "column": 3,
+                    "endLine": 119,
+                    "endColumn": 5
                 }
             ],
             "suggest": "",
@@ -758,6 +1389,27 @@
             "severity": "ERROR"
         },
         {
+            "line": 120,
+            "column": 21,
+            "endLine": 120,
+            "endColumn": 22,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 2103,
+                    "end": 2104,
+                    "replacementText": "1.0",
+                    "line": 120,
+                    "column": 21,
+                    "endLine": 120,
+                    "endColumn": 22
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 121,
             "column": 3,
             "endLine": 121,
@@ -777,7 +1429,32 @@
                 {
                     "start": 2200,
                     "end": 2208,
-                    "replacementText": "x2: number = 10;"
+                    "replacementText": "x2: number = 10;",
+                    "line": 125,
+                    "column": 3,
+                    "endLine": 125,
+                    "endColumn": 11
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 125,
+            "column": 8,
+            "endLine": 125,
+            "endColumn": 10,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 2205,
+                    "end": 2207,
+                    "replacementText": "10.0",
+                    "line": 125,
+                    "column": 8,
+                    "endLine": 125,
+                    "endColumn": 10
                 }
             ],
             "suggest": "",
@@ -794,7 +1471,32 @@
                 {
                     "start": 2211,
                     "end": 2219,
-                    "replacementText": "y2: number = 20;"
+                    "replacementText": "y2: number = 20;",
+                    "line": 126,
+                    "column": 3,
+                    "endLine": 126,
+                    "endColumn": 11
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 126,
+            "column": 8,
+            "endLine": 126,
+            "endColumn": 10,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 2216,
+                    "end": 2218,
+                    "replacementText": "20.0",
+                    "line": 126,
+                    "column": 8,
+                    "endLine": 126,
+                    "endColumn": 10
                 }
             ],
             "suggest": "",
@@ -811,7 +1513,32 @@
                 {
                     "start": 2222,
                     "end": 2230,
-                    "replacementText": "z2: number = 30;"
+                    "replacementText": "z2: number = 30;",
+                    "line": 127,
+                    "column": 3,
+                    "endLine": 127,
+                    "endColumn": 11
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 127,
+            "column": 8,
+            "endLine": 127,
+            "endColumn": 10,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 2227,
+                    "end": 2229,
+                    "replacementText": "30.0",
+                    "line": 127,
+                    "column": 8,
+                    "endLine": 127,
+                    "endColumn": 10
                 }
             ],
             "suggest": "",
@@ -838,7 +1565,11 @@
                 {
                     "start": 2289,
                     "end": 2291,
-                    "replacementText": "x2: x2"
+                    "replacementText": "x2: x2",
+                    "line": 134,
+                    "column": 3,
+                    "endLine": 134,
+                    "endColumn": 5
                 }
             ],
             "suggest": "",
@@ -855,7 +1586,11 @@
                 {
                     "start": 2306,
                     "end": 2308,
-                    "replacementText": "y2: y2"
+                    "replacementText": "y2: y2",
+                    "line": 135,
+                    "column": 3,
+                    "endLine": 135,
+                    "endColumn": 5
                 }
             ],
             "suggest": "",
@@ -872,7 +1607,11 @@
                 {
                     "start": 2323,
                     "end": 2325,
-                    "replacementText": "z2: z2"
+                    "replacementText": "z2: z2",
+                    "line": 136,
+                    "column": 3,
+                    "endLine": 136,
+                    "endColumn": 5
                 }
             ],
             "suggest": "",
@@ -890,6 +1629,27 @@
             "severity": "ERROR"
         },
         {
+            "line": 137,
+            "column": 21,
+            "endLine": 137,
+            "endColumn": 22,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 2358,
+                    "end": 2359,
+                    "replacementText": "1.0",
+                    "line": 137,
+                    "column": 21,
+                    "endLine": 137,
+                    "endColumn": 22
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 141,
             "column": 7,
             "endLine": 141,
@@ -899,7 +1659,32 @@
                 {
                     "start": 2469,
                     "end": 2474,
-                    "replacementText": "a: number = 1"
+                    "replacementText": "a: number = 1",
+                    "line": 141,
+                    "column": 7,
+                    "endLine": 141,
+                    "endColumn": 12
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 141,
+            "column": 11,
+            "endLine": 141,
+            "endColumn": 12,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 2473,
+                    "end": 2474,
+                    "replacementText": "1.0",
+                    "line": 141,
+                    "column": 11,
+                    "endLine": 141,
+                    "endColumn": 12
                 }
             ],
             "suggest": "",
@@ -916,7 +1701,32 @@
                 {
                     "start": 2476,
                     "end": 2481,
-                    "replacementText": "b: number = 2"
+                    "replacementText": "b: number = 2",
+                    "line": 141,
+                    "column": 14,
+                    "endLine": 141,
+                    "endColumn": 19
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 141,
+            "column": 18,
+            "endLine": 141,
+            "endColumn": 19,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 2480,
+                    "end": 2481,
+                    "replacementText": "2.0",
+                    "line": 141,
+                    "column": 18,
+                    "endLine": 141,
+                    "endColumn": 19
                 }
             ],
             "suggest": "",
@@ -973,7 +1783,11 @@
                 {
                     "start": 2741,
                     "end": 2781,
-                    "replacementText": "interface LocalType {\n    a: number;\n    b: string;\n}"
+                    "replacementText": "interface LocalType {\n    a: number;\n    b: string;\n}",
+                    "line": 154,
+                    "column": 20,
+                    "endLine": 154,
+                    "endColumn": 21
                 }
             ],
             "suggest": "",
@@ -988,6 +1802,27 @@
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
             "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 155,
+            "column": 38,
+            "endLine": 155,
+            "endColumn": 39,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 2819,
+                    "end": 2820,
+                    "replacementText": "1.0",
+                    "line": 155,
+                    "column": 38,
+                    "endLine": 155,
+                    "endColumn": 39
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -1031,6 +1866,27 @@
             "severity": "ERROR"
         },
         {
+            "line": 167,
+            "column": 34,
+            "endLine": 167,
+            "endColumn": 35,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 3177,
+                    "end": 3178,
+                    "replacementText": "1.0",
+                    "line": 167,
+                    "column": 34,
+                    "endLine": 167,
+                    "endColumn": 35
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 168,
             "column": 27,
             "endLine": 168,
@@ -1051,6 +1907,27 @@
             "severity": "ERROR"
         },
         {
+            "line": 177,
+            "column": 15,
+            "endLine": 177,
+            "endColumn": 16,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 3392,
+                    "end": 3393,
+                    "replacementText": "0.0",
+                    "line": 177,
+                    "column": 15,
+                    "endLine": 177,
+                    "endColumn": 16
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 180,
             "column": 14,
             "endLine": 180,
@@ -1058,6 +1935,48 @@
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
             "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 181,
+            "column": 6,
+            "endLine": 181,
+            "endColumn": 7,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 3499,
+                    "end": 3500,
+                    "replacementText": "1.0",
+                    "line": 181,
+                    "column": 6,
+                    "endLine": 181,
+                    "endColumn": 7
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 186,
+            "column": 15,
+            "endLine": 186,
+            "endColumn": 16,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 3545,
+                    "end": 3546,
+                    "replacementText": "0.0",
+                    "line": 186,
+                    "column": 15,
+                    "endLine": 186,
+                    "endColumn": 16
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -1071,6 +1990,27 @@
             "severity": "ERROR"
         },
         {
+            "line": 190,
+            "column": 6,
+            "endLine": 190,
+            "endColumn": 7,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 3640,
+                    "end": 3641,
+                    "replacementText": "1.0",
+                    "line": 190,
+                    "column": 6,
+                    "endLine": 190,
+                    "endColumn": 7
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 198,
             "column": 14,
             "endLine": 198,
@@ -1081,6 +2021,27 @@
             "severity": "ERROR"
         },
         {
+            "line": 199,
+            "column": 6,
+            "endLine": 199,
+            "endColumn": 7,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 3781,
+                    "end": 3782,
+                    "replacementText": "1.0",
+                    "line": 199,
+                    "column": 6,
+                    "endLine": 199,
+                    "endColumn": 7
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 209,
             "column": 3,
             "endLine": 209,
@@ -1088,6 +2049,27 @@
             "problem": "ObjectLiteralProperty",
             "suggest": "",
             "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 208,
+            "column": 6,
+            "endLine": 208,
+            "endColumn": 7,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 3933,
+                    "end": 3934,
+                    "replacementText": "1.0",
+                    "line": 208,
+                    "column": 6,
+                    "endLine": 208,
+                    "endColumn": 7
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -1110,16 +2092,55 @@
                 {
                     "start": 4038,
                     "end": 4038,
-                    "replacementText": "class GeneratedObjectLiteralClass_9 extends Derived {\n    m() { console.log(2); }\n}\n\n"
+                    "replacementText": "class GeneratedObjectLiteralClass_9 extends Derived {\n    m() { console.log(2); }\n}\n\n",
+                    "line": 220,
+                    "column": 3,
+                    "endLine": 220,
+                    "endColumn": 26
                 },
                 {
                     "start": 4055,
                     "end": 4095,
-                    "replacementText": "new GeneratedObjectLiteralClass_9()"
+                    "replacementText": "new GeneratedObjectLiteralClass_9()",
+                    "line": 220,
+                    "column": 3,
+                    "endLine": 220,
+                    "endColumn": 26
                 }
             ],
             "suggest": "",
             "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 220,
+            "column": 21,
+            "endLine": 220,
+            "endColumn": 22,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 4088,
+                    "end": 4089,
+                    "replacementText": "2.0",
+                    "line": 220,
+                    "column": 21,
+                    "endLine": 220,
+                    "endColumn": 22
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 226,
+            "column": 16,
+            "endLine": 226,
+            "endColumn": 29,
+            "problem": "MissingSuperCall",
+            "suggest": "",
+            "rule": "The subclass constructor must call the parent class's parametered constructor (arkts-subclass-must-call-super-constructor-with-args)",
             "severity": "ERROR"
         },
         {
@@ -1143,6 +2164,48 @@
             "severity": "ERROR"
         },
         {
+            "line": 230,
+            "column": 21,
+            "endLine": 230,
+            "endColumn": 22,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 4310,
+                    "end": 4311,
+                    "replacementText": "2.0",
+                    "line": 230,
+                    "column": 21,
+                    "endLine": 230,
+                    "endColumn": 22
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 240,
+            "column": 11,
+            "endLine": 240,
+            "endColumn": 12,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 4433,
+                    "end": 4434,
+                    "replacementText": "1.0",
+                    "line": 240,
+                    "column": 11,
+                    "endLine": 240,
+                    "endColumn": 12
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 243,
             "column": 20,
             "endLine": 243,
@@ -1162,12 +2225,163 @@
                 {
                     "start": 4443,
                     "end": 4443,
-                    "replacementText": "class GeneratedObjectLiteralClass_10 extends Derived3 {\n    m() { console.log(2); }\n}\n\n"
+                    "replacementText": "class GeneratedObjectLiteralClass_10 extends Derived3 {\n    m() { console.log(2); }\n}\n\n",
+                    "line": 244,
+                    "column": 3,
+                    "endLine": 244,
+                    "endColumn": 26
                 },
                 {
                     "start": 4462,
                     "end": 4502,
-                    "replacementText": "new GeneratedObjectLiteralClass_10()"
+                    "replacementText": "new GeneratedObjectLiteralClass_10()",
+                    "line": 244,
+                    "column": 3,
+                    "endLine": 244,
+                    "endColumn": 26
+                }
+            ],
+            "suggest": "",
+            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 244,
+            "column": 21,
+            "endLine": 244,
+            "endColumn": 22,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 4495,
+                    "end": 4496,
+                    "replacementText": "2.0",
+                    "line": 244,
+                    "column": 21,
+                    "endLine": 244,
+                    "endColumn": 22
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 251,
+            "column": 15,
+            "endLine": 251,
+            "endColumn": 18,
+            "problem": "ObjectLiteralProperty",
+            "autofix": [
+                {
+                    "start": 4619,
+                    "end": 4622,
+                    "replacementText": "map: map",
+                    "line": 251,
+                    "column": 15,
+                    "endLine": 251,
+                    "endColumn": 18
+                }
+            ],
+            "suggest": "",
+            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 258,
+            "column": 15,
+            "endLine": 258,
+            "endColumn": 19,
+            "problem": "ObjectLiteralProperty",
+            "autofix": [
+                {
+                    "start": 4766,
+                    "end": 4770,
+                    "replacementText": "map1: map1",
+                    "line": 258,
+                    "column": 15,
+                    "endLine": 258,
+                    "endColumn": 19
+                }
+            ],
+            "suggest": "",
+            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 274,
+            "column": 16,
+            "endLine": 274,
+            "endColumn": 17,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 275,
+            "column": 5,
+            "endLine": 277,
+            "endColumn": 6,
+            "problem": "ObjectLiteralProperty",
+            "autofix": [
+                {
+                    "start": 4956,
+                    "end": 4956,
+                    "replacementText": "class GeneratedObjectLiteralClass_11 extends X.C {\n    m() {\n        console.log(\"C - 2\");\n    }\n}\n\n",
+                    "line": 275,
+                    "column": 5,
+                    "endLine": 277,
+                    "endColumn": 6
+                },
+                {
+                    "start": 4989,
+                    "end": 5038,
+                    "replacementText": "new GeneratedObjectLiteralClass_11()",
+                    "line": 275,
+                    "column": 5,
+                    "endLine": 277,
+                    "endColumn": 6
+                }
+            ],
+            "suggest": "",
+            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 280,
+            "column": 16,
+            "endLine": 280,
+            "endColumn": 17,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 281,
+            "column": 5,
+            "endLine": 283,
+            "endColumn": 6,
+            "problem": "ObjectLiteralProperty",
+            "autofix": [
+                {
+                    "start": 4956,
+                    "end": 4956,
+                    "replacementText": "class GeneratedObjectLiteralClass_12 implements X.I {\n    m(): void {\n        console.log(\"I\");\n    }\n}\n\n",
+                    "line": 281,
+                    "column": 5,
+                    "endLine": 283,
+                    "endColumn": 6
+                },
+                {
+                    "start": 5055,
+                    "end": 5106,
+                    "replacementText": "new GeneratedObjectLiteralClass_12()",
+                    "line": 281,
+                    "column": 5,
+                    "endLine": 283,
+                    "endColumn": 6
                 }
             ],
             "suggest": "",

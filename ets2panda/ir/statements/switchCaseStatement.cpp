@@ -66,6 +66,7 @@ void SwitchCaseStatement::Dump(ir::SrcDumper *dumper) const
         dumper->Add("default:");
     }
     if (!consequent_.empty()) {
+        dumper->Add(" {");
         dumper->IncrIndent();
         dumper->Endl();
         for (auto cs : consequent_) {
@@ -75,6 +76,8 @@ void SwitchCaseStatement::Dump(ir::SrcDumper *dumper) const
             }
         }
         dumper->DecrIndent();
+        dumper->Endl();
+        dumper->Add("}");
     }
 }
 
@@ -103,7 +106,7 @@ void SwitchCaseStatement::CheckAndTestCase(checker::ETSChecker *checker, checker
                                            checker::Type *unboxedDiscType, ir::Expression *node, bool &isDefaultCase)
 {
     if (test_ != nullptr) {
-        auto caseType = test_->Check(checker);
+        auto *caseType = checker->MaybeUnboxType(test_->Check(checker));
         bool validCaseType = true;
 
         if (caseType->HasTypeFlag(checker::TypeFlag::CHAR)) {

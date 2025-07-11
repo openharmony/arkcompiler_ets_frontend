@@ -24,12 +24,14 @@
 #include "util/generateBin.h"
 #include "util/options.h"
 #include "util/plugin.h"
+#include "util/perfMetrics.h"
 #include "libpandabase/os/stacktrace.h"
 #include "generated/diagnostic.h"
 
 #include <iostream>
 #include <memory>
 #include <optional>
+
 namespace ark::es2panda::aot {
 using mem::MemConfig;
 
@@ -76,6 +78,29 @@ static int CompileFromSource(es2panda::Compiler &compiler, es2panda::SourceFile 
         });
 }
 
+using StringPairVector = std::vector<std::pair<std::string, std::string>>;
+
+static int CompileMultipleFiles(es2panda::Compiler &compiler, std::vector<SourceFile> &inputs, util::Options *options,
+                                util::DiagnosticEngine &diagnosticEngine)
+{
+    std::vector<pandasm::Program *> result;
+    auto overallRes = compiler.CompileM(inputs, *options, diagnosticEngine, result);
+    for (size_t i = 0; i < result.size(); i++) {
+        auto *program = result[i];
+        if (program == nullptr) {
+            overallRes |= 1U;
+            continue;
+        }
+        options->SetOutput(std::string(inputs[i].dest));
+        overallRes |= (unsigned int)util::GenerateProgram(
+            program, *options,
+            [&diagnosticEngine](const diagnostic::DiagnosticKind &kind, const util::DiagnosticMessageParams &params) {
+                diagnosticEngine.LogDiagnostic(kind, params);
+            });
+    }
+    return overallRes;
+}
+
 static int CompileFromConfig(es2panda::Compiler &compiler, util::Options *options,
                              util::DiagnosticEngine &diagnosticEngine)
 {
@@ -85,30 +110,37 @@ static int CompileFromConfig(es2panda::Compiler &compiler, util::Options *option
         return 1;
     }
 
-    unsigned overallRes = 0;
+    std::vector<SourceFile> inputs {};
+    unsigned int overallRes = 0;
     for (auto &[src, dst] : compilationList) {
         std::ifstream inputStream(src);
         if (inputStream.fail()) {
             diagnosticEngine.LogDiagnostic(diagnostic::OPEN_FAILED, util::DiagnosticMessageParams {src});
             return 1;
         }
-
         std::stringstream ss;
         ss << inputStream.rdbuf();
-        std::string parserInput = ss.str();
+        auto *parserInput = new std::string(ss.str());
         inputStream.close();
-        es2panda::SourceFile input(src, parserInput, options->IsModule());
-        options->SetOutput(dst);
-        LOG_IF(options->IsListFiles(), INFO, ES2PANDA)
-            << "> es2panda: compiling from '" << src << "' to '" << dst << "'";
+        es2panda::SourceFile input(src, *parserInput, options->IsModule(), std::string_view(dst));
+        inputs.push_back(input);
+    }
 
+    if (options->IsPermArena() && (options->GetExtension() == util::gen::extension::ETS)) {
+        return CompileMultipleFiles(compiler, inputs, options, diagnosticEngine);
+    }
+
+    for (auto &input : inputs) {
+        LOG_IF(options->IsListFiles(), INFO, ES2PANDA)
+            << "> es2panda: compiling from '" << input.filePath << "' to '" << input.dest << "'";
+        options->SetOutput(std::string(input.dest));
         auto res = CompileFromSource(compiler, input, *options, diagnosticEngine);
         if (res != 0) {
-            diagnosticEngine.LogDiagnostic(diagnostic::COMPILE_FAILED, util::DiagnosticMessageParams {src, dst});
+            diagnosticEngine.LogDiagnostic(diagnostic::COMPILE_FAILED,
+                                           util::DiagnosticMessageParams {input.filePath, input.dest});
             overallRes |= static_cast<unsigned>(res);
         }
     }
-
     return overallRes;
 }
 
@@ -134,6 +166,7 @@ static int Run(Span<const char *const> args)
     auto diagnosticEngine = util::DiagnosticEngine();
     auto options = std::make_unique<util::Options>(args[0], diagnosticEngine);
     if (!options->Parse(args)) {
+        diagnosticEngine.FlushDiagnostic();
         return 1;
     }
     diagnosticEngine.SetWError(options->IsEtsWarningsWerror());
@@ -144,6 +177,7 @@ static int Run(Span<const char *const> args)
 
     auto pluginsOpt = InitializePlugins(options->GetPlugins(), diagnosticEngine);
     if (!pluginsOpt.has_value()) {
+        diagnosticEngine.FlushDiagnostic();
         return 1;
     }
 
@@ -151,25 +185,32 @@ static int Run(Span<const char *const> args)
     if (options->IsListPhases()) {
         std::cerr << "Available phases:" << std::endl;
         std::cerr << compiler.GetPhasesList();
+        diagnosticEngine.FlushDiagnostic();
         return 1;
     }
 
+    int res;
     if (options->GetCompilationMode() == CompilationMode::PROJECT) {
-        return CompileFromConfig(compiler, options.get(), diagnosticEngine);
-    }
-
-    std::string sourceFile;
-    std::string_view parserInput;
-    if (options->GetCompilationMode() == CompilationMode::GEN_STD_LIB) {
-        sourceFile = "etsstdlib.ets";
-        parserInput = "";
+        res = CompileFromConfig(compiler, options.get(), diagnosticEngine);
     } else {
-        sourceFile = options->SourceFileName();
-        auto [buf, size] = options->CStrParserInputContents();
-        parserInput = std::string_view(buf, size);
+        std::string sourceFile;
+        std::string_view parserInput;
+        if (options->GetCompilationMode() == CompilationMode::GEN_STD_LIB) {
+            sourceFile = "etsstdlib.ets";
+            parserInput = "";
+        } else {
+            sourceFile = options->SourceFileName();
+            auto [buf, size] = options->CStrParserInputContents();
+            parserInput = std::string_view(buf, size);
+        }
+        es2panda::SourceFile input(sourceFile, parserInput, options->IsModule(), options->GetOutput());
+        res = CompileFromSource(compiler, input, *options.get(), diagnosticEngine);
     }
-    es2panda::SourceFile input(sourceFile, parserInput, options->IsModule());
-    return CompileFromSource(compiler, input, *options.get(), diagnosticEngine);
+    if (options->IsDumpPerfMetrics()) {
+        util::DumpPerfMetrics();
+    }
+    diagnosticEngine.FlushDiagnostic();
+    return res;
 }
 }  // namespace ark::es2panda::aot
 

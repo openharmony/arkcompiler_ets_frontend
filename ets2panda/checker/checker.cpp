@@ -20,13 +20,15 @@
 #include "checker/types/ts/unionType.h"
 
 namespace ark::es2panda::checker {
-Checker::Checker(util::DiagnosticEngine &diagnosticEngine)
-    : allocator_(SpaceType::SPACE_TYPE_COMPILER, nullptr, true),
+Checker::Checker(ThreadSafeArenaAllocator *allocator, util::DiagnosticEngine &diagnosticEngine,
+                 ThreadSafeArenaAllocator *programAllocator)
+    : allocator_(allocator),
+      programAllocator_(programAllocator),
       context_(this, CheckerStatus::NO_OPTS),
-      globalTypes_(allocator_.New<GlobalTypesHolder>(&allocator_)),
-      relation_(allocator_.New<TypeRelation>(this)),
       diagnosticEngine_(diagnosticEngine)
 {
+    relation_ = ProgramAllocator()->New<TypeRelation>(this);
+    globalTypes_ = ProgramAllocator()->New<GlobalTypesHolder>(ProgramAllocator());
 }
 
 void Checker::Initialize(varbinder::VarBinder *varbinder)
@@ -52,14 +54,10 @@ void Checker::LogTypeError(std::string_view message, const lexer::SourcePosition
     diagnosticEngine_.LogSemanticError(message, pos);
 }
 
-void Checker::Warning(const std::string_view message, const lexer::SourcePosition &pos) const
+void Checker::LogDiagnostic(const diagnostic::DiagnosticKind &kind, const util::DiagnosticMessageParams &list,
+                            const lexer::SourcePosition &pos)
 {
-    diagnosticEngine_.LogWarning(message, pos);
-}
-
-void Checker::ReportWarning(const util::DiagnosticMessageParams &list, const lexer::SourcePosition &pos)
-{
-    diagnosticEngine_.LogWarning(list, pos);
+    diagnosticEngine_.LogDiagnostic(kind, list, pos);
 }
 
 bool Checker::IsAllTypesAssignableTo(Type *source, Type *target)
@@ -166,6 +164,11 @@ bool Checker::IsAnyError()
     return DiagnosticEngine().IsAnyError();
 }
 
+bool Checker::IsDeclForDynamicStaticInterop() const
+{
+    return Program()->IsDeclForDynamicStaticInterop();
+}
+
 ScopeContext::ScopeContext(Checker *checker, varbinder::Scope *newScope)
     : checker_(checker), prevScope_(checker_->scope_), prevProgram_(checker_->Program())
 {
@@ -180,14 +183,16 @@ ScopeContext::ScopeContext(Checker *checker, varbinder::Scope *newScope)
 
 void Checker::CleanUp()
 {
+    if (!program_->IsASTLowered()) {
+        globalTypes_ = allocator_->New<GlobalTypesHolder>(allocator_);
+    }
     context_ = CheckerContext(this, CheckerStatus::NO_OPTS);
-    globalTypes_ = allocator_.New<GlobalTypesHolder>(&allocator_);
-    relation_ = allocator_.New<TypeRelation>(this);
-    identicalResults_.cached.clear();
-    assignableResults_.cached.clear();
-    comparableResults_.cached.clear();
-    uncheckedCastableResults_.cached.clear();
-    supertypeResults_.cached.clear();
+    relation_ = allocator_->New<TypeRelation>(this);
+    identicalResults_.Clear();
+    assignableResults_.Clear();
+    comparableResults_.Clear();
+    uncheckedCastableResults_.Clear();
+    supertypeResults_.Clear();
     typeStack_.clear();
     namedTypeStack_.clear();
 }

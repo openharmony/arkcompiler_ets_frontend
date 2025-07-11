@@ -57,12 +57,15 @@ enum class GlobalTypeId : std::size_t {
     ETS_OBJECT_BUILTIN,
     ETS_NULL,
     ETS_UNDEFINED,
-    ETS_NULLISH_TYPE,
+    ETS_UNION_UNDEFINED_NULL,
+    ETS_ANY,
+    ETS_RELAXED_ANY,
     ETS_NEVER,
-    ETS_NULLISH_OBJECT,
+    ETS_UNION_UNDEFINED_NULL_OBJECT,
     ETS_WILDCARD,
     ETS_BOOLEAN_BUILTIN,
     ETS_BYTE_BUILTIN,
+    ETS_CLASS_BUILTIN,
     ETS_CHAR_BUILTIN,
     ETS_COMPARABLE_BUILTIN,
     ETS_CONSOLE_BUILTIN,
@@ -74,7 +77,9 @@ enum class GlobalTypeId : std::size_t {
     ETS_INT_BUILTIN,
     ETS_INTEGRAL_BUILTIN,
     ETS_LONG_BUILTIN,
+    ETS_NUMERIC_BUILTIN,
     ETS_MAP_BUILTIN,
+    ETS_RECORD_BUILTIN,
     ETS_ERROR_BUILTIN,
     ETS_RUNTIME_BUILTIN,
     ETS_RUNTIME_LINKER_BUILTIN,
@@ -110,6 +115,7 @@ enum class GlobalTypeId : std::size_t {
     ETS_DOUBLE_BOX_BUILTIN,
     ETS_BIG_INT_BUILTIN,
     ETS_BIG_INT,
+    ETS_ARRAY,
 
     ETS_FUNCTION0_CLASS,
     ETS_FUNCTION1_CLASS,
@@ -265,12 +271,15 @@ public:
     Type *GlobalETSObjectType();
     Type *GlobalETSNullType();
     Type *GlobalETSUndefinedType();
+    Type *GlobalETSAnyType();
+    Type *GlobalETSRelaxedAnyType();
     Type *GlobalETSNeverType();
-    Type *GlobalETSNullishType();
-    Type *GlobalETSNullishObjectType();
+    Type *GlobalETSUnionUndefinedNull();
+    Type *GlobalETSUnionUndefinedNullObject();
     Type *GlobalWildcardType();
     Type *GlobalETSBooleanBuiltinType();
     Type *GlobalByteBuiltinType();
+    Type *GlobalClassBuiltinType();
     Type *GlobalCharBuiltinType();
     Type *GlobalComparableBuiltinType();
     Type *GlobalConsoleBuiltinType();
@@ -281,6 +290,7 @@ public:
     Type *GlobalIntegerBuiltinType();
     Type *GlobalIntegralBuiltinType();
     Type *GlobalLongBuiltinType();
+    Type *GlobalNumericBuiltinType();
     Type *GlobalErrorBuiltinType();
     Type *GlobalRuntimeBuiltinType();
     Type *GlobalShortBuiltinType();
@@ -323,6 +333,7 @@ public:
     Type *GlobalNullPointerErrorBuiltinType();
     Type *GlobalUncaughtExceptionErrorBuiltinType();
     Type *GlobalMapBuiltinType();
+    Type *GlobalRecordBuiltinType();
     Type *GlobalRegExpBuiltinType();
     Type *GlobalSetBuiltinType();
 

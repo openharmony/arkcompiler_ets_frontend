@@ -17,5 +17,5 @@ class A {
     x: int
 
 
-/* @@@ label Error SyntaxError: Expected '}', got 'eos'. */
+/* @@@ label Error SyntaxError: Expected '}', got 'end of stream'. */
 /* @@ label */

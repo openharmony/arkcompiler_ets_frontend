@@ -20,4 +20,4 @@ enum Color {
     C = /* @@ label */constVar
 }
 
-/* @@@ label Error SyntaxError: Invalid enum initialization value  */
+/* @@@ label Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type.  */

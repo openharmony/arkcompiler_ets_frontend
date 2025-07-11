@@ -18,7 +18,7 @@
             "line": 17,
             "column": 1,
             "endLine": 17,
-            "endColumn": 59,
+            "endColumn": 106,
             "problem": "ImportAfterStatement",
             "suggest": "",
             "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
@@ -28,18 +28,26 @@
             "line": 17,
             "column": 1,
             "endLine": 17,
-            "endColumn": 59,
+            "endColumn": 106,
             "problem": "InterOpImportJs",
             "autofix": [
                 {
                     "start": 618,
-                    "end": 676,
-                    "replacementText": ""
+                    "end": 723,
+                    "replacementText": "",
+                    "line": 17,
+                    "column": 1,
+                    "endLine": 17,
+                    "endColumn": 106
                 },
                 {
-                    "start": 676,
-                    "end": 676,
-                    "replacementText": "let GeneratedImportVar_1 = ESObject.load('./interop_not_have_property_js');\nlet foo = GeneratedImportVar_1.getPropertyByName('foo');\nlet person = GeneratedImportVar_1.getPropertyByName('person');\n"
+                    "start": 723,
+                    "end": 723,
+                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('./interop_not_have_property_js');\nlet foo = GeneratedImportVar_1.getProperty('foo');\nlet person = GeneratedImportVar_1.getProperty('person');\nlet TestHelper = GeneratedImportVar_1.getProperty('TestHelper');\nlet Machine = GeneratedImportVar_1.getProperty('Machine');\nlet User = GeneratedImportVar_1.getProperty('User');\nlet Person = GeneratedImportVar_1.getProperty('Person');\nlet Employee = GeneratedImportVar_1.getProperty('Employee');\n",
+                    "line": 17,
+                    "column": 1,
+                    "endLine": 17,
+                    "endColumn": 106
                 }
             ],
             "suggest": "",
@@ -54,40 +62,17 @@
             "problem": "InteropObjectProperty",
             "autofix": [
                 {
-                    "start": 678,
-                    "end": 686,
-                    "replacementText": "foo.getPropertyByName(\"name\")"
+                    "start": 725,
+                    "end": 733,
+                    "replacementText": "foo.getProperty(\"name\")",
+                    "line": 19,
+                    "column": 1,
+                    "endLine": 19,
+                    "endColumn": 9
                 }
             ],
             "suggest": "",
             "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 19,
-            "column": 1,
-            "endLine": 19,
-            "endColumn": 9,
-            "problem": "InteropJsObjectUsage",
-            "autofix": [
-                {
-                    "replacementText": "foo.getPropertyByName('name').toString()",
-                    "start": 678,
-                    "end": 686
-                }
-            ],
-            "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 19,
-            "column": 1,
-            "endLine": 19,
-            "endColumn": 9,
-            "problem": "BinaryOperations",
-            "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
             "severity": "ERROR"
         },
         {
@@ -98,40 +83,17 @@
             "problem": "InteropObjectProperty",
             "autofix": [
                 {
-                    "start": 687,
-                    "end": 703,
-                    "replacementText": "foo.setPropertyByName(\"name\", ESObject.wrap(\"456\"))"
+                    "start": 734,
+                    "end": 750,
+                    "replacementText": "foo.setProperty(\"name\", ESValue.wrap(\"456\"))",
+                    "line": 20,
+                    "column": 1,
+                    "endLine": 20,
+                    "endColumn": 17
                 }
             ],
             "suggest": "",
             "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 20,
-            "column": 1,
-            "endLine": 20,
-            "endColumn": 9,
-            "problem": "InteropJsObjectUsage",
-            "autofix": [
-                {
-                    "replacementText": "foo.getPropertyByName('name').toString()",
-                    "start": 687,
-                    "end": 695
-                }
-            ],
-            "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 20,
-            "column": 1,
-            "endLine": 20,
-            "endColumn": 9,
-            "problem": "BinaryOperations",
-            "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
             "severity": "ERROR"
         },
         {
@@ -142,9 +104,13 @@
             "problem": "InteropObjectProperty",
             "autofix": [
                 {
-                    "start": 704,
-                    "end": 719,
-                    "replacementText": "person.setPropertyByName(\"age\", ESObject.wrap(23))"
+                    "start": 751,
+                    "end": 766,
+                    "replacementText": "person.setProperty(\"age\", ESValue.wrap(23))",
+                    "line": 21,
+                    "column": 1,
+                    "endLine": 21,
+                    "endColumn": 16
                 }
             ],
             "suggest": "",
@@ -153,29 +119,23 @@
         },
         {
             "line": 21,
-            "column": 1,
+            "column": 14,
             "endLine": 21,
-            "endColumn": 11,
-            "problem": "InteropJsObjectUsage",
+            "endColumn": 16,
+            "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "replacementText": "person.getPropertyByName('age').toNumber()",
-                    "start": 704,
-                    "end": 714
+                    "start": 764,
+                    "end": 766,
+                    "replacementText": "23.0",
+                    "line": 21,
+                    "column": 14,
+                    "endLine": 21,
+                    "endColumn": 16
                 }
             ],
             "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 21,
-            "column": 1,
-            "endLine": 21,
-            "endColumn": 11,
-            "problem": "BinaryOperations",
-            "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -186,9 +146,13 @@
             "problem": "InteropObjectProperty",
             "autofix": [
                 {
-                    "start": 720,
-                    "end": 740,
-                    "replacementText": "person.setPropertyByName(\"male\", ESObject.wrap([2, 3]))"
+                    "start": 767,
+                    "end": 787,
+                    "replacementText": "person.setProperty(\"male\", ESValue.wrap([2, 3]))",
+                    "line": 22,
+                    "column": 1,
+                    "endLine": 22,
+                    "endColumn": 21
                 }
             ],
             "suggest": "",
@@ -197,29 +161,873 @@
         },
         {
             "line": 22,
-            "column": 1,
+            "column": 16,
             "endLine": 22,
-            "endColumn": 12,
-            "problem": "InteropJsObjectUsage",
+            "endColumn": 17,
+            "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "replacementText": "person.getPropertyByName('male')",
-                    "start": 720,
-                    "end": 731
+                    "start": 782,
+                    "end": 783,
+                    "replacementText": "2.0",
+                    "line": 22,
+                    "column": 16,
+                    "endLine": 22,
+                    "endColumn": 17
                 }
             ],
             "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
             "line": 22,
-            "column": 1,
+            "column": 19,
             "endLine": 22,
-            "endColumn": 12,
-            "problem": "BinaryOperations",
+            "endColumn": 20,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 785,
+                    "end": 786,
+                    "replacementText": "3.0",
+                    "line": 22,
+                    "column": 19,
+                    "endLine": 22,
+                    "endColumn": 20
+                }
+            ],
             "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 23,
+            "column": 1,
+            "endLine": 23,
+            "endColumn": 13,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 788,
+                    "end": 800,
+                    "replacementText": "foo.setProperty(\"age\", ESValue.wrap(12))",
+                    "line": 23,
+                    "column": 1,
+                    "endLine": 23,
+                    "endColumn": 13
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 23,
+            "column": 11,
+            "endLine": 23,
+            "endColumn": 13,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 798,
+                    "end": 800,
+                    "replacementText": "12.0",
+                    "line": 23,
+                    "column": 11,
+                    "endLine": 23,
+                    "endColumn": 13
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 24,
+            "column": 5,
+            "endLine": 24,
+            "endColumn": 21,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 805,
+                    "end": 821,
+                    "replacementText": "foo.setProperty(\"name\", ESValue.wrap(\"456\"))",
+                    "line": 24,
+                    "column": 5,
+                    "endLine": 24,
+                    "endColumn": 21
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 24,
+            "column": 5,
+            "endLine": 24,
+            "endColumn": 13,
+            "problem": "InteropJsObjectConditionJudgment",
+            "autofix": [
+                {
+                    "replacementText": "foo.getProperty('name').toString()",
+                    "start": 805,
+                    "end": 813,
+                    "line": 24,
+                    "column": 5,
+                    "endLine": 24,
+                    "endColumn": 13
+                }
+            ],
+            "suggest": "",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js2s-condition-judgment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 26,
+            "column": 5,
+            "endLine": 26,
+            "endColumn": 18,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 26,
+            "column": 9,
+            "endLine": 26,
+            "endColumn": 18,
+            "problem": "InstantiatedJsOjbect",
+            "autofix": [
+                {
+                    "start": 850,
+                    "end": 859,
+                    "replacementText": "foo.instantiate()",
+                    "line": 26,
+                    "column": 9,
+                    "endLine": 26,
+                    "endColumn": 18
+                }
+            ],
+            "suggest": "",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 27,
+            "column": 1,
+            "endLine": 27,
+            "endColumn": 11,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 860,
+                    "end": 870,
+                    "replacementText": "a.setProperty(\"age\", ESValue.wrap(12))",
+                    "line": 27,
+                    "column": 1,
+                    "endLine": 27,
+                    "endColumn": 11
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 27,
+            "column": 9,
+            "endLine": 27,
+            "endColumn": 11,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 868,
+                    "end": 870,
+                    "replacementText": "12.0",
+                    "line": 27,
+                    "column": 9,
+                    "endLine": 27,
+                    "endColumn": 11
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 29,
+            "column": 19,
+            "endLine": 29,
+            "endColumn": 63,
+            "problem": "InstantiatedJsOjbect",
+            "autofix": [
+                {
+                    "start": 890,
+                    "end": 934,
+                    "replacementText": "TestHelper.instantiate(ESValue.wrap(\"TEST_INSTANTIATE_JS_OBJECT\"))",
+                    "line": 29,
+                    "column": 19,
+                    "endLine": 29,
+                    "endColumn": 63
+                }
+            ],
+            "suggest": "",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 30,
+            "column": 1,
+            "endLine": 33,
+            "endColumn": 33,
+            "problem": "InteropCallObjectMethods",
+            "autofix": [
+                {
+                    "start": 936,
+                    "end": 1102,
+                    "replacementText": "test_helper.invokeMethod(\"test\", ESValue.wrap(() => {\n    let machine = new Machine();\n    return machine.name === \"machine\"; // arkts-interop-js2s-access-js-prop\n}), ESValue.wrap(\"machine.name === 'machine'\"))",
+                    "line": 30,
+                    "column": 1,
+                    "endLine": 33,
+                    "endColumn": 33
+                }
+            ],
+            "suggest": "",
+            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-interop-js2s-call-js-method)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 31,
+            "column": 19,
+            "endLine": 31,
+            "endColumn": 32,
+            "problem": "InstantiatedJsOjbect",
+            "autofix": [
+                {
+                    "start": 979,
+                    "end": 992,
+                    "replacementText": "Machine.instantiate()",
+                    "line": 31,
+                    "column": 19,
+                    "endLine": 31,
+                    "endColumn": 32
+                }
+            ],
+            "suggest": "",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 32,
+            "column": 12,
+            "endLine": 32,
+            "endColumn": 38,
+            "problem": "InteropEqualityJudgment",
+            "autofix": [
+                {
+                    "start": 1005,
+                    "end": 1031,
+                    "replacementText": "machine.name.areStrictlyEqual(\"machine\")",
+                    "line": 32,
+                    "column": 12,
+                    "endLine": 32,
+                    "endColumn": 38
+                }
+            ],
+            "suggest": "",
+            "rule": "\"JS\" objects can't be used directly as operands of the equality operators (arkts-interop-js2s-equality-judgment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 32,
+            "column": 12,
+            "endLine": 32,
+            "endColumn": 24,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 1005,
+                    "end": 1017,
+                    "replacementText": "machine.getProperty(\"name\")",
+                    "line": 32,
+                    "column": 12,
+                    "endLine": 32,
+                    "endColumn": 24
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 35,
+            "column": 1,
+            "endLine": 38,
+            "endColumn": 24,
+            "problem": "InteropCallObjectMethods",
+            "autofix": [
+                {
+                    "start": 1105,
+                    "end": 1252,
+                    "replacementText": "test_helper.invokeMethod(\"test\", ESValue.wrap(() => {\n    let user = new User(\"Bob\");\n    return user.id === \"Bob\"; // arkts-interop-js2s-access-js-prop\n}), ESValue.wrap(\"user.id === 'Bob'\"))",
+                    "line": 35,
+                    "column": 1,
+                    "endLine": 38,
+                    "endColumn": 24
+                }
+            ],
+            "suggest": "",
+            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-interop-js2s-call-js-method)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 36,
+            "column": 16,
+            "endLine": 36,
+            "endColumn": 31,
+            "problem": "InstantiatedJsOjbect",
+            "autofix": [
+                {
+                    "start": 1145,
+                    "end": 1160,
+                    "replacementText": "User.instantiate(ESValue.wrap(\"Bob\"))",
+                    "line": 36,
+                    "column": 16,
+                    "endLine": 36,
+                    "endColumn": 31
+                }
+            ],
+            "suggest": "",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 37,
+            "column": 12,
+            "endLine": 37,
+            "endColumn": 29,
+            "problem": "InteropEqualityJudgment",
+            "autofix": [
+                {
+                    "start": 1173,
+                    "end": 1190,
+                    "replacementText": "user.id.areStrictlyEqual(\"Bob\")",
+                    "line": 37,
+                    "column": 12,
+                    "endLine": 37,
+                    "endColumn": 29
+                }
+            ],
+            "suggest": "",
+            "rule": "\"JS\" objects can't be used directly as operands of the equality operators (arkts-interop-js2s-equality-judgment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 37,
+            "column": 12,
+            "endLine": 37,
+            "endColumn": 19,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 1173,
+                    "end": 1180,
+                    "replacementText": "user.getProperty(\"id\")",
+                    "line": 37,
+                    "column": 12,
+                    "endLine": 37,
+                    "endColumn": 19
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 40,
+            "column": 1,
+            "endLine": 43,
+            "endColumn": 21,
+            "problem": "InteropCallObjectMethods",
+            "autofix": [
+                {
+                    "start": 1255,
+                    "end": 1384,
+                    "replacementText": "test_helper.invokeMethod(\"test\", ESValue.wrap(() => {\nlet user = new User(10);\nreturn user.id === 10;// arkts-interop-js2s-access-js-prop\n}), ESValue.wrap(\"user.id === 10\"))",
+                    "line": 40,
+                    "column": 1,
+                    "endLine": 43,
+                    "endColumn": 21
+                }
+            ],
+            "suggest": "",
+            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-interop-js2s-call-js-method)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 41,
+            "column": 12,
+            "endLine": 41,
+            "endColumn": 24,
+            "problem": "InstantiatedJsOjbect",
+            "autofix": [
+                {
+                    "start": 1291,
+                    "end": 1303,
+                    "replacementText": "User.instantiate(ESValue.wrap(10))",
+                    "line": 41,
+                    "column": 12,
+                    "endLine": 41,
+                    "endColumn": 24
+                }
+            ],
+            "suggest": "",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 41,
+            "column": 21,
+            "endLine": 41,
+            "endColumn": 23,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1300,
+                    "end": 1302,
+                    "replacementText": "10.0",
+                    "line": 41,
+                    "column": 21,
+                    "endLine": 41,
+                    "endColumn": 23
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 42,
+            "column": 8,
+            "endLine": 42,
+            "endColumn": 22,
+            "problem": "InteropEqualityJudgment",
+            "autofix": [
+                {
+                    "start": 1312,
+                    "end": 1326,
+                    "replacementText": "user.id.areStrictlyEqual(10)",
+                    "line": 42,
+                    "column": 8,
+                    "endLine": 42,
+                    "endColumn": 22
+                }
+            ],
+            "suggest": "",
+            "rule": "\"JS\" objects can't be used directly as operands of the equality operators (arkts-interop-js2s-equality-judgment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 42,
+            "column": 8,
+            "endLine": 42,
+            "endColumn": 15,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 1312,
+                    "end": 1319,
+                    "replacementText": "user.getProperty(\"id\")",
+                    "line": 42,
+                    "column": 8,
+                    "endLine": 42,
+                    "endColumn": 15
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 42,
+            "column": 20,
+            "endLine": 42,
+            "endColumn": 22,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1324,
+                    "end": 1326,
+                    "replacementText": "10.0",
+                    "line": 42,
+                    "column": 20,
+                    "endLine": 42,
+                    "endColumn": 22
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 45,
+            "column": 1,
+            "endLine": 48,
+            "endColumn": 23,
+            "problem": "InteropCallObjectMethods",
+            "autofix": [
+                {
+                    "start": 1387,
+                    "end": 1531,
+                    "replacementText": "test_helper.invokeMethod(\"test\", ESValue.wrap(() => {\n    let user = new User(123n);\n    return user.id === 123n; // arkts-interop-js2s-access-js-prop\n}), ESValue.wrap(\"user.id === 123n\"))",
+                    "line": 45,
+                    "column": 1,
+                    "endLine": 48,
+                    "endColumn": 23
+                }
+            ],
+            "suggest": "",
+            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-interop-js2s-call-js-method)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 46,
+            "column": 16,
+            "endLine": 46,
+            "endColumn": 30,
+            "problem": "InstantiatedJsOjbect",
+            "autofix": [
+                {
+                    "start": 1427,
+                    "end": 1441,
+                    "replacementText": "User.instantiate(ESValue.wrap(123n))",
+                    "line": 46,
+                    "column": 16,
+                    "endLine": 46,
+                    "endColumn": 30
+                }
+            ],
+            "suggest": "",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 47,
+            "column": 12,
+            "endLine": 47,
+            "endColumn": 28,
+            "problem": "InteropEqualityJudgment",
+            "autofix": [
+                {
+                    "start": 1454,
+                    "end": 1470,
+                    "replacementText": "user.id.areStrictlyEqual(123n)",
+                    "line": 47,
+                    "column": 12,
+                    "endLine": 47,
+                    "endColumn": 28
+                }
+            ],
+            "suggest": "",
+            "rule": "\"JS\" objects can't be used directly as operands of the equality operators (arkts-interop-js2s-equality-judgment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 47,
+            "column": 12,
+            "endLine": 47,
+            "endColumn": 19,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 1454,
+                    "end": 1461,
+                    "replacementText": "user.getProperty(\"id\")",
+                    "line": 47,
+                    "column": 12,
+                    "endLine": 47,
+                    "endColumn": 19
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 50,
+            "column": 1,
+            "endLine": 53,
+            "endColumn": 23,
+            "problem": "InteropCallObjectMethods",
+            "autofix": [
+                {
+                    "start": 1534,
+                    "end": 1677,
+                    "replacementText": "test_helper.invokeMethod(\"test\", ESValue.wrap(() => {\n    let user = new User(true);\n    return user.id === true;// arkts-interop-js2s-access-js-prop\n}), ESValue.wrap(\"user.id === true\"))",
+                    "line": 50,
+                    "column": 1,
+                    "endLine": 53,
+                    "endColumn": 23
+                }
+            ],
+            "suggest": "",
+            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-interop-js2s-call-js-method)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 51,
+            "column": 16,
+            "endLine": 51,
+            "endColumn": 30,
+            "problem": "InstantiatedJsOjbect",
+            "autofix": [
+                {
+                    "start": 1574,
+                    "end": 1588,
+                    "replacementText": "User.instantiate(ESValue.wrap(true))",
+                    "line": 51,
+                    "column": 16,
+                    "endLine": 51,
+                    "endColumn": 30
+                }
+            ],
+            "suggest": "",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 52,
+            "column": 12,
+            "endLine": 52,
+            "endColumn": 28,
+            "problem": "InteropEqualityJudgment",
+            "autofix": [
+                {
+                    "start": 1601,
+                    "end": 1617,
+                    "replacementText": "user.id.areStrictlyEqual(true)",
+                    "line": 52,
+                    "column": 12,
+                    "endLine": 52,
+                    "endColumn": 28
+                }
+            ],
+            "suggest": "",
+            "rule": "\"JS\" objects can't be used directly as operands of the equality operators (arkts-interop-js2s-equality-judgment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 52,
+            "column": 12,
+            "endLine": 52,
+            "endColumn": 19,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 1601,
+                    "end": 1608,
+                    "replacementText": "user.getProperty(\"id\")",
+                    "line": 52,
+                    "column": 12,
+                    "endLine": 52,
+                    "endColumn": 19
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 55,
+            "column": 1,
+            "endLine": 58,
+            "endColumn": 33,
+            "problem": "InteropCallObjectMethods",
+            "autofix": [
+                {
+                    "start": 1680,
+                    "end": 1855,
+                    "replacementText": "test_helper.invokeMethod(\"test\", ESValue.wrap(() => {\n    let machine = new Person(\"John\", 10);\n    return machine.name === \"machine\"; // arkts-interop-js2s-access-js-prop\n}), ESValue.wrap(\"machine.name === 'machine'\"))",
+                    "line": 55,
+                    "column": 1,
+                    "endLine": 58,
+                    "endColumn": 33
+                }
+            ],
+            "suggest": "",
+            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-interop-js2s-call-js-method)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 56,
+            "column": 19,
+            "endLine": 56,
+            "endColumn": 41,
+            "problem": "InstantiatedJsOjbect",
+            "autofix": [
+                {
+                    "start": 1723,
+                    "end": 1745,
+                    "replacementText": "Person.instantiate(ESValue.wrap(\"John\"), ESValue.wrap(10))",
+                    "line": 56,
+                    "column": 19,
+                    "endLine": 56,
+                    "endColumn": 41
+                }
+            ],
+            "suggest": "",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 56,
+            "column": 38,
+            "endLine": 56,
+            "endColumn": 40,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1742,
+                    "end": 1744,
+                    "replacementText": "10.0",
+                    "line": 56,
+                    "column": 38,
+                    "endLine": 56,
+                    "endColumn": 40
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 57,
+            "column": 12,
+            "endLine": 57,
+            "endColumn": 38,
+            "problem": "InteropEqualityJudgment",
+            "autofix": [
+                {
+                    "start": 1758,
+                    "end": 1784,
+                    "replacementText": "machine.name.areStrictlyEqual(\"machine\")",
+                    "line": 57,
+                    "column": 12,
+                    "endLine": 57,
+                    "endColumn": 38
+                }
+            ],
+            "suggest": "",
+            "rule": "\"JS\" objects can't be used directly as operands of the equality operators (arkts-interop-js2s-equality-judgment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 57,
+            "column": 12,
+            "endLine": 57,
+            "endColumn": 24,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 1758,
+                    "end": 1770,
+                    "replacementText": "machine.getProperty(\"name\")",
+                    "line": 57,
+                    "column": 12,
+                    "endLine": 57,
+                    "endColumn": 24
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 60,
+            "column": 1,
+            "endLine": 63,
+            "endColumn": 35,
+            "problem": "InteropCallObjectMethods",
+            "autofix": [
+                {
+                    "start": 1858,
+                    "end": 2030,
+                    "replacementText": "test_helper.invokeMethod(\"test\", ESValue.wrap(() => {\n    let employee = new Employee();\n    return employee.name === \"employee\"; // arkts-interop-js2s-access-js-prop\n}), ESValue.wrap(\"employee.name === 'employee'\"))",
+                    "line": 60,
+                    "column": 1,
+                    "endLine": 63,
+                    "endColumn": 35
+                }
+            ],
+            "suggest": "",
+            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-interop-js2s-call-js-method)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 61,
+            "column": 20,
+            "endLine": 61,
+            "endColumn": 34,
+            "problem": "InstantiatedJsOjbect",
+            "autofix": [
+                {
+                    "start": 1902,
+                    "end": 1916,
+                    "replacementText": "Employee.instantiate()",
+                    "line": 61,
+                    "column": 20,
+                    "endLine": 61,
+                    "endColumn": 34
+                }
+            ],
+            "suggest": "",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 62,
+            "column": 12,
+            "endLine": 62,
+            "endColumn": 40,
+            "problem": "InteropEqualityJudgment",
+            "autofix": [
+                {
+                    "start": 1929,
+                    "end": 1957,
+                    "replacementText": "employee.name.areStrictlyEqual(\"employee\")",
+                    "line": 62,
+                    "column": 12,
+                    "endLine": 62,
+                    "endColumn": 40
+                }
+            ],
+            "suggest": "",
+            "rule": "\"JS\" objects can't be used directly as operands of the equality operators (arkts-interop-js2s-equality-judgment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 62,
+            "column": 12,
+            "endLine": 62,
+            "endColumn": 25,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 1929,
+                    "end": 1942,
+                    "replacementText": "employee.getProperty(\"name\")",
+                    "line": 62,
+                    "column": 12,
+                    "endLine": 62,
+                    "endColumn": 25
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
             "severity": "ERROR"
         }
     ]

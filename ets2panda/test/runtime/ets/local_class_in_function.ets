@@ -24,12 +24,12 @@ function main():void
         field2:int = 20;
         static staticfield = 30;
         method1(){
-            assertEQ(this.field1, 10)
-            assertEQ(this.field2, 20)
-            assertEQ(localint, 200)
+            arktest.assertEQ(this.field1, 10)
+            arktest.assertEQ(this.field2, 20)
+            arktest.assertEQ(localint, 200)
         }
         static method2(){
-            assertEQ(LocalClass.staticfield, 30)
+            arktest.assertEQ(LocalClass.staticfield, 30)
         }
     }
     
@@ -37,24 +37,24 @@ function main():void
         field1:int = 10;
         static staticfield = 30;
         method1(){
-            assertEQ(this.field1, 10)
-            assertEQ(localint, 200)
+            arktest.assertEQ(this.field1, 10)
+            arktest.assertEQ(localint, 200)
         }
         static method2(){
-            assertEQ(FinalLocalClass.staticfield, 30)
+            arktest.assertEQ(FinalLocalClass.staticfield, 30)
         }
     }
 
     let x:AbstractLocalClass = new LocalClass();
-    assertEQ(x.field1, 10)
-    assertEQ(x.field2, 20)
-    assertEQ(LocalClass.staticfield, 30)
+    arktest.assertEQ(x.field1, 10)
+    arktest.assertEQ(x.field2, 20)
+    arktest.assertEQ(LocalClass.staticfield, 30)
     x.method1();
     LocalClass.method2();
 
     let x2:FinalLocalClass = new FinalLocalClass();
-    assertEQ(x2.field1, 10)
-    assertEQ(FinalLocalClass.staticfield, 30)
+    arktest.assertEQ(x2.field1, 10)
+    arktest.assertEQ(FinalLocalClass.staticfield, 30)
     x2.method1()
     FinalLocalClass.method2();
 }

@@ -17,7 +17,7 @@ function main() {
     const a : int = 1;
     const b : int = 2 + a;
     enum Foo {Baz = a, Bar = b}
-    assertEQ(Foo.Bar, 3)
+    arktest.assertEQ(Foo.Bar, 3)
 
-    assertEQ(Foo.Baz, 1)
+    arktest.assertEQ(Foo.Baz, 1)
 }

@@ -29,12 +29,7 @@ void ETSTuple::TransformChildren(const NodeTransformer &cb, std::string_view con
         }
     }
 
-    for (auto *&it : VectorIterationGuard(Annotations())) {
-        if (auto *transformedNode = cb(it); it != transformedNode) {
-            it->SetTransformedNode(transformationName, transformedNode);
-            it = transformedNode->AsAnnotationUsage();
-        }
-    }
+    TransformAnnotations(cb, transformationName);
 }
 
 void ETSTuple::Iterate(const NodeTraverser &cb) const
@@ -97,10 +92,8 @@ checker::Type *ETSTuple::GetHolderTypeForTuple(checker::ETSChecker *const checke
         return typeList[0];
     }
 
-    std::for_each(typeList.begin(), typeList.end(), [checker](auto &t) { t = checker->MaybeBoxType(t); });
-
-    auto ctypes = typeList;
-    return checker->CreateETSUnionType(std::move(ctypes));
+    /* NOTE(gogabr): if we compute a union type, we'll lose smaller numeric types, so just return Object */
+    return checker->GlobalETSAnyType();
 }
 
 checker::Type *ETSTuple::GetType(checker::ETSChecker *const checker)
@@ -117,14 +110,14 @@ checker::Type *ETSTuple::GetType(checker::ETSChecker *const checker)
         return checker->InvalidateType(this);
     }
 
-    ArenaVector<checker::Type *> typeList(checker->Allocator()->Adapter());
+    ArenaVector<checker::Type *> typeList(checker->ProgramAllocator()->Adapter());
 
     for (auto *const typeAnnotation : GetTupleTypeAnnotationsList()) {
         auto *const checkedType = typeAnnotation->GetType(checker);
         typeList.emplace_back(checkedType);
     }
 
-    auto *tupleType = checker->Allocator()->New<checker::ETSTupleType>(checker, typeList);
+    auto *tupleType = checker->ProgramAllocator()->New<checker::ETSTupleType>(checker, typeList);
 
     if (IsReadonlyType()) {
         tupleType = checker->GetReadonlyType(tupleType)->AsETSTupleType();

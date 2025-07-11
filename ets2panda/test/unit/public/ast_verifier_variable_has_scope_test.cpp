@@ -45,9 +45,9 @@ TEST_F(ASTVerifierTest, TestUnions)
         function assert_ccexc(f: () => void) {
             try {
                 f();
-                assertTrue(false, "exception expected");
+                arktest.assertTrue(false, "exception expected");
             } catch (e) {
-                assertTrue(e instanceof ClassCastError);
+                arktest.assertTrue(e instanceof ClassCastError);
             }
         }
 
@@ -90,8 +90,8 @@ TEST_F(ASTVerifierTest, LambdasHaveCorrectScope)
 TEST_F(ASTVerifierTest, AsyncLambda1)
 {
     char const *text = R"(
-        let fs: ((p: int) => int)[]
-        function foo(i: int): ((p: int) => int) {
+        let fs: ((p: int) => int)[] = [];
+        async function foo(i: int): Promise<((p: int) => int)> {
             return fs[i]
         }
 
@@ -101,10 +101,10 @@ TEST_F(ASTVerifierTest, AsyncLambda1)
             ]
 
             let ps: Object = new Object()
-            ps = launch foo(0)
+            ps = foo(0)
 
             let cnt = 0
-            cnt += (await ps as Promise<(p: int) => int>)(0)
+            cnt += (await (ps as Promise<(p: int) => int>))(0)
         }
     )";
 

@@ -22,7 +22,9 @@ function main(): void {
   let Object_: Object = Int_a as Object;
   let Int_a4: Int[][] = Object_ as Int[][];
 
-  let Long_a: Long[][] = /* @@ label */Int_a as Long[][];
+  let Long_a: Long[][] = Int_a as Long[][];
 }
 
-/* @@@ label Error TypeError: Cannot cast type 'Int[][]' to 'Long[][]'  */
+/* @@? 19:30 Error TypeError: Cannot cast type 'Array<Array<Int>>' to 'Array<Array<Object>>' */
+/* @@? 20:25 Error TypeError: Cannot cast type 'Array<Array<Object>>' to 'Array<Array<Int>>' */
+/* @@? 25:26 Error TypeError: Cannot cast type 'Array<Array<Int>>' to 'Array<Array<Long>>' */

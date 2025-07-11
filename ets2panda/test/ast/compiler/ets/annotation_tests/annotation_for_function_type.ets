@@ -26,4 +26,3 @@ let foo: @Anno @Anno (a?: @Anno @Anno string) => @Anno @Anno Int
 /* @@? 21:17 Error TypeError: Duplicate annotations are not allowed. The annotation 'Anno' has already been applied to this element.  */
 /* @@? 21:57 Error TypeError: Duplicate annotations are not allowed. The annotation 'Anno' has already been applied to this element.  */
 /* @@? 21:34 Error TypeError: Duplicate annotations are not allowed. The annotation 'Anno' has already been applied to this element.  */
-/* @@? 21:57 Error TypeError: Duplicate annotations are not allowed. The annotation 'Anno' has already been applied to this element.  */

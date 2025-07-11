@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -32,15 +32,15 @@ std::string_view StringConstructorLowering::Name() const
 // NOLINTBEGIN(modernize-avoid-c-arrays)
 static constexpr char const FORMAT_CHECK_NULL_EXPRESSION[] =
     "let @@I1 = (@@E2);"
-    "(@@I3 === null ? \"null\" : @@I4 as String)";
+    "(@@I3 === null ? \"null\" : (@@I4 as Object).toString())";
 
 static constexpr char const FORMAT_CHECK_UNDEFINED_EXPRESSION[] =
     "let @@I1 = (@@E2);"
-    "(@@I3 === undefined ? \"undefined\" : @@I4 as String)";
+    "(@@I3 === undefined ? \"undefined\" : (@@I4 as Object).toString())";
 
 static constexpr char const FORMAT_CHECK_NULLISH_EXPRESSION[] =
     "let @@I1 = (@@E2);"
-    "(@@I3 instanceof null ? \"null\" : (@@I4 instanceof undefined ? \"undefined\" : @@I5 as String))";
+    "(@@I3 instanceof null ? \"null\" : (@@I4 instanceof undefined ? \"undefined\" : (@@I5 as Object).toString()))";
 
 static constexpr char const FORMAT_TO_STRING_EXPRESSION[] = "((@@E1 as Object).toString())";
 // NOLINTEND(modernize-avoid-c-arrays)
@@ -48,7 +48,7 @@ static constexpr char const FORMAT_TO_STRING_EXPRESSION[] = "((@@E1 as Object).t
 ir::Expression *ReplaceStringConstructor(public_lib::Context *const ctx,
                                          ir::ETSNewClassInstanceExpression *newClassInstExpr)
 {
-    auto *checker = ctx->checker->AsETSChecker();
+    auto *checker = ctx->GetChecker()->AsETSChecker();
     auto *parser = ctx->parser->AsETSParser();
 
     // Skip missing signatures
@@ -70,8 +70,8 @@ ir::Expression *ReplaceStringConstructor(public_lib::Context *const ctx,
 
         // For the case when the constructor parameter is "null" or "undefined"
         if (argType->IsETSNullType() || argType->IsETSUndefinedType()) {
-            auto *literal = argType->IsETSNullType() ? checker->AllocNode<ir::StringLiteral>("null")
-                                                     : checker->AllocNode<ir::StringLiteral>("undefined");
+            auto *literal = argType->IsETSNullType() ? ctx->AllocNode<ir::StringLiteral>("null")
+                                                     : ctx->AllocNode<ir::StringLiteral>("undefined");
             literal->SetParent(newClassInstExpr->Parent());
 
             // Run checker
@@ -84,7 +84,7 @@ ir::Expression *ReplaceStringConstructor(public_lib::Context *const ctx,
         auto exprCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(checker->VarBinder(), scope);
 
         // Generate temporary variable
-        auto const tmpIdentName = GenName(checker->Allocator());
+        auto const tmpIdentName = GenName(ctx->Allocator());
 
         // Create BlockExpression
         ir::Expression *blockExpr = nullptr;

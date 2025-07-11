@@ -162,12 +162,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "import_10.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "import_10.ets"
                     }
                   }
                 },
@@ -175,12 +175,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "import_10.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "import_10.ets"
                   }
                 }
               },
@@ -188,12 +188,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "import_10.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "import_10.ets"
                 }
               }
             },
@@ -374,4 +374,4 @@
     }
   }
 }
-TypeError: Ambiguous export "foo" [re_export_4.ets:17:8]
+TypeError: Ambiguous export 'foo' [re_export_4.ets:16:8]

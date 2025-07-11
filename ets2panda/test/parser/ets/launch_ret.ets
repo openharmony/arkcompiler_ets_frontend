@@ -13,10 +13,13 @@
  * limitations under the License.
  */
 
+import {launch} from "std/concurrency"
+import {Job} from "std/core"
+
 function fooInt(): int {
     return 5;
 }
 
 function main(): void {
-    let p: Promise<int> = launch fooInt();
+    let p: Job<int> = launch<int, () => int>(fooInt);
 }

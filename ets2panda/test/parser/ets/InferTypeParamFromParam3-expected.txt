@@ -2107,12 +2107,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "InferTypeParamFromParam3.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "InferTypeParamFromParam3.ets"
                     }
                   }
                 },
@@ -2120,12 +2120,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "InferTypeParamFromParam3.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "InferTypeParamFromParam3.ets"
                   }
                 }
               },
@@ -2133,12 +2133,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "InferTypeParamFromParam3.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "InferTypeParamFromParam3.ets"
                 }
               }
             },

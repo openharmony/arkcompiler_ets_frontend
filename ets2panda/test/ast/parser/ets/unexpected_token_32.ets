@@ -17,5 +17,5 @@ class G<T, S extends T /* @@ label */{/* @@ label1 */}
 
 /* @@@ label Error SyntaxError: Unexpected token, expected '>'. */
 /* @@@ label1 Error SyntaxError: Expected '{', got '}'. */
-/* @@@ label2 Error SyntaxError: Expected '}', got 'eos'. */
+/* @@@ label2 Error SyntaxError: Expected '}', got 'end of stream'. */
 /* @@label2 */

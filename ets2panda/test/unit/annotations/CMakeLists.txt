@@ -12,7 +12,7 @@
 # limitations under the License.
 
 ets2panda_add_gtest(es2panda_annotations_emit_standard_test
-    CPP_SOURCES standard_test.cpp    
+    CPP_SOURCES standard_test.cpp
 )
 ets2panda_add_gtest(es2panda_mutiple_annotations_for_class
     CPP_SOURCES mutiple_annotations_for_class.cpp    
@@ -37,4 +37,7 @@ ets2panda_add_gtest(annotations_for_namespace
 )
 ets2panda_add_gtest(annotations_module
     CPP_SOURCES annotations_module.cpp
+)
+ets2panda_add_gtest(annotations_for_functional_objects
+    CPP_SOURCES annotations_for_functional_objects.cpp
 )

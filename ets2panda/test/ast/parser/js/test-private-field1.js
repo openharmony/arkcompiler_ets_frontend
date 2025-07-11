@@ -16,4 +16,4 @@
 #a
 
 /* @@? 20:1 Error SyntaxError: Unexpected private identifier. */
-/* @@? 20:1 Error SyntaxError: Unexpected token 'eos'. */
+/* @@? 20:1 Error SyntaxError: Unexpected token 'end of stream'. */

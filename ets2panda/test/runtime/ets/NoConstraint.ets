@@ -13,13 +13,11 @@
  * limitations under the License.
  */
 
-type NullishFoo = Object | null | undefined;
-
-function foo<T>(x: T): NullishFoo {
+function foo<T>(x: T): Any {
     return x;
 }
 
-function bar<T extends NullishFoo>(x: T): NullishFoo {
+function bar<T extends Any>(x: T): Any {
     return x;
 }
 

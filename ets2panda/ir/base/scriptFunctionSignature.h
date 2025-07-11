@@ -23,6 +23,8 @@
 namespace ark::es2panda::ir {
 class TSTypeParameterDeclaration;
 class TypeNode;
+class ScriptFunction;
+class ETSFunctionType;
 
 class FunctionSignature {
 public:
@@ -90,6 +92,16 @@ private:
     ArenaVector<ir::Expression *> params_;
     TypeNode *returnTypeAnnotation_;
     bool hasReceiver_;
+
+    friend class ScriptFunction;
+    friend class ETSFunctionType;
+    void CopyFrom(const FunctionSignature &other)
+    {
+        typeParams_ = other.typeParams_;
+        params_ = other.params_;
+        returnTypeAnnotation_ = other.returnTypeAnnotation_;
+        hasReceiver_ = other.hasReceiver_;
+    }
 };
 
 }  // namespace ark::es2panda::ir

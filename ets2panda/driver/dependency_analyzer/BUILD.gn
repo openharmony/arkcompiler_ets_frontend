@@ -41,10 +41,25 @@ ohos_executable("dependency_analyzer") {
     "$ark_es2panda_root:libes2panda_frontend_static",
     "$ark_es2panda_root:libes2panda_public_frontend_static",
   ]
+
+  if (ark_standalone_build) {
+    deps += [
+      "$ark_root/bytecode_optimizer:libarktsbytecodeopt_package",
+      "$ark_root/libpandabase:libarktsbase_package",
+      "$ark_root/libpandafile:libarktsfile_package",
+    ]
+  }
+
   external_deps = [
+    "runtime_core:assembler_headers",
+    "runtime_core:libarktsassembler_package",
+    "runtime_core:libarktsbase_package",
     "runtime_core:libarktsbytecodeopt_package",
     "runtime_core:libarktscompiler_package",
     "runtime_core:libarktsfile_package",
+    "runtime_core:libpandabase_headers",
+    "runtime_core:libpandafile_headers",
+    sdk_libc_secshared_dep,
   ]
 
   libs = platform_libs

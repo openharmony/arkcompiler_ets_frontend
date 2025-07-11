@@ -48,6 +48,11 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::MethodDefinition *node) co
     ES2PANDA_UNREACHABLE();
 }
 
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::OverloadDeclaration *node) const
+{
+    ES2PANDA_UNREACHABLE();
+}
+
 checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::Property *expr) const
 {
     ES2PANDA_UNREACHABLE();
@@ -84,12 +89,12 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSFunctionType *node) con
     ES2PANDA_UNREACHABLE();
 }
 
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSImportDeclaration *node) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSIntrinsicNode *node) const
 {
     ES2PANDA_UNREACHABLE();
 }
 
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSLaunchExpression *expr) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSImportDeclaration *node) const
 {
     ES2PANDA_UNREACHABLE();
 }
@@ -140,6 +145,11 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSTypeReference *node) co
 }
 
 checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSTypeReferencePart *node) const
+{
+    ES2PANDA_UNREACHABLE();
+}
+
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSNonNullishTypeNode *node) const
 {
     ES2PANDA_UNREACHABLE();
 }

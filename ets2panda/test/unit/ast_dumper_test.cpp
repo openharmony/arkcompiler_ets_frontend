@@ -66,7 +66,7 @@ TestParams DumpJsonSimple()
 {
     static constexpr std::string_view SRC =
         "\
-        function main(args: String[]): int {\
+        function main(args: FixedArray<String>): int {\
             let a: int = 2;\
             let b: int = 3;\
             return a + b;\
@@ -79,7 +79,7 @@ TestParams DumpJsonUTF16Char()
 {
     static constexpr std::string_view SRC =
         "\
-        function main(args: String[]): int {\
+        function main(args: FixedArray<String>): int {\
             let a: char = c'\\uDBFF';\
             let b: char = c'\\uDC00';\
             console.log(a);\
@@ -94,7 +94,7 @@ TestParams DumpEtsSrcSimple()
 {
     static constexpr std::string_view SRC =
         "\
-        function main(args: String[]): int {\
+        function main(args: FixedArray<String>): int {\
             let a: int = 2;\
             let b: int = 3;\
             return a + b;\

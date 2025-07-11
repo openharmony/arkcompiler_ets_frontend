@@ -24,11 +24,141 @@
                 {
                     "start": 605,
                     "end": 688,
-                    "replacementText": "@AnimatableExtend\nfunction animatableWidth(this: TextAttribute, width: number): this {\n    this.width(width);\n    return this;\n}"
+                    "replacementText": "@AnimatableExtend\nfunction animatableWidth(this: TextAttribute, width: number): this {\n    this.width(width);\n    return this;\n}",
+                    "line": 16,
+                    "column": 1,
+                    "endLine": 19,
+                    "endColumn": 2
                 }
             ],
             "suggest": "",
             "rule": "\"@AnimatableExtend\" decorator should be transformed to use receiver (arkui-animatableextend-use-receiver)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 24,
+            "column": 30,
+            "endLine": 24,
+            "endColumn": 32,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 772,
+                    "end": 774,
+                    "replacementText": "80.0",
+                    "line": 24,
+                    "column": 30,
+                    "endLine": 24,
+                    "endColumn": 32
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 30,
+            "column": 32,
+            "endLine": 30,
+            "endColumn": 36,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 909,
+                    "end": 913,
+                    "replacementText": "2000.0",
+                    "line": 30,
+                    "column": 32,
+                    "endLine": 30,
+                    "endColumn": 36
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 33,
+            "column": 46,
+            "endLine": 33,
+            "endColumn": 48,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1027,
+                    "end": 1029,
+                    "replacementText": "80.0",
+                    "line": 33,
+                    "column": 46,
+                    "endLine": 33,
+                    "endColumn": 48
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 33,
+            "column": 51,
+            "endLine": 33,
+            "endColumn": 54,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1032,
+                    "end": 1035,
+                    "replacementText": "160.0",
+                    "line": 33,
+                    "column": 51,
+                    "endLine": 33,
+                    "endColumn": 54
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 33,
+            "column": 57,
+            "endLine": 33,
+            "endColumn": 59,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1038,
+                    "end": 1040,
+                    "replacementText": "80.0",
+                    "line": 33,
+                    "column": 57,
+                    "endLine": 33,
+                    "endColumn": 59
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 36,
+            "column": 14,
+            "endLine": 36,
+            "endColumn": 16,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1086,
+                    "end": 1088,
+                    "replacementText": "10.0",
+                    "line": 36,
+                    "column": 14,
+                    "endLine": 36,
+                    "endColumn": 16
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -41,11 +171,15 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { TextAttribute, AnimatableExtend, Entry, Component, State, Column, Text, Curve, Button } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport {\n  TextAttribute,\n  AnimatableExtend,\n  Entry,\n  Component,\n  State,\n  Column,\n  Text,\n  Curve,\n  Button,\n} from '@kit.ArkUI';",
+                    "line": 31,
+                    "column": 7,
+                    "endLine": 31,
+                    "endColumn": 13
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"AnimatableExtend\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -58,11 +192,15 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { TextAttribute, AnimatableExtend, Entry, Component, State, Column, Text, Curve, Button } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport {\n  TextAttribute,\n  AnimatableExtend,\n  Entry,\n  Component,\n  State,\n  Column,\n  Text,\n  Curve,\n  Button,\n} from '@kit.ArkUI';",
+                    "line": 31,
+                    "column": 7,
+                    "endLine": 31,
+                    "endColumn": 13
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Entry\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -75,11 +213,15 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { TextAttribute, AnimatableExtend, Entry, Component, State, Column, Text, Curve, Button } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport {\n  TextAttribute,\n  AnimatableExtend,\n  Entry,\n  Component,\n  State,\n  Column,\n  Text,\n  Curve,\n  Button,\n} from '@kit.ArkUI';",
+                    "line": 31,
+                    "column": 7,
+                    "endLine": 31,
+                    "endColumn": 13
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Component\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -92,11 +234,15 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { TextAttribute, AnimatableExtend, Entry, Component, State, Column, Text, Curve, Button } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport {\n  TextAttribute,\n  AnimatableExtend,\n  Entry,\n  Component,\n  State,\n  Column,\n  Text,\n  Curve,\n  Button,\n} from '@kit.ArkUI';",
+                    "line": 31,
+                    "column": 7,
+                    "endLine": 31,
+                    "endColumn": 13
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"State\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -109,11 +255,15 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { TextAttribute, AnimatableExtend, Entry, Component, State, Column, Text, Curve, Button } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport {\n  TextAttribute,\n  AnimatableExtend,\n  Entry,\n  Component,\n  State,\n  Column,\n  Text,\n  Curve,\n  Button,\n} from '@kit.ArkUI';",
+                    "line": 31,
+                    "column": 7,
+                    "endLine": 31,
+                    "endColumn": 13
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Column\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -126,11 +276,15 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { TextAttribute, AnimatableExtend, Entry, Component, State, Column, Text, Curve, Button } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport {\n  TextAttribute,\n  AnimatableExtend,\n  Entry,\n  Component,\n  State,\n  Column,\n  Text,\n  Curve,\n  Button,\n} from '@kit.ArkUI';",
+                    "line": 31,
+                    "column": 7,
+                    "endLine": 31,
+                    "endColumn": 13
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Text\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -143,11 +297,15 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { TextAttribute, AnimatableExtend, Entry, Component, State, Column, Text, Curve, Button } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport {\n  TextAttribute,\n  AnimatableExtend,\n  Entry,\n  Component,\n  State,\n  Column,\n  Text,\n  Curve,\n  Button,\n} from '@kit.ArkUI';",
+                    "line": 31,
+                    "column": 7,
+                    "endLine": 31,
+                    "endColumn": 13
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Curve\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -160,11 +318,15 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { TextAttribute, AnimatableExtend, Entry, Component, State, Column, Text, Curve, Button } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport {\n  TextAttribute,\n  AnimatableExtend,\n  Entry,\n  Component,\n  State,\n  Column,\n  Text,\n  Curve,\n  Button,\n} from '@kit.ArkUI';",
+                    "line": 31,
+                    "column": 7,
+                    "endLine": 31,
+                    "endColumn": 13
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Button\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         }
     ]

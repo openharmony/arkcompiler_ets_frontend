@@ -52,6 +52,28 @@ public:
         if (flags.isDeclare) {
             AddModifier(ModifierFlags::DECLARE);
         }
+        InitHistory();
+    }
+
+    explicit TSEnumDeclaration(ArenaAllocator *allocator, Identifier *key, ArenaVector<AstNode *> &&members,
+                               ConstructorFlags &&flags, AstNodeHistory *history)
+        : TypedStatement(AstNodeType::TS_ENUM_DECLARATION),
+          decorators_(allocator->Adapter()),
+          key_(key),
+          members_(std::move(members)),
+          isConst_(flags.isConst)
+    {
+        if (flags.isStatic) {
+            AddModifier(ModifierFlags::STATIC);
+        }
+        if (flags.isDeclare) {
+            AddModifier(ModifierFlags::DECLARE);
+        }
+        if (history != nullptr) {
+            history_ = history;
+        } else {
+            InitHistory();
+        }
     }
 
     [[nodiscard]] bool IsScopeBearer() const noexcept override
@@ -61,73 +83,63 @@ public:
 
     [[nodiscard]] varbinder::LocalScope *Scope() const noexcept override
     {
-        return scope_;
+        return GetHistoryNodeAs<TSEnumDeclaration>()->scope_;
     }
 
     void SetScope(varbinder::LocalScope *scope)
     {
-        ES2PANDA_ASSERT(scope_ == nullptr);
-        scope_ = scope;
+        ES2PANDA_ASSERT(Scope() == nullptr);
+        GetOrCreateHistoryNode()->AsTSEnumDeclaration()->scope_ = scope;
     }
 
     void ClearScope() noexcept override
     {
-        scope_ = nullptr;
+        SetScope(nullptr);
     }
 
     const Identifier *Key() const
     {
-        return key_;
+        return GetHistoryNodeAs<TSEnumDeclaration>()->key_;
     }
 
     Identifier *Key()
     {
-        return key_;
+        return GetHistoryNodeAs<TSEnumDeclaration>()->key_;
     }
 
     const ArenaVector<AstNode *> &Members() const
     {
-        return members_;
+        return GetHistoryNodeAs<TSEnumDeclaration>()->members_;
     }
 
     const util::StringView &InternalName() const
     {
-        return internalName_;
+        return GetHistoryNodeAs<TSEnumDeclaration>()->internalName_;
     }
 
-    void SetInternalName(util::StringView internalName)
-    {
-        internalName_ = internalName;
-    }
+    void SetInternalName(util::StringView internalName);
 
     ir::ClassDefinition *BoxedClass() const
     {
-        return boxedClass_;
+        return GetHistoryNodeAs<TSEnumDeclaration>()->boxedClass_;
     }
 
-    void SetBoxedClass(ir::ClassDefinition *const wrapperClass)
-    {
-        boxedClass_ = wrapperClass;
-    }
+    void SetBoxedClass(ir::ClassDefinition *boxedClass);
 
     bool IsConst() const
     {
-        return isConst_;
+        return GetHistoryNodeAs<TSEnumDeclaration>()->isConst_;
     }
 
     const ArenaVector<Decorator *> &Decorators() const
     {
-        return decorators_;
-    }
-
-    const ArenaVector<Decorator *> *DecoratorsPtr() const override
-    {
-        return &Decorators();
+        return GetHistoryNodeAs<TSEnumDeclaration>()->decorators_;
     }
 
     void AddDecorators([[maybe_unused]] ArenaVector<ir::Decorator *> &&decorators) override
     {
-        decorators_ = std::move(decorators);
+        auto newNode = GetOrCreateHistoryNodeAs<TSEnumDeclaration>();
+        newNode->decorators_ = std::move(decorators);
     }
 
     bool CanHaveDecorator([[maybe_unused]] bool inTs) const override
@@ -151,7 +163,24 @@ public:
         v->Accept(this);
     }
 
+    TSEnumDeclaration *Construct(ArenaAllocator *allocator) override;
+    void CopyTo(AstNode *other) const override;
+
+    void EmplaceDecorators(Decorator *source);
+    void ClearDecorators();
+    void SetValueDecorators(Decorator *source, size_t index);
+    [[nodiscard]] ArenaVector<Decorator *> &DecoratorsForUpdate();
+
+    void EmplaceMembers(AstNode *source);
+    void ClearMembers();
+    void SetValueMembers(AstNode *source, size_t index);
+    [[nodiscard]] ArenaVector<AstNode *> &MembersForUpdate();
+
 private:
+    bool RegisterUnexportedForDeclGen(ir::SrcDumper *dumper) const;
+    friend class SizeOfNodeTest;
+    void SetKey(Identifier *key);
+
     varbinder::LocalScope *scope_ {nullptr};
     ArenaVector<ir::Decorator *> decorators_;
     Identifier *key_;

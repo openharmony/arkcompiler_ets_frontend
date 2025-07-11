@@ -17,10 +17,10 @@ function assert_ccexc(f: () => void) {
     try {
         f();
     } catch (e) {
-        assertTrue(e instanceof ClassCastError)
+        arktest.assertTrue(e instanceof ClassCastError)
         return;
     }
-    assertTrue(false, "exception expected")
+    arktest.assertTrue(false, "exception expected")
 }
 
 class A { }
@@ -49,7 +49,7 @@ function test_substitution() {
     assert_ccexc(() => { erase<A | B>(new Object()); })
     assert_ccexc(() => { erase<A | B>(new C()); })
 
-    assert_ccexc(() => { erase<A[]>(new B[0]); })
+    assert_ccexc(() => { erase<FixedArray<A>>(new B[0]); })
 }
 
 class Erased<T> {
@@ -76,7 +76,7 @@ function test_substitution_memberexpr() {
     assert_ccexc(() => { new Erased<A | B>(new Object()).t; })
     assert_ccexc(() => { new Erased<A | B>(new C()).t; })
 
-    assert_ccexc(() => { new Erased<A[]>(new B[0]).t; })
+    assert_ccexc(() => { new Erased<FixedArray<A>>(new B[0]).t; })
 }
 
 function cast_to_tparam<T extends A | B | null>(x: Object | null | undefined) { x as T; }

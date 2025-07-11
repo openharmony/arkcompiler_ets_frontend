@@ -29,6 +29,7 @@ import {
     ArkNewExpr,
     ArkClass,
     ClassSignature,
+    ArkReturnStmt,
 } from 'arkanalyzer';
 import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
 import { BaseChecker, BaseMetaData } from '../BaseChecker';
@@ -49,8 +50,10 @@ const ARKUI_RULE_ID = '@migration/arkui-buildparam-passing';
 const arkuiMetaData: BaseMetaData = {
     severity: 1,
     ruleDocPath: '',
-    description: 'The execution context of the function annotated with @Builder is determined at the time of declaration. Please check the code carefully to ensure the correct function context',
+    description:
+        'The execution context of the function annotated with @Builder is determined at the time of declaration. Please check the code carefully to ensure the correct function context',
 };
+const LOCAL_BUILDER_PREFIX = 'The @LocalBuilder decorator is not supported, it will be transformed to @Builder decorator. ';
 
 export class ThisBindCheck implements BaseChecker {
     readonly metaData: BaseMetaData = arktsMetaData;
@@ -100,11 +103,12 @@ export class ThisBindCheck implements BaseChecker {
             if (!method || !method.getCfg() || !this.useThisInBody(method)) {
                 continue;
             }
-            const isBuilder = method.hasBuilderDecorator() || method.hasDecorator('LocalBuilder');
+            const isBuilder = method.hasBuilderDecorator();
+            const isLocalBuilder = method.hasDecorator('LocalBuilder');
             const leftOp = stmt.getLeftOp();
             if (i + 1 >= stmts.length || !this.hasBindThis(leftOp, stmts[i + 1])) {
                 if (!this.isSafeUse(leftOp)) {
-                    this.addIssueReport(stmt, isBuilder, base, scene);
+                    this.addIssueReport(stmt, isBuilder, isLocalBuilder, base, scene);
                 }
             }
         }
@@ -112,7 +116,18 @@ export class ThisBindCheck implements BaseChecker {
 
     private useThisInBody(method: ArkMethod): boolean {
         const thisInstance = (method.getThisInstance() as Local)!;
-        return thisInstance.getUsedStmts().length > 0;
+        const usedStmts = thisInstance.getUsedStmts();
+        if (method.getName() !== 'constructor') {
+            return usedStmts.length > 0;
+        }
+        // constructor方法一定会有return this语句，此句若为ArkAnalyzer为constructor方法自动生成，则不在检查范围内
+        for (const stmt of usedStmts) {
+            if (stmt instanceof ArkReturnStmt && stmt.getOriginPositionInfo().getLineNo() <= 0) {
+                continue;
+            }
+            return true;
+        }
+        return false;
     }
 
     private isSafeUse(v: Value): boolean {
@@ -158,9 +173,9 @@ export class ThisBindCheck implements BaseChecker {
         return true;
     }
 
-    private addIssueReport(stmt: ArkAssignStmt, isBuilder: boolean, operand: Value, scene: Scene): void {
-        if (isBuilder && this.isAssignToBuilderParam(stmt, scene)) {
-            this.reportArkUIIssue(stmt, operand);
+    private addIssueReport(stmt: ArkAssignStmt, isBuilder: boolean, isLocalBuilder: boolean, operand: Value, scene: Scene): void {
+        if ((isBuilder || isLocalBuilder) && this.isAssignToBuilderParam(stmt, scene)) {
+            this.reportArkUIIssue(stmt, operand, isLocalBuilder);
         } else {
             this.reportArkTSIssue(stmt, operand);
         }
@@ -257,10 +272,7 @@ export class ThisBindCheck implements BaseChecker {
         return arkField.hasBuilderParamDecorator();
     }
 
-    private findDefinitionOfAnonymousClass(
-        declaringClass: ArkClass,
-        anonymousClassSig: ClassSignature
-    ): ClassSignature | undefined {
+    private findDefinitionOfAnonymousClass(declaringClass: ArkClass, anonymousClassSig: ClassSignature): ClassSignature | undefined {
         for (const m of declaringClass.getMethods()) {
             const stmts = m.getBody()?.getCfg().getStmts() ?? [];
             for (const stmt of stmts) {
@@ -325,11 +337,11 @@ export class ThisBindCheck implements BaseChecker {
         this.issues.push(new IssueReport(defects, undefined));
     }
 
-    private reportArkUIIssue(stmt: ArkAssignStmt, operand: Value): void {
+    private reportArkUIIssue(stmt: ArkAssignStmt, operand: Value, isLocalBuilder: boolean): void {
         const severity = this.rule.alert ?? arkuiMetaData.severity;
         const warnInfo = this.getLineAndColumn(stmt, operand);
         const problem = 'BuilderParamContextChanged';
-        const desc = `${arkuiMetaData.description} (${ARKUI_RULE_ID.replace('@migration/', '')})`;
+        const desc = `${isLocalBuilder ? LOCAL_BUILDER_PREFIX : ''}${arkuiMetaData.description} (${ARKUI_RULE_ID.replace('@migration/', '')})`;
         let defects = new Defects(
             warnInfo.line,
             warnInfo.startCol,
@@ -348,7 +360,7 @@ export class ThisBindCheck implements BaseChecker {
     }
 
     private getLineAndColumn(stmt: ArkAssignStmt, operand: Value): WarnInfo {
-        const arkFile = stmt.getCfg()?.getDeclaringMethod().getDeclaringArkFile();
+        const arkFile = stmt.getCfg().getDeclaringMethod().getDeclaringArkFile();
         const originPosition = stmt.getOperandOriginalPosition(operand);
         if (arkFile && originPosition) {
             const originPath = arkFile.getFilePath();

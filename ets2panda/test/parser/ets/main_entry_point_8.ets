@@ -15,6 +15,6 @@
 
 type TTT = string;
 
-function main(i : TTT[]): void {
+function main(i : FixedArray<TTT>): void {
     return;
 }

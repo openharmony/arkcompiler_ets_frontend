@@ -17,4 +17,4 @@ function main(/* @@ label */i : FixedArray<int>): void {
     return;
 }
 
-/* @@? 16:29 Error TypeError: Only 'string[]' type argument is allowed. */
+/* @@? 16:29 Error TypeError: Only 'FixedArray<string>' type argument is allowed. */

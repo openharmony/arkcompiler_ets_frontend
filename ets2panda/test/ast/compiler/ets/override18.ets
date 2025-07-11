@@ -27,5 +27,5 @@ class JImpl implements J{
 
 function main(): void {
     let o: JImpl = new JImpl()
-    assertEQ(o.$_hashCode(), 4);
+    arktest.assertEQ(o.$_hashCode(), 4);
 }

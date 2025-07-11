@@ -26,7 +26,8 @@ function getFuncWithArgsZero(func: (() => void) | (() => Promise<void>)) {
 function getFunctionArgumentsCount(funcStr: string): number {
     const regex = new RegExp("^[0123456789]$", "g")
     let count = ""
-    for(let str of funcStr) {
+    for(let ch of funcStr) {
+        let str = new Char(ch).toString();
         if(regex.test(str)) {
             count = str
         }
@@ -55,7 +56,7 @@ async function testAsyncGetFuncWithArgsZeroSafe() {
     } catch (e) {
         success = false;
     }
-    assertEQ(success, true, "getFuncWithArgsZero with async should not throw");
+    arktest.assertEQ(success, true, "getFuncWithArgsZero with async should not throw");
 }
 
 function testGetFuncWithArgsZeroSafe() {
@@ -66,7 +67,7 @@ function testGetFuncWithArgsZeroSafe() {
     } catch (e) {
         success = false;
     }
-    assertEQ(success, true, "getFuncWithArgsZero should not throw");
+    arktest.assertEQ(success, true, "getFuncWithArgsZero should not throw");
 }
 
 function main(): void {
@@ -88,22 +89,22 @@ function main(): void {
     const funcStr4: string = Type.of(func4 as object).getLiteral();
 
     // Test getLiteral()
-    assertEQ(funcStr1, "(1: std.core.Double, 2: std.core.Double): std.core.Double", "func1 literal check");
-    assertEQ(funcStr2, "(): std.core.Promise", "func2 literal check");
-    assertEQ(funcStr3, "(): std.core.Double", "func3 literal check");
-    assertEQ(funcStr4, "(1: std.core.Double, 2: std.core.Double, 3: std.core.Double): std.core.Promise", "func4 literal check");
+    arktest.assertEQ(funcStr1, "(1: std.core.Double, 2: std.core.Double): std.core.Double", "func1 literal check");
+    arktest.assertEQ(funcStr2, "(): std.core.Promise", "func2 literal check");
+    arktest.assertEQ(funcStr3, "(): std.core.Double", "func3 literal check");
+    arktest.assertEQ(funcStr4, "(1: std.core.Double, 2: std.core.Double, 3: std.core.Double): std.core.Promise", "func4 literal check");
 
     // Test getFunctionArgumentsCount
-    assertEQ(getFunctionArgumentsCount(funcStr1), 2, "func1 should have 2 arguments");
-    assertEQ(getFunctionArgumentsCount(funcStr2), 0, "func2 should have 0 arguments");
-    assertEQ(getFunctionArgumentsCount(funcStr3), 0, "func3 should have 0 arguments");
-    assertEQ(getFunctionArgumentsCount(funcStr4), 3, "func4 should have 3 arguments");
+    arktest.assertEQ(getFunctionArgumentsCount(funcStr1), 2, "func1 should have 2 arguments");
+    arktest.assertEQ(getFunctionArgumentsCount(funcStr2), 0, "func2 should have 0 arguments");
+    arktest.assertEQ(getFunctionArgumentsCount(funcStr3), 0, "func3 should have 0 arguments");
+    arktest.assertEQ(getFunctionArgumentsCount(funcStr4), 3, "func4 should have 3 arguments");
 
     // Test checkIsAsyncFunction
-    assertEQ(checkIsAsyncFunction(funcStr1), false, "func1 should not be async");
-    assertEQ(checkIsAsyncFunction(funcStr2), true, "func2 should be async");
-    assertEQ(checkIsAsyncFunction(funcStr3), false, "func3 should not be async");
-    assertEQ(checkIsAsyncFunction(funcStr4), true, "func4 should be async");
+    arktest.assertEQ(checkIsAsyncFunction(funcStr1), false, "func1 should not be async");
+    arktest.assertEQ(checkIsAsyncFunction(funcStr2), true, "func2 should be async");
+    arktest.assertEQ(checkIsAsyncFunction(funcStr3), false, "func3 should not be async");
+    arktest.assertEQ(checkIsAsyncFunction(funcStr4), true, "func4 should be async");
 
     // execute getFuncWithArgsZero with async
     testAsyncGetFuncWithArgsZeroSafe()

@@ -14,9 +14,28 @@
  */
  'use static'
 
- import {foo, foo2, foo3, foo4} from "./interop_convert_import_js.js"
+ import {foo, foo2, foo3, foo4, array_val, null_val, undefined_val} from "./interop_convert_import_js.js"
 
  let a: number = foo.num as number
- let a: boolean = foo2.bool  as boolean
- let a: string = foo3.str  as string
- let a: bigint = foo4.big  as bigint"
+ let a1: boolean = foo2.bool  as boolean
+ let a2: string = foo3.str  as string
+ let a3: bigint = foo4.big  as bigint
+
+test_helper.test(() => {
+return (array_val as Array).toString() === new Array(1, 2, 3).toString();// 扫描出 arkts-interop-js2s-convert-js-type - no pass
+}, "array_val as Array === [1, 2, 3]");
+
+// convert type - Array
+test_helper.test(() => {
+return (array_val as number[]).toString() === [1,2,3].toString();// 扫描出 arkts-interop-js2s-convert-js-type - no pass
+}, "array_val as Array === [1, 2, 3]");
+
+// convert type - null
+test_helper.test(() => {
+return null_val as null === null;// 扫描出 arkts-interop-js2s-convert-js-type - no pass
+}, "null_val as null === null");
+
+// convert type - undefined
+test_helper.test(() => {
+return undefined_val as undefined === undefined; // 扫描出 arkts-interop-js2s-convert-js-type - no pass
+}, "undefined_val as undefined === undefined");

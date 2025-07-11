@@ -48,24 +48,78 @@ static bool CheckProgramSourcesConsistency(parser::Program *program)
     return success;
 }
 
+static void AddExportModifierForInterface(ir::AstNode *const ast)
+{
+    auto body = ast->AsClassDeclaration()->Definition()->BodyForUpdate();
+    for (auto it : body) {
+        if (it->IsTSInterfaceDeclaration()) {
+            it->AsTSInterfaceDeclaration()->AddModifier(ir::ModifierFlags::EXPORT);
+        }
+    }
+}
+
+static void DeclareNamespaceExportAdjust(parser::Program *program, const std::string_view &name)
+{
+    program->Ast()->TransformChildrenRecursively(
+        [](ir::AstNode *const ast) {
+            if (ast->IsClassDeclaration() && ast->AsClassDeclaration()->Definition()->IsNamespaceTransformed() &&
+                ast->AsClassDeclaration()->Definition()->IsDeclare() &&
+                (ast->IsExported() || ast->IsDefaultExported())) {
+                AddExportModifierForInterface(ast);
+            }
+            return ast;
+        },
+        name);
+}
+
+static void CheckFileHeaderFlag(parser::Program *program)
+{
+    auto &statements = program->Ast()->StatementsForUpdates();
+    if (statements.empty()) {
+        return;
+    }
+
+    if (!statements.front()->IsExpressionStatement()) {
+        return;
+    }
+
+    // If further processing based on "use static" is required later, such as throwing a warning or modifying the node,
+    // perform the operation here.
+    auto *expansion = statements.front()->AsExpressionStatement()->GetExpression();
+    if (expansion->IsStringLiteral() && expansion->AsStringLiteral()->Str() == Signatures::STATIC_PROGRAM_FLAG) {
+        statements.erase(statements.begin());
+        return;
+    }
+}
+
 bool TopLevelStatements::Perform(public_lib::Context *ctx, parser::Program *program)
 {
-    auto imports = ImportExportDecls(program->VarBinder()->AsETSBinder(), ctx->parser->AsETSParser());
+    CheckFileHeaderFlag(program);
+    auto imports = ImportExportDecls(program->VarBinder()->AsETSBinder(), ctx->parser->AsETSParser(), ctx);
     imports.ParseDefaultSources();
     if (!CheckProgramSourcesConsistency(program)) {
         // NOTE(vpukhov): enforce compilation failure
     }
 
-    GlobalClassHandler globalClass(ctx->parser->AsETSParser(), program->Allocator());
+    GlobalClassHandler globalClass(ctx->parser->AsETSParser(), program->Allocator(), program);
     for (auto &[package, extPrograms] : program->ExternalSources()) {
-        auto moduleDependencies = imports.HandleGlobalStmts(extPrograms);
-        globalClass.SetupGlobalClass(extPrograms, &moduleDependencies);
+        if (!extPrograms.front()->IsASTLowered()) {
+            auto moduleDependencies = imports.HandleGlobalStmts(extPrograms);
+            globalClass.SetGlobalProgram(extPrograms.front());
+            globalClass.SetupGlobalClass(extPrograms, &moduleDependencies);
+            for (auto extProg : extPrograms) {
+                DeclareNamespaceExportAdjust(extProg, Name());
+            }
+        }
     }
 
-    ArenaVector<parser::Program *> mainModule(program->Allocator()->Adapter());
+    ArenaVector<parser::Program *> mainModule(ctx->Allocator()->Adapter());
     mainModule.emplace_back(program);
     auto moduleDependencies = imports.HandleGlobalStmts(mainModule);
+    globalClass.SetGlobalProgram(program);
     globalClass.SetupGlobalClass(mainModule, &moduleDependencies);
+    DeclareNamespaceExportAdjust(program, Name());
+
     return true;
 }
 

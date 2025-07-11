@@ -13,7 +13,6 @@
  * limitations under the License.
  */
  
-'use static'
 import myAaa,{ClassA,Dog,Person,Wiki} from "./interop_import_js_js";
 import { Dog as Doge } from './interop_import_js_js';
 import { Wiki as wiki } from './interop_import_js_js';
@@ -36,16 +35,16 @@ let person:Person = new Person();
 let name =person.name
 let name2 =person.getName()
 function getPersonInfo(){
-    typeof person;
-    typeof person.getName();
-    typeof name2;
-    typeof name;
-    typeof person.setAge(111);
-    typeof person;
-    typeof new Person(); //error
+  typeof person;
+  typeof person.getName();
+  typeof name2;
+  typeof name;
+  typeof person.setAge(111);
+  typeof person;
+  typeof new Person(); //error
 }
 
-const  age = typeof person.setAge(111); 
+const  age = typeof person.setAge(111);
 let person2 = typeof person
 class Object {
   code: string = "www"

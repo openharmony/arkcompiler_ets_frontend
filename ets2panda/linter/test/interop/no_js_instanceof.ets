@@ -12,7 +12,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use static'
 
 import { Foo, foo, CreatePerson, a , b, MyNamespace } from "./no_js_instanceof_file.js"
 

@@ -276,10 +276,8 @@ export class InteropJSModifyPropertyCheck implements BaseChecker {
         }
         if (file) {
             return file.getLanguage();
-        } else {
-            logger.error(`fail to identify which file the type definition ${type.toString()} is in.`);
-            return Language.UNKNOWN;
         }
+        return Language.UNKNOWN;
     }
 
     private reportIssue(problemStmt: Stmt) {
@@ -289,7 +287,7 @@ export class InteropJSModifyPropertyCheck implements BaseChecker {
         const desc = `${this.metaData.description} (${RULE_ID})`;
         const severity = this.metaData.severity;
         const ruleId = this.rule.ruleId;
-        const filePath = problemStmt.getCfg()?.getDeclaringMethod().getDeclaringArkFile()?.getFilePath() ?? '';
+        const filePath = problemStmt.getCfg().getDeclaringMethod().getDeclaringArkFile()?.getFilePath() ?? '';
         const defeats = new Defects(
             line,
             column,

@@ -34,3 +34,14 @@ function foo(a: A | B | C) {
     a.y; // Report error here, type of `y` is different: 'number' in A, C and 'string' in B
     a.z; // No error, the code is valid
 }
+
+let data: Uint8Array = new Uint8Array();
+let reqPb = data.buffer.slice(data.byteOffset, data.byteLength + data.byteOffset);
+class D {
+    tt() {}
+}
+class E {
+    tt() {}
+}
+let ab: D|E = new D();
+ab.tt();

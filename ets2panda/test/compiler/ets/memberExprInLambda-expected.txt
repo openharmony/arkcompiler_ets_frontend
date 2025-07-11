@@ -143,12 +143,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "memberExprInLambda.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "memberExprInLambda.ets"
                     }
                   }
                 },
@@ -156,12 +156,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "memberExprInLambda.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "memberExprInLambda.ets"
                   }
                 }
               },
@@ -169,12 +169,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "memberExprInLambda.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "memberExprInLambda.ets"
                 }
               }
             },
@@ -249,12 +249,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "memberExprInLambda.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "memberExprInLambda.ets"
                     }
                   }
                 },
@@ -262,12 +262,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "memberExprInLambda.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "memberExprInLambda.ets"
                   }
                 }
               },
@@ -275,12 +275,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "memberExprInLambda.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "memberExprInLambda.ets"
                 }
               }
             },
@@ -375,55 +375,103 @@
                             "type": "Identifier",
                             "name": "arr",
                             "typeAnnotation": {
-                              "type": "TSArrayType",
-                              "elementType": {
-                                "type": "ETSTypeReference",
-                                "part": {
-                                  "type": "ETSTypeReferencePart",
-                                  "name": {
-                                    "type": "Identifier",
-                                    "name": "number",
-                                    "decorators": [],
-                                    "loc": {
-                                      "start": {
-                                        "line": 19,
-                                        "column": 16,
-                                        "program": "memberExprInLambda.ets"
-                                      },
-                                      "end": {
-                                        "line": 19,
-                                        "column": 22,
-                                        "program": "memberExprInLambda.ets"
-                                      }
-                                    }
-                                  },
+                              "type": "ETSTypeReference",
+                              "part": {
+                                "type": "ETSTypeReferencePart",
+                                "name": {
+                                  "type": "Identifier",
+                                  "name": "Array",
+                                  "decorators": [],
                                   "loc": {
                                     "start": {
-                                      "line": 19,
-                                      "column": 16,
+                                      "line": 1,
+                                      "column": 1,
                                       "program": "memberExprInLambda.ets"
                                     },
                                     "end": {
-                                      "line": 19,
-                                      "column": 23,
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "memberExprInLambda.ets"
+                                    }
+                                  }
+                                },
+                                "typeParams": {
+                                  "type": "TSTypeParameterInstantiation",
+                                  "params": [
+                                    {
+                                      "type": "ETSTypeReference",
+                                      "part": {
+                                        "type": "ETSTypeReferencePart",
+                                        "name": {
+                                          "type": "Identifier",
+                                          "name": "number",
+                                          "decorators": [],
+                                          "loc": {
+                                            "start": {
+                                              "line": 1,
+                                              "column": 3,
+                                              "program": "memberExprInLambda.ets"
+                                            },
+                                            "end": {
+                                              "line": 1,
+                                              "column": 3,
+                                              "program": "memberExprInLambda.ets"
+                                            }
+                                          }
+                                        },
+                                        "loc": {
+                                          "start": {
+                                            "line": 1,
+                                            "column": 3,
+                                            "program": "memberExprInLambda.ets"
+                                          },
+                                          "end": {
+                                            "line": 1,
+                                            "column": 3,
+                                            "program": "memberExprInLambda.ets"
+                                          }
+                                        }
+                                      },
+                                      "loc": {
+                                        "start": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "memberExprInLambda.ets"
+                                        },
+                                        "end": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "memberExprInLambda.ets"
+                                        }
+                                      }
+                                    }
+                                  ],
+                                  "loc": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "memberExprInLambda.ets"
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 3,
                                       "program": "memberExprInLambda.ets"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
-                                    "line": 19,
-                                    "column": 16,
+                                    "line": 1,
+                                    "column": 1,
                                     "program": "memberExprInLambda.ets"
                                   },
                                   "end": {
-                                    "line": 19,
-                                    "column": 23,
+                                    "line": 1,
+                                    "column": 3,
                                     "program": "memberExprInLambda.ets"
                                   }
                                 }
                               },
-                              "annotations": [],
                               "loc": {
                                 "start": {
                                   "line": 19,

@@ -37,4 +37,10 @@ std::string Expression::ToString() const
     return std::string {INVALID_EXPRESSION};
 }
 
+void Expression::CopyTo(AstNode *other) const
+{
+    [[maybe_unused]] auto otherImpl = other->AsExpression();
+    TypedAstNode::CopyTo(other);
+}
+
 }  // namespace ark::es2panda::ir

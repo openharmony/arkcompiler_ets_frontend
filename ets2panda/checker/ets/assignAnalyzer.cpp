@@ -14,7 +14,6 @@
  */
 
 #include "assignAnalyzer.h"
-#include <cstddef>
 
 #include "ir/base/classDefinition.h"
 #include "ir/base/classProperty.h"
@@ -58,6 +57,7 @@
 #include "varbinder/scope.h"
 #include "varbinder/declaration.h"
 #include "checker/ETSchecker.h"
+#include "checker/types/gradualType.h"
 #include "ir/base/catchClause.h"
 #include "parser/program/program.h"
 #include "checker/types/ts/objectType.h"
@@ -190,16 +190,11 @@ void AssignAnalyzer::Analyze(const ir::AstNode *node)
     AnalyzeNodes(node);
 }
 
-void AssignAnalyzer::Warning(const std::string_view message, const lexer::SourcePosition &pos)
+void AssignAnalyzer::Warning(const diagnostic::DiagnosticKind &kind, const util::DiagnosticMessageParams &list,
+                             const lexer::SourcePosition &pos)
 {
     ++numErrors_;
-    checker_->Warning(message, pos);
-}
-
-void AssignAnalyzer::Warning(const util::DiagnosticMessageParams &list, const lexer::SourcePosition &pos)
-{
-    ++numErrors_;
-    checker_->ReportWarning(list, pos);
+    checker_->LogDiagnostic(kind, list, pos);
 }
 
 void AssignAnalyzer::AnalyzeNodes(const ir::AstNode *node)
@@ -485,7 +480,9 @@ void AssignAnalyzer::ProcessClassDefStaticFields(const ir::ClassDefinition *clas
     for (const auto it : classDef->Body()) {
         if (it->IsClassStaticBlock() ||
             (it->IsStatic() && it->IsMethodDefinition() &&
-             it->AsMethodDefinition()->Key()->AsIdentifier()->Name().Is(compiler::Signatures::INIT_METHOD))) {
+             (it->AsMethodDefinition()->Key()->AsIdentifier()->Name().Is(compiler::Signatures::INIT_METHOD) ||
+              it->AsMethodDefinition()->Key()->AsIdentifier()->Name().StartsWith(
+                  compiler::Signatures::INITIALIZER_BLOCK_INIT)))) {
             AnalyzeNodes(it);
             ClearPendingExits();
         }
@@ -1016,10 +1013,6 @@ void AssignAnalyzer::AnalyzeId(const ir::Identifier *id)
         return;  // inside ObjectExpression
     }
 
-    if (id->Parent()->IsTypeofExpression() && id->Parent()->AsTypeofExpression()->Argument() == id) {
-        return;  // according to the spec 'typeof' works on uninitialized variables too
-    }
-
     if (id->Parent()->IsBinaryExpression()) {
         const ir::BinaryExpression *binExpr = id->Parent()->AsBinaryExpression();
         if ((binExpr->OperatorType() == lexer::TokenType::PUNCTUATOR_EQUAL ||
@@ -1220,7 +1213,7 @@ util::StringView AssignAnalyzer::GetVariableName(const ir::AstNode *node) const
     }
 }
 
-const lexer::SourcePosition &AssignAnalyzer::GetVariablePosition(const ir::AstNode *node) const
+lexer::SourcePosition AssignAnalyzer::GetVariablePosition(const ir::AstNode *node) const
 {
     switch (node->Type()) {
         case ir::AstNodeType::CLASS_PROPERTY:
@@ -1354,6 +1347,20 @@ const ir::AstNode *AssignAnalyzer::GetDeclaringNode(const ir::AstNode *node)
     return ret;
 }
 
+static bool IsDefaultValueType(const Type *type, bool isNonReadonlyField)
+{
+    if (type == nullptr) {
+        return false;
+    }
+    if (type->IsGradualType()) {
+        return IsDefaultValueType(type->AsGradualType()->GetBaseType(), isNonReadonlyField);
+    }
+    return (type->IsETSPrimitiveType() || (type->IsETSObjectType() && type->AsETSObjectType()->IsBoxedPrimitive()) ||
+            type->IsETSNeverType() || type->IsETSUndefinedType() || type->IsETSNullType() ||
+            (type->PossiblyETSUndefined() && (!type->HasTypeFlag(checker::TypeFlag::GENERIC) ||
+                                              (isNonReadonlyField && !CHECK_GENERIC_NON_READONLY_PROPERTIES))));
+}
+
 bool AssignAnalyzer::VariableHasDefaultValue(const ir::AstNode *node)
 {
     ES2PANDA_ASSERT(node != nullptr);
@@ -1371,11 +1378,7 @@ bool AssignAnalyzer::VariableHasDefaultValue(const ir::AstNode *node)
     } else {
         ES2PANDA_UNREACHABLE();
     }
-
-    return type != nullptr &&
-           (type->IsETSPrimitiveType() ||
-            (type->PossiblyETSUndefined() && (!type->HasTypeFlag(checker::TypeFlag::GENERIC) ||
-                                              (isNonReadonlyField && !CHECK_GENERIC_NON_READONLY_PROPERTIES))));
+    return IsDefaultValueType(type, isNonReadonlyField);
 }
 
 void AssignAnalyzer::LetInit(const ir::AstNode *node)
@@ -1395,7 +1398,7 @@ void AssignAnalyzer::LetInit(const ir::AstNode *node)
         // check reassignment of readonly properties
         util::StringView type = GetVariableType(declNode);
         util::StringView name = GetVariableName(declNode);
-        const lexer::SourcePosition &pos = GetVariablePosition(node);
+        const lexer::SourcePosition pos = GetVariablePosition(node);
 
         auto uninit = [this](NodeId a) {
             uninits_.Excl(a);
@@ -1406,9 +1409,9 @@ void AssignAnalyzer::LetInit(const ir::AstNode *node)
 
         if (classDef_ == globalClass_ || (adr < classFirstAdr_ || adr >= firstAdr_)) {
             if (declNode->IsClassProperty() && classDef_ != declNode->Parent()) {
-                Warning({"Cannot assign to '", name, "' because it is a read-only property."}, pos);
+                Warning(diagnostic::ASSIGN_TO_READONLY, {name}, pos);
             } else if (!uninits_.IsMember(adr)) {
-                Warning({Capitalize(type).c_str(), " '", name, "' might already have been assigned."}, pos);
+                Warning(diagnostic::MAYBE_REASSIGNED, {Capitalize(type).c_str(), name}, pos);
             } else {
                 uninit(adr);
             }
@@ -1446,6 +1449,10 @@ void AssignAnalyzer::CheckInit(const ir::AstNode *node)
             // property of an other class
             return;
         }
+
+        if (node->IsDefinite()) {
+            return;
+        }
     }
 
     if (classDef_ == globalClass_ || (adr < classFirstAdr_ || adr >= firstAdr_)) {
@@ -1456,14 +1463,13 @@ void AssignAnalyzer::CheckInit(const ir::AstNode *node)
 
             util::StringView type = GetVariableType(declNode);
             util::StringView name = GetVariableName(declNode);
-            const lexer::SourcePosition &pos = GetVariablePosition(node);
+            const lexer::SourcePosition pos = GetVariablePosition(node);
 
             std::stringstream ss;
             if (node->IsClassProperty()) {
                 checker_->LogError(diagnostic::PROPERTY_MAYBE_MISSING_INIT, {name}, pos);
             } else {
-                ss << Capitalize(type) << " '" << name << "' is used before being assigned.";
-                Warning(ss.str(), pos);
+                checker_->LogError(diagnostic::USE_BEFORE_INIT, {Capitalize(type), name}, pos);
             }
         }
     }

@@ -28,12 +28,29 @@ void GlobalDeclTransformer::FilterDeclarations(ArenaVector<ir::Statement *> &stm
 GlobalDeclTransformer::ResultT GlobalDeclTransformer::TransformStatements(const ArenaVector<ir::Statement *> &stmts)
 {
     result_.classProperties.clear();
-    result_.initializers[0].clear();
-    result_.initializers[1].clear();
+    result_.immediateInit.clear();
+    result_.initializerBlocks.clear();
     for (auto stmt : stmts) {
         stmt->Accept(this);
     }
     return std::move(result_);
+}
+
+void GlobalDeclTransformer::VisitExpressionStatement(ir::ExpressionStatement *exprStmt)
+{
+    if (exprStmt->GetExpression()->IsCallExpression()) {
+        auto *callExpr = exprStmt->GetExpression()->AsCallExpression();
+        if (callExpr->Callee()->IsIdentifier() &&
+            callExpr->Callee()->AsIdentifier()->Name() == compiler::Signatures::INIT_MODULE_METHOD) {
+            return;  // skip initModule call
+        }
+    }
+    result_.immediateInit.emplace_back(exprStmt);
+}
+
+void GlobalDeclTransformer::VisitOverloadDeclaration(ir::OverloadDeclaration *overloadDeclaration)
+{
+    result_.classProperties.emplace_back(overloadDeclaration);
 }
 
 void GlobalDeclTransformer::VisitFunctionDeclaration(ir::FunctionDeclaration *funcDecl)
@@ -58,7 +75,7 @@ void GlobalDeclTransformer::VisitFunctionDeclaration(ir::FunctionDeclaration *fu
         allocator_, methodKind, funcDecl->Function()->Id()->Clone(allocator_, nullptr), funcExpr,
         funcDecl->Function()->Modifiers(), allocator_, false);
     method->SetRange(funcDecl->Range());
-    method->Function()->SetAnnotations(std::move(funcDecl->Annotations()));
+    method->Function()->SetAnnotations(funcDecl->Annotations());
 
     if (funcDecl->Function()->IsExported() && funcDecl->Function()->HasExportAlias()) {
         method->AddAstNodeFlags(ir::AstNodeFlags::HAS_EXPORT_ALIAS);
@@ -73,9 +90,13 @@ void GlobalDeclTransformer::VisitVariableDeclaration(ir::VariableDeclaration *va
         auto id = declarator->Id()->AsIdentifier();
         auto typeAnn = id->TypeAnnotation();
         id->SetTsTypeAnnotation(nullptr);
+        auto modifiers = varDecl->Modifiers() | declarator->Modifiers();
+        bool needInitializeInStaticBlock = (declarator->Init() == nullptr) &&
+                                           (modifiers & ir::ModifierFlags::CONST) != 0 &&
+                                           currentModule_->AsETSModule()->Program()->IsPackage();
         auto *field = util::NodeAllocator::ForceSetParent<ir::ClassProperty>(
-            allocator_, id->Clone(allocator_, nullptr), declarator->Init(), typeAnn,
-            varDecl->Modifiers() | declarator->Modifiers(), allocator_, false);
+            allocator_, id->Clone(allocator_, nullptr), declarator->Init(), typeAnn, modifiers, allocator_, false);
+        field->SetInitInStaticBlock(needInitializeInStaticBlock);
         field->SetRange(declarator->Range());
 
         if (!varDecl->Annotations().empty()) {
@@ -93,7 +114,7 @@ void GlobalDeclTransformer::VisitVariableDeclaration(ir::VariableDeclaration *va
 
         result_.classProperties.emplace_back(field);
         if (auto stmt = InitTopLevelProperty(field); stmt != nullptr) {
-            result_.initializers[0].emplace_back(stmt);
+            result_.immediateInit.emplace_back(stmt);
         }
     }
 }
@@ -134,7 +155,9 @@ void GlobalDeclTransformer::VisitClassStaticBlock(ir::ClassStaticBlock *classSta
     ES2PANDA_ASSERT((staticBlock->Flags() & ir::ScriptFunctionFlags::STATIC_BLOCK) != 0);
     classStaticBlock->IterateRecursivelyPostorder(containUnhandledThrow);
     auto &initStatements = staticBlock->Body()->AsBlockStatement()->Statements();
-    result_.initializers[1].insert(result_.initializers[1].begin(), initStatements.begin(), initStatements.end());
+    ArenaVector<ir::Statement *> initializerBlock(allocator_->Adapter());
+    initializerBlock.insert(initializerBlock.begin(), initStatements.begin(), initStatements.end());
+    result_.initializerBlocks.emplace_back(std::move(initializerBlock));
     ++initializerBlockCount_;
 }
 
@@ -180,7 +203,7 @@ void GlobalDeclTransformer::HandleNode(ir::AstNode *node)
     ES2PANDA_ASSERT(node->IsStatement());
     if (typeDecl_.count(node->Type()) == 0U) {
         ES2PANDA_ASSERT(!propertiesDecl_.count(node->Type()));
-        result_.initializers[0].emplace_back(node->AsStatement());
+        result_.immediateInit.emplace_back(node->AsStatement());
     }
 }
 

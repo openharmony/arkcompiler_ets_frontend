@@ -61,6 +61,7 @@ if(PANDA_WITH_ETS)
       "      \"@ohos.util.PlainArray\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}api${DELIM}@ohos.util.PlainArray.ets\"],\n"
       "      \"@ohos.util.Queue\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}api${DELIM}@ohos.util.Queue.ets\"],\n"
       "      \"@ohos.util.Stack\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}api${DELIM}@ohos.util.Stack.ets\"],\n"
+      "      \"@ohos.util.stream\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}api${DELIM}@ohos.util.stream.ets\"],\n"
       "      \"@ohos.util\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}api${DELIM}@ohos.util.ets\"],\n"
       "      \"@ohos.util.TreeMap\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}api${DELIM}@ohos.util.TreeMap.ets\"],\n"
       "      \"@ohos.util.TreeSet\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}api${DELIM}@ohos.util.TreeSet.ets\"],\n"
@@ -69,12 +70,13 @@ if(PANDA_WITH_ETS)
       "      \"@ohos.xml\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}api${DELIM}@ohos.xml.ets\"],\n"
       "      \"@ohos.base\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}api${DELIM}@ohos.base.ets\"],\n"
       "      \"@arkts.math.Decimal\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}arkts${DELIM}@arkts.math.Decimal.ets\"],\n"
+      "      \"@arkts.collections\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}arkts${DELIM}@arkts.collections.ets\"],\n"
       "      \"import_tests\": [\"${CMAKE_CURRENT_SOURCE_DIR}/test/parser/ets/import_tests\"]\n"
       "    },\n"
-      "    \"dynamicPaths\": {\n"
+      "    \"dependencies\": {\n"
       "      \"dynamic_import_tests\": {\"language\": \"js\", \"ohmUrl\": \"dynamic_import_tests\"},\n"
-      "      \"dynamic_import_tests/modules/instanceof\": {\"language\": \"js\", \"declPath\": \"${CMAKE_CURRENT_SOURCE_DIR}/test/parser/ets/dynamic_import_tests/modules/instanceof.ets\", \"ohmUrl\": \"${CMAKE_CURRENT_SOURCE_DIR}/test/parser/ets/dynamic_import_tests/modules/instanceof.ets\"},\n"
-      "      \"dynamic_import_tests/modules/module\": {\"language\": \"js\", \"declPath\": \"${CMAKE_CURRENT_SOURCE_DIR}/test/parser/ets/dynamic_import_tests/modules/module.ets\", \"ohmUrl\": \"${CMAKE_CURRENT_SOURCE_DIR}/test/parser/ets/dynamic_import_tests/modules/module.ets\"}\n"
+      "      \"dynamic_import_tests/modules/instanceof\": {\"language\": \"js\", \"path\": \"${CMAKE_CURRENT_SOURCE_DIR}/test/parser/ets/dynamic_import_tests/modules/instanceof.ets\", \"ohmUrl\": \"${CMAKE_CURRENT_SOURCE_DIR}/test/parser/ets/dynamic_import_tests/modules/instanceof.ets\"},\n"
+      "      \"dynamic_import_tests/modules/module\": {\"language\": \"js\", \"path\": \"${CMAKE_CURRENT_SOURCE_DIR}/test/parser/ets/dynamic_import_tests/modules/module.ets\", \"ohmUrl\": \"${CMAKE_CURRENT_SOURCE_DIR}/test/parser/ets/dynamic_import_tests/modules/module.ets\"}\n"
       "    }\n"
       "  }\n"
       "}\n"
@@ -142,12 +144,14 @@ panda_gen(
         ${DIAGNOSTIC_DIR}/fatal.yaml
         ${CMAKE_CURRENT_SOURCE_DIR}/declgen_ets2ts/declgen_ets2ts_error.yaml
         ${CMAKE_CURRENT_SOURCE_DIR}/declgen_ets2ts/declgen_ets2ts_warning.yaml
+        ${CMAKE_CURRENT_SOURCE_DIR}/declgen_ets2ts/isolated_declgen.yaml
         ${DIAGNOSTIC_DIR}/arktsconfig_error.yaml
     TARGET_NAME es2panda_diagnostic_gen
     TEMPLATES diagnostic.h.erb
     SOURCE ${DIAGNOSTIC_DIR}
     DESTINATION ${GENERATED_DIR}
     API
+        ${DIAGNOSTIC_DIR}/diagnostic.rb
         ${DIAGNOSTIC_DIR}/diagnostic.rb
         ${DIAGNOSTIC_DIR}/diagnostic.rb
         ${DIAGNOSTIC_DIR}/diagnostic.rb
@@ -272,30 +276,39 @@ set(ES2PANDA_LIB_SRC
   compiler/lowering/ets/expressionLambdaLowering.cpp
   compiler/lowering/ets/extensionAccessorLowering.cpp
   compiler/lowering/ets/genericBridgesLowering.cpp
-  compiler/lowering/ets/boxedTypeLowering.cpp
+  compiler/lowering/ets/gradualTypeNarrowing.cpp
+  compiler/lowering/ets/arrayLiteralLowering.cpp
   compiler/lowering/ets/boxingForLocals.cpp
   compiler/lowering/ets/capturedVariables.cpp
   compiler/lowering/ets/cfgBuilderPhase.cpp
   compiler/lowering/ets/constantExpressionLowering.cpp
+  compiler/lowering/ets/convertPrimitiveCastMethodCall.cpp
   compiler/lowering/ets/declareOverloadLowering.cpp
+  compiler/lowering/ets/declGenPhase.cpp
   compiler/lowering/ets/defaultParametersInConstructorLowering.cpp
   compiler/lowering/ets/defaultParametersLowering.cpp
+  compiler/lowering/ets/exportAnonymousConst.cpp
+  compiler/lowering/ets/lateInitialization.cpp
   compiler/lowering/ets/lambdaLowering.cpp
+  compiler/lowering/ets/dynamicImport.cpp
   compiler/lowering/ets/restTupleLowering.cpp
   compiler/lowering/ets/spreadLowering.cpp
   compiler/lowering/ets/localClassLowering.cpp
   compiler/lowering/ets/objectIndexAccess.cpp
   compiler/lowering/ets/objectIterator.cpp
+  compiler/lowering/ets/insertOptionalParametersAnnotation.cpp
   compiler/lowering/ets/interfacePropertyDeclarations.cpp
   compiler/lowering/ets/opAssignment.cpp
   compiler/lowering/ets/ambientLowering.cpp
   compiler/lowering/ets/asyncMethodLowering.cpp
   compiler/lowering/ets/bigintLowering.cpp
-  compiler/lowering/ets/constStringToCharLowering.cpp
   compiler/lowering/ets/recordLowering.cpp
+  compiler/lowering/ets/resizableArrayLowering.cpp
+  compiler/lowering/ets/restArgsLowering.cpp
   compiler/lowering/ets/unionLowering.cpp
   compiler/lowering/ets/optionalArgumentsLowering.cpp
   compiler/lowering/ets/optionalLowering.cpp
+  compiler/lowering/ets/overloadMappingLowering.cpp
   compiler/lowering/ets/expandBrackets.cpp
   compiler/lowering/ets/packageImplicitImport.cpp
   compiler/lowering/ets/partialExportClassGen.cpp
@@ -305,9 +318,16 @@ set(ES2PANDA_LIB_SRC
   compiler/lowering/ets/stringComparison.cpp
   compiler/lowering/ets/stringConstantsLowering.cpp
   compiler/lowering/ets/stringConstructorLowering.cpp
+  compiler/lowering/ets/typeFromLowering.cpp
   compiler/lowering/ets/enumLowering.cpp
   compiler/lowering/ets/enumPostCheckLowering.cpp
+  compiler/lowering/ets/enumPropertiesInAnnotationsLowering.cpp
   compiler/lowering/ets/setJumpTarget.cpp
+  compiler/lowering/ets/setterLowering.cpp
+  compiler/lowering/ets/annotationCopyLowering.cpp
+  compiler/lowering/ets/annotationCopyPostLowering.cpp
+  compiler/lowering/ets/primitiveConversionPhase.cpp
+  compiler/lowering/ets/unboxLowering.cpp
   ir/astDump.cpp
   ir/srcDump.cpp
   ir/astNode.cpp
@@ -324,6 +344,7 @@ set(ES2PANDA_LIB_SRC
   ir/base/decorator.cpp
   ir/base/metaProperty.cpp
   ir/base/methodDefinition.cpp
+  ir/base/overloadDeclaration.cpp
   ir/base/property.cpp
   ir/base/scriptFunction.cpp
   ir/base/scriptFunctionSignature.cpp
@@ -411,15 +432,16 @@ set(ES2PANDA_LIB_SRC
   ir/as/namedType.cpp
   ir/as/prefixAssertionExpression.cpp
   ir/ets/etsClassLiteral.cpp
+  ir/ets/etsIntrinsicNode.cpp
   ir/ets/etsFunctionType.cpp
   ir/ets/etsKeyofType.cpp
-  ir/ets/etsLaunchExpression.cpp
   ir/ets/etsNewArrayInstanceExpression.cpp
   ir/ets/etsNewClassInstanceExpression.cpp
   ir/ets/etsNewMultiDimArrayInstanceExpression.cpp
   ir/ets/etsPackageDeclaration.cpp
   ir/ets/etsParameterExpression.cpp
   ir/ets/etsPrimitiveType.cpp
+  ir/ets/etsNonNullishTypeNode.cpp
   ir/ets/etsNullishTypes.cpp
   ir/ets/etsNeverType.cpp
   ir/ets/etsModule.cpp
@@ -502,6 +524,7 @@ set(ES2PANDA_LIB_SRC
   parser/ETSparserClasses.cpp
   parser/ETSparserEnums.cpp
   parser/ETSparserExpressions.cpp
+  parser/ETSparserJsDocInfo.cpp
   parser/ETSparserNamespaces.cpp
   parser/ETSparserStatements.cpp
   parser/ETSparserTypes.cpp
@@ -513,6 +536,7 @@ set(ES2PANDA_LIB_SRC
   parser/program/program.cpp
   parser/statementParser.cpp
   parser/statementTSParser.cpp
+  public/public.cpp
   checker/checker.cpp
   checker/checkerContext.cpp
   checker/ETSAnalyzer.cpp
@@ -534,13 +558,10 @@ set(ES2PANDA_LIB_SRC
   checker/ets/castingContext.cpp
   checker/ets/conversion.cpp
   checker/ets/dynamic.cpp
-  checker/ets/dynamic/dynamicCall.cpp
   checker/ets/function.cpp
   checker/ets/validateHelpers.cpp
   checker/ets/typeCheckingHelpers.cpp
   checker/ets/helpers.cpp
-  checker/ets/narrowingConverter.cpp
-  checker/ets/narrowingWideningConverter.cpp
   checker/ets/object.cpp
   checker/ets/typeConverter.cpp
   checker/ets/typeCreation.cpp
@@ -560,6 +581,7 @@ set(ES2PANDA_LIB_SRC
   checker/types/type.cpp
   checker/types/typeRelation.cpp
   checker/types/globalTypesHolder.cpp
+  checker/types/gradualType.cpp
   checker/types/ets/byteType.cpp
   checker/types/ets/charType.cpp
   checker/types/ets/doubleType.cpp
@@ -567,15 +589,16 @@ set(ES2PANDA_LIB_SRC
   checker/types/ets/intType.cpp
   checker/types/ets/longType.cpp
   checker/types/ets/shortType.cpp
+  checker/types/ets/etsAnyType.cpp
   checker/types/ets/etsArrayType.cpp
   checker/types/ets/etsBooleanType.cpp
-  checker/types/ets/etsDynamicType.cpp
   checker/types/ets/etsEnumType.cpp
   checker/types/ets/etsExtensionFuncHelperType.cpp
   checker/types/ets/etsFunctionType.cpp
   checker/types/ets/etsNonNullishType.cpp
   checker/types/ets/etsNeverType.cpp
   checker/types/ets/etsReadonlyType.cpp
+  checker/types/ets/etsResizableArrayType.cpp
   checker/types/ets/etsNullishTypes.cpp
   checker/types/ets/etsObjectType.cpp
   checker/types/ets/etsStringType.cpp
@@ -627,8 +650,9 @@ set(ES2PANDA_LIB_SRC
   util/helpers.cpp
   util/importPathManager.cpp
   util/path.cpp
+  util/plugin.cpp
+  util/perfMetrics.cpp
   util/ustring.cpp
-  test/utils/panda_executable_path_getter.cpp
   evaluate/debugInfoDeserialization/debugInfoDeserializer.cpp
   evaluate/debugInfoDeserialization/inheritanceResolution.cpp
   evaluate/debugInfoDeserialization/methodBuilder.cpp
@@ -667,9 +691,16 @@ panda_target_compile_options(es2panda-lib
   PRIVATE -fexceptions -Werror=shadow
 )
 
+if (EN_ISOLATED_DECLGEN)
+  message(STATUS "Isolated declgen enabled")
+  panda_target_compile_definitions(es2panda-lib
+    PRIVATE -DENABLE_ISOLATED_DECLGEN
+  )
+endif()
+
 panda_target_link_libraries(es2panda-lib
   PUBLIC arkbase hmicuuc.z
-  PRIVATE arkassembler arkdisassembler arkfile
+  PRIVATE arkassembler arkdisassembler arkfile abc2program
 )
 
 if((CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9.1) OR

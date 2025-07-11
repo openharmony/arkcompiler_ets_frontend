@@ -15,6 +15,8 @@
 
 import {A, B, foo} from "./export.ets"
 
+function goo() : int { return 2}
+
 function main() {
     let a: A = new A();
     a.foo();

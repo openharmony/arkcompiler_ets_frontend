@@ -120,7 +120,7 @@ export function findInteropRule(
             // 包含 object API 的 1.2 函数被导出到 1.1 文件使用
             return isReflect ? S2D_STATIC_REFLECT : S2D_STATIC_OBJECT;
         } else {
-            return isReflect ? D2S_STATIC_REFLECT : D2S_STATIC_OBJECT;
+            return undefined;
         }
     }
     if (methodLang === Language.ARKTS1_1 && typeDefLang === Language.ARKTS1_2) {

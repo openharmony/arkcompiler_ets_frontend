@@ -16,17 +16,14 @@
 export const ARKTSCONFIG_JSON_FILE: string = 'arktsconfig.json';
 export const MERGED_ABC_FILE: string = 'modules_static.abc';
 export const LINKER_INPUT_FILE: string = 'fileInfo.txt';
+export const DEPENDENCY_INPUT_FILE: string = 'dependencyFileInfo.txt';
+export const DEPENDENCY_JSON_FILE: string = 'dependency.json';
+export const PROJECT_BUILD_CONFIG_FILE: string = 'projectionConfig.json';
 
 export const DECL_ETS_SUFFIX: string = '.d.ets';
 export const ETS_SUFFIX: string = '.ets';
 export const TS_SUFFIX: string = '.ts';
 export const ABC_SUFFIX: string = '.abc';
-
-export const BUILD_TYPE_BUILD: string = 'build';
-export enum BUILD_MODE {
-  DEBUG = 'Debug',
-  RELEASE = 'Release'
-};
 
 export enum LANGUAGE_VERSION {
   ARKTS_1_2 = '1.2',
@@ -37,5 +34,15 @@ export enum LANGUAGE_VERSION {
 export const PANDA_SDK_PATH_FROM_SDK: string = './build-tools/ets2panda';
 export const SYSTEM_SDK_PATH_FROM_SDK: string = './';
 export const KOALA_WRAPPER_PATH_FROM_SDK: string = './build-tools/koala-wrapper/build/lib/es2panda';
+export const KIT_CONFIGS_PATH_FROM_SDK: string = '../ets1.1/build-tools/ets-loader/kit_configs';
 
 export const DEFAULT_WOKER_NUMS: number = 4;
+
+export const ETS_1_1 = 'ets1.1';
+export const ETS_1_1_INTEROP = 'ets1.1interop';
+
+export const sdkConfigPrefix = 'ohos|system|kit|arkts';
+export const NATIVE_MODULE: Set<string> = new Set(
+  ['system.app', 'ohos.app', 'system.router', 'system.curves', 'ohos.curves', 'system.matrix4', 'ohos.matrix4']);
+
+export const ARKTS_MODULE_NAME: string = 'arkts';

@@ -39,9 +39,9 @@
             "column": 18,
             "endLine": 43,
             "endColumn": 6,
-            "problem": "StylesDecoratorNotSupported",
+            "problem": "StateStylesBlockNeedArrowFunc",
             "suggest": "",
-            "rule": "\"@Styles\" decorator is not supported (arkui-no-styles-decorator)",
+            "rule": "The code block passed to stateStyles needs to be an arrow function (arkui-statestyles-block-need-arrow-func)",
             "severity": "ERROR"
         },
         {
@@ -49,9 +49,9 @@
             "column": 18,
             "endLine": 62,
             "endColumn": 6,
-            "problem": "StylesDecoratorNotSupported",
+            "problem": "StateStylesBlockNeedArrowFunc",
             "suggest": "",
-            "rule": "\"@Styles\" decorator is not supported (arkui-no-styles-decorator)",
+            "rule": "The code block passed to stateStyles needs to be an arrow function (arkui-statestyles-block-need-arrow-func)",
             "severity": "ERROR"
         },
         {
@@ -59,9 +59,9 @@
             "column": 20,
             "endLine": 76,
             "endColumn": 8,
-            "problem": "StylesDecoratorNotSupported",
+            "problem": "StateStylesBlockNeedArrowFunc",
             "suggest": "",
-            "rule": "\"@Styles\" decorator is not supported (arkui-no-styles-decorator)",
+            "rule": "The code block passed to stateStyles needs to be an arrow function (arkui-statestyles-block-need-arrow-func)",
             "severity": "ERROR"
         },
         {
@@ -69,9 +69,9 @@
             "column": 20,
             "endLine": 90,
             "endColumn": 8,
-            "problem": "StylesDecoratorNotSupported",
+            "problem": "StateStylesBlockNeedArrowFunc",
             "suggest": "",
-            "rule": "\"@Styles\" decorator is not supported (arkui-no-styles-decorator)",
+            "rule": "The code block passed to stateStyles needs to be an arrow function (arkui-statestyles-block-need-arrow-func)",
             "severity": "ERROR"
         },
         {
@@ -81,7 +81,7 @@
             "endColumn": 27,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Color\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -91,7 +91,7 @@
             "endColumn": 7,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Entry\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -101,7 +101,7 @@
             "endColumn": 11,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Component\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -111,7 +111,7 @@
             "endColumn": 16,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"BuilderParam\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -121,7 +121,7 @@
             "endColumn": 11,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Require\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -131,7 +131,7 @@
             "endColumn": 27,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Color\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -141,7 +141,7 @@
             "endColumn": 11,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Button\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -151,7 +151,7 @@
             "endColumn": 31,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Color\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -161,7 +161,7 @@
             "endColumn": 11,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Component\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -171,7 +171,7 @@
             "endColumn": 16,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"BuilderParam\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -181,7 +181,7 @@
             "endColumn": 11,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Require\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -191,7 +191,7 @@
             "endColumn": 11,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Button\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -201,7 +201,7 @@
             "endColumn": 31,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Color\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -211,7 +211,7 @@
             "endColumn": 11,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Component\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -221,7 +221,7 @@
             "endColumn": 11,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Button\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -231,7 +231,7 @@
             "endColumn": 33,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Color\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -241,7 +241,7 @@
             "endColumn": 11,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Component\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -251,7 +251,7 @@
             "endColumn": 11,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Button\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -261,7 +261,7 @@
             "endColumn": 33,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Color\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         }
     ]

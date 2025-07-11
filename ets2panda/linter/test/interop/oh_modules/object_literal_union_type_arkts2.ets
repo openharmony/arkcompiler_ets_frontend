@@ -12,7 +12,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use static'
 
 export class A { name: string = '' }
 export interface B { name: string, age?: number }

@@ -17,7 +17,7 @@ import type ts from 'typescript';
 
 export type ArrayAccess = {
   pos: number;
-  accessingIdentifier: 'number' | ts.Identifier;
+  accessingIdentifier: 'number' | ts.Identifier | ts.Expression;
   arrayIdent: ts.Identifier;
 };
 
@@ -25,7 +25,7 @@ export type UncheckedIdentifier = ts.Identifier | typeof NUMBER_LITERAL | undefi
 export type CheckedIdentifier = ts.Identifier | typeof NUMBER_LITERAL;
 
 export const NUMBER_LITERAL = 'number';
-
+export const LENGTH_IDENTIFIER = 'length';
 export enum LoopConditionChecked {
   LEFT,
   RIGHT,
@@ -34,5 +34,6 @@ export enum LoopConditionChecked {
 
 export enum CheckResult {
   SKIP,
+  HAS_ARRAY_ACCES,
   CHECKED
 }

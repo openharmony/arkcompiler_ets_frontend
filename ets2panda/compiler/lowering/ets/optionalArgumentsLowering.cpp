@@ -21,6 +21,21 @@
 namespace ark::es2panda::compiler {
 
 static void TransformArguments(public_lib::Context *ctx, ir::Expression *callLike, checker::Signature *signature,
+                               ArenaVector<ir::Expression *> &arguments);
+
+static void TransformArgumentsForTrailingLambda(public_lib::Context *ctx, ir::CallExpression *callExpr,
+                                                checker::Signature *sig)
+{
+    ES2PANDA_ASSERT(!callExpr->Arguments().empty());
+    auto lastArg = callExpr->Arguments().back();
+    callExpr->Arguments().pop_back();
+    TransformArguments(ctx, callExpr, sig, callExpr->Arguments());
+    // Here the last param to match the trailing lamda must be optional, so we pop the last argument.
+    callExpr->Arguments().pop_back();
+    callExpr->Arguments().push_back(lastArg);
+}
+
+static void TransformArguments(public_lib::Context *ctx, ir::Expression *callLike, checker::Signature *signature,
                                ArenaVector<ir::Expression *> &arguments)
 {
     if (signature->ArgCount() < arguments.size()) {
@@ -28,16 +43,10 @@ static void TransformArguments(public_lib::Context *ctx, ir::Expression *callLik
         return;
     }
     ES2PANDA_ASSERT(signature->ArgCount() >= signature->MinArgCount());
-    if (arguments.size() < signature->MinArgCount()) {  // #22952: workaround for dynamic types
-        auto callee = callLike->IsCallExpression() ? callLike->AsCallExpression()->Callee()
-                                                   : callLike->AsETSNewClassInstanceExpression()->GetTypeRef();
-        if (callee->TsType()->HasTypeFlag(checker::TypeFlag::ETS_DYNAMIC_FLAG)) {
-            return;
-        }
-    }
-    ES2PANDA_ASSERT(arguments.size() >= signature->MinArgCount());
+    ES2PANDA_ASSERT((callLike->IsCallExpression() && callLike->AsCallExpression()->IsTrailingCall()) ||
+                    arguments.size() >= signature->MinArgCount());
 
-    auto const checker = ctx->checker->AsETSChecker();
+    auto const checker = ctx->GetChecker()->AsETSChecker();
     auto const allocator = ctx->allocator;
 
     size_t missing = signature->ArgCount() - arguments.size();
@@ -56,7 +65,14 @@ bool OptionalArgumentsLowering::PerformForModule(public_lib::Context *ctx, parse
         [ctx](ir::AstNode *const node) -> ir::AstNode * {
             if (node->IsCallExpression()) {
                 auto callExpr = node->AsCallExpression();
-                TransformArguments(ctx, callExpr, callExpr->Signature(), callExpr->Arguments());
+                if (callExpr->Signature() == nullptr) {
+                    ctx->parser->LogError(diagnostic::IMPROPER_NESTING_INTERFACE, {}, node->Start());
+                    return node;
+                }
+
+                callExpr->IsTrailingCall()
+                    ? TransformArgumentsForTrailingLambda(ctx, callExpr->AsCallExpression(), callExpr->Signature())
+                    : TransformArguments(ctx, callExpr, callExpr->Signature(), callExpr->Arguments());
             } else if (node->IsETSNewClassInstanceExpression()) {
                 auto newExpr = node->AsETSNewClassInstanceExpression();
                 TransformArguments(ctx, newExpr, newExpr->GetSignature(), newExpr->GetArguments());

@@ -22,8 +22,9 @@ class A {
 
 function foo(a0: A) {
     let a: Readonly<A> = new A(2)
-    a.fld = 5
+    /* @@ label2 */a.fld = 5
 }
 
 
 /* @@@ label Error TypeError: Cannot assign to a readonly variable fld  */
+/* @@@ label2 Error TypeError: The 'Readonly' property cannot be reassigned.  */

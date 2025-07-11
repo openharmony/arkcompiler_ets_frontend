@@ -29,5 +29,5 @@ class A {
 
 function main() {
     let s = bar();
-    assertEQ(s, "hello");
+    arktest.assertEQ(s, "hello");
 }

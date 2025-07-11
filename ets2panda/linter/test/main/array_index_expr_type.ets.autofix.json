@@ -24,7 +24,74 @@
                 {
                     "start": 639,
                     "end": 657,
-                    "replacementText": "an_array: number[] = [1, 2, 3]"
+                    "replacementText": "an_array: number[] = [1, 2, 3]",
+                    "line": 17,
+                    "column": 7,
+                    "endLine": 17,
+                    "endColumn": 25
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 17,
+            "column": 19,
+            "endLine": 17,
+            "endColumn": 20,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 651,
+                    "end": 652,
+                    "replacementText": "1.0",
+                    "line": 17,
+                    "column": 19,
+                    "endLine": 17,
+                    "endColumn": 20
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 17,
+            "column": 21,
+            "endLine": 17,
+            "endColumn": 22,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 653,
+                    "end": 654,
+                    "replacementText": "2.0",
+                    "line": 17,
+                    "column": 21,
+                    "endLine": 17,
+                    "endColumn": 22
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 17,
+            "column": 23,
+            "endLine": 17,
+            "endColumn": 24,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 655,
+                    "end": 656,
+                    "replacementText": "3.0",
+                    "line": 17,
+                    "column": 23,
+                    "endLine": 17,
+                    "endColumn": 24
                 }
             ],
             "suggest": "",
@@ -41,11 +108,25 @@
                 {
                     "start": 664,
                     "end": 683,
-                    "replacementText": "a: number = an_array[index]"
+                    "replacementText": "a: number = an_array[index]",
+                    "line": 18,
+                    "column": 7,
+                    "endLine": 18,
+                    "endColumn": 26
                 }
             ],
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 18,
+            "column": 11,
+            "endLine": 18,
+            "endColumn": 26,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
             "severity": "ERROR"
         },
         {
@@ -58,7 +139,11 @@
                 {
                     "start": 677,
                     "end": 682,
-                    "replacementText": "index as int"
+                    "replacementText": "index as int",
+                    "line": 18,
+                    "column": 20,
+                    "endLine": 18,
+                    "endColumn": 25
                 }
             ],
             "suggest": "",
@@ -75,11 +160,25 @@
                 {
                     "start": 690,
                     "end": 714,
-                    "replacementText": "a1: number = an_array[index + 1]"
+                    "replacementText": "a1: number = an_array[index + 1]",
+                    "line": 19,
+                    "column": 7,
+                    "endLine": 19,
+                    "endColumn": 31
                 }
             ],
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 19,
+            "column": 12,
+            "endLine": 19,
+            "endColumn": 31,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
             "severity": "ERROR"
         },
         {
@@ -92,7 +191,11 @@
                 {
                     "start": 704,
                     "end": 713,
-                    "replacementText": "(index + 1) as int"
+                    "replacementText": "(index + 1) as int",
+                    "line": 19,
+                    "column": 21,
+                    "endLine": 19,
+                    "endColumn": 30
                 }
             ],
             "suggest": "",
@@ -109,11 +212,25 @@
                 {
                     "start": 721,
                     "end": 747,
-                    "replacementText": "a2: number = an_array[index + 1.1]"
+                    "replacementText": "a2: number = an_array[index + 1.1]",
+                    "line": 20,
+                    "column": 7,
+                    "endLine": 20,
+                    "endColumn": 33
                 }
             ],
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 12,
+            "endLine": 20,
+            "endColumn": 33,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
             "severity": "ERROR"
         },
         {
@@ -126,7 +243,11 @@
                 {
                     "start": 735,
                     "end": 746,
-                    "replacementText": "(index + 1.1) as int"
+                    "replacementText": "(index + 1.1) as int",
+                    "line": 20,
+                    "column": 21,
+                    "endLine": 20,
+                    "endColumn": 32
                 }
             ],
             "suggest": "",
@@ -143,11 +264,25 @@
                 {
                     "start": 754,
                     "end": 772,
-                    "replacementText": "b: number = an_array[1.23]"
+                    "replacementText": "b: number = an_array[1.23]",
+                    "line": 21,
+                    "column": 7,
+                    "endLine": 21,
+                    "endColumn": 25
                 }
             ],
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 21,
+            "column": 11,
+            "endLine": 21,
+            "endColumn": 25,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
             "severity": "ERROR"
         },
         {
@@ -160,7 +295,11 @@
                 {
                     "start": 767,
                     "end": 771,
-                    "replacementText": "1.23 as int"
+                    "replacementText": "1.23 as int",
+                    "line": 21,
+                    "column": 20,
+                    "endLine": 21,
+                    "endColumn": 24
                 }
             ],
             "suggest": "",
@@ -257,7 +396,11 @@
                 {
                     "start": 887,
                     "end": 901,
-                    "replacementText": "g: number = an_array[]"
+                    "replacementText": "g: number = an_array[]",
+                    "line": 26,
+                    "column": 7,
+                    "endLine": 26,
+                    "endColumn": 21
                 }
             ],
             "suggest": "",
@@ -284,11 +427,25 @@
                 {
                     "start": 908,
                     "end": 925,
-                    "replacementText": "h: number = an_array[12.]"
+                    "replacementText": "h: number = an_array[12.]",
+                    "line": 27,
+                    "column": 7,
+                    "endLine": 27,
+                    "endColumn": 24
                 }
             ],
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 27,
+            "column": 11,
+            "endLine": 27,
+            "endColumn": 24,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
             "severity": "ERROR"
         },
         {
@@ -301,7 +458,11 @@
                 {
                     "start": 921,
                     "end": 924,
-                    "replacementText": "12. as int"
+                    "replacementText": "12. as int",
+                    "line": 27,
+                    "column": 20,
+                    "endLine": 27,
+                    "endColumn": 23
                 }
             ],
             "suggest": "",
@@ -318,11 +479,25 @@
                 {
                     "start": 932,
                     "end": 950,
-                    "replacementText": "i: number = an_array[12.0]"
+                    "replacementText": "i: number = an_array[12.0]",
+                    "line": 28,
+                    "column": 7,
+                    "endLine": 28,
+                    "endColumn": 25
                 }
             ],
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 28,
+            "column": 11,
+            "endLine": 28,
+            "endColumn": 25,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
             "severity": "ERROR"
         },
         {
@@ -335,7 +510,11 @@
                 {
                     "start": 945,
                     "end": 949,
-                    "replacementText": "12.0 as int"
+                    "replacementText": "12.0 as int",
+                    "line": 28,
+                    "column": 20,
+                    "endLine": 28,
+                    "endColumn": 24
                 }
             ],
             "suggest": "",
@@ -352,11 +531,25 @@
                 {
                     "start": 957,
                     "end": 972,
-                    "replacementText": "j: number = an_array[0]"
+                    "replacementText": "j: number = an_array[0]",
+                    "line": 29,
+                    "column": 7,
+                    "endLine": 29,
+                    "endColumn": 22
                 }
             ],
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 29,
+            "column": 11,
+            "endLine": 29,
+            "endColumn": 22,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
             "severity": "ERROR"
         },
         {
@@ -369,11 +562,25 @@
                 {
                     "start": 979,
                     "end": 1009,
-                    "replacementText": "k: number = an_array[Number.MAX_VALUE]"
+                    "replacementText": "k: number = an_array[Number.MAX_VALUE]",
+                    "line": 30,
+                    "column": 7,
+                    "endLine": 30,
+                    "endColumn": 37
                 }
             ],
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 30,
+            "column": 11,
+            "endLine": 30,
+            "endColumn": 37,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
             "severity": "ERROR"
         },
         {
@@ -386,7 +593,11 @@
                 {
                     "start": 992,
                     "end": 1008,
-                    "replacementText": "Number.MAX_VALUE as int"
+                    "replacementText": "Number.MAX_VALUE as int",
+                    "line": 30,
+                    "column": 20,
+                    "endLine": 30,
+                    "endColumn": 36
                 }
             ],
             "suggest": "",
@@ -403,11 +614,25 @@
                 {
                     "start": 1016,
                     "end": 1046,
-                    "replacementText": "l: number = an_array[Number.MIN_VALUE]"
+                    "replacementText": "l: number = an_array[Number.MIN_VALUE]",
+                    "line": 31,
+                    "column": 7,
+                    "endLine": 31,
+                    "endColumn": 37
                 }
             ],
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 31,
+            "column": 11,
+            "endLine": 31,
+            "endColumn": 37,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
             "severity": "ERROR"
         },
         {
@@ -420,7 +645,11 @@
                 {
                     "start": 1029,
                     "end": 1045,
-                    "replacementText": "Number.MIN_VALUE as int"
+                    "replacementText": "Number.MIN_VALUE as int",
+                    "line": 31,
+                    "column": 20,
+                    "endLine": 31,
+                    "endColumn": 36
                 }
             ],
             "suggest": "",
@@ -437,11 +666,25 @@
                 {
                     "start": 1053,
                     "end": 1090,
-                    "replacementText": "m: number = an_array[Number.MAX_SAFE_INTEGER]"
+                    "replacementText": "m: number = an_array[Number.MAX_SAFE_INTEGER]",
+                    "line": 32,
+                    "column": 7,
+                    "endLine": 32,
+                    "endColumn": 44
                 }
             ],
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 32,
+            "column": 11,
+            "endLine": 32,
+            "endColumn": 44,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
             "severity": "ERROR"
         },
         {
@@ -454,7 +697,11 @@
                 {
                     "start": 1066,
                     "end": 1089,
-                    "replacementText": "Number.MAX_SAFE_INTEGER as int"
+                    "replacementText": "Number.MAX_SAFE_INTEGER as int",
+                    "line": 32,
+                    "column": 20,
+                    "endLine": 32,
+                    "endColumn": 43
                 }
             ],
             "suggest": "",
@@ -471,11 +718,109 @@
                 {
                     "start": 1098,
                     "end": 1113,
-                    "replacementText": "array: number[] = [1, 2, 3]"
+                    "replacementText": "array: number[] = [1, 2, 3]",
+                    "line": 35,
+                    "column": 5,
+                    "endLine": 35,
+                    "endColumn": 20
                 }
             ],
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 35,
+            "column": 14,
+            "endLine": 35,
+            "endColumn": 15,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1107,
+                    "end": 1108,
+                    "replacementText": "1.0",
+                    "line": 35,
+                    "column": 14,
+                    "endLine": 35,
+                    "endColumn": 15
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 35,
+            "column": 16,
+            "endLine": 35,
+            "endColumn": 17,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1109,
+                    "end": 1110,
+                    "replacementText": "2.0",
+                    "line": 35,
+                    "column": 16,
+                    "endLine": 35,
+                    "endColumn": 17
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 35,
+            "column": 18,
+            "endLine": 35,
+            "endColumn": 19,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1111,
+                    "end": 1112,
+                    "replacementText": "3.0",
+                    "line": 35,
+                    "column": 18,
+                    "endLine": 35,
+                    "endColumn": 19
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 38,
+            "column": 23,
+            "endLine": 38,
+            "endColumn": 24,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1192,
+                    "end": 1193,
+                    "replacementText": "1.0",
+                    "line": 38,
+                    "column": 23,
+                    "endLine": 38,
+                    "endColumn": 24
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 39,
+            "column": 1,
+            "endLine": 39,
+            "endColumn": 15,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
             "severity": "ERROR"
         },
         {
@@ -488,11 +833,25 @@
                 {
                     "start": 1201,
                     "end": 1208,
-                    "replacementText": "index_1 as int"
+                    "replacementText": "index_1 as int",
+                    "line": 39,
+                    "column": 7,
+                    "endLine": 39,
+                    "endColumn": 14
                 }
             ],
             "suggest": "",
             "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 40,
+            "column": 1,
+            "endLine": 40,
+            "endColumn": 15,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
             "severity": "ERROR"
         },
         {
@@ -505,11 +864,119 @@
                 {
                     "start": 1217,
                     "end": 1224,
-                    "replacementText": "index_2 as int"
+                    "replacementText": "index_2 as int",
+                    "line": 40,
+                    "column": 7,
+                    "endLine": 40,
+                    "endColumn": 14
                 }
             ],
             "suggest": "",
             "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 41,
+            "column": 1,
+            "endLine": 41,
+            "endColumn": 15,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 41,
+            "column": 7,
+            "endLine": 41,
+            "endColumn": 14,
+            "problem": "ArrayIndexExprType",
+            "autofix": [
+                {
+                    "start": 1233,
+                    "end": 1240,
+                    "replacementText": "index_3 as int",
+                    "line": 41,
+                    "column": 7,
+                    "endLine": 41,
+                    "endColumn": 14
+                }
+            ],
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 42,
+            "column": 20,
+            "endLine": 42,
+            "endColumn": 21,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1262,
+                    "end": 1263,
+                    "replacementText": "2.0",
+                    "line": 42,
+                    "column": 20,
+                    "endLine": 42,
+                    "endColumn": 21
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 45,
+            "column": 1,
+            "endLine": 45,
+            "endColumn": 15,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 45,
+            "column": 7,
+            "endLine": 45,
+            "endColumn": 14,
+            "problem": "ArrayIndexExprType",
+            "autofix": [
+                {
+                    "start": 1315,
+                    "end": 1322,
+                    "replacementText": "index_5 as int",
+                    "line": 45,
+                    "column": 7,
+                    "endLine": 45,
+                    "endColumn": 14
+                }
+            ],
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 48,
+            "column": 26,
+            "endLine": 48,
+            "endColumn": 28,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1381,
+                    "end": 1383,
+                    "replacementText": "10.0",
+                    "line": 48,
+                    "column": 26,
+                    "endLine": 48,
+                    "endColumn": 28
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -522,11 +989,88 @@
                 {
                     "start": 1391,
                     "end": 1409,
-                    "replacementText": "array1: number[] = [1, 2, 3]"
+                    "replacementText": "array1: number[] = [1, 2, 3]",
+                    "line": 50,
+                    "column": 5,
+                    "endLine": 50,
+                    "endColumn": 23
                 }
             ],
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 50,
+            "column": 15,
+            "endLine": 50,
+            "endColumn": 16,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1401,
+                    "end": 1402,
+                    "replacementText": "1.0",
+                    "line": 50,
+                    "column": 15,
+                    "endLine": 50,
+                    "endColumn": 16
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 50,
+            "column": 18,
+            "endLine": 50,
+            "endColumn": 19,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1404,
+                    "end": 1405,
+                    "replacementText": "2.0",
+                    "line": 50,
+                    "column": 18,
+                    "endLine": 50,
+                    "endColumn": 19
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 50,
+            "column": 21,
+            "endLine": 50,
+            "endColumn": 22,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1407,
+                    "end": 1408,
+                    "replacementText": "3.0",
+                    "line": 50,
+                    "column": 21,
+                    "endLine": 50,
+                    "endColumn": 22
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 51,
+            "column": 1,
+            "endLine": 51,
+            "endColumn": 19,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
             "severity": "ERROR"
         },
         {
@@ -539,7 +1083,11 @@
                 {
                     "start": 1418,
                     "end": 1428,
-                    "replacementText": "getIndex() as int"
+                    "replacementText": "getIndex() as int",
+                    "line": 51,
+                    "column": 8,
+                    "endLine": 51,
+                    "endColumn": 18
                 }
             ],
             "suggest": "",
@@ -556,7 +1104,200 @@
                 {
                     "start": 1436,
                     "end": 1454,
-                    "replacementText": "array2: number[] = [1, 2, 3]"
+                    "replacementText": "array2: number[] = [1, 2, 3]",
+                    "line": 53,
+                    "column": 5,
+                    "endLine": 53,
+                    "endColumn": 23
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 53,
+            "column": 15,
+            "endLine": 53,
+            "endColumn": 16,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1446,
+                    "end": 1447,
+                    "replacementText": "1.0",
+                    "line": 53,
+                    "column": 15,
+                    "endLine": 53,
+                    "endColumn": 16
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 53,
+            "column": 18,
+            "endLine": 53,
+            "endColumn": 19,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1449,
+                    "end": 1450,
+                    "replacementText": "2.0",
+                    "line": 53,
+                    "column": 18,
+                    "endLine": 53,
+                    "endColumn": 19
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 53,
+            "column": 21,
+            "endLine": 53,
+            "endColumn": 22,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1452,
+                    "end": 1453,
+                    "replacementText": "3.0",
+                    "line": 53,
+                    "column": 21,
+                    "endLine": 53,
+                    "endColumn": 22
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 54,
+            "column": 22,
+            "endLine": 54,
+            "endColumn": 23,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1477,
+                    "end": 1478,
+                    "replacementText": "0.0",
+                    "line": 54,
+                    "column": 22,
+                    "endLine": 54,
+                    "endColumn": 23
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 55,
+            "column": 22,
+            "endLine": 55,
+            "endColumn": 23,
+            "problem": "ArrayIndexExprType",
+            "autofix": [
+                {
+                    "start": 1527,
+                    "end": 1528,
+                    "replacementText": "i as int",
+                    "line": 55,
+                    "column": 22,
+                    "endLine": 55,
+                    "endColumn": 23
+                }
+            ],
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 58,
+            "column": 19,
+            "endLine": 58,
+            "endColumn": 20,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1553,
+                    "end": 1554,
+                    "replacementText": "0.0",
+                    "line": 58,
+                    "column": 19,
+                    "endLine": 58,
+                    "endColumn": 20
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 62,
+            "column": 22,
+            "endLine": 62,
+            "endColumn": 23,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1632,
+                    "end": 1633,
+                    "replacementText": "1.0",
+                    "line": 62,
+                    "column": 22,
+                    "endLine": 62,
+                    "endColumn": 23
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 62,
+            "column": 25,
+            "endLine": 62,
+            "endColumn": 26,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1635,
+                    "end": 1636,
+                    "replacementText": "2.0",
+                    "line": 62,
+                    "column": 25,
+                    "endLine": 62,
+                    "endColumn": 26
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 62,
+            "column": 28,
+            "endLine": 62,
+            "endColumn": 29,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1638,
+                    "end": 1639,
+                    "replacementText": "3.0",
+                    "line": 62,
+                    "column": 28,
+                    "endLine": 62,
+                    "endColumn": 29
                 }
             ],
             "suggest": "",
@@ -574,6 +1315,37 @@
             "severity": "ERROR"
         },
         {
+            "line": 65,
+            "column": 8,
+            "endLine": 65,
+            "endColumn": 9,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1669,
+                    "end": 1670,
+                    "replacementText": "0.0",
+                    "line": 65,
+                    "column": 8,
+                    "endLine": 65,
+                    "endColumn": 9
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 67,
+            "column": 1,
+            "endLine": 67,
+            "endColumn": 12,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
             "line": 67,
             "column": 6,
             "endLine": 67,
@@ -583,11 +1355,55 @@
                 {
                     "start": 1678,
                     "end": 1683,
-                    "replacementText": "TE.AA as int"
+                    "replacementText": "TE.AA as int",
+                    "line": 67,
+                    "column": 6,
+                    "endLine": 67,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
             "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 68,
+            "column": 1,
+            "endLine": 68,
+            "endColumn": 12,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 69,
+            "column": 1,
+            "endLine": 69,
+            "endColumn": 9,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 70,
+            "column": 1,
+            "endLine": 70,
+            "endColumn": 9,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 71,
+            "column": 1,
+            "endLine": 71,
+            "endColumn": 9,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
             "severity": "ERROR"
         },
         {
@@ -601,20 +1417,201 @@
             "severity": "ERROR"
         },
         {
+            "line": 72,
+            "column": 1,
+            "endLine": 72,
+            "endColumn": 9,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 73,
+            "column": 1,
+            "endLine": 73,
+            "endColumn": 20,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
             "line": 73,
             "column": 6,
             "endLine": 73,
-            "endColumn": 9,
+            "endColumn": 19,
             "problem": "ArrayIndexExprType",
             "autofix": [
                 {
                     "start": 1744,
                     "end": 1757,
-                    "replacementText": "1.1 as int"
+                    "replacementText": "1.1 as int",
+                    "line": 73,
+                    "column": 6,
+                    "endLine": 73,
+                    "endColumn": 19
                 }
             ],
             "suggest": "",
             "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 75,
+            "column": 15,
+            "endLine": 75,
+            "endColumn": 16,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1775,
+                    "end": 1776,
+                    "replacementText": "1.0",
+                    "line": 75,
+                    "column": 15,
+                    "endLine": 75,
+                    "endColumn": 16
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 76,
+            "column": 14,
+            "endLine": 76,
+            "endColumn": 15,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1791,
+                    "end": 1792,
+                    "replacementText": "1.0",
+                    "line": 76,
+                    "column": 14,
+                    "endLine": 76,
+                    "endColumn": 15
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 77,
+            "column": 13,
+            "endLine": 77,
+            "endColumn": 14,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1806,
+                    "end": 1807,
+                    "replacementText": "1.0",
+                    "line": 77,
+                    "column": 13,
+                    "endLine": 77,
+                    "endColumn": 14
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 78,
+            "column": 14,
+            "endLine": 78,
+            "endColumn": 15,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1822,
+                    "end": 1823,
+                    "replacementText": "1.0",
+                    "line": 78,
+                    "column": 14,
+                    "endLine": 78,
+                    "endColumn": 15
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 80,
+            "column": 21,
+            "endLine": 80,
+            "endColumn": 22,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1846,
+                    "end": 1847,
+                    "replacementText": "1.0",
+                    "line": 80,
+                    "column": 21,
+                    "endLine": 80,
+                    "endColumn": 22
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 80,
+            "column": 23,
+            "endLine": 80,
+            "endColumn": 24,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1848,
+                    "end": 1849,
+                    "replacementText": "2.0",
+                    "line": 80,
+                    "column": 23,
+                    "endLine": 80,
+                    "endColumn": 24
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 80,
+            "column": 25,
+            "endLine": 80,
+            "endColumn": 26,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1850,
+                    "end": 1851,
+                    "replacementText": "3.0",
+                    "line": 80,
+                    "column": 25,
+                    "endLine": 80,
+                    "endColumn": 26
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 81,
+            "column": 1,
+            "endLine": 81,
+            "endColumn": 18,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
             "severity": "ERROR"
         },
         {
@@ -623,6 +1620,194 @@
             "endLine": 81,
             "endColumn": 17,
             "problem": "ArrayIndexExprType",
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 82,
+            "column": 10,
+            "endLine": 82,
+            "endColumn": 11,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1880,
+                    "end": 1881,
+                    "replacementText": "1.0",
+                    "line": 82,
+                    "column": 10,
+                    "endLine": 82,
+                    "endColumn": 11
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 83,
+            "column": 10,
+            "endLine": 83,
+            "endColumn": 11,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1892,
+                    "end": 1893,
+                    "replacementText": "1.0",
+                    "line": 83,
+                    "column": 10,
+                    "endLine": 83,
+                    "endColumn": 11
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 84,
+            "column": 10,
+            "endLine": 84,
+            "endColumn": 11,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1904,
+                    "end": 1905,
+                    "replacementText": "1.0",
+                    "line": 84,
+                    "column": 10,
+                    "endLine": 84,
+                    "endColumn": 11
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 85,
+            "column": 10,
+            "endLine": 85,
+            "endColumn": 11,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1916,
+                    "end": 1917,
+                    "replacementText": "1.0",
+                    "line": 85,
+                    "column": 10,
+                    "endLine": 85,
+                    "endColumn": 11
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 87,
+            "column": 5,
+            "endLine": 87,
+            "endColumn": 13,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1924,
+                    "end": 1932,
+                    "replacementText": "test: number = 1",
+                    "line": 87,
+                    "column": 5,
+                    "endLine": 87,
+                    "endColumn": 13
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 87,
+            "column": 12,
+            "endLine": 87,
+            "endColumn": 13,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1931,
+                    "end": 1932,
+                    "replacementText": "1.0",
+                    "line": 87,
+                    "column": 12,
+                    "endLine": 87,
+                    "endColumn": 13
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 88,
+            "column": 1,
+            "endLine": 88,
+            "endColumn": 17,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 88,
+            "column": 5,
+            "endLine": 88,
+            "endColumn": 16,
+            "problem": "ArrayIndexExprType",
+            "autofix": [
+                {
+                    "start": 1938,
+                    "end": 1949,
+                    "replacementText": "1 as int",
+                    "line": 88,
+                    "column": 5,
+                    "endLine": 88,
+                    "endColumn": 16
+                }
+            ],
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 89,
+            "column": 1,
+            "endLine": 89,
+            "endColumn": 20,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 89,
+            "column": 5,
+            "endLine": 89,
+            "endColumn": 19,
+            "problem": "ArrayIndexExprType",
+            "autofix": [
+                {
+                    "start": 1956,
+                    "end": 1970,
+                    "replacementText": "test as int",
+                    "line": 89,
+                    "column": 5,
+                    "endLine": 89,
+                    "endColumn": 19
+                }
+            ],
             "suggest": "",
             "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
             "severity": "ERROR"

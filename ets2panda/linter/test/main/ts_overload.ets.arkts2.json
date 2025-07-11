@@ -45,6 +45,66 @@
             "severity": "ERROR"
         },
         {
+            "line": 25,
+            "column": 21,
+            "endLine": 25,
+            "endColumn": 29,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 26,
+            "column": 21,
+            "endLine": 26,
+            "endColumn": 22,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 26,
+            "column": 24,
+            "endLine": 26,
+            "endColumn": 25,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 26,
+            "column": 27,
+            "endLine": 26,
+            "endColumn": 28,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 27,
+            "column": 21,
+            "endLine": 27,
+            "endColumn": 22,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 27,
+            "column": 24,
+            "endLine": 27,
+            "endColumn": 25,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 30,
             "column": 3,
             "endLine": 30,
@@ -172,6 +232,56 @@
             "problem": "PropertyDeclOnFunction",
             "suggest": "",
             "rule": "Declaring properties on functions is not supported (arkts-no-func-props)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 74,
+            "column": 3,
+            "endLine": 76,
+            "endColumn": 4,
+            "problem": "TsOverload",
+            "suggest": "",
+            "rule": "Class TS overloading is not supported(arkts-no-ts-overload)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 77,
+            "column": 3,
+            "endLine": 77,
+            "endColumn": 24,
+            "problem": "TsOverload",
+            "suggest": "",
+            "rule": "Class TS overloading is not supported(arkts-no-ts-overload)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 85,
+            "column": 3,
+            "endLine": 86,
+            "endColumn": 4,
+            "problem": "TsOverload",
+            "suggest": "",
+            "rule": "Class TS overloading is not supported(arkts-no-ts-overload)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 87,
+            "column": 3,
+            "endLine": 87,
+            "endColumn": 24,
+            "problem": "TsOverload",
+            "suggest": "",
+            "rule": "Class TS overloading is not supported(arkts-no-ts-overload)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 64,
+            "column": 2,
+            "endLine": 64,
+            "endColumn": 11,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "The ArkUI interface \"Component\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         }
     ]

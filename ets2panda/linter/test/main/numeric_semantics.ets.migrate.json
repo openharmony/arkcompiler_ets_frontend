@@ -15,9 +15,9 @@
     ],
     "result": [
         {
-            "line": 60,
+            "line": 67,
             "column": 5,
-            "endLine": 60,
+            "endLine": 67,
             "endColumn": 15,
             "problem": "DefiniteAssignmentError",
             "suggest": "",
@@ -25,9 +25,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 110,
+            "line": 117,
             "column": 26,
-            "endLine": 110,
+            "endLine": 117,
             "endColumn": 26,
             "problem": "ArrayIndexExprType",
             "suggest": "",
@@ -35,9 +35,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 149,
+            "line": 156,
             "column": 6,
-            "endLine": 149,
+            "endLine": 156,
             "endColumn": 7,
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
@@ -45,9 +45,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 155,
+            "line": 162,
             "column": 9,
-            "endLine": 155,
+            "endLine": 162,
             "endColumn": 20,
             "problem": "ObjectLiteralProperty",
             "suggest": "",
@@ -55,9 +55,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 155,
+            "line": 162,
             "column": 9,
-            "endLine": 155,
+            "endLine": 162,
             "endColumn": 11,
             "problem": "InvalidIdentifier",
             "suggest": "",
@@ -65,9 +65,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 155,
+            "line": 162,
             "column": 12,
-            "endLine": 155,
+            "endLine": 162,
             "endColumn": 15,
             "problem": "AnyType",
             "suggest": "",
@@ -75,9 +75,19 @@
             "severity": "ERROR"
         },
         {
-            "line": 203,
+            "line": 196,
+            "column": 6,
+            "endLine": 196,
+            "endColumn": 13,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 210,
             "column": 1,
-            "endLine": 203,
+            "endLine": 210,
             "endColumn": 40,
             "problem": "ImportAfterStatement",
             "suggest": "",
@@ -85,9 +95,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 205,
+            "line": 212,
             "column": 5,
-            "endLine": 205,
+            "endLine": 212,
             "endColumn": 34,
             "problem": "AnyType",
             "suggest": "",
@@ -95,9 +105,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 205,
+            "line": 212,
             "column": 15,
-            "endLine": 205,
+            "endLine": 212,
             "endColumn": 24,
             "problem": "DynamicCtorCall",
             "suggest": "",
@@ -105,9 +115,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 211,
+            "line": 218,
             "column": 42,
-            "endLine": 211,
+            "endLine": 218,
             "endColumn": 51,
             "problem": "DynamicCtorCall",
             "suggest": "",

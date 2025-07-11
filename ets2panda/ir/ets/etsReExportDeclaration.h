@@ -31,22 +31,22 @@ public:
 
     ETSImportDeclaration *GetETSImportDeclarations() const
     {
-        return etsImportDeclarations_;
+        return GetHistoryNodeAs<ETSReExportDeclaration>()->etsImportDeclarations_;
     }
 
     ETSImportDeclaration *GetETSImportDeclarations()
     {
-        return etsImportDeclarations_;
+        return GetHistoryNodeAs<ETSReExportDeclaration>()->etsImportDeclarations_;
     }
 
     const ArenaVector<util::StringView> &GetUserPaths() const
     {
-        return userPaths_;
+        return GetHistoryNodeAs<ETSReExportDeclaration>()->userPaths_;
     }
 
     util::StringView const &GetProgramPath() const
     {
-        return programPath_;
+        return GetHistoryNodeAs<ETSReExportDeclaration>()->programPath_;
     }
 
     void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;
@@ -54,7 +54,7 @@ public:
     void Iterate(const NodeTraverser &cb) const override;
 
     void Dump(ir::AstDumper *dumper) const override;
-    void Dump([[maybe_unused]] ir::SrcDumper *dumper) const override {};
+    void Dump(ir::SrcDumper *dumper) const override;
 
     void Compile(compiler::PandaGen * /*pg*/) const override {}
 
@@ -72,7 +72,13 @@ public:
         v->Accept(this);
     }
 
+protected:
+    ETSReExportDeclaration *Construct(ArenaAllocator *allocator) override;
+    void CopyTo(AstNode *other) const override;
+    void SetETSImportDeclarations(ETSImportDeclaration *etsImportDeclarations);
+
 private:
+    friend class SizeOfNodeTest;
     // NOTE(rsipka): this should use a singular name
     ETSImportDeclaration *etsImportDeclarations_;
     ArenaVector<util::StringView> userPaths_;

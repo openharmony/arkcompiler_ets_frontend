@@ -277,8 +277,7 @@ SmartCastArray CheckerContext::CheckTryBlock(ir::BlockStatement const &tryBlock)
 //  (other cases are not interested)
 bool CheckerContext::IsInValidChain(ir::AstNode const *parent) noexcept
 {
-    while (parent != nullptr && !parent->IsIfStatement() && !parent->IsWhileStatement() &&
-           !parent->IsConditionalExpression()) {
+    while (parent != nullptr) {
         if (parent->IsBinaryExpression()) {
             auto const operation = parent->AsBinaryExpression()->OperatorType();
             if (operation != lexer::TokenType::PUNCTUATOR_LOGICAL_OR &&
@@ -289,8 +288,10 @@ bool CheckerContext::IsInValidChain(ir::AstNode const *parent) noexcept
             if (parent->AsUnaryExpression()->OperatorType() != lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK) {
                 return false;
             }
+        } else if (parent->IsExpression()) {
+            return parent->IsConditionalExpression();
         } else {
-            return false;
+            return true;
         }
         parent = parent->Parent();
     }
@@ -315,8 +316,8 @@ void CheckerContext::CheckIdentifierSmartCastCondition(ir::Identifier const *con
         return;
     }
 
-    ES2PANDA_ASSERT(testCondition_.variable == nullptr);
     if (identifier->TsType()->PossiblyETSNullish()) {
+        ES2PANDA_ASSERT(testCondition_.variable == nullptr);
         testCondition_ = {variable, parent_->AsETSChecker()->GlobalETSNullType(), true, false};
     }
 }
@@ -348,16 +349,31 @@ void CheckerContext::CheckBinarySmartCastCondition(ir::BinaryExpression *const b
     }
 
     if (auto const operatorType = binaryExpression->OperatorType(); operatorType == lexer::TokenType::KEYW_INSTANCEOF) {
-        ES2PANDA_ASSERT(testCondition_.variable == nullptr);
         if (binaryExpression->Left()->IsIdentifier()) {
-            testCondition_ = {binaryExpression->Left()->AsIdentifier()->Variable(),
-                              binaryExpression->Right()->TsType()};
+            if (binaryExpression->Right()->TsType() == nullptr) {
+                return;
+            }
+            // NOTE(pantos) Issue with generics
+            // eg
+            // class C <T> { ... }
+            // let x = new C<...>
+            // if (x instanceof C && x.fld instanceof ...
+            const auto variable = binaryExpression->Left()->AsIdentifier()->Variable();
+            auto type = binaryExpression->Right()->TsType();
+            auto smartIt = smartCasts_.find(variable);
+            // NOTE(pantos) Handle union types e.g. C<A>|C<B>|...
+            if (type->HasTypeFlag(TypeFlag::GENERIC) && smartIt != smartCasts_.end() && type->IsETSObjectType() &&
+                type->AsETSObjectType()->IsSameBasedGeneric(type->AsETSObjectType()->GetRelation(), smartIt->second)) {
+                // Replace generic type with instantiated one, e.g. C<T> with C<A>
+                type = smartIt->second;
+            }
+            ES2PANDA_ASSERT(testCondition_.variable == nullptr);
+            testCondition_ = {variable, type};
         }
     } else if (operatorType == lexer::TokenType::PUNCTUATOR_STRICT_EQUAL ||
                operatorType == lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL ||
                operatorType == lexer::TokenType::PUNCTUATOR_EQUAL ||
                operatorType == lexer::TokenType::PUNCTUATOR_NOT_EQUAL) {
-        ES2PANDA_ASSERT(testCondition_.variable == nullptr);
         CheckSmartCastEqualityCondition(binaryExpression);
     }
 }
@@ -398,6 +414,7 @@ void CheckerContext::CheckSmartCastEqualityCondition(ir::BinaryExpression *const
                             operatorType == lexer::TokenType::PUNCTUATOR_NOT_EQUAL;
 
         if (testedType->DefinitelyETSNullish()) {
+            ES2PANDA_ASSERT(testCondition_.variable == nullptr);
             testCondition_ = {variable, testedType, negate, strict};
         }
     }

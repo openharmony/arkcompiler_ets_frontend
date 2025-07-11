@@ -86,7 +86,13 @@ protected:
     void IterateNoTParams(ir::ClassDefinition *classDef);
 
 protected:
-    void LogSemanticError(std::string_view errorMessage, const lexer::SourcePosition &pos) const;
+    void LogDiagnostic(const diagnostic::DiagnosticKind &kind, const util::DiagnosticMessageParams &params,
+                       const lexer::SourcePosition &pos) const;
+
+    void LogDiagnostic(const diagnostic::DiagnosticKind &kind, const lexer::SourcePosition &pos) const
+    {
+        LogDiagnostic(kind, util::DiagnosticMessageParams {}, pos);
+    }
 
     void VisitFunctionExpression(ir::FunctionExpression *funcExpr) override;
     void VisitScriptFunction(ir::ScriptFunction *scriptFunction) override;
@@ -338,6 +344,8 @@ private:
     void DeclareClassMethod(ir::MethodDefinition *method);
     void MaybeAddOverload(ir::MethodDefinition *method, ir::Identifier *methodName, varbinder::Variable *found,
                           varbinder::ClassScope *clsScope, varbinder::LocalScope *targetScope);
+    void DeclareClassOverload(ir::OverloadDeclaration *overloadDef);
+    varbinder::LocalScope *OverloadTargetScope(ir::OverloadDeclaration *overloadDef, varbinder::ClassScope *clsScope);
 
     void VisitClassStaticBlock(ir::ClassStaticBlock *staticBlock) override;
     void VisitBlockExpression(ir::BlockExpression *blockExpr) override;
@@ -348,6 +356,7 @@ private:
     void VisitETSParameterExpression(ir::ETSParameterExpression *paramExpr) override;
     void VisitETSImportDeclaration(ir::ETSImportDeclaration *importDecl) override;
     void VisitTSEnumMember(ir::TSEnumMember *enumMember) override;
+    void VisitOverloadDeclaration(ir::OverloadDeclaration *overload) override;
     void VisitMethodDefinition(ir::MethodDefinition *method) override;
     void VisitETSFunctionType(ir::ETSFunctionType *funcType) override;
     void VisitETSNewClassInstanceExpression(ir::ETSNewClassInstanceExpression *newClassExpr) override;

@@ -16,6 +16,8 @@
 #ifndef PANDA_GLOBALCLASSHANDLER_H
 #define PANDA_GLOBALCLASSHANDLER_H
 
+#include "compiler/lowering/ets/topLevelStmts/globalDeclTransformer.h"
+#include "ir/ets/etsReExportDeclaration.h"
 #include "parser/program/program.h"
 #include "public/public.h"
 #include "ir/astNode.h"
@@ -24,14 +26,20 @@ namespace ark::es2panda::compiler {
 
 class GlobalClassHandler {
 public:
-    using ModuleDependencies = ArenaUnorderedSet<parser::Program *>;
+    // Using ArenaVector to ensure the order of the module dependencies;
+    using ModuleDependencies = std::pair<ArenaVector<parser::Program *>, ArenaUnorderedSet<parser::Program *>>;
 
     struct GlobalStmts {
         parser::Program *program;
         ArenaVector<ir::Statement *> statements;
     };
-    explicit GlobalClassHandler(parser::ETSParser *parser, ArenaAllocator *allocator)
-        : parser_(parser), allocator_(allocator) {};
+    explicit GlobalClassHandler(parser::ETSParser *parser, ArenaAllocator *allocator, parser::Program *program)
+        : parser_(parser),
+          allocator_(allocator),
+          globalProgram_(program),
+          packageInitializerBlockCount_(allocator->Adapter()) {};
+
+    static void MergeNamespace(ArenaVector<ir::ETSModule *> &namespaces, parser::Program *program);
 
     /**
      * Each "Module" has it's own global class, which contains all top level statements across "module"
@@ -39,7 +47,22 @@ public:
      * @param programs - vector of files in module
      */
     void SetupGlobalClass(const ArenaVector<parser::Program *> &programs, const ModuleDependencies *moduleDependencies);
-    void static MergeNamespace(ArenaVector<ir::ETSModule *> &namespaces, parser::Program *program);
+
+    void CheckPackageMultiInitializerBlock(util::StringView packageName,
+                                           const ArenaVector<ArenaVector<ir::Statement *>> &initializerBlocks);
+    void SetGlobalProgram(parser::Program *program)
+    {
+        globalProgram_ = program;
+    }
+
+    static void InsertModuleDependencies(ModuleDependencies *moduleDependencies, parser::Program *program)
+    {
+        if (moduleDependencies->second.find(program) != moduleDependencies->second.end()) {
+            return;
+        }
+        moduleDependencies->first.emplace_back(program);
+        moduleDependencies->second.insert(program);
+    }
 
 private:
     /**
@@ -47,42 +70,51 @@ private:
      * @param program program of module
      * @param init_statements statements which should be executed
      */
-    void SetupGlobalMethods(parser::Program *program, ArenaVector<ir::Statement *> &&statements);
+    void SetupGlobalMethods(ArenaVector<ir::Statement *> &&statements);
     void AddStaticBlockToClass(ir::AstNode *node);
-    void CollectProgramGlobalClasses(parser::Program *program, ArenaVector<ir::ETSModule *> namespaces);
-    ir::ClassDeclaration *TransformNamespace(ir::ETSModule *ns, parser::Program *program);
+    void CollectProgramGlobalClasses(ArenaVector<ir::ETSModule *> namespaces);
+    ir::ClassDeclaration *TransformNamespace(ir::ETSModule *ns);
     ir::ClassDeclaration *CreateTransformedClass(ir::ETSModule *ns);
     template <class Node>
-    void CollectExportedClasses(ir::ClassDefinition *classDef, const ArenaVector<Node *> &statements);
-    void CollectNamespaceExportedClasses(ir::ClassDefinition *classDef);
-    void SetupGlobalMethods(parser::Program *program, ArenaVector<ir::Statement *> &&initStatements,
-                            ArenaVector<ir::Statement *> &&initializerBlock, ir::ClassDefinition *globalClass,
+    void CollectExportedClasses(parser::Program *program, ir::ClassDefinition *classDef,
+                                const ArenaVector<Node *> &statements);
+    void CollectReExportedClasses(parser::Program *program, ir::ClassDefinition *classDef,
+                                  const ir::ETSReExportDeclaration *reExport);
+    void CollectNamespaceExportedClasses(parser::Program *program, ir::ClassDefinition *classDef);
+    void SetupGlobalMethods(ArenaVector<ir::Statement *> &&initStatements, ir::ClassDefinition *globalClass,
                             bool isDeclare);
-    ArenaVector<ir::ClassDeclaration *> TransformNamespaces(ArenaVector<ir::ETSModule *> &namespaces,
-                                                            parser::Program *program);
+    void SetupInitializerBlock(ArenaVector<ArenaVector<ir::Statement *>> &&initializerBlock,
+                               ir::ClassDefinition *globalClass);
+    void SetupInitializationMethodIfNeeded(ir::ClassDefinition *classDef);
+    ArenaVector<ir::Statement *> TransformNamespaces(ArenaVector<ir::ETSModule *> &namespaces);
 
     ir::ClassDeclaration *CreateGlobalClass(const parser::Program *globalProgram);
     ir::ClassStaticBlock *CreateStaticBlock(ir::ClassDefinition *classDef);
-    ir::MethodDefinition *CreateGlobalMethod(const std::string_view name, ArenaVector<ir::Statement *> &&statements,
-                                             const parser::Program *program);
+    ir::MethodDefinition *CreateGlobalMethod(std::string_view name, ArenaVector<ir::Statement *> &&statements);
+    void AddInitCallToStaticBlock(ir::ClassDefinition *globalClass, ir::MethodDefinition *initMethod);
+    void AddInitializerBlockToStaticBlock(ir::ClassDefinition *globalClass,
+                                          ArenaVector<ir::Statement *> &&initializerBlocks);
 
-    void AddInitCallFromStaticBlock(ir::ClassDefinition *globalClass, ir::MethodDefinition *initMethod);
-    ArenaVector<ir::Statement *> FormInitMethodStatements(parser::Program *program,
-                                                          const ModuleDependencies *moduleDependencies,
+    ArenaVector<ArenaVector<ir::Statement *>> FormInitStaticBlockMethodStatements(
+        const ModuleDependencies *moduleDependencies, ArenaVector<GlobalStmts> &&initStatements);
+    void TransformBrokenNamespace(ir::AstNode *node);
+
+    ArenaVector<ir::Statement *> FormInitMethodStatements(const ModuleDependencies *moduleDependencies,
                                                           ArenaVector<GlobalStmts> &&initStatements);
 
     void FormDependentInitTriggers(ArenaVector<ir::Statement *> &statements,
                                    const ModuleDependencies *moduleDependencies);
 
-    ArenaVector<ArenaVector<ir::Statement *>> CollectProgramGlobalStatements(ArenaVector<ir::Statement *> &stmts,
-                                                                             ir::ClassDefinition *classDef,
-                                                                             ir::Statement const *stmt);
+    GlobalDeclTransformer::ResultT CollectProgramGlobalStatements(ArenaVector<ir::Statement *> &stmts,
+                                                                  ir::ClassDefinition *classDef,
+                                                                  ir::Statement const *stmt);
 
     ir::Identifier *RefIdent(const util::StringView &name);
-    util::UString ReplaceSpecialCharacters(util::UString *word) const;
 
     parser::ETSParser *const parser_;
     ArenaAllocator *const allocator_;
+    parser::Program *globalProgram_;
+    ArenaUnorderedSet<util::StringView> packageInitializerBlockCount_;
 };
 }  // namespace ark::es2panda::compiler
 
