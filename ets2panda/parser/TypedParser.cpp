@@ -1308,7 +1308,6 @@ ir::AstNode *TypedParser::ParseTypeParameterInstantiationImpl(TypeAnnotationPars
         TypeAnnotationParsingOptions tmpOptions = *options &= ~TypeAnnotationParsingOptions::IGNORE_FUNCTION_TYPE;
         // Need to parse correctly the cases like `x: T|C<T|U>`
         tmpOptions &= ~TypeAnnotationParsingOptions::DISALLOW_UNION;
-        tmpOptions |= TypeAnnotationParsingOptions::ANNOTATION_NOT_ALLOW;
         ir::TypeNode *currentParam = ParseTypeAnnotation(&tmpOptions);
 
         if (currentParam == nullptr) {
