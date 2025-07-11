@@ -1218,7 +1218,7 @@ checker::Type *ETSAnalyzer::Check(ir::AssignmentExpression *const expr) const
     }
 
     if (expr->target_ != nullptr && !expr->IsIgnoreConstAssign()) {
-        checker->ValidateUnaryOperatorOperand(expr->target_);
+        checker->ValidateUnaryOperatorOperand(expr->target_, expr);
     }
 
     auto [rightType, relationNode] = CheckAssignmentExprOperatorType(expr, leftType);
@@ -2764,20 +2764,20 @@ checker::Type *ETSAnalyzer::Check(ir::UpdateExpression *expr) const
     }
 
     if (expr->Argument()->IsIdentifier()) {
-        checker->ValidateUnaryOperatorOperand(expr->Argument()->AsIdentifier()->Variable());
+        checker->ValidateUnaryOperatorOperand(expr->Argument()->AsIdentifier()->Variable(), expr);
     } else if (expr->Argument()->IsTSAsExpression()) {
         if (auto *const asExprVar = expr->Argument()->AsTSAsExpression()->Variable(); asExprVar != nullptr) {
-            checker->ValidateUnaryOperatorOperand(asExprVar);
+            checker->ValidateUnaryOperatorOperand(asExprVar, expr);
         }
     } else if (expr->Argument()->IsTSNonNullExpression()) {
         if (auto *const nonNullExprVar = expr->Argument()->AsTSNonNullExpression()->Variable();
             nonNullExprVar != nullptr) {
-            checker->ValidateUnaryOperatorOperand(nonNullExprVar);
+            checker->ValidateUnaryOperatorOperand(nonNullExprVar, expr);
         }
     } else if (expr->Argument()->IsMemberExpression()) {
         varbinder::LocalVariable *propVar = expr->argument_->AsMemberExpression()->PropVar();
         if (propVar != nullptr) {
-            checker->ValidateUnaryOperatorOperand(propVar);
+            checker->ValidateUnaryOperatorOperand(propVar, expr);
         }
     } else {
         ES2PANDA_ASSERT(checker->IsAnyError());

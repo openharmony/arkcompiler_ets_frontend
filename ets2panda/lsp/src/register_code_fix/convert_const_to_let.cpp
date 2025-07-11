@@ -33,12 +33,12 @@ void FixConvertConstToLet::MakeChangeForConvertConstToLet(ChangeTracker &changeT
                                                           size_t pos)
 {
     auto *token = GetTouchingToken(context, pos, false);
-    if (token == nullptr || !token->IsNumberLiteral() || token->OriginalNode() == nullptr) {
+    if (token == nullptr) {
         return;
     }
 
     auto *scope = compiler::NearestScope(token);
-    auto *resolvedDecl = FindDeclInScopeWithFallback(scope, token->OriginalNode()->AsIdentifier()->Name());
+    auto *resolvedDecl = FindDeclInScopeWithFallback(scope, token->AsIdentifier()->Name());
     if (resolvedDecl == nullptr) {
         return;
     }

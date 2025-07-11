@@ -620,7 +620,7 @@ public:
     const checker::Type *GetElementTypeOfArray(const checker::Type *type) const;
     bool IsNullLikeOrVoidExpression(const ir::Expression *expr) const;
     bool IsConstantExpression(ir::Expression *expr, Type *type);
-    void ValidateUnaryOperatorOperand(varbinder::Variable *variable);
+    void ValidateUnaryOperatorOperand(varbinder::Variable *variable, ir::Expression *expr);
     void CheckFunctionSignatureAnnotations(const ArenaVector<ir::Expression *> &params,
                                            ir::TSTypeParameterDeclaration *typeParams,
                                            ir::TypeNode *returnTypeAnnotation);

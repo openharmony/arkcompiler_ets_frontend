@@ -185,7 +185,6 @@ semantic:
 - name: ASSIGNMENT_INVALID_LHS
   id: 25
   message: "Invalid left-hand side of assignment expression"
-  code_fix_ids: [FixConvertConstToLet]
 
 - name: ASSIGN_TO_READONLY_PROP
   id: 209
@@ -522,6 +521,7 @@ semantic:
 - name: FIELD_ASSIGN_TYPE_MISMATCH
   id: 298
   message: "Cannot assign to a {} variable {}"
+  code_fix_ids: [FixConvertConstToLet]
 
 - name: FIELD_REASSIGNMENT
   id: 297

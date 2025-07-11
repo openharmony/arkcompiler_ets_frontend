@@ -1280,6 +1280,15 @@ ir::AstNode *ConstantExpressionLowering::MaybeUnfoldIdentifier(ir::Identifier *n
         return node;
     }
 
+    // Left-Hand-Side identifiers in UpdateExpression or BinaryExpression cannot be unfolded
+    if (node->Parent()->IsUpdateExpression() && node->Parent()->AsUpdateExpression()->Argument() == node) {
+        return node;
+    }
+
+    if (node->Parent()->IsAssignmentExpression() && node->Parent()->AsAssignmentExpression()->Left() == node) {
+        return node;
+    }
+
     auto *resolved = ResolveIdentifier(node);
     if (resolved == nullptr || !(resolved->Declaration()->IsConstDecl() || resolved->Declaration()->IsReadonlyDecl())) {
         return node;
