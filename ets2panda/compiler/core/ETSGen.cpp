@@ -591,17 +591,19 @@ void ETSGen::ReturnAcc(const ir::AstNode *node)
     }
 }
 
-static bool IsNullUnsafeObjectType(checker::Type const *type)
+bool ETSGen::IsNullUnsafeObjectType(checker::Type const *type) const
 {
     ES2PANDA_ASSERT(type != nullptr);
-    return type->IsETSObjectType() && type->AsETSObjectType()->IsGlobalETSObjectType();
+    auto const checker = const_cast<checker::ETSChecker *>(Checker());
+    return checker->Relation()->IsSupertypeOf(checker->GetApparentType(type), checker->GlobalETSObjectType());
 }
 
 // Implemented on top of the runtime type system, do not relax checks, do not introduce new types
-void ETSGen::TestIsInstanceConstituent(const ir::AstNode *const node, std::tuple<Label *, Label *> label,
-                                       checker::Type const *target, bool acceptNull)
+void ETSGen::TestIsInstanceType(const ir::AstNode *const node, std::tuple<Label *, Label *> label,
+                                checker::Type const *target, const VReg srcReg, bool acceptNull)
 {
     auto [ifTrue, ifFalse] = label;
+    LoadAccumulator(node, srcReg);
 
     switch (checker::ETSChecker::ETSType(target)) {
         case checker::TypeFlag::ETS_UNDEFINED:
@@ -629,6 +631,15 @@ void ETSGen::TestIsInstanceConstituent(const ir::AstNode *const node, std::tuple
             BranchIfTrue(node, ifTrue);
             break;
         }
+        case checker::TypeFlag::ETS_UNION: {
+            if (!target->PossiblyETSNull() && IsNullUnsafeObjectType(target)) {
+                BranchIfNull(node, ifFalse);
+            }
+            LoadAccumulator(node, srcReg);
+            InternalIsInstance(node, target);
+            BranchIfTrue(node, ifTrue);
+            break;
+        }
         default:
             ES2PANDA_UNREACHABLE();  // other types must not appear here
     }
@@ -641,26 +652,19 @@ void ETSGen::BranchIfIsInstance(const ir::AstNode *const node, const VReg srcReg
 {
     ES2PANDA_ASSERT(target == Checker()->GetApparentType(target));
     auto ifFalse = AllocLabel();
-
     if (!target->PossiblyETSUndefined()) {
         LoadAccumulator(node, srcReg);
         BranchIfUndefined(node, ifFalse);
+    } else if (target->IsETSUnionType()) {
+        LoadAccumulator(node, srcReg);
+        BranchIfUndefined(node, ifTrue);
     }
 
-    auto const checkType = [this, srcReg, ifTrue, ifFalse, acceptNull = target->PossiblyETSNull()](
-                               const ir::AstNode *const n, checker::Type const *t) {
-        LoadAccumulator(n, srcReg);
+    if (!target->IsETSNeverType()) {
         // #21835: type-alias in ApparentType
-        t = t->IsETSTypeAliasType() ? t->AsETSTypeAliasType()->GetTargetType() : t;
-        TestIsInstanceConstituent(n, std::tie(ifTrue, ifFalse), t, acceptNull);
-    };
-
-    if (target->IsETSUnionType()) {
-        for (auto *ct : target->AsETSUnionType()->ConstituentTypes()) {
-            checkType(node, ct);
-        }
-    } else if (!target->IsETSNeverType()) {
-        checkType(node, target);
+        TestIsInstanceType(node, std::tie(ifTrue, ifFalse),
+                           target->IsETSTypeAliasType() ? target->AsETSTypeAliasType()->GetTargetType() : target,
+                           srcReg, target->PossiblyETSNull());
     }
 
     SetLabel(node, ifFalse);
@@ -698,8 +702,8 @@ void ETSGen::IsInstance(const ir::AstNode *const node, const VReg srcReg, const 
 // isinstance can only be used for Object and [] types, ensure source is not null!
 void ETSGen::InternalIsInstance(const ir::AstNode *node, const es2panda::checker::Type *target)
 {
-    ES2PANDA_ASSERT(target->IsETSObjectType() || target->IsETSArrayType());
-    if (!IsNullUnsafeObjectType(target)) {
+    ES2PANDA_ASSERT(target->IsETSObjectType() || target->IsETSArrayType() || target->IsETSUnionType());
+    if (!IsNullUnsafeObjectType(target) || (target->IsETSUnionType() && !IsNullUnsafeObjectType(target))) {
         EmitIsInstance(node, ToAssemblerType(target));
         SetAccumulatorType(Checker()->GlobalETSBooleanType());
     } else {
@@ -710,8 +714,9 @@ void ETSGen::InternalIsInstance(const ir::AstNode *node, const es2panda::checker
 // checkcast can only be used for Object and [] types, ensure source is not nullish!
 void ETSGen::InternalCheckCast(const ir::AstNode *node, const es2panda::checker::Type *target)
 {
-    ES2PANDA_ASSERT(target->IsETSObjectType() || target->IsETSArrayType() || target->IsETSTupleType());
-    if (!IsNullUnsafeObjectType(target)) {
+    ES2PANDA_ASSERT(target->IsETSObjectType() || target->IsETSArrayType() || target->IsETSTupleType() ||
+                    target->IsETSUnionType());
+    if (!IsNullUnsafeObjectType(target) || (target->IsETSUnionType() && !IsNullUnsafeObjectType(target))) {
         EmitCheckCast(node, ToAssemblerType(target));
     }
     SetAccumulatorType(target);
@@ -817,13 +822,20 @@ void ETSGen::GuardUncheckedType(const ir::AstNode *node, const checker::Type *un
     SetAccumulatorType(target);
 }
 
-void ETSGen::EmitFailedTypeCastException(const ir::AstNode *node, const VReg src, checker::Type const *target)
+void ETSGen::EmitFailedTypeCastException(const ir::AstNode *node, const VReg src, checker::Type const *target,
+                                         bool isUndef)
 {
     const RegScope rs(this);
     const auto errorReg = AllocReg();
 
+    if (isUndef) {
+        Sa().Emit<Movi>(node, errorReg, 1.0);
+    } else {
+        Sa().Emit<Movi>(node, errorReg, 0.0);
+    }
+    SetVRegType(errorReg, Checker()->GlobalETSBooleanType());
     LoadAccumulatorString(node, util::UString(target->ToString(), Allocator()).View());
-    Ra().Emit<CallAccShort, 1>(node, Signatures::BUILTIN_RUNTIME_FAILED_TYPE_CAST_EXCEPTION, src, 1);
+    Ra().Emit<CallAcc, 2U>(node, Signatures::BUILTIN_RUNTIME_FAILED_TYPE_CAST_EXCEPTION, src, errorReg, dummyReg_, 1);
     StoreAccumulator(node, errorReg);
     EmitThrow(node, errorReg);
     SetAccumulatorType(nullptr);

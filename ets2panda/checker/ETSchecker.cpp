@@ -714,6 +714,16 @@ const GlobalArraySignatureMap &ETSChecker::GlobalArrayTypes() const
     return globalArraySignatures_;
 }
 
+const ArenaSet<util::StringView> &ETSChecker::UnionAssemblerTypes() const
+{
+    return unionAssemblerTypes_;
+}
+
+ArenaSet<util::StringView> &ETSChecker::UnionAssemblerTypes()
+{
+    return unionAssemblerTypes_;
+}
+
 Type *ETSChecker::GlobalTypeError() const
 {
     return GetGlobalTypesHolder()->GlobalTypeError();

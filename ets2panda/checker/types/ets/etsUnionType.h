@@ -54,10 +54,9 @@ public:
 
     [[nodiscard]] ArenaVector<Type *> GetNonConstantTypes(ETSChecker *checker) const noexcept;
 
-    // Do not use it anywhere except codegen
-    Type *GetAssemblerLUB() const noexcept
+    const util::StringView &GetAssemblerType() const
     {
-        return assemblerLub_;
+        return assemblerTypeCache_;
     }
 
     template <class UnaryPredicate>
@@ -105,10 +104,17 @@ private:
         checker::ETSChecker *checker, checker::ETSObjectType *sourceType,
         std::map<std::uint32_t, checker::ETSObjectType *> &numericTypes) const noexcept;
 
-    static Type *ComputeAssemblerLUB(ETSChecker *checker, ETSUnionType *un);
+    void CanonicalizedAssemblerType(ETSChecker *checker);
+    void InitAssemblerTypeCache(ETSChecker *checker);
+
+    const ArenaVector<Type *> &GetAssemblerTypes() const
+    {
+        return assemblerConstituentTypes_;
+    }
 
     ArenaVector<Type *> const constituentTypes_;
-    Type *assemblerLub_ {nullptr};
+    ArenaVector<Type *> assemblerConstituentTypes_;
+    util::StringView assemblerTypeCache_;
 };
 }  // namespace ark::es2panda::checker
 

@@ -108,9 +108,6 @@ static pandasm::Type PandasmTypeWithRank(checker::Type const *type, uint32_t ran
     if (type->IsETSPartialTypeParameter()) {
         return PandasmTypeWithRank(type->AsETSPartialTypeParameter()->GetUnderlying());
     }
-    if (type->IsETSUnionType()) {
-        return PandasmTypeWithRank(type->AsETSUnionType()->GetAssemblerLUB());
-    }
 
     std::stringstream ss;
     type->ToAssemblerType(ss);
@@ -298,6 +295,11 @@ void ETSEmitter::GenAnnotation()
 
     for (auto [arrType, signature] : checker->GlobalArrayTypes()) {
         GenGlobalArrayRecord(arrType, signature);
+    }
+    for (auto unionType : checker->UnionAssemblerTypes()) {
+        auto unionRecord = pandasm::Record(unionType.Mutf8(), Program()->lang);
+        unionRecord.metadata->SetAttribute(Signatures::EXTERNAL);
+        Program()->recordTable.emplace(unionRecord.name, std::move(unionRecord));
     }
 }
 

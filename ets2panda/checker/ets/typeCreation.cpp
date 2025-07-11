@@ -164,8 +164,12 @@ Type *ETSChecker::CreateETSUnionType(Span<Type *const> constituentTypes)
     if (newConstituentTypes.size() == 1) {
         return newConstituentTypes[0];
     }
-
-    return ProgramAllocator()->New<ETSUnionType>(this, std::move(newConstituentTypes));
+    auto *un = ProgramAllocator()->New<ETSUnionType>(this, std::move(newConstituentTypes));
+    auto ut = un->GetAssemblerType().Mutf8();
+    if (std::count_if(ut.begin(), ut.end(), [](char c) { return c == ','; }) > 0) {
+        unionAssemblerTypes_.insert(un->GetAssemblerType());
+    }
+    return un;
 }
 
 ETSTypeAliasType *ETSChecker::CreateETSTypeAliasType(util::StringView name, const ir::AstNode *declNode,

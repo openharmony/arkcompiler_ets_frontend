@@ -720,8 +720,7 @@ Type *ETSChecker::ResolveUnionUncheckedType(ArenaVector<checker::Type *> &&appar
     auto *unionType = CreateETSUnionType(std::move(apparentTypes));
     ES2PANDA_ASSERT(unionType != nullptr);
     if (unionType->IsETSUnionType()) {
-        checker::Type *typeLUB = unionType->AsETSUnionType()->GetAssemblerLUB();
-        return typeLUB;
+        return unionType->AsETSUnionType();
     }
     // Is case of single apparent type, just return itself
     return unionType;
