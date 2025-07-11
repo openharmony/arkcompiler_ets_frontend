@@ -88,9 +88,6 @@ const GENERATED_DESTRUCT_OBJECT_TRESHOLD = 1000;
 const GENERATED_DESTRUCT_ARRAY_NAME = 'GeneratedDestructArray_';
 const GENERATED_DESTRUCT_ARRAY_TRESHOLD = 1000;
 
-const GENERATED_IMPORT_VARIABLE_NAME = 'GeneratedImportVar_';
-const GENERATED_IMPORT_VARIABLE_TRESHOLD = 1000;
-
 const GENERATED_TMP_VARIABLE_NAME = 'tmp_';
 const GENERATED_TMP_VARIABLE_TRESHOLD = 1000;
 
@@ -153,17 +150,11 @@ export class Autofixer {
     GENERATED_OBJECT_LITERAL_INIT_INTERFACE_TRESHOLD
   );
 
-  private readonly importVarNameGenerator = new NameGenerator(
-    GENERATED_IMPORT_VARIABLE_NAME,
-    GENERATED_IMPORT_VARIABLE_TRESHOLD
-  );
-
   private readonly tmpVariableNameGenerator = new NameGenerator(
     GENERATED_TMP_VARIABLE_NAME,
     GENERATED_TMP_VARIABLE_TRESHOLD
   );
 
-  private modVarName: string = '';
   private readonly lastImportEndMap = new Map<string, number>();
 
   private readonly symbolCache: SymbolCache;
@@ -4210,33 +4201,44 @@ export class Autofixer {
   }
 
   private static createVariableForInteropImport(
-    newVarName: string,
-    interopObject: string,
-    interopMethod: string,
-    interopPropertyOrModule: string
+    interopProperty: string,
+    symbolName: string,
+    propertyName: string
   ): ts.VariableStatement {
     const newVarDecl = ts.factory.createVariableStatement(
       undefined,
       ts.factory.createVariableDeclarationList(
         [
           ts.factory.createVariableDeclaration(
-            ts.factory.createIdentifier(newVarName),
+            ts.factory.createIdentifier(symbolName),
             undefined,
             undefined,
-            ts.factory.createCallExpression(
-              ts.factory.createPropertyAccessExpression(
-                ts.factory.createIdentifier(interopObject),
-                ts.factory.createIdentifier(interopMethod)
-              ),
-              undefined,
-              [ts.factory.createStringLiteral(interopPropertyOrModule)]
-            )
+            this.createVariableInitialForInteropImport(propertyName, interopProperty)
           )
         ],
         ts.NodeFlags.Let
       )
     );
     return newVarDecl;
+  }
+
+  private static createVariableInitialForInteropImport(propertyName: string, interopProperty: string): ts.Expression {
+    const initializer = ts.factory.createCallExpression(
+      ts.factory.createPropertyAccessExpression(
+        ts.factory.createCallExpression(
+          ts.factory.createPropertyAccessExpression(
+            ts.factory.createIdentifier(ES_VALUE),
+            ts.factory.createIdentifier(LOAD)
+          ),
+          undefined,
+          [ts.factory.createStringLiteral(interopProperty)]
+        ),
+        ts.factory.createIdentifier(GET_PROPERTY)
+      ),
+      undefined,
+      [ts.factory.createStringLiteral(propertyName)]
+    );
+    return initializer;
   }
 
   private static getOriginalNameAtSymbol(symbolName: string, symbol?: ts.Symbol): string {
@@ -4315,20 +4317,25 @@ export class Autofixer {
     defaultSymbol?: ts.Symbol
   ): Autofix[] | undefined {
     let statements: string[] = [];
-    statements = this.constructAndSaveimportDecl2Arrays(importDecl, moduleSpecifier, undefined, statements, true);
     if (importClause.name) {
       const symbolName = importClause.name.text;
       const originalName = Autofixer.getOriginalNameAtSymbol(symbolName, defaultSymbol);
-      statements = this.constructAndSaveimportDecl2Arrays(importDecl, symbolName, originalName, statements, false);
+      statements = this.constructAndSaveimportDecl2Arrays(
+        importDecl,
+        moduleSpecifier,
+        symbolName,
+        originalName,
+        statements
+      );
     }
     const namedBindings = importClause.namedBindings;
-    if (namedBindings && ts.isNamedImports(namedBindings)) {
-      namedBindings.elements.map((element) => {
-        const symbolName = element.name.text;
-        const originalName = element.propertyName ? element.propertyName.text : symbolName;
-        statements = this.constructAndSaveimportDecl2Arrays(importDecl, symbolName, originalName, statements, false);
-        return statements;
-      });
+    if (namedBindings) {
+      statements = this.getStatementForInterOpImportJsOnNamedBindings(
+        namedBindings,
+        importDecl,
+        moduleSpecifier,
+        statements
+      );
     }
     if (statements.length <= 0) {
       return undefined;
@@ -4348,30 +4355,48 @@ export class Autofixer {
     ];
   }
 
+  private getStatementForInterOpImportJsOnNamedBindings(
+    namedBindings: ts.NamedImportBindings,
+    importDecl: ts.ImportDeclaration,
+    moduleSpecifier: string,
+    statements: string[]
+  ): string[] {
+    if (ts.isNamespaceImport(namedBindings)) {
+      const symbolName = namedBindings.name.text;
+      statements = this.constructAndSaveimportDecl2Arrays(
+        importDecl,
+        moduleSpecifier,
+        symbolName,
+        symbolName,
+        statements
+      );
+    }
+    if (ts.isNamedImports(namedBindings)) {
+      namedBindings.elements.map((element) => {
+        const symbolName = element.name.text;
+        const originalName = element.propertyName ? element.propertyName.text : symbolName;
+        statements = this.constructAndSaveimportDecl2Arrays(
+          importDecl,
+          moduleSpecifier,
+          symbolName,
+          originalName,
+          statements
+        );
+        return statements;
+      });
+    }
+    return statements;
+  }
+
   private constructAndSaveimportDecl2Arrays(
     importDecl: ts.ImportDeclaration,
+    moduleSpecifier: string,
     symbolName: string,
     originalName: string | undefined,
-    statements: string[],
-    isLoad: boolean
+    statements: string[]
   ): string[] {
-    if (isLoad) {
-      const newVarName = TsUtils.generateUniqueName(this.importVarNameGenerator, this.sourceFile);
-      if (!newVarName) {
-        return [];
-      }
-      this.modVarName = newVarName;
-    }
     const propertyName = originalName || symbolName;
-    const constructDeclInfo: string[] = isLoad ?
-      [this.modVarName, ES_VALUE, LOAD] :
-      [symbolName, this.modVarName, GET_PROPERTY];
-    const newVarDecl = Autofixer.createVariableForInteropImport(
-      constructDeclInfo[0],
-      constructDeclInfo[1],
-      constructDeclInfo[2],
-      propertyName
-    );
+    const newVarDecl = Autofixer.createVariableForInteropImport(moduleSpecifier, symbolName, propertyName);
     const text = this.printer.printNode(ts.EmitHint.Unspecified, newVarDecl, importDecl.getSourceFile());
     statements.push(TsUtils.removeOrReplaceQuotes(text, true));
     return statements;

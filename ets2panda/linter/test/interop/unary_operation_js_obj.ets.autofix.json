@@ -33,7 +33,7 @@
                 {
                     "start": 654,
                     "end": 654,
-                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('./unary_operation_js_obj_js.js');\nlet foo = GeneratedImportVar_1.getProperty('foo');\n",
+                    "replacementText": "let foo = ESValue.load('./unary_operation_js_obj_js.js').getProperty('foo');\n",
                     "line": 15,
                     "column": 1,
                     "endLine": 15,

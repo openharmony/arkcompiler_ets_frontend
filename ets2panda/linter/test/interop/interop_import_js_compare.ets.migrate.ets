@@ -14,10 +14,9 @@
  */
  
 
-let GeneratedImportVar_1 = ESValue.load('./interop_import_js_compare_js');
-let foo = GeneratedImportVar_1.getProperty('foo');
-let m = GeneratedImportVar_1.getProperty('m');
-let n = GeneratedImportVar_1.getProperty('n');
+let foo = ESValue.load('./interop_import_js_compare_js').getProperty('foo');
+let m = ESValue.load('./interop_import_js_compare_js').getProperty('m');
+let n = ESValue.load('./interop_import_js_compare_js').getProperty('n');
 
 let a = foo.getProperty("a")
 let b = foo.getProperty("b")

@@ -43,7 +43,7 @@
                 {
                     "start": 1092,
                     "end": 1092,
-                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('./interop_import_js_rules_js');\nlet foo = GeneratedImportVar_1.getProperty('foo');\n",
+                    "replacementText": "let foo = ESValue.load('./interop_import_js_rules_js').getProperty('foo');\n",
                     "line": 17,
                     "column": 1,
                     "endLine": 17,
@@ -83,7 +83,7 @@
                 {
                     "start": 1092,
                     "end": 1092,
-                    "replacementText": "let GeneratedImportVar_2 = ESValue.load('./interop_import_js_rules_js');\nlet ff1 = GeneratedImportVar_2.getProperty('ff1');\nlet ff2 = GeneratedImportVar_2.getProperty('ff2');\n",
+                    "replacementText": "let ff1 = ESValue.load('./interop_import_js_rules_js').getProperty('ff1');\nlet ff2 = ESValue.load('./interop_import_js_rules_js').getProperty('ff2');\n",
                     "line": 18,
                     "column": 1,
                     "endLine": 18,
@@ -123,7 +123,7 @@
                 {
                     "start": 1092,
                     "end": 1092,
-                    "replacementText": "let GeneratedImportVar_3 = ESValue.load('./interop_import_js_rules_js');\nlet A = GeneratedImportVar_3.getProperty('A');\n",
+                    "replacementText": "let A = ESValue.load('./interop_import_js_rules_js').getProperty('A');\n",
                     "line": 20,
                     "column": 1,
                     "endLine": 20,
@@ -163,7 +163,7 @@
                 {
                     "start": 1092,
                     "end": 1092,
-                    "replacementText": "let GeneratedImportVar_4 = ESValue.load('./interop_import_js_rules_js');\nlet C = GeneratedImportVar_4.getProperty('C');\n",
+                    "replacementText": "let C = ESValue.load('./interop_import_js_rules_js').getProperty('C');\n",
                     "line": 21,
                     "column": 1,
                     "endLine": 21,
@@ -203,7 +203,7 @@
                 {
                     "start": 1092,
                     "end": 1092,
-                    "replacementText": "let GeneratedImportVar_5 = ESValue.load('./interop_import_js_rules_js');\nlet ff3 = GeneratedImportVar_5.getProperty('ff3');\n",
+                    "replacementText": "let ff3 = ESValue.load('./interop_import_js_rules_js').getProperty('ff3');\n",
                     "line": 23,
                     "column": 1,
                     "endLine": 23,
@@ -243,7 +243,7 @@
                 {
                     "start": 1092,
                     "end": 1092,
-                    "replacementText": "let GeneratedImportVar_6 = ESValue.load('./interop_import_js_rules_js');\nlet ff4 = GeneratedImportVar_6.getProperty('ff4');\n",
+                    "replacementText": "let ff4 = ESValue.load('./interop_import_js_rules_js').getProperty('ff4');\n",
                     "line": 25,
                     "column": 1,
                     "endLine": 25,
@@ -283,7 +283,7 @@
                 {
                     "start": 1092,
                     "end": 1092,
-                    "replacementText": "let GeneratedImportVar_7 = ESValue.load('./interop_import_js_rules_js');\nlet handle = GeneratedImportVar_7.getProperty('handle');\n",
+                    "replacementText": "let handle = ESValue.load('./interop_import_js_rules_js').getProperty('handle');\n",
                     "line": 27,
                     "column": 1,
                     "endLine": 27,
@@ -323,7 +323,7 @@
                 {
                     "start": 1092,
                     "end": 1092,
-                    "replacementText": "let GeneratedImportVar_8 = ESValue.load('./interop_import_js_rules_js');\nlet expand = GeneratedImportVar_8.getProperty('expand');\n",
+                    "replacementText": "let expand = ESValue.load('./interop_import_js_rules_js').getProperty('expand');\n",
                     "line": 29,
                     "column": 1,
                     "endLine": 29,
@@ -363,7 +363,7 @@
                 {
                     "start": 1092,
                     "end": 1092,
-                    "replacementText": "let GeneratedImportVar_9 = ESValue.load('./interop_import_js_rules_js');\nlet orange = GeneratedImportVar_9.getProperty('orange');\n",
+                    "replacementText": "let orange = ESValue.load('./interop_import_js_rules_js').getProperty('orange');\n",
                     "line": 30,
                     "column": 1,
                     "endLine": 30,

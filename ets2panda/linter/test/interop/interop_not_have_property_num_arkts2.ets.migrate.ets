@@ -13,8 +13,7 @@
  * limitations under the License.
  */
 
-let GeneratedImportVar_1 = ESValue.load('./interop_property_num_js');
-let foo = GeneratedImportVar_1.getProperty('foo');
+let foo = ESValue.load('./interop_property_num_js').getProperty('foo');
 
 
 +foo.getProperty("num").toNumber();

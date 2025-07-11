@@ -18,7 +18,7 @@
             "line": 15,
             "column": 5,
             "endLine": 15,
-            "endColumn": 72,
+            "endColumn": 74,
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
@@ -28,7 +28,7 @@
             "line": 16,
             "column": 5,
             "endLine": 16,
-            "endColumn": 50,
+            "endColumn": 70,
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
@@ -38,17 +38,17 @@
             "line": 17,
             "column": 5,
             "endLine": 17,
-            "endColumn": 46,
+            "endColumn": 70,
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
             "severity": "ERROR"
         },
         {
-            "line": 18,
+            "line": 19,
             "column": 5,
-            "endLine": 18,
-            "endColumn": 46,
+            "endLine": 19,
+            "endColumn": 29,
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
@@ -65,19 +65,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 21,
-            "column": 5,
-            "endLine": 21,
-            "endColumn": 29,
-            "problem": "AnyType",
-            "suggest": "",
-            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 27,
+            "line": 26,
             "column": 1,
-            "endLine": 27,
+            "endLine": 26,
             "endColumn": 15,
             "problem": "MathPow",
             "suggest": "",
@@ -85,9 +75,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 31,
+            "line": 30,
             "column": 1,
-            "endLine": 31,
+            "endLine": 30,
             "endColumn": 37,
             "problem": "MathPow",
             "suggest": "",
@@ -95,9 +85,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 37,
+            "line": 36,
             "column": 1,
-            "endLine": 37,
+            "endLine": 36,
             "endColumn": 15,
             "problem": "MathPow",
             "suggest": "",
@@ -105,9 +95,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 49,
+            "line": 48,
             "column": 1,
-            "endLine": 49,
+            "endLine": 48,
             "endColumn": 17,
             "problem": "MathPow",
             "suggest": "",
