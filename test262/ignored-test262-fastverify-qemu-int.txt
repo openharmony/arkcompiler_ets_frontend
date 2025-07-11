@@ -189,3 +189,14 @@ test262/data/test_es2021/built-ins/Atomics/compareExchange/name.js
 
 #27389
 test262/data/test_es2021/built-ins/global/S10.2.3_A1.2_T3.js
+
+#27476
+test262/data/test_es2021/built-ins/Array/prototype/reduceRight/15.4.4.22-2-2.js
+test262/dtat/test_es2021/built-ins/Object/S15.2.2.1_A3_T2.js
+
+#27471
+test262/data/test_es2021/language/expressions/dynamic-import/usage/nested-arrow-assignment-expression-is-call-expression-square-brackets.js
+
+#27679
+test262/data/test_es2021/intl402/Collator/prototype/compare/non-normative/basic.js
+
