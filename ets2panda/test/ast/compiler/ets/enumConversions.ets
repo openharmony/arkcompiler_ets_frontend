@@ -13,16 +13,23 @@
  * limitations under the License.
  */
 
-enum Color { Red }
-
-function main(): void {
-  let arr: FixedArray<Color> = [Color.Red];
-
-  let ordinal: int = arr[0] as int;
-  let red = ordinal as Color;
-  let ordinalFail: int = /* @@ label */Color as int;
+enum E {
+  a, b, c
 }
 
-/* @@@ label Error TypeError: Enum name 'Color' used in the wrong context  */
-/* @@? 21:22 Warning Warning: Enum cast is deprecated. Cast support from 'Color' to 'Int' will be removed. */
-/* @@? 22:13 Warning Warning: Enum cast is deprecated. Cast support from 'Int' to 'Color' will be removed. */
+enum EE {
+  a, b, c, d, e
+}
+
+function foo(e: E, i: int) {
+//   i = e  // OK if widening, otherwise - CTE
+  i = e as int  // CTE
+//   e = i  // CTE
+  e = 1 as E  // CTE
+//   e = E.fromValue(i)  // RTE, if i is not equal to one of enum constants, otherwise OK
+//   e = 1  // OK, 1 can be E.b
+//   e = 10 // CTE, 10 is out of range
+}
+
+/* @@? 26:7 Warning Warning: Enum cast is deprecated. Cast support from 'E' to 'Int' will be removed. */
+/* @@? 28:7 Warning Warning: Enum cast is deprecated. Cast support from 'Int' to 'E' will be removed. */
