@@ -76,7 +76,8 @@ static ETSObjectType *FunctionTypeToFunctionalInterfaceType(ETSChecker *checker,
     bool isExtensionHack = signature->HasSignatureFlag(SignatureFlags::EXTENSION_FUNCTION);
 
     if (signature->RestVar() != nullptr) {
-        auto nPosParams = signature->Params().size();
+        auto sigParamsSize = signature->Params().size();
+        auto nPosParams = arity < sigParamsSize ? arity : sigParamsSize;
         auto *functionN = checker->GlobalBuiltinFunctionType(nPosParams, true);
         auto substitution = Substitution {};
         for (size_t i = 0; i < nPosParams; i++) {

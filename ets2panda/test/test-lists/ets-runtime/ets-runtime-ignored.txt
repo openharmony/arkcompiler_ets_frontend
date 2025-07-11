@@ -109,9 +109,7 @@ inferTypeLambda_14.ets
 enum_const_variable.ets
 enumConstExpression.ets
 local_enum03.ets
-lambda_with_restparameter_optinal.ets
 overload-primitive-and-object.ets
-lambda_with_restparameter_optinal_fixedarray.ets
 finallyTryAbruptedByReturn.ets
 Recursive_Parameter_2.ets
 Recursive_Parameter_3.ets
