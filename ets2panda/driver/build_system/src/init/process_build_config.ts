@@ -148,14 +148,14 @@ function initKoalaWrapper(buildConfig: BuildConfig): void {
 
 function initAliasConfig(buildConfig: BuildConfig): void {
   buildConfig.aliasConfig = new Map();
-  buildConfig.aliasPaths = buildConfig.aliasPaths instanceof Map
-    ? buildConfig.aliasPaths
-    : new Map(Object.entries(buildConfig.aliasPaths || {}));
+  buildConfig.sdkAliasMap = buildConfig.sdkAliasMap instanceof Map
+    ? buildConfig.sdkAliasMap
+    : new Map(Object.entries(buildConfig.sdkAliasMap || {}));
 
-  if (buildConfig.aliasPaths.size === 0) {
+  if (buildConfig.sdkAliasMap.size === 0) {
     return;
   }
-  for (const [pkgName, filePath] of buildConfig.aliasPaths) {
+  for (const [pkgName, filePath] of buildConfig.sdkAliasMap) {
     const rawContent = fs.readFileSync(filePath, 'utf-8');
     const jsonData = JSON.parse(rawContent);
     const pkgAliasMap = new Map<string, AliasConfig>();
@@ -183,20 +183,26 @@ function initAliasConfig(buildConfig: BuildConfig): void {
 }
 
 function initInteropSDKInfo(buildConfig: BuildConfig): void {
-  buildConfig.interopSDKPaths = new Set();
+  buildConfig.interopSDKPaths = new Set<string>();
 
-  const dynamicInteroSDKBasePath =
-    process.env.dynamicInteroSDKBasePath ||
-    buildConfig.dynamicInteroSDKBasePath ||
-    path.resolve(buildConfig.buildSdkPath as string, "../ets1.1/build-tools/interop");
+  const basePaths = buildConfig.interopApiPaths?.length
+    ? buildConfig.interopApiPaths
+    : [path.resolve(buildConfig.buildSdkPath as string, "../ets1.1/build-tools/interop")];
 
-  const arktsPath = path.resolve(dynamicInteroSDKBasePath, './arkts');
-  const apiPath = path.resolve(dynamicInteroSDKBasePath, './api');
+  for (const basePath of basePaths) {
+    const arktsPath = path.resolve(basePath, 'arkts');
+    const apiPath = path.resolve(basePath, 'api');
+    const kitsPath = path.resolve(basePath, 'kits');
 
-  if (fs.existsSync(arktsPath)) {
-    buildConfig.interopSDKPaths.add(arktsPath);
-  }
-  if (fs.existsSync(apiPath)) {
-    buildConfig.interopSDKPaths.add(apiPath);
+    if (fs.existsSync(arktsPath)) {
+      buildConfig.interopSDKPaths.add(arktsPath);
+    }
+    if (fs.existsSync(apiPath)) {
+      buildConfig.interopSDKPaths.add(apiPath);
+    }
+    if (fs.existsSync(kitsPath)) {
+      buildConfig.interopSDKPaths.add(kitsPath);
+    }
   }
 }
+

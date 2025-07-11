@@ -91,8 +91,9 @@ public:
 
     class ExternalModuleData {
     public:
-        explicit ExternalModuleData(Language lang, std::string path, std::string ohmUrl)
-            : lang_(lang), path_(std::move(path)), ohmUrl_(std::move(ohmUrl))
+        explicit ExternalModuleData(Language lang, std::string path, std::string ohmUrl,
+                                    std::vector<std::string> alias = {})
+            : lang_(lang), path_(std::move(path)), ohmUrl_(std::move(ohmUrl)), alias_(std::move(alias))
         {
         }
 
@@ -111,10 +112,16 @@ public:
             return ohmUrl_;
         }
 
+        const std::vector<std::string> &Alias() const
+        {
+            return alias_;
+        }
+
     private:
         Language lang_;
         std::string path_ {};
         std::string ohmUrl_ {};
+        std::vector<std::string> alias_;
     };
 
     explicit ArkTsConfig(std::string_view configPath, util::DiagnosticEngine &de)
@@ -187,6 +194,7 @@ private:
     template <class Collection, class Function>
     bool ParseCollection(const JsonObject *config, Collection &out, const std::string &target, Function &&constructor);
     std::optional<std::string> ReadConfig(const std::string &path);
+    std::vector<std::string> ParseStringArray(const std::unique_ptr<ark::JsonObject> *alias, std::string_view key);
 
 private:
     static constexpr const char *PACKAGE = "package";  // CC-OFF(G.NAM.03,G.NAM.03-CPP) project code style
