@@ -156,6 +156,13 @@ typedef struct es2panda_DiagnosticInfo {
 
 enum es2panda_PluginDiagnosticType { ES2PANDA_PLUGIN_WARNING, ES2PANDA_PLUGIN_ERROR, ES2PANDA_PLUGIN_SUGGESTION };
 
+typedef enum Es2pandaLanguage {
+    LANGUAGE_AS,
+    LANGUAGE_JS,
+    LANGUAGE_TS,
+    LANGUAGE_ETS,
+} Es2pandaLanguage;
+
 typedef enum es2panda_PluginDiagnosticType es2panda_PluginDiagnosticType;
 typedef enum es2panda_ContextState es2panda_ContextState;
 // CC-OFFNXT(G.INC.08) project code style
