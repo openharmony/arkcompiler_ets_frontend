@@ -345,6 +345,7 @@ void EnumLoweringPhase::CreateCCtorForEnumClass(ir::ClassDefinition *const enumC
                                                 ir::ScriptFunctionFlags::STATIC_BLOCK | ir::ScriptFunctionFlags::HIDDEN,
                                                 ir::ModifierFlags::STATIC, Language(Language::Id::ETS)});
 
+    ES2PANDA_ASSERT(func != nullptr);
     func->SetIdent(id);
     id->SetParent(func);
 

@@ -1035,6 +1035,7 @@ void LoopDeclarationScope::ConvertToVariableScope(ArenaAllocator *allocator)
         slotIndex_++;
         loopType_ = ScopeType::LOOP_DECL;
         auto *copiedVar = var->AsLocalVariable()->Copy(allocator, var->Declaration());
+        ES2PANDA_ASSERT(copiedVar != nullptr);
         copiedVar->AddFlag(VariableFlags::INITIALIZED | VariableFlags::PER_ITERATION);
         var->AddFlag(VariableFlags::LOOP_DECL);
         loopScope_->InsertBinding(name, copiedVar);
@@ -1046,6 +1047,7 @@ void LoopDeclarationScope::ConvertToVariableScope(ArenaAllocator *allocator)
         slotIndex_ = std::max(slotIndex_, parentVarScope->LexicalSlots());
         evalBindings_ = parentVarScope->EvalBindings();
         initScope_ = allocator->New<LocalScope>(allocator, Parent());
+        ES2PANDA_ASSERT(initScope_ != nullptr);
         initScope_->BindNode(Node());
         initScope_->MergeBindings(bindings);
     }
