@@ -1590,7 +1590,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     );
     if (node.type && node.initializer) {
       this.checkAssignmentMatching(node, this.tsTypeChecker.getTypeAtLocation(node.type), node.initializer, true);
-      this.checkFunctionTypeCompatible(node.type, node.initializer);
     }
     this.handleDeclarationInferredType(node);
     this.handleDefiniteAssignmentAssertion(node);
@@ -2124,7 +2123,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
           this.checkUsageOfTsTypes(leftOperandType, tsBinaryExpr);
         });
         this.checkAssignmentMatching(tsBinaryExpr, leftOperandType, tsRhsExpr);
-        this.checkFunctionTypeCompatible(typeNode, tsRhsExpr);
         this.handleEsObjectAssignment(tsBinaryExpr, typeNode, tsRhsExpr);
         this.handleSdkGlobalApi(tsBinaryExpr);
         break;
@@ -2588,7 +2586,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         this.tsTypeChecker.getTypeAtLocation(tsVarDecl.type),
         tsVarDecl.initializer
       );
-      this.checkFunctionTypeCompatible(tsVarDecl.type, tsVarDecl.initializer);
     }
     this.handleEsValueDeclaration(tsVarDecl);
     this.handleDeclarationInferredType(tsVarDecl);
@@ -6726,6 +6723,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
     this.handleStructuralTyping(contextNode, lhsType, rhsType, rhsExpr, isStrict);
+    this.checkFunctionalTypeCompatibility(lhsType, rhsType, rhsExpr);
   }
 
   private handleStructuralTyping(
@@ -7601,8 +7599,8 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.incrementCounters(node, FaultID.TaggedTemplates);
   }
 
-  private checkFunctionTypeCompatible(lhsTypeNode: ts.TypeNode | undefined, rhsExpr: ts.Expression): void {
-    if (this.options.arkts2 && lhsTypeNode && this.tsUtils.isIncompatibleFunctionals(lhsTypeNode, rhsExpr)) {
+  private checkFunctionalTypeCompatibility(lhsType: ts.Type, rhsType: ts.Type, rhsExpr: ts.Expression): void {
+    if (this.options.arkts2 && !this.tsUtils.areCompatibleFunctionalTypes(lhsType, rhsType)) {
       this.incrementCounters(rhsExpr, FaultID.IncompationbleFunctionType);
     }
   }
