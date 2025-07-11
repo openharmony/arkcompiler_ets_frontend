@@ -860,8 +860,7 @@ void ETSGen::BranchIfIsInstance(const ir::AstNode *const node, const VReg srcReg
 void ETSGen::IsInstance(const ir::AstNode *const node, const VReg srcReg, const checker::Type *target)
 {
     target = Checker()->GetApparentType(target);
-    ES2PANDA_ASSERT(target != nullptr);
-    ES2PANDA_ASSERT(target->IsETSReferenceType() && GetAccumulatorType() != nullptr);
+    ES2PANDA_ASSERT(target != nullptr && target->IsETSReferenceType() && GetAccumulatorType() != nullptr);
 
     if (target->IsETSAnyType()) {  // should be IsSupertypeOf(target, source)
         LoadAccumulatorBoolean(node, true);
@@ -2561,6 +2560,7 @@ static std::optional<std::pair<checker::Type const *, util::StringView>> SelectL
     ES2PANDA_ASSERT(alhs != nullptr && arhs != nullptr);
     alhs = alhs->IsETSStringType() ? checker->GlobalBuiltinETSStringType() : alhs;
     arhs = arhs->IsETSStringType() ? checker->GlobalBuiltinETSStringType() : arhs;
+    ES2PANDA_ASSERT(alhs != nullptr && arhs != nullptr);
     if (!alhs->IsETSObjectType() || !arhs->IsETSObjectType()) {
         return std::nullopt;
     }

@@ -969,6 +969,7 @@ void InitScopesPhaseETS::DeclareClassMethod(ir::MethodDefinition *method)
     }
 
     const auto methodName = method->Id();
+    ES2PANDA_ASSERT(methodName != nullptr);
     auto *const clsScope = VarBinder()->GetScope()->AsClassScope();
     auto options =
         method->IsStatic()
@@ -1009,8 +1010,9 @@ void InitScopesPhaseETS::MaybeAddOverload(ir::MethodDefinition *method, ir::Iden
             methodName->SetVariable(var);
         }
         for (auto *overload : method->Overloads()) {
-            ES2PANDA_ASSERT((overload->Function()->Flags() & ir::ScriptFunctionFlags::OVERLOAD) ||
-                            (overload->Function()->Flags() & ir::ScriptFunctionFlags::EXTERNAL_OVERLOAD));
+            ES2PANDA_ASSERT(overload->Id() != nullptr &&
+                            ((overload->Function()->Flags() & ir::ScriptFunctionFlags::OVERLOAD) ||
+                             (overload->Function()->Flags() & ir::ScriptFunctionFlags::EXTERNAL_OVERLOAD)));
             overload->Id()->SetVariable(var);
             overload->SetParent(var->Declaration()->Node());
         }
@@ -1100,6 +1102,7 @@ void InitScopesPhaseETS::VisitMethodDefinition(ir::MethodDefinition *method)
 
     auto *curScope = VarBinder()->GetScope();
     const auto methodName = method->Id();
+    ES2PANDA_ASSERT(methodName != nullptr);
     auto res =
         curScope->Find(methodName->Name(), method->IsStatic() ? varbinder::ResolveBindingOptions::ALL_STATIC
                                                               : varbinder::ResolveBindingOptions::ALL_NON_STATIC);

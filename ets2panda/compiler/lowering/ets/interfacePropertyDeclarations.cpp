@@ -77,6 +77,7 @@ ir::FunctionSignature InterfacePropertyDeclarationsPhase::GenerateGetterOrSetter
 
     if (isSetter) {
         auto paramIdent = field->Key()->AsIdentifier()->Clone(ctx->Allocator(), nullptr);
+        ES2PANDA_ASSERT(paramIdent != nullptr);
         paramIdent->SetTsTypeAnnotation(field->TypeAnnotation()->Clone(ctx->Allocator(), nullptr));
         paramIdent->TypeAnnotation()->SetParent(paramIdent);
 
