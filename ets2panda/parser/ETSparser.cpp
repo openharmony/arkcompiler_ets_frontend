@@ -2047,7 +2047,8 @@ ir::AstNode *ETSParser::ParseAmbientSignature(const lexer::SourcePosition &start
     }
 
     // eat ":"
-    if (Lexer()->NextToken(); Lexer()->GetToken().KeywordType() != lexer::TokenType::KEYW_NUMBER) {
+    if (Lexer()->NextToken(); Lexer()->GetToken().KeywordType() != lexer::TokenType::KEYW_NUMBER &&
+                              Lexer()->GetToken().KeywordType() != lexer::TokenType::KEYW_INT) {
         // ambient_indexer_3.ets
         LogError(diagnostic::INDEX_TYPE_NOT_NUMBER);
 
