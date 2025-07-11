@@ -53,6 +53,7 @@ import { LibraryTypeCallDiagnosticChecker } from './utils/functions/LibraryTypeC
 import { mergeArrayMaps } from './utils/functions/MergeArrayMaps';
 import { clearPathHelperCache, pathContainsDirectory } from './utils/functions/PathHelper';
 import { processSyncErr } from './utils/functions/ProcessWrite';
+import { LinterInputInfo } from './LinterInputInfo';
 
 function prepareInputFilesList(cmdOptions: CommandLineOptions): string[] {
   let inputFiles = cmdOptions.inputFiles.map((x) => {
@@ -141,12 +142,8 @@ function lintFiles(
   tscStrictDiagnostics: Map<string, ts.Diagnostic[]>,
   migrationInfo?: MigrationInfo
 ): LintRunResult {
-  const projectStats: ProjectStatistics = new ProjectStatistics();
-  const problemsInfos: Map<string, ProblemInfo[]> = new Map();
-
   TypeScriptLinter.initGlobals();
   InteropTypescriptLinter.initGlobals();
-  let fileCount: number = 0;
   const cmdProgressBar = new FixedLineProgressBar();
   const cmdProgressInfo: CmdProgressInfo = {
     cmdProgressBar: cmdProgressBar,
@@ -155,8 +152,31 @@ function lintFiles(
     options: options
   };
 
-  process.stderr.write('\n');
-  preProcessCmdProgressBar(cmdProgressInfo);
+  if (options.ideInteractive) {
+    process.stderr.write('\n');
+    preProcessCmdProgressBar(cmdProgressInfo);
+  }
+  const linterInputInfo: LinterInputInfo = {
+    tsProgram: tsProgram,
+    srcFiles: srcFiles,
+    options: options,
+    tscStrictDiagnostics: tscStrictDiagnostics,
+    migrationInfo: migrationInfo,
+    cmdProgressInfo: cmdProgressInfo
+  };
+  
+  const lintResult = executeLinter(linterInputInfo);
+  if (options.ideInteractive) {
+    postProcessCmdProgressBar(cmdProgressInfo);
+  }
+  return lintResult;
+}
+
+function executeLinter(linterInputInfo: LinterInputInfo): LintRunResult {
+  const { tsProgram, srcFiles, options, tscStrictDiagnostics, migrationInfo, cmdProgressInfo } = linterInputInfo;
+  const projectStats: ProjectStatistics = new ProjectStatistics();
+  const problemsInfos: Map<string, ProblemInfo[]> = new Map();
+  let fileCount : number = 0;
   for (const srcFile of srcFiles) {
     const linter: BaseTypeScriptLinter = !options.interopCheckMode ?
       new TypeScriptLinter(tsProgram.getTypeChecker(), options, srcFile, tscStrictDiagnostics) :
@@ -167,21 +187,18 @@ function lintFiles(
     problemsInfos.set(path.normalize(srcFile.fileName), [...problems]);
     projectStats.fileStats.push(linter.fileStats);
     fileCount += 1;
-    processCmdProgressBar(cmdProgressInfo, fileCount);
     if (options.ideInteractive) {
+      processCmdProgressBar(cmdProgressInfo, fileCount);
       processIdeProgressBar(
         { migrationInfo: migrationInfo, currentSrcFile: srcFile, srcFiles: srcFiles, options: options },
         fileCount
       );
     }
   }
-
-  postProcessCmdProgressBar(cmdProgressInfo);
-
   return {
     hasErrors: projectStats.hasError(),
-    problemsInfos,
-    projectStats
+    problemsInfos: problemsInfos,
+    projectStats: projectStats
   };
 }
 
