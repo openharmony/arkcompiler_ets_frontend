@@ -225,6 +225,15 @@ syntax:
   id: 312
   message: "Importing by 'require' and 'import' assignment is not supported, use 'import * as ... from ...' form instead!"
 
+- name: ERROR_ARKTS_NO_SIDE_EFFECT_IMPORT
+  id: 73297
+  message: "Importing for side-effect only is prohibited! Please provide objects to be imported explicitly or use * to import
+    all objects declared in the module!"
+
+- name: ERROR_ARKTS_NO_UMD
+  id: 114179
+  message: "Universal module definitions are not supported, please use ordinary import/export syntax instead."
+
 - name: ERROR_ARKTS_NO_VAR
   id: 297
   message: "'var' keyword is not supported. Use 'let' instead."
