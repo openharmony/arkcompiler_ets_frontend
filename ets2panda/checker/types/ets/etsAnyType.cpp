@@ -64,6 +64,7 @@ void ETSAnyType::Cast(TypeRelation *relation, Type *target)
 
     if (relation->ApplyUnboxing()) {
         auto *const boxedTarget = relation->GetChecker()->AsETSChecker()->MaybeBoxInRelation(target);
+        ES2PANDA_ASSERT(boxedTarget != nullptr);
         conversion::Unboxing(relation, boxedTarget->AsETSObjectType());
         relation->Result(true);
     }
