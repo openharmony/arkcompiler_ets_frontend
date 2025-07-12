@@ -118,27 +118,37 @@ std::string FormatStringFromArgs(const std::string &textStr,
     return ss.str();
 }
 
-FileDiagnostic CreateFileDiagnostic(es2panda_AstNode *node, lexer::SourceRange span, Diagnostic diagnostic,
+FileDiagnostic CreateFileDiagnostic(es2panda_AstNode *node, Range span, Diagnostic diagnostic,
                                     const std::vector<std::string> &args = std::vector<std::string>())
 {
     if (!args.empty()) {
         std::string newMessageStr = FormatStringFromArgs(diagnostic.message_, args);
         diagnostic.message_ = newMessageStr;
     }
-    FileDiagnostic fileDiagnostic(node, diagnostic, TransSourcePositionToPosition(span.start),
-                                  TransSourcePositionToPosition(span.end));
+    FileDiagnostic fileDiagnostic(node, diagnostic, span.start, span.end);
     return fileDiagnostic;
 }
 
-lexer::SourceRange GetErrorRangeForNode(ir::AstNode *node)
+Range GetErrorRangeForNode(ir::AstNode *node, es2panda_Context *context)
 {
-    return lexer::SourceRange(node->Start(), node->End());
+    auto ctx = reinterpret_cast<public_lib::Context *>(context);
+    // The line and col should start from 1 istead of 0
+    auto index = lexer::LineIndex(ctx->parserProgram->SourceCode());
+    auto sourceStartLocation = index.GetLocation(node->Range().start);
+    auto sourceEndLocation = index.GetLocation(node->Range().end);
+    Position posStart(sourceStartLocation.line, sourceStartLocation.col);
+    Position posEnd(sourceEndLocation.line, sourceEndLocation.col);
+    return Range(posStart, posEnd);
 }
 
-FileDiagnostic CreateDiagnosticForNode(es2panda_AstNode *node, Diagnostic diagnostic,
+FileDiagnostic CreateDiagnosticForNode(es2panda_AstNode *node, Diagnostic diagnostic, es2panda_Context *context,
                                        const std::vector<std::string> &args)
 {
-    auto span = GetErrorRangeForNode(reinterpret_cast<ir::AstNode *>(node));
+    auto span = diagnostic.range_;
+    // Only genereate range when original range is invalid
+    if (span.start.character_ <= 0 || span.end.character_ <= 0 || span.start.line_ <= 0 || span.end.line_ <= 0) {
+        span = GetErrorRangeForNode(reinterpret_cast<ir::AstNode *>(node), context);
+    }
     auto res = CreateFileDiagnostic(node, span, std::move(diagnostic), args);
     return res;
 }
