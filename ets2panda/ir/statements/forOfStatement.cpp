@@ -120,6 +120,7 @@ ForOfStatement *ForOfStatement::Clone(ArenaAllocator *const allocator, AstNode *
     auto *const right = right_ != nullptr ? right_->Clone(allocator, nullptr)->AsExpression() : nullptr;
     auto *const body = body_ != nullptr ? body_->Clone(allocator, nullptr)->AsStatement() : nullptr;
     auto *const clone = allocator->New<ForOfStatement>(left, right, body, isAwait_);
+    ES2PANDA_ASSERT(clone != nullptr);
 
     if (left != nullptr) {
         left->SetParent(clone);

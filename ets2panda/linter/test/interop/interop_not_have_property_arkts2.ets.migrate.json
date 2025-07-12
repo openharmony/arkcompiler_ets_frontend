@@ -18,7 +18,7 @@
             "line": 17,
             "column": 5,
             "endLine": 17,
-            "endColumn": 74,
+            "endColumn": 76,
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
@@ -28,7 +28,7 @@
             "line": 18,
             "column": 5,
             "endLine": 18,
-            "endColumn": 50,
+            "endColumn": 82,
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
@@ -38,7 +38,7 @@
             "line": 19,
             "column": 5,
             "endLine": 19,
-            "endColumn": 56,
+            "endColumn": 90,
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
@@ -48,7 +48,7 @@
             "line": 20,
             "column": 5,
             "endLine": 20,
-            "endColumn": 64,
+            "endColumn": 84,
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
@@ -58,7 +58,7 @@
             "line": 21,
             "column": 5,
             "endLine": 21,
-            "endColumn": 58,
+            "endColumn": 78,
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
@@ -68,7 +68,7 @@
             "line": 22,
             "column": 5,
             "endLine": 22,
-            "endColumn": 52,
+            "endColumn": 82,
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
@@ -78,26 +78,16 @@
             "line": 23,
             "column": 5,
             "endLine": 23,
-            "endColumn": 56,
+            "endColumn": 86,
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
             "severity": "ERROR"
         },
         {
-            "line": 24,
+            "line": 33,
             "column": 5,
-            "endLine": 24,
-            "endColumn": 60,
-            "problem": "AnyType",
-            "suggest": "",
-            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 34,
-            "column": 5,
-            "endLine": 34,
+            "endLine": 33,
             "endColumn": 26,
             "problem": "AnyType",
             "suggest": "",
@@ -105,9 +95,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 37,
+            "line": 36,
             "column": 5,
-            "endLine": 37,
+            "endLine": 36,
             "endColumn": 85,
             "problem": "AnyType",
             "suggest": "",
@@ -115,9 +105,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 39,
+            "line": 38,
             "column": 9,
-            "endLine": 39,
+            "endLine": 38,
             "endColumn": 32,
             "problem": "AnyType",
             "suggest": "",
@@ -125,9 +115,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 39,
+            "line": 38,
             "column": 23,
-            "endLine": 39,
+            "endLine": 38,
             "endColumn": 30,
             "problem": "DynamicCtorCall",
             "suggest": "",
@@ -135,9 +125,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 44,
+            "line": 43,
             "column": 9,
-            "endLine": 44,
+            "endLine": 43,
             "endColumn": 31,
             "problem": "AnyType",
             "suggest": "",
@@ -145,9 +135,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 44,
+            "line": 43,
             "column": 20,
-            "endLine": 44,
+            "endLine": 43,
             "endColumn": 24,
             "problem": "DynamicCtorCall",
             "suggest": "",
@@ -155,9 +145,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 49,
+            "line": 48,
             "column": 5,
-            "endLine": 49,
+            "endLine": 48,
             "endColumn": 26,
             "problem": "AnyType",
             "suggest": "",
@@ -165,9 +155,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 49,
+            "line": 48,
             "column": 16,
-            "endLine": 49,
+            "endLine": 48,
             "endColumn": 20,
             "problem": "DynamicCtorCall",
             "suggest": "",
@@ -175,9 +165,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 54,
+            "line": 53,
             "column": 9,
-            "endLine": 54,
+            "endLine": 53,
             "endColumn": 30,
             "problem": "AnyType",
             "suggest": "",
@@ -185,9 +175,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 54,
+            "line": 53,
             "column": 20,
-            "endLine": 54,
+            "endLine": 53,
             "endColumn": 24,
             "problem": "DynamicCtorCall",
             "suggest": "",
@@ -195,9 +185,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 59,
+            "line": 58,
             "column": 9,
-            "endLine": 59,
+            "endLine": 58,
             "endColumn": 30,
             "problem": "AnyType",
             "suggest": "",
@@ -205,9 +195,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 59,
+            "line": 58,
             "column": 20,
-            "endLine": 59,
+            "endLine": 58,
             "endColumn": 24,
             "problem": "DynamicCtorCall",
             "suggest": "",
@@ -215,9 +205,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 64,
+            "line": 63,
             "column": 9,
-            "endLine": 64,
+            "endLine": 63,
             "endColumn": 43,
             "problem": "AnyType",
             "suggest": "",
@@ -225,9 +215,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 64,
+            "line": 63,
             "column": 23,
-            "endLine": 64,
+            "endLine": 63,
             "endColumn": 29,
             "problem": "DynamicCtorCall",
             "suggest": "",
@@ -235,9 +225,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 69,
+            "line": 68,
             "column": 9,
-            "endLine": 69,
+            "endLine": 68,
             "endColumn": 34,
             "problem": "AnyType",
             "suggest": "",
@@ -245,9 +235,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 69,
+            "line": 68,
             "column": 24,
-            "endLine": 69,
+            "endLine": 68,
             "endColumn": 32,
             "problem": "DynamicCtorCall",
             "suggest": "",

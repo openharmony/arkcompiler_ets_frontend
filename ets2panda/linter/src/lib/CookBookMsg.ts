@@ -16,6 +16,16 @@
 export const cookBookMsg: string[] = [];
 export const cookBookTag: string[] = [];
 
+/**
+ * @note If the value contains multiple parentheses groups, 
+ *       the rule name must be placed in the last group.
+ * 
+ * @example 
+ * // Correct (rule name in last parentheses):
+ * 'cookBookTag[352] = "1.2 Void conflict...(sdk-ability-asynchronous-lifecycle)"'
+ * 
+*/
+
 cookBookTag[1] =
   'Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)';
 cookBookTag[2] = '"Symbol()" API is not supported (arkts-no-symbol)';
@@ -291,7 +301,7 @@ cookBookTag[285] = '"setAndProp" function is not supported (arkui-no-setandprop-
 cookBookTag[286] =
   'Parameters decorated with "@Prop" need to call the specific method when receiving data to ensure deep copy of the data (arkui-prop-need-call-method-for-deep-copy)';
 cookBookTag[300] = 'The function type should be explicit (arkts-no-ts-like-function-call)';
-cookBookTag[301] = 'Importing from "oh module" requires specifying full path (arkts-ohmurl-full-path)';
+cookBookTag[301] = 'Importing from "oh module" requires specifying full path (arkts-require-fullpath-name)';
 cookBookTag[302] =
   'Class type is not compatible with "Object" parameter in interop call (arkts-interop-d2s-static-object-on-dynamic-instance)';
 cookBookTag[303] =
@@ -361,6 +371,8 @@ cookBookTag[357] = 'Worker are not supported(arkts-no-need-stdlib-worker)';
 cookBookTag[358] =
   'Using "Object.getOwnPropertyNames" is not allowed in this API (arkts-builtin-object-getOwnPropertyNames))';
 cookBookTag[359] = '"@LocalBuilder" Decorator is not supported (arkui-no-localbuilder-decorator)';
+cookBookTag[360] =
+  '"Repeat" natively supports virtual scrolling capability in ArkTS1.2, so the default virtual scrolling should be disabled (arkui-repeat-disable-default-virtualscroll)';
 cookBookTag[370] = 'Sparse array is not supported in ArkTS1.2 (arkts-no-sparse-array)';
 cookBookTag[371] = 'Enum elements cannot be types in ArkTS1.2 (arkts-no-enum-prop-as-type)';
 cookBookTag[372] = 'Smart type differences (arkts-no-ts-like-smart-type)';

@@ -235,9 +235,11 @@ varbinder::LocalVariable *ETSObjectType::CreateSyntheticVarFromEverySignature(co
     varbinder::LocalVariable *res = allocator_->New<varbinder::LocalVariable>(varianceFlag);
 
     ETSFunctionType *funcType = CreateMethodTypeForProp(name);
+    ES2PANDA_ASSERT(funcType != nullptr);
     for (auto &s : signatures) {
         funcType->AddCallSignature(s);
     }
+    ES2PANDA_ASSERT(res != nullptr);
     res->SetTsType(funcType);
     funcType->SetVariable(res);
 
@@ -1069,6 +1071,7 @@ varbinder::LocalVariable *ETSObjectType::CopyProperty(varbinder::LocalVariable *
     if (copiedPropType->Variable() == prop) {
         copiedPropType->SetVariable(copiedProp);
     }
+    ES2PANDA_ASSERT(copiedProp != nullptr);
     copiedProp->SetTsType(copiedPropType);
     return copiedProp;
 }
@@ -1089,6 +1092,7 @@ Type *ETSObjectType::Instantiate(ArenaAllocator *const allocator, TypeRelation *
     auto *const copiedType = checker->CreateETSObjectType(declNode_, flags_);
     ES2PANDA_ASSERT(copiedType->internalName_ == internalName_);
     ES2PANDA_ASSERT(copiedType->name_ == name_);
+    ES2PANDA_ASSERT(copiedType != nullptr);
     copiedType->typeFlags_ = typeFlags_;
     copiedType->RemoveObjectFlag(ETSObjectFlags::INCOMPLETE_INSTANTIATION | ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY);
     copiedType->SetVariable(variable_);
@@ -1136,6 +1140,7 @@ static varbinder::LocalVariable *CopyPropertyWithTypeArguments(varbinder::LocalV
     if (copiedPropType->Variable() == prop || copiedPropType->Variable() == nullptr) {
         copiedPropType->SetVariable(copiedProp);
     }
+    ES2PANDA_ASSERT(copiedProp != nullptr);
     copiedProp->SetTsType(copiedPropType);
     return copiedProp;
 }
@@ -1186,6 +1191,7 @@ static ArenaSubstitution *ComputeEffectiveSubstitution(TypeRelation *const relat
 void ETSObjectType::SetCopiedTypeProperties(TypeRelation *const relation, ETSObjectType *const copiedType,
                                             ArenaVector<Type *> &&newTypeArgs, ETSObjectType *base)
 {
+    ES2PANDA_ASSERT(copiedType != nullptr);
     copiedType->typeFlags_ = typeFlags_;
     copiedType->RemoveObjectFlag(ETSObjectFlags::INCOMPLETE_INSTANTIATION | ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY);
     copiedType->SetVariable(variable_);
@@ -1568,8 +1574,29 @@ void ETSObjectType::CheckVarianceRecursively(TypeRelation *relation, VarianceFla
         return;
     }
 
-    auto *params = GetDeclNode()->IsClassDefinition() ? GetDeclNode()->AsClassDefinition()->TypeParams()
-                                                      : GetDeclNode()->AsTSInterfaceDeclaration()->TypeParams();
+    // according to the spec(GENERICS chapter), only class/interface/function/
+    // method/lambda and type alias can have type parameters. since
+    // 1. the type of function and method is ETSFunctionType
+    // 2. lambda has been checked above
+    // here we just need check
+    // 1. class
+    // 2. interface
+    // 3. type alias(which will be redirected to its real type)
+    // And all of them should have declarations
+    if (declNode_ == nullptr) {
+        // If the type is not declared, then we do not need to check variance.
+        return;
+    }
+    ir::TSTypeParameterDeclaration *params;
+    if (GetDeclNode()->IsClassDefinition()) {
+        params = GetDeclNode()->AsClassDefinition()->TypeParams();
+    } else if (GetDeclNode()->IsTSInterfaceDeclaration()) {
+        params = GetDeclNode()->AsTSInterfaceDeclaration()->TypeParams();
+    } else {
+        // If the type is not a class or interface or type alias, then we do not need to check variance.
+        return;
+    }
+
     if (params == nullptr) {
         return;
     }

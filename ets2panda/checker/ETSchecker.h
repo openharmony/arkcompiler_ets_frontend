@@ -93,6 +93,7 @@ public:
           invokeToArrowSignatures_(Allocator()->Adapter()),
           arrowToFuncInterfaces_(Allocator()->Adapter()),
           globalArraySignatures_(Allocator()->Adapter()),
+          unionAssemblerTypes_(Allocator()->Adapter()),
           dynamicIntrinsics_ {DynamicCallIntrinsicsMap {Allocator()->Adapter()},
                               DynamicCallIntrinsicsMap {Allocator()->Adapter()}},
           dynamicClasses_ {DynamicClassIntrinsicsMap(Allocator()->Adapter()),
@@ -174,6 +175,9 @@ public:
     GlobalArraySignatureMap &GlobalArrayTypes();
     const GlobalArraySignatureMap &GlobalArrayTypes() const;
 
+    const ArenaSet<util::StringView> &UnionAssemblerTypes() const;
+    ArenaSet<util::StringView> &UnionAssemblerTypes();
+
     Type *GlobalTypeError() const;
     [[nodiscard]] Type *InvalidateType(ir::Typed<ir::AstNode> *node);
     [[nodiscard]] Type *TypeError(ir::Typed<ir::AstNode> *node, const diagnostic::DiagnosticKind &diagKind,
@@ -207,6 +211,7 @@ public:
     void CheckObjectLiteralKeys(const ArenaVector<ir::Expression *> &properties);
     Type *BuildBasicClassProperties(ir::ClassDefinition *classDef);
     ETSObjectType *BuildAnonymousClassProperties(ir::ClassDefinition *classDef, ETSObjectType *superType);
+    Type *MaybeGradualType(ir::AstNode *node, ETSObjectType *type);
     Type *BuildBasicInterfaceProperties(ir::TSInterfaceDeclaration *interfaceDecl);
     ETSObjectType *GetSuperType(ETSObjectType *type);
     ArenaVector<ETSObjectType *> GetInterfaces(ETSObjectType *type);
@@ -468,7 +473,6 @@ public:
     bool ValidateSignatureInvocationContext(Signature *substitutedSig, ir::Expression *argument, std::size_t index,
                                             TypeRelationFlag flags);
     bool CheckOptionalLambdaFunction(ir::Expression *argument, Signature *substitutedSig, std::size_t index);
-    bool ValidateArgumentAsIdentifier(const ir::Identifier *identifier);
     bool IsValidRestArgument(ir::Expression *argument, Signature *substitutedSig, TypeRelationFlag flags,
                              std::size_t index);
     bool SetPreferredTypeForArrayArgument(ir::ArrayExpression *arrayExpr, Signature *substitutedSig);
@@ -513,6 +517,8 @@ public:
     void SearchAmongMostSpecificTypes(Type *&mostSpecificType, Signature *&prevSig,
                                       std::tuple<const lexer::SourcePosition &, size_t, Signature *> info,
                                       bool lookForClassType);
+    void CheckAmbiguousCall(Type *&mostSpecificType, Type *sigType, Signature *prevSig, Signature *sig,
+                            const lexer::SourcePosition &pos);
     void CollectSuitableSignaturesForTypeInference(size_t paramIdx, ArenaVector<Signature *> &signatures,
                                                    ArenaMultiMap<size_t, Signature *> &bestSignaturesForParameter,
                                                    const ArenaVector<ir::Expression *> &arguments);
@@ -940,6 +946,7 @@ public:
         pendingConstraintCheckRecords_.clear();
         constraintCheckScopesCount_ = 0;
         globalArraySignatures_.clear();
+        unionAssemblerTypes_.clear();
         GetCachedComputedAbstracts()->clear();
         for (auto &dynamicCallIntrinsicsMap : dynamicIntrinsics_) {
             dynamicCallIntrinsicsMap.clear();
@@ -1099,6 +1106,7 @@ private:
     FunctionInterfaceMap arrowToFuncInterfaces_;
     size_t constraintCheckScopesCount_ {0};
     GlobalArraySignatureMap globalArraySignatures_;
+    ArenaSet<util::StringView> unionAssemblerTypes_;
     ComputedAbstracts *cachedComputedAbstracts_ {nullptr};
     // NOTE(aleksisch): Extract dynamic from checker to separate class
     std::array<DynamicCallIntrinsicsMap, 2U> dynamicIntrinsics_;

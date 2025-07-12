@@ -145,6 +145,7 @@ RegAllocator::RegAllocator(CodeGen *const cg, RegSpiller *const spiller) noexcep
 void RegAllocator::Run(IRNode *const ins, const int32_t spillMax)
 {
     ES2PANDA_ASSERT(Spiller().Restored());
+    ES2PANDA_ASSERT(ins != nullptr);
     std::array<VReg *, IRNode::MAX_REG_OPERAND> regs {};
     const auto regCnt = ins->Registers(&regs);
     const auto registers =
@@ -212,6 +213,7 @@ RangeRegAllocator::RangeRegAllocator(CodeGen *const cg, RegSpiller *const spille
 void RangeRegAllocator::Run(IRNode *const ins, VReg rangeStart, const std::size_t argCount)
 {
     ES2PANDA_ASSERT(Spiller().Restored());
+    ES2PANDA_ASSERT(ins != nullptr);
     const auto rangeEnd = rangeStart + argCount;
 
     std::array<VReg *, IRNode::MAX_REG_OPERAND> regs {};

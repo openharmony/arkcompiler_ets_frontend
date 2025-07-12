@@ -33,6 +33,10 @@ import {
     UnknownType,
     Local,
     ArkClass,
+    ArkInvokeStmt,
+    ArkReturnStmt,
+    ArkThrowStmt,
+    PrimitiveType,
 } from 'arkanalyzer/lib';
 import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
 import { BaseChecker, BaseMetaData } from '../BaseChecker';
@@ -292,8 +296,8 @@ export class InteropBackwardDFACheck implements BaseChecker {
                     }
                 }
                 const rightOpTy = rightOp.getType();
-                if (!this.isIrrelevantType(rightOpTy)) {
-                    const rightOpTyLang = this.getTypeDefinedLang(rightOpTy, scene);
+                if (!this.isIrrelevantType(rightOpTy) && !(rightOpTy instanceof PrimitiveType)) {
+                    const rightOpTyLang = this.getTypeDefinedLang(rightOpTy, scene) ?? currentStmt.getCfg().getDeclaringMethod().getLanguage();
                     if (rightOpTyLang && rightOpTyLang !== apiLanguage) {
                         res.push({ problemStmt: currentStmt, objLanguage: rightOpTyLang });
                         continue;
@@ -331,42 +335,35 @@ export class InteropBackwardDFACheck implements BaseChecker {
                 this.cg.getInvokeStmtByMethod(currentStmt.getCfg().getDeclaringMethod().getSignature()).forEach(cs => {
                     const declaringMtd = cs.getCfg().getDeclaringMethod();
                     DVFGHelper.buildSingleDVFG(declaringMtd, scene);
-                    const argDefs = this.findArgumentDef(
-                        cs,
-                        paramIdx,
-                        apiLanguage,
-                        importVarMap,
-                        topLevelVarMap,
-                        scene
-                    );
+                    const argDefs = this.findArgumentDef(cs, paramIdx, apiLanguage, importVarMap, topLevelVarMap, scene);
                     if (this.isLanguage(argDefs)) {
                         // imported var
                         res.push({ problemStmt: cs, objLanguage: argDefs as Language });
                     } else {
                         argDefs.forEach(d => {
-                            this.checkFromStmt(
-                                d,
-                                apiLanguage,
-                                res,
-                                visited,
-                                importVarMap,
-                                topLevelVarMap,
-                                scene,
-                                depth + 1
-                            );
+                            this.checkFromStmt(d, apiLanguage, res, visited, importVarMap, topLevelVarMap, scene, depth + 1);
                         });
                     }
                 });
                 continue;
             }
-            current.getIncomingEdge().forEach(e => worklist.push(e.getSrcNode() as DVFGNode));
             if (stmt instanceof ArkAssignStmt) {
                 const rightOp = stmt.getRightOp();
                 if (rightOp instanceof Local && !rightOp.getDeclaringStmt()) {
                     (topLevelVarMap.get(rightOp.getName()) ?? []).forEach(def => {
                         worklist.push(DVFGHelper.getOrNewDVFGNode(def, scene));
                     });
+                } else {
+                    current.getIncomingEdge().forEach(e => {
+                        const srcNode = e.getSrcNode() as DVFGNode;
+                        const srcStmt = srcNode.getStmt();
+                        if (srcStmt.getDef() === stmt.getRightOp()) {
+                            worklist.push(srcNode);
+                        }
+                    })
                 }
+            } else if ((stmt instanceof ArkReturnStmt) || (stmt instanceof ArkThrowStmt)) {
+                 current.getIncomingEdge().forEach(e => worklist.push(e.getSrcNode() as DVFGNode));
             }
         }
     }
@@ -430,8 +427,8 @@ export class InteropBackwardDFACheck implements BaseChecker {
             }
         }
         const argTy = arg.getType();
-        if (!this.isIrrelevantType(argTy)) {
-            const argTyLang = this.getTypeDefinedLang(argTy, scene);
+        if (!this.isIrrelevantType(argTy) && !(argTy instanceof PrimitiveType)) {
+            const argTyLang = this.getTypeDefinedLang(argTy, scene) ?? stmt.getCfg().getDeclaringMethod().getLanguage();
             if (argTyLang && argTyLang !== apiLanguage) {
                 return argTyLang;
             }

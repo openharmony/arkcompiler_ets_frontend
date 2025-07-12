@@ -127,6 +127,7 @@ Type *ETSTypeParameter::Instantiate([[maybe_unused]] ArenaAllocator *allocator, 
     auto *const checker = relation->GetChecker()->AsETSChecker();
 
     auto *const copiedType = checker->CreateTypeParameter();
+    ES2PANDA_ASSERT(copiedType != nullptr);
     copiedType->AddTypeFlag(TypeFlag::GENERIC);
     copiedType->SetDeclNode(GetDeclNode());
     copiedType->SetDefaultType(GetDefaultType());

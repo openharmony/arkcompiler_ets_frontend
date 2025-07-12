@@ -13,12 +13,11 @@
  * limitations under the License.
  */
 
-let GeneratedImportVar_1 = ESValue.load('./no_await_js_promise_export');
-let p = GeneratedImportVar_1.getProperty('p');
-let foo = GeneratedImportVar_1.getProperty('foo');
-let pFuncCall = GeneratedImportVar_1.getProperty('pFuncCall');
-let arrowFunc = GeneratedImportVar_1.getProperty('arrowFunc');
-let pArrowCall = GeneratedImportVar_1.getProperty('pArrowCall');
+let p = ESValue.load('./no_await_js_promise_export').getProperty('p');
+let foo = ESValue.load('./no_await_js_promise_export').getProperty('foo');
+let pFuncCall = ESValue.load('./no_await_js_promise_export').getProperty('pFuncCall');
+let arrowFunc = ESValue.load('./no_await_js_promise_export').getProperty('arrowFunc');
+let pArrowCall = ESValue.load('./no_await_js_promise_export').getProperty('pArrowCall');
 
 
 async function awaitPromise() {

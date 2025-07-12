@@ -14,6 +14,7 @@
  */
 
 #include "boxingForLocals.h"
+#include <cstddef>
 
 #include "compiler/lowering/util.h"
 #include "checker/ETSchecker.h"
@@ -132,6 +133,7 @@ static void HandleFunctionParam(public_lib::Context *ctx, ir::ETSParameterExpres
     auto *scope = body->Scope();
 
     auto *initId = allocator->New<ir::Identifier>(id->Name(), allocator);
+    ES2PANDA_ASSERT(initId != nullptr);
     initId->SetVariable(id->Variable());
     initId->SetTsType(oldType);
     initId->SetRange(id->Range());
@@ -204,6 +206,8 @@ static ir::AstNode *HandleVariableDeclarator(public_lib::Context *ctx, ir::Varia
         allocator, allocator->New<ir::OpaqueTypeNode>(boxedType, allocator), std::move(initArgs));
     auto *newDeclarator = util::NodeAllocator::ForceSetParent<ir::VariableDeclarator>(
         allocator, declarator->Flag(), allocator->New<ir::Identifier>(id->Name(), allocator), newInit);
+    ES2PANDA_ASSERT(newDeclarator != nullptr);
+
     newDeclarator->SetParent(declarator->Parent());
 
     newInit->GetTypeRef()->SetRange(declarator->Range());

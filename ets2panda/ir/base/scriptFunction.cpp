@@ -200,6 +200,7 @@ ScriptFunction *ScriptFunction::Clone(ArenaAllocator *allocator, AstNode *parent
                                                   : nullptr,
                 HasReceiver()},
             Flags(), Modifiers(), Language()});
+    ES2PANDA_ASSERT(res != nullptr);
     res->SetParent(parent);
     res->SetAnnotations(std::move(annotationUsages));
     return res;

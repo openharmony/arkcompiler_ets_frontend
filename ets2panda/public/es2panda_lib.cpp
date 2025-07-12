@@ -130,7 +130,7 @@ __attribute__((unused)) es2panda_variantDoubleCharArrayBool EnumMemberResultToEs
     // NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
     // NOLINTBEGIN(cppcoreguidelines-pro-bounds-pointer-arithmetic, readability-simplify-subscript-expr)
     es2panda_variantDoubleCharArrayBool es2panda_variant;
-    es2panda_variant.index = variant.index();
+    es2panda_variant.index = static_cast<int>(variant.index());
     switch (es2panda_variant.index) {
         case es2panda_variantIndex::CAPI_DOUBLE:
             es2panda_variant.variant.d = std::get<double>(variant);
@@ -1280,7 +1280,15 @@ extern "C" void InsertETSImportDeclarationAndParse(es2panda_Context *context, es
     importDeclE2p->AddAstNodeFlags(ir::AstNodeFlags::NOCLEANUP);
 
     auto &stmt = parserProgram->Ast()->StatementsForUpdates();
-    stmt.insert(stmt.begin(), importDeclE2p);
+    bool hasUseStatic = !stmt.empty() && stmt.front()->IsExpressionStatement();
+    if (hasUseStatic) {
+        auto *expansion = stmt.front()->AsExpressionStatement()->GetExpression();
+        hasUseStatic = hasUseStatic && expansion->IsStringLiteral() &&
+                       expansion->AsStringLiteral()->Str() == compiler::Signatures::STATIC_PROGRAM_FLAG;
+    }
+    size_t insertIndex = hasUseStatic ? 1 : 0;
+
+    stmt.insert(stmt.begin() + insertIndex, importDeclE2p);
     importDeclE2p->SetParent(parserProgram->Ast());
 
     ctx->parser->AsETSParser()->AddExternalSource(ctx->parser->AsETSParser()->ParseSources());

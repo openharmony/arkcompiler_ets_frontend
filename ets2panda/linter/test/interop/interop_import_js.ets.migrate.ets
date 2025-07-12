@@ -19,21 +19,15 @@
 
 
 
-let GeneratedImportVar_7 = ESValue.load('./interop_import_js_js');
-let Wiki = GeneratedImportVar_7.getProperty('Wiki');
-let Doge = GeneratedImportVar_7.getProperty('Dog');
-let GeneratedImportVar_6 = ESValue.load('./interop_import_js_js');
-let GeneratedImportVar_5 = ESValue.load('./interop_import_js_js');
-let myAaa = GeneratedImportVar_5.getProperty('aaa');
-let ClassA = GeneratedImportVar_5.getProperty('ClassA');
-let Dog = GeneratedImportVar_5.getProperty('Dog');
-let GeneratedImportVar_4 = ESValue.load('./interop_import_js_js');
-let myAaa = GeneratedImportVar_4.getProperty('aaa');
-let GeneratedImportVar_3 = ESValue.load('./jsfiles/preview_import_js');
-let CPreview = GeneratedImportVar_3.getProperty('CPreview');
-let bar = GeneratedImportVar_3.getProperty('bar');
-let foo = GeneratedImportVar_3.getProperty('foo');
-let GeneratedImportVar_2 = ESValue.load('../main/js_lib');
-let fjs = GeneratedImportVar_2.getProperty('fjs');
-let GeneratedImportVar_1 = ESValue.load('../main/js_lib');
-let Cjs = GeneratedImportVar_1.getProperty('Cjs');
+let Wiki = ESValue.load('./interop_import_js_js').getProperty('Wiki');
+let Doge = ESValue.load('./interop_import_js_js').getProperty('Dog');
+let tjs = ESValue.load('./interop_import_js_js').getProperty('tjs');
+let myAaa = ESValue.load('./interop_import_js_js').getProperty('aaa');
+let ClassA = ESValue.load('./interop_import_js_js').getProperty('ClassA');
+let Dog = ESValue.load('./interop_import_js_js').getProperty('Dog');
+let myAaa = ESValue.load('./interop_import_js_js').getProperty('aaa');
+let CPreview = ESValue.load('./jsfiles/preview_import_js').getProperty('CPreview');
+let bar = ESValue.load('./jsfiles/preview_import_js').getProperty('bar');
+let foo = ESValue.load('./jsfiles/preview_import_js').getProperty('foo');
+let fjs = ESValue.load('../main/js_lib').getProperty('fjs');
+let Cjs = ESValue.load('../main/js_lib').getProperty('Cjs');

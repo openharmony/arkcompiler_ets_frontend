@@ -191,7 +191,7 @@ TSEnumDeclaration *TSEnumDeclaration::Construct(ArenaAllocator *allocator)
 {
     ArenaVector<AstNode *> members(allocator->Adapter());
     return allocator->New<TSEnumDeclaration>(allocator, nullptr, std::move(members),
-                                             ConstructorFlags {false, false, false});
+                                             ConstructorFlags {false, false, false}, lang_);
 }
 
 void TSEnumDeclaration::CopyTo(AstNode *other) const

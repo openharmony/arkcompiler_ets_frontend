@@ -46,11 +46,13 @@ namespace ark::es2panda::ir {
 
 class ETSModule : public JsDocAllowed<AnnotationAllowed<BlockStatement>> {
 public:
+    // CC-OFFNXT(G.FUN.01-CPP) solid logic
     explicit ETSModule(ArenaAllocator *allocator, ArenaVector<Statement *> &&statementList, Identifier *ident,
-                       ModuleFlag flag, parser::Program *program)
+                       ModuleFlag flag, Language lang, parser::Program *program)
         : JsDocAllowed<AnnotationAllowed<BlockStatement>>(allocator, std::move(statementList)),
           ident_(ident),
           flag_(flag),
+          lang_(lang),
           program_(program)
     {
         type_ = AstNodeType::ETS_MODULE;
@@ -59,10 +61,11 @@ public:
 
     // CC-OFFNXT(G.FUN.01-CPP) solid logic
     explicit ETSModule(ArenaAllocator *allocator, ArenaVector<Statement *> &&statementList, Identifier *ident,
-                       ModuleFlag flag, parser::Program *program, AstNodeHistory *history)
+                       ModuleFlag flag, Language lang, parser::Program *program, AstNodeHistory *history)
         : JsDocAllowed<AnnotationAllowed<BlockStatement>>(allocator, std::move(statementList)),
           ident_(ident),
           flag_(flag),
+          lang_(lang),
           program_(program)
     {
         type_ = AstNodeType::ETS_MODULE;
@@ -91,6 +94,11 @@ public:
     const ir::ClassDefinition *GlobalClass() const
     {
         return GetHistoryNodeAs<ETSModule>()->globalClass_;
+    }
+
+    [[nodiscard]] es2panda::Language Language() const noexcept
+    {
+        return GetHistoryNodeAs<ETSModule>()->lang_;
     }
 
     ir::ClassDefinition *GlobalClass()
@@ -162,6 +170,7 @@ private:
 
     Identifier *ident_;
     ModuleFlag flag_;
+    es2panda::Language lang_;
     parser::Program *program_;
     ir::ClassDefinition *globalClass_ {};
 };

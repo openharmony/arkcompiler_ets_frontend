@@ -120,6 +120,7 @@ checker::Type *ETSTuple::GetType(checker::ETSChecker *const checker)
     auto *tupleType = checker->ProgramAllocator()->New<checker::ETSTupleType>(checker, typeList);
 
     if (IsReadonlyType()) {
+        ES2PANDA_ASSERT(checker->GetReadonlyType(tupleType));
         tupleType = checker->GetReadonlyType(tupleType)->AsETSTupleType();
     }
 
@@ -130,6 +131,7 @@ checker::Type *ETSTuple::GetType(checker::ETSChecker *const checker)
 ETSTuple *ETSTuple::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     auto *const clone = allocator->New<ETSTuple>(allocator, size_);
+    ES2PANDA_ASSERT(clone);
 
     clone->AddModifier(flags_);
 

@@ -167,6 +167,7 @@ checker::Type *ETSAnalyzer::Check(ir::ClassStaticBlock *st) const
 static void HandleNativeAndAsyncMethods(ETSChecker *checker, ir::MethodDefinition *node)
 {
     auto *scriptFunc = node->Function();
+    ES2PANDA_ASSERT(scriptFunc != nullptr);
     if (node->IsNative() && !node->IsConstructor() && !scriptFunc->IsSetter()) {
         if (scriptFunc->ReturnTypeAnnotation() == nullptr) {
             checker->LogError(diagnostic::NATIVE_WITHOUT_RETURN, {}, scriptFunc->Start());
@@ -361,7 +362,9 @@ checker::Type *ETSAnalyzer::Check(ir::OverloadDeclaration *node) const
     }
 
     if (node->IsFunctionOverloadDeclaration()) {
-        ES2PANDA_ASSERT(node->Parent()->IsClassDefinition() && compiler::HasGlobalClassParent(node));
+        ES2PANDA_ASSERT(
+            node->Parent()->IsClassDefinition() &&
+            (compiler::HasGlobalClassParent(node) || node->Parent()->AsClassDefinition()->IsNamespaceTransformed()));
         checker->CheckFunctionOverloadDeclaration(checker, node);
         return nullptr;
     }
@@ -459,7 +462,10 @@ checker::Type *ETSAnalyzer::Check(ir::ETSFunctionType *node) const
     checker->CheckFunctionSignatureAnnotations(node->Params(), node->TypeParams(), node->ReturnType());
 
     auto *signatureInfo = checker->ComposeSignatureInfo(node->TypeParams(), node->Params());
-    auto *returnType = checker->ComposeReturnType(node->ReturnType(), node->IsAsync());
+    auto *returnType = node->IsExtensionFunction() && node->ReturnType()->IsTSThisType()
+                           ? signatureInfo->params.front()->TsType()
+                           : checker->ComposeReturnType(node->ReturnType(), node->IsAsync());
+
     auto *const signature =
         checker->CreateSignature(signatureInfo, returnType, node->Flags(), node->IsExtensionFunction());
     if (signature == nullptr) {  // #23134
@@ -479,6 +485,7 @@ static bool CheckArrayElementType(ETSChecker *checker, T *newArrayInstanceExpr)
     ES2PANDA_ASSERT(newArrayInstanceExpr != nullptr);
 
     checker::Type *elementType = newArrayInstanceExpr->TypeReference()->GetType(checker)->MaybeBaseTypeOfGradualType();
+    ES2PANDA_ASSERT(elementType != nullptr);
     if (elementType->IsETSPrimitiveType()) {
         return true;
     }
@@ -1665,6 +1672,7 @@ checker::Type *ETSAnalyzer::Check(ir::CallExpression *expr) const
 
     checker::TypeStackElement tse(checker, expr, {{diagnostic::CYCLIC_CALLEE, {}}}, expr->Start());
     if (tse.HasTypeError()) {
+        expr->SetTsType(checker->GlobalTypeError());
         return checker->GlobalTypeError();
     }
 
@@ -1770,7 +1778,7 @@ checker::Type *ETSAnalyzer::Check(ir::ConditionalExpression *expr) const
     checker->Context().CombineSmartCasts(consequentSmartCasts);
 
     if (checker->IsTypeIdenticalTo(consequentType, alternateType)) {
-        expr->SetTsType(checker->GetNonConstantType(consequentType));
+        expr->SetTsType(consequentType);
     } else if (IsNumericType(GetETSChecker(), consequentType) && IsNumericType(GetETSChecker(), alternateType)) {
         expr->SetTsType(BiggerNumericType(GetETSChecker(), consequentType, alternateType));
     } else {
@@ -2015,7 +2023,7 @@ checker::Type *ETSAnalyzer::CheckDynamic(ir::ObjectExpression *expr) const
 
 static bool ValidatePreferredType(ETSChecker *checker, ir::ObjectExpression *expr)
 {
-    auto preferredType = expr->PreferredType();
+    auto preferredType = expr->PreferredType()->MaybeBaseTypeOfGradualType();
     if (preferredType == nullptr) {
         checker->LogError(diagnostic::CLASS_COMPOSITE_UNKNOWN_TYPE, {}, expr->Start());
         return false;
@@ -2374,7 +2382,7 @@ checker::ETSObjectType *ResolveUnionObjectTypeForObjectLiteral(ETSChecker *check
 static checker::ETSObjectType *ResolveObjectTypeFromPreferredType(ETSChecker *checker, ir::ObjectExpression *expr)
 {
     // Assume not null, checked by caller in Check()
-    checker::Type *preferredType = expr->PreferredType();
+    checker::Type *preferredType = expr->PreferredType()->MaybeBaseTypeOfGradualType();
 
     if (preferredType->IsETSAsyncFuncReturnType()) {
         preferredType = preferredType->AsETSAsyncFuncReturnType()->GetPromiseTypeArg();
@@ -3114,7 +3122,7 @@ checker::Type *ETSAnalyzer::Check(ir::AnnotationUsage *st) const
         return ReturnTypeForStatement(st);
     }
 
-    if (st->Properties().size() == 1 &&
+    if (st->Properties().size() == 1 && st->Properties().at(0)->AsClassProperty()->Id() != nullptr &&
         st->Properties().at(0)->AsClassProperty()->Id()->Name() == compiler::Signatures::ANNOTATION_KEY_VALUE) {
         checker->CheckSinglePropertyAnnotation(st, annoDecl);
         fieldMap.clear();
@@ -3376,6 +3384,7 @@ bool ETSAnalyzer::CheckInferredFunctionReturnType(ir::ReturnStatement *st, ir::S
 
     // Case when function's return type is defined explicitly:
     if (st->argument_ == nullptr) {
+        ES2PANDA_ASSERT(funcReturnType != nullptr);
         if (!funcReturnType->MaybeBaseTypeOfGradualType()->IsETSVoidType() &&
             funcReturnType != checker->GlobalVoidType() &&
             !funcReturnType->MaybeBaseTypeOfGradualType()->IsETSAsyncFuncReturnType()) {

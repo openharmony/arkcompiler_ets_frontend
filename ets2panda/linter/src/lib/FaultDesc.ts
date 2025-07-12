@@ -256,3 +256,4 @@ faultDesc[FaultID.SetAndPropFunctionNotSupported] = '"setAndProp" function is no
 faultDesc[FaultID.PropNeedCallMethodForDeepCopy] = 'Deep copy needs to call the specific method';
 faultDesc[FaultID.StateStylesBlockNeedArrowFunc] = 'StateStyles needs arrow function block';
 faultDesc[FaultID.PromiseVoidNeedResolveArg] = 'Promise<void>constructor only supports using resolve (undefined)';
+faultDesc[FaultID.RepeatDisableVirtualScroll] = '"Repeat" disable default "virtualScroll"';

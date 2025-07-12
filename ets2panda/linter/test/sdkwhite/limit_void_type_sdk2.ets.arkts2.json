@@ -205,6 +205,46 @@
             "severity": "ERROR"
         },
         {
+            "line": 68,
+            "column": 3,
+            "endLine": 70,
+            "endColumn": 4,
+            "problem": "MethodOverridingField",
+            "suggest": "",
+            "rule": "Method can't override filed in interface implemented (arkts-no-method-overriding-field)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 64,
+            "column": 31,
+            "endLine": 64,
+            "endColumn": 35,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 68,
+            "column": 19,
+            "endLine": 68,
+            "endColumn": 33,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 68,
+            "column": 29,
+            "endLine": 68,
+            "endColumn": 33,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
             "line": 44,
             "column": 41,
             "endLine": 44,

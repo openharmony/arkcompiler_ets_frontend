@@ -14,14 +14,13 @@
  */
 
 'use static'
-let GeneratedImportVar_1 = ESValue.load('./interop_not_have_property_js');
-let foo = GeneratedImportVar_1.getProperty('foo');
-let person = GeneratedImportVar_1.getProperty('person');
-let TestHelper = GeneratedImportVar_1.getProperty('TestHelper');
-let Machine = GeneratedImportVar_1.getProperty('Machine');
-let User = GeneratedImportVar_1.getProperty('User');
-let Person = GeneratedImportVar_1.getProperty('Person');
-let Employee = GeneratedImportVar_1.getProperty('Employee');
+let foo = ESValue.load('./interop_not_have_property_js').getProperty('foo');
+let person = ESValue.load('./interop_not_have_property_js').getProperty('person');
+let TestHelper = ESValue.load('./interop_not_have_property_js').getProperty('TestHelper');
+let Machine = ESValue.load('./interop_not_have_property_js').getProperty('Machine');
+let User = ESValue.load('./interop_not_have_property_js').getProperty('User');
+let Person = ESValue.load('./interop_not_have_property_js').getProperty('Person');
+let Employee = ESValue.load('./interop_not_have_property_js').getProperty('Employee');
 
 
 foo.getProperty("name")

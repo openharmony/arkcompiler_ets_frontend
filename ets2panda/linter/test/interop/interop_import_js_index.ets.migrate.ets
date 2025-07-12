@@ -13,10 +13,8 @@
  * limitations under the License.
  */
 
-let GeneratedImportVar_2 = ESValue.load('./interop_import_js_index_js');
-let foo = GeneratedImportVar_2.getProperty('foo');
-let GeneratedImportVar_1 = ESValue.load('./interop_import_js_rules_js');
-let ff3 = GeneratedImportVar_1.getProperty('ff3');
+let foo = ESValue.load('./interop_import_js_index_js').getProperty('foo');
+let ff3 = ESValue.load('./interop_import_js_rules_js').getProperty('ff3');
 
 let arr = foo.getProperty("arr")
 arr.getProperty(1.0)

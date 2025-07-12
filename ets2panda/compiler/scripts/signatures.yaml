@@ -152,6 +152,8 @@ defines:
     ref: UNDEFINED
   - name: 'null'
     ref: NULL_LITERAL
+  - name: 'std.core.Null'
+    ref: NULL_ASSEMBLY_TYPE
   - name: 'Readonly'
     ref: READONLY_TYPE_NAME
   - name: 'Partial'
@@ -788,7 +790,7 @@ signatures:
 
   - callee: BUILTIN_RUNTIME
     method_name: failedTypeCastException
-    params: [BUILTIN_OBJECT, BUILTIN_STRING]
+    params: [BUILTIN_OBJECT, BUILTIN_STRING, PRIMITIVE_BOOLEAN]
     return_type: BUILTIN_CLASS_CAST_ERROR
     ref: BUILTIN_RUNTIME_FAILED_TYPE_CAST_EXCEPTION
 

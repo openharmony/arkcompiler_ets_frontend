@@ -65,7 +65,8 @@ import {
   DependentModuleConfig,
   JobInfo,
   KPointer,
-  ModuleInfo
+  ModuleInfo,
+  ES2PANDA_MODE
 } from '../types';
 import { ArkTSConfigGenerator } from './generate_arktsconfig';
 import { SetupClusterOptions } from '../types';
@@ -141,7 +142,7 @@ export abstract class BaseMode {
     this.isBuildConfigModified = buildConfig.isBuildConfigModified as boolean | undefined;
     this.hasCleanWorker = false;
     this.byteCodeHar = buildConfig.byteCodeHar as boolean;
-    this.es2pandaMode = buildConfig?.es2pandaMode ?? 0;
+    this.es2pandaMode = buildConfig?.es2pandaMode ?? ES2PANDA_MODE.RUN;
   }
 
   public declgen(fileInfo: CompileFileInfo): void {

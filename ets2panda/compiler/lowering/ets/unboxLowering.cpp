@@ -724,6 +724,9 @@ static void HandleForOfStatement(UnboxContext *uctx, ir::ForOfStatement *forOf)
     // NOTE(gogabr): we need to recompute the right side type instead of just unboxing;
     // this may be, for example, a generic call that returns a boxed array.
     auto *tp = MaybeRecursivelyUnboxType(uctx, forOf->Right()->TsType());
+    if (tp->IsETSAnyType()) {
+        return;
+    }
 
     checker::Type *elemTp = nullptr;
     if (tp->IsETSArrayType()) {

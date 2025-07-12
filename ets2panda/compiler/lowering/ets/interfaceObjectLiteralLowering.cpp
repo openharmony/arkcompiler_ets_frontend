@@ -35,13 +35,13 @@ std::string_view InterfaceObjectLiteralLowering::Name() const
 static inline bool IsInterfaceType(const checker::Type *type)
 {
     return type != nullptr && type->IsETSObjectType() &&
-           type->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::INTERFACE) && !type->IsETSAnyType();
+           type->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::INTERFACE) && !type->IsGradualType();
 }
 
 static inline bool IsAbstractClassType(const checker::Type *type)
 {
     return type != nullptr && type->IsETSObjectType() &&
-           type->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::ABSTRACT) && !type->IsETSAnyType();
+           type->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::ABSTRACT) && !type->IsGradualType();
 }
 
 static ir::AstNode *CreateAnonClassImplCtor(public_lib::Context *ctx, ArenaVector<ReadonlyFieldHolder> &readonlyFields)
@@ -93,6 +93,7 @@ static ir::MethodDefinition *CreateAnonClassFieldGetterSetter(public_lib::Contex
 {
     auto *const parser = ctx->parser->AsETSParser();
     // Field type annotation
+    ES2PANDA_ASSERT(ifaceMethod->Function());
     auto *fieldType = ifaceMethod->Function()->Signature()->ReturnType();
     ES2PANDA_ASSERT(fieldType != nullptr);
 
@@ -103,7 +104,7 @@ static ir::MethodDefinition *CreateAnonClassFieldGetterSetter(public_lib::Contex
         sourceCode << "public set @@I1 (anonParam:@@T2){" << std::endl;
         sourceCode << "this.@@I3 = anonParam" << std::endl;
         sourceCode << "}" << std::endl;
-
+        ES2PANDA_ASSERT(ifaceMethod->Id());
         return parser
             ->CreateFormattedClassMethodDefinition(sourceCode.str(), ifaceMethod->Id()->Name(), fieldType,
                                                    anonClassFieldName)
@@ -133,6 +134,7 @@ static void FillClassBody(public_lib::Context *ctx, ArenaVector<ir::AstNode *> *
         ES2PANDA_ASSERT(it->IsMethodDefinition());
         auto *ifaceMethod = it->AsMethodDefinition();
 
+        ES2PANDA_ASSERT(ifaceMethod->Function());
         if (!ifaceMethod->Function()->IsGetter()) {
             continue;
         }
@@ -203,6 +205,7 @@ static void AnnotateGeneratedAnonClass(checker::ETSChecker *checker, ir::ClassDe
         checker->ProgramAllocNode<ir::Identifier>(Signatures::INTERFACE_OBJ_LITERAL, checker->ProgramAllocator());
     annoId->SetAnnotationUsage();
     auto *annoUsage = checker->ProgramAllocNode<ir::AnnotationUsage>(annoId, checker->ProgramAllocator());
+    ES2PANDA_ASSERT(annoUsage);
     annoUsage->AddModifier(ir::ModifierFlags::ANNOTATION_USAGE);
     annoUsage->SetParent(classDef);
     annoId->SetParent(annoUsage);
@@ -256,6 +259,7 @@ static void GenerateAnonClassTypeFromInterface(public_lib::Context *ctx, ir::TSI
     // Class implements
     auto *classImplements = ctx->AllocNode<ir::TSClassImplements>(
         ctx->AllocNode<ir::OpaqueTypeNode>(ifaceNode->TsType(), ctx->Allocator()));
+    ES2PANDA_ASSERT(classImplements);
     classImplements->SetParent(classDef);
     classDef->EmplaceImplements(classImplements);
     classType->RemoveObjectFlag(checker::ETSObjectFlags::RESOLVED_INTERFACES);
@@ -289,7 +293,10 @@ static void GenerateAnonClassTypeFromAbstractClass(public_lib::Context *ctx, ir:
     auto *classDecl = checker->BuildClass(anonClassName.View(), classBodyBuilder);
     RefineSourceRanges(classDecl);
     auto *classDef = classDecl->Definition();
-    auto *classType = classDef->TsType()->MaybeBaseTypeOfGradualType()->AsETSObjectType();
+    if (classDef->TsType()->IsGradualType()) {
+        return;
+    }
+    auto *classType = classDef->TsType()->AsETSObjectType();
 
     classDecl->SetRange(abstractClassNode->Range());
     classDef->SetAnonymousModifier();
@@ -333,6 +340,7 @@ static checker::Type *ProcessDeclNode(checker::ETSChecker *checker, checker::ETS
                 continue;
             }
 
+            ES2PANDA_ASSERT(it->AsMethodDefinition()->Id());
             checker->LogError(diagnostic::ABSTRACT_METH_IN_ABSTRACT_CLASS, {it->AsMethodDefinition()->Id()->Name()},
                               objExpr->Start());
             return checker->GlobalTypeError();
@@ -378,12 +386,16 @@ static void HandleInterfaceLowering(public_lib::Context *ctx, ir::ObjectExpressi
 
 static bool CheckInterfaceShouldGenerateAnonClass(ir::TSInterfaceDeclaration *interfaceDecl)
 {
+    if (interfaceDecl->TsType() != nullptr && interfaceDecl->TsType()->IsGradualType()) {
+        return false;
+    }
     for (auto it : interfaceDecl->Body()->Body()) {
         if (it->IsOverloadDeclaration()) {
             continue;
         }
         ES2PANDA_ASSERT(it->IsMethodDefinition());
         auto methodDef = it->AsMethodDefinition();
+        ES2PANDA_ASSERT(methodDef->Function());
         if (!methodDef->Function()->IsGetter() && !methodDef->Function()->IsSetter()) {
             return false;
         }
@@ -394,7 +406,7 @@ static bool CheckInterfaceShouldGenerateAnonClass(ir::TSInterfaceDeclaration *in
 
 static bool CheckAbstractClassShouldGenerateAnonClass(ir::ClassDefinition *classDef)
 {
-    auto constructorSigs = classDef->TsType()->MaybeBaseTypeOfGradualType()->AsETSObjectType()->ConstructSignatures();
+    auto constructorSigs = classDef->TsType()->AsETSObjectType()->ConstructSignatures();
     if (auto res = std::find_if(constructorSigs.cbegin(), constructorSigs.cend(),
                                 [](checker::Signature *sig) -> bool { return sig->MinArgCount() == 0; });
         res == constructorSigs.cend()) {
@@ -415,7 +427,7 @@ static void TransfromInterfaceDecl(public_lib::Context *ctx, parser::Program *pr
         if (ast->IsTSInterfaceDeclaration() && CheckInterfaceShouldGenerateAnonClass(ast->AsTSInterfaceDeclaration())) {
             GenerateAnonClassTypeFromInterface(ctx, ast->AsTSInterfaceDeclaration());
         } else if (ast->IsClassDefinition() && ast != program->GlobalClass() &&
-                   ast->AsClassDefinition()->IsAbstract() &&
+                   ast->AsClassDefinition()->IsAbstract() && !ast->AsClassDefinition()->TsType()->IsGradualType() &&
                    CheckAbstractClassShouldGenerateAnonClass(ast->AsClassDefinition())) {
             GenerateAnonClassTypeFromAbstractClass(ctx, ast->AsClassDefinition());
         }
@@ -425,8 +437,12 @@ static void TransfromInterfaceDecl(public_lib::Context *ctx, parser::Program *pr
 static void TransfromInterfaceLiteral(public_lib::Context *ctx, parser::Program *program)
 {
     program->Ast()->IterateRecursivelyPostorder([ctx](ir::AstNode *ast) -> void {
-        if (ast->IsObjectExpression() && (IsInterfaceType(ast->AsObjectExpression()->TsType()) ||
-                                          IsAbstractClassType(ast->AsObjectExpression()->TsType()))) {
+        if (!ast->IsObjectExpression()) {
+            return;
+        }
+        auto objExpr = ast->AsObjectExpression();
+        if ((IsInterfaceType(objExpr->TsType()) || IsAbstractClassType(objExpr->TsType())) &&
+            !objExpr->TsType()->AsETSObjectType()->GetDeclNode()->AsTyped()->TsType()->IsGradualType()) {
             HandleInterfaceLowering(ctx, ast->AsObjectExpression());
         }
     });

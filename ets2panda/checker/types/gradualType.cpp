@@ -21,37 +21,64 @@
 namespace ark::es2panda::checker {
 void GradualType::Identical(TypeRelation *relation, Type *other)
 {
-    baseType_->Identical(relation, other);
+    if (other->IsGradualType()) {
+        baseType_->Identical(relation, other->AsGradualType()->GetBaseType());
+    } else {
+        baseType_->Identical(relation, other);
+    }
 }
 
 void GradualType::AssignmentTarget(TypeRelation *relation, Type *source)
 {
-    baseType_->AssignmentTarget(relation, source);
+    if (source->IsGradualType()) {
+        baseType_->AssignmentTarget(relation, source->AsGradualType()->GetBaseType());
+    } else {
+        baseType_->AssignmentTarget(relation, source);
+    }
 }
 
 bool GradualType::AssignmentSource(TypeRelation *relation, Type *target)
 {
+    if (target->IsGradualType()) {
+        return baseType_->AssignmentSource(relation, target->AsGradualType()->GetBaseType());
+    }
     return baseType_->AssignmentSource(relation, target);
 }
 
 void GradualType::Compare(TypeRelation *relation, Type *other)
 {
-    return baseType_->Compare(relation, other);
+    if (other->IsGradualType()) {
+        baseType_->Compare(relation, other->AsGradualType()->GetBaseType());
+    } else {
+        baseType_->Compare(relation, other);
+    }
 }
 
 void GradualType::Cast(TypeRelation *relation, Type *target)
 {
-    return baseType_->Cast(relation, target);
+    if (target->IsGradualType()) {
+        baseType_->Cast(relation, target->AsGradualType()->GetBaseType());
+    } else {
+        baseType_->Cast(relation, target);
+    }
 }
 
 void GradualType::CastTarget(TypeRelation *relation, Type *source)
 {
-    return baseType_->CastTarget(relation, source);
+    if (source->IsGradualType()) {
+        baseType_->CastTarget(relation, source->AsGradualType()->GetBaseType());
+    } else {
+        baseType_->CastTarget(relation, source);
+    }
 }
 
 void GradualType::IsSubtypeOf(TypeRelation *relation, Type *target)
 {
-    return baseType_->IsSubtypeOf(relation, target);
+    if (target->IsGradualType()) {
+        baseType_->IsSubtypeOf(relation, target->AsGradualType()->GetBaseType());
+    } else {
+        baseType_->IsSubtypeOf(relation, target);
+    }
 }
 
 void GradualType::IsSupertypeOf(TypeRelation *relation, Type *source)
@@ -70,7 +97,8 @@ void GradualType::ToString(std::stringstream &ss, [[maybe_unused]] bool precise)
 
 Type *GradualType::Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes)
 {
-    return baseType_->Instantiate(allocator, relation, globalTypes);
+    auto baseType = baseType_->Instantiate(allocator, relation, globalTypes);
+    return relation->GetChecker()->AsETSChecker()->CreateGradualType(baseType);
 }
 
 Type *GradualType::Substitute(TypeRelation *relation, const Substitution *substitution)

@@ -230,6 +230,7 @@ checker::Type *MemberExpression::TraverseUnionMember(checker::ETSChecker *checke
 
     for (auto *const type : unionType->ConstituentTypes()) {
         auto *const apparent = checker->GetApparentType(type);
+        ES2PANDA_ASSERT(apparent != nullptr);
         if (apparent->IsETSObjectType()) {
             SetObjectType(apparent->AsETSObjectType());
             addPropType(ResolveObjectMember(checker).first);
@@ -285,6 +286,7 @@ static checker::Type *AdjustRecordReturnType(checker::Type *type, checker::Type 
 checker::Type *MemberExpression::AdjustType(checker::ETSChecker *checker, checker::Type *type)
 {
     auto *const objType = checker->GetApparentType(Object()->TsType());
+    ES2PANDA_ASSERT(objType != nullptr);
     if (type != nullptr && objType->IsETSObjectType() &&
         objType->ToAssemblerName().str() == compiler::Signatures::BUILTIN_RECORD) {
         type = AdjustRecordReturnType(type, objType);
@@ -414,7 +416,7 @@ checker::Type *MemberExpression::CheckIndexAccessMethod(checker::ETSChecker *che
         isSetter ? compiler::Signatures::SET_INDEX_METHOD : compiler::Signatures::GET_INDEX_METHOD;
     auto *const method = objType_->GetProperty(methodName, searchFlag);
     if (method == nullptr || !method->HasFlag(varbinder::VariableFlags::METHOD)) {
-        checker->LogError(diagnostic::ERROR_ARKTS_NO_PROPERTIES_BY_INDEX, {}, Start());
+        checker->LogError(diagnostic::NO_INDEX_ACCESS_METHOD, {}, Start());
         return nullptr;
     }
 
@@ -482,10 +484,11 @@ checker::Type *MemberExpression::HandleComputedInGradualType(checker::ETSChecker
 
 checker::Type *MemberExpression::CheckComputed(checker::ETSChecker *checker, checker::Type *baseType)
 {
-    if (baseType->IsGradualType()) {
-        auto objType = baseType->MaybeBaseTypeOfGradualType()->AsETSObjectType();
-        SetObjectType(objType);
-        return HandleComputedInGradualType(checker, objType);
+    if (baseType->IsETSObjectType() && baseType->AsETSObjectType()->GetDeclNode() != nullptr &&
+        baseType->AsETSObjectType()->GetDeclNode()->AsTyped()->TsType() != nullptr &&
+        baseType->AsETSObjectType()->GetDeclNode()->AsTyped()->TsType()->IsGradualType()) {
+        SetObjectType(baseType->AsETSObjectType());
+        return HandleComputedInGradualType(checker, baseType);
     }
     if (baseType->IsETSArrayType()) {
         auto *dflt = baseType->AsETSArrayType()->ElementType();
@@ -540,6 +543,7 @@ checker::VerifiedType MemberExpression::Check(checker::ETSChecker *checker)
 MemberExpression *MemberExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     auto *const clone = allocator->New<MemberExpression>(Tag {}, *this, allocator);
+    ES2PANDA_ASSERT(clone != nullptr);
     if (parent != nullptr) {
         clone->SetParent(parent);
     }

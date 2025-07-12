@@ -33,7 +33,6 @@ class A {
 /* @@? 17:29 Error SyntaxError: Unexpected token ':'. */
 /* @@? 17:31 Error SyntaxError: number is a predefined type, cannot be used as an identifier */
 /* @@? 17:37 Error SyntaxError: Unexpected token ')'. */
-/* @@? 17:37 Error SyntaxError: Field type annotation expected. */
 /* @@? 17:39 Error SyntaxError: Unexpected token '{'. */
 /* @@? 18:3 Error SyntaxError: Unexpected token 'while'. */
 /* @@? 18:8 Error SyntaxError: Unexpected token '('. */

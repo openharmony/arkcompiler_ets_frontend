@@ -18,17 +18,7 @@
             "line": 15,
             "column": 5,
             "endLine": 15,
-            "endColumn": 68,
-            "problem": "AnyType",
-            "suggest": "",
-            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 16,
-            "column": 5,
-            "endLine": 16,
-            "endColumn": 50,
+            "endColumn": 70,
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",

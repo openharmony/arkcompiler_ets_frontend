@@ -36,4 +36,50 @@ class E extends A { // NO ERROR constructor is called
   }
 }
 
-class F extends B {} // NO ERROR
+class Base {
+    constructor(a?: string) {}
+    constructor(a: string, b:string, c?:string) {}
+}
+
+class Foo extends Base {
+    constructor() {
+        super()
+    }
+}
+
+class Bar extends Base {
+    constructor() {
+        super("foo")
+    }
+}
+
+class FooTheSecond extends Base {
+    constructor() {
+        super("Foo", "Bar", "Baz")
+    }
+}
+
+class FaultyBar extends Base {
+    constructor() {
+        super(12) // should error
+    }
+}
+
+
+class FaultyFooTheSecond extends Base {
+    constructor() {
+        super("foo", "bar", false) // should error
+    }
+}
+
+class EpicFoo extends Error {
+    constructor() {
+        super()
+    }
+}
+
+class EpicBar extends Error {
+    constructor() {
+        super("foo")
+    }
+}

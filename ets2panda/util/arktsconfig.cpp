@@ -228,6 +228,7 @@ bool ArkTsConfig::ParsePaths(const JsonObject::JsonObjPointer *options, PathsMap
 static constexpr auto LANGUAGE = "language";  // CC-OFF(G.NAM.03-CPP) project code style
 static constexpr auto PATH = "path";          // CC-OFF(G.NAM.03-CPP) project code style
 static constexpr auto OHM_URL = "ohmUrl";     // CC-OFF(G.NAM.03-CPP) project code style
+static constexpr auto ALIAS = "alias";        // CC-OFF(G.NAM.03-CPP) project code style
 
 bool ArkTsConfig::ParseDependency(size_t keyIdx, const std::unique_ptr<ark::JsonObject> *dependencies,
                                   std::map<std::string, ExternalModuleData, CompareByLength> &dependenciesMap)
@@ -281,7 +282,9 @@ bool ArkTsConfig::ParseDependency(size_t keyIdx, const std::unique_ptr<ark::Json
             return false;
         }
     }
-    auto res = dependenciesMap.insert({key, ArkTsConfig::ExternalModuleData(*lang, normalizedPath, ohmUrlValue)});
+    std::vector<std::string> aliases = ParseStringArray(data, ALIAS);
+    auto res = dependenciesMap.insert(
+        {key, ArkTsConfig::ExternalModuleData(*lang, normalizedPath, ohmUrlValue, std::move(aliases))});
     return Check(res.second, diagnostic::DUPLICATED_DEPENDENCIES, {normalizedPath, key});
 }
 
@@ -486,8 +489,12 @@ std::optional<std::string> ArkTsConfig::ResolvePath(std::string_view path, bool 
     };
 
     auto tryResolveWithDependencies = [this, &path]() -> std::optional<std::string> {
-        for (const auto &[dynPath, _] : dependencies_) {
+        for (const auto &[dynPath, dependence] : dependencies_) {
             if (path == dynPath) {
+                return dynPath;
+            }
+            const auto &aliases = dependence.Alias();
+            if (std::find(aliases.begin(), aliases.end(), path) != aliases.end()) {
                 return dynPath;
             }
         }
@@ -507,6 +514,22 @@ std::optional<std::string> ArkTsConfig::ResolvePath(std::string_view path, bool 
         return result;
     }
     return tryResolveWithDependencies();
+}
+
+std::vector<std::string> ArkTsConfig::ParseStringArray(const std::unique_ptr<ark::JsonObject> *alias,
+                                                       std::string_view key)
+{
+    std::vector<std::string> result;
+    const auto *array = alias->get()->GetValue<JsonObject::ArrayT>(std::string(key));
+    if (array != nullptr) {
+        for (const auto &val : *array) {
+            const auto *str = val.template Get<JsonObject::StringT>();
+            if (str != nullptr && !str->empty()) {
+                result.emplace_back(*str);
+            }
+        }
+    }
+    return result;
 }
 
 #ifdef ARKTSCONFIG_USE_FILESYSTEM

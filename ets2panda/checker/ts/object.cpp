@@ -139,6 +139,7 @@ void TSChecker::ResolveUnionTypeMembers(UnionType *type)
         }
     }
 
+    ES2PANDA_ASSERT(desc != nullptr);
     desc->callSignatures = callSignatures;
     desc->constructSignatures = constructSignatures;
 
@@ -151,6 +152,7 @@ void TSChecker::ResolveUnionTypeMembers(UnionType *type)
     }
 
     ObjectType *mergedType = Allocator()->New<ObjectLiteralType>(desc);
+    ES2PANDA_ASSERT(mergedType != nullptr);
     mergedType->AddObjectFlag(ObjectFlags::RESOLVED_MEMBERS);
     type->SetMergedObjectType(mergedType);
 }
@@ -333,6 +335,7 @@ varbinder::Variable *TSChecker::GetPropertyOfUnionType(UnionType *type, const ut
     }
 
     varbinder::Variable *syntheticProp = varbinder::Scope::CreateVar(Allocator(), name, flags, nullptr);
+    ES2PANDA_ASSERT(syntheticProp != nullptr);
     syntheticProp->SetTsType(CreateUnionType(std::move(collectedTypes)));
     type->CachedSyntheticProperties().insert({name, syntheticProp});
     return syntheticProp;
@@ -386,10 +389,12 @@ IndexInfo *TSChecker::GetApplicableIndexInfo(Type *type, Type *indexType)
 
 Type *TSChecker::GetPropertyTypeForIndexType(Type *type, Type *indexType)
 {
+    ES2PANDA_ASSERT(type != nullptr);
     if (type->IsArrayType()) {
         return type->AsArrayType()->ElementType();
     }
 
+    ES2PANDA_ASSERT(indexType != nullptr);
     if (indexType->HasTypeFlag(TypeFlag::STRING_LITERAL | TypeFlag::NUMBER_LITERAL)) {
         varbinder::Variable *prop = nullptr;
 
@@ -453,6 +458,7 @@ ArenaVector<ObjectType *> TSChecker::GetBaseTypes(InterfaceType *type)
         for (auto *extends : declaration->Extends()) {
             Type *baseType = extends->Expr()->GetType(this);
 
+            ES2PANDA_ASSERT(baseType != nullptr);
             if (!baseType->HasTypeFlag(TypeFlag::OBJECT | TypeFlag::NON_PRIMITIVE | TypeFlag::ANY)) {
                 ThrowTypeError(
                     "An interface can only extend an object type or intersection of object types with statically "

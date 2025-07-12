@@ -220,6 +220,7 @@ ir::Expression *RecordLowering::UpdateObjectExpression(ir::ObjectExpression *exp
 
     // Create Block Expression
     auto block = CreateBlockExpression(expr, typeArguments[0], typeArguments[1], ctx);
+    ES2PANDA_ASSERT(block != nullptr);
     block->SetParent(expr->Parent());
 
     // Run checks

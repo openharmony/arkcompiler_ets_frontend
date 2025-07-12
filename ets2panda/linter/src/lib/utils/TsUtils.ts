@@ -2954,6 +2954,13 @@ export class TsUtils {
       if (TsUtils.hasModifier(ts.getModifiers(propDecl.parent), ts.SyntaxKind.ExportKeyword)) {
         return false;
       }
+
+      if (
+        ts.isStringLiteral(propDecl.name) &&
+        (ts.isClassDeclaration(propDecl.parent) || ts.isInterfaceDeclaration(propDecl.parent))
+      ) {
+        return false;
+      }
     }
 
     return true;
@@ -3793,5 +3800,38 @@ export class TsUtils {
       });
     }
     return typeNode.kind === ts.SyntaxKind.VoidKeyword;
+  }
+
+  static isStdPromiseType(type: ts.Type): boolean {
+    const sym = type.getSymbol();
+    return !!sym && sym.getName() === 'Promise' && isStdLibrarySymbol(sym);
+  }
+
+  static isStdPromiseLikeType(type: ts.Type): boolean {
+    const sym = type.getSymbol();
+    return !!sym && sym.getName() === 'PromiseLike' && isStdLibrarySymbol(sym);
+  }
+
+  static checkStmtHasTargetIdentifier(stmt: ts.ExpressionStatement, target: string): boolean {
+    let current: ts.Node | undefined = stmt.expression;
+
+    while (current) {
+      if (ts.isCallExpression(current)) {
+        current = current.expression;
+        continue;
+      }
+
+      if (ts.isPropertyAccessExpression(current)) {
+        if (current.name.getText() === target) {
+          return true;
+        }
+        current = current.expression;
+        continue;
+      }
+
+      break;
+    }
+
+    return false;
   }
 }

@@ -315,13 +315,163 @@
             "severity": "ERROR"
         },
         {
-            "line": 281,
-            "column": 10,
-            "endLine": 281,
-            "endColumn": 17,
+            "line": 277,
+            "column": 15,
+            "endLine": 277,
+            "endColumn": 28,
             "problem": "MethodInheritRule",
             "suggest": "",
             "rule": "Overridden method parameters and return types must respect type inheritance principles (arkts-method-inherit-rule)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 282,
+            "column": 15,
+            "endLine": 282,
+            "endColumn": 30,
+            "problem": "MethodInheritRule",
+            "suggest": "",
+            "rule": "Overridden method parameters and return types must respect type inheritance principles (arkts-method-inherit-rule)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 287,
+            "column": 15,
+            "endLine": 287,
+            "endColumn": 30,
+            "problem": "MethodInheritRule",
+            "suggest": "",
+            "rule": "Overridden method parameters and return types must respect type inheritance principles (arkts-method-inherit-rule)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 292,
+            "column": 15,
+            "endLine": 292,
+            "endColumn": 28,
+            "problem": "MethodInheritRule",
+            "suggest": "",
+            "rule": "Overridden method parameters and return types must respect type inheritance principles (arkts-method-inherit-rule)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 298,
+            "column": 10,
+            "endLine": 298,
+            "endColumn": 14,
+            "problem": "MethodInheritRule",
+            "suggest": "",
+            "rule": "Overridden method parameters and return types must respect type inheritance principles (arkts-method-inherit-rule)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 309,
+            "column": 3,
+            "endLine": 309,
+            "endColumn": 6,
+            "problem": "MethodInheritRule",
+            "suggest": "",
+            "rule": "Overridden method parameters and return types must respect type inheritance principles (arkts-method-inherit-rule)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 313,
+            "column": 3,
+            "endLine": 313,
+            "endColumn": 6,
+            "problem": "MethodInheritRule",
+            "suggest": "",
+            "rule": "Overridden method parameters and return types must respect type inheritance principles (arkts-method-inherit-rule)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 318,
+            "column": 3,
+            "endLine": 318,
+            "endColumn": 6,
+            "problem": "MethodInheritRule",
+            "suggest": "",
+            "rule": "Overridden method parameters and return types must respect type inheritance principles (arkts-method-inherit-rule)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 324,
+            "column": 3,
+            "endLine": 324,
+            "endColumn": 6,
+            "problem": "MethodInheritRule",
+            "suggest": "",
+            "rule": "Overridden method parameters and return types must respect type inheritance principles (arkts-method-inherit-rule)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 330,
+            "column": 3,
+            "endLine": 330,
+            "endColumn": 6,
+            "problem": "MethodInheritRule",
+            "suggest": "",
+            "rule": "Overridden method parameters and return types must respect type inheritance principles (arkts-method-inherit-rule)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 336,
+            "column": 16,
+            "endLine": 336,
+            "endColumn": 31,
+            "problem": "MethodInheritRule",
+            "suggest": "",
+            "rule": "Overridden method parameters and return types must respect type inheritance principles (arkts-method-inherit-rule)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 355,
+            "column": 11,
+            "endLine": 355,
+            "endColumn": 15,
+            "problem": "MethodInheritRule",
+            "suggest": "",
+            "rule": "Overridden method parameters and return types must respect type inheritance principles (arkts-method-inherit-rule)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 361,
+            "column": 3,
+            "endLine": 361,
+            "endColumn": 7,
+            "problem": "MethodInheritRule",
+            "suggest": "",
+            "rule": "Overridden method parameters and return types must respect type inheritance principles (arkts-method-inherit-rule)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 320,
+            "column": 12,
+            "endLine": 320,
+            "endColumn": 14,
+            "problem": "StrictDiagnostic",
+            "suggest": "Variable 'aa' is used before being assigned.",
+            "rule": "Variable 'aa' is used before being assigned.",
+            "severity": "ERROR"
+        },
+        {
+            "line": 326,
+            "column": 12,
+            "endLine": 326,
+            "endColumn": 14,
+            "problem": "StrictDiagnostic",
+            "suggest": "Variable 'aa' is used before being assigned.",
+            "rule": "Variable 'aa' is used before being assigned.",
+            "severity": "ERROR"
+        },
+        {
+            "line": 332,
+            "column": 12,
+            "endLine": 332,
+            "endColumn": 14,
+            "problem": "StrictDiagnostic",
+            "suggest": "Variable 'aa' is used before being assigned.",
+            "rule": "Variable 'aa' is used before being assigned.",
             "severity": "ERROR"
         }
     ]

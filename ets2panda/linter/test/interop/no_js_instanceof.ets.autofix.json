@@ -33,7 +33,7 @@
                 {
                     "start": 692,
                     "end": 692,
-                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('./no_js_instanceof_file.js');\nlet Foo = GeneratedImportVar_1.getProperty('Foo');\nlet foo = GeneratedImportVar_1.getProperty('foo');\nlet CreatePerson = GeneratedImportVar_1.getProperty('CreatePerson');\nlet a = GeneratedImportVar_1.getProperty('a');\nlet b = GeneratedImportVar_1.getProperty('b');\nlet MyNamespace = GeneratedImportVar_1.getProperty('MyNamespace');\n",
+                    "replacementText": "let Foo = ESValue.load('./no_js_instanceof_file.js').getProperty('Foo');\nlet foo = ESValue.load('./no_js_instanceof_file.js').getProperty('foo');\nlet CreatePerson = ESValue.load('./no_js_instanceof_file.js').getProperty('CreatePerson');\nlet a = ESValue.load('./no_js_instanceof_file.js').getProperty('a');\nlet b = ESValue.load('./no_js_instanceof_file.js').getProperty('b');\nlet MyNamespace = ESValue.load('./no_js_instanceof_file.js').getProperty('MyNamespace');\n",
                     "line": 16,
                     "column": 1,
                     "endLine": 16,

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -34,9 +34,11 @@ varbinder::LocalVariable *ObjectDescriptor::FindProperty(const util::StringView 
 void ObjectDescriptor::Copy(ArenaAllocator *allocator, ObjectDescriptor *copiedDesc, TypeRelation *relation,
                             GlobalTypesHolder *globalTypes)
 {
+    ES2PANDA_ASSERT(copiedDesc != nullptr);
     // copy by hand
     for (auto *it : properties) {
         auto *copiedProp = it->Copy(allocator, it->Declaration());
+        ES2PANDA_ASSERT(copiedProp != nullptr);
         copiedProp->SetTsType(it->TsType()->Instantiate(allocator, relation, globalTypes));
         copiedDesc->properties.push_back(copiedProp);
     }

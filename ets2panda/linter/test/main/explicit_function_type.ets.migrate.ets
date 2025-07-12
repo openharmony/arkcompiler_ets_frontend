@@ -75,8 +75,8 @@ class I24 {
   constructor(par: Function, par1?: string) {}
 }
 class I24_1 extends I24 {
-  constructor() {
-    super(Function)
+  constructor(par: Function) {
+    super(par)
   }
 }
 
@@ -130,7 +130,7 @@ let tup38:[['arkts'|Function, 1.0|true, false], string[], Function] = [['arkts',
 //枚举
 enum E39 {
   Function,
-  BLUE = 1.0,
+  BLUE = 1,
   YELLOW
 }
 
@@ -178,3 +178,7 @@ SysApiWrapper.setTimeout = (handler: Function | string, delay?: number): number 
   (handler as Function)?.unsafeCall();
   return Math.random();
 }
+
+new Function('return 42')();
+
+Function('return 42')();

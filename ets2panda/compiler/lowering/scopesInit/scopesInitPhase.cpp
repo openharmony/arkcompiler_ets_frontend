@@ -582,6 +582,7 @@ void ScopeInitTyped::VisitTSModuleDeclaration(ir::TSModuleDeclaration *moduleDec
     if (!moduleDecl->IsExternalOrAmbient()) {
         auto name = moduleDecl->Name()->AsIdentifier()->Name();
         auto *decl = AddOrGetDecl<varbinder::VarDecl>(VarBinder(), name, moduleDecl, moduleDecl->Name()->Start(), name);
+        ES2PANDA_ASSERT(decl != nullptr);
         decl->BindNode(moduleDecl);
     }
     auto localCtx = LexicalScopeCreateOrEnter<varbinder::LocalScope>(VarBinder(), moduleDecl);
@@ -643,6 +644,7 @@ void ScopeInitTyped::VisitTSInterfaceDeclaration(ir::TSInterfaceDeclaration *int
     auto localScope = LexicalScopeCreateOrEnter<varbinder::LocalScope>(VarBinder(), interfDecl);
     auto *identDecl =
         AddOrGetDecl<varbinder::ConstDecl>(VarBinder(), ident->Name(), interfDecl, ident->Start(), ident->Name());
+    ES2PANDA_ASSERT(identDecl != nullptr);
     identDecl->BindNode(interfDecl);
     BindScopeNode(localScope.GetScope(), interfDecl);
 
@@ -786,6 +788,7 @@ void InitScopesPhaseTs::CreateFuncDecl(ir::ScriptFunction *func)
         decl = currentDecl->AsFunctionDecl();
     }
 
+    ES2PANDA_ASSERT(decl != nullptr);
     decl->Add(func);
 }
 
@@ -972,13 +975,14 @@ void AddOverload(ir::MethodDefinition *overload, varbinder::Variable *variable) 
 {
     auto *currentNode = variable->Declaration()->Node();
     currentNode->AsMethodDefinition()->AddOverload(overload);
+    ES2PANDA_ASSERT(overload->Id() != nullptr);
     overload->Id()->SetVariable(variable);
     overload->SetParent(currentNode);
 }
 
 void InitScopesPhaseETS::DeclareClassMethod(ir::MethodDefinition *method)
 {
-    ES2PANDA_ASSERT(VarBinder()->GetScope()->IsClassScope());
+    ES2PANDA_ASSERT(VarBinder()->GetScope()->IsClassScope() && method->AsMethodDefinition()->Function() != nullptr);
 
     if ((method->AsMethodDefinition()->Function()->Flags() & ir::ScriptFunctionFlags::OVERLOAD) != 0) {
         return;
@@ -1034,7 +1038,8 @@ void InitScopesPhaseETS::MaybeAddOverload(ir::MethodDefinition *method, ir::Iden
         if (methodName->Name().Is(compiler::Signatures::MAIN) && clsScope->Parent()->IsGlobalScope()) {
             LogDiagnostic(diagnostic::OVERLOADED_MAIN, methodName->Start());
         }
-        ES2PANDA_ASSERT((method->Function()->Flags() & ir::ScriptFunctionFlags::OVERLOAD) == 0U);
+        ES2PANDA_ASSERT(method->Function() != nullptr &&
+                        (method->Function()->Flags() & ir::ScriptFunctionFlags::OVERLOAD) == 0U);
 
         AddOverload(method, found);
         method->Function()->AddFlag(ir::ScriptFunctionFlags::OVERLOAD);
@@ -1198,6 +1203,7 @@ void InitScopesPhaseETS::VisitTSEnumMember(ir::TSEnumMember *enumMember)
 
 void InitScopesPhaseETS::VisitMethodDefinition(ir::MethodDefinition *method)
 {
+    ES2PANDA_ASSERT(method->Function() != nullptr);
     if (method->Function()->Scope() != nullptr) {
         return;
     }

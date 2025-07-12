@@ -53,7 +53,7 @@ declare const broken2: AnotherBroken<any>;
 /* @@? 31:14 Error SyntaxError: Unexpected token ','. */
 /* @@? 32:12 Error SyntaxError: Class cannot be used as object. */
 /* @@? 32:12 Error SyntaxError: Label must be followed by a loop statement. */
-/* @@? 32:12 Error TypeError: Indexed signatures are not allowed. Use arrays instead! */
+/* @@? 32:12 Error TypeError: Object type doesn't have proper index access method. */
 /* @@? 36:27 Error TypeError: Cannot find type 'UndefinedInterface'. */
 /* @@? 39:35 Error TypeError: Cannot find type 'any'. */
 /* @@? 40:38 Error TypeError: Cannot find type 'any'. */

@@ -13,9 +13,8 @@
  * limitations under the License.
  */
 
-let GeneratedImportVar_1 = ESValue.load('./interop_equality_judgment_js');
-let a = GeneratedImportVar_1.getProperty('a');
-let b = GeneratedImportVar_1.getProperty('b');
+let a = ESValue.load('./interop_equality_judgment_js').getProperty('a');
+let b = ESValue.load('./interop_equality_judgment_js').getProperty('b');
 
 a.areEqual(b)
 !a.areEqual(b)

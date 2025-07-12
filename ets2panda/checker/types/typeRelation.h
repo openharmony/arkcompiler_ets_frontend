@@ -312,7 +312,6 @@ public:
     void RaiseError(const diagnostic::DiagnosticKind &kind, const lexer::SourcePosition &loc) const;
     void RaiseError(const diagnostic::DiagnosticKind &kind, const util::DiagnosticMessageParams &list,
                     const lexer::SourcePosition &loc) const;
-    void LogError(const util::DiagnosticMessageParams &list, const lexer::SourcePosition &loc) const;
 
     bool Result(bool res)
     {

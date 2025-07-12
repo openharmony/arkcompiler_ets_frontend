@@ -29,18 +29,18 @@ enum LiteralAsPropertyNameEnum {
 class LiteralAsPropertyName {
   public one: string = "1111111111";
   private __2: string;
-  Two: number;
+  'Two': number;
 }
 
 const litAsPropName: LiteralAsPropertyName = {
   one: "1",
   __2: 'two',
-  Two: 2.0,
+  'Two': 2.0,
 };
 
 console.log(litAsPropName.one);
 console.log(litAsPropName.__2);
-console.log(litAsPropName.Two);
+console.log(litAsPropName["Two"]);
 
 class LiteralAsPropertyName_fix {
   public one: string = "1111111111";
@@ -82,12 +82,12 @@ console.log(x_fix._2);
 interface litAsPropNameIface {
   one: string;
   ___2: string;
-  __2: number;
+  '__2': number;
 }
 const int: litAsPropNameIface = {
   one: '12321',
   ___2: 'weqwewq',
-  __2: 123.0
+  '__2': 123.0
 };
 
 const imp: ExportLitAsPropName = { 1: 234.0 };
@@ -98,27 +98,27 @@ LiteralAsPropertyNameEnum.PrivateTwo;
 
 {
   const enum Direction {
-   __empty = 1.0,
+   __empty = 1,
   }
 }
 
 const enum Direction16 {
-  ___x5c = 1.0,
-  __x5c = 1.0,
+  ___x5c = 1,
+  __x5c = 1,
 }
 
 const enum Direction17 {
-  ___x5c = 1.0,
-  __x5c = 1.0,
+  ___x5c = 1,
+  __x5c = 1,
 }
 let case17: number = Direction17.___x5c
 let case172: number = Direction17.__x5c
 
 const enum Direction11 {
-__x21x21 = 1.0,
+__x21x21 = 1,
 }
 const enum Direction23 {
-aaa = 1.0,
+aaa = 1,
 }
 // ArkUI
 @Component
@@ -138,7 +138,7 @@ let a:A = { age: 30.0}
 
 
 class B {
-  public age: number = 1.0 // error in arkts2
+  public 'age': number = 1.0 // error in arkts2
 }
 
 let obj11: Record<string, number> = {

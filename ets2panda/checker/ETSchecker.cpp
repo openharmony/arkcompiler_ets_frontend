@@ -697,6 +697,7 @@ ETSObjectType *ETSChecker::GlobalBuiltinBoxType(Type *contents)
         default: {
             auto *base = AsETSObjectType(&GlobalTypesHolder::GlobalBoxBuiltinType);
             auto substitution = Substitution {};
+            ES2PANDA_ASSERT(base != nullptr);
             substitution.emplace(base->TypeArguments()[0]->AsETSTypeParameter(), contents);
             return base->Substitute(Relation(), &substitution);
         }
@@ -711,6 +712,16 @@ GlobalArraySignatureMap &ETSChecker::GlobalArrayTypes()
 const GlobalArraySignatureMap &ETSChecker::GlobalArrayTypes() const
 {
     return globalArraySignatures_;
+}
+
+const ArenaSet<util::StringView> &ETSChecker::UnionAssemblerTypes() const
+{
+    return unionAssemblerTypes_;
+}
+
+ArenaSet<util::StringView> &ETSChecker::UnionAssemblerTypes()
+{
+    return unionAssemblerTypes_;
 }
 
 Type *ETSChecker::GlobalTypeError() const

@@ -89,7 +89,8 @@ bool ETSChecker::CheckNonNullish(ir::Expression const *expr)
 Type *ETSChecker::GetNonNullishType(Type *type)
 {
     if (type->IsGradualType()) {
-        return GetNonNullishType(type->AsGradualType()->GetBaseType());
+        return CreateGradualType(GetNonNullishType(type->AsGradualType()->GetBaseType()),
+                                 type->AsGradualType()->Language());
     }
     if (type->DefinitelyNotETSNullish()) {
         return type;
@@ -414,6 +415,7 @@ bool ETSChecker::IsConstantExpression(ir::Expression *expr, Type *type)
 
 Type *ETSChecker::GetNonConstantType(Type *type)
 {
+    ES2PANDA_ASSERT(type != nullptr);
     if (type->IsETSStringType()) {
         return GlobalBuiltinETSStringType();
     }
@@ -471,7 +473,14 @@ Type *ETSChecker::GetTypeOfSetterGetter(varbinder::Variable *const var)
 {
     auto *propType = var->TsType()->AsETSFunctionType();
     if (propType->HasTypeFlag(checker::TypeFlag::GETTER)) {
-        return propType->FindGetter()->ReturnType();
+        auto *getter = propType->FindGetter();
+        ES2PANDA_ASSERT(getter != nullptr);
+        return getter->ReturnType();
+    }
+
+    if (propType->FindSetter()->Params().empty()) {
+        var->SetTsType(GlobalTypeError());
+        return GlobalTypeError();
     }
 
     return propType->FindSetter()->Params()[0]->TsType();
@@ -511,7 +520,9 @@ void ETSChecker::IterateInVariableContext(varbinder::Variable *const var)
         if (iter->IsMethodDefinition()) {
             auto *methodDef = iter->AsMethodDefinition();
             ES2PANDA_ASSERT(methodDef->TsType());
-            Context().SetContainingSignature(methodDef->Function()->Signature());
+            auto *func = methodDef->Function();
+            ES2PANDA_ASSERT(func != nullptr);
+            Context().SetContainingSignature(func->Signature());
         } else if (iter->IsClassDefinition()) {
             auto *classDef = iter->AsClassDefinition();
             Type *containingClass {};
@@ -666,7 +677,9 @@ Type *ETSChecker::GuaranteedTypeForUncheckedPropertyAccess(varbinder::Variable *
 
     switch (auto node = prop->Declaration()->Node(); node->Type()) {
         case ir::AstNodeType::CLASS_PROPERTY: {
-            auto baseProp = node->AsClassProperty()->Id()->Variable();
+            auto *id = node->AsClassProperty()->Id();
+            ES2PANDA_ASSERT(id != nullptr);
+            auto baseProp = id->Variable();
             if (baseProp == prop) {
                 return nullptr;
             }
@@ -686,6 +699,7 @@ Type *ETSChecker::GuaranteedTypeForUncheckedPropertyAccess(varbinder::Variable *
 // Determine if substituted method cast requires cast from erased type
 Type *ETSChecker::GuaranteedTypeForUncheckedCallReturn(Signature *sig)
 {
+    ES2PANDA_ASSERT(sig != nullptr);
     ES2PANDA_ASSERT(sig->HasFunction());
     if (sig->HasSignatureFlag(SignatureFlags::THIS_RETURN_TYPE)) {
         return sig->ReturnType();
@@ -704,9 +718,9 @@ Type *ETSChecker::ResolveUnionUncheckedType(ArenaVector<checker::Type *> &&appar
         return nullptr;
     }
     auto *unionType = CreateETSUnionType(std::move(apparentTypes));
+    ES2PANDA_ASSERT(unionType != nullptr);
     if (unionType->IsETSUnionType()) {
-        checker::Type *typeLUB = unionType->AsETSUnionType()->GetAssemblerLUB();
-        return typeLUB;
+        return unionType->AsETSUnionType();
     }
     // Is case of single apparent type, just return itself
     return unionType;
@@ -808,6 +822,7 @@ Type *ETSChecker::GetTypeFromTypeAliasReference(varbinder::Variable *var)
     typeAliasType = CreateETSTypeAliasType(aliasTypeNode->Id()->Name(), aliasTypeNode);
     if (aliasTypeNode->TypeParams() != nullptr) {
         auto [typeParamTypes, ok] = CreateUnconstrainedTypeParameters(aliasTypeNode->TypeParams());
+        ES2PANDA_ASSERT(typeAliasType != nullptr);
         typeAliasType->AsETSTypeAliasType()->SetTypeArguments(std::move(typeParamTypes));
         if (ok) {
             AssignTypeParameterConstraints(aliasTypeNode->TypeParams());
@@ -957,12 +972,15 @@ void ETSChecker::CheckAmbientAnnotation(ir::AnnotationDeclaration *annoImpl, ir:
 
     for (auto *prop : annoDecl->Properties()) {
         auto *field = prop->AsClassProperty();
+        ES2PANDA_ASSERT(field->Id() != nullptr);
         fieldMap[field->Id()->Name()] = field;
     }
 
     for (auto *prop : annoImpl->Properties()) {
         auto *field = prop->AsClassProperty();
-        auto fieldName = field->Id()->Name();
+        auto *id = field->Id();
+        ES2PANDA_ASSERT(id != nullptr);
+        auto fieldName = id->Name();
         auto fieldDeclIter = fieldMap.find(fieldName);
         if (fieldDeclIter == fieldMap.end()) {
             LogError(diagnostic::AMBIENT_ANNOT_IMPL_OF_UNDEFINED_FIELD, {fieldName, annoDecl->GetBaseName()->Name()},
@@ -1140,7 +1158,7 @@ void ETSChecker::HandleAnnotationRetention(ir::AnnotationUsage *anno, ir::Annota
 
 void ETSChecker::CheckStandardAnnotation(ir::AnnotationUsage *anno)
 {
-    if (anno->GetBaseName()->Variable() == nullptr) {
+    if (anno->GetBaseName()->Variable() == nullptr || IsTypeError(anno->GetBaseName()->TsType())) {
         return;
     }
     ES2PANDA_ASSERT(anno->GetBaseName()->Variable()->Declaration()->Node()->AsAnnotationDeclaration() != nullptr);
@@ -1235,9 +1253,11 @@ void ETSChecker::CheckMultiplePropertiesAnnotation(ir::AnnotationUsage *st, util
 {
     for (auto *it : st->Properties()) {
         auto *param = it->AsClassProperty();
-        auto result = fieldMap.find(param->Id()->Name());
+        auto *id = param->Id();
+        ES2PANDA_ASSERT(id != nullptr);
+        auto result = fieldMap.find(id->Name());
         if (result == fieldMap.end()) {
-            LogError(diagnostic::ANNOT_PROP_UNDEFINED, {param->Id()->Name(), baseName}, param->Start());
+            LogError(diagnostic::ANNOT_PROP_UNDEFINED, {id->Name(), baseName}, param->Start());
             continue;
         }
 
@@ -1312,11 +1332,13 @@ Type *ETSChecker::MaybeBoxInRelation(Type *objectType)
 
 Type *ETSChecker::MaybeBoxType(Type *type) const
 {
+    ES2PANDA_ASSERT(type != nullptr);
     return type->IsETSPrimitiveType() ? BoxingConverter::Convert(this, type) : type;
 }
 
 Type *ETSChecker::MaybeUnboxType(Type *type) const
 {
+    ES2PANDA_ASSERT(type != nullptr);
     return type->IsETSUnboxableObject() ? UnboxingConverter::Convert(this, type->AsETSObjectType()) : type;
 }
 
@@ -1389,24 +1411,6 @@ void ETSChecker::CheckUnboxedSourceTypeWithWideningAssignable(TypeRelation *rela
     }
 }
 
-static ir::AstNode *DerefETSTypeReference(ir::AstNode *node)
-{
-    ES2PANDA_ASSERT(node->IsETSTypeReference());
-    do {
-        auto *name = node->AsETSTypeReference()->Part()->GetIdent();
-
-        ES2PANDA_ASSERT(name->IsIdentifier());
-        auto *var = name->AsIdentifier()->Variable();
-        ES2PANDA_ASSERT(var != nullptr);
-        auto *declNode = var->Declaration()->Node();
-        if (!declNode->IsTSTypeAliasDeclaration()) {
-            return declNode;
-        }
-        node = declNode->AsTSTypeAliasDeclaration()->TypeAnnotation();
-    } while (node->IsETSTypeReference());
-    return node;
-}
-
 // #22952: optional arrow leftovers
 bool ETSChecker::CheckLambdaAssignable(ir::Expression *param, ir::ScriptFunction *lambda)
 {
@@ -1416,14 +1420,13 @@ bool ETSChecker::CheckLambdaAssignable(ir::Expression *param, ir::ScriptFunction
         return false;
     }
     if (typeAnn->IsETSTypeReference() && !typeAnn->AsETSTypeReference()->TsType()->IsETSArrayType()) {
-        typeAnn = DerefETSTypeReference(typeAnn);
+        typeAnn = util::Helpers::DerefETSTypeReference(typeAnn);
     }
 
     if (!typeAnn->IsETSFunctionType()) {
         // the surrounding function is made so we can *bypass* the typecheck in the "inference" context,
         // however the body of the function has to be checked in any case
         if (typeAnn->IsETSUnionType()) {
-            lambda->Parent()->Check(this);
             return CheckLambdaAssignableUnion(typeAnn, lambda);
         }
 
@@ -1443,7 +1446,7 @@ bool ETSChecker::CheckLambdaInfer(ir::AstNode *typeAnnotation, ir::ArrowFunction
                                   Type *const subParameterType)
 {
     if (typeAnnotation->IsETSTypeReference()) {
-        typeAnnotation = DerefETSTypeReference(typeAnnotation);
+        typeAnnotation = util::Helpers::DerefETSTypeReference(typeAnnotation);
     }
 
     if (!typeAnnotation->IsETSFunctionType()) {
@@ -1462,7 +1465,10 @@ bool ETSChecker::CheckLambdaTypeAnnotation(ir::ETSParameterExpression *param,
                                            ir::ArrowFunctionExpression *const arrowFuncExpr, Type *const parameterType,
                                            TypeRelationFlag flags)
 {
-    auto *typeAnnotation = param->Ident()->TypeAnnotation();
+    ir::AstNode *typeAnnotation = param->Ident()->TypeAnnotation();
+    if (typeAnnotation->IsETSTypeReference()) {
+        typeAnnotation = util::Helpers::DerefETSTypeReference(typeAnnotation);
+    }
     auto checkInvocable = [&arrowFuncExpr, &parameterType, this](TypeRelationFlag functionFlags) {
         Type *const argumentType = arrowFuncExpr->Check(this);
         functionFlags |= TypeRelationFlag::NO_THROW;
@@ -1476,6 +1482,7 @@ bool ETSChecker::CheckLambdaTypeAnnotation(ir::ETSParameterExpression *param,
     if (!typeAnnotation->IsETSUnionType()) {
         // #22952: infer optional parameter heuristics
         auto nonNullishParam = param->IsOptional() ? GetNonNullishType(parameterType) : parameterType;
+        ES2PANDA_ASSERT(nonNullishParam != nullptr);
         if (!nonNullishParam->IsETSFunctionType()) {
             arrowFuncExpr->Check(this);
             return true;
@@ -1492,13 +1499,12 @@ bool ETSChecker::CheckLambdaTypeAnnotation(ir::ETSParameterExpression *param,
     }
     auto *const lambdaReturnTypeAnnotation = lambda->ReturnTypeAnnotation();
 
-    Type *const argumentType = arrowFuncExpr->Check(this);
-    if (Relation()->IsSupertypeOf(parameterType, argumentType)) {
-        return true;
+    if (!parameterType->IsETSUnionType() || parameterType->AsETSUnionType()->ConstituentTypes().size() !=
+                                                typeAnnotation->AsETSUnionType()->Types().size()) {
+        Type *const argumentType = arrowFuncExpr->Check(this);
+        return Relation()->IsSupertypeOf(parameterType, argumentType);
     }
 
-    ES2PANDA_ASSERT(parameterType->AsETSUnionType()->ConstituentTypes().size() ==
-                    typeAnnotation->AsETSUnionType()->Types().size());
     const auto typeAnnsOfUnion = typeAnnotation->AsETSUnionType()->Types();
     const auto typeParamOfUnion = parameterType->AsETSUnionType()->ConstituentTypes();
     for (size_t ix = 0; ix < typeAnnsOfUnion.size(); ++ix) {

@@ -75,6 +75,27 @@ Variable *Scope::FindLocal(const util::StringView &name, ResolveBindingOptions o
     return res->second;
 }
 
+bool Scope::CorrectForeignBinding(const util::StringView &name, Variable *builtinVar, Variable *redefinedVar)
+{
+    ES2PANDA_ASSERT(builtinVar != redefinedVar);
+    auto bindingTobeErase = bindings_.find(name);
+    if (bindingTobeErase == bindings_.end()) {
+        return false;
+    }
+
+    Variable *varTobeErase = bindingTobeErase->second;
+    if (varTobeErase != redefinedVar) {
+        return false;
+    }
+
+    auto declTobeErase = redefinedVar->Declaration();
+    bindings_.erase(name);
+    auto it = std::find_if(decls_.begin(), decls_.end(), [&](auto *decl) { return decl == declTobeErase; });
+    ES2PANDA_ASSERT(it != decls_.end());
+    decls_.erase(it);
+    return Scope::InsertBinding(name, builtinVar).second;
+}
+
 Scope::InsertResult Scope::InsertBinding(const util::StringView &name, Variable *const var)
 {
     ES2PANDA_ASSERT(var != nullptr);
@@ -432,6 +453,7 @@ Variable *ParamScope::AddParameter(ArenaAllocator *allocator, Decl *newDecl, Var
     ES2PANDA_ASSERT(newDecl->IsParameterDecl());
 
     auto *param = allocator->New<LocalVariable>(newDecl, flags);
+    ES2PANDA_ASSERT(param != nullptr);
     param->SetScope(this);
 
     params_.emplace_back(param);
@@ -495,13 +517,12 @@ Variable *AnnotationParamScope::AddBinding([[maybe_unused]] ArenaAllocator *allo
                                            [[maybe_unused]] ScriptExtension extension)
 {
     auto *ident = newDecl->Node()->AsClassProperty()->Id();
+    ES2PANDA_ASSERT(ident != nullptr);
     auto annoVar = allocator->New<LocalVariable>(newDecl, VariableFlags::PROPERTY);
     auto var = InsertBinding(ident->Name(), annoVar).first->second;
     if (var != nullptr) {
         var->SetScope(this);
-        if (ident != nullptr) {
-            ident->SetVariable(var);
-        }
+        ident->SetVariable(var);
     }
     return var;
 }
@@ -633,6 +654,15 @@ Scope::InsertResult GlobalScope::InsertOrAssignForeignBinding(const util::String
     return GlobalScope::InsertImpl(name, var, InsertBindingFlags::FOREIGN | InsertBindingFlags::ASSIGN);
 }
 
+bool GlobalScope::CorrectForeignBinding(const util::StringView &name, Variable *builtinVar, Variable *redefinedVar)
+{
+    const bool deleteRes = Scope::CorrectForeignBinding(name, builtinVar, redefinedVar);
+    if (deleteRes) {
+        foreignBindings_[name] = true;
+    }
+    return deleteRes;
+}
+
 Scope::InsertResult GlobalScope::InsertImpl(const util::StringView &name, Variable *const var,
                                             const InsertBindingFlags flags)
 {
@@ -721,6 +751,7 @@ void ModuleScope::AddImportDecl(ir::ImportDeclaration *importDecl, ImportDeclLis
 
 void ModuleScope::AddExportDecl(ir::AstNode *exportDecl, ExportDecl *decl)
 {
+    ES2PANDA_ASSERT(decl != nullptr);
     decl->BindNode(exportDecl);
 
     ArenaVector<ExportDecl *> decls(allocator_->Adapter());
@@ -750,6 +781,7 @@ Variable *ModuleScope::AddImport(ArenaAllocator *allocator, Variable *currentVar
     }
 
     auto *variable = allocator->New<ModuleVariable>(newDecl, VariableFlags::NONE);
+    ES2PANDA_ASSERT(variable != nullptr);
     variable->ExoticName() = newDecl->AsImportDecl()->ImportName();
     InsertBinding(newDecl->Name(), variable);
     return variable;
@@ -1010,6 +1042,7 @@ void LoopDeclarationScope::ConvertToVariableScope(ArenaAllocator *allocator)
 
     if (loopType_ == ScopeType::LOOP_DECL) {
         auto *parentVarScope = Parent()->EnclosingVariableScope();
+        ES2PANDA_ASSERT(parentVarScope != nullptr);
         slotIndex_ = std::max(slotIndex_, parentVarScope->LexicalSlots());
         evalBindings_ = parentVarScope->EvalBindings();
         initScope_ = allocator->New<LocalScope>(allocator, Parent());

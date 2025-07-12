@@ -48,6 +48,7 @@ namespace ark::es2panda::checker {
 void ProcessCheckerNode(ETSChecker *checker, ir::AstNode *node)
 {
     auto scope = compiler::NearestScope(node);
+    ES2PANDA_ASSERT(scope != nullptr);
     if (scope->IsGlobalScope()) {
         // NOTE(aleksisch): All classes are contained in ETSGlobal class scope (not just Global scope),
         // however it's parent is ETSModule. It should be fixed
@@ -62,6 +63,7 @@ void ProcessCheckerNode(ETSChecker *checker, ir::AstNode *node)
         // however right now checker do it when called on ClassDefinition
         auto method = node->AsMethodDefinition();
         auto func = method->Value()->AsFunctionExpression()->Function();
+        ES2PANDA_ASSERT(method->Id() != nullptr);
         func->Id()->SetVariable(method->Id()->Variable());
     }
     ScopeContext checkerScope(checker, scope);
@@ -71,6 +73,7 @@ void ProcessCheckerNode(ETSChecker *checker, ir::AstNode *node)
 void ProcessScopesNode(ETSChecker *checker, ir::AstNode *node)
 {
     auto *scope = compiler::NearestScope(node);
+    ES2PANDA_ASSERT(scope != nullptr);
     if (scope->IsGlobalScope()) {
         // NOTE(aleksisch): All classes are contained in ETSGlobal scope,
         // however it's parent is ETSModule (not ETSGlobal). It should be fixed
@@ -117,6 +120,7 @@ std::pair<ir::ScriptFunction *, ir::Identifier *> ETSChecker::CreateStaticScript
                         ir::ModifierFlags::STATIC,
                      });
     // clang-format on
+    ES2PANDA_ASSERT(func != nullptr);
     func->SetIdent(id);
 
     return std::make_pair(func, id);
@@ -143,6 +147,7 @@ std::pair<ir::ScriptFunction *, ir::Identifier *> ETSChecker::CreateScriptFuncti
                                                                     ir::ScriptFunctionFlags::CONSTRUCTOR |
                                                                         ir::ScriptFunctionFlags::EXPRESSION,
                                                                     ir::ModifierFlags::PUBLIC});
+    ES2PANDA_ASSERT(func != nullptr);
     func->SetIdent(id);
 
     return std::make_pair(func, id);
@@ -159,6 +164,7 @@ ir::ClassStaticBlock *ETSChecker::CreateClassStaticInitializer(const ClassInitia
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *staticBlock = ProgramAllocNode<ir::ClassStaticBlock>(funcExpr, ProgramAllocator());
+    ES2PANDA_ASSERT(staticBlock != nullptr);
     staticBlock->AddModifier(ir::ModifierFlags::STATIC);
 
     return staticBlock;

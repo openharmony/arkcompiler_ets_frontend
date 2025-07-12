@@ -36,6 +36,7 @@ NewExpression::NewExpression([[maybe_unused]] Tag const tag, NewExpression const
 NewExpression *NewExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     auto *const clone = allocator->New<NewExpression>(Tag {}, *this, allocator);
+    ES2PANDA_ASSERT(clone != nullptr);
     if (parent != nullptr) {
         clone->SetParent(parent);
     }

@@ -161,9 +161,10 @@ ir::ClassDeclaration *GlobalClassHandler::CreateTransformedClass(ir::ETSModule *
     auto *ident = NodeAllocator::Alloc<ir::Identifier>(allocator_, className, allocator_);
     ident->SetRange(ns->Ident()->Range());
 
-    auto *classDef = NodeAllocator::Alloc<ir::ClassDefinition>(
-        allocator_, allocator_, ident, ir::ClassDefinitionModifiers::CLASS_DECL, ir::ModifierFlags::ABSTRACT,
-        Language(Language::Id::ETS));
+    auto *classDef = NodeAllocator::Alloc<ir::ClassDefinition>(allocator_, allocator_, ident,
+                                                               ir::ClassDefinitionModifiers::CLASS_DECL,
+                                                               ir::ModifierFlags::ABSTRACT, ns->Language());
+    ES2PANDA_ASSERT(classDef != nullptr);
     classDef->SetRange(ns->Range());
     classDef->AddModifier(ns->Modifiers());
     auto *classDecl = NodeAllocator::Alloc<ir::ClassDeclaration>(allocator_, classDef, allocator_);
@@ -181,6 +182,7 @@ ir::ClassDeclaration *GlobalClassHandler::CreateTransformedClass(ir::ETSModule *
 
 static void InsertInGlobal(ir::ClassDefinition *globalClass, ir::AstNode *node)
 {
+    ES2PANDA_ASSERT(node != nullptr);
     globalClass->BodyForUpdate().insert(globalClass->Body().begin(), node);
     node->SetParent(globalClass);
 }
@@ -221,6 +223,7 @@ void GlobalClassHandler::SetupGlobalMethods(ArenaVector<ir::Statement *> &&initS
 
     ir::MethodDefinition *initMethod = CreateGlobalMethod(compiler::Signatures::INIT_METHOD, std::move(initStatements));
     InsertInGlobal(globalClass, initMethod);
+    ES2PANDA_ASSERT(initMethod->Function());
     if (!initMethod->Function()->Body()->AsBlockStatement()->Statements().empty()) {
         AddInitCallToStaticBlock(globalClass, initMethod);
     }
@@ -282,6 +285,7 @@ void GlobalClassHandler::TransformBrokenNamespace(ir::AstNode *node)
 ir::ClassDeclaration *GlobalClassHandler::TransformNamespace(ir::ETSModule *ns)
 {
     ir::ClassDeclaration *const globalDecl = CreateTransformedClass(ns);
+    ES2PANDA_ASSERT(globalDecl != nullptr);
     ir::ClassDefinition *const globalClass = globalDecl->Definition();
 
     ArenaVector<GlobalStmts> immediateInitializers(allocator_->Adapter());
@@ -366,6 +370,7 @@ void GlobalClassHandler::SetupGlobalClass(const ArenaVector<parser::Program *> &
 
     ArenaUnorderedSet<util::StringView> packageInitializerBlockCount(allocator_->Adapter());
     ir::ClassDeclaration *const globalDecl = CreateGlobalClass(globalProgram_);
+    ES2PANDA_ASSERT(globalDecl != nullptr);
     ir::ClassDefinition *const globalClass = globalDecl->Definition();
 
     // NOTE(vpukhov): a clash inside program list is possible
@@ -429,7 +434,7 @@ ir::MethodDefinition *GlobalClassHandler::CreateGlobalMethod(const std::string_v
         allocator_, allocator_,
         ir::ScriptFunction::ScriptFunctionData {
             body, std::move(funcSignature), functionFlags, {}, Language(Language::Id::ETS)});
-
+    ES2PANDA_ASSERT(func != nullptr);
     func->SetIdent(ident);
     func->AddModifier(functionModifiers);
 
@@ -469,7 +474,7 @@ void GlobalClassHandler::AddInitializerBlockToStaticBlock(ir::ClassDefinition *g
     auto *staticBlock = (*maybeStaticBlock)->AsClassStaticBlock();
     auto *initializerStmts =
         NodeAllocator::ForceSetParent<ir::BlockStatement>(allocator_, allocator_, std::move(initializerBlocks));
-
+    ES2PANDA_ASSERT(initializerStmts != nullptr);
     auto *blockBody = staticBlock->Function()->Body()->AsBlockStatement();
     initializerStmts->SetParent(blockBody);
     blockBody->AddStatement(initializerStmts);
@@ -485,6 +490,7 @@ void GlobalClassHandler::AddInitCallToStaticBlock(ir::ClassDefinition *globalCla
     ES2PANDA_ASSERT(maybeStaticBlock != globalBody.end());
 
     auto *staticBlock = (*maybeStaticBlock)->AsClassStaticBlock();
+    ES2PANDA_ASSERT(initMethod->Id() != nullptr);
     auto *callee = RefIdent(initMethod->Id()->Name());
 
     auto *const callExpr = NodeAllocator::Alloc<ir::CallExpression>(
@@ -587,7 +593,7 @@ ir::ClassStaticBlock *GlobalClassHandler::CreateStaticBlock(ir::ClassDefinition 
         ir::ScriptFunction::ScriptFunctionData {body, ir::FunctionSignature(nullptr, std::move(params), nullptr),
                                                 ir::ScriptFunctionFlags::STATIC_BLOCK | ir::ScriptFunctionFlags::HIDDEN,
                                                 ir::ModifierFlags::STATIC, Language(Language::Id::ETS)});
-
+    ES2PANDA_ASSERT(func != nullptr);
     func->SetIdent(id);
 
     auto *funcExpr = NodeAllocator::Alloc<ir::FunctionExpression>(allocator_, func);
@@ -646,6 +652,7 @@ ir::ClassDeclaration *GlobalClassHandler::CreateGlobalClass(const parser::Progra
     auto *classDef =
         NodeAllocator::Alloc<ir::ClassDefinition>(allocator_, allocator_, ident, ir::ClassDefinitionModifiers::GLOBAL,
                                                   ir::ModifierFlags::ABSTRACT, Language(Language::Id::ETS));
+    ES2PANDA_ASSERT(classDef != nullptr);
     classDef->SetRange(rangeToStartOfFile);
     auto *classDecl = NodeAllocator::Alloc<ir::ClassDeclaration>(allocator_, classDef, allocator_);
     classDecl->SetRange(rangeToStartOfFile);

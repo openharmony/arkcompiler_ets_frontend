@@ -161,7 +161,7 @@ function foo(i:number):number{
 arr1[(24)] = 23.0;
 arr1[+24] = 23.0;
 enum TE{
-  AA = 12.0
+  AA = 12
 }
 arr1[TE.AA] = 12.0;
 
@@ -280,4 +280,18 @@ function test7(config: Record<string, object>, name: string) {
 
 function getValue(): string {
   return '';
+}
+
+const arr: Record<string, string> = {};
+let keys: string[] = Object.keys(arr);
+let values: string[] = Object.values(arr);
+for (let i: number = 0.0; i < keys.length; i++) {
+  values[i as int];
+}
+
+const arr: Map<string, string> = new Map<string, string>();
+let keys: string[] = Object.keys(arr);
+let values: string[] = Object.values(arr);
+for (let i: number = 0.0; i < keys.length; i++) {
+  values[i as int];
 }
