@@ -13,11 +13,24 @@
  * limitations under the License.
  */
 
-let /* @@ label1 */a = {
-  get [/* @@ label2 */b/* @@ label3 */)(){},
-  ...a,
+let a = {
+    get [b)(){},
+    ...a,
 }
 
-/* @@@ label1 Error TypeError: Cannot infer type for a because class composite needs an explicit target type */
-/* @@@ label2 Error SyntaxError: Object pattern can't contain methods. */
-/* @@@ label3 Error SyntaxError: Unexpected token, expected ']'.  */
+/* @@? 16:5 Error TypeError: Cannot infer type for a because class composite needs an explicit target type */
+/* @@? 17:9 Error SyntaxError: Unexpected token. */
+/* @@? 17:10 Error SyntaxError: Unexpected token, expected '('. */
+/* @@? 17:10 Error SyntaxError: Object pattern can't contain methods. */
+/* @@? 17:12 Error SyntaxError: Expected '{', got '('. */
+/* @@? 17:12 Error SyntaxError: Unexpected token. */
+/* @@? 17:13 Error SyntaxError: Unexpected token ')'. */
+/* @@? 17:13 Error SyntaxError: Unexpected token ')'. */
+/* @@? 17:13 Error SyntaxError: Unexpected token ')'. */
+/* @@? 17:16 Error SyntaxError: Unexpected token ','. */
+/* @@? 17:16 Error SyntaxError: Unexpected token ','. */
+/* @@? 18:5 Error SyntaxError: Unexpected token '...'. */
+/* @@? 18:9 Error SyntaxError: Unexpected token ','. */
+/* @@? 18:9 Error SyntaxError: Unexpected token ','. */
+/* @@? 18:9 Error SyntaxError: Unexpected token ','. */
+/* @@? 19:1 Error SyntaxError: Unexpected token '}'. */
