@@ -106,8 +106,12 @@ bool CompileFileJob::RetrieveProgramFromCacheFiles(const std::string &buffer, bo
                 cacheFileIter->second, &allocator);
             if (cacheAbcProgramsInfo != nullptr && cacheAbcProgramsInfo->hashCode == src_->hash) {
                 InsertAbcCachePrograms(src_->hash, cacheAbcProgramsInfo->programsCache);
+                delete cacheAbcProgramsInfo;
+                cacheAbcProgramsInfo = nullptr;
                 return true;
             }
+            delete cacheAbcProgramsInfo;
+            cacheAbcProgramsInfo = nullptr;
         }
     }
     return false;
@@ -185,9 +189,11 @@ void CompileFileJob::CompileAbcFileJobInParallel(es2panda::Compiler &compiler)
     panda::Timer::timerStart(panda::EVENT_UPDATE_ABC_PROG_CACHE, src_->fileName);
     auto outputCacheIter = options_->cacheFiles.find(src_->fileName);
     if (!options_->requireGlobalOptimization && outputCacheIter != options_->cacheFiles.end()) {
-        auto *cache = allocator_->New<panda::es2panda::util::AbcProgramsCache>(src_->hash, abcProgramsInfo);
+        auto *cache = new panda::es2panda::util::AbcProgramsCache(src_->hash, abcProgramsInfo);
         CHECK_NOT_NULL(cache);
         panda::proto::ProtobufSnapshotGenerator::UpdateAbcCacheFile(cache, outputCacheIter->second);
+        delete cache;
+        cache = nullptr;
     }
     InsertAbcCachePrograms(src_->hash, abcProgramsInfo);
     panda::Timer::timerEnd(panda::EVENT_UPDATE_ABC_PROG_CACHE, src_->fileName);
