@@ -243,7 +243,9 @@ void AliveAnalyzer::AnalyzeMethodDef(const ir::MethodDefinition *methodDef)
     status_ = LivenessStatus::ALIVE;
     AnalyzeStat(func->Body());
     ES2PANDA_ASSERT(methodDef->TsType() && methodDef->TsType()->IsETSFunctionType());
-    const auto *returnType = methodDef->TsType()->AsETSFunctionType()->FindSignature(func)->ReturnType();
+    const auto *signature = methodDef->TsType()->AsETSFunctionType()->FindSignature(func);
+    ES2PANDA_ASSERT(signature != nullptr);
+    const auto *returnType = signature->ReturnType();
     const auto isVoid = returnType->IsETSVoidType() || returnType == checker_->GlobalVoidType();
 
     auto isPromiseVoid = false;

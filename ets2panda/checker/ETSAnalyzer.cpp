@@ -462,6 +462,7 @@ checker::Type *ETSAnalyzer::Check(ir::ETSFunctionType *node) const
     checker->CheckFunctionSignatureAnnotations(node->Params(), node->TypeParams(), node->ReturnType());
 
     auto *signatureInfo = checker->ComposeSignatureInfo(node->TypeParams(), node->Params());
+    ES2PANDA_ASSERT(signatureInfo != nullptr);
     auto *returnType = node->IsExtensionFunction() && node->ReturnType()->IsTSThisType()
                            ? signatureInfo->params.front()->TsType()
                            : checker->ComposeReturnType(node->ReturnType(), node->IsAsync());
@@ -1863,6 +1864,7 @@ checker::Type *ETSAnalyzer::Check(ir::Identifier *expr) const
     }
 
     expr->SetTsType(identType);
+    ES2PANDA_ASSERT(identType != nullptr);
     if (!identType->IsTypeError()) {
         checker->Context().CheckIdentifierSmartCastCondition(expr);
     }
@@ -1977,6 +1979,7 @@ checker::Type *ETSAnalyzer::Check(ir::MemberExpression *expr) const
     auto *baseType = checker->GetNonConstantType(checker->GetApparentType(expr->Object()->Check(checker)));
     //  Note: don't use possible smart cast to null-like types.
     //        Such situation should be correctly resolved in the subsequent lowering.
+    ES2PANDA_ASSERT(baseType != nullptr);
     if (baseType->DefinitelyETSNullish() && expr->Object()->IsIdentifier()) {
         baseType = expr->Object()->AsIdentifier()->Variable()->TsType();
     }
@@ -2678,6 +2681,7 @@ static checker::Type *ComputeTypeOfType(ETSChecker *checker, checker::Type *argT
 {
     checker::Type *ret = nullptr;
     ArenaVector<checker::Type *> types(checker->ProgramAllocator()->Adapter());
+    ES2PANDA_ASSERT(argType != nullptr);
     if (argType->IsETSUnionType()) {
         for (auto *it : argType->AsETSUnionType()->ConstituentTypes()) {
             checker::Type *elType = ComputeTypeOfType(checker, it);
@@ -2719,6 +2723,7 @@ checker::Type *ETSAnalyzer::Check(ir::UnaryExpression *expr) const
                 checker::Type *type = checker->CreateETSBigIntLiteralType(argType->AsETSBigIntType()->GetValue());
 
                 // We do not need this const anymore as we are negating the bigint object in runtime
+                ES2PANDA_ASSERT(type != nullptr);
                 type->RemoveTypeFlag(checker::TypeFlag::CONSTANT);
                 expr->argument_->SetTsType(type);
                 expr->SetTsType(type);
@@ -3114,6 +3119,7 @@ checker::Type *ETSAnalyzer::Check(ir::AnnotationUsage *st) const
     ArenaUnorderedMap<util::StringView, ir::ClassProperty *> fieldMap {checker->ProgramAllocator()->Adapter()};
     for (auto *it : annoDecl->Properties()) {
         auto *field = it->AsClassProperty();
+        ES2PANDA_ASSERT(field->Id() != nullptr);
         fieldMap.insert(std::make_pair(field->Id()->Name(), field));
     }
 
@@ -3701,6 +3707,7 @@ checker::Type *ETSAnalyzer::Check(ir::TSAsExpression *expr) const
 
     checker->CheckAnnotations(expr->TypeAnnotation()->Annotations());
     auto *const targetType = expr->TypeAnnotation()->AsTypeNode()->GetType(checker);
+    ES2PANDA_ASSERT(targetType != nullptr);
     if (targetType->IsTypeError()) {
         return checker->InvalidateType(expr);
     }

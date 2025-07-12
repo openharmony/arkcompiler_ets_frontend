@@ -802,7 +802,7 @@ void TSAnalyzer::CheckNonComputed(checker::ObjectDescriptor *desc, ir::Expressio
     if (prop->Key()->IsNumberLiteral()) {
         memberVar->AddFlag(varbinder::VariableFlags::NUMERIC_NAME);
     }
-
+    ES2PANDA_ASSERT(desc != nullptr);
     varbinder::LocalVariable *foundMember = desc->FindProperty(propName);
     allPropertiesMap.insert({propName, it->Start()});
 
@@ -1740,6 +1740,7 @@ static void AddEnumValueDeclaration(checker::TSChecker *checker, double number, 
         enumScope->AddDecl(checker->Allocator(), decl, ScriptExtension::TS);
         res = enumScope->FindLocal(memberStr, varbinder::ResolveBindingOptions::BINDINGS);
         ES2PANDA_ASSERT(res && res->IsEnumVariable());
+        ES2PANDA_ASSERT(enumVar != nullptr);
         enumVar = res->AsEnumVariable();
         enumVar->AsEnumVariable()->SetBackReference();
         enumVar->SetTsType(checker->GlobalStringType());
@@ -1747,6 +1748,7 @@ static void AddEnumValueDeclaration(checker::TSChecker *checker, double number, 
         ES2PANDA_ASSERT(res->IsEnumVariable());
         enumVar = res->AsEnumVariable();
         auto *decl = checker->Allocator()->New<varbinder::EnumDecl>(memberStr);
+        ES2PANDA_ASSERT(decl != nullptr);
         decl->BindNode(variable->Declaration()->Node());
         enumVar->ResetDecl(decl);
     }

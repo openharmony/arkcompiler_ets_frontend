@@ -525,9 +525,11 @@ ir::Statement *ParserImpl::ParseBreakStatement()
     }
 
     auto *identNode = AllocNode<ir::Identifier>(label, Allocator());
+    ES2PANDA_ASSERT(identNode != nullptr);
     identNode->SetRange(lexer_->GetToken().Loc());
 
     auto *breakStatement = AllocNode<ir::BreakStatement>(identNode);
+    ES2PANDA_ASSERT(breakStatement != nullptr);
     breakStatement->SetRange({startLoc, lexer_->GetToken().End()});
 
     lexer_->NextToken();
@@ -580,6 +582,7 @@ ir::Statement *ParserImpl::ParseContinueStatement()
     }
 
     auto *identNode = AllocNode<ir::Identifier>(label, Allocator());
+    ES2PANDA_ASSERT(identNode != nullptr);
     identNode->SetRange(lexer_->GetToken().Loc());
 
     auto *continueStatement = AllocNode<ir::ContinueStatement>(identNode);
@@ -662,9 +665,11 @@ ir::FunctionDeclaration *ParserImpl::ParseFunctionDeclaration(bool canBeAnonymou
     if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
         if (canBeAnonymous) {
             ir::ScriptFunction *func = ParseFunction(newStatus | ParserStatus::NEED_RETURN_TYPE);
+            ES2PANDA_ASSERT(func != nullptr);
             func->SetStart(startLoc);
 
             auto *funcDecl = AllocNode<ir::FunctionDeclaration>(Allocator(), func, true);
+            ES2PANDA_ASSERT(funcDecl != nullptr);
             funcDecl->SetRange(func->Range());
             return funcDecl;
         }
@@ -684,6 +689,7 @@ ir::FunctionDeclaration *ParserImpl::ParseFunctionDeclaration(bool canBeAnonymou
     func->SetIdent(identNode);
     func->SetStart(startLoc);
     auto *funcDecl = AllocNode<ir::FunctionDeclaration>(Allocator(), func);
+    ES2PANDA_ASSERT(funcDecl != nullptr);
     funcDecl->SetRange(func->Range());
 
     if (func->IsOverload() && lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SEMI_COLON) {
@@ -1383,6 +1389,7 @@ ir::Statement *ParserImpl::ParseTryStatement()
 
     while (lexer_->GetToken().Type() == lexer::TokenType::KEYW_CATCH) {
         catchClause = ParseCatchClause();
+        ES2PANDA_ASSERT(catchClause != nullptr);
         endLoc = catchClause->End();
         catchClauses.push_back(catchClause);
     }
@@ -1398,6 +1405,7 @@ ir::Statement *ParserImpl::ParseTryStatement()
     ArenaVector<std::pair<compiler::LabelPair, const ir::Statement *>> finalizerInsertions(Allocator()->Adapter());
 
     auto *tryStatement = AllocNode<ir::TryStatement>(body, std::move(catchClauses), finallyClause, finalizerInsertions);
+    ES2PANDA_ASSERT(tryStatement != nullptr);
     tryStatement->SetRange({startLoc, endLoc});
     return tryStatement;
 }
@@ -2001,6 +2009,7 @@ ir::Statement *ParserImpl::ParseImportDeclaration(StatementParsingFlags flags)
         source = ParseFromClause(false);
     }
 
+    ES2PANDA_ASSERT(source != nullptr);
     lexer::SourcePosition endLoc = source->End();
     auto *importDeclaration = AllocNode<ir::ImportDeclaration>(source, std::move(specifiers));
     ES2PANDA_ASSERT(importDeclaration != nullptr);

@@ -515,7 +515,7 @@ ir::TypeNode *TSParser::ParseTypeOperatorOrTypeReference()
         }
 
         auto *typeOperator = AllocNode<ir::TSTypeOperator>(type, ir::TSOperatorType::READONLY, Allocator());
-
+        ES2PANDA_ASSERT(typeOperator != nullptr);
         typeOperator->SetRange({typeOperatorStart, type->End()});
 
         return typeOperator;
@@ -1934,6 +1934,7 @@ ir::MethodDefinition *TSParser::ParseClassMethod(ClassElementDescriptor *desc,
     }
 
     auto *funcExpr = AllocNode<ir::FunctionExpression>(func);
+    ES2PANDA_ASSERT(funcExpr != nullptr);
     funcExpr->SetRange(func->Range());
 
     if (desc->methodKind == ir::MethodDefinitionKind::SET) {
@@ -1946,6 +1947,7 @@ ir::MethodDefinition *TSParser::ParseClassMethod(ClassElementDescriptor *desc,
     func->AddFlag(ir::ScriptFunctionFlags::METHOD);
     auto *method = AllocNode<ir::MethodDefinition>(desc->methodKind, propName, funcExpr, desc->modifiers, Allocator(),
                                                    desc->isComputed);
+    ES2PANDA_ASSERT(method != nullptr);
     method->SetRange(funcExpr->Range());
 
     return method;
