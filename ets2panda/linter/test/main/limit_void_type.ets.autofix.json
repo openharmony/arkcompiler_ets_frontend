@@ -1111,7 +1111,7 @@
                 {
                     "start": 4720,
                     "end": 4720,
-                    "replacementText": "\nreturn undefined;\n",
+                    "replacementText": "\n  return undefined;\n",
                     "line": 162,
                     "column": 16,
                     "endLine": 162,
@@ -1151,7 +1151,7 @@
                 {
                     "start": 4800,
                     "end": 4800,
-                    "replacementText": "\nreturn undefined;\n",
+                    "replacementText": "\n    return undefined;\n  ",
                     "line": 165,
                     "column": 8,
                     "endLine": 165,
@@ -1289,9 +1289,9 @@
                     "endColumn": 42
                 },
                 {
-                    "start": 5587,
-                    "end": 5587,
-                    "replacementText": "\nreturn undefined;\n",
+                    "start": 5586,
+                    "end": 5586,
+                    "replacementText": "\n  return undefined;",
                     "line": 211,
                     "column": 29,
                     "endLine": 211,
@@ -1530,9 +1530,9 @@
                     "endColumn": 44
                 },
                 {
-                    "start": 5952,
-                    "end": 5952,
-                    "replacementText": "\nreturn undefined;\n",
+                    "start": 5951,
+                    "end": 5951,
+                    "replacementText": "\n  return undefined;",
                     "line": 228,
                     "column": 31,
                     "endLine": 228,
@@ -1652,9 +1652,9 @@
                     "endColumn": 35
                 },
                 {
-                    "start": 6160,
-                    "end": 6160,
-                    "replacementText": "\nreturn undefined;\n",
+                    "start": 6159,
+                    "end": 6159,
+                    "replacementText": "\n  return undefined;",
                     "line": 246,
                     "column": 22,
                     "endLine": 246,
@@ -1692,9 +1692,9 @@
                     "endColumn": 48
                 },
                 {
-                    "start": 6290,
-                    "end": 6290,
-                    "replacementText": "\nreturn undefined;\n",
+                    "start": 6289,
+                    "end": 6289,
+                    "replacementText": "\n  return undefined;",
                     "line": 250,
                     "column": 35,
                     "endLine": 250,
@@ -1762,9 +1762,9 @@
                     "endColumn": 35
                 },
                 {
-                    "start": 6402,
-                    "end": 6402,
-                    "replacementText": "\nreturn undefined;\n",
+                    "start": 6401,
+                    "end": 6401,
+                    "replacementText": "\n  return undefined;",
                     "line": 257,
                     "column": 22,
                     "endLine": 257,
@@ -1962,9 +1962,9 @@
                     "endColumn": 35
                 },
                 {
-                    "start": 6812,
-                    "end": 6812,
-                    "replacementText": "\nreturn undefined;\n",
+                    "start": 6809,
+                    "end": 6809,
+                    "replacementText": "\n    return undefined;",
                     "line": 287,
                     "column": 21,
                     "endLine": 287,
@@ -2086,7 +2086,7 @@
                 {
                     "start": 6982,
                     "end": 6982,
-                    "replacementText": "\nreturn undefined;\n",
+                    "replacementText": "\n    return undefined;\n  ",
                     "line": 302,
                     "column": 12,
                     "endLine": 302,
@@ -2264,9 +2264,9 @@
                     "endColumn": 42
                 },
                 {
-                    "start": 7333,
-                    "end": 7333,
-                    "replacementText": "\nreturn undefined;\n",
+                    "start": 7332,
+                    "end": 7332,
+                    "replacementText": "\n  return undefined;",
                     "line": 325,
                     "column": 28,
                     "endLine": 325,
@@ -2388,7 +2388,7 @@
                 {
                     "start": 7510,
                     "end": 7510,
-                    "replacementText": "\nreturn undefined;\n",
+                    "replacementText": "\n  return undefined;\n",
                     "line": 340,
                     "column": 28,
                     "endLine": 340,

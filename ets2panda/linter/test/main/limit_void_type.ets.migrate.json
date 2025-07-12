@@ -995,9 +995,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 234,
+            "line": 233,
             "column": 5,
-            "endLine": 234,
+            "endLine": 233,
             "endColumn": 7,
             "problem": "DeclWithDuplicateName",
             "suggest": "",
@@ -1005,9 +1005,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 234,
+            "line": 233,
             "column": 9,
-            "endLine": 234,
+            "endLine": 233,
             "endColumn": 13,
             "problem": "LimitedVoidType",
             "suggest": "",
@@ -1015,8 +1015,18 @@
             "severity": "ERROR"
         },
         {
-            "line": 234,
+            "line": 233,
             "column": 16,
+            "endLine": 233,
+            "endColumn": 21,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 234,
+            "column": 8,
             "endLine": 234,
             "endColumn": 21,
             "problem": "LimitedVoidType",
@@ -1025,19 +1035,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 235,
+            "line": 234,
             "column": 8,
-            "endLine": 235,
-            "endColumn": 21,
-            "problem": "LimitedVoidType",
-            "suggest": "",
-            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 235,
-            "column": 8,
-            "endLine": 235,
+            "endLine": 234,
             "endColumn": 12,
             "problem": "LimitedVoidType",
             "suggest": "",
@@ -1045,9 +1045,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 235,
+            "line": 234,
             "column": 24,
-            "endLine": 235,
+            "endLine": 234,
             "endColumn": 29,
             "problem": "LimitedVoidType",
             "suggest": "",
@@ -1055,9 +1055,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 236,
+            "line": 235,
             "column": 9,
-            "endLine": 236,
+            "endLine": 235,
             "endColumn": 22,
             "problem": "LimitedVoidType",
             "suggest": "",
@@ -1065,9 +1065,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 236,
+            "line": 235,
             "column": 9,
-            "endLine": 236,
+            "endLine": 235,
             "endColumn": 13,
             "problem": "LimitedVoidType",
             "suggest": "",
@@ -1075,9 +1075,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 265,
+            "line": 262,
             "column": 11,
-            "endLine": 265,
+            "endLine": 262,
             "endColumn": 15,
             "problem": "SwitchExpression",
             "suggest": "",
@@ -1085,9 +1085,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 266,
+            "line": 263,
             "column": 10,
-            "endLine": 266,
+            "endLine": 263,
             "endColumn": 11,
             "problem": "NumericSemantics",
             "suggest": "",
@@ -1095,9 +1095,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 267,
+            "line": 264,
             "column": 10,
-            "endLine": 267,
+            "endLine": 264,
             "endColumn": 11,
             "problem": "NumericSemantics",
             "suggest": "",
@@ -1105,9 +1105,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 285,
+            "line": 280,
             "column": 8,
-            "endLine": 285,
+            "endLine": 280,
             "endColumn": 22,
             "problem": "LimitedVoidType",
             "suggest": "",
@@ -1115,9 +1115,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 285,
+            "line": 280,
             "column": 18,
-            "endLine": 285,
+            "endLine": 280,
             "endColumn": 22,
             "problem": "LimitedVoidType",
             "suggest": "",
@@ -1125,9 +1125,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 372,
+            "line": 365,
             "column": 9,
-            "endLine": 372,
+            "endLine": 365,
             "endColumn": 13,
             "problem": "LimitedVoidType",
             "suggest": "",
@@ -1135,9 +1135,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 379,
+            "line": 372,
             "column": 35,
-            "endLine": 379,
+            "endLine": 372,
             "endColumn": 39,
             "problem": "LimitedVoidType",
             "suggest": "",
@@ -1145,9 +1145,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 380,
+            "line": 373,
             "column": 36,
-            "endLine": 380,
+            "endLine": 373,
             "endColumn": 40,
             "problem": "LimitedVoidType",
             "suggest": "",
@@ -1155,9 +1155,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 381,
+            "line": 374,
             "column": 36,
-            "endLine": 381,
+            "endLine": 374,
             "endColumn": 40,
             "problem": "LimitedVoidType",
             "suggest": "",
@@ -1165,9 +1165,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 384,
+            "line": 377,
             "column": 23,
-            "endLine": 384,
+            "endLine": 377,
             "endColumn": 27,
             "problem": "LimitedVoidType",
             "suggest": "",
@@ -1175,9 +1175,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 387,
+            "line": 380,
             "column": 39,
-            "endLine": 387,
+            "endLine": 380,
             "endColumn": 43,
             "problem": "LimitedVoidType",
             "suggest": "",
@@ -1185,9 +1185,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 388,
+            "line": 381,
             "column": 50,
-            "endLine": 388,
+            "endLine": 381,
             "endColumn": 54,
             "problem": "LimitedVoidType",
             "suggest": "",
@@ -1195,9 +1195,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 389,
+            "line": 382,
             "column": 38,
-            "endLine": 389,
+            "endLine": 382,
             "endColumn": 42,
             "problem": "LimitedVoidType",
             "suggest": "",
@@ -1205,9 +1205,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 389,
+            "line": 382,
             "column": 23,
-            "endLine": 389,
+            "endLine": 382,
             "endColumn": 34,
             "problem": "LimitedVoidType",
             "suggest": "",
@@ -1215,9 +1215,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 390,
+            "line": 383,
             "column": 29,
-            "endLine": 390,
+            "endLine": 383,
             "endColumn": 33,
             "problem": "LimitedVoidType",
             "suggest": "",
@@ -1225,9 +1225,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 391,
+            "line": 384,
             "column": 28,
-            "endLine": 391,
+            "endLine": 384,
             "endColumn": 32,
             "problem": "LimitedVoidType",
             "suggest": "",

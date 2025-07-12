@@ -4906,17 +4906,39 @@ export class Autofixer {
         const statements = fn.body.statements;
         const lastExpr = statements.length > 0 ? statements[statements.length - 1] : undefined;
         if (hasReturn && lastExpr && !ts.isReturnStatement(lastExpr) || !hasReturn) {
-          const lastBrace = fn.body.getEnd() - 1;
+          const text = this.createUndefinedReturnStatement(fn, lastExpr);
           fixes.push({
-            start: lastBrace,
-            end: lastBrace,
-            replacementText: '\nreturn undefined;\n'
+            start: lastExpr ? lastExpr.getEnd() : fn.body.getEnd() - 1,
+            end: lastExpr ? lastExpr.getEnd() : fn.body.getEnd() - 1,
+            replacementText: text
           });
         }
       }
     }
-
     return fixes;
+  }
+
+  private createUndefinedReturnStatement(fn: ts.FunctionLikeDeclaration, lastExpr: ts.Statement | undefined): string {
+    const returnStatement = ts.factory.createReturnStatement(ts.factory.createIdentifier(UNDEFINED_NAME));
+    if (lastExpr) {
+      const startPos = lastExpr.getStart();
+      const lineAndCharacter = this.sourceFile.getLineAndCharacterOfPosition(startPos);
+      const indent = lineAndCharacter.character;
+      return (
+        this.getNewLine() +
+        ' '.repeat(indent) +
+        this.printer.printNode(ts.EmitHint.Unspecified, returnStatement, fn.getSourceFile())
+      );
+    }
+    const lineAndCharacter = this.sourceFile.getLineAndCharacterOfPosition(fn.getStart());
+    const indent = lineAndCharacter.character + INDENT_STEP;
+    return (
+      this.getNewLine() +
+      ' '.repeat(indent) +
+      this.printer.printNode(ts.EmitHint.Unspecified, returnStatement, fn.getSourceFile()) +
+      this.getNewLine() +
+      ' '.repeat(lineAndCharacter.character)
+    );
   }
 
   private fixGenericCallNoTypeArgsWithContextualType(node: ts.NewExpression): Autofix[] | undefined {
