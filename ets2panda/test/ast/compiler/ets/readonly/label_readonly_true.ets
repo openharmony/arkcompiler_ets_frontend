@@ -18,11 +18,8 @@ let/* @@ colon */: /* @@ readonly2 */readonly/* @@ end */;
 
 /* @@@ readonly1 Error SyntaxError: Label must be followed by a loop statement. */
 /* @@@ readonly1 Error TypeError: Unresolved reference readonly */
-/* @@@ true      Error SyntaxError: Invalid Type. */
 /* @@@ true      Error SyntaxError: Unexpected token 'true'. */
-
 /* @@@ colon     Error SyntaxError: Identifier expected, got ':'. */
 /* @@@ readonly2 Error SyntaxError: Variable must be initialized or it's type must be declared. */
 /* @@@ readonly2 Error SyntaxError: Variable must be initialized or it's type must be declared. */
 /* @@@ readonly2 Error SyntaxError: Unexpected token 'readonly'. */
-/* @@@ end       Error SyntaxError: Invalid Type. */
