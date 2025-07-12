@@ -13,9 +13,6 @@
  * limitations under the License.
  */
 
-class A {
-    foo(a?)
-}
+function foo(a?){}
 
-/* @@? 17:8 Error TypeError: Only abstract or native methods can't have body. */
-/* @@? 17:11 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
+/* @@? 16:16 Error SyntaxError: Parameter declaration should have an explicit type annotation. */

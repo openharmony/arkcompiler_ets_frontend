@@ -43,18 +43,16 @@ export default class HashMap<K, V> implements ReadonlyHashMap<K, V> {
 /* @@? 22:13 Error SyntaxError: Unexpected token '.'. */
 /* @@? 22:21 Error SyntaxError: Field type annotation expected. */
 /* @@? 22:21 Error SyntaxError: Unexpected token '.'. */
-/* @@? 22:30 Error SyntaxError: Unexpected token, expected ',' or ')'. */
-/* @@? 22:30 Error SyntaxError: Unexpected token, expected an identifier. */
 /* @@? 22:30 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
 /* @@? 22:30 Error SyntaxError: Unexpected token '('. */
+/* @@? 22:30 Error SyntaxError: Unexpected token, expected ',' or ')'. */
+/* @@? 22:30 Error SyntaxError: Unexpected token, expected an identifier. */
 /* @@? 22:39 Error SyntaxError: Unexpected token ','. */
 /* @@? 22:47 Error SyntaxError: Unexpected token ')'. */
 /* @@? 22:49 Error SyntaxError: Unexpected token '=>'. */
 /* @@? 22:52 Error SyntaxError: Unexpected token '{'. */
 /* @@? 23:23 Error TypeError: Only abstract or native methods can't have body. */
-/* @@? 23:24 Error TypeError: The type of parameter 'value' cannot be inferred */
 /* @@? 23:29 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
-/* @@? 23:31 Error TypeError: The type of parameter 'key' cannot be inferred */
 /* @@? 23:34 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
 /* @@? 23:40 Error SyntaxError: The function parameter 'this' must explicitly specify the typeAnnotation. */
 /* @@? 24:10 Error SyntaxError: Unexpected token ')'. */
