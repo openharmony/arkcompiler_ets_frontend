@@ -50,7 +50,7 @@ fatal:
 
 - name: UNKNOWN_EXT
   id: 10
-  message: "Unknown extension of sourcefile, set the '--extension' option or change the file extension (available options: js, ts, as, ets)"
+  message: "Unknown extension of sourcefile, set the '--extension' option or change the file extension (available options: ets)"
 
 - name: JS_UNSUPPORTED
   id: 11
