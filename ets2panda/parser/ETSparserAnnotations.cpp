@@ -407,13 +407,21 @@ ir::AnnotationUsage *ETSParser::ParseAnnotationUsage()
                 {singleParamName->Start(), initializer != nullptr ? initializer->End() : singleParamName->End()});
             properties.push_back(singleParam);
         }
+
+        auto *annotationUsage = AllocNode<ir::AnnotationUsage>(expr, std::move(properties));
+        annotationUsage->AddModifier(flags);
+        annotationUsage->SetRange({startLoc, Lexer()->GetToken().End()});
+
         ExpectToken(lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS, true);  // eat ')'
+
+        return annotationUsage;
     }
 
     auto *annotationUsage = AllocNode<ir::AnnotationUsage>(expr, std::move(properties));
     ES2PANDA_ASSERT(annotationUsage != nullptr);
     annotationUsage->AddModifier(flags);
-    annotationUsage->SetRange({startLoc, Lexer()->GetToken().End()});
+    annotationUsage->SetRange({startLoc, GetExpressionEndLoc(expr)});
+
     return annotationUsage;
 }
 
