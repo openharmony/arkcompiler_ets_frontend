@@ -65,7 +65,8 @@ import {
   DependentModuleConfig,
   JobInfo,
   KPointer,
-  ModuleInfo
+  ModuleInfo,
+  ES2PANDA_MODE
 } from '../types';
 import { ArkTSConfigGenerator } from './generate_arktsconfig';
 import { SetupClusterOptions } from '../types';
@@ -106,6 +107,7 @@ export abstract class BaseMode {
   public hasCleanWorker: boolean;
   public byteCodeHar: boolean;
   public es2pandaMode: number;
+  public skipDeclCheck: boolean;
 
   constructor(buildConfig: BuildConfig) {
     this.buildConfig = buildConfig;
@@ -141,7 +143,8 @@ export abstract class BaseMode {
     this.isBuildConfigModified = buildConfig.isBuildConfigModified as boolean | undefined;
     this.hasCleanWorker = false;
     this.byteCodeHar = buildConfig.byteCodeHar as boolean;
-    this.es2pandaMode = buildConfig?.es2pandaMode ?? 0;
+    this.es2pandaMode = buildConfig?.es2pandaMode ?? ES2PANDA_MODE.RUN;
+    this.skipDeclCheck = buildConfig?.skipDeclCheck as boolean ?? true;
   }
 
   public declgen(fileInfo: CompileFileInfo): void {
@@ -174,13 +177,13 @@ export abstract class BaseMode {
       arktsGlobal.compilerContext = arkts.Context.createFromString(source);
       PluginDriver.getInstance().getPluginContext().setArkTSProgram(arktsGlobal.compilerContext.program);
 
-      arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_PARSED, arktsGlobal.compilerContext.peer, true);
+      arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_PARSED, arktsGlobal.compilerContext.peer, this.skipDeclCheck);
 
       let ast = arkts.EtsScript.fromContext();
       PluginDriver.getInstance().getPluginContext().setArkTSAst(ast);
       PluginDriver.getInstance().runPluginHook(PluginHook.PARSED);
 
-      arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_CHECKED, arktsGlobal.compilerContext.peer, true);
+      arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_CHECKED, arktsGlobal.compilerContext.peer, this.skipDeclCheck);
 
       ast = arkts.EtsScript.fromContext();
       PluginDriver.getInstance().getPluginContext().setArkTSAst(ast);
@@ -693,10 +696,6 @@ export abstract class BaseMode {
 
   protected collectCompileFiles(): void {
     this.entryFiles.forEach((file: string) => {
-      // Skip the declaration files when compiling abc
-      if (file.endsWith(DECL_ETS_SUFFIX)) {
-        return;
-      }
       for (const [packageName, moduleInfo] of this.moduleInfos) {
         const relativePath = path.relative(moduleInfo.moduleRootPath, file);
         if (relativePath.startsWith('..') || path.isAbsolute(relativePath)) {

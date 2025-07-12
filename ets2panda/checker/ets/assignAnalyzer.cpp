@@ -532,11 +532,14 @@ static bool IsInitialConstructor(const ir::AstNode *node)
     }
 
     const auto methodDef = node->AsMethodDefinition();
+    ES2PANDA_ASSERT(methodDef != nullptr);
     if (methodDef->Function()->Body() == nullptr || methodDef->Function()->IsExternal()) {
         return false;
     }
 
-    const auto funcBody = node->AsMethodDefinition()->Function()->Body()->AsBlockStatement();
+    const auto *func = node->AsMethodDefinition()->Function();
+    ES2PANDA_ASSERT(func != nullptr);
+    const auto funcBody = func->Body()->AsBlockStatement();
 
     return !(!funcBody->Statements().empty() && funcBody->Statements()[0]->IsExpressionStatement() &&
              funcBody->Statements()[0]->AsExpressionStatement()->GetExpression()->IsCallExpression() &&
@@ -551,7 +554,7 @@ static bool IsInitialConstructor(const ir::AstNode *node)
 void AssignAnalyzer::AnalyzeMethodDef(const ir::MethodDefinition *methodDef)
 {
     auto *func = methodDef->Function();
-
+    ES2PANDA_ASSERT(func != nullptr);
     if (func->Body() == nullptr || func->IsProxy()) {
         return;
     }
@@ -1204,8 +1207,11 @@ util::StringView AssignAnalyzer::GetVariableType(const ir::AstNode *node) const
 util::StringView AssignAnalyzer::GetVariableName(const ir::AstNode *node) const
 {
     switch (node->Type()) {
-        case ir::AstNodeType::CLASS_PROPERTY:
-            return node->AsClassProperty()->Id()->Name();
+        case ir::AstNodeType::CLASS_PROPERTY: {
+            const ir::Identifier *identifier = node->AsClassProperty()->Id();
+            ES2PANDA_ASSERT(identifier != nullptr);
+            return identifier->Name();
+        }
         case ir::AstNodeType::VARIABLE_DECLARATOR:
             return node->AsVariableDeclarator()->Id()->AsIdentifier()->Name();
         default:
@@ -1277,7 +1283,9 @@ varbinder::Variable *AssignAnalyzer::GetBoundVariable(const ir::AstNode *node)
     varbinder::Variable *ret = nullptr;
 
     if (node->IsClassProperty()) {
-        ret = node->AsClassProperty()->Id()->Variable();
+        const ir::Identifier *identifier = node->AsClassProperty()->Id();
+        ES2PANDA_ASSERT(identifier != nullptr);
+        ret = identifier->Variable();
     } else if (node->IsVariableDeclarator()) {
         ret = node->AsVariableDeclarator()->Id()->AsIdentifier()->Variable();
     } else {

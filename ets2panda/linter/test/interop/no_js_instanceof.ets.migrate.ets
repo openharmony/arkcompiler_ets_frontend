@@ -13,13 +13,12 @@
  * limitations under the License.
  */
 
-let GeneratedImportVar_1 = ESValue.load('./no_js_instanceof_file.js');
-let Foo = GeneratedImportVar_1.getProperty('Foo');
-let foo = GeneratedImportVar_1.getProperty('foo');
-let CreatePerson = GeneratedImportVar_1.getProperty('CreatePerson');
-let a = GeneratedImportVar_1.getProperty('a');
-let b = GeneratedImportVar_1.getProperty('b');
-let MyNamespace = GeneratedImportVar_1.getProperty('MyNamespace');
+let Foo = ESValue.load('./no_js_instanceof_file.js').getProperty('Foo');
+let foo = ESValue.load('./no_js_instanceof_file.js').getProperty('foo');
+let CreatePerson = ESValue.load('./no_js_instanceof_file.js').getProperty('CreatePerson');
+let a = ESValue.load('./no_js_instanceof_file.js').getProperty('a');
+let b = ESValue.load('./no_js_instanceof_file.js').getProperty('b');
+let MyNamespace = ESValue.load('./no_js_instanceof_file.js').getProperty('MyNamespace');
 
 
 class Foo1 {}

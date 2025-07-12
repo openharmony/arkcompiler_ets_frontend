@@ -1786,6 +1786,7 @@ void PandaGen::DirectEval(const ir::AstNode *node, uint32_t parserStatus)
     const auto *iter = Scope()->EnclosingVariableScope();
 
     while (true) {
+        ES2PANDA_ASSERT(iter != nullptr);
         uint32_t scopeBindingsBuf = iter->EvalBindings();
         if (scopeBindingsBuf != INVALID_LITERAL_BUFFER_ID) {
             Sa().Emit<EcmaLdevalbindings>(node, util::Helpers::ToStringView(Allocator(), scopeBindingsBuf));

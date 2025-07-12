@@ -193,6 +193,7 @@ public:
         ES2PANDA_ASSERT(overload != nullptr);
         auto newNode = this->GetOrCreateHistoryNode()->AsMethodDefinition();
         newNode->overloads_.emplace_back(overload);
+        ES2PANDA_ASSERT(overload->Function() != nullptr);
         overload->Function()->AddFlag((ir::ScriptFunctionFlags::OVERLOAD));
         overload->SetBaseOverloadMethod(this);
     }

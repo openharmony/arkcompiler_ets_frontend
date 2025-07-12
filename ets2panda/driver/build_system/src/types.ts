@@ -132,9 +132,9 @@ export interface PathConfig {
   abcLinkerPath?: string;
   dependencyAnalyzerPath?: string;
   sdkAliasConfigPaths?: string[];
-  aliasPaths: Map<string, string>;
+  sdkAliasMap: Map<string, string>;
   interopSDKPaths: Set<string>;
-  dynamicInteroSDKBasePath:string;
+  interopApiPaths:string[];
   projectRootPath: string;
 }
 
@@ -164,6 +164,7 @@ export interface DeclgenConfig {
   declgenV1OutPath?: string;
   declgenV2OutPath?: string;
   declgenBridgeCodePath?: string;
+  skipDeclCheck?: boolean;
 }
 
 export interface LoggerConfig {
@@ -294,5 +295,22 @@ export enum Es2pandaImportFlags {
 export enum ES2PANDA_MODE {
   RUN_PARALLEL = 0,
   RUN_CONCURRENT = 1,
-  RUN = 2
+  RUN = 2,
+  RUN_WITH_MUTIL = 3
 };
+
+export interface DynamicFileContext {
+  filePath: string;
+  fileName: string;
+  relativePath: string;
+  isExcludedDir: boolean;
+  dependencySection: Record<string, DependencyItem>;
+  prefix?: string;
+}
+
+export interface DependencyItem {
+  language: string,
+  path: string,
+  ohmUrl: string,
+  alias?:string[]
+}

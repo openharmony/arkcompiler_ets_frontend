@@ -16,6 +16,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
+import { DECL_ETS_SUFFIX } from './preDefine';
 
 export function throwError(error: string): never {
   throw new Error(error);
@@ -47,4 +48,22 @@ export function ensurePathExists(filePath: string): void {
 
 export function isMac(): boolean {
   return os.type() === 'Darwin';
+}
+
+export function changeDeclgenFileExtension(file: string, targetExt: string): string {
+  if (file.endsWith(DECL_ETS_SUFFIX)) {
+    return changeFileExtension(file, targetExt, DECL_ETS_SUFFIX);
+  }
+  return changeFileExtension(file, targetExt);
+}
+
+export function getModuleNameAndPath(filePath: string, projectPath: string): [string, string] {
+  let moduleName: string = '';
+  let moduleRootPath: string = '';
+  if (filePath.indexOf(projectPath) >= 0) {
+    const relativePath = path.relative(projectPath, filePath);
+    moduleName = relativePath.split(path.sep)[0];
+    moduleRootPath = path.join(projectPath, moduleName);
+  }
+  return [moduleName, moduleRootPath];
 }

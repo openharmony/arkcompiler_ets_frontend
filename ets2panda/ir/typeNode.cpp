@@ -22,6 +22,7 @@ TypeNode *TypeNode::Clone(ArenaAllocator *const allocator, AstNode *const parent
 {
     if (auto *const type = TsType(); type != nullptr) {
         auto *const clone = allocator->New<OpaqueTypeNode>(type, allocator);
+        ES2PANDA_ASSERT(clone != nullptr);
         if (parent != nullptr) {
             clone->SetParent(parent);
         }

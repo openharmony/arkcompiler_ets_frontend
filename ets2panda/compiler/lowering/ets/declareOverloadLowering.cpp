@@ -49,6 +49,7 @@ void GenerateOverloadHelperParams(public_lib::Context *ctx, uint32_t minArg, siz
     spread->SetTsType(arr);
     restIdent->SetTsType(arr);
     auto *param = ctx->AllocNode<ir::ETSParameterExpression>(spread, nullptr, allocator);
+    ES2PANDA_ASSERT(param);
 
     restIdent->SetParent(spread);
     typeAnnotation->SetParent(spread);
@@ -84,6 +85,7 @@ void BuildOverloadHelperFunction(public_lib::Context *ctx, ir::MethodDefinition 
                                                                 method->Modifiers(), allocator, false);
 
     method->AddOverload(helperOverload);
+    ES2PANDA_ASSERT(helperOverload->Function());
     helperOverload->Function()->ClearFlag((ir::ScriptFunctionFlags::OVERLOAD));
     helperOverload->SetParent(method);
 

@@ -224,16 +224,6 @@ bool ETSChecker::CheckBinaryOperatorForBigInt(Type *left, Type *right, lexer::To
             case lexer::TokenType::PUNCTUATOR_LESS_THAN_EQUAL:
             case lexer::TokenType::PUNCTUATOR_EQUAL:
             case lexer::TokenType::PUNCTUATOR_NOT_EQUAL:
-            case lexer::TokenType::PUNCTUATOR_PLUS:
-            case lexer::TokenType::PUNCTUATOR_MINUS:
-            case lexer::TokenType::PUNCTUATOR_MULTIPLY:
-            case lexer::TokenType::PUNCTUATOR_DIVIDE:
-            case lexer::TokenType::PUNCTUATOR_MOD:
-            case lexer::TokenType::PUNCTUATOR_BITWISE_OR:
-            case lexer::TokenType::PUNCTUATOR_BITWISE_AND:
-            case lexer::TokenType::PUNCTUATOR_BITWISE_XOR:
-            case lexer::TokenType::PUNCTUATOR_LEFT_SHIFT:
-            case lexer::TokenType::PUNCTUATOR_RIGHT_SHIFT:
                 return true;
             default:
                 break;
@@ -250,6 +240,7 @@ bool ETSChecker::CheckBinaryOperatorForBigInt(Type *left, Type *right, lexer::To
         case lexer::TokenType::PUNCTUATOR_STRICT_EQUAL:
         case lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL:
         case lexer::TokenType::KEYW_INSTANCEOF:
+        case lexer::TokenType::PUNCTUATOR_UNSIGNED_RIGHT_SHIFT:
             // This is handled in the main CheckBinaryOperator function
             return false;
         default:
@@ -933,6 +924,7 @@ Type *ETSChecker::CheckBinaryOperatorNullishCoalescing(ir::Expression *left, ir:
         LogError(diagnostic::COALESCE_NOT_REF, {}, pos);
     }
     leftType = GetNonNullishType(leftType);
+    ES2PANDA_ASSERT(leftType != nullptr);
     if (leftType->IsTypeError()) {
         ES2PANDA_ASSERT(IsAnyError());
         return GlobalTypeError();

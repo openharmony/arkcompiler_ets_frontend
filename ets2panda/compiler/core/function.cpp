@@ -128,6 +128,7 @@ static void CompileFunctionParameterDeclaration(PandaGen *pg, const ir::ScriptFu
 void Function::LoadClassContexts(const ir::AstNode *node, PandaGen *pg, VReg ctor, const util::StringView &name)
 {
     auto *classDef = util::Helpers::GetContainingClassDefinition(node);
+    ES2PANDA_ASSERT(classDef != nullptr);
 
     do {
         auto res = pg->Scope()->Find(classDef->InternalName());

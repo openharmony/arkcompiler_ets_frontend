@@ -63,7 +63,8 @@ enum class TypeAnnotationParsingOptions : uint32_t {
     ALLOW_DECLARATION_SITE_VARIANCE = 1U << 14U,
     DISALLOW_UNION = 1U << 15U,
     POTENTIAL_NEW_ARRAY = 1U << 16U,
-    ANNOTATION_NOT_ALLOW = 1U << 17U
+    ANNOTATION_NOT_ALLOW = 1U << 17U,
+    INSTANCEOF = 1U << 18U
 };
 
 class ParserImpl {
@@ -127,7 +128,7 @@ protected:
 
     ir::VariableDeclaratorFlag GetFlag(VariableParsingFlags flags);
 
-    void ValidateAccessor(ExpressionParseFlags flags, lexer::TokenFlags currentTokenFlags);
+    void ValidateAccessor(ExpressionParseFlags flags);
     void CheckPropertyKeyAsyncModifier(ParserStatus *methodStatus);
     ir::Property *ParseShorthandProperty(const lexer::LexerPosition *startPos);
     void ParseGeneratorPropertyModifier(ExpressionParseFlags flags, ParserStatus *methodStatus);
@@ -241,6 +242,8 @@ protected:
         return false;
     }
 
+    void ParseIndexSignature();
+    void EatTypeAnnotation();
     util::StringView ParseSymbolIteratorIdentifier() const noexcept;
     ir::Identifier *ExpectIdentifier(bool isReference = false, bool isUserDefinedType = false,
                                      TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR);

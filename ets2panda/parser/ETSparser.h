@@ -188,6 +188,9 @@ private:
 #endif
     ir::ETSImportDeclaration *ParseImportPathBuildImport(ArenaVector<ir::AstNode *> &&specifiers, bool requireFrom,
                                                          lexer::SourcePosition startLoc, ir::ImportKinds importKind);
+    ir::Statement *CreateReExportDeclarationNode(ir::ETSImportDeclaration *reExportDeclaration,
+                                                 const lexer::SourcePosition &startLoc,
+                                                 const ir::ModifierFlags &modifiers);
     void ParseNamedExportSpecifiers(ArenaVector<ir::AstNode *> *specifiers, bool defaultExport);
     void ParseUserSources(std::vector<std::string> userParths);
     ArenaVector<ir::Statement *> ParseTopLevelDeclaration();
@@ -229,6 +232,7 @@ private:
     ir::ModifierFlags ParseClassModifiers();
     ir::ModifierFlags ParseInterfaceMethodModifiers();
     ir::AstNode *ParseInterfaceField();
+    void ParseIndexedSignature();
     ir::TypeNode *ParseInterfaceTypeAnnotation(ir::Identifier *name);
     void ParseInterfaceModifiers(ir::ModifierFlags &fieldModifiers, bool &optionalField);
     ir::OverloadDeclaration *ParseInterfaceOverload(ir::ModifierFlags modifiers);

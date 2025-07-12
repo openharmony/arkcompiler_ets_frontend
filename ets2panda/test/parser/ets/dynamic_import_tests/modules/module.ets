@@ -19,6 +19,7 @@ export declare class A {
     f1: string;
     static f2: double;
 
+    constructor()
     constructor(p1: double, p2: string);
 
     foo(p: double): string;
@@ -26,6 +27,17 @@ export declare class A {
     optional_foo(p?: double): string;
 }
 export declare interface I {
+    s:string
     f1(p: string): double;
     f2(p: double): string;
 }
+
+export declare abstract class Animal {
+    abstract move(): void
+}
+
+export declare class C {
+    s:string
+}
+
+export declare type requiredC = Required<C>

@@ -177,7 +177,7 @@ public:
 
     void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;
 
-    es2panda::Language Language() const
+    [[nodiscard]] es2panda::Language Language() const noexcept
     {
         return GetHistoryNodeAs<TSInterfaceDeclaration>()->lang_;
     }

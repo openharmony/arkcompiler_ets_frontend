@@ -27,7 +27,7 @@ export const MAKE_OBSERVED = 'makeObserved';
 export const ARKUI_STATE_MANAGEMENT = '@ohos.arkui.StateManagement';
 export const NEW_PROP_DECORATOR_SUFFIX = 'Ref';
 
-export enum CustomDecoratorName {
+export enum CustomInterfaceName {
   Extend = 'Extend',
   LocalBuilder = 'LocalBuilder',
   Styles = 'Styles',
@@ -35,7 +35,8 @@ export enum CustomDecoratorName {
   Memo = 'Memo',
   Observed = 'Observed',
   CustomLayout = 'CustomLayout',
-  CustomStyles = 'CustomStyles'
+  CustomStyles = 'CustomStyles',
+  Repeat = 'Repeat'
 }
 
 export enum StorageTypeName {
@@ -88,3 +89,6 @@ export const GET_LOCAL_STORAGE_FUNC_NAME = '__get_local_storage__';
 export const PROVIDE_DECORATOR_NAME = 'Provide';
 export const PROVIDE_ALIAS_PROPERTY_NAME = 'alias';
 export const PROVIDE_ALLOW_OVERRIDE_PROPERTY_NAME = 'allowOverride';
+
+export const VIRTUAL_SCROLL_IDENTIFIER = 'virtualScroll';
+export const DISABLE_VIRTUAL_SCROLL_IDENTIFIER = 'disableVirtualScroll';

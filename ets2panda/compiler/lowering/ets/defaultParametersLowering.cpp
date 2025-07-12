@@ -42,6 +42,17 @@ static void TransformDefaultParameters(public_lib::Context *ctx, ir::ScriptFunct
                                        const std::vector<ir::ETSParameterExpression *> &params,
                                        bool isInterfaceFunction)
 {
+    auto validateDefaultParamInDeclare = [ctx, function, &params]() {
+        for (auto param : params) {
+            if (param->Initializer() == nullptr) {
+                continue;
+            }
+            param->SetInitializer(nullptr);
+            if ((function->Flags() & ir::ScriptFunctionFlags::EXTERNAL) != 0U) {
+                ctx->GetChecker()->AsETSChecker()->LogError(diagnostic::DEFAULT_PARAM_IN_DECLARE, param->Start());
+            }
+        }
+    };
     if (isInterfaceFunction) {
         for (const auto param : params) {
             TransformInitializer(ctx->allocator, ctx->parser->AsETSParser(), param);
@@ -50,7 +61,7 @@ static void TransformDefaultParameters(public_lib::Context *ctx, ir::ScriptFunct
     }
 
     if (!function->HasBody()) {  // #23134
-        ES2PANDA_ASSERT(ctx->diagnosticEngine->IsAnyError());
+        validateDefaultParamInDeclare();
         return;
     }
 
@@ -65,6 +76,9 @@ static void TransformDefaultParameters(public_lib::Context *ctx, ir::ScriptFunct
         auto const param = params.at(dfltIdx);
         auto stmt = TransformInitializer(allocator, parser, param);
         bodyStmt[dfltIdx] = stmt;
+        // From a developer's perspective, this locational information is more intuitive.
+        stmt->SetParent(param);
+        RefineSourceRanges(stmt);
         stmt->SetParent(body);
     }
 }

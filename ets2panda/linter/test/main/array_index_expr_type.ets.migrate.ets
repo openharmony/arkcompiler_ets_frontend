@@ -13,6 +13,11 @@
  * limitations under the License.
  */
 
+import {
+  Component,
+  Link,
+} from '@kit.ArkUI';
+
 function foo(index:number){
   let an_array: number[] = [1.0, 2.0, 3.0]
   let a: number = an_array[index as int]
@@ -36,8 +41,8 @@ let array: number[] = [1.0, 2.0, 3.0]
 const index_1: number = 1.3;
 let index_2: number = 1.3;
 let index_3: number = 1.0;
-array[index_1 as int];
-array[index_2 as int];
+array[index_1];
+array[index_2];
 array[index_3 as int];
 let index_4: int = 2.0
 array[index_4];
@@ -62,7 +67,7 @@ for (let i: int = 0.0; i < array2.length; i++) {
 let arr1:number[] = [1.0, 2.0, 3.0]
 enum TE{
   AA = 1.12
-  BB = 0.0
+  BB = 0
 }
 arr1[TE.AA as int];
 arr1[TE.BB];
@@ -87,3 +92,17 @@ arr[d] = 1.0;
 let test: number = 1.0;
 arr[1 as int];
 arr[test as int];
+
+@Component
+struct Test {
+  @Link testIndex: number;
+
+  async cateMode(testIndex: number) {
+    emitter.on(innerEvent, (eventData) => {
+      if (this.testIndex == 0.0) {
+        let array: number[] = [1.0, 2.0, 3.0];
+        array[this.testIndex as int];
+      }
+    })
+  }
+}

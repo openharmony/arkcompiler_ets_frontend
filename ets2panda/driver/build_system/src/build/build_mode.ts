@@ -40,7 +40,7 @@ export class BuildMode extends BaseMode {
       await super.run();
     } else {
       // Default fallback: Uses parallel execution (same as RUN_PARALLEL)
-      await super.runParallel();
+      await super.run();
     }
   }
 }

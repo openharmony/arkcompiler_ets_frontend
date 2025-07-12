@@ -51,6 +51,7 @@ static ir::BlockExpression *CreateRestArgsBlockExpression(public_lib::Context *c
     args.emplace_back(argumentSymbol->Clone(allocator, nullptr));
     ss << "@@I3[@@I4] = @@I5;";
     args.emplace_back(arraySymbol->Clone(allocator, nullptr));
+    ES2PANDA_ASSERT(iteratorIndex != nullptr);
     args.emplace_back(iteratorIndex->Clone(allocator, nullptr));
     args.emplace_back(iteratorSymbol->Clone(allocator, nullptr));
     ss << "@@I6 = @@I7 + 1;";
@@ -69,6 +70,7 @@ static ir::BlockExpression *ConvertSpreadToBlockExpression(public_lib::Context *
                                                            ir::SpreadElement *spreadElement)
 {
     auto *blockExpression = CreateRestArgsBlockExpression(context, spreadElement);
+    ES2PANDA_ASSERT(blockExpression != nullptr);
     blockExpression->SetParent(spreadElement->Parent());
     blockExpression->SetRange(spreadElement->Range());
 
@@ -119,6 +121,7 @@ static ir::Expression *CreateRestArgsArray(public_lib::Context *context, ArenaVe
     ss << "for (let i = 0; i < @@I8.length; ++i) { @@I9[i] = @@I10[i]}";
     ss << "@@I11;";
     auto *arrayExpr = checker->AllocNode<ir::ArrayExpression>(std::move(copiedArguments), allocator);
+    ES2PANDA_ASSERT(type != nullptr);
     auto *loweringResult = parser->CreateFormattedExpression(
         ss.str(), genSymIdent, type->Clone(allocator, nullptr), arrayExpr, genSymIdent2, type,
         type->Clone(allocator, nullptr), genSymIdent->Clone(allocator, nullptr), genSymIdent->Clone(allocator, nullptr),
@@ -142,7 +145,7 @@ static ir::CallExpression *RebuildCallExpression(public_lib::Context *context, i
 
     auto *newCall = util::NodeAllocator::ForceSetParent<ir::CallExpression>(allocator, originalCall->Callee(),
                                                                             std::move(newArgs), nullptr, false);
-
+    ES2PANDA_ASSERT(newCall != nullptr);
     restArgsArray->SetParent(newCall);
     newCall->SetParent(originalCall->Parent());
     newCall->AddModifier(originalCall->Modifiers());

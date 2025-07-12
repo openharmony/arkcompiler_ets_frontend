@@ -306,6 +306,7 @@ void ETSLReference::SetValueComputed(const ir::MemberExpression *memberExpr) con
 
     if (objectType->IsETSArrayType() || objectType->IsETSResizableArrayType()) {
         auto vRegtype = etsg_->GetVRegType(baseReg_);
+        ES2PANDA_ASSERT(vRegtype != nullptr);
         auto *elementType = vRegtype->IsETSArrayType() ? vRegtype->AsETSArrayType()->ElementType()
                                                        : vRegtype->AsETSResizableArrayType()->ElementType();
         etsg_->StoreArrayElement(Node(), baseReg_, propReg_, elementType);
@@ -317,11 +318,12 @@ void ETSLReference::SetValueComputed(const ir::MemberExpression *memberExpr) con
 
 void ETSLReference::SetValueGetterSetter(const ir::MemberExpression *memberExpr) const
 {
+    ES2PANDA_ASSERT(memberExpr->PropVar() != nullptr);
     const auto *sig = memberExpr->PropVar()->TsType()->AsETSFunctionType()->FindSetter();
 
     auto argReg = etsg_->AllocReg();
     etsg_->StoreAccumulator(Node(), argReg);
-
+    ES2PANDA_ASSERT(sig->Function() != nullptr);
     if (sig->Function()->IsStatic()) {
         etsg_->CallExact(Node(), sig->InternalName(), argReg);
     } else if (memberExpr->Object()->IsSuperExpression()) {
@@ -356,6 +358,7 @@ void ETSLReference::SetValue() const
         return;
     }
 
+    ES2PANDA_ASSERT(memberExpr->PropVar() != nullptr);
     if (memberExpr->PropVar()->TsType()->HasTypeFlag(checker::TypeFlag::GETTER_SETTER)) {
         SetValueGetterSetter(memberExpr);
         return;

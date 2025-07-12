@@ -44,6 +44,8 @@ ArenaVector<ir::Statement *> ArrayLiteralLowering::GenerateDefaultCallToConstruc
         auto *indexSymbol = Gensym(Allocator());
         auto *lengthSymbol = Gensym(Allocator());
         auto *typeNode = checker_->AllocNode<ir::OpaqueTypeNode>(eleType, Allocator());
+        ES2PANDA_ASSERT(typeNode != nullptr);
+
         ss << "let @@I1 : int = @@I2.length.toInt();";
         newStmts.emplace_back(lengthSymbol);
         newStmts.emplace_back(arraySymbol->Clone(Allocator(), nullptr));
@@ -110,6 +112,7 @@ ir::AstNode *ArrayLiteralLowering::TryTransformLiteralArrayToRefArray(ir::ArrayE
 
     auto *parent = literalArray->Parent();
     auto *loweringResult = parser_->CreateFormattedExpression(ss.str(), newStmts);
+    ES2PANDA_ASSERT(loweringResult != nullptr);
     loweringResult->SetRange(literalArray->Range());
     loweringResult->SetParent(parent);
 

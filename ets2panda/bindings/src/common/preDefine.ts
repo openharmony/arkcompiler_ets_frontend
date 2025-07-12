@@ -26,3 +26,5 @@ export const PANDA_SDK_PATH_FROM_SDK: string = './build-tools/ets2panda';
 export const SYSTEM_SDK_PATH_FROM_SDK: string = './';
 export const EXTERNAL_API_PATH_FROM_SDK: string = '../../../hms/ets/ets1.2';
 export const DEFAULT_CACHE_DIR: string = './.idea/.deveco';
+export const ETS_SUFFIX: string = '.ets';
+export const TS_SUFFIX: string = '.ts';

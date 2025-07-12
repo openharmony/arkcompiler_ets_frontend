@@ -27,6 +27,7 @@ static ir::AstNode *ConvertToResizableArrayType(ir::TSArrayType *node, public_li
     auto *parser = ctx->parser->AsETSParser();
     ir::TypeNode *typeAnnotation = parser->CreateFormattedTypeAnnotation((insideAnnotdecl ? "FixedArray<" : "Array<") +
                                                                          node->ElementType()->DumpEtsSrc() + ">");
+    ES2PANDA_ASSERT(typeAnnotation != nullptr);
     typeAnnotation->SetAnnotations(node->Annotations());
     typeAnnotation->SetParent(node->Parent());
     typeAnnotation->SetRange(node->Range());

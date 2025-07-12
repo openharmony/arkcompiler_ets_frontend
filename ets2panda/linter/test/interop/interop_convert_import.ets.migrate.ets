@@ -14,14 +14,13 @@
  */
  'use static'
 
- let GeneratedImportVar_1 = ESValue.load('./interop_convert_import_js.js');
-let foo = GeneratedImportVar_1.getProperty('foo');
-let foo2 = GeneratedImportVar_1.getProperty('foo2');
-let foo3 = GeneratedImportVar_1.getProperty('foo3');
-let foo4 = GeneratedImportVar_1.getProperty('foo4');
-let array_val = GeneratedImportVar_1.getProperty('array_val');
-let null_val = GeneratedImportVar_1.getProperty('null_val');
-let undefined_val = GeneratedImportVar_1.getProperty('undefined_val');
+ let foo = ESValue.load('./interop_convert_import_js.js').getProperty('foo');
+let foo2 = ESValue.load('./interop_convert_import_js.js').getProperty('foo2');
+let foo3 = ESValue.load('./interop_convert_import_js.js').getProperty('foo3');
+let foo4 = ESValue.load('./interop_convert_import_js.js').getProperty('foo4');
+let array_val = ESValue.load('./interop_convert_import_js.js').getProperty('array_val');
+let null_val = ESValue.load('./interop_convert_import_js.js').getProperty('null_val');
+let undefined_val = ESValue.load('./interop_convert_import_js.js').getProperty('undefined_val');
 
 
  let a: number = foo.getProperty("num").toNumber()

@@ -60,6 +60,7 @@ ir::Statement *ETSParser::ParseNamespace(ir::ModifierFlags flags)
     }
     auto start = Lexer()->GetToken().Start();
     ir::ETSModule *ns = ParseNamespaceImp(flags);
+    ES2PANDA_ASSERT(ns != nullptr);
     ns->SetRange({start, Lexer()->GetToken().Start()});
     return ns;
 }
@@ -67,15 +68,18 @@ ir::Statement *ETSParser::ParseNamespace(ir::ModifierFlags flags)
 ir::ETSModule *ETSParser::ParseNamespaceImp(ir::ModifierFlags flags)
 {
     Lexer()->NextToken();
-    auto *result = AllocNode<ir::ETSModule>(Allocator(), ArenaVector<ir::Statement *>(Allocator()->Adapter()),
-                                            ExpectIdentifier(), ir::ModuleFlag::NAMESPACE, globalProgram_);
+    auto *result =
+        AllocNode<ir::ETSModule>(Allocator(), ArenaVector<ir::Statement *>(Allocator()->Adapter()), ExpectIdentifier(),
+                                 ir::ModuleFlag::NAMESPACE, GetContext().GetLanguage(), globalProgram_);
     ir::ETSModule *parent = result;
     ir::ETSModule *child = nullptr;
     while (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD) {
         Lexer()->NextToken();
         auto start = Lexer()->GetToken().Start();
         child = AllocNode<ir::ETSModule>(Allocator(), ArenaVector<ir::Statement *>(Allocator()->Adapter()),
-                                         ExpectIdentifier(), ir::ModuleFlag::NAMESPACE, globalProgram_);
+                                         ExpectIdentifier(), ir::ModuleFlag::NAMESPACE, GetContext().GetLanguage(),
+                                         globalProgram_);
+        ES2PANDA_ASSERT(child != nullptr);
         child->SetParent(parent);
         child->SetRange({start, Lexer()->GetToken().Start()});
         child->AddModifier(ir::ModifierFlags::EXPORT);

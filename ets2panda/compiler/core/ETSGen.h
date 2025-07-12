@@ -94,8 +94,10 @@ public:
     void ReturnAcc(const ir::AstNode *node);
 
     void BranchIfIsInstance(const ir::AstNode *node, VReg srcReg, const checker::Type *target, Label *ifTrue);
+    void BranchIfIsInstanceUnion(const ir::AstNode *node, VReg srcReg, const checker::Type *target, Label *ifTrue);
     void IsInstance(const ir::AstNode *node, VReg srcReg, checker::Type const *target);
-    void EmitFailedTypeCastException(const ir::AstNode *node, VReg src, checker::Type const *target);
+    void EmitFailedTypeCastException(const ir::AstNode *node, const VReg src, checker::Type const *target,
+                                     bool isUndef = false);
 
     void EmitNullcheck([[maybe_unused]] const ir::AstNode *node)
     {
@@ -298,7 +300,7 @@ public:
 
     bool IsDevirtualizedSignature(const checker::Signature *signature)
     {
-        ES2PANDA_ASSERT(!signature->HasSignatureFlag(checker::SignatureFlags::STATIC));
+        ES2PANDA_ASSERT(signature != nullptr && !signature->HasSignatureFlag(checker::SignatureFlags::STATIC));
         return signature->HasSignatureFlag(checker::SignatureFlags::FINAL | checker::SignatureFlags::PRIVATE |
                                            checker::SignatureFlags::CONSTRUCTOR);
     }
@@ -456,6 +458,7 @@ public:
         if (isEtsPrimitive) {
             // NOTE: SzD. LoadStaticProperty if ETS stdlib has static TYPE constants otherwise fallback to LdaType
         } else {
+            ES2PANDA_ASSERT(GetAccumulatorType() != nullptr);
             auto classRef = GetAccumulatorType()->AsETSObjectType()->AssemblerName();
             Sa().Emit<LdaType>(node, classRef);
         }
@@ -482,14 +485,16 @@ private:
     void UnaryTilde(const ir::AstNode *node);
 
     util::StringView ToAssemblerType(const es2panda::checker::Type *type) const;
-    void TestIsInstanceConstituent(const ir::AstNode *node, std::tuple<Label *, Label *> label,
-                                   checker::Type const *target, bool acceptNull);
+    void TestIsInstanceType(const ir::AstNode *const node, std::tuple<Label *, Label *> label,
+                            checker::Type const *target, const VReg srcReg, bool acceptNull);
     void CheckedReferenceNarrowingObject(const ir::AstNode *node, const checker::Type *target);
 
     template <bool IS_SRTICT = false>
     void HandleDefinitelyNullishEquality(const ir::AstNode *node, VReg lhs, VReg rhs, Label *ifFalse);
     template <bool IS_SRTICT = false>
     void HandlePossiblyNullishEquality(const ir::AstNode *node, VReg lhs, VReg rhs, Label *ifFalse, Label *ifTrue);
+
+    bool IsNullUnsafeObjectType(checker::Type const *type) const;
 
     void EmitIsNull([[maybe_unused]] const ir::AstNode *node)
     {

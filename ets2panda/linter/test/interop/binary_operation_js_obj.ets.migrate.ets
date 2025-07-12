@@ -12,10 +12,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-let GeneratedImportVar_1 = ESValue.load('./binary_operation_js_obj_js');
-let foo = GeneratedImportVar_1.getProperty('foo');
-let m = GeneratedImportVar_1.getProperty('m');
-let n = GeneratedImportVar_1.getProperty('n');
+let foo = ESValue.load('./binary_operation_js_obj_js').getProperty('foo');
+let m = ESValue.load('./binary_operation_js_obj_js').getProperty('m');
+let n = ESValue.load('./binary_operation_js_obj_js').getProperty('n');
 
 let a = foo.getProperty("a")
 let b = foo.getProperty("b")

@@ -26,4 +26,4 @@ function main() {
 /* @@? 18:5 Error TypeError: Call to `log` is ambiguous as `2` versions of `log` are available: `log(i: String): void` and `log(i: Long): void` */
 /* @@? 18:5 Error TypeError: Call to `log` is ambiguous as `2` versions of `log` are available: `log(i: String): void` and `log(i: Float): void` */
 /* @@? 18:5 Error TypeError: Call to `log` is ambiguous as `2` versions of `log` are available: `log(i: String): void` and `log(i: Double): void` */
-/* @@@ label Error TypeError: Indexed signatures are not allowed. Use arrays instead! */
+/* @@@ label Error TypeError: Object type doesn't have proper index access method. */

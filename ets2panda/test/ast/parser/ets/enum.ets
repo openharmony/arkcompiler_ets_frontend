@@ -65,3 +65,5 @@ function main(): void {
       arktest.assertTrue(false)
   }
 }
+
+/* @@? 26:10 Warning Warning: Enum cast is deprecated. Cast support from 'Color' to 'Int' will be removed. */

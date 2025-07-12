@@ -174,14 +174,13 @@ ImportPathManager::ResolvedPathRes ImportPathManager::ResolvePath(std::string_vi
         return {*importPath};
     }
     if (IsRelativePath(*importPath)) {
-        const size_t pos = curModulePath.find_last_of("/\\");
-        ES2PANDA_ASSERT(pos != std::string::npos);
+        size_t pos = curModulePath.find_last_of("/\\");
+        auto currentDir = (pos != std::string::npos) ? curModulePath.substr(0, pos) : ".";
 
-        auto currentDirectory = curModulePath.substr(0, pos);
-        auto resolvedPath = UString(currentDirectory, allocator_);
+        auto resolvedPath = UString(currentDir, allocator_);
         resolvedPath.Append(pathDelimiter_);
         resolvedPath.Append(*importPath);
-        // NOTE(dkofanov): Suspicious shortcut: shouldn't it fallthrough into `ResolveAbsolutePath`?
+
         return AppendExtensionOrIndexFileIfOmitted(resolvedPath.View());
     }
 

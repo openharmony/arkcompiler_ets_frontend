@@ -100,6 +100,7 @@ static void AllowRequiredTypeInstantiation(const ir::Expression *const loweringR
 static bool CheckReadonlyAndUpdateCtorArgs(const ir::Identifier *key, ir::Expression *value,
                                            std::map<util::StringView, ir::Expression *> &ctorArgumentsMap)
 {
+    ES2PANDA_ASSERT(key != nullptr);
     auto varType = (key->Variable() != nullptr) ? key->Variable()->TsType() : nullptr;
     if (varType == nullptr || varType->HasTypeFlag(checker::TypeFlag::SETTER)) {
         return false;
@@ -162,6 +163,18 @@ static void SetInstanceArguments(ArenaVector<ir::Statement *> &statements, Arena
     instance->SetArguments(std::move(ctorArguments));
 }
 
+static void GenerateArgsForAnonymousClassType(const checker::ETSObjectType *classType, const bool &isAnonymous,
+                                              std::map<util::StringView, ir::Expression *> &ctorArgumentsMap)
+{
+    if (isAnonymous) {
+        checker::Signature *sig = classType->ConstructSignatures().front();
+        for (auto param : sig->Params()) {
+            ES2PANDA_ASSERT(param->Declaration() != nullptr);
+            ctorArgumentsMap.emplace(param->Declaration()->Name(), nullptr);
+        }
+    }
+}
+
 static void GenerateNewStatements(public_lib::Context *ctx, ir::ObjectExpression *objExpr, std::stringstream &ss,
                                   std::vector<ir::AstNode *> &newStmts,
                                   std::deque<ir::BlockExpression *> &nestedBlckExprs,
@@ -186,13 +199,7 @@ static void GenerateNewStatements(public_lib::Context *ctx, ir::ObjectExpression
     bool isAnonymous = IsAnonymousClassType(classType);
 
     std::map<util::StringView, ir::Expression *> ctorArgumentsMap;
-    if (isAnonymous) {
-        checker::Signature *sig = classType->ConstructSignatures().front();
-        for (auto param : sig->Params()) {
-            ES2PANDA_ASSERT(param->Declaration() != nullptr);
-            ctorArgumentsMap.emplace(param->Declaration()->Name(), nullptr);
-        }
-    }
+    GenerateArgsForAnonymousClassType(classType, isAnonymous, ctorArgumentsMap);
 
     for (auto *propExpr : objExpr->Properties()) {
         //  Skip possibly invalid properties:
@@ -218,7 +225,7 @@ static void GenerateNewStatements(public_lib::Context *ctx, ir::ObjectExpression
         if (isAnonymous && CheckReadonlyAndUpdateCtorArgs(keyIdent, value, ctorArgumentsMap)) {
             continue;
         }
-
+        ES2PANDA_ASSERT(genSymIdent != nullptr);
         ss << "@@I" << addNode(genSymIdent->Clone(allocator, nullptr)) << ".@@I" << addNode(keyIdent);
 
         if (value->IsBlockExpression()) {
@@ -269,7 +276,7 @@ static ir::AstNode *HandleObjectLiteralLowering(public_lib::Context *ctx, ir::Ob
     GenerateNewStatements(ctx, objExpr, ss, newStmts, nestedBlckExprs, ctorArguments);
 
     auto *loweringResult = parser->CreateFormattedExpression(ss.str(), newStmts);
-
+    ES2PANDA_ASSERT(loweringResult != nullptr);
     SetInstanceArguments(loweringResult->AsBlockExpression()->Statements(), ctorArguments);
 
     loweringResult->SetParent(objExpr->Parent());
@@ -293,6 +300,40 @@ static ir::AstNode *HandleObjectLiteralLowering(public_lib::Context *ctx, ir::Ob
     return loweringResult;
 }
 
+static ir::AstNode *HandleDynamicObjectLiteralLowering(public_lib::Context *ctx, ir::ObjectExpression *objExpr)
+{
+    auto parser = ctx->parser->AsETSParser();
+    auto checker = ctx->GetChecker()->AsETSChecker();
+    auto varBinder = checker->VarBinder()->AsETSBinder();
+    auto allocator = checker->ProgramAllocator();
+
+    std::stringstream ss;
+    ArenaVector<ir::Statement *> blockStatements(allocator->Adapter());
+    std::vector<ir::AstNode *> args;
+    auto gensym = Gensym(allocator);
+    blockStatements.push_back(parser->CreateFormattedStatement("let @@I1:ESValue = ESValue.instantiateEmptyObject();",
+                                                               gensym->Clone(allocator, nullptr)));
+    size_t counter = 0;
+    for (auto property : objExpr->Properties()) {
+        auto appendArgument = [&](auto &&arg) {
+            args.push_back(std::forward<decltype(arg)>(arg));
+            return ++counter;
+        };
+
+        const size_t genSymId = appendArgument(gensym->Clone(allocator, nullptr));
+        const size_t valueId = appendArgument(property->AsProperty()->Value()->Clone(allocator, nullptr));
+
+        ss << "@@I" << genSymId << ".setProperty('" << property->AsProperty()->Key()->DumpEtsSrc()
+           << "', ESValue.wrap(@@E" << valueId << "));";
+    }
+    blockStatements.push_back(parser->CreateFormattedStatement(ss.str(), args));
+    blockStatements.push_back(parser->CreateFormattedStatement("@@I1.unwrap();", gensym->Clone(allocator, nullptr)));
+    auto *blockExpr = util::NodeAllocator::ForceSetParent<ir::BlockExpression>(allocator, std::move(blockStatements));
+    blockExpr->SetParent(objExpr->Parent());
+    CheckLoweredNode(varBinder, checker, blockExpr);
+    return blockExpr;
+}
+
 bool ObjectLiteralLowering::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
     program->Ast()->TransformChildrenRecursively(
@@ -301,8 +342,13 @@ bool ObjectLiteralLowering::PerformForModule(public_lib::Context *ctx, parser::P
             // Skip processing invalid and dynamic objects
             if (ast->IsObjectExpression()) {
                 auto *exprType = ast->AsObjectExpression()->TsType();
-                if (exprType != nullptr && exprType->IsETSObjectType()) {
-                    return HandleObjectLiteralLowering(ctx, ast->AsObjectExpression());
+                if (exprType == nullptr) {
+                    return ast;
+                }
+                if (exprType->IsETSObjectType()) {
+                    return exprType->AsETSObjectType()->GetDeclNode()->AsTyped()->TsType()->IsGradualType()
+                               ? HandleDynamicObjectLiteralLowering(ctx, ast->AsObjectExpression())
+                               : HandleObjectLiteralLowering(ctx, ast->AsObjectExpression());
                 }
             }
             return ast;

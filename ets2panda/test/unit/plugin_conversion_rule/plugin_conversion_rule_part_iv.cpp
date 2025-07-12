@@ -395,17 +395,19 @@ TEST_F(PluginConversionRuleUnitTest, TSEnumDeclarationConstructorFlagsInputParam
         auto *allocatorE2p = reinterpret_cast<Context *>(context)->allocator;
         auto *keyE2p = reinterpret_cast<ir::Identifier *>(key);
         ArenaVector<ir::AstNode *> membersArenaVector {reinterpret_cast<Context *>(context)->allocator->Adapter()};
-     	for (size_t i = 0; i < membersLen; ++i) {
-     		auto *membersElement1 = members[i];
- 	    	auto *membersElement1E2p = reinterpret_cast<ir::AstNode *>(membersElement1);
+        for (size_t i = 0; i < membersLen; ++i) {
+            auto *membersElement1 = members[i];
+            auto *membersElement1E2p = reinterpret_cast<ir::AstNode *>(membersElement1);
 
- 	    	membersArenaVector.push_back(membersElement1E2p);
-     	}
-
+            membersArenaVector.push_back(membersElement1E2p);
+        }
+        
+        ark::es2panda::Language langE2p {Language::Id::ETS};
         auto *ctx = reinterpret_cast<Context *>(context);
         auto *ctxAllocator = ctx->allocator;
         auto *astNode = (ctxAllocator->New<ir::TSEnumDeclaration>(allocatorE2p, keyE2p,
-            std::move(membersArenaVector), ir::TSEnumDeclaration::ConstructorFlags {isConst, isStatic, isDeclare}));
+            std::move(membersArenaVector), ir::TSEnumDeclaration::ConstructorFlags {isConst, isStatic, isDeclare},
+            langE2p));
         astNode->AddAstNodeFlags(ir::AstNodeFlags::NOCLEANUP);
         return reinterpret_cast<es2panda_AstNode *>(astNode);
     })"};

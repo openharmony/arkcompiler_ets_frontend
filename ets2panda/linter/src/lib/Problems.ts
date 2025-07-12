@@ -256,6 +256,7 @@ export enum FaultID {
   PropNeedCallMethodForDeepCopy,
   StateStylesBlockNeedArrowFunc,
   PromiseVoidNeedResolveArg,
+  RepeatDisableVirtualScroll,
   // this should always be last enum
   LAST_ID
 }

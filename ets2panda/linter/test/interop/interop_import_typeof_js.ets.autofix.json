@@ -33,7 +33,7 @@
                 {
                     "start": 783,
                     "end": 783,
-                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('./interop_import_js_js');\nlet myAaa = GeneratedImportVar_1.getProperty('aaa');\nlet ClassA = GeneratedImportVar_1.getProperty('ClassA');\nlet Dog = GeneratedImportVar_1.getProperty('Dog');\nlet Person = GeneratedImportVar_1.getProperty('Person');\nlet Wiki = GeneratedImportVar_1.getProperty('Wiki');\n",
+                    "replacementText": "let myAaa = ESValue.load('./interop_import_js_js').getProperty('aaa');\nlet ClassA = ESValue.load('./interop_import_js_js').getProperty('ClassA');\nlet Dog = ESValue.load('./interop_import_js_js').getProperty('Dog');\nlet Person = ESValue.load('./interop_import_js_js').getProperty('Person');\nlet Wiki = ESValue.load('./interop_import_js_js').getProperty('Wiki');\n",
                     "line": 16,
                     "column": 1,
                     "endLine": 16,
@@ -63,7 +63,7 @@
                 {
                     "start": 783,
                     "end": 783,
-                    "replacementText": "let GeneratedImportVar_2 = ESValue.load('./interop_import_js_js');\nlet Doge = GeneratedImportVar_2.getProperty('Dog');\n",
+                    "replacementText": "let Doge = ESValue.load('./interop_import_js_js').getProperty('Dog');\n",
                     "line": 17,
                     "column": 1,
                     "endLine": 17,
@@ -93,7 +93,7 @@
                 {
                     "start": 783,
                     "end": 783,
-                    "replacementText": "let GeneratedImportVar_3 = ESValue.load('./interop_import_js_js');\nlet wiki = GeneratedImportVar_3.getProperty('Wiki');\n",
+                    "replacementText": "let wiki = ESValue.load('./interop_import_js_js').getProperty('Wiki');\n",
                     "line": 18,
                     "column": 1,
                     "endLine": 18,

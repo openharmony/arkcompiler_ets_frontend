@@ -29,7 +29,7 @@ import {
   INSTANCE_IDENTIFIER,
   COMMON_METHOD_IDENTIFIER,
   APPLY_STYLES_IDENTIFIER,
-  CustomDecoratorName,
+  CustomInterfaceName,
   ARKUI_PACKAGE_NAME,
   VALUE_IDENTIFIER,
   INDENT_STEP,
@@ -40,7 +40,9 @@ import {
   PROVIDE_DECORATOR_NAME,
   PROVIDE_ALIAS_PROPERTY_NAME,
   PROVIDE_ALLOW_OVERRIDE_PROPERTY_NAME,
-  NEW_PROP_DECORATOR_SUFFIX
+  NEW_PROP_DECORATOR_SUFFIX,
+  VIRTUAL_SCROLL_IDENTIFIER,
+  DISABLE_VIRTUAL_SCROLL_IDENTIFIER
 } from '../utils/consts/ArkuiConstants';
 import { ES_VALUE } from '../utils/consts/ESObject';
 import type { IncrementDecrementNodeInfo } from '../utils/consts/InteropAPI';
@@ -85,9 +87,6 @@ const GENERATED_DESTRUCT_OBJECT_TRESHOLD = 1000;
 
 const GENERATED_DESTRUCT_ARRAY_NAME = 'GeneratedDestructArray_';
 const GENERATED_DESTRUCT_ARRAY_TRESHOLD = 1000;
-
-const GENERATED_IMPORT_VARIABLE_NAME = 'GeneratedImportVar_';
-const GENERATED_IMPORT_VARIABLE_TRESHOLD = 1000;
 
 const GENERATED_TMP_VARIABLE_NAME = 'tmp_';
 const GENERATED_TMP_VARIABLE_TRESHOLD = 1000;
@@ -151,17 +150,11 @@ export class Autofixer {
     GENERATED_OBJECT_LITERAL_INIT_INTERFACE_TRESHOLD
   );
 
-  private readonly importVarNameGenerator = new NameGenerator(
-    GENERATED_IMPORT_VARIABLE_NAME,
-    GENERATED_IMPORT_VARIABLE_TRESHOLD
-  );
-
   private readonly tmpVariableNameGenerator = new NameGenerator(
     GENERATED_TMP_VARIABLE_NAME,
     GENERATED_TMP_VARIABLE_TRESHOLD
   );
 
-  private modVarName: string = '';
   private readonly lastImportEndMap = new Map<string, number>();
 
   private readonly symbolCache: SymbolCache;
@@ -2904,7 +2897,7 @@ export class Autofixer {
     const newFuncDecl = Autofixer.createFunctionDeclaration(funcDecl, undefined, parameDecl, returnType, newBlock);
     let text = this.printer.printNode(ts.EmitHint.Unspecified, newFuncDecl, funcDecl.getSourceFile());
     if (preserveDecorator) {
-      text = '@' + CustomDecoratorName.AnimatableExtend + this.getNewLine() + text;
+      text = '@' + CustomInterfaceName.AnimatableExtend + this.getNewLine() + text;
     }
     return [{ start: funcDecl.getStart(), end: funcDecl.getEnd(), replacementText: text }];
   }
@@ -3717,17 +3710,16 @@ export class Autofixer {
       });
 
       if (items.length > 1) {
-        const formattedList = items
-          .map((item) => {
+        const formattedList = items.
+          map((item) => {
             return `  ${item.trim()},`;
-          })
-          .join('\n');
+          }).
+          join('\n');
         return `{\n${formattedList}\n}`;
       }
       return `{${importList}}`;
     });
   }
-
 
   fixStylesDecoratorGlobal(
     funcDecl: ts.FunctionDeclaration,
@@ -3767,7 +3759,7 @@ export class Autofixer {
     const values: ts.Expression[][] = [];
     const statements = block?.statements;
     const type = ts.factory.createTypeReferenceNode(
-      ts.factory.createIdentifier(CustomDecoratorName.CustomStyles),
+      ts.factory.createIdentifier(CustomInterfaceName.CustomStyles),
       undefined
     );
     Autofixer.getParamsAndValues(statements, parameters, values);
@@ -3789,7 +3781,7 @@ export class Autofixer {
       newBlock
     );
     const newModifiers = ts.getModifiers(methodDecl)?.filter((modifier) => {
-      return !(ts.isDecorator(modifier) && TsUtils.getDecoratorName(modifier) === CustomDecoratorName.Styles);
+      return !(ts.isDecorator(modifier) && TsUtils.getDecoratorName(modifier) === CustomInterfaceName.Styles);
     });
     const expr = ts.factory.createPropertyDeclaration(newModifiers, methodDecl.name, undefined, type, arrowFunc);
     needImport.add(COMMON_METHOD_IDENTIFIER);
@@ -3928,7 +3920,7 @@ export class Autofixer {
   fixDataObservation(classDecls: ts.ClassDeclaration[]): Autofix[] | undefined {
     const autofixes: Autofix[] = [];
     classDecls.forEach((classDecl) => {
-      const observedDecorator = ts.factory.createDecorator(ts.factory.createIdentifier(CustomDecoratorName.Observed));
+      const observedDecorator = ts.factory.createDecorator(ts.factory.createIdentifier(CustomInterfaceName.Observed));
       const sourceFile = classDecl.getSourceFile();
       const text = this.printer.printNode(ts.EmitHint.Unspecified, observedDecorator, sourceFile) + this.getNewLine();
       const autofix = { start: classDecl.getStart(), end: classDecl.getStart(), replacementText: text };
@@ -4208,33 +4200,44 @@ export class Autofixer {
   }
 
   private static createVariableForInteropImport(
-    newVarName: string,
-    interopObject: string,
-    interopMethod: string,
-    interopPropertyOrModule: string
+    interopProperty: string,
+    symbolName: string,
+    propertyName: string
   ): ts.VariableStatement {
     const newVarDecl = ts.factory.createVariableStatement(
       undefined,
       ts.factory.createVariableDeclarationList(
         [
           ts.factory.createVariableDeclaration(
-            ts.factory.createIdentifier(newVarName),
+            ts.factory.createIdentifier(symbolName),
             undefined,
             undefined,
-            ts.factory.createCallExpression(
-              ts.factory.createPropertyAccessExpression(
-                ts.factory.createIdentifier(interopObject),
-                ts.factory.createIdentifier(interopMethod)
-              ),
-              undefined,
-              [ts.factory.createStringLiteral(interopPropertyOrModule)]
-            )
+            this.createVariableInitialForInteropImport(propertyName, interopProperty)
           )
         ],
         ts.NodeFlags.Let
       )
     );
     return newVarDecl;
+  }
+
+  private static createVariableInitialForInteropImport(propertyName: string, interopProperty: string): ts.Expression {
+    const initializer = ts.factory.createCallExpression(
+      ts.factory.createPropertyAccessExpression(
+        ts.factory.createCallExpression(
+          ts.factory.createPropertyAccessExpression(
+            ts.factory.createIdentifier(ES_VALUE),
+            ts.factory.createIdentifier(LOAD)
+          ),
+          undefined,
+          [ts.factory.createStringLiteral(interopProperty)]
+        ),
+        ts.factory.createIdentifier(GET_PROPERTY)
+      ),
+      undefined,
+      [ts.factory.createStringLiteral(propertyName)]
+    );
+    return initializer;
   }
 
   private static getOriginalNameAtSymbol(symbolName: string, symbol?: ts.Symbol): string {
@@ -4313,20 +4316,25 @@ export class Autofixer {
     defaultSymbol?: ts.Symbol
   ): Autofix[] | undefined {
     let statements: string[] = [];
-    statements = this.constructAndSaveimportDecl2Arrays(importDecl, moduleSpecifier, undefined, statements, true);
     if (importClause.name) {
       const symbolName = importClause.name.text;
       const originalName = Autofixer.getOriginalNameAtSymbol(symbolName, defaultSymbol);
-      statements = this.constructAndSaveimportDecl2Arrays(importDecl, symbolName, originalName, statements, false);
+      statements = this.constructAndSaveimportDecl2Arrays(
+        importDecl,
+        moduleSpecifier,
+        symbolName,
+        originalName,
+        statements
+      );
     }
     const namedBindings = importClause.namedBindings;
-    if (namedBindings && ts.isNamedImports(namedBindings)) {
-      namedBindings.elements.map((element) => {
-        const symbolName = element.name.text;
-        const originalName = element.propertyName ? element.propertyName.text : symbolName;
-        statements = this.constructAndSaveimportDecl2Arrays(importDecl, symbolName, originalName, statements, false);
-        return statements;
-      });
+    if (namedBindings) {
+      statements = this.getStatementForInterOpImportJsOnNamedBindings(
+        namedBindings,
+        importDecl,
+        moduleSpecifier,
+        statements
+      );
     }
     if (statements.length <= 0) {
       return undefined;
@@ -4346,30 +4354,48 @@ export class Autofixer {
     ];
   }
 
+  private getStatementForInterOpImportJsOnNamedBindings(
+    namedBindings: ts.NamedImportBindings,
+    importDecl: ts.ImportDeclaration,
+    moduleSpecifier: string,
+    statements: string[]
+  ): string[] {
+    if (ts.isNamespaceImport(namedBindings)) {
+      const symbolName = namedBindings.name.text;
+      statements = this.constructAndSaveimportDecl2Arrays(
+        importDecl,
+        moduleSpecifier,
+        symbolName,
+        symbolName,
+        statements
+      );
+    }
+    if (ts.isNamedImports(namedBindings)) {
+      namedBindings.elements.map((element) => {
+        const symbolName = element.name.text;
+        const originalName = element.propertyName ? element.propertyName.text : symbolName;
+        statements = this.constructAndSaveimportDecl2Arrays(
+          importDecl,
+          moduleSpecifier,
+          symbolName,
+          originalName,
+          statements
+        );
+        return statements;
+      });
+    }
+    return statements;
+  }
+
   private constructAndSaveimportDecl2Arrays(
     importDecl: ts.ImportDeclaration,
+    moduleSpecifier: string,
     symbolName: string,
     originalName: string | undefined,
-    statements: string[],
-    isLoad: boolean
+    statements: string[]
   ): string[] {
-    if (isLoad) {
-      const newVarName = TsUtils.generateUniqueName(this.importVarNameGenerator, this.sourceFile);
-      if (!newVarName) {
-        return [];
-      }
-      this.modVarName = newVarName;
-    }
     const propertyName = originalName || symbolName;
-    const constructDeclInfo: string[] = isLoad ?
-      [this.modVarName, ES_VALUE, LOAD] :
-      [symbolName, this.modVarName, GET_PROPERTY];
-    const newVarDecl = Autofixer.createVariableForInteropImport(
-      constructDeclInfo[0],
-      constructDeclInfo[1],
-      constructDeclInfo[2],
-      propertyName
-    );
+    const newVarDecl = Autofixer.createVariableForInteropImport(moduleSpecifier, symbolName, propertyName);
     const text = this.printer.printNode(ts.EmitHint.Unspecified, newVarDecl, importDecl.getSourceFile());
     statements.push(TsUtils.removeOrReplaceQuotes(text, true));
     return statements;
@@ -4615,16 +4641,8 @@ export class Autofixer {
   }
 
   fixImportClause(tsImportClause: ts.ImportClause): Autofix[] {
-    const newImportClause = ts.factory.createImportClause(
-      tsImportClause.isTypeOnly,
-      tsImportClause.name,
-      tsImportClause.namedBindings
-    );
-    const replacementText = this.printer.printNode(
-      ts.EmitHint.Unspecified,
-      newImportClause,
-      tsImportClause.getSourceFile()
-    );
+    void this;
+    const replacementText = tsImportClause.getText().replace(/\blazy\b\s*/, "");
     return [{ start: tsImportClause.getStart(), end: tsImportClause.getEnd(), replacementText }];
   }
 
@@ -4709,17 +4727,17 @@ export class Autofixer {
     const expr = callExpr.expression;
     const hasOptionalChain = !!callExpr.questionDotToken;
 
-    const replacementText = hasOptionalChain
-        ? `${expr.getText()}${callExpr.questionDotToken.getText()}unsafeCall`
-        : `${expr.getText()}.unsafeCall`;
+    const replacementText = hasOptionalChain ?
+      `${expr.getText()}${callExpr.questionDotToken.getText()}unsafeCall` :
+      `${expr.getText()}.unsafeCall`;
 
-    return [{
+    return [
+      {
         start: expr.getStart(),
-        end: hasOptionalChain
-            ? callExpr.questionDotToken.getEnd()
-            : expr.getEnd(),
+        end: hasOptionalChain ? callExpr.questionDotToken.getEnd() : expr.getEnd(),
         replacementText
-    }];
+      }
+    ];
   }
 
   private static createBuiltInTypeInitializer(type: ts.TypeReferenceNode): ts.Expression | undefined {
@@ -4890,7 +4908,7 @@ export class Autofixer {
     const srcFile = node.getSourceFile();
     const typeArgsText = `<${typeNode.typeArguments?.
       map((arg) => {
-        return this.printer.printNode(ts.EmitHint.Unspecified, arg, srcFile);
+        return this.nonCommentPrinter.printNode(ts.EmitHint.Unspecified, arg, srcFile);
       }).
       join(', ')}>`;
     // Insert the type arguments immediately after the constructor name
@@ -4898,15 +4916,21 @@ export class Autofixer {
     return [{ start: insertPos, end: insertPos, replacementText: typeArgsText }];
   }
 
-  private fixGenericCallNoTypeArgsForArrayType(node: ts.NewExpression, arrayTypeNode: ts.ArrayTypeNode): Autofix[] | undefined {
+  private fixGenericCallNoTypeArgsForArrayType(
+    node: ts.NewExpression,
+    arrayTypeNode: ts.ArrayTypeNode
+  ): Autofix[] | undefined {
     const elementTypeNode = arrayTypeNode.elementType;
     const srcFile = node.getSourceFile();
-    const typeArgsText = `<${this.printer.printNode(ts.EmitHint.Unspecified, elementTypeNode, srcFile)}>`;
+    const typeArgsText = `<${this.nonCommentPrinter.printNode(ts.EmitHint.Unspecified, elementTypeNode, srcFile)}>`;
     const insertPos = node.expression.getEnd();
     return [{ start: insertPos, end: insertPos, replacementText: typeArgsText }];
   }
 
-  private fixGenericCallNoTypeArgsForUnionType(node: ts.NewExpression, unionType: ts.UnionTypeNode): Autofix[] | undefined {
+  private fixGenericCallNoTypeArgsForUnionType(
+    node: ts.NewExpression,
+    unionType: ts.UnionTypeNode
+  ): Autofix[] | undefined {
     const matchingTypes = unionType.types.filter((type) => {
       return ts.isTypeReferenceNode(type) && type.typeName.getText() === node.expression.getText();
     }) as ts.TypeReferenceNode[];
@@ -4917,7 +4941,7 @@ export class Autofixer {
         const srcFile = node.getSourceFile();
         const typeArgsText = `<${matchingType.typeArguments.
           map((arg) => {
-            return this.printer.printNode(ts.EmitHint.Unspecified, arg, srcFile);
+            return this.nonCommentPrinter.printNode(ts.EmitHint.Unspecified, arg, srcFile);
           }).
           join(', ')}>`;
 
@@ -4948,7 +4972,7 @@ export class Autofixer {
     }
     const typeArgsText = `<${typeArgs?.
       map((arg) => {
-        return this.printer.printNode(ts.EmitHint.Unspecified, arg, srcFile);
+        return this.nonCommentPrinter.printNode(ts.EmitHint.Unspecified, arg, srcFile);
       }).
       join(', ')}>`;
     return [{ start: identifier.getEnd(), end: identifier.getEnd(), replacementText: typeArgsText }];
@@ -5077,7 +5101,7 @@ export class Autofixer {
 
   fixCustomLayout(node: ts.StructDeclaration): Autofix[] {
     const startPos = Autofixer.getStartPositionWithoutDecorators(node);
-    const decorator = ts.factory.createDecorator(ts.factory.createIdentifier(CustomDecoratorName.CustomLayout));
+    const decorator = ts.factory.createDecorator(ts.factory.createIdentifier(CustomInterfaceName.CustomLayout));
 
     const text = this.getNewLine() + this.printer.printNode(ts.EmitHint.Unspecified, decorator, node.getSourceFile());
     return [{ start: startPos, end: startPos, replacementText: text }];
@@ -5147,5 +5171,39 @@ export class Autofixer {
       end: node.getEnd(),
       replacementText: newText
     }];
+  }
+
+  fixRepeat(stmt: ts.ExpressionStatement): Autofix[] {
+    const newExpr = ts.factory.createCallExpression(ts.factory.createIdentifier(VIRTUAL_SCROLL_IDENTIFIER), undefined, [
+      ts.factory.createObjectLiteralExpression(
+        [
+          ts.factory.createPropertyAssignment(
+            ts.factory.createIdentifier(DISABLE_VIRTUAL_SCROLL_IDENTIFIER),
+            ts.factory.createTrue()
+          )
+        ],
+        false
+      )
+    ]);
+
+    let identifier: ts.Identifier | undefined;
+    const expression = stmt.expression;
+    if (
+      ts.isCallExpression(expression) &&
+      ts.isPropertyAccessExpression(expression.expression) &&
+      ts.isIdentifier(expression.expression.name)
+    ) {
+      identifier = expression.expression.name;
+    }
+
+    const startPos = identifier ? identifier.getStart() : stmt.getStart();
+    const lineAndCharacter = this.sourceFile.getLineAndCharacterOfPosition(startPos);
+    const indent = identifier ? lineAndCharacter.character - 1 : lineAndCharacter.character + INDENT_STEP;
+    const text =
+      this.getNewLine() +
+      ' '.repeat(indent) +
+      '.' +
+      this.printer.printNode(ts.EmitHint.Unspecified, newExpr, stmt.getSourceFile());
+    return [{ start: stmt.getEnd(), end: stmt.getEnd(), replacementText: text }];
   }
 }

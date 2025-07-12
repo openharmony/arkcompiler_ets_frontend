@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-
+import {unionVoidVal,undefinedFooFun,func3Void,fun4undefined,fun5String} from './limit_void_type2'
 // Example 1: Basic function
 function func1(): void { }
 let a: void = func1();
@@ -263,8 +263,8 @@ return undefined;
 
 function getStatus(code: number): string | undefined {
   switch (code) {
-    case 1.0: return "OK";
-    case 2.0: return "Warning";
+    case 1: return "OK";
+    case 2: return "Warning";
   }
 
 return undefined;
@@ -366,3 +366,26 @@ function test4(a: number): undefined | boolean {
 
 return undefined;
 }
+
+let unionVoid = (()=>{
+  return undefined;
+})() as void;   //error
+function undefinedFoo(){
+  return undefined;
+}
+function unionFoo(): undefined | boolean{
+  return undefined;
+}
+let asVoidFun = undefinedFoo() as void;   //error
+let undefinedAsVoid = undefined as void;   //error
+let unionFooAsVoid = unionFoo() as void;  //error
+
+function func6() {
+  return undefined as void;   //error
+}
+
+let exportAsVoidFun = unionVoidVal as void;
+let exportUndefinedFooFun = undefinedFooFun() as void;   //error
+let exportfunc3Void = func3Void() as void;   //error
+console.log(fun5String() as void);
+typeof (fun4undefined() as void)   //error

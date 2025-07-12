@@ -19,6 +19,7 @@
 #include <string>
 #include <string_view>
 #include "compiler/lowering/phase.h"
+#include "checker/ETSchecker.h"
 
 namespace ark::es2panda::compiler {
 
@@ -37,7 +38,7 @@ public:
     static constexpr std::string_view ORDINAL_NAME {"#ordinal"};
     static constexpr auto ORDINAL_TYPE {ir::PrimitiveType::INT};
 
-    enum EnumType { INT = 0, LONG = 1, STRING = 2 };
+    enum EnumType { NOT_SPECIFIED = 0, INT = 1, LONG = 2, DOUBLE = 3, STRING = 4 };
 
     struct DeclarationFlags {
         // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
@@ -81,7 +82,7 @@ private:
                   const lexer::SourcePosition &pos);
 
     // clang-format off
-    template <typename TypeNode>
+    template <EnumLoweringPhase::EnumType TYPE_NODE>
     bool CheckEnumMemberType(const ArenaVector<ir::AstNode *> &enumMembers, bool &hasLoggedError,
                              bool &hasLongLiteral);
     // clang-format on
@@ -100,6 +101,9 @@ private:
     template <ir::PrimitiveType TYPE>
     ir::ClassDeclaration *CreateEnumIntClassFromEnumDeclaration(ir::TSEnumDeclaration *const enumDecl,
                                                                 const DeclarationFlags flags);
+    template <ir::PrimitiveType TYPE>
+    ir::ClassDeclaration *CreateEnumFloatClassFromEnumDeclaration(ir::TSEnumDeclaration *const enumDecl,
+                                                                  const DeclarationFlags flags);
     ir::ClassDeclaration *CreateEnumStringClassFromEnumDeclaration(ir::TSEnumDeclaration *const enumDecl,
                                                                    const DeclarationFlags flags);
     static void AppendParentNames(util::UString &qualifiedName, const ir::AstNode *const node);
@@ -133,6 +137,9 @@ private:
     void CreateEnumDollarGetMethod(ir::TSEnumDeclaration const *const enumDecl, ir::ClassDefinition *const enumClass);
     void SetDefaultPositionInUnfilledClassNodes(const ir::ClassDeclaration *enumClassDecl,
                                                 ir::TSEnumDeclaration const *const enumDecl);
+    ir::Expression *CheckEnumTypeForItemFields(EnumType enumType, ir::TSEnumMember *const member);
+    checker::AstNodePtr TransformEnumChildrenRecursively(checker::AstNodePtr &ast);
+    checker::AstNodePtr TransformAnnotedEnumChildrenRecursively(checker::AstNodePtr &ast);
     ArenaAllocator *Allocator();
 
     template <typename T, typename... Args>

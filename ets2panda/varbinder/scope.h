@@ -216,6 +216,7 @@ public:
 
     Variable *AddDecl(ArenaAllocator *allocator, Decl *decl, ScriptExtension extension)
     {
+        ES2PANDA_ASSERT(decl != nullptr);
         auto *var =
             AddBinding(allocator, FindLocal(decl->Name(), varbinder::ResolveBindingOptions::BINDINGS), decl, extension);
         if (var != nullptr) {
@@ -249,6 +250,7 @@ public:
     virtual InsertResult TryInsertBinding(const util::StringView &name, Variable *var);
     virtual void MergeBindings(VariableMap const &bindings);
     virtual VariableMap::size_type EraseBinding(const util::StringView &name);
+    virtual bool CorrectForeignBinding(const util::StringView &name, Variable *builtinVar, Variable *redefinedVar);
 
     [[nodiscard]] const VariableMap &Bindings() const noexcept
     {
@@ -873,6 +875,7 @@ public:
     {
         auto *paramScope = allocator->New<FunctionParamScope>(allocator, this);
         paramScope_ = paramScope;
+        ES2PANDA_ASSERT(paramScope_ != nullptr);
         paramScope_->BindFunctionScope(this);
     }
 
@@ -894,6 +897,7 @@ public:
     [[nodiscard]] bool IsForeignBinding(const util::StringView &name) const;
 
     InsertResult InsertDynamicBinding(const util::StringView &name, Variable *var);
+    bool CorrectForeignBinding(const util::StringView &name, Variable *builtinVar, Variable *redefinedVar) override;
 
 private:
     enum class InsertBindingFlags : uint8_t { NONE = 0, FOREIGN = 1U << 0U, DYNAMIC = 1U << 1U, ASSIGN = 1U << 2U };
@@ -979,7 +983,7 @@ std::pair<varbinder::Variable *, bool> Scope::AddDecl(ArenaAllocator *allocator,
 
     auto *decl = allocator->New<DeclType>(name);
     variable = allocator->New<VariableType>(decl, flags);
-
+    ES2PANDA_ASSERT(variable != nullptr);
     decls_.emplace_back(decl);
     bindings_.insert({decl->Name(), variable});
     variable->SetScope(this);

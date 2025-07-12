@@ -47,7 +47,6 @@
 #include "compiler/lowering/ets/interfacePropertyDeclarations.h"
 #include "compiler/lowering/ets/lambdaLowering.h"
 #include "compiler/lowering/ets/dynamicImport.h"
-#include "compiler/lowering/ets/localClassLowering.h"
 #include "compiler/lowering/ets/objectIndexAccess.h"
 #include "compiler/lowering/ets/objectIterator.h"
 #include "compiler/lowering/ets/objectLiteralLowering.h"
@@ -133,7 +132,6 @@ std::vector<Phase *> GetETSPhaseList()
         new PluginPhase {g_pluginsAfterCheck, ES2PANDA_STATE_CHECKED, &util::Plugin::AfterCheck},
         // new ConvertPrimitiveCastMethodCall,
         new DynamicImport,
-        new GradualTypeNarrowing,
         new AnnotationCopyPostLowering,
         new AsyncMethodLowering,
         new DeclareOverloadLowering,
@@ -154,7 +152,6 @@ std::vector<Phase *> GetETSPhaseList()
         new LambdaConversionPhase,
         new UnionLowering,
         new ExpandBracketsPhase,
-        new LocalClassConstructionPhase,
         new PartialExportClassGen,
         new InterfaceObjectLiteralLowering, // must be put after all classes are generated.
         new ObjectLiteralLowering,
@@ -163,6 +160,7 @@ std::vector<Phase *> GetETSPhaseList()
         new OptionalArgumentsLowering, // #22952 could be moved to earlier phase
         new GenericBridgesPhase,
         new TypeFromLowering,
+        new GradualTypeNarrowing,
         new PrimitiveConversionPhase,
         new UnboxPhase,
         // pluginsAfterLowerings has to come at the very end, nothing should go after it

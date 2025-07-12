@@ -76,6 +76,7 @@ VariableDeclarator *VariableDeclarator::Clone(ArenaAllocator *const allocator, A
     auto *const id = id_ != nullptr ? id_->Clone(allocator, nullptr)->AsExpression() : nullptr;
     auto *const init = init_ != nullptr ? init_->Clone(allocator, nullptr)->AsExpression() : nullptr;
     auto *const clone = allocator->New<VariableDeclarator>(flag_, id, init);
+    ES2PANDA_ASSERT(clone != nullptr);
 
     if (id != nullptr) {
         id->SetParent(clone);

@@ -63,6 +63,10 @@ export const testCases: TestCases = {
     expectedFilePath: resolveTestPath('test/expected/getFileReferences.json'),
     '1': [resolveTestPath('test/testcases/getFileReferences/getFileReferences1_export.ets')]
   },
+  getFileSource: {
+    expectedFilePath: resolveTestPath('test/expected/getFileSource.json'),
+    '1': [resolveTestPath('test/testcases/getFileSource/getFileSource1.ets')]
+  },
   getReferencesAtPosition: {
     expectedFilePath: resolveTestPath('test/expected/getReferencesAtPosition.json'),
     '1': [resolveTestPath('test/testcases/getReferencesAtPosition/getReferencesAtPosition1.ets'), 613],
@@ -145,6 +149,21 @@ export const testCases: TestCases = {
   getRenameInfo: {
     expectedFilePath: resolveTestPath('test/expected/getRenameInfo.json'),
     '1': [resolveTestPath('test/testcases/getRenameInfo/getRenameInfo1.ets'), 615]
+  },
+  entry: {
+    expectedFilePath: '',
+    '1': [resolveTestPath('test/testcases/entry/Index.ets'), 615]
+  }
+};
+
+export const testSingleModuleCases: TestCases = {
+  generateDeclFile: {
+    expectedFilePath: resolveTestPath('test/expected/generateDeclFile.json'),
+    '1': []
+  },
+  modifyDeclFile: {
+    expectedFilePath: resolveTestPath('test/expected/modifyDeclFile.json'),
+    '1': [resolveTestPath('test/testcases/modifyDeclFile/entry/index.ets')]
   }
 };
 

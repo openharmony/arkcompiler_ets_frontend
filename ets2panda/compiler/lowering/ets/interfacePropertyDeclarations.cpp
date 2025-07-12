@@ -192,6 +192,7 @@ static void AddOverload(ir::MethodDefinition *method, ir::MethodDefinition *over
 {
     method->AddOverload(overload);
     overload->SetParent(method);
+    ES2PANDA_ASSERT(overload->Function());
     overload->Function()->AddFlag(ir::ScriptFunctionFlags::OVERLOAD);
     overload->Function()->Id()->SetVariable(variable);
 }
@@ -218,7 +219,9 @@ ir::Expression *InterfacePropertyDeclarationsPhase::UpdateInterfaceProperties(pu
             HandleInternalGetterOrSetterMethod(prop);
             continue;
         }
+        auto *originProp = prop->Clone(ctx->allocator, nullptr);
         auto getter = GenerateGetterOrSetter(ctx, varbinder, prop->AsClassProperty(), false);
+        getter->SetOriginalNode(originProp);
 
         auto methodScope = scope->AsClassScope()->InstanceMethodScope();
         auto name = getter->Key()->AsIdentifier()->Name();

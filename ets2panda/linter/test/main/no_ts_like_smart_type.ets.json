@@ -13,5 +13,46 @@
         "See the License for the specific language governing permissions and",
         "limitations under the License."
     ],
-    "result": []
+    "result": [
+        {
+            "line": 151,
+            "column": 7,
+            "endLine": 151,
+            "endColumn": 20,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 137,
+            "column": 5,
+            "endLine": 137,
+            "endColumn": 8,
+            "problem": "StrictDiagnostic",
+            "suggest": "'b.a' is possibly 'undefined'.",
+            "rule": "'b.a' is possibly 'undefined'.",
+            "severity": "ERROR"
+        },
+        {
+            "line": 144,
+            "column": 7,
+            "endLine": 144,
+            "endColumn": 10,
+            "problem": "StrictDiagnostic",
+            "suggest": "'obj' is possibly 'undefined'.",
+            "rule": "'obj' is possibly 'undefined'.",
+            "severity": "ERROR"
+        },
+        {
+            "line": 151,
+            "column": 13,
+            "endLine": 151,
+            "endColumn": 16,
+            "problem": "StrictDiagnostic",
+            "suggest": "'b.a' is possibly 'undefined'.",
+            "rule": "'b.a' is possibly 'undefined'.",
+            "severity": "ERROR"
+        }
+    ]
 }

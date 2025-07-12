@@ -31,9 +31,9 @@
                     "endColumn": 38
                 },
                 {
-                    "start": 958,
-                    "end": 958,
-                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('../main/js_lib');\nlet Cjs = GeneratedImportVar_1.getProperty('Cjs');\n",
+                    "start": 952,
+                    "end": 952,
+                    "replacementText": "let Cjs = ESValue.load('../main/js_lib').getProperty('Cjs');\n",
                     "line": 16,
                     "column": 1,
                     "endLine": 16,
@@ -61,9 +61,9 @@
                     "endColumn": 38
                 },
                 {
-                    "start": 958,
-                    "end": 958,
-                    "replacementText": "let GeneratedImportVar_2 = ESValue.load('../main/js_lib');\nlet fjs = GeneratedImportVar_2.getProperty('fjs');\n",
+                    "start": 952,
+                    "end": 952,
+                    "replacementText": "let fjs = ESValue.load('../main/js_lib').getProperty('fjs');\n",
                     "line": 17,
                     "column": 1,
                     "endLine": 17,
@@ -91,9 +91,9 @@
                     "endColumn": 64
                 },
                 {
-                    "start": 958,
-                    "end": 958,
-                    "replacementText": "let GeneratedImportVar_3 = ESValue.load('./jsfiles/preview_import_js');\nlet CPreview = GeneratedImportVar_3.getProperty('CPreview');\nlet bar = GeneratedImportVar_3.getProperty('bar');\nlet foo = GeneratedImportVar_3.getProperty('foo');\n",
+                    "start": 952,
+                    "end": 952,
+                    "replacementText": "let CPreview = ESValue.load('./jsfiles/preview_import_js').getProperty('CPreview');\nlet bar = ESValue.load('./jsfiles/preview_import_js').getProperty('bar');\nlet foo = ESValue.load('./jsfiles/preview_import_js').getProperty('foo');\n",
                     "line": 18,
                     "column": 1,
                     "endLine": 18,
@@ -121,9 +121,9 @@
                     "endColumn": 44
                 },
                 {
-                    "start": 958,
-                    "end": 958,
-                    "replacementText": "let GeneratedImportVar_4 = ESValue.load('./interop_import_js_js');\nlet myAaa = GeneratedImportVar_4.getProperty('aaa');\n",
+                    "start": 952,
+                    "end": 952,
+                    "replacementText": "let myAaa = ESValue.load('./interop_import_js_js').getProperty('aaa');\n",
                     "line": 19,
                     "column": 1,
                     "endLine": 19,
@@ -151,9 +151,9 @@
                     "endColumn": 57
                 },
                 {
-                    "start": 958,
-                    "end": 958,
-                    "replacementText": "let GeneratedImportVar_5 = ESValue.load('./interop_import_js_js');\nlet myAaa = GeneratedImportVar_5.getProperty('aaa');\nlet ClassA = GeneratedImportVar_5.getProperty('ClassA');\nlet Dog = GeneratedImportVar_5.getProperty('Dog');\n",
+                    "start": 952,
+                    "end": 952,
+                    "replacementText": "let myAaa = ESValue.load('./interop_import_js_js').getProperty('aaa');\nlet ClassA = ESValue.load('./interop_import_js_js').getProperty('ClassA');\nlet Dog = ESValue.load('./interop_import_js_js').getProperty('Dog');\n",
                     "line": 20,
                     "column": 1,
                     "endLine": 20,
@@ -168,26 +168,26 @@
             "line": 21,
             "column": 1,
             "endLine": 21,
-            "endColumn": 53,
+            "endColumn": 47,
             "problem": "InterOpImportJs",
             "autofix": [
                 {
                     "start": 847,
-                    "end": 899,
+                    "end": 893,
                     "replacementText": "",
                     "line": 21,
                     "column": 1,
                     "endLine": 21,
-                    "endColumn": 53
+                    "endColumn": 47
                 },
                 {
-                    "start": 958,
-                    "end": 958,
-                    "replacementText": "let GeneratedImportVar_6 = ESValue.load('./interop_import_js_js');\n",
+                    "start": 952,
+                    "end": 952,
+                    "replacementText": "let tjs = ESValue.load('./interop_import_js_js').getProperty('tjs');\n",
                     "line": 21,
                     "column": 1,
                     "endLine": 21,
-                    "endColumn": 53
+                    "endColumn": 47
                 }
             ],
             "suggest": "",
@@ -202,8 +202,8 @@
             "problem": "InterOpImportJs",
             "autofix": [
                 {
-                    "start": 900,
-                    "end": 958,
+                    "start": 894,
+                    "end": 952,
                     "replacementText": "",
                     "line": 22,
                     "column": 1,
@@ -211,9 +211,9 @@
                     "endColumn": 59
                 },
                 {
-                    "start": 958,
-                    "end": 958,
-                    "replacementText": "let GeneratedImportVar_7 = ESValue.load('./interop_import_js_js');\nlet Wiki = GeneratedImportVar_7.getProperty('Wiki');\nlet Doge = GeneratedImportVar_7.getProperty('Dog');\n",
+                    "start": 952,
+                    "end": 952,
+                    "replacementText": "let Wiki = ESValue.load('./interop_import_js_js').getProperty('Wiki');\nlet Doge = ESValue.load('./interop_import_js_js').getProperty('Dog');\n",
                     "line": 22,
                     "column": 1,
                     "endLine": 22,

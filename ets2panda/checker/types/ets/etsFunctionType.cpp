@@ -46,9 +46,12 @@ ETSFunctionType::ETSFunctionType(ETSChecker *checker, Signature *signature)
       extensionFunctionSigs_(ArenaVector<Signature *>(checker->ProgramAllocator()->Adapter())),
       extensionAccessorSigs_(ArenaVector<Signature *>(checker->ProgramAllocator()->Adapter())),
       name_(""),
-      assemblerName_(checker->GlobalBuiltinFunctionType(signature->MinArgCount(), signature->HasRestParameter())
-                         ->AsETSObjectType()
-                         ->AssemblerName())
+      assemblerName_(checker->GlobalBuiltinFunctionType(signature->MinArgCount(), signature->HasRestParameter()) !=
+                             nullptr
+                         ? checker->GlobalBuiltinFunctionType(signature->MinArgCount(), signature->HasRestParameter())
+                               ->AsETSObjectType()
+                               ->AssemblerName()
+                         : "")
 {
 }
 
@@ -56,11 +59,12 @@ ETSFunctionType::ETSFunctionType(ETSChecker *checker, Signature *signature)
 static void HackThisParameterInExtensionFunctionInvoke(ETSObjectType *interface, size_t arity)
 {
     auto invokeName = FunctionalInterfaceInvokeName(arity, false);
-    auto &callSigsOfInvoke0 = interface->AsETSObjectType()
-                                  ->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>(util::StringView(invokeName))
-                                  ->TsType()
-                                  ->AsETSFunctionType()
-                                  ->CallSignatures();
+    auto *property = interface->AsETSObjectType()->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>(
+        util::StringView(invokeName));
+    ES2PANDA_ASSERT(property != nullptr);
+    auto *tsType = property->TsType();
+    ES2PANDA_ASSERT(tsType != nullptr);
+    auto &callSigsOfInvoke0 = tsType->AsETSFunctionType()->CallSignatures();
     for (auto sig : callSigsOfInvoke0) {
         sig->AddSignatureFlag(SignatureFlags::THIS_RETURN_TYPE);
     }
@@ -72,8 +76,9 @@ static ETSObjectType *FunctionTypeToFunctionalInterfaceType(ETSChecker *checker,
     bool isExtensionHack = signature->HasSignatureFlag(SignatureFlags::EXTENSION_FUNCTION);
 
     if (signature->RestVar() != nullptr) {
-        auto nPosParams = signature->Params().size();
-        auto *functionN = checker->GlobalBuiltinFunctionType(nPosParams, true)->AsETSObjectType();
+        auto sigParamsSize = signature->Params().size();
+        auto nPosParams = arity < sigParamsSize ? arity : sigParamsSize;
+        auto *functionN = checker->GlobalBuiltinFunctionType(nPosParams, true);
         auto substitution = Substitution {};
         for (size_t i = 0; i < nPosParams; i++) {
             substitution.emplace(functionN->TypeArguments()[i]->AsETSTypeParameter(),
@@ -98,7 +103,7 @@ static ETSObjectType *FunctionTypeToFunctionalInterfaceType(ETSChecker *checker,
         return nullptr;
     }
 
-    auto *funcIface = checker->GlobalBuiltinFunctionType(arity, false)->AsETSObjectType();
+    auto *funcIface = checker->GlobalBuiltinFunctionType(arity, false);
     auto substitution = Substitution {};
 
     for (size_t i = 0; i < arity; i++) {

@@ -113,12 +113,14 @@ public:
     void SetLeft(Expression *expr) noexcept
     {
         left_ = expr;
+        ES2PANDA_ASSERT(left_);
         left_->SetParent(this);
     }
 
     void SetRight(Expression *expr) noexcept
     {
         right_ = expr;
+        ES2PANDA_ASSERT(right_);
         right_->SetParent(this);
     }
 

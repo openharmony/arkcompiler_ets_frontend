@@ -151,8 +151,9 @@ static void BuildLazyImportObject(public_lib::Context *ctx, ir::ETSImportDeclara
     }
 
     const auto className = classDecl->Definition()->Ident()->Name();
-    if (declProgram->IsASTChecked()) {
-        checker->SetPropertiesForModuleObject(moduleMap.find(className)->second, importDecl->DeclPath(), nullptr);
+    auto found = moduleMap.find(className);
+    if (declProgram->IsASTChecked() && found != moduleMap.end()) {
+        checker->SetPropertiesForModuleObject(found->second, importDecl->DeclPath(), nullptr);
         return;
     }
 
@@ -211,6 +212,7 @@ static AstNodePtr TransformIdentifier(ir::Identifier *ident, public_lib::Context
         return ident;
     }
 
+    auto newIdent = allocator->New<ir::Identifier>(ident->Variable()->Name(), allocator);
     auto *leftId = allocator->New<ir::Identifier>(varIt->second->Ident()->Name(), allocator);
     auto *rightId = allocator->New<ir::Identifier>(FIELD_NAME, allocator);
 
@@ -218,7 +220,7 @@ static AstNodePtr TransformIdentifier(ir::Identifier *ident, public_lib::Context
         allocator, leftId, rightId, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
 
     auto *memberExpr = util::NodeAllocator::ForceSetParent<ir::MemberExpression>(
-        allocator, expr, ident, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
+        allocator, expr, newIdent, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
 
     memberExpr->SetParent(parent);
     CheckLoweredNode(varBinder, checker, memberExpr);
@@ -228,7 +230,7 @@ static AstNodePtr TransformIdentifier(ir::Identifier *ident, public_lib::Context
 
 bool DynamicImport::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
-    auto allocator = ctx->Allocator();
+    auto allocator = ctx->GetChecker()->ProgramAllocator();
     ArenaUnorderedMap<varbinder::Variable *, ir::ClassDefinition *> varMap {allocator->Adapter()};
     ArenaUnorderedMap<util::StringView, checker::ETSObjectType *> moduleMap {allocator->Adapter()};
 

@@ -64,6 +64,7 @@ checker::VerifiedType UndefinedLiteral::Check(checker::ETSChecker *checker)
 UndefinedLiteral *UndefinedLiteral::Clone(ArenaAllocator *allocator, AstNode *parent)
 {
     auto *const clone = allocator->New<UndefinedLiteral>();
+    ES2PANDA_ASSERT(clone != nullptr);
     if (parent != nullptr) {
         clone->SetParent(parent);
     }

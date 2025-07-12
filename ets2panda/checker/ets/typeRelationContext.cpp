@@ -73,6 +73,7 @@ void InstantiationContext::InstantiateType(ETSObjectType *type, ir::TSTypeParame
     if (typeArgs != nullptr) {
         for (auto *const it : typeArgs->Params()) {
             auto *paramType = it->GetType(checker_);
+            ES2PANDA_ASSERT(paramType != nullptr);
             if (paramType->IsTypeError()) {
                 result_ = paramType;
                 return;
@@ -110,6 +111,7 @@ static void CheckInstantiationConstraints(ETSChecker *checker, ArenaVector<Type 
     auto relation = checker->Relation();
 
     for (auto type : typeParams) {
+        type = type->MaybeBaseTypeOfGradualType();
         if (!type->IsETSTypeParameter()) {
             continue;
         }

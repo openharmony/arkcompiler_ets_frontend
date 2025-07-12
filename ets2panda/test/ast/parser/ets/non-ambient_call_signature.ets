@@ -15,10 +15,9 @@
 
 class A{
     /* @@ label */(a:number/* @@ label1 */)/* @@ label2 */:number
-/* @@ label3 */}
+}
 
 /* @@@ label Error SyntaxError: Unexpected token '('. */
 /* @@@ label1 Error SyntaxError: Unexpected token ')'. */
 /* @@@ label2 Error SyntaxError: Unexpected token ':'. */
 /* @@? 17:60 Error SyntaxError: number is a predefined type, cannot be used as an identifier */
-/* @@@ label3 Error SyntaxError: Field type annotation expected. */

@@ -34,19 +34,113 @@ void ETSUnionType::ToString(std::stringstream &ss, bool precise) const
 
 void ETSUnionType::ToAssemblerType(std::stringstream &ss) const
 {
-    assemblerLub_->ToAssemblerTypeWithRank(ss);
+    ss << GetAssemblerType();
 }
 
 void ETSUnionType::ToDebugInfoType(std::stringstream &ss) const
 {
-    assemblerLub_->ToDebugInfoType(ss);
+    if (assemblerConstituentTypes_.size() == 1) {
+        assemblerConstituentTypes_[0]->ToDebugInfoType(ss);
+        return;
+    }
+    ss << "{U";
+    // NOLINTNEXTLINE(modernize-loop-convert)
+    for (size_t idx = 0; idx < assemblerConstituentTypes_.size(); idx++) {
+        assemblerConstituentTypes_[idx]->ToDebugInfoType(ss);
+        if (idx != assemblerConstituentTypes_.size() - 1) {
+            ss << ",";
+        }
+    }
+    ss << "}";
+}
+
+static std::string GetAssemblerTypeString(Type *type)
+{
+    std::stringstream ss;
+    type->ToAssemblerTypeWithRank(ss);
+    return ss.str();
+}
+
+void ETSUnionType::InitAssemblerTypeCache(ETSChecker *checker)
+{
+    ES2PANDA_ASSERT(!assemblerConstituentTypes_.empty());
+    std::stringstream ss;
+    if (assemblerConstituentTypes_.size() == 1) {
+        assemblerConstituentTypes_[0]->ToAssemblerTypeWithRank(ss);
+    } else {
+        ss << "{U";
+        for (size_t idx = 0; idx < assemblerConstituentTypes_.size(); idx++) {
+            if (idx != 0) {
+                ss << ",";
+            }
+            if (assemblerConstituentTypes_[idx]->IsETSNullType()) {
+                ss << compiler::Signatures::NULL_ASSEMBLY_TYPE;
+                continue;
+            }
+            assemblerConstituentTypes_[idx]->ToAssemblerTypeWithRank(ss);
+        }
+        ss << "}";
+    }
+    assemblerTypeCache_ = util::UString(ss.str(), checker->ProgramAllocator()).View();
+}
+
+void ETSUnionType::CanonicalizedAssemblerType(ETSChecker *checker)
+{
+    auto *const apparent = checker->GetApparentType(this);
+    if (!apparent->IsETSUnionType()) {
+        assemblerConstituentTypes_.push_back(apparent);
+        return;
+    }
+    if (apparent != this) {
+        const auto &types = apparent->AsETSUnionType()->GetAssemblerTypes();
+        assemblerConstituentTypes_.insert(assemblerConstituentTypes_.begin(), types.begin(), types.end());
+        return;
+    }
+
+    ES2PANDA_ASSERT(constituentTypes_.size() > 1);
+    bool hasNull = false;
+    for (auto *type : constituentTypes_) {
+        ES2PANDA_ASSERT(!type->IsETSUnionType());
+        if (type->IsETSUndefinedType() || type->IsETSVoidType()) {
+            continue;
+        }
+        if (type->IsETSNullType() && !hasNull) {
+            hasNull = true;
+            assemblerConstituentTypes_.push_back(type);
+            continue;
+        }
+        if (type->IsTypeError()) {
+            assemblerConstituentTypes_.clear();
+            assemblerConstituentTypes_.push_back(checker->GlobalTypeError());
+            return;
+        }
+        auto found =
+            std::find_if(assemblerConstituentTypes_.begin(), assemblerConstituentTypes_.end(),
+                         [&type](Type *t) { return GetAssemblerTypeString(type) == GetAssemblerTypeString(t); });
+        if (found == assemblerConstituentTypes_.end()) {
+            assemblerConstituentTypes_.push_back(type);
+        }
+    }
+    if (assemblerConstituentTypes_.empty()) {
+        assemblerConstituentTypes_.push_back(checker->GlobalETSObjectType());
+        return;
+    }
+    if (assemblerConstituentTypes_.size() == 1) {
+        return;
+    }
+
+    std::sort(assemblerConstituentTypes_.begin(), assemblerConstituentTypes_.end(),
+              [](Type *a, Type *b) { return GetAssemblerTypeString(a) < GetAssemblerTypeString(b); });
 }
 
 ETSUnionType::ETSUnionType(ETSChecker *checker, ArenaVector<Type *> &&constituentTypes)
-    : Type(TypeFlag::ETS_UNION), constituentTypes_(std::move(constituentTypes))
+    : Type(TypeFlag::ETS_UNION),
+      constituentTypes_(std::move(constituentTypes)),
+      assemblerConstituentTypes_(checker->ProgramAllocator()->Adapter())
 {
     ES2PANDA_ASSERT(constituentTypes_.size() > 1);
-    assemblerLub_ = ComputeAssemblerLUB(checker, this);
+    CanonicalizedAssemblerType(checker);
+    InitAssemblerTypeCache(checker);
 }
 
 bool ETSUnionType::EachTypeRelatedToSomeType(TypeRelation *relation, ETSUnionType *source, ETSUnionType *target)
@@ -59,49 +153,6 @@ bool ETSUnionType::TypeRelatedToSomeType(TypeRelation *relation, Type *source, E
 {
     return std::any_of(target->constituentTypes_.begin(), target->constituentTypes_.end(),
                        [relation, source](auto *t) { return relation->IsIdenticalTo(source, t); });
-}
-
-// This function computes effective runtime representation of union type
-Type *ETSUnionType::ComputeAssemblerLUB(ETSChecker *checker, ETSUnionType *un)
-{
-    auto *const apparent = checker->GetApparentType(un);
-    if (!apparent->IsETSUnionType()) {
-        return apparent;
-    }
-    if (apparent != un) {
-        return apparent->AsETSUnionType()->assemblerLub_;
-    }
-    un = apparent->AsETSUnionType();
-
-    Type *lub = nullptr;
-    for (auto *t : un->ConstituentTypes()) {
-        if (t->IsTypeError()) {
-            return checker->GlobalTypeError();
-        }
-        // NOTE(vpukhov): #19701 void refactoring
-        ES2PANDA_ASSERT(t->IsETSReferenceType() || t->IsETSVoidType());
-        t = t->IsETSVoidType() ? checker->GlobalETSUndefinedType() : t;
-
-        if (lub == nullptr || lub->IsETSUndefinedType()) {
-            lub = t;
-            continue;
-        }
-        if (lub == t || t->IsETSUndefinedType()) {
-            continue;
-        }
-        if (t->IsETSNullType()) {
-            return checker->GetGlobalTypesHolder()->GlobalETSObjectType();
-        }
-        if (t->IsETSObjectType() && lub->IsETSObjectType()) {
-            lub = checker->GetClosestCommonAncestor(lub->AsETSObjectType(), t->AsETSObjectType());
-        } else if (t->IsETSArrayType() && lub->IsETSArrayType()) {
-            // NOTE: can compute "common(lub, t)[]"
-            return checker->GetGlobalTypesHolder()->GlobalETSObjectType();
-        } else {
-            return checker->GetGlobalTypesHolder()->GlobalETSObjectType();
-        }
-    }
-    return checker->GetNonConstantType(lub);
 }
 
 void ETSUnionType::Identical(TypeRelation *relation, Type *other)
@@ -368,6 +419,7 @@ bool ETSUnionType::ExtractType(checker::ETSChecker *checker, checker::Type *sour
             constituentType = constituentType->AsETSTypeParameter()->GetConstraintType();
         } else if (constituentType->HasTypeFlag(checker::TypeFlag::GENERIC)) {
             constituentType = constituentType->Clone(checker);
+            ES2PANDA_ASSERT(constituentType != nullptr);
             constituentType->RemoveTypeFlag(checker::TypeFlag::GENERIC);
         }
 

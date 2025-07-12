@@ -49,13 +49,13 @@ class A_class{
     }
 }
 
-/* @@? 21:24 Error TypeError: Property 'localfield' of enclosing class 'A_class' is not allowed to be captured from the local class 'LocalClass'  */
-/* @@? 21:24 Error TypeError: Property 'localfield' must be accessed through 'this'  */
-/* @@? 26:29 Error TypeError: Property 'localfield' does not exist on type 'FinalLocalClass'  */
-/* @@? 30:41 Error TypeError: Cannot inherit with 'final' modifier.  */
-/* @@? 31:53 Error TypeError: Cannot use both 'final' and 'abstract' modifiers.  */
-/* @@? 36:37 Error TypeError: AbstractLocalClass2 is abstract therefore cannot be instantiated.  */
-/* @@? 39:13 Error TypeError: Invalid method modifier(s): an abstract method can't have private, override, static, final or native modifier.  */
-/* @@? 40:31 Error TypeError: Native, Abstract and Declare methods cannot have body.  */
-/* @@? 43:65 Error TypeError: FinalLocalClass2 is not abstract and does not override abstract method method3(): void in FinalLocalClass2  */
-/* @@? 45:13 Error TypeError: Non abstract class has abstract method.  */
+/* @@? 18:18 Error SyntaxError: Illegal start of CLASS expression. */
+/* @@? 19:9 Error SyntaxError: Illegal start of CLASS expression. */
+/* @@? 24:15 Error SyntaxError: Illegal start of CLASS expression. */
+/* @@? 30:9 Error SyntaxError: Illegal start of CLASS expression. */
+/* @@? 31:24 Error SyntaxError: Illegal start of CLASS expression. */
+/* @@? 33:18 Error SyntaxError: Illegal start of CLASS expression. */
+/* @@? 36:15 Error TypeError: Cannot find type 'AbstractLocalClass2'. */
+/* @@? 36:41 Error TypeError: Cannot find type 'AbstractLocalClass2'. */
+/* @@? 38:18 Error SyntaxError: Illegal start of CLASS expression. */
+/* @@? 43:15 Error SyntaxError: Illegal start of CLASS expression. */

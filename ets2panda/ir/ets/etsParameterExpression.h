@@ -55,6 +55,7 @@ public:
     void SetIdent(Identifier *ident) noexcept
     {
         this->GetOrCreateHistoryNodeAs<ETSParameterExpression>()->ident_ = ident;
+        ES2PANDA_ASSERT(ident);
         ident->SetParent(this);
     }
 

@@ -105,6 +105,6 @@ void ETSAnyType::ToDebugInfoType(std::stringstream &ss) const
 Type *ETSAnyType::Instantiate(ArenaAllocator *allocator, [[maybe_unused]] TypeRelation *relation,
                               [[maybe_unused]] GlobalTypesHolder *globalTypes)
 {
-    return allocator->New<ETSAnyType>();
+    return isRelaxedAny_ ? allocator->New<ETSAnyType>(true) : allocator->New<ETSAnyType>();
 }
 }  // namespace ark::es2panda::checker
