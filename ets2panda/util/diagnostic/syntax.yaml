@@ -941,6 +941,10 @@ syntax:
   id: 238
   message: "Methods or fields should not be decorated with {} in ambient class."
 
+- name: PROTOTYPE_ACCESS
+  id: 30818
+  message: "Runtime prototype assignment is not supported because of static typing"
+
 - name: QUANTIFIER_OUT_OF_ORDER
   id: 78
   message: "Quantifier range out of order."
