@@ -106,8 +106,8 @@ ir::TypeNode *ETSParser::ParseTypeFormatPlaceholder(std::optional<ParserImpl::No
 {
     if (!nodeFormat.has_value()) {
         if (insertingNodes_.empty()) {
-            LogError(diagnostic::INSERT_NODE_ABSENT, {}, Lexer()->GetToken().Start());
-            ES2PANDA_UNREACHABLE();
+            LogUnexpectedToken(lexer::TokenType::PUNCTUATOR_FORMAT);
+            return AllocBrokenType(Lexer()->GetToken().Loc());
         }
 
         nodeFormat = GetFormatPlaceholderType();
