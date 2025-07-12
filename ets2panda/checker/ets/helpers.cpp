@@ -603,9 +603,14 @@ void ETSChecker::InferAliasLambdaType(ir::TypeNode *localTypeAnnotation, ir::Arr
 checker::Type *ETSChecker::FixOptionalVariableType(varbinder::Variable *const bindingVar, ir::ModifierFlags flags,
                                                    ir::Expression *init)
 {
+    ES2PANDA_ASSERT(bindingVar != nullptr);
     if ((flags & ir::ModifierFlags::OPTIONAL) != 0) {
-        if (init != nullptr && bindingVar->TsType()->IsETSPrimitiveType()) {
-            init->SetBoxingUnboxingFlags(GetBoxingFlag(bindingVar->TsType()));
+        if (init != nullptr) {
+            auto *type = bindingVar->TsType();
+            ES2PANDA_ASSERT(type != nullptr);
+            if (type->IsETSPrimitiveType()) {
+                init->SetBoxingUnboxingFlags(GetBoxingFlag(bindingVar->TsType()));
+            }
         }
         auto *variableType = bindingVar->TsType() != nullptr ? bindingVar->TsType() : GlobalTypeError();
         bindingVar->SetTsType(CreateETSUnionType({GlobalETSUndefinedType(), variableType}));
@@ -1618,6 +1623,7 @@ Type *ETSChecker::HandleTypeAlias(ir::Expression *const name, const ir::TSTypePa
     auto expandedAliasType = aliasType->Substitute(Relation(), substitution);
     CollectAliasParametersForBoxing(expandedAliasType, parametersNeedToBeBoxed, false);
 
+    ES2PANDA_ASSERT(substitution != nullptr);
     for (std::size_t idx = 0; idx < typeAliasNode->TypeParams()->Params().size(); ++idx) {
         auto *typeAliasTypeName = typeAliasNode->TypeParams()->Params().at(idx)->Name();
         auto *typeAliasType = typeAliasTypeName->Variable()->TsType();

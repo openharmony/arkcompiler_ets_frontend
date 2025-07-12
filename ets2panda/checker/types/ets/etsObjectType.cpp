@@ -1153,6 +1153,7 @@ ETSObjectType *ETSObjectType::SubstituteArguments(TypeRelation *relation, ArenaV
     auto *substitution = checker->NewSubstitution();
 
     ES2PANDA_ASSERT(baseType_ == nullptr);
+    ES2PANDA_ASSERT(substitution != nullptr);
     ES2PANDA_ASSERT(typeArguments_.size() == arguments.size());
 
     for (size_t ix = 0; ix < typeArguments_.size(); ix++) {

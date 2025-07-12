@@ -565,7 +565,7 @@ bool ETSUnionType::ExtractType(checker::ETSChecker *checker, checker::ETSArrayTy
 
         if (checker->Relation()->IsIdenticalTo(constituentType, sourceType)) {
             rc = true;
-            unionTypes.erase(it);
+            it = unionTypes.erase(it);
             continue;
         }
         if (checker->Relation()->IsSupertypeOf(constituentType, sourceType)) {

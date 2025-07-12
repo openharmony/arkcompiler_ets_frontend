@@ -2565,6 +2565,7 @@ Type const *ETSChecker::GetApparentType(Type const *type) const
     if (auto it = apparentTypes_.find(type); LIKELY(it != apparentTypes_.end())) {
         return it->second;
     }
+    ES2PANDA_ASSERT(type != nullptr);
     // Relaxed for some types
     if (type->IsETSTypeParameter()) {
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)

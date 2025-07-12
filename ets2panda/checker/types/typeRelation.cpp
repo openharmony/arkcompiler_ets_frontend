@@ -161,6 +161,7 @@ bool TypeRelation::IsComparableTo(Type *source, Type *target)
     result_ = CacheLookup(source, target, checker_->ComparableResults(), RelationType::COMPARABLE);
 
     // NOTE: vpukhov. reimplement dynamic comparison and remove this check
+    ES2PANDA_ASSERT(source != nullptr);
     if (source->IsETSDynamicType() || target->IsETSDynamicType()) {
         if (!(source->IsETSDynamicType() && target->IsETSDynamicType())) {
             return false;

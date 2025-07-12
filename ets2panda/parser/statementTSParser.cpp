@@ -372,6 +372,7 @@ ir::Statement *TSParser::ParseImportDeclaration([[maybe_unused]] StatementParsin
     ES2PANDA_ASSERT(source != nullptr);
     lexer::SourcePosition endLoc = source->End();
     auto *importDeclaration = AllocNode<ir::ImportDeclaration>(source, std::move(specifiers));
+    ES2PANDA_ASSERT(importDeclaration != nullptr);
     importDeclaration->SetRange({startLoc, endLoc});
 
     ConsumeSemicolon(importDeclaration);

@@ -1122,6 +1122,7 @@ ArenaVector<ir::TSClassImplements *> ASParser::ParseClassImplementClause()
 
         const lexer::SourcePosition &implementStart = Lexer()->GetToken().Start();
         auto *implementsName = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
+        ES2PANDA_ASSERT(implementsName != nullptr);
         implementsName->SetRange(Lexer()->GetToken().Loc());
         auto *implementsClause = AllocNode<ir::NamedType>(implementsName, Allocator());
         ES2PANDA_ASSERT(implementsClause != nullptr);
@@ -1137,6 +1138,7 @@ ArenaVector<ir::TSClassImplements *> ASParser::ParseClassImplementClause()
             }
 
             implementsName = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
+            ES2PANDA_ASSERT(implementsName != nullptr);
             implementsName->SetRange(Lexer()->GetToken().Loc());
             auto *next = AllocNode<ir::NamedType>(implementsName, Allocator());
             current->SetRange(Lexer()->GetToken().Loc());
@@ -1740,6 +1742,7 @@ ir::Statement *ASParser::ParseImportDeclaration([[maybe_unused]] StatementParsin
         source = ParseFromClause(false);
     }
 
+    ES2PANDA_ASSERT(source != nullptr);
     lexer::SourcePosition endLoc = source->End();
     auto *importDeclaration = AllocNode<ir::ImportDeclaration>(source, std::move(specifiers));
     ES2PANDA_ASSERT(importDeclaration != nullptr);
