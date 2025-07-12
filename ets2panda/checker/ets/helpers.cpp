@@ -61,7 +61,8 @@ bool ETSChecker::IsVariableStatic(const varbinder::Variable *var)
 {
     CHECK_NOT_NULL(var);
     if (var->HasFlag(varbinder::VariableFlags::METHOD)) {
-        return var->TsType()->AsETSFunctionType()->CallSignatures()[0]->HasSignatureFlag(SignatureFlags::STATIC);
+        return var->TsType()->IsETSFunctionType() &&
+               var->TsType()->AsETSFunctionType()->CallSignatures()[0]->HasSignatureFlag(SignatureFlags::STATIC);
     }
     return var->HasFlag(varbinder::VariableFlags::STATIC);
 }
