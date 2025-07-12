@@ -26,20 +26,18 @@ function foo(MyAnno({testProperty1: ""}) x: int, MyAnno({testProperty1: ""}) y: 
 }
 
 /* @@? 19:10 Error TypeError: Only abstract or native methods can't have body. */
-/* @@? 19:14 Error TypeError: The type of parameter 'MyAnno' cannot be inferred */
 /* @@? 19:20 Error SyntaxError: Unexpected token, expected ',' or ')'. */
 /* @@? 19:20 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
 /* @@? 19:20 Error TypeError: need to specify target type for class composite */
 /* @@? 19:42 Error SyntaxError: Unexpected token 'x'. */
-/* @@? 19:45 Error SyntaxError: Unexpected token 'int'. */
 /* @@? 19:45 Error SyntaxError: Label must be followed by a loop statement. */
+/* @@? 19:45 Error SyntaxError: Unexpected token 'int'. */
 /* @@? 19:45 Error SyntaxError: Unexpected token 'int'. */
 /* @@? 19:48 Error SyntaxError: Unexpected token ')'. */
 /* @@? 19:48 Error SyntaxError: Unexpected token ')'. */
 /* @@? 22:1 Error TypeError: Function foo is already declared. */
-/* @@? 22:14 Error TypeError: The type of parameter 'MyAnno' cannot be inferred */
-/* @@? 22:20 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
 /* @@? 22:20 Error SyntaxError: Unexpected token, expected ',' or ')'. */
+/* @@? 22:20 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
 /* @@? 22:20 Error TypeError: need to specify target type for class composite */
 /* @@? 22:42 Error SyntaxError: Unexpected token 'x'. */
 /* @@? 22:45 Error SyntaxError: Label must be followed by a loop statement. */
@@ -57,7 +55,6 @@ function foo(MyAnno({testProperty1: ""}) x: int, MyAnno({testProperty1: ""}) y: 
 /* @@? 22:87 Error SyntaxError: Unexpected token ')'. */
 /* @@? 25:1 Error TypeError: Function foo is already declared. */
 /* @@? 25:1 Error TypeError: Function foo is already declared. */
-/* @@? 25:14 Error TypeError: The type of parameter 'MyAnno' cannot be inferred */
 /* @@? 25:20 Error SyntaxError: Unexpected token, expected ',' or ')'. */
 /* @@? 25:20 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
 /* @@? 25:20 Error TypeError: need to specify target type for class composite */
