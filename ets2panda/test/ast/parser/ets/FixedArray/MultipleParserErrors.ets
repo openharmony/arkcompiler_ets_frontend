@@ -172,8 +172,8 @@ function main(): void {
 /* @@? 37:33 Error SyntaxError: Unexpected token 'rethrows'. */
 /* @@? 37:33 Error TypeError: Unresolved reference rethrows */
 /* @@? 39:14 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
-/* @@? 39:14 Error SyntaxError: Unexpected token, expected ',' or ')'. */
 /* @@? 39:14 Error SyntaxError: Unexpected token, expected an identifier. */
+/* @@? 39:14 Error SyntaxError: Unexpected token, expected ',' or ')'. */
 /* @@? 39:24 Error SyntaxError: Unexpected token 'int'. */
 /* @@? 39:27 Error SyntaxError: Unexpected token ')'. */
 /* @@? 39:29 Error SyntaxError: Unexpected token '{'. */
@@ -189,12 +189,11 @@ function main(): void {
 /* @@? 43:11 Error SyntaxError: Invalid left-hand side in assignment expression. */
 /* @@? 43:13 Error SyntaxError: Unexpected token 'byte'. */
 /* @@? 45:6 Error SyntaxError: Unexpected token 'this'. */
-/* @@? 45:6 Error TypeError: Invalid left-hand side of assignment expression */
 /* @@? 45:6 Error TypeError: Cannot reference 'this' in this context. */
+/* @@? 45:6 Error TypeError: Invalid left-hand side of assignment expression */
 /* @@? 45:11 Error SyntaxError: Invalid left-hand side in assignment expression. */
 /* @@? 47:8 Error SyntaxError: Variable must be initialized or it's type must be declared. */
 /* @@? 47:8 Error TypeError: Missing initializer in const declaration */
-/* @@? 49:12 Error TypeError: The type of parameter 'a' cannot be inferred */
 /* @@? 49:13 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
 /* @@? 51:35 Error SyntaxError: Rest parameter must be the last formal parameter. */
 /* @@? 51:37 Error SyntaxError: Unexpected token '...'. */
@@ -241,10 +240,10 @@ function main(): void {
 /* @@? 115:38 Error SyntaxError: Unexpected token '{'. */
 /* @@? 116:5 Error SyntaxError: return keyword should be used in function body. */
 /* @@? 116:12 Error TypeError: All return statements in the function should be empty or have a value. */
-/* @@? 119:26 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
-/* @@? 119:26 Error SyntaxError: Unexpected token 'case'. */
-/* @@? 119:26 Error SyntaxError: Unexpected token, expected ',' or ')'. */
 /* @@? 119:26 Error SyntaxError: Unexpected token, expected an identifier. */
+/* @@? 119:26 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
+/* @@? 119:26 Error SyntaxError: Unexpected token, expected ',' or ')'. */
+/* @@? 119:26 Error SyntaxError: Unexpected token 'case'. */
 /* @@? 119:30 Error SyntaxError: Unexpected token ':'. */
 /* @@? 119:32 Error SyntaxError: Unexpected token 'U'. */
 /* @@? 119:33 Error SyntaxError: Unexpected token ')'. */
@@ -254,8 +253,8 @@ function main(): void {
 /* @@? 120:5 Error SyntaxError: return keyword should be used in function body. */
 /* @@? 120:12 Error TypeError: All return statements in the function should be empty or have a value. */
 /* @@? 123:5 Error SyntaxError: Identifier expected, got ','. */
-/* @@? 123:6 Error SyntaxError: Variable must be initialized or it's type must be declared. */
 /* @@? 123:6 Error SyntaxError: Unexpected token 'abc'. */
+/* @@? 123:6 Error SyntaxError: Variable must be initialized or it's type must be declared. */
 /* @@? 123:6 Error TypeError: Unresolved reference abc */
 /* @@? 127:1 Error SyntaxError: The modifier async cannot be used in an ambient context. */
 /* @@? 132:14 Error SyntaxError: Unexpected token, expected an identifier. */
@@ -285,4 +284,4 @@ function main(): void {
 /* @@? 165:5 Error TypeError: This expression is not callable. */
 /* @@? 166:5 Error TypeError: Expected 1 arguments, got 0. */
 /* @@? 166:5 Error TypeError: No matching call signature */
-/* @@? 289:1 Error SyntaxError: Expected '}', got 'end of stream'. */
+/* @@? 288:1 Error SyntaxError: Expected '}', got 'end of stream'. */
