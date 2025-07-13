@@ -15,10 +15,11 @@
 
 function foo()
 {
-    interface LocalInterface
+    /* @@ label1 */interface LocalInterface
     {
-        /* @@ label */protected property : int;
+        /* @@ label2 */protected property : int;
     }
 }
 
-/* @@@ label Error SyntaxError: Unexpected token, expected 'private' or identifier.  */
+/* @@@ label1 Error SyntaxError: Illegal start of INTERFACE expression. */
+/* @@@ label2 Error SyntaxError: Unexpected token, expected 'private' or identifier.  */
