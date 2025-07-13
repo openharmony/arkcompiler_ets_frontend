@@ -631,9 +631,11 @@ bool Options::Parse(int argc, const char **argv)
         // common mode
         auto inputAbs = panda::os::file::File::GetAbsolutePath(sourceFile_);
         if (!inputAbs) {
-            std::cerr << "Failed to find file '" << sourceFile_ << "' during input file resolution" << std::endl
-                      << "Please check if the file name is correct, the file exists at the specified path, "
-                      << "and your project has the necessary permissions to access it." << std::endl;
+            std::cerr << "Failed to find file '" << sourceFile_ << "' during input file resolution." << std::endl <<
+                         "Solutions: > Check whether the file name is correct." <<
+                         "> Check whether the file exists at the specified path." <<
+                         "> Check whether the file path length is within OS limits." <<
+                         "> Check whether your project has the necessary permissions to access the file.";
             return false;
         }
 
@@ -764,9 +766,11 @@ bool Options::Parse(int argc, const char **argv)
         // check file exist or not
         auto transformLibAbs = panda::os::file::File::GetAbsolutePath(libName);
         if (!transformLibAbs) {
-            std::cerr << "Failed to find file '" << libName << "' during transformLib file resolution" << std::endl
-                      << "Please check if the file name is correct, the file exists at the specified path, "
-                      << "and your project has the necessary permissions to access it." << std::endl;
+            std::cerr << "Failed to find file '" << libName << "' during transformLib file resolution." << std::endl <<
+                         "Solutions: > Check whether the file name is correct." <<
+                         "> Check whether the file exists at the specified path." <<
+                         "> Check whether the file path length is within OS limits." <<
+                         "> Check whether your project has the necessary permissions to access the file.";
             return false;
         }
         compilerOptions_.transformLib = transformLibAbs.Value();
