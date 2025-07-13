@@ -21,18 +21,21 @@
   return x+1; 
 });
 
-/* @@? 16:1 Error TypeError: No matching call signature  */
-/* @@? 16:1 Error TypeError: Expected 1 arguments, got 0.  */
-/* @@? 16:2 Error SyntaxError: Unexpected token, expected ')'.  */
-/* @@? 16:2 Error SyntaxError: Unexpected token 'function'.  */
+/* @@? 16:1 Error TypeError: Expected 1 arguments, got 0. */
+/* @@? 16:1 Error TypeError: No matching call signature */
+/* @@? 16:2 Error SyntaxError: Unexpected token 'function'. */
+/* @@? 16:2 Error SyntaxError: Unexpected token, expected ')'. */
 /* @@? 18:2 Error SyntaxError: Unexpected token ')'. */
-/* @@? 18:4 Error SyntaxError: Unexpected token ')'.  */
-/* @@? 20:1 Error TypeError: Can't resolve array type  */
+/* @@? 18:2 Error SyntaxError: Unexpected token ')'. */
+/* @@? 18:2 Error SyntaxError: Unexpected token ')'. */
+/* @@? 18:4 Error SyntaxError: Unexpected token ')'. */
+/* @@? 20:1 Error TypeError: Can't resolve array type */
 /* @@? 20:8 Error SyntaxError: Unexpected token 'function'. */
 /* @@? 20:8 Error SyntaxError: Unexpected token, expected ',' or ')'. */
+/* @@? 20:8 Error SyntaxError: Unexpected token 'function'. */
 /* @@? 20:16 Error SyntaxError: Unexpected token, expected an identifier. */
-/* @@? 20:17 Error TypeError: The type of parameter 'x' cannot be inferred */
 /* @@? 20:18 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
-/* @@? 22:2 Error SyntaxError: Unexpected token ')'.  */
+/* @@? 22:2 Error SyntaxError: Unexpected token ')'. */
+/* @@? 22:2 Error SyntaxError: Unexpected token ')'. */
 
 

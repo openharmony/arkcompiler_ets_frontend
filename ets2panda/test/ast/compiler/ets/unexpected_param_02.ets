@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,12 +13,6 @@
  * limitations under the License.
  */
 
-@Retention("SOURCE")
-@interface MyAnno {
-    testProperty1: string
-}
+function foo(a?){}
 
-
-function foo(@MyAnno ...a){}
-/* @@? 22:15 Error TypeError: The required field 'testProperty1' must be specified. Fields without default values cannot be omitted. */
-/* @@? 22:26 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
+/* @@? 16:16 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
