@@ -71,6 +71,7 @@ ir::ETSModule *ETSParser::ParseNamespaceImp(ir::ModifierFlags flags)
     auto *result =
         AllocNode<ir::ETSModule>(Allocator(), ArenaVector<ir::Statement *>(Allocator()->Adapter()), ExpectIdentifier(),
                                  ir::ModuleFlag::NAMESPACE, GetContext().GetLanguage(), globalProgram_);
+    ES2PANDA_ASSERT(result != nullptr);
     ir::ETSModule *parent = result;
     ir::ETSModule *child = nullptr;
     while (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD) {

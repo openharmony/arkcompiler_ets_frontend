@@ -249,10 +249,11 @@ ir::ClassProperty *ETSChecker::CreateNullishPropertyFromAccessor(ir::MethodDefin
     auto *prop =
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         ProgramAllocator()->New<ir::ClassProperty>(ident, nullptr, nullptr, modifierFlag, ProgramAllocator(), false);
-
+    ES2PANDA_ASSERT(prop != nullptr);
     prop->SetParent(newClassDefinition);
     ident->SetParent(prop);
 
+    ES2PANDA_ASSERT(accessor->Function() != nullptr);
     prop->SetTypeAnnotation(accessor->Function()->IsGetter()
                                 ? accessor->Function()->ReturnTypeAnnotation()
                                 : accessor->Function()->Params()[0]->AsETSParameterExpression()->TypeAnnotation());
@@ -268,6 +269,7 @@ ir::ClassProperty *ETSChecker::CreateNullishPropertyFromAccessor(ir::MethodDefin
 
     auto callSign = accessor->TsType()->AsETSFunctionType()->CallSignatures()[0];
 
+    ES2PANDA_ASSERT(accessor->Function() != nullptr);
     auto tsType = accessor->Function()->IsGetter() ? callSign->ReturnType() : callSign->Params()[0]->TsType();
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)

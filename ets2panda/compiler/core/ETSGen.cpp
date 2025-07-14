@@ -675,6 +675,7 @@ void ETSGen::BranchIfIsInstance(const ir::AstNode *const node, const VReg srcReg
 void ETSGen::IsInstance(const ir::AstNode *const node, const VReg srcReg, const checker::Type *target)
 {
     target = Checker()->GetApparentType(target);
+    ES2PANDA_ASSERT(target != nullptr);
     ES2PANDA_ASSERT(target->IsETSReferenceType() && GetAccumulatorType() != nullptr);
 
     if (target->IsETSAnyType()) {  // should be IsSupertypeOf(target, source)
@@ -725,6 +726,7 @@ void ETSGen::InternalCheckCast(const ir::AstNode *node, const es2panda::checker:
 // Handle checkcast for interop if it is 1.2 type.
 void ETSGen::EmitAnyCheckCast(const ir::AstNode *node, const checker::Type *target)
 {
+    ES2PANDA_ASSERT(target != nullptr);
     if (!target->IsETSAnyType() &&
         (target->IsETSObjectType() || target->IsETSArrayType() || target->IsETSTupleType())) {
         InternalCheckCast(node, target);
@@ -779,6 +781,7 @@ void ETSGen::CheckedReferenceNarrowing(const ir::AstNode *node, const checker::T
     }
 
     target = Checker()->GetApparentType(target);
+    ES2PANDA_ASSERT(target != nullptr);
     ES2PANDA_ASSERT(target->IsETSReferenceType());
 
     if (target->IsETSAnyType()) {  // should be IsSupertypeOf(target, source)
@@ -815,6 +818,7 @@ void ETSGen::GuardUncheckedType(const ir::AstNode *node, const checker::Type *un
         CheckedReferenceNarrowing(node, Checker()->MaybeBoxType(target));
         // Because on previous step accumulator type may be set in CheckerReferenceNarrowing to boxed counterpart of
         // target We need to apply unbox conversion if needed to avoid RTE
+        ES2PANDA_ASSERT(GetAccumulatorType() != nullptr);
         if (target->IsETSPrimitiveType() && GetAccumulatorType()->IsETSUnboxableObject()) {
             ApplyConversion(node, target);
         }
@@ -1288,6 +1292,7 @@ void ETSGen::CastToInt(const ir::AstNode *node)
 
 void ETSGen::CastToReftype(const ir::AstNode *const node, const checker::Type *const targetType, const bool unchecked)
 {
+    ES2PANDA_ASSERT(GetAccumulatorType() != nullptr);
     ES2PANDA_ASSERT(GetAccumulatorType()->IsETSReferenceType());
 
     if (!unchecked) {
