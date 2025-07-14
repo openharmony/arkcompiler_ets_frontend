@@ -61,6 +61,9 @@ import {
   LENGTH,
   IS_INSTANCE_OF
 } from '../utils/consts/InteropAPI';
+import { ESLIB_SHAREDARRAYBUFFER } from '../utils/consts/ConcurrentAPI';
+import path from 'node:path';
+import { isStdLibrarySymbol } from '../utils/functions/IsStdLibrary';
 
 const UNDEFINED_NAME = 'undefined';
 
@@ -4949,12 +4952,10 @@ export class Autofixer {
     }
 
     const srcFile = node.getSourceFile();
-    const typeArgsText = `<${typeNode.typeArguments?.
-      map((arg) => {
-        return this.nonCommentPrinter.printNode(ts.EmitHint.Unspecified, arg, srcFile);
-      }).
-      join(', ')}>`;
-    // Insert the type arguments immediately after the constructor name
+    const typeArgsText = this.printGenericCallTypeArgs(srcFile, typeNode.typeArguments);
+    if (!typeArgsText) {
+      return undefined;
+    }
     const insertPos = node.expression.getEnd();
     return [{ start: insertPos, end: insertPos, replacementText: typeArgsText }];
   }
@@ -4965,7 +4966,10 @@ export class Autofixer {
   ): Autofix[] | undefined {
     const elementTypeNode = arrayTypeNode.elementType;
     const srcFile = node.getSourceFile();
-    const typeArgsText = `<${this.nonCommentPrinter.printNode(ts.EmitHint.Unspecified, elementTypeNode, srcFile)}>`;
+    const typeArgsText = this.printGenericCallTypeArgs(srcFile, elementTypeNode);
+    if (!typeArgsText) {
+      return undefined;
+    }
     const insertPos = node.expression.getEnd();
     return [{ start: insertPos, end: insertPos, replacementText: typeArgsText }];
   }
@@ -4982,17 +4986,76 @@ export class Autofixer {
       const matchingType = matchingTypes[0];
       if (matchingType.typeArguments) {
         const srcFile = node.getSourceFile();
-        const typeArgsText = `<${matchingType.typeArguments.
-          map((arg) => {
-            return this.nonCommentPrinter.printNode(ts.EmitHint.Unspecified, arg, srcFile);
-          }).
-          join(', ')}>`;
-
+        const typeArgsText = this.printGenericCallTypeArgs(srcFile, matchingType.typeArguments);
+        if (!typeArgsText) {
+          return undefined;
+        }
         const insertPos = node.expression.getEnd();
         return [{ start: insertPos, end: insertPos, replacementText: typeArgsText }];
       }
     }
     return undefined;
+  }
+
+  private printGenericCallTypeArgs(
+    sourceFile: ts.SourceFile,
+    typeArg: ts.TypeNode | readonly ts.Node[] | undefined
+  ): string | undefined {
+    if (Array.isArray(typeArg)) {
+      if (
+        typeArg.some((arg) => {
+          return !this.isTypeArgumentAccessible(sourceFile, arg as ts.TypeNode);
+        })
+      ) {
+        return undefined;
+      }
+      return `<${typeArg.
+        map((arg) => {
+          return this.nonCommentPrinter.printNode(ts.EmitHint.Unspecified, arg, sourceFile);
+        }).
+        join(', ')}>`;
+    }
+    if (!typeArg || !this.isTypeArgumentAccessible(sourceFile, typeArg as ts.TypeNode)) {
+      return undefined;
+    }
+
+    return `<${this.nonCommentPrinter.printNode(ts.EmitHint.Unspecified, typeArg as ts.TypeNode, sourceFile)}>`;
+  }
+
+  private isTypeArgumentAccessible(sourceFile: ts.SourceFile, arg: ts.TypeNode): boolean {
+    const type = this.typeChecker.getTypeFromTypeNode(arg);
+    const symbol = type.symbol || type.aliasSymbol;
+    const decl = TsUtils.getDeclaration(symbol);
+    const fileName = decl?.getSourceFile().fileName;
+    const isStdLib = isStdLibrarySymbol(symbol);
+    const isMatchPathOnSourceAndDecl = decl && path.normalize(sourceFile.fileName) === path.normalize(fileName!);
+    if (!decl || isMatchPathOnSourceAndDecl || isStdLib) {
+      return true;
+    }
+    let result = false;
+    ts.forEachChild(sourceFile, (node) => {
+      if (ts.isImportDeclaration(node)) {
+        if (node.importClause?.namedBindings && ts.isNamedImports(node.importClause.namedBindings)) {
+          node.importClause.namedBindings.elements.some((element) => {
+            result = this.isTypeArgImport(arg, element.name, symbol);
+            return result;
+          });
+        }
+        if (node.importClause?.name) {
+          result = this.isTypeArgImport(arg, node.importClause.name, symbol);
+        }
+      }
+      return result;
+    });
+    return result;
+  }
+
+  private isTypeArgImport(arg: ts.Node, importName: ts.Identifier, typeArgSym: ts.Symbol): boolean {
+    if (arg.getText() !== importName.text) {
+      return false;
+    }
+    const importSym = this.utils.trueSymbolAtLocation(importName);
+    return importSym === typeArgSym;
   }
 
   private generateGenericTypeArgumentsAutofix(
@@ -5013,11 +5076,10 @@ export class Autofixer {
     if (hasAnyType) {
       return undefined;
     }
-    const typeArgsText = `<${typeArgs?.
-      map((arg) => {
-        return this.nonCommentPrinter.printNode(ts.EmitHint.Unspecified, arg, srcFile);
-      }).
-      join(', ')}>`;
+    const typeArgsText = this.printGenericCallTypeArgs(srcFile, typeArgs);
+    if (!typeArgsText) {
+      return undefined;
+    }
     return [{ start: identifier.getEnd(), end: identifier.getEnd(), replacementText: typeArgsText }];
   }
 
