@@ -18,7 +18,8 @@
 
 #include "varbinder/scope.h"
 #include "ir/annotationAllowed.h"
-#include "ir/jsDocAllowed.h"
+#include "ir/statement.h"
+#include "ir/statements/annotationUsage.h"
 
 namespace ark::es2panda::varbinder {
 class Variable;
@@ -30,7 +31,7 @@ class TSInterfaceBody;
 class TSInterfaceHeritage;
 class TSTypeParameterDeclaration;
 
-class TSInterfaceDeclaration : public JsDocAllowed<AnnotationAllowed<TypedStatement>> {
+class TSInterfaceDeclaration : public AnnotationAllowed<TypedStatement> {
 public:
     // NOLINTBEGIN(cppcoreguidelines-pro-type-member-init)
     struct ConstructorData {
@@ -45,7 +46,7 @@ public:
 
     explicit TSInterfaceDeclaration(ArenaAllocator *allocator, ArenaVector<TSInterfaceHeritage *> &&extends,
                                     ConstructorData &&data)
-        : JsDocAllowed<AnnotationAllowed<TypedStatement>>(AstNodeType::TS_INTERFACE_DECLARATION, allocator),
+        : AnnotationAllowed<TypedStatement>(AstNodeType::TS_INTERFACE_DECLARATION, allocator),
           decorators_(allocator->Adapter()),
           id_(data.id),
           typeParams_(data.typeParams),
@@ -63,7 +64,7 @@ public:
 
     explicit TSInterfaceDeclaration(ArenaAllocator *allocator, ArenaVector<TSInterfaceHeritage *> &&extends,
                                     ConstructorData &&data, AstNodeHistory *history)
-        : JsDocAllowed<AnnotationAllowed<TypedStatement>>(AstNodeType::TS_INTERFACE_DECLARATION, allocator),
+        : AnnotationAllowed<TypedStatement>(AstNodeType::TS_INTERFACE_DECLARATION, allocator),
           decorators_(allocator->Adapter()),
           id_(data.id),
           typeParams_(data.typeParams),

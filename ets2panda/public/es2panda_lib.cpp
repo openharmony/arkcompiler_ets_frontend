@@ -201,37 +201,6 @@ __attribute__((unused)) es2panda_OverloadInfo OverloadInfoToE2p(const ir::Overlo
     return es2pandaOverloadInfo;
 }
 
-__attribute__((unused)) ir::JsDocRecord JsDocRecordToE2p(const es2panda_JsDocRecord *jsDocRecord)
-{
-    return ir::JsDocRecord(jsDocRecord->name, jsDocRecord->param, jsDocRecord->comment);
-}
-
-__attribute__((unused)) es2panda_JsDocRecord *JsDocRecordFromE2p(ArenaAllocator *allocator,
-                                                                 const ir::JsDocRecord &jsDocRecord)
-{
-    es2panda_JsDocRecord *res = allocator->New<es2panda_JsDocRecord>();
-    res->name = StringViewToCString(allocator, jsDocRecord.name);
-    res->param = StringViewToCString(allocator, jsDocRecord.param);
-    res->comment = StringViewToCString(allocator, jsDocRecord.comment);
-    return res;
-}
-
-__attribute__((unused)) es2panda_JsDocInfo *JsDocInfoFromE2p(ArenaAllocator *allocator, const ir::JsDocInfo &jsDocInfo)
-{
-    size_t jsDocInfoLen = jsDocInfo.size();
-    es2panda_JsDocInfo *res = allocator->New<es2panda_JsDocInfo>();
-    res->len = jsDocInfoLen;
-    res->strings = allocator->New<char *[]>(jsDocInfoLen);
-    res->jsDocRecords = allocator->New<es2panda_JsDocRecord *[]>(jsDocInfoLen);
-    size_t i = 0;
-    for (const auto &[key, value] : jsDocInfo) {
-        res->strings[i] = StringViewToCString(allocator, key);
-        res->jsDocRecords[i] = JsDocRecordFromE2p(allocator, value);
-        ++i;
-    };
-    return res;
-}
-
 __attribute__((unused)) char const *ArenaStrdup(ArenaAllocator *allocator, char const *src)
 {
     size_t len = strlen(src);
@@ -1125,6 +1094,40 @@ extern "C" es2panda_AstNode *DeclarationFromIdentifier([[maybe_unused]] es2panda
     return reinterpret_cast<es2panda_AstNode *>(compiler::DeclarationFromIdentifier(E2pNode));
 }
 
+extern "C" bool IsImportTypeKind([[maybe_unused]] es2panda_Context *context, es2panda_AstNode *node)
+{
+    auto E2pNode = reinterpret_cast<const ir::AstNode *>(node);
+    if (E2pNode->IsETSImportDeclaration()) {
+        return E2pNode->AsETSImportDeclaration()->IsTypeKind();
+    }
+
+    if (E2pNode->IsImportDeclaration()) {
+        return E2pNode->AsETSImportDeclaration()->IsTypeKind();
+    }
+
+    auto ctx = reinterpret_cast<Context *>(context);
+    auto id = ctx->config->diagnosticKindStorage.size() + 1;
+    auto type = util::DiagnosticType::PLUGIN_WARNING;
+    util::DiagnosticMessageParams params {};
+    diagnostic::DiagnosticKind *kind = &ctx->config->diagnosticKindStorage.emplace_back(type, id, "Insert wrong node!");
+    ctx->diagnosticEngine->LogDiagnostic(*kind, params, E2pNode->Start());
+    return false;
+}
+
+extern "C" char *GetLicenseFromRootNode(es2panda_Context *ctx, es2panda_AstNode *node)
+{
+    auto E2pNode = reinterpret_cast<const ir::AstNode *>(node);
+    auto *allocator = reinterpret_cast<Context *>(ctx)->allocator;
+    return StringViewToCString(allocator, compiler::GetLicenseFromRootNode(E2pNode));
+}
+
+extern "C" char *JsdocStringFromDeclaration([[maybe_unused]] es2panda_Context *ctx, es2panda_AstNode *node)
+{
+    auto E2pNode = reinterpret_cast<const ir::AstNode *>(node);
+    auto *allocator = reinterpret_cast<Context *>(ctx)->allocator;
+    return StringViewToCString(allocator, compiler::JsdocStringFromDeclaration(E2pNode));
+}
+
 extern "C" es2panda_AstNode *FirstDeclarationByNameFromNode([[maybe_unused]] es2panda_Context *ctx,
                                                             const es2panda_AstNode *node, const char *name)
 {
@@ -1389,6 +1392,9 @@ es2panda_Impl g_impl = {
     Es2pandaEnumFromString,
     Es2pandaEnumToString,
     DeclarationFromIdentifier,
+    IsImportTypeKind,
+    JsdocStringFromDeclaration,
+    GetLicenseFromRootNode,
     FirstDeclarationByNameFromNode,
     FirstDeclarationByNameFromProgram,
     AllDeclarationsByNameFromNode,

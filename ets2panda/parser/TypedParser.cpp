@@ -588,10 +588,6 @@ ArenaVector<ir::AstNode *> TypedParser::ParseTypeLiteralOrInterfaceBody()
         util::ErrorRecursionGuard infiniteLoopBlocker(Lexer());
 
         ir::AstNode *member = ParseTypeLiteralOrInterfaceMember();
-        if (member == nullptr) {
-            break;
-        }
-
         if (member->IsMethodDefinition() && member->AsMethodDefinition()->Function() != nullptr &&
             member->AsMethodDefinition()->Function()->IsOverload() &&
             member->AsMethodDefinition()->Function()->Body() != nullptr) {
@@ -608,10 +604,6 @@ ArenaVector<ir::AstNode *> TypedParser::ParseTypeLiteralOrInterfaceBody()
 
         if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
             break;
-        }
-
-        if (Lexer()->GetToken().Type() == lexer::TokenType::JS_DOC_START) {
-            continue;
         }
 
         if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COMMA &&

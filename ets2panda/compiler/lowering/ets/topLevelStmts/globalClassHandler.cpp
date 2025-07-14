@@ -180,6 +180,7 @@ ir::ClassDeclaration *GlobalClassHandler::CreateTransformedClass(ir::ETSModule *
     }
 
     classDef->SetAnnotations(std::move(annotations));
+    classDecl->SetRange(ns->Range());
     return classDecl;
 }
 

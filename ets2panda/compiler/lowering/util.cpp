@@ -20,6 +20,7 @@
 #include "checker/checker.h"
 #include "checker/ETSAnalyzer.h"
 #include "checker/types/gradualType.h"
+#include "parser/JsdocHelper.h"
 
 namespace ark::es2panda::compiler {
 
@@ -334,6 +335,20 @@ ir::AstNode *DeclarationFromIdentifier(const ir::Identifier *node)
         return nullptr;
     }
     return decl->Node();
+}
+
+// NOTE: used to get the license string from the input root node.
+util::StringView GetLicenseFromRootNode(const ir::AstNode *node)
+{
+    std::unique_ptr<parser::JsdocHelper> jsdocGetter = std::make_unique<parser::JsdocHelper>(node);
+    return jsdocGetter->GetLicenseStringFromStart();
+}
+
+// NOTE: used to get the jsdoc string from the input node.
+util::StringView JsdocStringFromDeclaration(const ir::AstNode *node)
+{
+    std::unique_ptr<parser::JsdocHelper> jsdocGetter = std::make_unique<parser::JsdocHelper>(node);
+    return jsdocGetter->GetJsdocBackward();
 }
 
 // Note: run varbinder on the new node generated in lowering phases (without ClearTypesVariablesAndScopes)

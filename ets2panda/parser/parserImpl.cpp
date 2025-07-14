@@ -46,10 +46,7 @@ using namespace std::literals::string_literals;
 namespace ark::es2panda::parser {
 ParserImpl::ParserImpl(Program *program, const util::Options *options, util::DiagnosticEngine &diagnosticEngine,
                        ParserStatus status)
-    : program_(program),
-      context_(program_, status, options == nullptr ? false : options->IsEnableJsdocParse()),
-      options_(options),
-      diagnosticEngine_(diagnosticEngine)
+    : program_(program), context_(program_, status), options_(options), diagnosticEngine_(diagnosticEngine)
 {
 }
 
@@ -840,10 +837,6 @@ ParserImpl::ClassBody ParserImpl::ParseClassBody(ir::ClassDefinitionModifiers mo
 
             util::ErrorRecursionGuard infiniteLoopBlocker(Lexer());
             ir::AstNode *property = ParseClassElement(properties, modifiers, flags);
-            if (property == nullptr) {
-                continue;
-            }
-
             if (property->IsBrokenStatement()) {  // Error processing.
                 continue;
             }

@@ -317,7 +317,7 @@ void TSInterfaceDeclaration::CopyTo(AstNode *other) const
     otherImpl->lang_ = lang_;
     otherImpl->anonClass_ = anonClass_;
 
-    JsDocAllowed<AnnotationAllowed<TypedStatement>>::CopyTo(other);
+    AnnotationAllowed<TypedStatement>::CopyTo(other);
 }
 
 }  // namespace ark::es2panda::ir

@@ -45,6 +45,9 @@ void Recheck(PhaseManager *phaseManager, varbinder::ETSBinder *varBinder, checke
 ir::AstNode *DeclarationFromIdentifier(const ir::Identifier *node);
 // NOTE: used to get the declaration name in Plugin API and LSP
 std::optional<std::string> GetNameOfDeclaration(const ir::AstNode *node);
+// NOTE: used to get the license string from the input root node.
+util::StringView GetLicenseFromRootNode(const ir::AstNode *node);
+util::StringView JsdocStringFromDeclaration(const ir::AstNode *node);
 
 // Note: run varbinder on the new node generated in lowering phases
 void BindLoweredNode(varbinder::ETSBinder *varBinder, ir::AstNode *node);

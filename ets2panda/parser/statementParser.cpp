@@ -13,7 +13,6 @@
  * limitations under the License.
  */
 
-#include "ETSparser.h"
 #include "parser/parserFlags.h"
 #include "parser/parserStatusContext.h"
 #include "util/errorRecovery.h"
@@ -147,10 +146,6 @@ ir::Statement *ParserImpl::ParseStatementControlFlowTokenHelper(StatementParsing
 // NOLINTNEXTLINE(google-default-arguments)
 ir::Statement *ParserImpl::ParseStatement(StatementParsingFlags flags)
 {
-    if (IsETSParser()) {
-        AsETSParser()->HandleJsDocLikeComments();
-    }
-
     const auto tokenType = lexer_->GetToken().Type();
     bool isPunctuatorToken = tokenType == lexer::TokenType::PUNCTUATOR_LEFT_BRACE ||
                              tokenType == lexer::TokenType::PUNCTUATOR_SEMI_COLON ||

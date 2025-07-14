@@ -251,4 +251,3 @@ allowed_list:
   - StringView
   - TypeNode
   - ArkTsConfig
-  - JsDocInfo

@@ -104,23 +104,12 @@ size_t SizeOfNodeTest::SizeOf<AnnotationAllowed<TypedAstNode>>()
 }
 
 template <>
-size_t SizeOfNodeTest::SizeOf<JsDocAllowed<AnnotationAllowed<TypedAstNode>>>()
-{
-    JsDocAllowed<AnnotationAllowed<TypedAstNode>> *node = nullptr;
-
-    // clang-format off
-    return SizeOf<AnnotationAllowed<TypedAstNode>>() +
-        sizeof(node->jsDocInformation_);
-    // clang-format on
-}
-
-template <>
 size_t SizeOfNodeTest::SizeOf<ClassDefinition>()
 {
     ClassDefinition *node = nullptr;
 
     // clang-format off
-    return SizeOf<JsDocAllowed<AnnotationAllowed<TypedAstNode>>>() +
+    return SizeOf<AnnotationAllowed<TypedAstNode>>() +
         sizeof(node->scope_) +
         sizeof(node->internalName_) +
         sizeof(node->ident_) +
@@ -206,23 +195,12 @@ size_t SizeOfNodeTest::SizeOf<AnnotationAllowed<ClassElement>>()
 }
 
 template <>
-size_t SizeOfNodeTest::SizeOf<JsDocAllowed<AnnotationAllowed<ClassElement>>>()
-{
-    JsDocAllowed<AnnotationAllowed<ClassElement>> *node = nullptr;
-
-    // clang-format off
-    return SizeOf<AnnotationAllowed<ClassElement>>() +
-        sizeof(node->jsDocInformation_);
-    // clang-format on
-}
-
-template <>
 size_t SizeOfNodeTest::SizeOf<ClassProperty>()
 {
     ClassProperty *node = nullptr;
 
     // clang-format off
-    return SizeOf<JsDocAllowed<AnnotationAllowed<ClassElement>>>() +
+    return SizeOf<AnnotationAllowed<ClassElement>>() +
         sizeof(node->typeAnnotation_) +
         Align(sizeof(node->isDefault_) +
             sizeof(node->needInitInStaticBlock_));
@@ -257,23 +235,12 @@ size_t SizeOfNodeTest::SizeOf<AnnotationAllowed<AstNode>>()
 }
 
 template <>
-size_t SizeOfNodeTest::SizeOf<JsDocAllowed<AnnotationAllowed<AstNode>>>()
-{
-    JsDocAllowed<AnnotationAllowed<AstNode>> *node = nullptr;
-
-    // clang-format off
-    return SizeOf<AnnotationAllowed<AstNode>>() +
-        sizeof(node->jsDocInformation_);
-    // clang-format on
-}
-
-template <>
 size_t SizeOfNodeTest::SizeOf<ScriptFunction>()
 {
     ScriptFunction *node = nullptr;
 
     // clang-format off
-    return SizeOf<JsDocAllowed<AnnotationAllowed<AstNode>>>() +
+    return SizeOf<AnnotationAllowed<AstNode>>() +
         sizeof(node->id_) +
         Align(sizeof(node->irSignature_)) +
         sizeof(node->body_) +
@@ -311,23 +278,12 @@ size_t SizeOfNodeTest::SizeOf<AnnotationAllowed<Statement>>()
 }
 
 template <>
-size_t SizeOfNodeTest::SizeOf<JsDocAllowed<AnnotationAllowed<Statement>>>()
-{
-    JsDocAllowed<AnnotationAllowed<Statement>> *node = nullptr;
-
-    // clang-format off
-    return SizeOf<AnnotationAllowed<Statement>>() +
-        sizeof(node->jsDocInformation_);
-    // clang-format on
-}
-
-template <>
 size_t SizeOfNodeTest::SizeOf<FunctionDeclaration>()
 {
     FunctionDeclaration *node = nullptr;
 
     // clang-format off
-    return SizeOf<JsDocAllowed<AnnotationAllowed<Statement>>>() +
+    return SizeOf<AnnotationAllowed<Statement>>() +
         sizeof(node->decorators_) +
         sizeof(node->func_) +
         Align(sizeof(node->isAnonymous_));
@@ -364,23 +320,12 @@ size_t SizeOfNodeTest::SizeOf<AnnotationAllowed<TypedStatement>>()
 }
 
 template <>
-size_t SizeOfNodeTest::SizeOf<JsDocAllowed<AnnotationAllowed<TypedStatement>>>()
-{
-    JsDocAllowed<AnnotationAllowed<TypedStatement>> *node = nullptr;
-
-    // clang-format off
-    return SizeOf<AnnotationAllowed<TypedStatement>>() +
-        sizeof(node->jsDocInformation_);
-    // clang-format on
-}
-
-template <>
 size_t SizeOfNodeTest::SizeOf<TSInterfaceDeclaration>()
 {
     TSInterfaceDeclaration *node = nullptr;
 
     // clang-format off
-    return SizeOf<JsDocAllowed<AnnotationAllowed<TypedStatement>>>() +
+    return SizeOf<AnnotationAllowed<TypedStatement>>() +
         sizeof(node->decorators_) +
         sizeof(node->scope_) +
         sizeof(node->id_) +
@@ -413,23 +358,12 @@ size_t SizeOfNodeTest::SizeOf<AnnotatedStatement>()
 }
 
 template <>
-size_t SizeOfNodeTest::SizeOf<JsDocAllowed<AnnotatedStatement>>()
-{
-    JsDocAllowed<AnnotatedStatement> *node = nullptr;
-
-    // clang-format off
-    return SizeOf<AnnotatedStatement>() +
-        sizeof(node->jsDocInformation_);
-    // clang-format on
-}
-
-template <>
 size_t SizeOfNodeTest::SizeOf<TSTypeAliasDeclaration>()
 {
     TSTypeAliasDeclaration *node = nullptr;
 
     // clang-format off
-    return SizeOf<JsDocAllowed<AnnotatedStatement>>() +
+    return SizeOf<AnnotatedStatement>() +
         sizeof(node->decorators_) +
         sizeof(node->annotations_) +
         sizeof(node->id_) +
@@ -465,7 +399,7 @@ size_t SizeOfNodeTest::SizeOf<VariableDeclaration>()
     VariableDeclaration *node = nullptr;
 
     // clang-format off
-    return SizeOf<JsDocAllowed<AnnotationAllowed<Statement>>>() +
+    return SizeOf<AnnotationAllowed<Statement>>() +
         Align(sizeof(node->kind_) +
         sizeof(node->decorators_) +
         sizeof(node->declarators_));
@@ -569,23 +503,12 @@ size_t SizeOfNodeTest::SizeOf<AnnotationAllowed<BlockStatement>>()
 }
 
 template <>
-size_t SizeOfNodeTest::SizeOf<JsDocAllowed<AnnotationAllowed<BlockStatement>>>()
-{
-    JsDocAllowed<AnnotationAllowed<BlockStatement>> *node = nullptr;
-
-    // clang-format off
-    return SizeOf<AnnotationAllowed<BlockStatement>>() +
-        sizeof(node->jsDocInformation_);
-    // clang-format on
-}
-
-template <>
 size_t SizeOfNodeTest::SizeOf<ETSModule>()
 {
     ETSModule *node = nullptr;
 
     // clang-format off
-    return SizeOf<JsDocAllowed<AnnotationAllowed<BlockStatement>>>() +
+    return SizeOf<AnnotationAllowed<BlockStatement>>() +
         sizeof(node->ident_) +
         Align(sizeof(node->flag_)) +
         sizeof(node->program_)+
@@ -652,22 +575,16 @@ TEST_F(SizeOfNodeTest, DeclNodesBase)
     ASSERT_EQ(sizeof(Typed<AstNode>), SizeOf<Typed<AstNode>>());
     ASSERT_EQ(sizeof(TypedAstNode), SizeOf<TypedAstNode>());
     ASSERT_EQ(sizeof(AnnotationAllowed<TypedAstNode>), SizeOf<AnnotationAllowed<TypedAstNode>>());
-    ASSERT_EQ(sizeof(JsDocAllowed<AnnotationAllowed<TypedAstNode>>),
-              SizeOf<JsDocAllowed<AnnotationAllowed<TypedAstNode>>>());
     ASSERT_EQ(sizeof(Statement), SizeOf<Statement>());
     ASSERT_EQ(sizeof(Typed<Statement>), SizeOf<Typed<Statement>>());
     ASSERT_EQ(sizeof(TypedStatement), SizeOf<TypedStatement>());
     ASSERT_EQ(sizeof(ClassElement), SizeOf<ClassElement>());
     ASSERT_EQ(sizeof(AnnotationAllowed<ClassElement>), SizeOf<AnnotationAllowed<ClassElement>>());
-    ASSERT_EQ(sizeof(JsDocAllowed<AnnotationAllowed<ClassElement>>),
-              SizeOf<JsDocAllowed<AnnotationAllowed<ClassElement>>>());
     ASSERT_EQ(sizeof(AnnotationAllowed<AstNode>), SizeOf<AnnotationAllowed<AstNode>>());
-    ASSERT_EQ(sizeof(JsDocAllowed<AnnotationAllowed<AstNode>>), SizeOf<JsDocAllowed<AnnotationAllowed<AstNode>>>());
+    ASSERT_EQ(sizeof(AnnotationAllowed<AstNode>), SizeOf<AnnotationAllowed<AstNode>>());
     ASSERT_EQ(sizeof(AnnotationAllowed<Statement>), SizeOf<AnnotationAllowed<Statement>>());
-    ASSERT_EQ(sizeof(JsDocAllowed<AnnotationAllowed<Statement>>), SizeOf<JsDocAllowed<AnnotationAllowed<Statement>>>());
+    ASSERT_EQ(sizeof(AnnotationAllowed<Statement>), SizeOf<AnnotationAllowed<Statement>>());
     ASSERT_EQ(sizeof(AnnotationAllowed<TypedStatement>), SizeOf<AnnotationAllowed<TypedStatement>>());
-    ASSERT_EQ(sizeof(JsDocAllowed<AnnotationAllowed<TypedStatement>>),
-              SizeOf<JsDocAllowed<AnnotationAllowed<TypedStatement>>>());
 
     // IMPORTANT NOTICE: This test purpose is to warn a developer who modified fields of specific node classes.
     // Classes listed below implements CopyTo/Clone methods.
@@ -676,7 +593,7 @@ TEST_F(SizeOfNodeTest, DeclNodesBase)
 
     ASSERT_EQ(sizeof(Annotated<Statement>), SizeOf<Annotated<Statement>>());
     ASSERT_EQ(sizeof(AnnotatedStatement), SizeOf<AnnotatedStatement>());
-    ASSERT_EQ(sizeof(JsDocAllowed<AnnotatedStatement>), SizeOf<JsDocAllowed<AnnotatedStatement>>());
+    ASSERT_EQ(sizeof(AnnotatedStatement), SizeOf<AnnotatedStatement>());
     ASSERT_EQ(sizeof(Expression), SizeOf<Expression>());
     ASSERT_EQ(sizeof(AnnotationAllowed<Expression>), SizeOf<AnnotationAllowed<Expression>>());
     ASSERT_EQ(sizeof(TypeNode), SizeOf<TypeNode>());

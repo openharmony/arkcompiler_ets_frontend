@@ -110,7 +110,7 @@ void ScriptFunction::SetValueReturnStatements(ReturnStatement *returnStatements,
 }
 
 ScriptFunction::ScriptFunction(ArenaAllocator *allocator, ScriptFunctionData &&data)
-    : JsDocAllowed<AnnotationAllowed<AstNode>>(AstNodeType::SCRIPT_FUNCTION, data.flags, allocator),
+    : AnnotationAllowed<AstNode>(AstNodeType::SCRIPT_FUNCTION, data.flags, allocator),
       irSignature_(std::move(data.signature)),
       body_(data.body),
       funcFlags_(data.funcFlags),
@@ -132,7 +132,7 @@ ScriptFunction::ScriptFunction(ArenaAllocator *allocator, ScriptFunctionData &&d
 }
 
 ScriptFunction::ScriptFunction(ArenaAllocator *allocator, ScriptFunctionData &&data, AstNodeHistory *history)
-    : JsDocAllowed<AnnotationAllowed<AstNode>>(AstNodeType::SCRIPT_FUNCTION, data.flags, allocator),
+    : AnnotationAllowed<AstNode>(AstNodeType::SCRIPT_FUNCTION, data.flags, allocator),
       irSignature_(std::move(data.signature)),
       body_(data.body),
       funcFlags_(data.funcFlags),
@@ -398,7 +398,7 @@ void ScriptFunction::CopyTo(AstNode *other) const
     otherImpl->lang_ = lang_;
     otherImpl->returnStatements_ = returnStatements_;
 
-    JsDocAllowed<AnnotationAllowed<AstNode>>::CopyTo(other);
+    AnnotationAllowed<AstNode>::CopyTo(other);
 }
 
 }  // namespace ark::es2panda::ir

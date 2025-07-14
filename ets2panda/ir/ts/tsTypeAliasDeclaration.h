@@ -18,7 +18,6 @@
 
 #include "ir/statement.h"
 #include "ir/typed.h"
-#include "ir/jsDocAllowed.h"
 #include "ir/statements/annotationUsage.h"
 
 namespace ark::es2panda::varbinder {
@@ -29,11 +28,11 @@ namespace ark::es2panda::ir {
 class Identifier;
 class TSTypeParameterDeclaration;
 
-class TSTypeAliasDeclaration : public JsDocAllowed<AnnotatedStatement> {
+class TSTypeAliasDeclaration : public AnnotatedStatement {
 public:
     explicit TSTypeAliasDeclaration(ArenaAllocator *allocator, Identifier *id, TSTypeParameterDeclaration *typeParams,
                                     TypeNode *typeAnnotation)
-        : JsDocAllowed<AnnotatedStatement>(AstNodeType::TS_TYPE_ALIAS_DECLARATION, typeAnnotation, allocator),
+        : AnnotatedStatement(AstNodeType::TS_TYPE_ALIAS_DECLARATION, typeAnnotation),
           decorators_(allocator->Adapter()),
           annotations_(allocator->Adapter()),
           id_(id),
@@ -44,7 +43,7 @@ public:
     }
 
     explicit TSTypeAliasDeclaration(ArenaAllocator *allocator, Identifier *id)
-        : JsDocAllowed<AnnotatedStatement>(allocator, AstNodeType::TS_TYPE_ALIAS_DECLARATION),
+        : AnnotatedStatement(AstNodeType::TS_TYPE_ALIAS_DECLARATION),
           decorators_(allocator->Adapter()),
           annotations_(allocator->Adapter()),
           id_(id),

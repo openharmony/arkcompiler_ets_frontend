@@ -195,7 +195,7 @@ void TSTypeAliasDeclaration::CopyTo(AstNode *other) const
     otherImpl->typeParams_ = typeParams_;
     otherImpl->typeParamTypes_ = typeParamTypes_;
 
-    JsDocAllowed<AnnotatedStatement>::CopyTo(other);
+    AnnotatedStatement::CopyTo(other);
 }
 
 void TSTypeAliasDeclaration::EmplaceDecorators(Decorator *decorators)

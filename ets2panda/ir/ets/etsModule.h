@@ -18,7 +18,6 @@
 
 #include "ir/statements/blockStatement.h"
 #include "ir/annotationAllowed.h"
-#include "ir/jsDocAllowed.h"
 #include "ir/expressions/identifier.h"
 #include "ir/srcDump.h"
 
@@ -44,12 +43,12 @@ struct enumbitops::IsAllowedType<ark::es2panda::ir::ModuleFlag> : std::true_type
 
 namespace ark::es2panda::ir {
 
-class ETSModule : public JsDocAllowed<AnnotationAllowed<BlockStatement>> {
+class ETSModule : public AnnotationAllowed<BlockStatement> {
 public:
     // CC-OFFNXT(G.FUN.01-CPP) solid logic
     explicit ETSModule(ArenaAllocator *allocator, ArenaVector<Statement *> &&statementList, Identifier *ident,
                        ModuleFlag flag, Language lang, parser::Program *program)
-        : JsDocAllowed<AnnotationAllowed<BlockStatement>>(allocator, std::move(statementList)),
+        : AnnotationAllowed<BlockStatement>(allocator, std::move(statementList)),
           ident_(ident),
           flag_(flag),
           lang_(lang),
@@ -62,7 +61,7 @@ public:
     // CC-OFFNXT(G.FUN.01-CPP) solid logic
     explicit ETSModule(ArenaAllocator *allocator, ArenaVector<Statement *> &&statementList, Identifier *ident,
                        ModuleFlag flag, Language lang, parser::Program *program, AstNodeHistory *history)
-        : JsDocAllowed<AnnotationAllowed<BlockStatement>>(allocator, std::move(statementList)),
+        : AnnotationAllowed<BlockStatement>(allocator, std::move(statementList)),
           ident_(ident),
           flag_(flag),
           lang_(lang),

@@ -69,7 +69,7 @@ void ETSModule::CopyTo(AstNode *other) const
     otherImpl->program_ = program_;
     otherImpl->globalClass_ = globalClass_;
 
-    JsDocAllowed<AnnotationAllowed<BlockStatement>>::CopyTo(other);
+    AnnotationAllowed<BlockStatement>::CopyTo(other);
 }
 
 }  // namespace ark::es2panda::ir
