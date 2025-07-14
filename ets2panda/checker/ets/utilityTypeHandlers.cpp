@@ -243,7 +243,6 @@ ir::ClassProperty *ETSChecker::CreateNullishPropertyFromAccessor(ir::MethodDefin
     ES2PANDA_ASSERT(prop != nullptr);
     prop->SetParent(newClassDefinition);
     ident->SetParent(prop);
-
     prop->SetTypeAnnotation(accessor->Function()->IsGetter()
                                 ? accessor->Function()->ReturnTypeAnnotation()
                                 : accessor->Function()->Params()[0]->AsETSParameterExpression()->TypeAnnotation());
