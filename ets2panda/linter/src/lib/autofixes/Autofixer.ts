@@ -61,7 +61,6 @@ import {
   LENGTH,
   IS_INSTANCE_OF
 } from '../utils/consts/InteropAPI';
-import { ESLIB_SHAREDARRAYBUFFER } from '../utils/consts/ConcurrentAPI';
 import path from 'node:path';
 import { isStdLibrarySymbol } from '../utils/functions/IsStdLibrary';
 

@@ -2719,23 +2719,309 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (this.options.arkts2 && tsCatch.variableDeclaration?.name) {
       const varDeclName = tsCatch.variableDeclaration?.name.getText();
       tsCatch.block.statements.forEach((statement) => {
-        this.checkTsLikeCatchType(statement, varDeclName);
+        this.checkTsLikeCatchType(statement, varDeclName, undefined);
       });
     }
   }
 
-  private checkTsLikeCatchType(node: ts.Node, variableDeclarationName: string): void {
+  private checkTsLikeCatchType(
+    node: ts.Node,
+    variableDeclarationName: string,
+    typeNode: ts.ClassDeclaration | ts.InterfaceDeclaration | undefined
+  ): void {
     if (!node) {
       return;
     }
+    const hasChecked = this.hasCheckedTsLikeCatchTypeInIfStatement(node, variableDeclarationName, typeNode);
+    if (hasChecked) {
+      return;
+    }
+    const hasCheckedInConditionalExpr = this.hasCheckedTsLikeCatchTypeInConditionalExpression(
+      node,
+      variableDeclarationName,
+      typeNode
+    );
+    if (hasCheckedInConditionalExpr) {
+      return;
+    }
+    this.checkTsLikeCatchTypeForAsExpr(node, variableDeclarationName);
+
     for (const child of node.getChildren()) {
       if (ts.isPropertyAccessExpression(child)) {
-        if (child.expression.getText() === variableDeclarationName && !ERROR_PROP_LIST.has(child.name.getText())) {
-          this.incrementCounters(child, FaultID.TsLikeCatchType);
+        this.checkTsLikeCatchTypeForPropAccessExpr(child, variableDeclarationName, typeNode);
+
+        if (
+          ts.isParenthesizedExpression(child.expression) &&
+          ts.isAsExpression(child.expression.expression) &&
+          child.expression.expression.expression.getText() === variableDeclarationName
+        ) {
+          this.checkTsLikeCatchTypePropForAsExpression(child, child.expression.expression);
         }
       }
-      this.checkTsLikeCatchType(child, variableDeclarationName);
+      this.checkTsLikeCatchType(child, variableDeclarationName, typeNode);
     }
+  }
+
+  private hasCheckedTsLikeCatchTypeInIfStatement(
+    node: ts.Node,
+    variableDeclarationName: string,
+    typeNode: ts.ClassDeclaration | ts.InterfaceDeclaration | undefined
+  ): boolean {
+    const checkSubStatement = (node: ts.IfStatement, declaration: ts.ClassDeclaration): void => {
+      if (!this.isErrorOrInheritError(declaration)) {
+        this.incrementCounters(node.expression, FaultID.TsLikeCatchType);
+      } else {
+        this.checkTsLikeCatchType(node.thenStatement, variableDeclarationName, declaration);
+      }
+      const elseStatement = node.elseStatement;
+      if (elseStatement) {
+        this.checkTsLikeCatchType(elseStatement, variableDeclarationName, typeNode);
+      }
+    };
+
+    if (
+      ts.isIfStatement(node) &&
+      ts.isBinaryExpression(node.expression) &&
+      node.expression.operatorToken.kind === ts.SyntaxKind.InstanceOfKeyword &&
+      node.expression.left.getText() === variableDeclarationName
+    ) {
+      const rightSym = this.tsTypeChecker.getSymbolAtLocation(node.expression.right);
+      const decl = rightSym?.declarations?.[0];
+      if (decl && ts.isClassDeclaration(decl)) {
+        checkSubStatement(node, decl);
+        return true;
+      }
+      if (decl && ts.isImportSpecifier(decl)) {
+        const symbol = this.getSymbolByImportSpecifier(decl);
+        const declaration = symbol?.declarations?.[0];
+        if (declaration && ts.isClassDeclaration(declaration)) {
+          checkSubStatement(node, declaration);
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  private hasCheckedTsLikeCatchTypeInConditionalExpression(
+    node: ts.Node,
+    variableDeclarationName: string,
+    typeNode: ts.ClassDeclaration | ts.InterfaceDeclaration | undefined
+  ): boolean {
+    if (
+      ts.isConditionalExpression(node) &&
+      ts.isBinaryExpression(node.condition) &&
+      node.condition.operatorToken.kind === ts.SyntaxKind.InstanceOfKeyword &&
+      node.condition.left.getText() === variableDeclarationName
+    ) {
+      const rightSym = this.tsTypeChecker.getSymbolAtLocation(node.condition.right);
+      const decl = rightSym?.declarations?.[0];
+      if (decl && ts.isClassDeclaration(decl)) {
+        this.checkTsLikeCatchTypeInConditionalExprSubStatement(node, decl, variableDeclarationName, typeNode);
+        return true;
+      } else if (decl && ts.isImportSpecifier(decl)) {
+        const symbol = this.getSymbolByImportSpecifier(decl);
+        const declaration = symbol?.declarations?.[0];
+        if (declaration && ts.isClassDeclaration(declaration)) {
+          this.checkTsLikeCatchTypeInConditionalExprSubStatement(node, declaration, variableDeclarationName, typeNode);
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  private checkTsLikeCatchTypeInConditionalExprSubStatement(
+    node: ts.ConditionalExpression,
+    declarationType: ts.ClassDeclaration,
+    variableDeclarationName: string,
+    typeNode: ts.ClassDeclaration | ts.InterfaceDeclaration | undefined
+  ): void {
+    const checkWhenFalseExpr = (
+      whenFalse: ts.Node,
+      typeNode: ts.ClassDeclaration | ts.InterfaceDeclaration | undefined
+    ): void => {
+      if (ts.isPropertyAccessExpression(whenFalse) && whenFalse.expression.getText() === variableDeclarationName) {
+        if (!typeNode) {
+          if (!ERROR_PROP_LIST.has(whenFalse.name.getText())) {
+            this.incrementCounters(whenFalse, FaultID.TsLikeCatchType);
+          }
+        } else {
+          const isValidErrorPropAccess = this.isValidErrorPropAccess(whenFalse, typeNode);
+          if (!isValidErrorPropAccess) {
+            this.incrementCounters(whenFalse, FaultID.TsLikeCatchType);
+          }
+        }
+      } else {
+        this.checkTsLikeCatchType(whenFalse, variableDeclarationName, typeNode);
+      }
+    };
+
+    if (!this.isErrorOrInheritError(declarationType)) {
+      this.incrementCounters(node.condition, FaultID.TsLikeCatchType);
+      checkWhenFalseExpr(node.whenFalse, typeNode);
+    } else {
+      if (
+        ts.isPropertyAccessExpression(node.whenTrue) &&
+        node.whenTrue.expression.getText() === variableDeclarationName
+      ) {
+        const whenTrue: ts.PropertyAccessExpression = node.whenTrue;
+        const isValidErrorPropAccess = this.isValidErrorPropAccess(whenTrue, declarationType);
+        if (!isValidErrorPropAccess) {
+          this.incrementCounters(whenTrue, FaultID.TsLikeCatchType);
+        }
+      } else {
+        this.checkTsLikeCatchType(node.whenTrue, variableDeclarationName, declarationType);
+      }
+      checkWhenFalseExpr(node.whenFalse, typeNode);
+    }
+  }
+
+  private checkTsLikeCatchTypeForAsExpr(node: ts.Node, variableDeclarationName: string): void {
+    if (!ts.isAsExpression(node) || node.expression.getText() !== variableDeclarationName) {
+      return;
+    }
+    const asExprTypeNode = node.type;
+    if (!asExprTypeNode || !ts.isTypeReferenceNode(asExprTypeNode)) {
+      return;
+    }
+    const checkReport = (node: ts.AsExpression, declaration: ts.ClassDeclaration | ts.InterfaceDeclaration): void => {
+      if (!this.isErrorOrInheritError(declaration)) {
+        this.incrementCounters(node, FaultID.TsLikeCatchType);
+      }
+    };
+
+    const checkImportSpecifier = (decl: ts.ImportSpecifier): void => {
+      const symbol = this.getSymbolByImportSpecifier(decl);
+      const declaration = symbol?.declarations?.[0];
+      if (declaration && (ts.isClassDeclaration(declaration) || ts.isInterfaceDeclaration(declaration))) {
+        checkReport(node, declaration);
+      }
+    };
+    const typeName = asExprTypeNode.typeName;
+    const sym = this.tsTypeChecker.getSymbolAtLocation(typeName);
+    const decl = sym?.declarations?.[0];
+    if (decl && (ts.isClassDeclaration(decl) || ts.isInterfaceDeclaration(decl))) {
+      checkReport(node, decl);
+    } else if (decl && ts.isImportSpecifier(decl)) {
+      checkImportSpecifier(decl);
+    }
+  }
+
+  private checkTsLikeCatchTypeHasPropInType(
+    propAccessExpr: ts.PropertyAccessExpression,
+    decl: ts.ClassDeclaration | ts.InterfaceDeclaration
+  ): void {
+    if (!decl) {
+      return;
+    }
+    if (this.isErrorOrInheritError(decl)) {
+      const isValidErrorPropAccess = this.isValidErrorPropAccess(propAccessExpr, decl);
+      if (!isValidErrorPropAccess) {
+        this.incrementCounters(propAccessExpr, FaultID.TsLikeCatchType);
+      }
+    }
+  }
+
+  private checkTsLikeCatchTypeForPropAccessExpr(
+    propAccessExpr: ts.PropertyAccessExpression,
+    variableDeclarationName: string,
+    typeNode: ts.ClassDeclaration | ts.InterfaceDeclaration | undefined
+  ): void {
+    const checkProp = (): void => {
+      if (!typeNode) {
+        if (!ERROR_PROP_LIST.has(propAccessExpr.name.getText())) {
+          this.incrementCounters(propAccessExpr, FaultID.TsLikeCatchType);
+        }
+      } else {
+        const isValidErrorPropAccess = this.isValidErrorPropAccess(propAccessExpr, typeNode);
+        if (!isValidErrorPropAccess) {
+          this.incrementCounters(propAccessExpr, FaultID.TsLikeCatchType);
+        }
+      }
+    };
+
+    if (propAccessExpr.expression.getText() === variableDeclarationName) {
+      checkProp();
+      return;
+    }
+
+    const sym = this.tsTypeChecker.getSymbolAtLocation(propAccessExpr.expression);
+    const decl = sym?.declarations?.[0];
+    if (decl && ts.isVariableDeclaration(decl) && decl.initializer) {
+      if (decl.initializer.getText() === variableDeclarationName) {
+        checkProp();
+        return;
+      }
+      if (ts.isAsExpression(decl.initializer) && decl.initializer.expression.getText() === variableDeclarationName) {
+        this.checkTsLikeCatchTypePropForAsExpression(propAccessExpr, decl.initializer);
+      }
+    }
+  }
+
+  private checkTsLikeCatchTypePropForAsExpression(
+    propAccessExpr: ts.PropertyAccessExpression,
+    asExpr: ts.AsExpression
+  ): void {
+    const asExprTypeNode = asExpr.type;
+    if (asExprTypeNode && ts.isTypeReferenceNode(asExprTypeNode)) {
+      const typeName = asExprTypeNode.typeName;
+      const sym = this.tsTypeChecker.getSymbolAtLocation(typeName);
+      const decl = sym?.declarations?.[0];
+      if (decl && (ts.isClassDeclaration(decl) || ts.isInterfaceDeclaration(decl))) {
+        this.checkTsLikeCatchTypeHasPropInType(propAccessExpr, decl);
+      } else if (decl && ts.isImportSpecifier(decl)) {
+        const symbol = this.getSymbolByImportSpecifier(decl);
+        const declaration = symbol?.declarations?.[0];
+        if (declaration && (ts.isClassDeclaration(declaration) || ts.isInterfaceDeclaration(declaration))) {
+          this.checkTsLikeCatchTypeHasPropInType(propAccessExpr, declaration);
+        }
+      }
+    }
+  }
+
+  private isErrorOrInheritError(declaration: ts.ClassDeclaration | ts.InterfaceDeclaration): boolean {
+    const type = this.tsTypeChecker.getTypeAtLocation(declaration);
+    return this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStdErrorType);
+  }
+
+  private isValidErrorPropAccess(
+    propertyAccessExpr: ts.PropertyAccessExpression,
+    decl: ts.ClassDeclaration | ts.InterfaceDeclaration | undefined
+  ): boolean {
+    void this;
+    let containsMember = false;
+    decl?.members.forEach((member) => {
+      if (member.name?.getText() === propertyAccessExpr.name.getText()) {
+        containsMember = true;
+      }
+    });
+    return containsMember || ERROR_PROP_LIST.has(propertyAccessExpr.name.getText());
+  }
+
+  private getSymbolByImportSpecifier(declaration: ts.ImportSpecifier): ts.Symbol | undefined {
+    if (!declaration?.parent?.parent) {
+      return undefined;
+    }
+    if (!ts.isImportClause(declaration.parent.parent)) {
+      return undefined;
+    }
+    const importClause = declaration.parent.parent;
+    const namedBindings = importClause.namedBindings;
+    let symbol: ts.Symbol | undefined;
+    if (namedBindings) {
+      if (ts.isNamedImports(namedBindings) && namedBindings.elements?.length > 0) {
+        for (let i = 0; i < namedBindings.elements.length; i++) {
+          if (namedBindings.elements[i].name.getText() === declaration.name.getText()) {
+            symbol = this.tsUtils.trueSymbolAtLocation(namedBindings.elements[i].name);
+            break;
+          }
+        }
+      } else if (ts.isNamespaceImport(namedBindings)) {
+        symbol = this.tsUtils.trueSymbolAtLocation(namedBindings.name);
+      }
+    }
+    return symbol;
   }
 
   private handleClassExtends(tsClassDecl: ts.ClassDeclaration): void {
