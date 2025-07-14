@@ -31,6 +31,7 @@
 #include "public/es2panda_lib.h"
 #include "public/public.h"
 #include "../get_class_property_info.h"
+#include "lsp/include/services/text_change/text_change_context.h"
 
 namespace ark::es2panda::lsp {
 
