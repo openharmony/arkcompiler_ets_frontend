@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,9 +13,10 @@
  * limitations under the License.
  */
 
-function foo(a : int = 10, /* @@ label */b : int, c : int = 15) : int
-{
-    return a + b;
-}
 
-/* @@@ label Error SyntaxError: A required parameter cannot follow an optional parameter. */
+// ETSNOLINT(definitely-not-a-real-etsnolint-argument)
+// ETSNOLINT(@)
+function main() {}
+/* @@? 1:3 Error SyntaxError: Invalid argument for ETSNOLINT! */
+/* @@? 1:3 Error SyntaxError: Unexpected character for ETSNOLINT argument! [VALID ONLY: a-z, '-']. */
+/* @@? 1:3 Error SyntaxError: Invalid argument for ETSNOLINT! */
