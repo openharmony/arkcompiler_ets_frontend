@@ -8,3 +8,6 @@ test262/data/other_tests/language/statements/class/elements/after-same-line-stat
 
 #27167
 test262/data/other_tests/built-ins/RegExp/property-escapes/generated/Script_-_Tangsa.js
+
+#27743
+test262/data/other_tests/built-ins/RegExp/property-escapes/generated/Script_Extensions_-_Khitan_Small_Script.js
