@@ -19,6 +19,7 @@
 #include "ir/ets/etsTuple.h"
 #include "ir/ets/etsUnionType.h"
 #include "ir/statements/annotationDeclaration.h"
+#include "ir/brokenTypeNode.h"
 
 namespace ark::es2panda::parser {
 
@@ -195,6 +196,8 @@ ir::AstNode *ETSParser::ParseAnnotationProperty(ir::Identifier *fieldName, ir::M
     if (typeAnnotation == nullptr && (memberModifiers & ir::ModifierFlags::ANNOTATION_DECLARATION) != 0 &&
         !fieldName->IsErrorPlaceHolder()) {
         LogError(diagnostic::MISSING_TYPE_ANNOTATION, {fieldName->Name().Mutf8()}, Lexer()->GetToken().Start());
+        typeAnnotation = Allocator()->New<ir::BrokenTypeNode>(Allocator());
+        typeAnnotation->SetRange({endLoc, endLoc});
     }
 
     if (typeAnnotation != nullptr) {
