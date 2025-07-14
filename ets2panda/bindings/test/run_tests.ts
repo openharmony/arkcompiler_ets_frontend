@@ -56,10 +56,7 @@ function getExpectedResult(filePath: string): any {
 // CC-OFFNXT(no_explicit_any) project code style
 function getFilesByDir(dirPath: string): string[] {
   try {
-    return fs.readdirSync(dirPath)
-      .filter(file =>
-        fs.statSync(path.join(dirPath, file)).isFile()
-      );
+    return fs.readdirSync(dirPath).filter((file) => fs.statSync(path.join(dirPath, file)).isFile());
   } catch (err) {
     console.error(`Failed to load files from ${dirPath}: ${err}`);
     return [];
@@ -235,7 +232,7 @@ function compareGetCompletionResult(testName: string, actual: unknown, expected:
 
 function compareDeclFileResult(testName: string, declgenOutDir: string, expected: unknown): boolean {
   let fileList: string[] = getFilesByDir(declgenOutDir);
-  const actualEntries = fileList.filter(file => file.endsWith('.d.ets'));
+  const actualEntries = fileList.filter((file) => file.endsWith('.d.ets'));
   const expectedEntries = expected as string[];
   return compareResultsHelper(testName, normalizeData(actualEntries), expectedEntries, {
     subMatch: true
@@ -302,7 +299,13 @@ function compareGetDefinitionResult(testName: string, actual: any, expected: Rec
 }
 
 // CC-OFFNXT(no_explicit_any) project code style
-function compareResults(testName: string, index: string, actual: unknown, expected: unknown, declgenOutDir: string = ''): boolean {
+function compareResults(
+  testName: string,
+  index: string,
+  actual: unknown,
+  expected: unknown,
+  declgenOutDir: string = ''
+): boolean {
   const name = `${testName}:${index}`;
   if (testName === 'getDefinitionAtPosition') {
     return compareGetDefinitionResult(name, actual, expected as Record<string, string | number>);
