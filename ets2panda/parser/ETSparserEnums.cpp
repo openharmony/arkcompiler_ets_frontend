@@ -148,9 +148,6 @@ ir::Statement *ETSParser::ParsePotentialConstEnum(VariableParsingFlags flags)
     return ParseEnumDeclaration(false);
 }
 
-// NOLINTBEGIN(cert-err58-cpp)
-// NOLINTEND(cert-err58-cpp)
-
 ir::TSEnumDeclaration *ETSParser::ParseEnumMembers(ir::Identifier *const key, const lexer::SourcePosition &enumStart,
                                                    const bool isConst, const bool isStatic)
 {

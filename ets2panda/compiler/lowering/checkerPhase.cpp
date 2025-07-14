@@ -48,8 +48,16 @@ bool CheckerPhase::Perform(public_lib::Context *ctx, [[maybe_unused]] parser::Pr
     for (auto stmt : program->Ast()->Statements()) {
         stmt->AddAstNodeFlags(ir::AstNodeFlags::NOCLEANUP);
     }
-    auto checkerResult = ctx->GetChecker()->StartChecker(ctx->parserProgram->VarBinder(), *ctx->config->options);
-    return program->Extension() == ScriptExtension::ETS ? true : checkerResult;
-}
 
+    if (program->Extension() == ScriptExtension::ETS) {
+        try {
+            ctx->GetChecker()->StartChecker(ctx->parserProgram->VarBinder(), *ctx->config->options);
+        } catch (std::exception &e) {
+            // nothing to do - just to avoid program crash
+        }
+        return true;
+    }
+
+    return ctx->GetChecker()->StartChecker(ctx->parserProgram->VarBinder(), *ctx->config->options);
+}
 }  // namespace ark::es2panda::compiler

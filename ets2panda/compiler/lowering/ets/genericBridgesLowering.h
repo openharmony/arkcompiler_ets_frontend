@@ -42,7 +42,7 @@ private:
                            ArenaVector<checker::ETSObjectType *> const &interfaces) const;
 
     Substitutions GetSubstitutions(checker::ETSObjectType const *const objectType,
-                                   ArenaVector<checker::Type *> const &typeParameters) const noexcept;
+                                   ArenaVector<checker::Type *> const &typeParameters) const;
 
     void CreateGenericBridges(ir::ClassDefinition const *classDefinition, Substitutions &substitutions,
                               ArenaVector<ir::AstNode *> const &items) const;

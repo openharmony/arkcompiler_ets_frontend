@@ -773,7 +773,7 @@ void ETSChecker::HandleUpdatedCallExpressionNode(ir::CallExpression *callExpr)
     VarBinder()->AsETSBinder()->HandleCustomNodes(callExpr);
 }
 
-Type *ETSChecker::SelectGlobalIntegerTypeForNumeric(Type *type) const noexcept
+Type *ETSChecker::SelectGlobalIntegerTypeForNumeric(Type *type) const
 {
     if (type->IsETSObjectType()) {
         auto const *objectType = type->AsETSObjectType();

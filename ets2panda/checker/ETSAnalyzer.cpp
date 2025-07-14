@@ -27,7 +27,7 @@
 #include "checker/types/ets/etsAsyncFuncReturnType.h"
 #include "types/ts/nullType.h"
 #include "types/type.h"
-#include "types/typeFlag.h"
+#include "checker/types/typeError.h"
 #include "util/es2pandaMacros.h"
 
 #include <unordered_set>
@@ -554,9 +554,8 @@ static checker::Type *CheckInstantiatedNewType(ETSChecker *checker, ir::ETSNewCl
 {
     checker::Type *res = expr->GetTypeRef()->Check(checker);
     auto calleeType = res->MaybeBaseTypeOfGradualType();
-    if (calleeType->IsTypeError()) {
-        return checker->InvalidateType(expr->GetTypeRef());
-    }
+    FORWARD_TYPE_ERROR(checker, calleeType, expr->GetTypeRef());
+
     if (calleeType->IsETSUnionType()) {
         return checker->TypeError(expr->GetTypeRef(), diagnostic::UNION_NONCONSTRUCTIBLE, expr->Start());
     }
@@ -592,11 +591,11 @@ checker::Type *ETSAnalyzer::Check(ir::ETSNewClassInstanceExpression *expr) const
     if (expr->TsType() != nullptr) {
         return expr->TsType();
     }
+
     ETSChecker *checker = GetETSChecker();
     auto *calleeType = CheckInstantiatedNewType(checker, expr);
-    if (calleeType->IsTypeError()) {
-        return checker->InvalidateType(expr);
-    }
+    FORWARD_TYPE_ERROR(checker, calleeType, expr);
+
     auto *calleeObj = calleeType->MaybeBaseTypeOfGradualType()->AsETSObjectType();
     expr->SetTsType(calleeType);
 
@@ -1683,16 +1682,14 @@ checker::Type *ETSAnalyzer::Check(ir::CallExpression *expr) const
     CheckCallee(checker, expr);
 
     checker::TypeStackElement tse(checker, expr, {{diagnostic::CYCLIC_CALLEE, {}}}, expr->Start());
-    if (tse.HasTypeError()) {
-        expr->SetTsType(checker->GlobalTypeError());
-        return checker->GlobalTypeError();
-    }
+    ERROR_SANITY_CHECK(checker, !tse.HasTypeError(), return expr->SetTsType(checker->GlobalTypeError()));
 
     checker::Type *const returnType = GetCallExpressionReturnType(expr, calleeType);
     expr->SetTsType(returnType);
     if (returnType->IsTypeError()) {
         return returnType;
     }
+
     if (calleeType->IsETSArrowType()) {
         expr->SetUncheckedType(checker->GuaranteedTypeForUncheckedCast(
             checker->GlobalETSAnyType(), checker->MaybeBoxType(expr->Signature()->ReturnType())));
@@ -1703,11 +1700,6 @@ checker::Type *ETSAnalyzer::Check(ir::CallExpression *expr) const
     if (expr->UncheckedType() != nullptr) {
         ES2PANDA_ASSERT(expr->UncheckedType()->IsETSReferenceType());
         checker->ComputeApparentType(returnType);
-    }
-
-    if (returnType->IsTypeError()) {
-        expr->SetTsType(returnType);
-        return expr->TsType();
     }
 
     CheckOverloadCall(checker, expr);
@@ -2766,9 +2758,7 @@ checker::Type *ETSAnalyzer::Check(ir::UpdateExpression *expr) const
     }
 
     checker::Type *operandType = expr->argument_->Check(checker);
-    if (operandType->IsTypeError()) {
-        return checker->InvalidateType(expr);
-    }
+    FORWARD_TYPE_ERROR(checker, operandType, expr);
 
     if (expr->Argument()->IsIdentifier()) {
         checker->ValidateUnaryOperatorOperand(expr->Argument()->AsIdentifier()->Variable(), expr);
@@ -3719,17 +3709,12 @@ checker::Type *ETSAnalyzer::Check(ir::TSAsExpression *expr) const
 
     checker->CheckAnnotations(expr->TypeAnnotation()->Annotations());
     auto *const targetType = expr->TypeAnnotation()->AsTypeNode()->GetType(checker);
-    ES2PANDA_ASSERT(targetType != nullptr);
-    if (targetType->IsTypeError()) {
-        return checker->InvalidateType(expr);
-    }
+    FORWARD_TYPE_ERROR(checker, targetType, expr);
 
     expr->Expr()->SetPreferredType(targetType);
 
     auto const sourceType = expr->Expr()->Check(checker);
-    if (sourceType->IsTypeError()) {
-        return checker->InvalidateType(expr);
-    }
+    FORWARD_TYPE_ERROR(checker, sourceType, expr);
 
     if (sourceType->DefinitelyETSNullish() && !targetType->PossiblyETSNullish()) {
         return expr->SetTsType(checker->TypeError(expr, diagnostic::NULLISH_CAST_TO_NONNULLISH, expr->Start()));
@@ -3775,9 +3760,7 @@ checker::Type *ETSAnalyzer::Check(ir::TSInterfaceDeclaration *st) const
     auto *stmtType = checker->BuildBasicInterfaceProperties(st);
     ES2PANDA_ASSERT(stmtType != nullptr);
 
-    if (stmtType->IsTypeError()) {
-        return st->SetTsType(stmtType);
-    }
+    FORWARD_TYPE_ERROR(checker, stmtType, st);
 
     auto *interfaceType = stmtType->IsGradualType() ? stmtType->AsGradualType()->GetBaseType()->AsETSObjectType()
                                                     : stmtType->AsETSObjectType();

@@ -15,6 +15,7 @@
 
 #include "ETSAnalyzerHelpers.h"
 #include "checker/types/ets/etsAsyncFuncReturnType.h"
+#include "checker/types/typeError.h"
 
 namespace ark::es2panda::checker {
 
@@ -507,10 +508,7 @@ ArenaVector<checker::Signature *> GetUnionTypeSignatures(ETSChecker *checker, ch
 
 void ProcessExclamationMark(ETSChecker *checker, ir::UnaryExpression *expr, checker::Type *operandType)
 {
-    if (operandType == nullptr || operandType->IsTypeError()) {
-        expr->SetTsType(checker->GlobalTypeError());
-        return;
-    }
+    FORWARD_VALUE_ON_TYPE_ERROR(checker, operandType, expr, EMPTY_VALUE);
 
     expr->SetTsType(checker->GlobalETSBooleanBuiltinType());
 }

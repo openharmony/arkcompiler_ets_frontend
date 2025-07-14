@@ -264,7 +264,7 @@ void GenericBridgesPhase::CreateGenericBridges(ir::ClassDefinition const *const 
 }
 
 GenericBridgesPhase::Substitutions GenericBridgesPhase::GetSubstitutions(
-    checker::ETSObjectType const *const objectType, ArenaVector<checker::Type *> const &typeParameters) const noexcept
+    checker::ETSObjectType const *const objectType, ArenaVector<checker::Type *> const &typeParameters) const
 {
     auto const &typeArguments = objectType->TypeArguments();
     auto const parameterNumber = typeParameters.size();
