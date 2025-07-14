@@ -801,8 +801,13 @@ void CheckAllConstPropertyInitialized(checker::ETSChecker *checker, ir::ETSModul
             continue;
         }
 
-        if (prop->AsClassProperty()->Key()->Variable()->HasFlag(varbinder::VariableFlags::INIT_IN_STATIC_BLOCK) &&
-            !prop->AsClassProperty()->Key()->Variable()->HasFlag(varbinder::VariableFlags::INITIALIZED)) {
+        auto *classProp = prop->AsClassProperty();
+        if (classProp->Key()->Variable() == nullptr) {
+            continue;
+        }
+
+        if (classProp->Key()->Variable()->HasFlag(varbinder::VariableFlags::INIT_IN_STATIC_BLOCK) &&
+            !classProp->Key()->Variable()->HasFlag(varbinder::VariableFlags::INITIALIZED)) {
             checker->LogError(diagnostic::MISSING_INIT_FOR_CONST_PACKAGE_PROP, {}, prop->Start());
         }
     }
