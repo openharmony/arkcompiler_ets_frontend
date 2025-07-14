@@ -12,15 +12,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-class A {}
-export let a = new A()
-export let b = new A()
-export let c = {
-  num1:1,
-  num2:2,
+import {C} from './func_inferred_type_args_ts'
+import B from './func_inferred_type_args_ts'
+export default class A2 {
+  id?: string;
+  map?: Map<string, C>;
 }
-export let d = {
-  num1: 1,
-  num2: 2,
+export class A3 {
+  id?: string;
+  map?: Map<string, B>;
 }

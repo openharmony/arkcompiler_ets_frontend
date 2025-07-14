@@ -61,7 +61,8 @@ import {
   LENGTH,
   IS_INSTANCE_OF
 } from '../utils/consts/InteropAPI';
-import { ESLIB_SHAREDARRAYBUFFER } from '../utils/consts/ConcurrentAPI';
+import path from 'node:path';
+import { isStdLibrarySymbol } from '../utils/functions/IsStdLibrary';
 
 const UNDEFINED_NAME = 'undefined';
 
@@ -981,11 +982,11 @@ export class Autofixer {
 
     const propertyChain: string[] = [propertyName];
     let current: ts.Node = node;
-    
+
     while (current.parent && ts.isElementAccessExpression(current.parent)) {
       const parentArg = current.parent.argumentExpression;
       if (ts.isStringLiteral(parentArg)) {
-        propertyChain.push(parentArg.text); 
+        propertyChain.push(parentArg.text);
       }
       current = current.parent;
     }
@@ -2468,17 +2469,15 @@ export class Autofixer {
         const prev = allSpecifiers[specIndex - 1];
         start = prev.getEnd();
       }
-      fixes.push({
-        start: start,
-        end: end,
-        replacementText: ''
-      });
+      fixes.push({ start: start, end: end, replacementText: '' });
     }
 
     const alias = specToRemove.name;
-    const original = specToRemove.propertyName ?? specToRemove.name;
-    const replacements = this.replaceIdentifierUsages(alias, original.getText());
-    fixes.push(...replacements);
+    const original = specToRemove.propertyName;
+    if (original) {
+      const replacements = this.replaceIdentifierUsages(alias, original.getText());
+      fixes.push(...replacements);
+    }
     return fixes;
   }
 
@@ -3473,6 +3472,119 @@ export class Autofixer {
     return [{ start: expression.getStart(), end: expression.getEnd(), replacementText }];
   }
 
+  /**
+   * Convert a JS-imported `for...of` over an array into an indexed `for` loop.
+   *
+   * @param forOf - The `ForOfStatement` node to transform.
+   */
+  applyForOfJsArrayFix(forOf: ts.ForOfStatement): Autofix[] | undefined {
+    const loopDecl = (forOf.initializer as ts.VariableDeclarationList).declarations[0];
+    const elementName = (loopDecl.name as ts.Identifier).text;
+
+    const indexName = TsUtils.generateUniqueName(this.tmpVariableNameGenerator, forOf.getSourceFile()) ?? '_i';
+
+    const fixes: Autofix[] = [];
+    fixes.push(this.buildForOfHeaderFix(forOf, indexName));
+    fixes.push(...this.buildForOfBodyFixes(forOf, elementName, indexName));
+    return fixes.length > 0 ? fixes : undefined;
+  }
+
+  /**
+   * Build an Autofix for replacing the for-of loop header.
+   */
+  private buildForOfHeaderFix(forOf: ts.ForOfStatement, indexName: string): Autofix {
+    const arrText = forOf.expression.getText();
+
+    const initializer = ts.factory.createVariableDeclarationList(
+      [
+        ts.factory.createVariableDeclaration(
+          ts.factory.createIdentifier(indexName),
+          undefined,
+          undefined,
+          ts.factory.createNumericLiteral('0')
+        )
+      ],
+      ts.NodeFlags.Let
+    );
+
+    // condition: i < arr.getProperty('length').toNumber()
+    const condition = ts.factory.createBinaryExpression(
+      ts.factory.createIdentifier(indexName),
+      ts.SyntaxKind.LessThanToken,
+      ts.factory.createCallExpression(
+        ts.factory.createPropertyAccessExpression(
+          ts.factory.createCallExpression(
+            ts.factory.createPropertyAccessExpression(
+              ts.factory.createIdentifier(arrText),
+              ts.factory.createIdentifier(GET_PROPERTY)
+            ),
+            undefined,
+            [ts.factory.createStringLiteral(LENGTH, true)]
+          ),
+          ts.factory.createIdentifier('toNumber')
+        ),
+        undefined,
+        []
+      )
+    );
+
+    const incrementor = ts.factory.createPrefixUnaryExpression(
+      ts.SyntaxKind.PlusPlusToken,
+      ts.factory.createIdentifier(indexName)
+    );
+
+    return this.createReplacementTextForOfHeader(forOf, initializer, condition, incrementor);
+  }
+
+  private createReplacementTextForOfHeader(
+    forOf: ts.ForOfStatement,
+    initializer: ts.VariableDeclarationList,
+    condition: ts.BinaryExpression,
+    incrementor: ts.PrefixUnaryExpression
+  ): Autofix {
+    // Render just the "(initializer; condition; incrementor)" text:
+    const replacementText = [
+      this.printer.printNode(ts.EmitHint.Unspecified, initializer, forOf.getSourceFile()),
+      '; ',
+      this.printer.printNode(ts.EmitHint.Unspecified, condition, forOf.getSourceFile()),
+      '; ',
+      this.printer.printNode(ts.EmitHint.Unspecified, incrementor, forOf.getSourceFile())
+    ].join('');
+
+    return { start: forOf.initializer.getStart(), end: forOf.expression.getEnd(), replacementText };
+  }
+
+  /**
+   * Build fixes for replacing loop-variable references inside the for-of body.
+   */
+  private buildForOfBodyFixes(forOf: ts.ForOfStatement, elementName: string, indexName: string): Autofix[] {
+    const fixes: Autofix[] = [];
+    const arrExpr = forOf.expression;
+
+    const visit = (node: ts.Node): void => {
+      if (ts.isIdentifier(node) && node.text === elementName) {
+        const callExpr = ts.factory.createCallExpression(
+          ts.factory.createPropertyAccessExpression(
+            ts.factory.createIdentifier(arrExpr.getText()),
+            ts.factory.createIdentifier(GET_PROPERTY)
+          ),
+          undefined,
+          [ts.factory.createIdentifier(indexName)]
+        );
+
+        // Print and append proper conversion suffix
+        const printed = this.printer.printNode(ts.EmitHint.Unspecified, callExpr, forOf.getSourceFile());
+        const replacementText = printed + this.utils.findTypeOfNodeForConversion(node);
+
+        fixes.push({ start: node.getStart(), end: node.getEnd(), replacementText });
+      }
+      ts.forEachChild(node, visit);
+    };
+
+    visit(forOf.statement);
+    return fixes;
+  }
+
   fixInteropInstantiateExpression(
     express: ts.NewExpression,
     args: ts.NodeArray<ts.Expression> | undefined
@@ -4056,114 +4168,26 @@ export class Autofixer {
     return [{ replacementText, start, end }];
   }
 
-  /**
-   * Replace each loop‐variable reference (e.g. `element`) with
-   * `array.getProperty(i)` plus appropriate conversion.
-   *
-   * @param identifier The Identifier node of the loop variable usage.
-   * @param arrayName  The name of the array being iterated.
-   */
-  fixInteropArrayElementUsage(identifier: ts.Identifier, arrayName: string): Autofix {
-    // arr.getProperty(i)
-    const callExpr = ts.factory.createCallExpression(
-      ts.factory.createPropertyAccessExpression(
-        ts.factory.createIdentifier(arrayName),
-        ts.factory.createIdentifier(GET_PROPERTY)
-      ),
-      undefined,
-      [ts.factory.createIdentifier('i')]
-    );
-
-    // Print and append proper conversion suffix
-    const printed = this.printer.printNode(ts.EmitHint.Unspecified, callExpr, identifier.getSourceFile());
-    const replacementText = printed + this.utils.findTypeOfNodeForConversion(identifier);
-
-    return { replacementText, start: identifier.getStart(), end: identifier.getEnd() };
-  }
-
-  fixSharedArrayBufferConstructor(node: ts.NewExpression): Autofix[] | undefined {
-    void this;
-
-    // Ensure it's a constructor call to SharedArrayBuffer
-    if (!ts.isIdentifier(node.expression) || node.expression.text !== ESLIB_SHAREDARRAYBUFFER) {
+  fixConcurrencyLock(locksProp: ts.PropertyAccessExpression): Autofix[] | undefined {
+    // 1) Ensure the next property is `.AsyncLock`
+    const asyncLockProp = locksProp.parent;
+    if (!ts.isPropertyAccessExpression(asyncLockProp)) {
       return undefined;
     }
 
-    // Construct replacement
-    const replacementText = 'ArrayBuffer';
-
-    return [{ replacementText, start: node.expression.getStart(), end: node.expression.getEnd() }];
-  }
-
-  fixSharedArrayBufferTypeReference(node: ts.TypeReferenceNode): Autofix[] | undefined {
-    void this;
-
-    if (!ts.isIdentifier(node.typeName) || node.typeName.text !== ESLIB_SHAREDARRAYBUFFER) {
+    // 2) Find the enclosing `new` expression
+    const newExpr = asyncLockProp.parent;
+    if (!ts.isNewExpression(newExpr)) {
       return undefined;
     }
 
-    const replacementText = 'ArrayBuffer';
+    const className = asyncLockProp.name.getText();
+    const replacement = ts.factory.createNewExpression(ts.factory.createIdentifier(className), undefined, []);
+    const replacementText = this.printer.printNode(ts.EmitHint.Unspecified, replacement, newExpr.getSourceFile());
 
-    return [{ replacementText, start: node.getStart(), end: node.getEnd() }];
+    return [{ start: newExpr.getStart(), end: newExpr.getEnd(), replacementText }];
   }
-
-  /**
-   * Converts a `for...of` over an interop array into
-   * an index-based `for` loop using `getProperty("length")`.
-   *
-   * @param node The `ForOfStatement` node to fix.
-   * @returns A single Autofix for the loop header replacement.
-   */
-  fixInteropArrayForOf(node: ts.ForOfStatement): Autofix {
-    const iterableName = node.expression.getText();
-
-    const initializer = ts.factory.createVariableDeclarationList(
-      [
-        ts.factory.createVariableDeclaration(
-          ts.factory.createIdentifier('i'),
-          undefined,
-          undefined,
-          ts.factory.createNumericLiteral('0')
-        )
-      ],
-      ts.NodeFlags.Let
-    );
-
-    const lengthAccess = ts.factory.createCallExpression(
-      ts.factory.createPropertyAccessExpression(
-        ts.factory.createIdentifier(iterableName),
-        ts.factory.createIdentifier(GET_PROPERTY)
-      ),
-      undefined,
-      [ts.factory.createStringLiteral(LENGTH)]
-    );
-    const condition = ts.factory.createBinaryExpression(
-      ts.factory.createIdentifier('i'),
-      ts.SyntaxKind.LessThanToken,
-      lengthAccess
-    );
-
-    const incrementor = ts.factory.createPrefixUnaryExpression(
-      ts.SyntaxKind.PlusPlusToken,
-      ts.factory.createIdentifier('i')
-    );
-
-    // Render just the "(initializer; condition; incrementor)" text:
-    const headerText = [
-      this.printer.printNode(ts.EmitHint.Unspecified, initializer, node.getSourceFile()),
-      '; ',
-      this.printer.printNode(ts.EmitHint.Unspecified, condition, node.getSourceFile()),
-      '; ',
-      this.printer.printNode(ts.EmitHint.Unspecified, incrementor, node.getSourceFile())
-    ].join('');
-
-    // Only replace from the start of the initializer to the end of the 'of' expression
-    const start = node.initializer.getStart();
-    const end = node.expression.getEnd();
-
-    return { start, end, replacementText: headerText };
-  }
-
+  
   fixAppStorageCallExpression(callExpr: ts.CallExpression): Autofix[] | undefined {
     const varDecl = Autofixer.findParentVariableDeclaration(callExpr);
     if (!varDecl || varDecl.type) {
@@ -4642,7 +4666,7 @@ export class Autofixer {
 
   fixImportClause(tsImportClause: ts.ImportClause): Autofix[] {
     void this;
-    const replacementText = tsImportClause.getText().replace(/\blazy\b\s*/, "");
+    const replacementText = tsImportClause.getText().replace(/\blazy\b\s*/, '');
     return [{ start: tsImportClause.getStart(), end: tsImportClause.getEnd(), replacementText }];
   }
 
@@ -4657,6 +4681,21 @@ export class Autofixer {
     return undefined;
   }
 
+  createInteropPropertyAccess(exp: ts.Expression): string {
+    let text: string;
+    if (!ts.isPropertyAccessExpression(exp)) {
+      text = exp.getText();
+      return text;
+    }
+    const statements = ts.factory.createCallExpression(
+      ts.factory.createPropertyAccessExpression(exp.expression, ts.factory.createIdentifier(GET_PROPERTY)),
+      undefined,
+      [ts.factory.createStringLiteral(exp.name.getText())]
+    );
+    text = this.printer.printNode(ts.EmitHint.Unspecified, statements, exp.getSourceFile());
+    return text;
+  }
+
   replaceInteropEqualityOperator(
     tsBinaryExpr: ts.BinaryExpression,
     binaryOperator: ts.BinaryOperator
@@ -4667,14 +4706,20 @@ export class Autofixer {
     }
 
     const tsLhsExpr = tsBinaryExpr.left;
+    const left = this.createInteropPropertyAccess(tsLhsExpr);
     const tsRhsExpr = tsBinaryExpr.right;
+    const right = this.createInteropPropertyAccess(tsRhsExpr);
+    if (!left || !right) {
+      return undefined;
+    }
+
     const callExpression = ts.factory.createCallExpression(
       ts.factory.createPropertyAccessExpression(
-        ts.factory.createIdentifier(tsLhsExpr.getText()),
+        ts.factory.createIdentifier(left),
         ts.factory.createIdentifier(info.functionName)
       ),
       undefined,
-      [ts.factory.createIdentifier(tsRhsExpr.getText())]
+      [ts.factory.createIdentifier(right)]
     );
 
     let text = this.printer.printNode(ts.EmitHint.Unspecified, callExpression, tsBinaryExpr.getSourceFile());
@@ -4731,13 +4776,13 @@ export class Autofixer {
       `${expr.getText()}${callExpr.questionDotToken.getText()}unsafeCall` :
       `${expr.getText()}.unsafeCall`;
 
-    return [
-      {
-        start: expr.getStart(),
-        end: hasOptionalChain ? callExpr.questionDotToken.getEnd() : expr.getEnd(),
-        replacementText
-      }
-    ];
+    return [{
+      start: expr.getStart(),
+      end: hasOptionalChain ?
+        callExpr.questionDotToken.getEnd() :
+        expr.getEnd(),
+      replacementText
+    }];
   }
 
   private static createBuiltInTypeInitializer(type: ts.TypeReferenceNode): ts.Expression | undefined {
@@ -4906,12 +4951,10 @@ export class Autofixer {
     }
 
     const srcFile = node.getSourceFile();
-    const typeArgsText = `<${typeNode.typeArguments?.
-      map((arg) => {
-        return this.nonCommentPrinter.printNode(ts.EmitHint.Unspecified, arg, srcFile);
-      }).
-      join(', ')}>`;
-    // Insert the type arguments immediately after the constructor name
+    const typeArgsText = this.printGenericCallTypeArgs(srcFile, typeNode.typeArguments);
+    if (!typeArgsText) {
+      return undefined;
+    }
     const insertPos = node.expression.getEnd();
     return [{ start: insertPos, end: insertPos, replacementText: typeArgsText }];
   }
@@ -4922,7 +4965,10 @@ export class Autofixer {
   ): Autofix[] | undefined {
     const elementTypeNode = arrayTypeNode.elementType;
     const srcFile = node.getSourceFile();
-    const typeArgsText = `<${this.nonCommentPrinter.printNode(ts.EmitHint.Unspecified, elementTypeNode, srcFile)}>`;
+    const typeArgsText = this.printGenericCallTypeArgs(srcFile, elementTypeNode);
+    if (!typeArgsText) {
+      return undefined;
+    }
     const insertPos = node.expression.getEnd();
     return [{ start: insertPos, end: insertPos, replacementText: typeArgsText }];
   }
@@ -4939,17 +4985,76 @@ export class Autofixer {
       const matchingType = matchingTypes[0];
       if (matchingType.typeArguments) {
         const srcFile = node.getSourceFile();
-        const typeArgsText = `<${matchingType.typeArguments.
-          map((arg) => {
-            return this.nonCommentPrinter.printNode(ts.EmitHint.Unspecified, arg, srcFile);
-          }).
-          join(', ')}>`;
-
+        const typeArgsText = this.printGenericCallTypeArgs(srcFile, matchingType.typeArguments);
+        if (!typeArgsText) {
+          return undefined;
+        }
         const insertPos = node.expression.getEnd();
         return [{ start: insertPos, end: insertPos, replacementText: typeArgsText }];
       }
     }
     return undefined;
+  }
+
+  private printGenericCallTypeArgs(
+    sourceFile: ts.SourceFile,
+    typeArg: ts.TypeNode | readonly ts.Node[] | undefined
+  ): string | undefined {
+    if (Array.isArray(typeArg)) {
+      if (
+        typeArg.some((arg) => {
+          return !this.isTypeArgumentAccessible(sourceFile, arg as ts.TypeNode);
+        })
+      ) {
+        return undefined;
+      }
+      return `<${typeArg.
+        map((arg) => {
+          return this.nonCommentPrinter.printNode(ts.EmitHint.Unspecified, arg, sourceFile);
+        }).
+        join(', ')}>`;
+    }
+    if (!typeArg || !this.isTypeArgumentAccessible(sourceFile, typeArg as ts.TypeNode)) {
+      return undefined;
+    }
+
+    return `<${this.nonCommentPrinter.printNode(ts.EmitHint.Unspecified, typeArg as ts.TypeNode, sourceFile)}>`;
+  }
+
+  private isTypeArgumentAccessible(sourceFile: ts.SourceFile, arg: ts.TypeNode): boolean {
+    const type = this.typeChecker.getTypeFromTypeNode(arg);
+    const symbol = type.symbol || type.aliasSymbol;
+    const decl = TsUtils.getDeclaration(symbol);
+    const fileName = decl?.getSourceFile().fileName;
+    const isStdLib = isStdLibrarySymbol(symbol);
+    const isMatchPathOnSourceAndDecl = decl && path.normalize(sourceFile.fileName) === path.normalize(fileName!);
+    if (!decl || isMatchPathOnSourceAndDecl || isStdLib) {
+      return true;
+    }
+    let result = false;
+    ts.forEachChild(sourceFile, (node) => {
+      if (ts.isImportDeclaration(node)) {
+        if (node.importClause?.namedBindings && ts.isNamedImports(node.importClause.namedBindings)) {
+          node.importClause.namedBindings.elements.some((element) => {
+            result = this.isTypeArgImport(arg, element.name, symbol);
+            return result;
+          });
+        }
+        if (node.importClause?.name) {
+          result = this.isTypeArgImport(arg, node.importClause.name, symbol);
+        }
+      }
+      return result;
+    });
+    return result;
+  }
+
+  private isTypeArgImport(arg: ts.Node, importName: ts.Identifier, typeArgSym: ts.Symbol): boolean {
+    if (arg.getText() !== importName.text) {
+      return false;
+    }
+    const importSym = this.utils.trueSymbolAtLocation(importName);
+    return importSym === typeArgSym;
   }
 
   private generateGenericTypeArgumentsAutofix(
@@ -4970,11 +5075,10 @@ export class Autofixer {
     if (hasAnyType) {
       return undefined;
     }
-    const typeArgsText = `<${typeArgs?.
-      map((arg) => {
-        return this.nonCommentPrinter.printNode(ts.EmitHint.Unspecified, arg, srcFile);
-      }).
-      join(', ')}>`;
+    const typeArgsText = this.printGenericCallTypeArgs(srcFile, typeArgs);
+    if (!typeArgsText) {
+      return undefined;
+    }
     return [{ start: identifier.getEnd(), end: identifier.getEnd(), replacementText: typeArgsText }];
   }
 
@@ -5152,8 +5256,8 @@ export class Autofixer {
 
   fixNumericPublicStatic(node: ts.PropertyDeclaration): Autofix[] | undefined {
     if (!node?.name || node.type) {
-      return undefined
-    };
+      return undefined;
+    }
     const typeNode = ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword);
     const modifiers = ts.getModifiers(node) || [];
     const updatedProperty = ts.factory.updatePropertyDeclaration(
@@ -5166,11 +5270,13 @@ export class Autofixer {
     );
 
     const newText = this.printer.printNode(ts.EmitHint.Unspecified, updatedProperty, node.getSourceFile());
-    return [{
-      start: node.getStart(),
-      end: node.getEnd(),
-      replacementText: newText
-    }];
+    return [
+      {
+        start: node.getStart(),
+        end: node.getEnd(),
+        replacementText: newText
+      }
+    ];
   }
 
   fixRepeat(stmt: ts.ExpressionStatement): Autofix[] {

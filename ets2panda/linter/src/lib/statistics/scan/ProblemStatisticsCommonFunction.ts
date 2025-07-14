@@ -119,7 +119,7 @@ export function generateReportFileSync(reportName: string, reportData: any, repo
     fs.mkdirSync(path.dirname(reportFilePath), { recursive: true });
     fs.writeFileSync(reportFilePath, JSON.stringify(reportData, null, 2));
   } catch (error) {
-      Logger.error(`Error generating report file:${error}`);
+    Logger.error(`Error generating report file:${error}`);
   }
 }
 

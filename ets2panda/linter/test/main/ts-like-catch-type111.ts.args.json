@@ -13,26 +13,5 @@
         "See the License for the specific language governing permissions and",
         "limitations under the License."
     ],
-    "result": [
-        {
-            "line": 18,
-            "column": 28,
-            "endLine": 18,
-            "endColumn": 33,
-            "problem": "LimitedStdLibNoImportConcurrency",
-            "suggest": "",
-            "rule": "Import Concurrency is not required (arkts-limited-stdlib-no-import-concurrency)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 20,
-            "column": 28,
-            "endLine": 20,
-            "endColumn": 33,
-            "problem": "LimitedStdLibNoImportConcurrency",
-            "suggest": "",
-            "rule": "Import Concurrency is not required (arkts-limited-stdlib-no-import-concurrency)",
-            "severity": "ERROR"
-        }
-    ]
+    "commonArgs": "--no-check-ts-as-source"
 }

@@ -315,6 +315,26 @@
             "severity": "ERROR"
         },
         {
+            "line": 172,
+            "column": 11,
+            "endLine": 172,
+            "endColumn": 24,
+            "problem": "UnsupportPropNameFromValue",
+            "suggest": "",
+            "rule": "Enum cannot get member name by member value (arkts-enum-no-props-by-index)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 173,
+            "column": 11,
+            "endLine": 173,
+            "endColumn": 32,
+            "problem": "UnsupportPropNameFromValue",
+            "suggest": "",
+            "rule": "Enum cannot get member name by member value (arkts-enum-no-props-by-index)",
+            "severity": "ERROR"
+        },
+        {
             "line": 31,
             "column": 11,
             "endLine": 31,

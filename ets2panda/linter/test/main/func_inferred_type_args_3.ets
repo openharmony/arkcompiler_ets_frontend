@@ -12,9 +12,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import {A} from './func_inferred_type_args_ts';
+import B from './func_inferred_type_args_ts'
+import A2 from './func_inferred_type_args_ts2'
+import {A3} from './func_inferred_type_args_ts2'
+import { HashMap } from '@kit.ArkTS';
 
-import { ArkTSUtils } from '../main/oh_modules/@kit.ArkTS';
+function test() {
+  const a = new A();
+  a.map = new Map(); //error
+}
+function test2() {
+  const a = new A2();
+  a.map = new Map(); //error
+}
+function test3() {
+  const a = new A3();
+  a.map = new Map(); //error
+}
 
-let lock1 = new ArkTSUtils.locks.AsyncLock(); 
+class A4 {
+  id?: string;
+  map?: HashMap<string, Demo>;
+}
+class  Demo{}
 
-let lock2 = new ArkTSUtils.locks.AsyncLock(); 
+function test4() {
+  const a = new A4();
+  a.map = new HashMap(); //error
+}

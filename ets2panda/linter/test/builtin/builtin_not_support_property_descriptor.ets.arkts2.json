@@ -125,26 +125,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 27,
-            "column": 3,
-            "endLine": 27,
-            "endColumn": 35,
-            "problem": "ObjectLiteralProperty",
-            "suggest": "",
-            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 28,
-            "column": 3,
-            "endLine": 28,
-            "endColumn": 32,
-            "problem": "ObjectLiteralProperty",
-            "suggest": "",
-            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
-            "severity": "ERROR"
-        },
-        {
             "line": 26,
             "column": 9,
             "endLine": 26,
@@ -242,26 +222,6 @@
             "problem": "NoPropertyDescriptor",
             "suggest": "",
             "rule": "Not support propertydescriptor (arkts-builtin-no-property-descriptor)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 48,
-            "column": 5,
-            "endLine": 48,
-            "endColumn": 41,
-            "problem": "ObjectLiteralProperty",
-            "suggest": "",
-            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 49,
-            "column": 5,
-            "endLine": 49,
-            "endColumn": 34,
-            "problem": "ObjectLiteralProperty",
-            "suggest": "",
-            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
             "severity": "ERROR"
         },
         {

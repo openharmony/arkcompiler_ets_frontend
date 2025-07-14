@@ -148,3 +148,18 @@ let compPropObj = {
   [2]: 'CompProp2', // Error in arkts 2.0
   [LiteralAsPropertyNameEnum.One]: 3 // Error in arkts 2.0
 };
+
+enum TEST {
+  A,
+  B,
+  C,
+}
+enum TEST2 {
+  A,
+  B,
+  C,
+}
+
+let de3 = TEST2[TEST.A] //error
+let de4 = TEST2[TEST.A| TEST.B] //error
+let de5 = TEST[TEST.C] //ok

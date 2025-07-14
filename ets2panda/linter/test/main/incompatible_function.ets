@@ -80,3 +80,15 @@ type FuncTypeNoParams = () => void;
 let fNoParams: FuncTypeNoParams = () => {
     return 0;
 };
+
+class A {}
+
+class C extends Array<A> {}
+
+class B {
+  private arr: Array<A> = [];
+
+  test(): C {
+    return this.arr;
+  }
+}

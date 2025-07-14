@@ -478,6 +478,26 @@
             "endLine": 34,
             "endColumn": 2,
             "problem": "InteropJsObjectTraverseJsInstance",
+          "autofix": [
+            {
+              "start": 970,
+              "end": 989,
+              "replacementText": "let tmp_1 = 0; tmp_1 < arr1.getProperty('length').toNumber(); ++tmp_1",
+              "line": 30,
+              "column": 1,
+              "endLine": 34,
+              "endColumn": 2
+            },
+            {
+              "start": 1008,
+              "end": 1015,
+              "replacementText": "arr1.getProperty(tmp_1).toNumber()",
+              "line": 30,
+              "column": 1,
+              "endLine": 34,
+              "endColumn": 2
+            }
+          ],
             "suggest": "",
             "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js2s-traverse-js-instance)",
             "severity": "ERROR"

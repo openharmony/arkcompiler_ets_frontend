@@ -33,3 +33,9 @@ class PromiseTest {
     return this.foo(); // No error in ArkTS 1.2
   }
 }
+
+function sleep<T = void>(ms: number): PromiseLike<T> {
+  return new Promise<T>(
+    (resolve: (value: T | PromiseLike<T>) => void): number => setTimeout(resolve, ms)
+  );
+}

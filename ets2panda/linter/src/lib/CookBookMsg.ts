@@ -17,14 +17,14 @@ export const cookBookMsg: string[] = [];
 export const cookBookTag: string[] = [];
 
 /**
- * @note If the value contains multiple parentheses groups, 
+ * @note If the value contains multiple parentheses groups,
  *       the rule name must be placed in the last group.
- * 
- * @example 
+ *
+ * @example
  * // Correct (rule name in last parentheses):
  * 'cookBookTag[352] = "1.2 Void conflict...(sdk-ability-asynchronous-lifecycle)"'
- * 
-*/
+ *
+ */
 
 cookBookTag[1] =
   'Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)';

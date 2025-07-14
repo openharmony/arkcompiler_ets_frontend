@@ -13,26 +13,46 @@
         "See the License for the specific language governing permissions and",
         "limitations under the License."
     ],
-    "result": [
-        {
-            "line": 16,
-            "column": 5,
-            "endLine": 16,
-            "endColumn": 72,
-            "problem": "AnyType",
-            "suggest": "",
-            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 17,
-            "column": 5,
-            "endLine": 17,
-            "endColumn": 72,
-            "problem": "AnyType",
-            "suggest": "",
-            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
-            "severity": "ERROR"
-        }
-    ]
+  "result": [
+    {
+      "line": 16,
+      "column": 5,
+      "endLine": 16,
+      "endColumn": 72,
+      "problem": "AnyType",
+      "suggest": "",
+      "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 17,
+      "column": 5,
+      "endLine": 17,
+      "endColumn": 72,
+      "problem": "AnyType",
+      "suggest": "",
+      "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 18,
+      "column": 5,
+      "endLine": 18,
+      "endColumn": 72,
+      "problem": "AnyType",
+      "suggest": "",
+      "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 19,
+      "column": 5,
+      "endLine": 19,
+      "endColumn": 72,
+      "problem": "AnyType",
+      "suggest": "",
+      "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+      "severity": "ERROR"
+    }
+  ]
 }
