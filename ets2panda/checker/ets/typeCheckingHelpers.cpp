@@ -1076,11 +1076,13 @@ void ETSChecker::ValidateThisUsage(const ir::TypeNode *returnTypeAnnotation)
     }
     if (returnTypeAnnotation->IsETSTypeReference() &&
         IsFixedArray(returnTypeAnnotation->AsETSTypeReference()->Part())) {
-        auto elementType = returnTypeAnnotation->AsETSTypeReference()->Part()->TypeParams()->Params()[0];
-        if (CheckAndLogInvalidThisUsage(elementType, diagnostic::NOT_ALLOWED_THIS_IN_ARRAY_TYPE)) {
-            return;
+        if (returnTypeAnnotation->AsETSTypeReference()->Part()->TypeParams() != nullptr) {
+            auto elementType = returnTypeAnnotation->AsETSTypeReference()->Part()->TypeParams()->Params()[0];
+            if (CheckAndLogInvalidThisUsage(elementType, diagnostic::NOT_ALLOWED_THIS_IN_ARRAY_TYPE)) {
+                return;
+            }
+            ValidateThisUsage(elementType);
         }
-        ValidateThisUsage(elementType);
         return;
     }
 }
