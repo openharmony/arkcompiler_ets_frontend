@@ -1036,7 +1036,8 @@ void ETSChecker::ValidateThisUsage(const ir::TypeNode *returnTypeAnnotation)
         return;
     }
     if (returnTypeAnnotation->IsETSTypeReference() &&
-        IsFixedArray(returnTypeAnnotation->AsETSTypeReference()->Part())) {
+        IsFixedArray(returnTypeAnnotation->AsETSTypeReference()->Part()) &&
+        returnTypeAnnotation->AsETSTypeReference()->Part()->TypeParams() != nullptr) {
         auto elementType = returnTypeAnnotation->AsETSTypeReference()->Part()->TypeParams()->Params()[0];
         if (CheckAndLogInvalidThisUsage(elementType, diagnostic::NOT_ALLOWED_THIS_IN_ARRAY_TYPE)) {
             return;

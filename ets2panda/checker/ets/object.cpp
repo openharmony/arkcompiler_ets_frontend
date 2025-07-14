@@ -1757,7 +1757,12 @@ void ETSChecker::CheckCyclicConstructorCall(Signature *signature)
 {
     ES2PANDA_ASSERT(signature->Function());
 
-    if (signature->Function()->IsExternal() || signature->Function()->Body() == nullptr) {
+    if (signature->Function()->IsExternal()) {
+        return;
+    }
+
+    // This is a condition set up to handle error scenarios.
+    if (signature->Function()->Body() == nullptr) {
         return;
     }
 
