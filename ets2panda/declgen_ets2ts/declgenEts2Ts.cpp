@@ -1656,6 +1656,7 @@ bool TSDeclGen::GenInterfaceProp(const ir::MethodDefinition *methodDef)
         OutDts("?");
     }
     OutDts(": ");
+    ES2PANDA_ASSERT(methodDef->Function() != nullptr);
     GenType(methodDef->Function()->Signature()->ReturnType());
     OutDts(";");
     OutEndlDts();
