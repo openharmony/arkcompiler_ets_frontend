@@ -913,9 +913,13 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
         ES2PANDA_ASSERT(IsAnyError());
     }
 
-    // initType should not be nullptr. If an error occurs during check, set it to GlobalTypeError().
-    if (bindingVar == nullptr || initType == nullptr || initType->IsTypeError()) {
+    if (bindingVar == nullptr) {
         return annotationType != nullptr ? annotationType : GlobalTypeError();
+    }
+
+    // initType should not be nullptr. If an error occurs during check, set it to GlobalTypeError().
+    if (initType == nullptr || initType->IsTypeError()) {
+        return bindingVar->SetTsType(annotationType != nullptr ? annotationType : GlobalTypeError());
     }
 
     if (typeAnnotation == nullptr && initType->IsETSFunctionType()) {
