@@ -13,13 +13,18 @@
  * limitations under the License.
  */
 
-function foo()
-{
-    /* @@ label1 */interface LocalInterface
-    {
-        /* @@ label2 */private property : int;
-    }
-}
+let a = 1
+switch(a) {
+    a":
+        try{
 
-/* @@@ label1 Error SyntaxError: Illegal start of INTERFACE expression. */
-/* @@@ label2 Error SyntaxError: Local class or interface declaration members can not have access modifies. */
+        }
+    }
+
+
+/* @@? 18:5 Error SyntaxError: Unexpected token 'identification literal', expected 'case' or 'default'. */
+/* @@? 18:5 Error SyntaxError: Expected ':', got 'identification literal'. */
+/* @@? 18:6 Error SyntaxError: Newline is not allowed in strings */
+/* @@? 18:6 Error SyntaxError: Unexpected token ':'. */
+/* @@? 18:8 Error SyntaxError: Unexpected token 'try'. */
+/* @@? 18:8 Error SyntaxError: A try statement should contain either finally clause or at least one catch clause. */

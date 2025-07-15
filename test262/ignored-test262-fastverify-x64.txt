@@ -15,3 +15,6 @@ test262/data/test_es2021/built-ins/Proxy/defineProperty/trap-is-not-callable-rea
 
 #27184
 test262/data/test_es2021/language/module-code/instn-iee-err-circular-as.js
+
+#27695
+test262/data/test_es2021/built-ins/Object/defineProperty/15.2.3.6-4-211.js

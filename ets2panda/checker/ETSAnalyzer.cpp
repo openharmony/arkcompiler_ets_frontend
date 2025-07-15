@@ -378,7 +378,6 @@ checker::Type *ETSAnalyzer::Check(ir::ETSFunctionType *node) const
     checker->CheckFunctionSignatureAnnotations(node->Params(), node->TypeParams(), node->ReturnType());
 
     auto *signatureInfo = checker->ComposeSignatureInfo(node->TypeParams(), node->Params());
-    ES2PANDA_ASSERT(signatureInfo != nullptr);
     auto *returnType = node->IsExtensionFunction() && node->ReturnType()->IsTSThisType()
                            ? signatureInfo->params.front()->TsType()
                            : checker->ComposeReturnType(node->ReturnType(), node->IsAsync());

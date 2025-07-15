@@ -13,14 +13,17 @@
  * limitations under the License.
  */
 
-class A {
-    constructor (a0?: () => void){
 
-    }
+let obj: Record<string, number> = {
+    [this.viewModel.ads] : 123
 }
 
-function main(): void {
-    new A {}; // It is forbidden to extend a class by an anonymous class
-}
-
-/* @@? 23:11 Error SyntaxError: Unexpected token '{'. */
+/* @@? 18:5 Error SyntaxError: Unexpected token. */
+/* @@? 18:6 Error SyntaxError: Unexpected token. */
+/* @@? 18:6 Error TypeError: Cannot reference 'this' in this context. */
+/* @@? 18:11 Error TypeError: Property 'viewModel' does not exist on type 'Error' */
+/* @@? 18:24 Error SyntaxError: Unexpected token. */
+/* @@? 18:26 Error SyntaxError: Unexpected token ':'. */
+/* @@? 18:26 Error SyntaxError: Unexpected token ':'. */
+/* @@? 18:26 Error SyntaxError: Unexpected token ':'. */
+/* @@? 19:1 Error SyntaxError: Unexpected token '}'. */

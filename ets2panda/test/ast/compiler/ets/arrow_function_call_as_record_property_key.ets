@@ -24,6 +24,30 @@ const b: Record<number, (x: string) => number> = {
     [(():number => +("bar"))()]: (y: string):number => y.length
 };
 
-/* @@? 21:21 Error TypeError: Bad operand type, the type of the operand must be numeric type. */
-/* @@? 21:34 Error SyntaxError: Function expressions are not supported, use arrow functions instead */
+/* @@? 16:35 Error TypeError: need to specify target type for class composite */
+/* @@? 17:5 Error SyntaxError: Unexpected token. */
+/* @@? 17:6 Error SyntaxError: Unexpected token, expected ':'. */
+/* @@? 17:22 Error SyntaxError: Unexpected token. */
+/* @@? 17:25 Error SyntaxError: Unexpected token ']'. */
+/* @@? 17:25 Error SyntaxError: Unexpected token ']'. */
+/* @@? 17:25 Error SyntaxError: Unexpected token ']'. */
+/* @@? 17:26 Error SyntaxError: Unexpected token ':'. */
+/* @@? 17:26 Error SyntaxError: Unexpected token ':'. */
+/* @@? 18:1 Error SyntaxError: Unexpected token '}'. */
+/* @@? 20:50 Error TypeError: need to specify target type for class composite */
+/* @@? 21:5 Error SyntaxError: Unexpected token. */
+/* @@? 21:6 Error SyntaxError: Unexpected token, expected ':'. */
+/* @@? 21:28 Error SyntaxError: Unexpected token. */
+/* @@? 21:31 Error SyntaxError: Unexpected token ']'. */
+/* @@? 21:31 Error SyntaxError: Unexpected token ']'. */
+/* @@? 21:31 Error SyntaxError: Unexpected token ']'. */
+/* @@? 21:32 Error SyntaxError: Unexpected token ':'. */
+/* @@? 21:32 Error SyntaxError: Unexpected token ':'. */
+/* @@? 21:43 Error SyntaxError: Unexpected token, expected an identifier. */
+/* @@? 23:6 Error SyntaxError: Unexpected token ','. */
+/* @@? 23:6 Error SyntaxError: Unexpected token ','. */
 /* @@? 24:21 Error TypeError: Bad operand type, the type of the operand must be numeric type. */
+/* @@? 24:32 Error SyntaxError: Unexpected token ':'. */
+/* @@? 24:32 Error SyntaxError: Unexpected token ':'. */
+/* @@? 24:32 Error SyntaxError: Unexpected token ':'. */
+/* @@? 25:1 Error SyntaxError: Unexpected token '}'. */

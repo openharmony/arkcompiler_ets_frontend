@@ -33,3 +33,4 @@ export function extractRuleTags(tags: string[]): Map<number, string> {
 
   return resultMap;
 }
+

@@ -204,7 +204,7 @@ ir::Statement *ParserImpl::ParseStatementBasedOnTokenType(StatementParsingFlags 
         case lexer::TokenType::KEYW_ENUM:
             return ParseEnumDeclaration();
         case lexer::TokenType::KEYW_INTERFACE:
-            return ParseInterfaceDeclaration(false);
+            return ParseInterfaceStatement(flags);
         case lexer::TokenType::PUNCTUATOR_AT:
             if (IsETSParser()) {
                 return ParseAnnotationsInStatement(flags);
@@ -324,6 +324,15 @@ ir::Statement *ParserImpl::ParseClassStatement(StatementParsingFlags flags, ir::
     }
 
     return ParseClassDeclaration(modifiers, modFlags);
+}
+
+ir::Statement *ParserImpl::ParseInterfaceStatement(StatementParsingFlags flags)
+{
+    if ((flags & StatementParsingFlags::ALLOW_LEXICAL) == 0) {
+        LogError(diagnostic::LEXICAL_DEC_NOT_ALLOWED_IN_SINGLE_STATEMENT_CONTEXT);
+    }
+
+    return ParseInterfaceDeclaration(false);
 }
 
 ir::Statement *ParserImpl::ParseStructDeclaration(ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags flags)

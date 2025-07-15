@@ -83,7 +83,7 @@ static bool CheckGetterSetterDecl(varbinder::LocalVariable const *child, varbind
 static bool CheckFunctionDecl(varbinder::LocalVariable *child, varbinder::LocalVariable *parent)
 {
     ES2PANDA_ASSERT(child->Declaration()->Type() == parent->Declaration()->Type());
-    if (!child->TsType()->IsETSMethodType()) {
+    if (!child->TsType()->IsETSFunctionType() || !parent->TsType()->IsETSFunctionType()) {
         return true;
     }
 
@@ -1757,7 +1757,7 @@ void ETSChecker::CheckCyclicConstructorCall(Signature *signature)
 {
     ES2PANDA_ASSERT(signature->Function());
 
-    if (signature->Function()->IsExternal()) {
+    if (signature->Function()->IsExternal() || signature->Function()->Body() == nullptr) {
         return;
     }
 

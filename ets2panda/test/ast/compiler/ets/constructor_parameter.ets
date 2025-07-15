@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,11 +13,11 @@
  * limitations under the License.
  */
 
-function bar(): void {
-  let BC: int = 1;
-  interface BC {
-    x: int;
-  }
+class A {
+    constructor (this.
 }
 
-/* @@? 18:3 Error SyntaxError: Illegal start of INTERFACE expression. */
+/* @@? 17:17 Error TypeError: Only abstract or native methods can't have body. */
+/* @@? 17:22 Error SyntaxError: The function parameter 'this' must explicitly specify the typeAnnotation. */
+/* @@? 17:22 Error SyntaxError: Unexpected token, expected ',' or ')'. */
+/* @@? 17:22 Error SyntaxError: Unexpected token '.'. */

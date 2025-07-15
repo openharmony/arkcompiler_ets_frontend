@@ -1416,7 +1416,7 @@ static bool AppendSignatureInfoParam(ETSChecker *checker, SignatureInfo *sigInfo
     if (!param->IsOptional()) {
         ++sigInfo->minArgCount;
     }
-    ES2PANDA_ASSERT(!param->IsOptional() ||
+    ES2PANDA_ASSERT(!param->IsOptional() || param->Ident()->TsType()->IsTypeError() ||
                     checker->Relation()->IsSupertypeOf(param->Ident()->TsType(), checker->GlobalETSUndefinedType()));
     return true;
 }
@@ -1753,7 +1753,7 @@ bool ETSChecker::CheckOverride(Signature *signature, ETSObjectType *site)
     auto *target = site->GetProperty(signature->Function()->Id()->Name(), flags);
     bool isOverridingAnySignature = false;
 
-    if (target == nullptr) {
+    if (target == nullptr || target->TsType() == nullptr || !target->TsType()->IsETSFunctionType()) {
         return isOverridingAnySignature;
     }
 

@@ -1716,8 +1716,11 @@ ir::Expression *ETSParser::ParseFunctionParameter()
         typeAnnotation->SetParent(paramIdent);
         paramIdent->SetTsTypeAnnotation(typeAnnotation);
         paramIdent->SetEnd(typeAnnotation->End());
-    } else if (!isArrow && !isOptional) {
+    }
+
+    if ((!isArrow || isOptional) && paramIdent->TypeAnnotation() == nullptr) {
         LogError(diagnostic::EXPLICIT_PARAM_TYPE);
+        paramIdent->SetTsTypeAnnotation(AllocBrokenType(Lexer()->GetToken().Loc()));
     }
 
     return ParseFunctionParameterExpression(paramIdent, isOptional);
@@ -1850,8 +1853,10 @@ void ETSParser::ParseCatchParamTypeAnnotation([[maybe_unused]] ir::AnnotatedExpr
 
 ir::Statement *ETSParser::ParseImportDeclaration([[maybe_unused]] StatementParsingFlags flags)
 {
+    bool isError = false;
     if ((flags & StatementParsingFlags::GLOBAL) == 0) {
         LogError(diagnostic::IMPORT_TOP_LEVEL);
+        isError = true;
     }
 
     char32_t nextChar = Lexer()->Lookahead();
@@ -1878,7 +1883,7 @@ ir::Statement *ETSParser::ParseImportDeclaration([[maybe_unused]] StatementParsi
         importDeclaration = ParseImportPathBuildImport(std::move(specifiers), false, startLoc, ir::ImportKinds::ALL);
     }
 
-    return importDeclaration;
+    return isError ? AllocBrokenStatement(startLoc) : importDeclaration;
 }
 
 ir::Statement *ETSParser::ParseExportDeclaration([[maybe_unused]] StatementParsingFlags flags)

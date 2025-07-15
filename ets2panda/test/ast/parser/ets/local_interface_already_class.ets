@@ -23,3 +23,4 @@ function bar(): void {
 }
 
 /* @@? 17:3 Error SyntaxError: Illegal start of CLASS expression. */
+/* @@? 20:3 Error SyntaxError: Illegal start of INTERFACE expression. */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,9 +13,11 @@
  * limitations under the License.
  */
 
-function main() : void
-{
-  interface C {
-    foo(a: int): int;
-  }
+class MyTest {
+    @Consume.
+    private property1;
 }
+
+/* @@? 18:5 Error SyntaxError: Identifier expected.  */
+/* @@? 18:5 Error TypeError: '*ERROR_LITERAL*' is not an annotation.  */
+/* @@? 18:22 Error SyntaxError: Field type annotation expected.  */

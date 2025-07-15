@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,11 +13,9 @@
  * limitations under the License.
  */
 
-function bar(): void {
-  let BC: int = 1;
-  interface BC {
-    x: int;
-  }
+declare class A{
+    foo(/* @@ label1 */a:number = 1, /* @@ label2 */b:int = 2):void
 }
 
-/* @@? 18:3 Error SyntaxError: Illegal start of INTERFACE expression. */
+/* @@@ label1 Error SyntaxError: A parameter initializer is only allowed in a function or constructor implementation. */
+/* @@@ label2 Error SyntaxError: A parameter initializer is only allowed in a function or constructor implementation. */

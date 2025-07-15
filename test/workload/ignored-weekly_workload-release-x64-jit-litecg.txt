@@ -10,3 +10,6 @@ date-format-tofte
 #21663
 n-body
 deltablue
+
+#18740
+splay

@@ -90,8 +90,11 @@
 /ets2panda/checker/types/ets/etsTypeParameter.* ^vpukhov @gogabr ^igelhaus ^Prof1983
 /ets2panda/checker/types/ets/etsUnionType.* @akmaevaleksey ^vpukhov ^igelhaus ^Prof1983
 /ets2panda/checker/types/ets/wildcardType.* ^vpukhov @gogabr ^igelhaus ^Prof1983
-/ets2panda/compiler/lowering/ets/ @akmaevaleksey ^igelhaus ^Prof1983 ^zelentsovdmitry
-/ets2panda/compiler/lowering/ets/lambdaLowering.cpp ^vpukhov @akmaevaleksey @gogabr ^igelhaus ^Prof1983
-/ets2panda/compiler/lowering/ets/optionalLowering.cpp ^vpukhov @akmaevaleksey ^igelhaus ^Prof1983
-/ets2panda/compiler/lowering/ets/unionLowering.cpp ^vpukhov @akmaevaleksey ^igelhaus ^Prof1983
-/ets2panda/compiler/lowering/ets/topLevelStmts/.* ^vpukhov @akmaevaleksey ^igelhaus ^Prof1983
+/ets2panda/compiler/lowering/ets/ @gogabr ^igelhaus ^Prof1983 ^zelentsovdmitry
+/ets2panda/compiler/lowering/ets/const* @ziziziiziziz @lirismankarina ^akmaevaleksey ^igelhaus ^Prof1983
+/ets2panda/compiler/lowering/ets/enum* @ziziziiziziz @dkofanov ^akmaevaleksey ^igelhaus ^Prof1983
+/ets2panda/compiler/lowering/ets/lambdaLowering.cpp @Ekkoruse @gogabr ^vpukhov ^akmaevaleksey ^igelhaus ^Prof1983
+/ets2panda/compiler/lowering/ets/optionalLowering.cpp @akmaevaleksey ^vpukhov ^igelhaus ^Prof1983
+/ets2panda/compiler/lowering/ets/spread* @ziziziiziziz @dkofanov ^akmaevaleksey ^igelhaus ^Prof1983
+/ets2panda/compiler/lowering/ets/unionLowering.cpp @Ekkoruse @akmaevaleksey ^vpukhov ^igelhaus ^Prof1983
+/ets2panda/compiler/lowering/ets/topLevelStmts/.* @lirismankarina @xuxjeeee ^akmaevaleksey ^vpukhov ^igelhaus ^Prof1983

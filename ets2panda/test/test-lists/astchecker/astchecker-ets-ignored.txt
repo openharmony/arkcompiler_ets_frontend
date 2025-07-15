@@ -57,6 +57,10 @@ ast/compiler/ets/implicit_this_method_trailing.ets
 ast/parser/ets/import_tests/export_and_import_class.ets
 ast/parser/ets/import_tests/export_and_import_top_level.ets
 
+# This case will emit different error messages on debug and release builds.
+# It behaves different because `Phase::Apply` contains `#ifndef NDEBUG`.
+ast/compiler/ets/type_error_processing/param_typeannotation_null.ets
+
 # Issue: #22951
 ast/compiler/ets/extension_accessor_tests/getterAsFunctionCall.ets
 ast/compiler/ets/extension_accessor_tests/getterAsMethodCall.ets

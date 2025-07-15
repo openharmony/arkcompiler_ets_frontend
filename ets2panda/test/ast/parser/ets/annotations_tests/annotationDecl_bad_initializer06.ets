@@ -20,4 +20,4 @@ class A{}
 }
 
 /* @@@ label Error SyntaxError: Invalid value for annotation field, expected a constant literal.  */
-/* @@? 19:43 Error TypeError: Type '(a: Int) => void' cannot be assigned to type 'String' */
+/* @@@ label Error TypeError: Invalid value for annotation field, expected a constant literal.  */

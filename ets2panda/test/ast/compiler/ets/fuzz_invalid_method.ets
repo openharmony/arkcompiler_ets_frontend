@@ -47,6 +47,7 @@ class A<T> {
 /* @@? 32:7 Error SyntaxError: Unexpected token '{'. */
 /* @@? 33:9 Error SyntaxError: Unexpected token 'return'. */
 /* @@? 33:19 Error TypeError: Only abstract or native methods can't have body. */
+/* @@? 33:19 Error TypeError: Only abstract or native methods can't have body. */
 /* @@? 33:24 Error SyntaxError: The function parameter 'this' must explicitly specify the typeAnnotation. */
 /* @@? 33:30 Error SyntaxError: Unexpected token, expected ',' or ')'. */
 /* @@? 33:30 Error SyntaxError: Unexpected token '.'. */

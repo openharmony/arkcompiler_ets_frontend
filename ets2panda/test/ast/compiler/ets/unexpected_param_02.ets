@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,11 +13,6 @@
  * limitations under the License.
  */
 
-function bar(): void {
-  let BC: int = 1;
-  interface BC {
-    x: int;
-  }
-}
+function foo(a?){}
 
-/* @@? 18:3 Error SyntaxError: Illegal start of INTERFACE expression. */
+/* @@? 16:16 Error SyntaxError: Parameter declaration should have an explicit type annotation. */

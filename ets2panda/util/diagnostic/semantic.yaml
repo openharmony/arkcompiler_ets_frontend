@@ -399,6 +399,7 @@ semantic:
 - name: ITERATOR_TYPE_ABSENT
   id: 99
   message: "Cannot obtain iterator type in 'for-of' statement."
+
 - name: OBJ_LIT_PROPERTY_REDECLARATION
   id: 100
   message: "An object literal cannot have multiple properties with the same name."
@@ -1531,10 +1532,14 @@ semantic:
   id: 392
   message: "overload declaration cannot contain abstract methods."
  
-- name: INVALID_RECORD_PROPERTY
+- name: INVALID_RECORD_PROPERTY`
   id: 393
   message: "Invalid record property"
 
 - name: INVALID_LAMBDA_PARAMETER
   id: 394
   message: "Invalid lambda parameter. Expected: 'identifier(: type)?', 'identifier?(: type)?' or '...identifier(: type)?'."
+
+- name: TYPEOF_IN_ANNOTATION
+  id: 395
+  message: "'typeof' is not allowed in type annotations."

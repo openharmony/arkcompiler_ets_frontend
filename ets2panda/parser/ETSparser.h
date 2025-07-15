@@ -318,6 +318,7 @@ private:
         ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS) override;
     // NOLINTNEXTLINE(google-default-arguments)
     ir::Expression *ParsePropertyDefinition(ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS) override;
+    ir::Expression *ParsePropertyKey(ExpressionParseFlags flags) override;
     // NOLINTNEXTLINE(google-default-arguments)
     ir::Expression *ParseDefaultPrimaryExpression(ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
     // NOLINTNEXTLINE(google-default-arguments)
@@ -341,6 +342,8 @@ private:
         const ArenaVector<ir::AstNode *> &properties,
         std::tuple<ir::ClassDefinitionModifiers, ir::ModifierFlags, ir::ModifierFlags> modifierInfo,
         std::tuple<bool, bool, bool> elementFlag, std::tuple<lexer::SourcePosition, lexer::LexerPosition> posInfo);
+    // NOLINTNEXTLINE(google-default-arguments)
+    ir::Statement *ParseInterfaceStatement(StatementParsingFlags flags) override;
     ir::AstNode *ParseClassElement(const ArenaVector<ir::AstNode *> &properties, ir::ClassDefinitionModifiers modifiers,
                                    ir::ModifierFlags flags) override;
     std::tuple<bool, bool, bool> HandleClassElementModifiers(ir::ModifierFlags &memberModifiers);
