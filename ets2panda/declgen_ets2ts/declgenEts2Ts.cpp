@@ -1020,6 +1020,7 @@ void TSDeclGen::GenAnnotationProperties(const ir::AnnotationUsage *anno)
     OutEndlDts();
     for (auto *prop : properties) {
         ProcessIndent();
+        ES2PANDA_ASSERT(prop->AsClassProperty()->Id() != nullptr);
         OutDts(prop->AsClassProperty()->Id()->Name());
         OutDts(": ");
         if (prop->AsClassProperty()->Value() != nullptr) {
@@ -2062,6 +2063,7 @@ bool TSDeclGen::GenMethodDeclarationPrefix(const ir::MethodDefinition *methodDef
     }
     EmitMethodGlueCode(methodName, methodIdent);
 
+    ES2PANDA_ASSERT(methodDef->Function() != nullptr);
     if (methodDef->Function()->IsAbstract() && !state_.inInterface &&
         !(methodDef->Parent()->IsTSInterfaceBody() ||
           (methodDef->BaseOverloadMethod() != nullptr &&

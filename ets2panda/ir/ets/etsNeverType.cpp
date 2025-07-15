@@ -73,7 +73,7 @@ checker::Type *ETSNeverType::GetType([[maybe_unused]] checker::ETSChecker *check
 ETSNeverType *ETSNeverType::Clone(ArenaAllocator *allocator, AstNode *parent)
 {
     auto *const clone = allocator->New<ir::ETSNeverType>(allocator);
-    ES2PANDA_ASSERT(clone);
+    ES2PANDA_ASSERT(clone != nullptr);
 
     if (parent != nullptr) {
         clone->SetParent(parent);
@@ -82,7 +82,9 @@ ETSNeverType *ETSNeverType::Clone(ArenaAllocator *allocator, AstNode *parent)
     if (!Annotations().empty()) {
         ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
         for (auto *annotationUsage : Annotations()) {
-            annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
+            auto *const annotationClone = annotationUsage->Clone(allocator, clone);
+            ES2PANDA_ASSERT(annotationClone != nullptr);
+            annotationUsages.push_back(annotationClone->AsAnnotationUsage());
         }
         clone->SetAnnotations(std::move(annotationUsages));
     }

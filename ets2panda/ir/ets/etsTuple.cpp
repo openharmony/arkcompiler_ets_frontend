@@ -147,7 +147,7 @@ checker::Type *ETSTuple::GetType(checker::ETSChecker *const checker)
 ETSTuple *ETSTuple::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     auto *const clone = allocator->New<ETSTuple>(allocator, size_);
-    ES2PANDA_ASSERT(clone);
+    ES2PANDA_ASSERT(clone != nullptr);
 
     clone->AddModifier(flags_);
 
@@ -164,7 +164,9 @@ ETSTuple *ETSTuple::Clone(ArenaAllocator *const allocator, AstNode *const parent
     if (!Annotations().empty()) {
         ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
         for (auto *annotationUsage : Annotations()) {
-            annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
+            auto *const annotationClone = annotationUsage->Clone(allocator, clone);
+            ES2PANDA_ASSERT(annotationClone != nullptr);
+            annotationUsages.push_back(annotationClone->AsAnnotationUsage());
         }
         clone->SetAnnotations(std::move(annotationUsages));
     }
