@@ -1472,6 +1472,10 @@ semantic:
   id: 184
   message: "Type parameter '{}' has circular constraint dependency."
 
+- name: TYPE_PARAM_CIRCULAR_DEFAULT_TYPE
+  id: 398
+  message: "Default type of type parameter has circular dependency."
+
 - name: TYPE_PARAM_USE_BEFORE_DEFINE
   id: 183
   message: "Type Parameter {} should be defined before use."
