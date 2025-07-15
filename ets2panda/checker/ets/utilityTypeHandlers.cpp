@@ -243,6 +243,7 @@ ir::ClassProperty *ETSChecker::CreateNullishPropertyFromAccessor(ir::MethodDefin
     ES2PANDA_ASSERT(prop != nullptr);
     prop->SetParent(newClassDefinition);
     ident->SetParent(prop);
+
     prop->SetTypeAnnotation(accessor->Function()->IsGetter()
                                 ? accessor->Function()->ReturnTypeAnnotation()
                                 : accessor->Function()->Params()[0]->AsETSParameterExpression()->TypeAnnotation());
@@ -588,27 +589,6 @@ ir::MethodDefinition *ETSChecker::CreateNullishAccessor(ir::MethodDefinition *co
                                         ProgramAllocator()->Adapter()),
             ProgramAllocator()));
     } else {
-        for (auto *params : function->Params()) {
-            auto *paramExpr = params->AsETSParameterExpression();
-
-            auto *unionType =
-                // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-                ProgramAllocNode<ir::ETSUnionType>(
-                    ArenaVector<ir::TypeNode *>({paramExpr->Ident()->TypeAnnotation(),
-                                                 // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-                                                 ProgramAllocNode<ir::ETSUndefinedType>(ProgramAllocator())},
-                                                ProgramAllocator()->Adapter()),
-                    ProgramAllocator());
-            paramExpr->Ident()->SetTsTypeAnnotation(unionType);
-            unionType->SetParent(paramExpr->Ident());
-
-            auto [paramVar, node] = paramScope->AddParamDecl(ProgramAllocator(), VarBinder(), paramExpr);
-            if (node != nullptr) {
-                VarBinder()->ThrowRedeclaration(node->Start(), paramVar->Name(), paramVar->Declaration()->Type());
-            }
-
-            paramExpr->SetVariable(paramVar);
-        }
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         SetupFunctionParams(function, paramScope, this);
     }

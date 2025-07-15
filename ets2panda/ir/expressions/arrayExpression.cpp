@@ -398,8 +398,7 @@ bool ArrayExpression::TrySetPreferredTypeForNestedArrayExpr(checker::ETSChecker 
             return false;
         }
         nestedArrayExpr->SetPreferredType(arrayElementType);
-
-        return doesArrayExprFitInTuple(arrayElementType);
+        return true;
     }
 
     if (nestedArrayExpr->GetPreferredType() == nullptr) {
