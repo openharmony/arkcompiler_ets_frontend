@@ -1623,7 +1623,7 @@ bool ETSChecker::ValidateArrayIndex(ir::Expression *const expr, bool relaxed)
         return false;
     }
 
-    if (!relaxed || !expressionType->IsConstantType()) {
+    if (!relaxed || !expressionType->IsConstantType() || !expr->IsNumberLiteral()) {
         return true;
     }
 
