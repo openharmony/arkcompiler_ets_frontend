@@ -1331,7 +1331,14 @@ bool TSDeclGen::ProcessTSQualifiedName(const ir::ETSTypeReference *typeReference
     if (typeReference->Part()->Name()->IsTSQualifiedName() &&
         typeReference->Part()->Name()->AsTSQualifiedName()->Name() != nullptr) {
         const auto qualifiedName = typeReference->Part()->Name()->AsTSQualifiedName()->Name().Mutf8();
-        std::istringstream stream(qualifiedName.data());
+        std::istringstream stream(qualifiedName);
+        std::string firstSegment;
+        if (std::getline(stream, firstSegment, '.') && stdlibNamespaceList_.count(firstSegment) != 0U) {
+            OutDts("ESObject");
+            return true;
+        }
+        importSet_.insert(firstSegment);
+        indirectDependencyObjects_.insert(firstSegment);
         std::string segment;
         while (std::getline(stream, segment, '.')) {
             importSet_.insert(segment);
@@ -1347,6 +1354,10 @@ void TSDeclGen::ProcessETSTypeReferenceType(const ir::ETSTypeReference *typeRefe
 {
     auto typePart = typeReference->Part();
     auto partName = typePart->GetIdent()->Name().Mutf8();
+    if (partName == "Type" || partName == "Function0") {
+        OutDts("ESObject");
+        return;
+    }
     importSet_.insert(partName);
     if (typePart->TypeParams() != nullptr && typePart->TypeParams()->IsTSTypeParameterInstantiation()) {
         indirectDependencyObjects_.insert(partName);
@@ -1670,6 +1681,13 @@ bool TSDeclGen::GenInterfaceProp(const ir::MethodDefinition *methodDef)
         OutDts("?");
     }
     OutDts(": ");
+    if (methodDef->TsType()->IsETSFunctionType()) {
+        const auto *sig = GetFuncSignature(methodDef->TsType()->AsETSFunctionType(), methodDef);
+        ProcessFunctionReturnType(sig);
+        OutDts(";");
+        OutEndlDts();
+        return true;
+    }
     ES2PANDA_ASSERT(methodDef->Function() != nullptr);
     GenType(methodDef->Function()->Signature()->ReturnType());
     OutDts(";");
