@@ -271,8 +271,16 @@ checker::VerifiedType ETSParameterExpression::Check(checker::ETSChecker *const c
 
 ETSParameterExpression *ETSParameterExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const identOrSpread = Spread() != nullptr ? Spread()->Clone(allocator, nullptr)->AsAnnotatedExpression()
-                                                    : Ident()->Clone(allocator, nullptr)->AsAnnotatedExpression();
+    AnnotatedExpression *identOrSpread = nullptr;
+    if (Spread() != nullptr) {
+        auto spreadClone = Spread()->Clone(allocator, nullptr);
+        ES2PANDA_ASSERT(spreadClone != nullptr);
+        identOrSpread = spreadClone->AsAnnotatedExpression();
+    } else {
+        auto identClone = Ident()->Clone(allocator, nullptr);
+        ES2PANDA_ASSERT(identClone != nullptr);
+        identOrSpread = identClone->AsAnnotatedExpression();
+    }
     auto *const initializer =
         Initializer() != nullptr ? Initializer()->Clone(allocator, nullptr)->AsExpression() : nullptr;
 
@@ -287,7 +295,7 @@ ETSParameterExpression *ETSParameterExpression::Clone(ArenaAllocator *const allo
         initializer->SetParent(clone);
     }
 
-    ES2PANDA_ASSERT(clone);
+    ES2PANDA_ASSERT(clone != nullptr);
     if (parent != nullptr) {
         clone->SetParent(parent);
     }
@@ -297,7 +305,9 @@ ETSParameterExpression *ETSParameterExpression::Clone(ArenaAllocator *const allo
     if (!Annotations().empty()) {
         ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
         for (auto *annotationUsage : Annotations()) {
-            annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
+            auto *const annotationClone = annotationUsage->Clone(allocator, nullptr);
+            ES2PANDA_ASSERT(annotationClone != nullptr);
+            annotationUsages.push_back(annotationClone->AsAnnotationUsage());
         }
         clone->SetAnnotations(std::move(annotationUsages));
     }

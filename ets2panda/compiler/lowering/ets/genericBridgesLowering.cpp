@@ -85,9 +85,9 @@ void GenericBridgesPhase::AddGenericBridge(ir::ClassDefinition const *const clas
 
     auto const sourceCode = CreateMethodDefinitionString(classDefinition, baseSignature, derivedFunction, typeNodes);
 
-    auto *const bridgeMethod =
-        parser->CreateFormattedClassMethodDefinition(sourceCode, typeNodes)->AsMethodDefinition();
-    ES2PANDA_ASSERT(bridgeMethod);
+    auto *const bridgeMethodDefinition = parser->CreateFormattedClassMethodDefinition(sourceCode, typeNodes);
+    auto *const bridgeMethod = bridgeMethodDefinition->AsMethodDefinition();
+    ES2PANDA_ASSERT(bridgeMethodDefinition != nullptr && bridgeMethod != nullptr && methodDefinition->Id() != nullptr);
     bridgeMethod->AddModifier(methodDefinition->Modifiers());
     bridgeMethod->ClearModifier(ir::ModifierFlags::NATIVE | ir::ModifierFlags::ABSTRACT);
     bridgeMethod->AddAstNodeFlags(methodDefinition->GetAstNodeFlags());
