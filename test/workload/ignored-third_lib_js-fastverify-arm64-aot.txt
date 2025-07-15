@@ -16,3 +16,6 @@ dayjs_test
 
 #26457
 memory-cache_test
+
+#27446
+lodash_test
