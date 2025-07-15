@@ -292,7 +292,6 @@ set(ES2PANDA_LIB_SRC
   compiler/lowering/ets/lambdaLowering.cpp
   compiler/lowering/ets/restTupleLowering.cpp
   compiler/lowering/ets/spreadLowering.cpp
-  compiler/lowering/ets/localClassLowering.cpp
   compiler/lowering/ets/objectIndexAccess.cpp
   compiler/lowering/ets/objectIterator.cpp
   compiler/lowering/ets/insertOptionalParametersAnnotation.cpp
@@ -581,6 +580,7 @@ set(ES2PANDA_LIB_SRC
   checker/types/ets/intType.cpp
   checker/types/ets/longType.cpp
   checker/types/ets/shortType.cpp
+  checker/types/ets/etsAnyType.cpp
   checker/types/ets/etsArrayType.cpp
   checker/types/ets/etsBooleanType.cpp
   checker/types/ets/etsDynamicType.cpp

@@ -54,6 +54,7 @@ namespace ark::es2panda::checker {
 
 static Type *MaybeBoxedType(ETSChecker *checker, Type *type, ir::Expression *expr)
 {
+    ES2PANDA_ASSERT(type != nullptr);
     if (!type->IsETSPrimitiveType()) {
         return type;
     }
@@ -77,6 +78,7 @@ static void InferUntilFail(Signature const *const signature, const ArenaVector<i
 
     checker->AddStatus(checker::CheckerStatus::IN_TYPE_INFER);
     // some ets lib files require type infer from arg index 0,1,... , not fit to build graph
+    ES2PANDA_ASSERT(substitution != nullptr);
     while (anyChange && substitution->size() < sigParams.size()) {
         anyChange = false;
         for (size_t ix = 0; ix < arguments.size(); ++ix) {

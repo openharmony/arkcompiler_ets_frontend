@@ -274,6 +274,7 @@ bool MethodDefinition::FilterForDeclGen(ir::SrcDumper *dumper) const
         return true;
     }
 
+    ES2PANDA_ASSERT(Id() != nullptr);
     auto name = Id()->Name().Mutf8();
     if (name.find("$asyncimpl") != std::string::npos || name == compiler::Signatures::INITIALIZER_BLOCK_INIT ||
         name == compiler::Signatures::INIT_METHOD) {
@@ -301,7 +302,8 @@ void MethodDefinition::Dump(ir::SrcDumper *dumper) const
         return;
     }
 
-    if (compiler::HasGlobalClassParent(this) && Id()->Name().Is(compiler::Signatures::INIT_METHOD)) {
+    if (compiler::HasGlobalClassParent(this) && Id() != nullptr && Id()->Name().Is(compiler::Signatures::INIT_METHOD) &&
+        Function() != nullptr) {
         Function()->Body()->Dump(dumper);
         return;
     }

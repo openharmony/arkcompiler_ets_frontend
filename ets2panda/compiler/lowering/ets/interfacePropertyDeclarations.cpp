@@ -85,6 +85,7 @@ ir::FunctionSignature InterfacePropertyDeclarationsPhase::GenerateGetterOrSetter
         InitScopesPhaseETS::RunExternalNode(paramIdent, varbinder);
 
         auto *const paramExpression = ctx->AllocNode<ir::ETSParameterExpression>(paramIdent, false, ctx->Allocator());
+        ES2PANDA_ASSERT(paramExpression != nullptr);
         paramExpression->SetRange(paramIdent->Range());
         auto [paramVar, node] = paramScope->AddParamDecl(ctx->Allocator(), varbinder, paramExpression);
         if (node != nullptr) {
@@ -108,6 +109,7 @@ ir::MethodDefinition *InterfacePropertyDeclarationsPhase::GenerateGetterOrSetter
     auto classScope = NearestScope(field);
     auto *paramScope = ctx->Allocator()->New<varbinder::FunctionParamScope>(ctx->Allocator(), classScope);
     auto *functionScope = ctx->Allocator()->New<varbinder::FunctionScope>(ctx->Allocator(), paramScope);
+    ES2PANDA_ASSERT(functionScope != nullptr);
 
     functionScope->BindParamScope(paramScope);
     paramScope->BindFunctionScope(functionScope);
@@ -191,6 +193,7 @@ static void AddOverload(ir::MethodDefinition *method, ir::MethodDefinition *over
 {
     method->AddOverload(overload);
     overload->SetParent(method);
+    ES2PANDA_ASSERT(overload->Function());
     overload->Function()->AddFlag(ir::ScriptFunctionFlags::OVERLOAD);
     overload->Function()->Id()->SetVariable(variable);
 }
@@ -217,7 +220,9 @@ ir::Expression *InterfacePropertyDeclarationsPhase::UpdateInterfaceProperties(pu
             HandleInternalGetterOrSetterMethod(prop);
             continue;
         }
+        auto *originProp = prop->Clone(ctx->allocator, nullptr);
         auto getter = GenerateGetterOrSetter(ctx, varbinder, prop->AsClassProperty(), false);
+        getter->SetOriginalNode(originProp);
 
         auto methodScope = scope->AsClassScope()->InstanceMethodScope();
         auto name = getter->Key()->AsIdentifier()->Name();
@@ -252,6 +257,7 @@ ir::Expression *InterfacePropertyDeclarationsPhase::UpdateInterfaceProperties(pu
     }
 
     auto newInterface = ctx->AllocNode<ir::TSInterfaceBody>(std::move(newPropertyList));
+    ES2PANDA_ASSERT(newInterface != nullptr);
     newInterface->SetRange(interface->Range());
     newInterface->SetParent(interface->Parent());
 

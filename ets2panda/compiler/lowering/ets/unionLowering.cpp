@@ -62,6 +62,7 @@ static ir::ClassDefinition *GetUnionAccessClass(public_lib::Context *ctx, varbin
     auto classCtx = varbinder::LexicalScope<varbinder::ClassScope>(varbinder);
     auto *classDef = ctx->AllocNode<ir::ClassDefinition>(ctx->Allocator(), ident, ir::ClassDefinitionModifiers::GLOBAL,
                                                          ir::ModifierFlags::ABSTRACT, Language(Language::Id::ETS));
+    ES2PANDA_ASSERT(classDef != nullptr);
     classDef->SetScope(classCtx.GetScope());
     auto *classDecl = ctx->AllocNode<ir::ClassDeclaration>(classDef, allocator);
     classDef->Scope()->BindNode(classDecl->Definition());
@@ -103,6 +104,7 @@ static std::tuple<varbinder::LocalVariable *, checker::Signature *> CreateNamedA
                        nullptr, ir::FunctionSignature(nullptr, std::move(params), returnTypeAnno),
                        // CC-OFFNXT(G.FMT.02-CPP) project code style
                        ir::ScriptFunctionFlags::METHOD, ir::ModifierFlags::PUBLIC});
+    ES2PANDA_ASSERT(func != nullptr);
     func->SetIdent(methodIdent->Clone(allocator, nullptr));
 
     // Create the synthetic function node
@@ -146,7 +148,7 @@ static varbinder::LocalVariable *CreateNamedAccessProperty(public_lib::Context *
     // Create the synthetic class property node
     auto *field =
         ctx->AllocNode<ir::ClassProperty>(fieldIdent, nullptr, nullptr, ir::ModifierFlags::NONE, allocator, false);
-
+    ES2PANDA_ASSERT(field != nullptr);
     // Add the declaration to the scope
     auto [decl, var] = varbinder->NewVarDecl<varbinder::LetDecl>(fieldIdent->Start(), fieldIdent->Name());
     var->AddFlag(varbinder::VariableFlags::PROPERTY);
@@ -167,7 +169,7 @@ static varbinder::LocalVariable *CreateNamedAccess(public_lib::Context *ctx, var
     auto type = expr->TsType();
     auto name = expr->Property()->AsIdentifier()->Name();
     auto *checker = ctx->checker->AsETSChecker();
-
+    ES2PANDA_ASSERT(checker->GetApparentType(checker->GetNonNullishType(expr->Object()->TsType())) != nullptr);
     auto unionType = checker->GetApparentType(checker->GetNonNullishType(expr->Object()->TsType()))->AsETSUnionType();
     auto *const accessClass = GetUnionAccessClass(ctx, varbinder, GetAccessClassName(unionType));
     auto *classScope = accessClass->Scope()->AsClassScope();
@@ -207,6 +209,7 @@ static ir::TSAsExpression *GenAsExpression(public_lib::Context *ctx, checker::Ty
 {
     auto *const typeNode = ctx->AllocNode<ir::OpaqueTypeNode>(opaqueType, ctx->Allocator());
     auto *const asExpression = ctx->AllocNode<ir::TSAsExpression>(node, typeNode, false);
+    ES2PANDA_ASSERT(asExpression != nullptr);
     asExpression->SetParent(parent);
     asExpression->Check(ctx->checker->AsETSChecker());
     return asExpression;
@@ -240,6 +243,7 @@ static ir::TSAsExpression *HandleUnionCastToPrimitive(public_lib::Context *ctx, 
         // when sourceType get `object`, it could cast to any primitive type but can't be unboxed;
         if (maybeUnboxingType != nullptr && expr->TsType()->IsETSPrimitiveType()) {
             auto *const asExpr = GenAsExpression(ctx, sourceType, expr->Expr(), expr);
+            ES2PANDA_ASSERT(asExpr != nullptr);
             asExpr->SetBoxingUnboxingFlags(checker->GetUnboxingFlag(maybeUnboxingType));
             expr->Expr()->SetBoxingUnboxingFlags(ir::BoxingUnboxingFlags::NONE);
             expr->SetExpr(asExpr);

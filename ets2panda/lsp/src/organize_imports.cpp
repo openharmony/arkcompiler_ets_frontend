@@ -36,6 +36,13 @@ bool IsImportUsed(es2panda_Context *ctx, const ImportSpecifier &spec)
         }
 
         if (spec.type == ImportType::NAMESPACE) {
+            if (node->IsTSQualifiedName()) {
+                auto *qname = node->AsTSQualifiedName();
+                found = qname->Left()->IsIdentifier() &&
+                        (std::string(qname->Left()->AsIdentifier()->Name()) == spec.localName);
+                return found;
+            }
+
             if (node->IsMemberExpression()) {
                 auto *member = node->AsMemberExpression();
                 found = member->Object()->IsIdentifier() &&
@@ -182,9 +189,9 @@ std::vector<TextChange> GenerateTextChanges(const std::vector<ImportInfo> &impor
             if (index + 1 < imp.namedImports.size()) {
                 osst << ", ";
             }
+            index++;
         }
-        osst << " } from \"" << imp.moduleName << "\";\n";
-        index++;
+        osst << " } from \'" << imp.moduleName << "\';\n";
     };
 
     for (const auto &imp : imports) {
@@ -197,10 +204,10 @@ std::vector<TextChange> GenerateTextChanges(const std::vector<ImportInfo> &impor
                 generateImportBlock(imp, oss, "import { ");
                 break;
             case ImportType::DEFAULT:
-                oss << "import " << imp.namedImports[0].localName << " from \"" << imp.moduleName << "\";\n";
+                oss << "import " << imp.namedImports[0].localName << " from \'" << imp.moduleName << "\';\n";
                 break;
             case ImportType::NAMESPACE:
-                oss << "import * as " << imp.namedImports[0].localName << " from \"" << imp.moduleName << "\";\n";
+                oss << "import * as " << imp.namedImports[0].localName << " from \'" << imp.moduleName << "\';\n";
                 break;
             case ImportType::TYPE_ONLY:
                 generateImportBlock(imp, oss, "import type { ");

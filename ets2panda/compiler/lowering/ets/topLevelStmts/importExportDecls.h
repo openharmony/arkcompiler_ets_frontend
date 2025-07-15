@@ -151,7 +151,7 @@ private:
         exportMap.insert({program_->SourceFilePath(), newMap});
     }
 
-    void RestoreImportExportDecls()
+    void RestoreImportExportDecls() noexcept
     {
         imExDecl_->fieldMap_ = fieldMapPrev_;
         imExDecl_->exportNameMap_ = exportNameMapPrev_;

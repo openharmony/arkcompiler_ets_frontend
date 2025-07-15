@@ -67,6 +67,7 @@ ClassExpression *ClassExpression::Clone(ArenaAllocator *const allocator, AstNode
 {
     auto *const def = def_ != nullptr ? def_->Clone(allocator, nullptr)->AsClassDefinition() : nullptr;
     auto *const clone = allocator->New<ClassExpression>(def);
+    ES2PANDA_ASSERT(clone != nullptr);
 
     if (parent != nullptr) {
         clone->SetParent(parent);

@@ -52,6 +52,7 @@ static ir::ClassProperty *CreateCapturedField(public_lib::Context *ctx, const va
     var->SetTsType(capturedVar->TsType());
 
     fieldIdent->SetVariable(var);
+    ES2PANDA_ASSERT(field != nullptr);
     field->SetTsType(capturedVar->TsType());
     decl->BindNode(field);
     return field;
@@ -91,6 +92,7 @@ void LocalClassConstructionPhase::CreateClassPropertiesForCapturedVariables(
         LOG(DEBUG, ES2PANDA) << "  - Creating property (" << property->Id()->Name()
                              << ") for captured variable: " << var->Name();
         properties.push_back(property);
+        ES2PANDA_ASSERT(property->Id() != nullptr);
         variableMap[var] = property->Id()->Variable();
         propertyMap[var] = property;
         idx++;
@@ -199,6 +201,7 @@ void LocalClassConstructionPhase::RemapReferencesFromCapturedVariablesToClassPro
         if (it->IsMethodDefinition() && !it->AsMethodDefinition()->IsConstructor()) {
             LOG(DEBUG, ES2PANDA) << "  - Rebinding variable rerferences in: "
                                  << it->AsMethodDefinition()->Id()->Name().Mutf8().c_str();
+            ES2PANDA_ASSERT(it->AsMethodDefinition()->Function() != nullptr);
             if (it->AsMethodDefinition()->Function()->Body() == nullptr &&
                 it->AsMethodDefinition()->AsyncPairMethod() != nullptr) {
                 it->AsMethodDefinition()->AsyncPairMethod()->Function()->Body()->IterateRecursively(

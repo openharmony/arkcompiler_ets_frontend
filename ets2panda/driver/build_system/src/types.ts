@@ -18,6 +18,10 @@ export interface PluginsConfig {
   [pluginName: string]: string;
 }
 
+export interface PathsConfig {
+  [pathName: string]: string[];
+}
+
 export interface BuildBaseConfig {
   buildType: 'build' | 'preview' | 'hotreload' | 'coldreload';
   buildMode: 'Debug' | 'Release';
@@ -44,6 +48,7 @@ export interface ArkTSGlobal {
 export interface ArkTS {
   Config: {
     create: Function;
+    createContextGenerateAbcForExternalSourceFiles: Function;
   };
   Context: {
     createFromString: Function;
@@ -113,6 +118,7 @@ export interface ModuleConfig {
   moduleType: string;
   moduleRootPath: string;
   sourceRoots: string[];
+  byteCodeHar: boolean;
 }
 
 export interface PathConfig {
@@ -124,6 +130,7 @@ export interface PathConfig {
   externalApiPaths: string[];
   abcLinkerPath?: string;
   dependencyAnalyzerPath?: string;
+  projectRootPath: string;
 }
 
 /**
@@ -150,6 +157,7 @@ export interface FrameworkConfig {
 export interface DeclgenConfig {
   enableDeclgenEts2Ts: boolean;
   declgenV1OutPath?: string;
+  declgenV2OutPath?: string;
   declgenBridgeCodePath?: string;
 }
 
@@ -168,11 +176,14 @@ export interface DependentModuleConfig {
   declFilesPath?: string;
   dependencies?: string[];
   declgenV1OutPath?: string;
+  declgenV2OutPath?: string;
   declgenBridgeCodePath?: string;
+  byteCodeHar: boolean;
 }
 
 export interface BuildConfig extends BuildBaseConfig, DeclgenConfig, LoggerConfig, ModuleConfig, PathConfig, FrameworkConfig {
   plugins: PluginsConfig;
+  paths: PathsConfig; // paths config passed from template to generate arktsconfig.json "paths" configs.
   compileFiles: string[];
   dependentModuleList: DependentModuleConfig[];
 }
@@ -196,6 +207,7 @@ export interface ModuleInfo {
   arktsConfigFile: string,
   compileFileInfos: CompileFileInfo[],
   declgenV1OutPath: string | undefined,
+  declgenV2OutPath: string | undefined,
   declgenBridgeCodePath: string | undefined,
   dependencies?: string[]
   staticDepModuleInfos: Map<string, ModuleInfo>;
@@ -204,6 +216,7 @@ export interface ModuleInfo {
   declFilesPath?: string;
   frameworkMode?: boolean;
   useEmptyPackage?: boolean;
+  byteCodeHar: boolean;
 }
 
 export type SetupClusterOptions = {

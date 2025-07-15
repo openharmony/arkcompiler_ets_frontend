@@ -17,6 +17,7 @@
 #include "internal_api.h"
 #include "public/public.h"
 #include "compiler/lowering/util.h"
+#include "quick_info.h"
 
 namespace ark::es2panda::lsp {
 std::string GetNameFromIdentifierNode(const ir::AstNode *node)
@@ -24,7 +25,7 @@ std::string GetNameFromIdentifierNode(const ir::AstNode *node)
     if (node == nullptr || !node->IsIdentifier()) {
         return "";
     }
-    return std::string(node->AsIdentifier()->Name());
+    return node->AsIdentifier()->ToString();
 }
 
 // Currently only considering enum scenarios.
@@ -77,9 +78,17 @@ std::string SpliceFunctionDetailStr(const std::string &functionName, const std::
     return result;
 }
 
+std::string SplicePropertyDetailStr(const std::string &name, const std::string &type)
+{
+    if (name.empty() || type.empty()) {
+        return "";
+    }
+    return name + ": " + type;
+}
+
 std::string GetFunctionNameFromScriptFunction(const ir::ScriptFunction *function)
 {
-    if (function == nullptr) {
+    if (function == nullptr || function->Id() == nullptr) {
         return "";
     }
     return function->Id()->ToString();
@@ -92,21 +101,23 @@ std::vector<FunctionParamStyle> GetParamListFromScriptFunction(const ir::ScriptF
         return params;
     }
     auto nodeParams = function->Params();
-    for (const auto &nodeParam : nodeParams) {
-        std::string paramName;
-        std::string paramKind;
-        if (!nodeParam->IsETSParameterExpression()) {
+    for (const auto *it : nodeParams) {
+        if (it == nullptr || !it->IsETSParameterExpression()) {
             continue;
         }
-        paramName = std::string(nodeParam->AsETSParameterExpression()->Name());
-        nodeParam->AsETSParameterExpression()->FindChild([&paramKind](ir::AstNode *childNode) {
-            if (childNode->IsETSTypeReference()) {
-                paramKind = childNode->AsETSTypeReference()->Part()->Name()->ToString();
-            }
-            return false;
-        });
-        FunctionParamStyle tmp(paramName, paramKind);
-        params.emplace_back(std::move(tmp));
+        std::string paramName;
+        std::string paramKind;
+        auto nodeParam = it->AsETSParameterExpression();
+        if (nodeParam->IsRestParameter()) {
+            paramName = nodeParam->RestParameter()->ToString();
+        } else {
+            paramName = GetNameFromIdentifierNode(nodeParam->Ident());
+        }
+        if (paramName == INVALID_EXPRESSION || nodeParam->TypeAnnotation() == nullptr) {
+            continue;
+        }
+        paramKind = GetNameForTypeNode(nodeParam->TypeAnnotation());
+        params.emplace_back(FunctionParamStyle(std::move(paramName), std::move(paramKind)));
     }
     return params;
 }
@@ -116,20 +127,17 @@ std::string GetReturnTypeFromScriptFunction(const ir::ScriptFunction *function)
     if (function == nullptr) {
         return "";
     }
-    auto nodeReturn = function->ReturnTypeAnnotation();
-    if (nodeReturn == nullptr || !nodeReturn->IsETSTypeReference()) {
+    auto returnNode = function->ReturnTypeAnnotation();
+    if (returnNode == nullptr) {
         return "";
     }
-    auto ident = nodeReturn->AsETSTypeReference()->Part()->Name();
-    if (ident == nullptr || !ident->IsIdentifier()) {
-        return "";
-    }
-    return std::string(ident->AsIdentifier()->Name());
+    auto returnType = GetNameForTypeNode(returnNode);
+    return returnType;
 }
 
 SetterStyle CreateSetterStyle(ir::MethodDefinitionKind kind)
 {
-    SetterStyle setter = SetterStyle::METHOD;
+    SetterStyle setter = SetterStyle::NONE;
     switch (kind) {
         case ir::MethodDefinitionKind::GET:
         case ir::MethodDefinitionKind::EXTENSION_GET:
@@ -151,14 +159,28 @@ std::shared_ptr<ClassMethodItem> CreateClassMethodItem(const ir::MethodDefinitio
     if (methodDefinition == nullptr || funcName.empty() || detail.empty()) {
         return nullptr;
     }
-
     auto setter = CreateSetterStyle(methodDefinition->Kind());
     AccessModifierStyle access = AccessModifierStyle::PUBLIC;
     if (methodDefinition->IsProtected()) {
         access = AccessModifierStyle::PROTECTED;
     }
-    auto item = std::make_shared<ClassMethodItem>(std::move(detail), setter, access);
+    auto item = std::make_shared<ClassMethodItem>(access, std::move(detail), setter);
     item->SetFunctionName(funcName);
+    return item;
+}
+
+std::shared_ptr<ClassPropertyItem> CreateClassPropertyItem(const ir::ClassProperty *property,
+                                                           const std::string &propertyName, std::string detail)
+{
+    if (property == nullptr || propertyName.empty() || detail.empty()) {
+        return nullptr;
+    }
+    AccessModifierStyle access = AccessModifierStyle::PUBLIC;
+    if (property->IsProtected()) {
+        access = AccessModifierStyle::PROTECTED;
+    }
+    auto item = std::make_shared<ClassPropertyItem>(access, std::move(detail));
+    item->SetVariableName(propertyName);
     return item;
 }
 
@@ -184,6 +206,48 @@ std::shared_ptr<ClassMethodItem> ParseFunctionStyleWithCreateItem(const ir::Meth
     return CreateClassMethodItem(methodDefinition, functionName, functionDetail);
 }
 
+ir::Identifier *GetIdentFromNewClassExprPart(const ir::Expression *value)
+{
+    if (value == nullptr || !value->IsETSNewClassInstanceExpression()) {
+        return nullptr;
+    }
+    auto typeRef = value->AsETSNewClassInstanceExpression()->GetTypeRef();
+    if (typeRef == nullptr || !typeRef->IsETSTypeReference()) {
+        return nullptr;
+    }
+    auto part = typeRef->AsETSTypeReference()->Part();
+    if (part == nullptr) {
+        return nullptr;
+    }
+    return part->GetIdent();
+}
+
+std::shared_ptr<ClassPropertyItem> ParsePropertyStyleWithCreateItem(const ir::ClassProperty *property,
+                                                                    bool isCurrentToken)
+{
+    if (property == nullptr) {
+        return nullptr;
+    }
+    if ((isCurrentToken && property->IsStatic()) ||
+        (!isCurrentToken && (property->IsPrivate() || property->IsStatic()))) {
+        return nullptr;
+    }
+    std::string propertyName = GetNameFromIdentifierNode(property->Key());
+    std::string type;
+    if (property->TypeAnnotation() == nullptr) {
+        auto value = property->Value();
+        auto ident = GetIdentFromNewClassExprPart(value);
+        type = GetNameFromIdentifierNode(ident);
+    } else {
+        type = GetNameForTypeNode(property->TypeAnnotation());
+    }
+    if (propertyName == INVALID_EXPRESSION || type == INVALID_EXPRESSION) {
+        return nullptr;
+    }
+    auto detail = SplicePropertyDetailStr(propertyName, type);
+    return CreateClassPropertyItem(property, propertyName, detail);
+}
+
 ClassHierarchyInfo CreateClassHierarchyInfoFromBody(const ir::ClassDefinition *classDefinition,
                                                     const std::string &className, bool isCurrentToken)
 {
@@ -194,23 +258,28 @@ ClassHierarchyInfo CreateClassHierarchyInfoFromBody(const ir::ClassDefinition *c
     result.SetClassName(className);
     auto bodyNodes = classDefinition->Body();
     for (const auto &node : bodyNodes) {
-        if (node == nullptr || !node->IsMethodDefinition()) {
+        if (node == nullptr) {
             continue;
         }
-        auto methodDefinition = node->AsMethodDefinition();
-        if (methodDefinition == nullptr) {
-            continue;
-        }
-        auto item = ParseFunctionStyleWithCreateItem(methodDefinition, isCurrentToken);
-        if (item != nullptr) {
-            result.AddClassMethodItem(item);
-        }
-        auto overLoads = methodDefinition->Overloads();
-        for (const auto *overLoadMethodDefinition : overLoads) {
-            auto overLoadItem = ParseFunctionStyleWithCreateItem(overLoadMethodDefinition, isCurrentToken);
-            if (overLoadItem != nullptr) {
-                result.AddClassMethodItem(overLoadItem);
+        if (node->IsMethodDefinition()) {
+            auto methodDefinition = node->AsMethodDefinition();
+            if (methodDefinition == nullptr) {
+                continue;
             }
+            auto item = ParseFunctionStyleWithCreateItem(methodDefinition, isCurrentToken);
+            result.AddItemToMethodList(item);
+            auto overLoads = methodDefinition->Overloads();
+            for (const auto *overLoadMethodDefinition : overLoads) {
+                auto overLoadItem = ParseFunctionStyleWithCreateItem(overLoadMethodDefinition, isCurrentToken);
+                result.AddItemToMethodList(overLoadItem);
+            }
+        } else if (node->IsClassProperty()) {
+            auto property = node->AsClassProperty();
+            if (property == nullptr) {
+                continue;
+            }
+            auto item = ParsePropertyStyleWithCreateItem(property, isCurrentToken);
+            result.AddItemToPropertyList(item);
         }
     }
     return result;
@@ -230,13 +299,29 @@ ir::AstNode *GetSuperClassNode(const ir::ClassDefinition *classDefinition)
 
 void ComputeClassHierarchyInfo(const ClassHierarchyInfo &deriveInfo, ClassHierarchyInfo &superInfo)
 {
-    auto deriveMethods = deriveInfo.GetMethodList();
+    auto deriveMethods = deriveInfo.GetMethodItemList();
     for (const auto &method : deriveMethods) {
-        superInfo.DeleteClassMethodItem(method.second);
+        superInfo.DeleteTargetItemInMethodList(method.second);
+    }
+    auto deriveProperties = deriveInfo.GetPropertyItemList();
+    for (const auto &property : deriveProperties) {
+        superInfo.DeleteTargetItemInPropertyList(property.second);
     }
 }
 
-void ProcessClassHierarchy(const ir::AstNode *token, const ClassHierarchyInfo &baseInfo, ClassHierarchy &result)
+void FillBaseClassHierarchyInfo(const ClassHierarchyInfo &extraInfo, ClassHierarchyInfo &baseInfo)
+{
+    auto extraMethods = extraInfo.GetMethodItemList();
+    for (const auto &method : extraMethods) {
+        baseInfo.AddItemToMethodList(method.second);
+    }
+    auto extraProperties = extraInfo.GetPropertyItemList();
+    for (const auto &property : extraProperties) {
+        baseInfo.AddItemToPropertyList(property.second);
+    }
+}
+
+void ProcessClassHierarchy(const ir::AstNode *token, ClassHierarchyInfo &baseInfo, ClassHierarchy &result)
 {
     if (token == nullptr || !token->IsIdentifier()) {
         return;
@@ -250,8 +335,10 @@ void ProcessClassHierarchy(const ir::AstNode *token, const ClassHierarchyInfo &b
     if (!className.empty()) {
         // Calculate the difference between the obtained parent class info and the current clicked node class info.
         ComputeClassHierarchyInfo(baseInfo, info);
-        if (info.GetClassName() == className && !info.GetMethodList().empty()) {
+        if (info.GetClassName() == className &&
+            (!info.GetMethodItemList().empty() || !info.GetPropertyItemList().empty())) {
             result.emplace_back(info);
+            FillBaseClassHierarchyInfo(info, baseInfo);
         }
     }
     auto superClass = GetSuperClassNode(classDefinition);

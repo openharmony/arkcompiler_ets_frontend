@@ -57,6 +57,7 @@ util::UString GenName(ArenaAllocator *const allocator)
 
 void SetSourceRangesRecursively(ir::AstNode *node, const lexer::SourceRange &range)
 {
+    ES2PANDA_ASSERT(node != nullptr);
     node->SetRange(range);
     node->IterateRecursively([](ir::AstNode *n) { n->SetRange(n->Parent()->Range()); });
 }
@@ -166,6 +167,7 @@ static bool IsGeneratedDynamicClass(ir::AstNode const *ast)
 static void ClearHelper(parser::Program *prog)
 {
     ResetGlobalClass(prog);
+    prog->ClearASTCheckedStatus();
     // #24256 Should be removed when code refactoring on checker is done and no ast node allocated in checker.
     auto &stmts = prog->Ast()->Statements();
     // clang-format off
@@ -262,6 +264,10 @@ void Recheck(PhaseManager *phaseManager, varbinder::ETSBinder *varBinder, checke
 // NOTE: used to get the declaration from identifier in Plugin API and LSP
 ir::AstNode *DeclarationFromIdentifier(const ir::Identifier *node)
 {
+    if (node == nullptr) {
+        return nullptr;
+    }
+
     auto idVar = node->Variable();
     if (idVar == nullptr) {
         return nullptr;

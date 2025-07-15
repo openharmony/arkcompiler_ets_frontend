@@ -108,6 +108,7 @@ static ir::OpaqueTypeNode *FindIterValueType(checker::ETSObjectType *type, Arena
                                    checker::PropertySearchFlags::SEARCH_INSTANCE_METHOD |
                                        checker::PropertySearchFlags::SEARCH_IN_INTERFACES |
                                        checker::PropertySearchFlags::SEARCH_IN_BASE);
+    ES2PANDA_ASSERT(itor != nullptr);
     auto const &sigs = itor->TsType()->AsETSFunctionType()->CallSignatures();
     checker::ETSObjectType *itorReturnType = nullptr;
     for (auto &sig : sigs) {
@@ -157,7 +158,8 @@ ir::Statement *ObjectIteratorLowering::ProcessObjectIterator(public_lib::Context
             declaration->Kind() != ir::VariableDeclaration::VariableDeclarationKind::CONST ? "let " : "const ";
         loopVariableIdent = declaration->Declarators().at(0U)->Id()->AsIdentifier()->Clone(allocator, nullptr);
     } else if (left->IsIdentifier()) {
-        loopVariableIdent = left->AsIdentifier()->Clone(allocator, nullptr);
+        loopVariableIdent = Gensym(allocator);
+        loopVariableIdent->SetName(left->AsIdentifier()->Name());
     } else {
         ES2PANDA_UNREACHABLE();
     }
@@ -170,6 +172,7 @@ ir::Statement *ObjectIteratorLowering::ProcessObjectIterator(public_lib::Context
     auto *const loweringResult = parser->CreateFormattedStatement(
         whileStatement, iterIdent, forOfStatement->Right(), nextIdent, iterIdent->Clone(allocator, nullptr),
         nextIdent->Clone(allocator, nullptr), loopVariableIdent, nextIdent->Clone(allocator, nullptr), typeNode);
+    ES2PANDA_ASSERT(loweringResult != nullptr);
     loweringResult->SetParent(forOfStatement->Parent());
     loweringResult->SetRange(forOfStatement->Range());
 
@@ -189,8 +192,7 @@ ir::Statement *ObjectIteratorLowering::ProcessObjectIterator(public_lib::Context
 bool ObjectIteratorLowering::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
     auto hasIterator = [](checker::Type const *const exprType) -> bool {
-        return exprType != nullptr &&
-               ((exprType->IsETSObjectType() && !exprType->IsETSStringType()) || exprType->IsETSTypeParameter());
+        return exprType != nullptr && (exprType->IsETSObjectType() || exprType->IsETSTypeParameter());
     };
 
     program->Ast()->TransformChildrenRecursively(

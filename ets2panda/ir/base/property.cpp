@@ -33,7 +33,7 @@ Property *Property::Clone(ArenaAllocator *const allocator, AstNode *const parent
     auto *const key = key_ != nullptr ? key_->Clone(allocator, nullptr)->AsExpression() : nullptr;
     auto *const value = value_ != nullptr ? value_->Clone(allocator, nullptr)->AsExpression() : nullptr;
     auto *const clone = allocator->New<Property>(Tag {}, *this, key, value);
-
+    ES2PANDA_ASSERT(clone != nullptr);
     if (key != nullptr) {
         key->SetParent(clone);
     }

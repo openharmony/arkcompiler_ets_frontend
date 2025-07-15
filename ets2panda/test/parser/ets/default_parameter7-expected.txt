@@ -983,14 +983,14 @@
                                     "decorators": [],
                                     "loc": {
                                       "start": {
-                                        "line": 1,
-                                        "column": 1,
-                                        "program": null
+                                        "line": 21,
+                                        "column": 36,
+                                        "program": "default_parameter7.ets"
                                       },
                                       "end": {
-                                        "line": 1,
-                                        "column": 1,
-                                        "program": null
+                                        "line": 21,
+                                        "column": 48,
+                                        "program": "default_parameter7.ets"
                                       }
                                     }
                                   },
@@ -999,26 +999,26 @@
                                     "value": "undefined",
                                     "loc": {
                                       "start": {
-                                        "line": 1,
-                                        "column": 3,
+                                        "line": 21,
+                                        "column": 36,
                                         "program": "default_parameter7.ets"
                                       },
                                       "end": {
-                                        "line": 1,
-                                        "column": 3,
+                                        "line": 21,
+                                        "column": 48,
                                         "program": "default_parameter7.ets"
                                       }
                                     }
                                   },
                                   "loc": {
                                     "start": {
-                                      "line": 1,
-                                      "column": 3,
+                                      "line": 21,
+                                      "column": 36,
                                       "program": "default_parameter7.ets"
                                     },
                                     "end": {
-                                      "line": 1,
-                                      "column": 3,
+                                      "line": 21,
+                                      "column": 48,
                                       "program": "default_parameter7.ets"
                                     }
                                   }
@@ -1029,14 +1029,14 @@
                                   "decorators": [],
                                   "loc": {
                                     "start": {
-                                      "line": 1,
-                                      "column": 1,
-                                      "program": null
+                                      "line": 21,
+                                      "column": 36,
+                                      "program": "default_parameter7.ets"
                                     },
                                     "end": {
-                                      "line": 1,
-                                      "column": 1,
-                                      "program": null
+                                      "line": 21,
+                                      "column": 48,
+                                      "program": "default_parameter7.ets"
                                     }
                                   }
                                 },
@@ -1107,39 +1107,39 @@
                                   },
                                   "loc": {
                                     "start": {
-                                      "line": 1,
-                                      "column": 3,
+                                      "line": 21,
+                                      "column": 36,
                                       "program": "default_parameter7.ets"
                                     },
                                     "end": {
-                                      "line": 1,
-                                      "column": 3,
+                                      "line": 21,
+                                      "column": 48,
                                       "program": "default_parameter7.ets"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
-                                    "line": 1,
-                                    "column": 3,
+                                    "line": 21,
+                                    "column": 36,
                                     "program": "default_parameter7.ets"
                                   },
                                   "end": {
-                                    "line": 1,
-                                    "column": 3,
+                                    "line": 21,
+                                    "column": 48,
                                     "program": "default_parameter7.ets"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
-                                  "line": 1,
-                                  "column": 3,
+                                  "line": 21,
+                                  "column": 36,
                                   "program": "default_parameter7.ets"
                                 },
                                 "end": {
-                                  "line": 1,
-                                  "column": 3,
+                                  "line": 21,
+                                  "column": 48,
                                   "program": "default_parameter7.ets"
                                 }
                               }
@@ -1148,13 +1148,13 @@
                           "kind": "let",
                           "loc": {
                             "start": {
-                              "line": 1,
-                              "column": 1,
+                              "line": 21,
+                              "column": 36,
                               "program": "default_parameter7.ets"
                             },
                             "end": {
-                              "line": 1,
-                              "column": 3,
+                              "line": 21,
+                              "column": 48,
                               "program": "default_parameter7.ets"
                             }
                           }

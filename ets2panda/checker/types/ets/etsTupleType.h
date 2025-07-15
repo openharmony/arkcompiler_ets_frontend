@@ -28,7 +28,10 @@ public:
     explicit ETSTupleType(ETSChecker *checker, const ArenaVector<Type *> &typeList)
         : Type(checker::TypeFlag::ETS_TUPLE),
           typeList_(typeList),
-          wrapperType_(checker->GlobalBuiltinTupleType(typeList_.size())->AsETSObjectType())
+          // NOLINTNEXTLINE(readability-implicit-bool-conversion)
+          wrapperType_(checker->GlobalBuiltinTupleType(typeList_.size()) != nullptr
+                           ? checker->GlobalBuiltinTupleType(typeList_.size())->AsETSObjectType()
+                           : nullptr)
     {
         typeFlags_ |= TypeFlag::ETS_TUPLE;
     }

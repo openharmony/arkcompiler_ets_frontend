@@ -18,7 +18,6 @@
 
 #include "util/arktsconfig.h"
 #include "util/importPathManager.h"
-#include "util/recursiveGuard.h"
 #include "innerSourceParser.h"
 #include "TypedParser.h"
 #include "ir/base/classDefinition.h"
@@ -70,6 +69,7 @@ public:
 
     void AddDirectImportsToDirectExternalSources(const ArenaVector<util::StringView> &directImportsFromMainSource,
                                                  parser::Program *newProg) const;
+    bool CheckDupAndReplace(Program *&oldProg, Program *newProg);
     ArenaVector<ir::ETSImportDeclaration *> ParseDefaultSources(std::string_view srcFile, std::string_view importSrc);
     lexer::LexerPosition HandleJsDocLikeComments();
 
@@ -142,8 +142,10 @@ public:
 
     void AddExternalSource(const std::vector<Program *> &programs);
     std::vector<Program *> ParseSources(bool firstSource = false);
+    static void AddGenExtenralSourceToParseList(public_lib::Context *ctx);
 
 private:
+    void ParseAndSetStdlib();
     NodeFormatType GetFormatPlaceholderType();
     ir::Statement *ParseStatementFormatPlaceholder() override;
     ir::Expression *ParseExpressionFormatPlaceholder();
@@ -207,6 +209,7 @@ private:
                                               ArenaVector<util::StringView> &directImportsFromMainSource);
     parser::Program *ParseSource(const SourceFile &sourceFile);
     ir::ETSModule *ParseETSGlobalScript(lexer::SourcePosition startLoc, ArenaVector<ir::Statement *> &statements);
+    void ParseFileHeaderFlag(lexer::SourcePosition startLoc, ArenaVector<ir::Statement *> *statements);
     ir::ETSModule *ParseImportsOnly(lexer::SourcePosition startLoc, ArenaVector<ir::Statement *> &statements);
     ir::AstNode *ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> *specifiers) override;
     void *ApplyAnnotationsToClassElement(ir::AstNode *property, ArenaVector<ir::AnnotationUsage *> &&annotations,
@@ -438,7 +441,6 @@ private:
 
     friend class ExternalSourceParser;
     friend class InnerSourceParser;
-    friend ir::Expression *HandleLeftParanthesis(ETSParser *parser, ExpressionParseFlags flags);
 
 private:
     uint32_t namespaceNestedRank_;
@@ -448,7 +450,6 @@ private:
     parser::Program *globalProgram_;
     std::vector<ir::AstNode *> insertingNodes_ {};
     std::unique_ptr<util::ImportPathManager> importPathManager_ {nullptr};
-    RecursiveContext recursiveCtx_;
 };
 
 class ExternalSourceParser {

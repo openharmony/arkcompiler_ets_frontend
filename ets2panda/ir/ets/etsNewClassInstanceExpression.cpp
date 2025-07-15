@@ -109,6 +109,7 @@ ETSNewClassInstanceExpression *ETSNewClassInstanceExpression::Clone(ArenaAllocat
                                                                     AstNode *const parent)
 {
     auto *const clone = allocator->New<ETSNewClassInstanceExpression>(*this, allocator);
+    ES2PANDA_ASSERT(clone);
     if (parent != nullptr) {
         clone->SetParent(parent);
     }

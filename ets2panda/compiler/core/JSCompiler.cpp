@@ -261,6 +261,7 @@ static void CompileStaticFieldInitializers(compiler::PandaGen *pg, compiler::VRe
         }
 
         if (prop->IsPrivateElement()) {
+            ES2PANDA_ASSERT(prop->Id() != nullptr);
             pg->ClassPrivateFieldAdd(prop, classReg, classReg, prop->Id()->Name());
             continue;
         }
@@ -395,6 +396,7 @@ void JSCompiler::Compile(const ir::ClassDefinition *node) const
     compiler::LocalRegScope lrs(pg, node->Scope());
 
     compiler::VReg baseReg = CompileHeritageClause(pg, node);
+    ES2PANDA_ASSERT(node->Ctor() != nullptr);
     util::StringView ctorId = node->Ctor()->Function()->Scope()->InternalName();
     util::BitSet compiled(node->Body().size());
 

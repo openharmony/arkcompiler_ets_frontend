@@ -33,6 +33,7 @@ SequenceExpression::SequenceExpression([[maybe_unused]] Tag const tag, SequenceE
 SequenceExpression *SequenceExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     auto *const clone = allocator->New<SequenceExpression>(Tag {}, *this, allocator);
+    ES2PANDA_ASSERT(clone != nullptr);
     if (parent != nullptr) {
         clone->SetParent(parent);
     }

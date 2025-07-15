@@ -32,7 +32,6 @@ using ark::es2panda::lsp::Initializer;
 
 class LspClassHierarchiesTests : public LSPAPITests {};
 
-std::vector<std::string> fileNames = {"wangz_test.ets"};
 std::vector<std::string> fileContents = {
     R"(
 interface Iaa {
@@ -119,6 +118,100 @@ TEST_F(LspClassHierarchiesTests, GetClassHierarchiesImpl_001)
 {
     constexpr size_t expectedInfoCount = 5;
     constexpr size_t tokenOffset = 600;
+
+    std::vector<std::string> fileNames = {"GetClassHierarchiesImpl_001_file1.ets"};
+
+    auto filePaths = CreateTempFile(fileNames, fileContents);
+    std::vector<ark::es2panda::SourceFile> sourceFiles;
+    for (size_t i = 0; i < filePaths.size(); ++i) {
+        sourceFiles.emplace_back(filePaths[i], fileContents[i]);
+    }
+    ASSERT_EQ(fileNames.size(), sourceFiles.size());
+    Initializer initializer;
+    size_t sourceIndex = 0;
+    auto filePath = std::string {sourceFiles[sourceIndex].filePath};
+    auto fileContent = std::string {sourceFiles[sourceIndex].source};
+    auto context = initializer.CreateContext(filePath.c_str(), ES2PANDA_STATE_CHECKED, fileContent.c_str());
+    std::vector<ark::es2panda::lsp::ClassHierarchyItemInfo> infos =
+        ark::es2panda::lsp::GetClassHierarchiesImpl(context, fileNames[sourceIndex], tokenOffset);
+    ASSERT_EQ(expectedInfoCount, infos.size());
+}
+
+TEST_F(LspClassHierarchiesTests, GetClassHierarchiesImpl_002)
+{
+    constexpr size_t expectedInfoCount = 5;
+    constexpr size_t tokenOffset = 1100;
+
+    std::vector<std::string> fileNames = {"GetClassHierarchiesImpl_002_file1.ets"};
+
+    auto filePaths = CreateTempFile(fileNames, fileContents);
+    std::vector<ark::es2panda::SourceFile> sourceFiles;
+    for (size_t i = 0; i < filePaths.size(); ++i) {
+        sourceFiles.emplace_back(filePaths[i], fileContents[i]);
+    }
+    ASSERT_EQ(fileNames.size(), sourceFiles.size());
+    Initializer initializer;
+    size_t sourceIndex = 0;
+    auto filePath = std::string {sourceFiles[sourceIndex].filePath};
+    auto fileContent = std::string {sourceFiles[sourceIndex].source};
+    auto context = initializer.CreateContext(filePath.c_str(), ES2PANDA_STATE_CHECKED, fileContent.c_str());
+    std::vector<ark::es2panda::lsp::ClassHierarchyItemInfo> infos =
+        ark::es2panda::lsp::GetClassHierarchiesImpl(context, fileNames[sourceIndex], tokenOffset);
+    ASSERT_EQ(expectedInfoCount, infos.size());
+}
+
+TEST_F(LspClassHierarchiesTests, GetClassHierarchiesImpl_003)
+{
+    constexpr size_t expectedInfoCount = 12;
+    constexpr size_t tokenOffset = 100;
+
+    std::vector<std::string> fileNames = {"GetClassHierarchiesImpl_003_file1.ets"};
+
+    auto filePaths = CreateTempFile(fileNames, fileContents);
+    std::vector<ark::es2panda::SourceFile> sourceFiles;
+    for (size_t i = 0; i < filePaths.size(); ++i) {
+        sourceFiles.emplace_back(filePaths[i], fileContents[i]);
+    }
+    ASSERT_EQ(fileNames.size(), sourceFiles.size());
+    Initializer initializer;
+    size_t sourceIndex = 0;
+    auto filePath = std::string {sourceFiles[sourceIndex].filePath};
+    auto fileContent = std::string {sourceFiles[sourceIndex].source};
+    auto context = initializer.CreateContext(filePath.c_str(), ES2PANDA_STATE_CHECKED, fileContent.c_str());
+    std::vector<ark::es2panda::lsp::ClassHierarchyItemInfo> infos =
+        ark::es2panda::lsp::GetClassHierarchiesImpl(context, fileNames[sourceIndex], tokenOffset);
+    ASSERT_EQ(expectedInfoCount, infos.size());
+}
+
+TEST_F(LspClassHierarchiesTests, GetClassHierarchiesImpl_004)
+{
+    constexpr size_t expectedInfoCount = 7;
+    constexpr size_t tokenOffset = 130;
+
+    std::vector<std::string> fileNames = {"GetClassHierarchiesImpl_004_file1.ets"};
+
+    auto filePaths = CreateTempFile(fileNames, fileContents);
+    std::vector<ark::es2panda::SourceFile> sourceFiles;
+    for (size_t i = 0; i < filePaths.size(); ++i) {
+        sourceFiles.emplace_back(filePaths[i], fileContents[i]);
+    }
+    ASSERT_EQ(fileNames.size(), sourceFiles.size());
+    Initializer initializer;
+    size_t sourceIndex = 0;
+    auto filePath = std::string {sourceFiles[sourceIndex].filePath};
+    auto fileContent = std::string {sourceFiles[sourceIndex].source};
+    auto context = initializer.CreateContext(filePath.c_str(), ES2PANDA_STATE_CHECKED, fileContent.c_str());
+    std::vector<ark::es2panda::lsp::ClassHierarchyItemInfo> infos =
+        ark::es2panda::lsp::GetClassHierarchiesImpl(context, fileNames[sourceIndex], tokenOffset);
+    ASSERT_EQ(expectedInfoCount, infos.size());
+}
+
+TEST_F(LspClassHierarchiesTests, GetClassHierarchiesImpl_005)
+{
+    constexpr size_t expectedInfoCount = 5;
+    constexpr size_t tokenOffset = 1000;
+
+    std::vector<std::string> fileNames = {"GetClassHierarchiesImpl_005_file1.ets"};
 
     auto filePaths = CreateTempFile(fileNames, fileContents);
     std::vector<ark::es2panda::SourceFile> sourceFiles;

@@ -161,6 +161,19 @@ function getModuleDependencies(modulePath: string, visited = new Set<string>()):
   return Array.from(new Set([...dependencies, ...nestedDependencies]));
 }
 
+function createMapEntryForPlugin(buildSdkPath: string, pluginName: string): string {
+  return path.join(buildSdkPath, 'build-tools', 'ui-plugins', 'lib', pluginName, 'index');
+}
+
+function createPluginMap(buildSdkPath: string): Record<string, string> {
+  let pluginMap: Record<string, string> = {};
+  const pluginList: string[] = ['ui-syntax-plugins', 'ui-plugins', 'memo-plugins'];
+  for (const plugin of pluginList) {
+    pluginMap[plugin] = createMapEntryForPlugin(buildSdkPath, plugin);
+  }
+  return pluginMap;
+}
+
 export function generateBuildConfigs(
   buildSdkPath: string,
   projectRoot: string,
@@ -179,6 +192,7 @@ export function generateBuildConfigs(
   for (const module of definedModules) {
     const modulePath = module.srcPath;
     const compileFiles = new Set(getEtsFiles(modulePath));
+    const pluginMap = createPluginMap(buildSdkPath);
 
     // Get recursive dependencies
     const dependencies = getModuleDependencies(modulePath);
@@ -187,10 +201,7 @@ export function generateBuildConfigs(
     }
 
     allBuildConfigs[module.name] = {
-      plugins: {
-        'ui-plugins': path.join(buildSdkPath, 'build-tools', 'ui-plugins', 'lib', 'ui-plugins', 'index'),
-        'memo-plugin': path.join(buildSdkPath, 'build-tools', 'ui-plugins', 'lib', 'memo-plugins', 'index')
-      },
+      plugins: pluginMap,
       arkts: {},
       arktsGlobal: {},
       compileFiles: Array.from(compileFiles),

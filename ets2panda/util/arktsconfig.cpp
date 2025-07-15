@@ -341,6 +341,7 @@ std::optional<std::string> ArkTsConfig::ReadConfig(const std::string &path)
 
 static std::string ValueOrEmptyString(const JsonObject::JsonObjPointer *json, const std::string &key)
 {
+    ES2PANDA_ASSERT(json != nullptr);
     auto res = json->get()->GetValue<JsonObject::StringT>(key);
     return (res != nullptr) ? *res : "";
 }
@@ -384,7 +385,9 @@ bool ArkTsConfig::ParseCompilerOptions(std::string &arktsConfigDir, std::unorder
 
     // Parse "useUrl"
     if (compilerOptions->get()->HasKey(USE_EMPTY_PACKAGE)) {
-        useUrl_ = *(compilerOptions->get()->GetValue<JsonObject::BoolT>(USE_EMPTY_PACKAGE));
+        auto *useUrl = compilerOptions->get()->GetValue<JsonObject::BoolT>(USE_EMPTY_PACKAGE);
+        ES2PANDA_ASSERT(useUrl != nullptr);
+        useUrl_ = *useUrl;
     }
 
     // Parse "dependencies"

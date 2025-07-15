@@ -191,6 +191,7 @@ ir::Statement *ETSParser::ParseTopLevelDeclStatement(StatementParsingFlags flags
     switch (token.Type()) {
         case lexer::TokenType::KEYW_FUNCTION: {
             result = ParseFunctionDeclaration(false, memberModifiers);
+            ES2PANDA_ASSERT(result != nullptr);
             result->SetStart(startLoc);
             break;
         }
@@ -331,7 +332,7 @@ ir::Statement *ETSParser::ParseTryStatement()
 
     if (catchClauses.empty() && finalizer == nullptr) {
         LogError(diagnostic::MISSING_CATCH_OR_FINALLY_AFTER_TRY, {}, startLoc);
-        return nullptr;
+        return AllocBrokenStatement(startLoc);
     }
 
     lexer::SourcePosition endLoc = finalizer != nullptr ? finalizer->End() : catchClauses.back()->End();
@@ -339,6 +340,7 @@ ir::Statement *ETSParser::ParseTryStatement()
     ArenaVector<std::pair<compiler::LabelPair, const ir::Statement *>> finalizerInsertions(Allocator()->Adapter());
 
     auto *tryStatement = AllocNode<ir::TryStatement>(body, std::move(catchClauses), finalizer, finalizerInsertions);
+    ES2PANDA_ASSERT(tryStatement != nullptr);
     tryStatement->SetRange({startLoc, endLoc});
     ConsumeSemicolon(tryStatement);
 
@@ -350,9 +352,13 @@ ir::Statement *ETSParser::ParseClassStatement([[maybe_unused]] StatementParsingF
                                               ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags modFlags)
 {
     modFlags |= ParseClassModifiers();
-    return ParseClassDeclaration(modifiers | ir::ClassDefinitionModifiers::ID_REQUIRED |
-                                     ir::ClassDefinitionModifiers::CLASS_DECL | ir::ClassDefinitionModifiers::LOCAL,
-                                 modFlags);
+    const auto &rangeClass = Lexer()->GetToken().Loc();
+    LogError(diagnostic::ILLEGAL_START_STRUCT_CLASS, {"CLASS"}, rangeClass.start);
+    // Try to parse class and drop the result.
+    ParseClassDeclaration(modifiers | ir::ClassDefinitionModifiers::ID_REQUIRED |
+                              ir::ClassDefinitionModifiers::CLASS_DECL | ir::ClassDefinitionModifiers::LOCAL,
+                          modFlags);
+    return AllocBrokenStatement(rangeClass);
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
@@ -360,10 +366,11 @@ ir::Statement *ETSParser::ParseStructStatement([[maybe_unused]] StatementParsing
                                                ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags modFlags)
 {
     const auto &rangeStruct = Lexer()->GetToken().Loc();
-    LogError(diagnostic::ILLEGAL_START_STRUCT, {}, rangeStruct.start);
+    LogError(diagnostic::ILLEGAL_START_STRUCT_CLASS, {"STRUCT"}, rangeStruct.start);
+    // Try to parse struct and drop the result.
     ParseClassDeclaration(modifiers | ir::ClassDefinitionModifiers::ID_REQUIRED |
                               ir::ClassDefinitionModifiers::CLASS_DECL | ir::ClassDefinitionModifiers::LOCAL,
-                          modFlags);  // Try to parse struct and drop the result.
+                          modFlags);
     return AllocBrokenStatement(rangeStruct);
 }
 

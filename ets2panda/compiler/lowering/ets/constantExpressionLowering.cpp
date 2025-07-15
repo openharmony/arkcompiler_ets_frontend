@@ -346,6 +346,7 @@ ir::AstNode *ConstantExpressionLowering::FoldBinaryBooleanConstant(ir::BinaryExp
     }
 
     auto resNode = util::NodeAllocator::Alloc<ir::BooleanLiteral>(context_->allocator, result);
+    ES2PANDA_ASSERT(resNode);
     resNode->SetParent(expr->Parent());
     resNode->SetRange(expr->Range());
     return resNode;
@@ -545,6 +546,7 @@ ir::AstNode *ConstantExpressionLowering::FoldBinaryStringConstant(ir::BinaryExpr
     auto const rhs = expr->Right()->AsLiteral();
     auto const resStr = util::UString(lhs->ToString() + rhs->ToString(), context_->allocator).View();
     auto resNode = util::NodeAllocator::Alloc<ir::StringLiteral>(context_->allocator, resStr);
+    ES2PANDA_ASSERT(resNode);
     resNode->SetParent(expr->Parent());
     resNode->SetRange(expr->Range());
     return resNode;
@@ -758,6 +760,7 @@ ir::AstNode *ConstantExpressionLowering::FoldTSAsExpression(ir::TSAsExpression *
 ir::AstNode *ConstantExpressionLowering::FoldMultilineString(ir::TemplateLiteral *expr)
 {
     auto *result = util::NodeAllocator::Alloc<ir::StringLiteral>(context_->allocator, expr->GetMultilineString());
+    ES2PANDA_ASSERT(result);
     result->SetParent(expr->Parent());
     result->SetRange(expr->Range());
     return result;

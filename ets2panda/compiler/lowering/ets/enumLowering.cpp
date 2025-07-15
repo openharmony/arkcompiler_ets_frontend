@@ -39,6 +39,7 @@ namespace {
 [[nodiscard]] ir::Identifier *MakeParamRefIdent(public_lib::Context *ctx, ir::ETSParameterExpression *paramExpr)
 {
     auto *const refIdent = ctx->AllocNode<ir::Identifier>(paramExpr->Ident()->Name(), ctx->Allocator());
+    ES2PANDA_ASSERT(refIdent);
     refIdent->SetRange(paramExpr->Ident()->Range());
     refIdent->SetVariable(paramExpr->Ident()->Variable());
     return refIdent;
@@ -151,6 +152,7 @@ template <typename ElementMaker>
     auto *const arrayClassProp = AllocNode<ir::ClassProperty>(
         arrayIdent, arrayExpr, typeAnnotation,
         ir::ModifierFlags::STATIC | ir::ModifierFlags::PRIVATE | ir::ModifierFlags::READONLY, Allocator(), false);
+    ES2PANDA_ASSERT(arrayClassProp != nullptr);
     arrayClassProp->SetParent(enumClass);
     enumClass->Body().push_back(arrayClassProp);
 
@@ -277,6 +279,7 @@ ir::ClassDeclaration *EnumLoweringPhase::CreateClass(ir::TSEnumDeclaration *cons
 
     if (enumDecl->IsExported()) {
         classDecl->AddModifier(ir::ModifierFlags::EXPORT);
+        program_->GlobalClass()->AddToExportedClasses(classDecl);
     } else if (enumDecl->IsDefaultExported()) {
         classDecl->AddModifier(ir::ModifierFlags::DEFAULT_EXPORT);
     }
@@ -315,6 +318,7 @@ void EnumLoweringPhase::CreateCCtorForEnumClass(ir::ClassDefinition *const enumC
     auto *const methodDef =
         AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::METHOD, identClone, funcExpr,
                                         ir::ModifierFlags::PRIVATE | ir::ModifierFlags::STATIC, Allocator(), false);
+    ES2PANDA_ASSERT(methodDef != nullptr);
     methodDef->SetParent(enumClass);
     enumClass->Body().push_back(methodDef);
 }
@@ -413,13 +417,17 @@ void EnumLoweringPhase::ProcessEnumClassDeclaration(ir::TSEnumDeclaration *const
     auto *ident = enumClassDecl->Definition()->Ident();
     if (flags.isLocal) {
         auto *scope = NearestScope(enumDecl->Parent());
+        ES2PANDA_ASSERT(scope);
         auto localCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(varbinder_, scope);
+        ES2PANDA_ASSERT(scope);
         scope->EraseBinding(ident->Name());
         InitScopesPhaseETS::RunExternalNode(enumClassDecl, varbinder_);
         var = varbinder_->GetScope()->FindLocal(ident->Name(), varbinder::ResolveBindingOptions::ALL);
     } else if (flags.isTopLevel) {
         auto *scope = program_->GlobalClassScope();
+        ES2PANDA_ASSERT(scope);
         auto localCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(varbinder_, scope);
+        ES2PANDA_ASSERT(scope);
         scope->StaticDeclScope()->EraseBinding(ident->Name());
         InitScopesPhaseETS::RunExternalNode(enumClassDecl, varbinder_);
         var = varbinder_->GetScope()->FindLocal(ident->Name(), varbinder::ResolveBindingOptions::ALL);
@@ -791,11 +799,13 @@ ir::VariableDeclaration *CreateForLoopInitVariableDeclaration(public_lib::Contex
 {
     auto *const init = ctx->AllocNode<ir::NumberLiteral>("0");
     auto *const decl = ctx->AllocNode<ir::VariableDeclarator>(ir::VariableDeclaratorFlag::LET, loopIdentifier, init);
+    ES2PANDA_ASSERT(loopIdentifier);
     loopIdentifier->SetParent(decl);
     ArenaVector<ir::VariableDeclarator *> decls(ctx->Allocator()->Adapter());
     decls.push_back(decl);
     auto *const declaration = ctx->AllocNode<ir::VariableDeclaration>(
         ir::VariableDeclaration::VariableDeclarationKind::LET, ctx->Allocator(), std::move(decls));
+    ES2PANDA_ASSERT(decl);
     decl->SetParent(declaration);
     return declaration;
 }

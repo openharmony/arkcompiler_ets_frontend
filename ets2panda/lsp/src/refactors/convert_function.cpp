@@ -15,10 +15,11 @@
 
 #include <string_view>
 #include "refactors/convert_function.h"
-#include "compiler/lowering/util.h"
+#include "refactor_provider.h"
 #include "internal_api.h"
 
 namespace ark::es2panda::lsp {
+
 ConvertFunctionRefactor::ConvertFunctionRefactor()
 {
     AddKind(std::string(TO_ANONYMOUS_FUNCTION_ACTION.kind));
@@ -26,27 +27,64 @@ ConvertFunctionRefactor::ConvertFunctionRefactor()
     AddKind(std::string(TO_ARROW_FUNCTION_ACTION.kind));
 }
 
-ApplicableRefactorInfo ConvertFunctionRefactor::GetAvailableActions(es2panda_Context *context, std::string kind,
-                                                                    size_t position)
+bool HasArrowFunction(ark::es2panda::ir::AstNode *node)
 {
+    if (!node->IsCallExpression() && !node->IsClassProperty() && !node->IsVariableDeclarator()) {
+        return false;
+    }
+    if ((node->IsClassProperty() && node->AsClassProperty()->Value() != nullptr &&
+         node->AsClassProperty()->Value()->IsArrowFunctionExpression()) ||
+        (node->IsVariableDeclarator() && node->AsVariableDeclarator()->Init() != nullptr &&
+         node->AsVariableDeclarator()->Init()->IsArrowFunctionExpression())) {
+        return true;
+    }
+    if (node->IsCallExpression()) {
+        auto arguments = node->AsCallExpression()->Arguments();
+        for (auto argument : arguments) {
+            if (argument->IsArrowFunctionExpression()) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+ApplicableRefactorInfo ConvertFunctionRefactor::GetAvailableActions(const RefactorContext &refContext) const
+{
+    es2panda_Context *context = refContext.context;
+    size_t position = refContext.span.pos;
+
     ApplicableRefactorInfo res;
-    if (TO_NAMED_FUNCTION_ACTION.kind.substr(0, kind.length()) != kind) {
+
+    if (!IsKind(refContext.kind)) {
         return res;
     }
+
     auto node = GetTouchingToken(context, position, false);
-    if (node == nullptr || !node->IsIdentifier()) {
+    if (node == nullptr) {
         return res;
     }
-    auto nodeDecl = compiler::DeclarationFromIdentifier(node->AsIdentifier());
-    if (nodeDecl->IsClassProperty() && nodeDecl->AsClassProperty()->Value()->IsArrowFunctionExpression()) {
+    auto cb = [](ir::AstNode *ancestorNode) { return HasArrowFunction(ancestorNode); };
+    auto ancestor = FindAncestor(node, cb);
+    if (ancestor != nullptr && ancestor->IsClassProperty()) {
         res.name = refactor_name::CONVERT_FUNCTION_REFACTOR_NAME;
         res.description = refactor_description::CONVERT_FUNCTION_REFACTOR_DESC;
         res.action.kind = std::string(TO_NAMED_FUNCTION_ACTION.kind);
         res.action.name = std::string(TO_NAMED_FUNCTION_ACTION.name);
         res.action.description = std::string(TO_NAMED_FUNCTION_ACTION.description);
-        return res;
     }
 
     return res;
 }
+
+std::unique_ptr<RefactorEditInfo> ConvertFunctionRefactor::GetEditsForAction(const RefactorContext &context,
+                                                                             const std::string &actionName) const
+{
+    (void)context;
+    (void)actionName;
+    return std::make_unique<RefactorEditInfo>();
+}
+// NOLINTNEXTLINE(fuchsia-statically-constructed-objects, cert-err58-cpp)
+AutoRefactorRegister<ConvertFunctionRefactor> g_convertFunctionRefactorRegister("ConvertFunctionRefactor");
+
 }  // namespace ark::es2panda::lsp

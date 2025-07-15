@@ -14,7 +14,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { KNativePointer as KPtr, KInt, KBoolean, KNativePointer, KDouble, KUInt, KStringPtr } from './InteropTypes';
+import { KNativePointer as KPtr, KInt, KBoolean, KNativePointer, KDouble, KUInt, KStringPtr, KInt32ArrayPtr } from './InteropTypes';
 import { Es2pandaNativeModule as GeneratedEs2pandaNativeModule } from './generated/Es2pandaNativeModule';
 import { loadNativeModuleLibrary, registerNativeModuleLibraryName } from './loadLibraries';
 import { throwError } from './utils';
@@ -209,19 +209,23 @@ export class Es2pandaNativeModule {
     throw new Error('Not implemented');
   }
 
-  _getMethodListFromClassHierarchyInfo(ptr: KNativePointer): KPtr {
+  _getMethodItemsFromClassHierarchyInfo(ptr: KNativePointer): KPtr {
     throw new Error('Not implemented');
   }
 
-  _getDetailFromClassMethodItem(ptr: KNativePointer): KPtr {
+  _getPropertyItemsFromClassHierarchyInfo(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getDetailFromClassHierarchyItem(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getAccessModifierStyleFromClassHierarchyItem(ptr: KNativePointer): KInt {
     throw new Error('Not implemented');
   }
 
   _getSetterStyleFromClassMethodItem(ptr: KNativePointer): KInt {
-    throw new Error('Not implemented');
-  }
-
-  _getAccessModifierStyleFromClassMethodItem(ptr: KNativePointer): KInt {
     throw new Error('Not implemented');
   }
 
@@ -345,11 +349,7 @@ export class Es2pandaNativeModule {
     throw new Error('Not implemented');
   }
 
-  _getRefactorAction(ptr: KNativePointer): KPtr {
-    throw new Error('Not implemented');
-  }
-
-  _getApplicableRefactors(context: KNativePointer, kind: String, position: number): KPtr {
+  _getApplicableRefactorAction(ptr: KNativePointer): KPtr {
     throw new Error('Not implemented');
   }
 
@@ -358,6 +358,14 @@ export class Es2pandaNativeModule {
   }
 
   _getApplicableRefactorDescription(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getApplicableRefactors(context: KNativePointer, kind: String, position: KInt): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getApplicableRefactorInfoList(ptr: KNativePointer): KPtr {
     throw new Error('Not implemented');
   }
 
@@ -720,7 +728,36 @@ export class Es2pandaNativeModule {
     throw new Error('Not implemented');
   }
 
-  _getSafeDeleteInfo(context: KNativePointer, position: KInt, path: String): boolean {
+  _getSafeDeleteInfo(context: KNativePointer, position: KInt): boolean {
+    throw new Error('Not implemented');
+  }
+
+  _getCodeFixesAtPosition(context: KNativePointer, startPosition: KInt, endPosition: KInt,
+    errorCodesPtr: KInt32ArrayPtr, codeLength: KInt): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getCodeFixActionInfos(infoPtr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getFileTextChangesFromCodeActionInfo(infoPtr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getDescriptionFromCodeActionInfo(infoPtr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getFixNameFromCodeFixActionInfo(infoPtr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getFixIdFromCodeFixActionInfo(infoPtr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getFixAllDescriptionFromCodeFixActionInfo(infoPtr: KNativePointer): KPtr {
     throw new Error('Not implemented');
   }
 

@@ -86,6 +86,7 @@ void GenericBridgesPhase::AddGenericBridge(ir::ClassDefinition const *const clas
 
     auto *const bridgeMethod =
         parser->CreateFormattedClassMethodDefinition(sourceCode, typeNodes)->AsMethodDefinition();
+    ES2PANDA_ASSERT(bridgeMethod);
     bridgeMethod->AddModifier(methodDefinition->Modifiers());
     bridgeMethod->ClearModifier(ir::ModifierFlags::NATIVE | ir::ModifierFlags::ABSTRACT);
     bridgeMethod->AddAstNodeFlags(methodDefinition->GetAstNodeFlags());
@@ -143,6 +144,7 @@ void GenericBridgesPhase::ProcessScriptFunction(ir::ClassDefinition const *const
 
     //  We are not interested in functions that either don't have type parameters at all
     //  or have type parameters that are not modified in the derived class
+    ES2PANDA_ASSERT(baseFunction);
     auto const *baseSignature1 = baseFunction->Signature()->Substitute(relation, substitutions.baseConstraints);
     if (baseSignature1 == baseFunction->Signature()) {
         return;
@@ -214,6 +216,7 @@ void GenericBridgesPhase::CreateGenericBridges(ir::ClassDefinition const *const 
         if (item->IsMethodDefinition()) {
             // Skip `static`, `final` and special methods...
             auto *const method = item->AsMethodDefinition();
+            ES2PANDA_ASSERT(method->Id());
             if (method->Kind() != ir::MethodDefinitionKind::METHOD || method->IsStatic() || method->IsFinal() ||
                 method->Id()->Name().Utf8().find("lambda$invoke$") != std::string_view::npos) {
                 continue;
@@ -272,7 +275,7 @@ void GenericBridgesPhase::ProcessInterfaces(ir::ClassDefinition *const classDefi
             !typeParameters.empty()) {
             if (Substitutions substitutions = GetSubstitutions(interfaceType, typeParameters);
                 // NOLINTNEXTLINE(clang-analyzer-core.CallAndMessage)
-                !substitutions.derivedSubstitutions->empty()) {
+                (substitutions.derivedSubstitutions != nullptr) && !substitutions.derivedSubstitutions->empty()) {
                 ES2PANDA_ASSERT(interfaceType->GetDeclNode()->IsTSInterfaceDeclaration());
                 auto const &interfaceBody = interfaceType->GetDeclNode()->AsTSInterfaceDeclaration()->Body()->Body();
                 CreateGenericBridges(classDefinition, substitutions, interfaceBody);
@@ -303,6 +306,7 @@ ir::ClassDefinition *GenericBridgesPhase::ProcessClassDefinition(ir::ClassDefini
     //  Check if the class derived from base generic class has either explicit class type substitutions
     //  or type parameters with narrowing constraints.
     if (Substitutions substitutions = GetSubstitutions(superType, typeParameters);
+        (substitutions.derivedSubstitutions != nullptr) &&
         // NOLINTNEXTLINE(clang-analyzer-core.CallAndMessage)
         !substitutions.derivedSubstitutions->empty()) {
         // If it has, then probably the generic bridges should be created.

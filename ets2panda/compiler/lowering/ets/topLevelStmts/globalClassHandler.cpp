@@ -14,6 +14,7 @@
  */
 
 #include "compiler/lowering/ets/topLevelStmts/globalClassHandler.h"
+#include <algorithm>
 #include "compiler/lowering/util.h"
 
 #include "ir/statements/classDeclaration.h"
@@ -59,13 +60,69 @@ std::string AddToNamespaceChain(std::string chain, std::string name)
     return chain + "." + name;
 }
 
-void GlobalClassHandler::CollectNamespaceExportedClasses(ir::ClassDefinition *classDef)
+void GlobalClassHandler::CollectNamespaceExportedClasses(parser::Program *program, ir::ClassDefinition *classDef)
 {
-    CollectExportedClasses(classDef, classDef->Body());
+    CollectExportedClasses(program, classDef, classDef->Body());
+}
+
+void GlobalClassHandler::CollectReExportedClasses(parser::Program *program, ir::ClassDefinition *classDef,
+                                                  const ir::ETSReExportDeclaration *reExport)
+{
+    auto importDecl = reExport->GetETSImportDeclarations();
+    const auto importPath = reExport->GetETSImportDeclarations()->ImportMetadata().resolvedSource;
+    parser::Program *extProg = nullptr;
+    // Search Correct external program by comparing importPath and absolutePath
+    for (auto &[_, progs] : program->DirectExternalSources()) {
+        auto it = std::find_if(progs.begin(), progs.end(),
+                               [&](const auto *prog) { return prog->AbsoluteName() == importPath; });
+        if (it != progs.end()) {
+            extProg = *it;
+            break;
+        }
+    }
+    if (extProg == nullptr) {
+        return;
+    }
+    auto &externalExportedClasses = extProg->GlobalClass()->ExportedClasses();
+    const auto &specifiers = importDecl->Specifiers();
+    bool needAddETSGlobal = false;
+    for (const auto *specifier : specifiers) {
+        if (specifier->IsImportNamespaceSpecifier()) {
+            classDef->BatchAddToExportedClasses(externalExportedClasses);
+            break;
+        }
+        auto found = std::find_if(externalExportedClasses.begin(), externalExportedClasses.end(),
+                                  [&specifier](const ir::ClassDeclaration *classDecl) {
+                                      return specifier->IsImportSpecifier() &&
+                                             specifier->AsImportSpecifier()->Imported()->Name() ==
+                                                 // CC-OFFNXT(G.FMT.02-CPP) solid logic
+                                                 classDecl->Definition()->Ident()->Name();
+                                      // CC-OFFNXT(G.FMT.02-CPP) solid logic
+                                  });
+        if (found == externalExportedClasses.end()) {
+            needAddETSGlobal = true;
+            continue;
+        }
+        classDef->AddToExportedClasses(*found);
+    }
+
+    /*
+     *        a.ets:                                 b.ets:
+     * export let ident = 10             export {ident, A, B} from './a'
+     * export class A {}
+     * export class B {}
+     *              Note: (`a.ets` exported classes: A, B and ETSGLOBAL)
+     *
+     * In this re-export declaration, we need manually add ETSGLOBAL to exportedClasses.
+     */
+    if (needAddETSGlobal) {
+        classDef->AddToExportedClasses(extProg->GlobalClass()->Parent()->AsClassDeclaration());
+    }
 }
 
 template <class Node>
-void GlobalClassHandler::CollectExportedClasses(ir::ClassDefinition *classDef, const ArenaVector<Node *> &statements)
+void GlobalClassHandler::CollectExportedClasses(parser::Program *program, ir::ClassDefinition *classDef,
+                                                const ArenaVector<Node *> &statements)
 {
     for (const auto *statement : statements) {
         if (!statement->IsExported()) {
@@ -73,7 +130,26 @@ void GlobalClassHandler::CollectExportedClasses(ir::ClassDefinition *classDef, c
         }
         if (statement->IsClassDeclaration()) {
             classDef->AddToExportedClasses(statement->AsClassDeclaration());
+            continue;
         }
+        if (statement->IsETSReExportDeclaration()) {
+            CollectReExportedClasses(program, classDef, statement->AsETSReExportDeclaration());
+        }
+    }
+    auto globalClass = program->GlobalClass();
+    bool foundExport = false;
+    // Add ETSGLOBAL to Module in case of export let a = 10
+    std::function<void(ir::AstNode *)> findExportInGlobal = [&findExportInGlobal, &foundExport](ir::AstNode *node) {
+        if (node->IsExported()) {
+            foundExport = true;
+            return;
+        }
+        node->Iterate(findExportInGlobal);
+    };
+    globalClass->Iterate(findExportInGlobal);
+    if (foundExport) {
+        auto globalClassDecl = globalClass->Parent()->AsClassDeclaration();
+        classDef->AddToExportedClasses(globalClassDecl);
     }
 }
 
@@ -86,6 +162,7 @@ ir::ClassDeclaration *GlobalClassHandler::CreateTransformedClass(ir::ETSModule *
     auto *classDef = NodeAllocator::Alloc<ir::ClassDefinition>(
         allocator_, allocator_, ident, ir::ClassDefinitionModifiers::CLASS_DECL, ir::ModifierFlags::ABSTRACT,
         Language(Language::Id::ETS));
+    ES2PANDA_ASSERT(classDef != nullptr);
     classDef->SetRange(ns->Range());
     classDef->AddModifier(ns->Modifiers());
     auto *classDecl = NodeAllocator::Alloc<ir::ClassDeclaration>(allocator_, classDef, allocator_);
@@ -103,6 +180,7 @@ ir::ClassDeclaration *GlobalClassHandler::CreateTransformedClass(ir::ETSModule *
 
 static void InsertInGlobal(ir::ClassDefinition *globalClass, ir::AstNode *node)
 {
+    ES2PANDA_ASSERT(node != nullptr);
     globalClass->Body().insert(globalClass->Body().begin(), node);
     node->SetParent(globalClass);
 }
@@ -145,6 +223,7 @@ void GlobalClassHandler::SetupGlobalMethods(parser::Program *program, ArenaVecto
     ir::MethodDefinition *initMethod =
         CreateGlobalMethod(compiler::Signatures::INIT_METHOD, std::move(initStatements), program);
     InsertInGlobal(globalClass, initMethod);
+    ES2PANDA_ASSERT(initMethod->Function());
     if (!initMethod->Function()->Body()->AsBlockStatement()->Statements().empty()) {
         AddInitCallToStaticBlock(globalClass, initMethod);
     }
@@ -209,6 +288,7 @@ void GlobalClassHandler::TransformBrokenNamespace(ir::AstNode *node, parser::Pro
 ir::ClassDeclaration *GlobalClassHandler::TransformNamespace(ir::ETSModule *ns, parser::Program *program)
 {
     ir::ClassDeclaration *const globalDecl = CreateTransformedClass(ns);
+    ES2PANDA_ASSERT(globalDecl != nullptr);
     ir::ClassDefinition *const globalClass = globalDecl->Definition();
 
     ArenaVector<GlobalStmts> immediateInitializers(allocator_->Adapter());
@@ -243,7 +323,7 @@ ir::ClassDeclaration *GlobalClassHandler::TransformNamespace(ir::ETSModule *ns, 
     for (auto *cls : globalClasses) {
         globalClass->Body().emplace_back(cls);
         cls->SetParent(globalClass);
-        CollectNamespaceExportedClasses(cls->Definition());
+        CollectNamespaceExportedClasses(program, cls->AsClassDeclaration()->Definition());
     }
 
     // Add rest statement, such as type declaration
@@ -261,7 +341,7 @@ void GlobalClassHandler::CollectProgramGlobalClasses(parser::Program *program, A
     for (auto cls : classDecls) {
         program->Ast()->Statements().push_back(cls);
         cls->SetParent(program->Ast());
-        CollectNamespaceExportedClasses(cls->Definition());
+        CollectNamespaceExportedClasses(program, cls->Definition());
     }
 }
 
@@ -294,6 +374,7 @@ void GlobalClassHandler::SetupGlobalClass(const ArenaVector<parser::Program *> &
 
     ArenaUnorderedSet<util::StringView> packageInitializerBlockCount(allocator_->Adapter());
     ir::ClassDeclaration *const globalDecl = CreateGlobalClass(globalProgram);
+    ES2PANDA_ASSERT(globalDecl != nullptr);
     ir::ClassDefinition *const globalClass = globalDecl->Definition();
 
     // NOTE(vpukhov): a clash inside program list is possible
@@ -329,7 +410,7 @@ void GlobalClassHandler::SetupGlobalClass(const ArenaVector<parser::Program *> &
     CollectProgramGlobalClasses(globalProgram, namespaces);
     auto initializerBlockStmts =
         FormInitStaticBlockMethodStatements(globalProgram, moduleDependencies, std::move(initializerBlock));
-    CollectExportedClasses(globalClass, globalProgram->Ast()->Statements());
+    CollectExportedClasses(globalProgram, globalClass, globalProgram->Ast()->Statements());
 
     // NOTE(vpukhov): stdlib checks are to be removed - do not extend the existing logic
     if (globalProgram->Kind() != parser::ScriptKind::STDLIB) {
@@ -357,7 +438,7 @@ ir::MethodDefinition *GlobalClassHandler::CreateGlobalMethod(std::string_view na
         allocator_, allocator_,
         ir::ScriptFunction::ScriptFunctionData {
             body, std::move(funcSignature), functionFlags, {}, Language(Language::Id::ETS)});
-
+    ES2PANDA_ASSERT(func != nullptr);
     func->SetIdent(ident);
     func->AddModifier(functionModifiers);
 
@@ -380,7 +461,7 @@ void GlobalClassHandler::AddInitializerBlockToStaticBlock(ir::ClassDefinition *g
     auto *staticBlock = (*maybeStaticBlock)->AsClassStaticBlock();
     auto *initializerStmts =
         NodeAllocator::ForceSetParent<ir::BlockStatement>(allocator_, allocator_, std::move(initializerBlocks));
-
+    ES2PANDA_ASSERT(initializerStmts != nullptr);
     auto *blockBody = staticBlock->Function()->Body()->AsBlockStatement();
     initializerStmts->SetParent(blockBody);
     blockBody->Statements().emplace_back(initializerStmts);
@@ -396,6 +477,7 @@ void GlobalClassHandler::AddInitCallToStaticBlock(ir::ClassDefinition *globalCla
     ES2PANDA_ASSERT(maybeStaticBlock != globalBody.end());
 
     auto *staticBlock = (*maybeStaticBlock)->AsClassStaticBlock();
+    ES2PANDA_ASSERT(initMethod->Id() != nullptr);
     auto *callee = RefIdent(initMethod->Id()->Name());
 
     auto *const callExpr = NodeAllocator::Alloc<ir::CallExpression>(
@@ -448,26 +530,11 @@ ArenaVector<ir::Statement *> GlobalClassHandler::FormInitMethodStatements(parser
     return statements;
 }
 
-void GlobalClassHandler::FormDependentInitTriggers(ArenaVector<ir::Statement *> &statements,
-                                                   const ModuleDependencies *moduleDependencies)
+void GlobalClassHandler::FormDependentInitTriggers([[maybe_unused]] ArenaVector<ir::Statement *> &statements,
+                                                   [[maybe_unused]] const ModuleDependencies *moduleDependencies)
 {
-    auto const sequence = [&statements](ir::Statement *stmt) { statements.push_back(stmt); };
-
-    auto triggerInitOf = [this, sequence, initialized = false](parser::Program *prog) mutable {
-        if (!initialized) {
-            initialized = true;
-            sequence(parser_->CreateFormattedStatement("const __linker = Class.ofCaller().getLinker();"));
-        }
-        auto name = std::string(prog->ModulePrefix()).append(Signatures::ETS_GLOBAL);
-        sequence(parser_->CreateFormattedStatement("__linker.loadClass(\"" + name + "\", true);"));
-    };
-
-    for (auto depProg : *moduleDependencies) {
-        if (util::Helpers::IsStdLib(depProg)) {
-            continue;
-        }
-        triggerInitOf(depProg);
-    }
+    // NOTE(dslynko, #26183): leaving this function for later reuse in `import "path"` feature,
+    // which would initialize the dependency.
 }
 
 ir::ClassStaticBlock *GlobalClassHandler::CreateStaticBlock(ir::ClassDefinition *classDef)
@@ -498,7 +565,7 @@ ir::ClassStaticBlock *GlobalClassHandler::CreateStaticBlock(ir::ClassDefinition 
         ir::ScriptFunction::ScriptFunctionData {body, ir::FunctionSignature(nullptr, std::move(params), nullptr),
                                                 ir::ScriptFunctionFlags::STATIC_BLOCK | ir::ScriptFunctionFlags::HIDDEN,
                                                 ir::ModifierFlags::STATIC, Language(Language::Id::ETS)});
-
+    ES2PANDA_ASSERT(func != nullptr);
     func->SetIdent(id);
 
     auto *funcExpr = NodeAllocator::Alloc<ir::FunctionExpression>(allocator_, func);
@@ -557,6 +624,7 @@ ir::ClassDeclaration *GlobalClassHandler::CreateGlobalClass(const parser::Progra
     auto *classDef =
         NodeAllocator::Alloc<ir::ClassDefinition>(allocator_, allocator_, ident, ir::ClassDefinitionModifiers::GLOBAL,
                                                   ir::ModifierFlags::ABSTRACT, Language(Language::Id::ETS));
+    ES2PANDA_ASSERT(classDef != nullptr);
     classDef->SetRange(rangeToStartOfFile);
     auto *classDecl = NodeAllocator::Alloc<ir::ClassDeclaration>(allocator_, classDef, allocator_);
     classDecl->SetRange(rangeToStartOfFile);

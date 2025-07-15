@@ -59,7 +59,7 @@ Type *TSChecker::GetBaseTypeOfLiteralType(Type *type)
     if (HasStatus(CheckerStatus::KEEP_LITERAL_TYPE)) {
         return type;
     }
-
+    ES2PANDA_ASSERT(type != nullptr);
     if (type->IsStringLiteralType()) {
         return GlobalStringType();
     }
@@ -370,6 +370,7 @@ void TSChecker::GetTypeVar(varbinder::Decl *decl)
         util::Helpers::FindAncestorGivenByType(decl->Node(), ir::AstNodeType::VARIABLE_DECLARATOR);
     ES2PANDA_ASSERT(declarator);
 
+    ES2PANDA_ASSERT(declarator);
     if (declarator->AsVariableDeclarator()->Id()->IsIdentifier()) {
         InferSimpleVariableDeclaratorType(declarator->AsVariableDeclarator());
         return;
@@ -382,6 +383,7 @@ void TSChecker::GetTypeParam(varbinder::Variable *var, varbinder::Decl *decl)
 {
     ir::AstNode *declaration = FindAncestorUntilGivenType(decl->Node(), ir::AstNodeType::SCRIPT_FUNCTION);
 
+    ES2PANDA_ASSERT(declaration != nullptr);
     if (declaration->IsIdentifier()) {
         auto *ident = declaration->AsIdentifier();
         if (ident->TypeAnnotation() != nullptr) {
@@ -499,6 +501,7 @@ Type *TSChecker::GetTypeFromClassOrInterfaceReference([[maybe_unused]] ir::TSTyp
     if (resolvedType == nullptr) {
         ObjectDescriptor *desc = Allocator()->New<ObjectDescriptor>(Allocator());
         resolvedType = Allocator()->New<InterfaceType>(Allocator(), var->Name(), desc);
+        ES2PANDA_ASSERT(resolvedType != nullptr);
         resolvedType->SetVariable(var);
         var->SetTsType(resolvedType);
     }

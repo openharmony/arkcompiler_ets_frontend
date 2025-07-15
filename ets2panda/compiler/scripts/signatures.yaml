@@ -162,6 +162,8 @@ defines:
     ref: ARRAY
   - name: '<property>'
     ref: PROPERTY
+  - name: 'Any'
+    ref: ANY_TYPE_NAME
   - name: 'never'
     ref: NEVER_TYPE_NAME
   - name: 'SOURCE'
@@ -221,6 +223,14 @@ defines:
   - name: 'InterfaceObjectLiteral'
     ref: INTERFACE_OBJ_LITERAL
     comment: ETS annotation type
+  - name: 'ETSGLOBAL.<cctor>:void;'
+    ref: UNUSED_ETSGLOBAL_CTOR
+  - name: 'ETSGLOBAL._$init$_:void;'
+    ref: UNUSED_ETSGLOBAL_INIT
+  - name: 'ETSGLOBAL.main:void;'
+    ref: UNUSED_ETSGLOBAL_MAIN
+  - name: 'use static'
+    ref: STATIC_PROGRAM_FLAG
 
 packages:
   - name: 'std.core'

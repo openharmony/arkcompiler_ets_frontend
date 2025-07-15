@@ -367,10 +367,16 @@ void ETSChecker::CheckProgram(parser::Program *program, bool runAnalysis)
             if (extProg->IsASTChecked()) {
                 continue;
             }
+
+            auto *savedProgram2 = VarBinder()->AsETSBinder()->Program();
+            VarBinder()->AsETSBinder()->SetProgram(extProg);
+            VarBinder()->AsETSBinder()->ResetTopScope(extProg->GlobalScope());
             checker::SavedCheckerContext savedContext(this, Context().Status(), Context().ContainingClass());
             AddStatus(checker::CheckerStatus::IN_EXTERNAL);
             CheckProgram(extProg, VarBinder()->IsGenStdLib());
             extProg->SetFlag(parser::ProgramFlags::AST_CHECK_PROCESSED);
+            VarBinder()->AsETSBinder()->SetProgram(savedProgram2);
+            VarBinder()->AsETSBinder()->ResetTopScope(savedProgram2->GlobalScope());
         }
     }
 
@@ -409,6 +415,22 @@ bool ETSChecker::IsClassStaticMethod(checker::ETSObjectType *objType, checker::S
 {
     return objType->HasObjectFlag(checker::ETSObjectFlags::CLASS) &&
            signature->HasSignatureFlag(checker::SignatureFlags::STATIC);
+}
+
+[[nodiscard]] TypeFlag ETSChecker::TypeKind(const Type *const type) noexcept
+{
+    // These types were not present in the ETS_TYPE list. Some of them are omited intentionally, other are just bugs
+    static constexpr auto TO_CLEAR = TypeFlag::CONSTANT | TypeFlag::GENERIC | TypeFlag::ETS_INT_ENUM |
+                                     TypeFlag::ETS_STRING_ENUM | TypeFlag::READONLY | TypeFlag::BIGINT_LITERAL |
+                                     TypeFlag::ETS_TYPE_ALIAS | TypeFlag::TYPE_ERROR;
+
+    // Bugs: these types do not appear as a valid TypeKind, as the TypeKind has more then one bit set
+    [[maybe_unused]] static constexpr auto NOT_A_TYPE_KIND = TypeFlag::ETS_DYNAMIC_FLAG;
+    CHECK_NOT_NULL(type);
+    auto res = static_cast<checker::TypeFlag>(type->TypeFlags() & ~(TO_CLEAR));
+    ES2PANDA_ASSERT_POS(res == TypeFlag::NONE || helpers::math::IsPowerOfTwo(res & ~(NOT_A_TYPE_KIND)),
+                        ark::es2panda::GetPositionForDiagnostic());
+    return res;
 }
 
 template <typename... Args>
@@ -512,6 +534,11 @@ Type *ETSChecker::GlobalETSUndefinedType() const
     return GetGlobalTypesHolder()->GlobalETSUndefinedType();
 }
 
+Type *ETSChecker::GlobalETSAnyType() const
+{
+    return GetGlobalTypesHolder()->GlobalETSAnyType();
+}
+
 Type *ETSChecker::GlobalETSNeverType() const
 {
     return GetGlobalTypesHolder()->GlobalETSNeverType();
@@ -537,15 +564,15 @@ ETSObjectType *ETSChecker::GlobalETSObjectType() const
     return AsETSObjectType(&GlobalTypesHolder::GlobalETSObjectType);
 }
 
-ETSUnionType *ETSChecker::GlobalETSNullishType() const
+ETSUnionType *ETSChecker::GlobalETSUnionUndefinedNull() const
 {
-    auto *ret = (GetGlobalTypesHolder()->*&GlobalTypesHolder::GlobalETSNullishType)();
+    auto *ret = (GetGlobalTypesHolder()->*&GlobalTypesHolder::GlobalETSUnionUndefinedNull)();
     return ret != nullptr ? ret->AsETSUnionType() : nullptr;
 }
 
-ETSUnionType *ETSChecker::GlobalETSNullishObjectType() const
+ETSUnionType *ETSChecker::GlobalETSUnionUndefinedNullObject() const
 {
-    auto *ret = (GetGlobalTypesHolder()->*&GlobalTypesHolder::GlobalETSNullishObjectType)();
+    auto *ret = (GetGlobalTypesHolder()->*&GlobalTypesHolder::GlobalETSUnionUndefinedNullObject)();
     return ret != nullptr ? ret->AsETSUnionType() : nullptr;
 }
 
@@ -654,6 +681,7 @@ ETSObjectType *ETSChecker::GlobalBuiltinBoxType(Type *contents)
         default: {
             auto *base = AsETSObjectType(&GlobalTypesHolder::GlobalBoxBuiltinType);
             auto *substitution = NewSubstitution();
+            ES2PANDA_ASSERT(base != nullptr);
             substitution->emplace(base->TypeArguments()[0]->AsETSTypeParameter(), contents);
             return base->Substitute(Relation(), substitution);
         }

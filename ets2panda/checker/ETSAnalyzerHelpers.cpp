@@ -51,12 +51,13 @@ void CheckExtensionIsShadowedInCurrentClassOrInterface(checker::ETSChecker *chec
 
     // check if there are class and interfaces' instance methods with the same name as extensions.
     auto *const methodVariable = objType->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>(methodName);
-    if (methodVariable == nullptr) {
+    if (methodVariable == nullptr || methodVariable->TsType()->IsTypeError()) {
         return;
     }
 
     const auto *const funcType = methodVariable->TsType()->AsETSFunctionType();
     for (auto *funcSignature : funcType->CallSignatures()) {
+        ES2PANDA_ASSERT(signature != nullptr);
         signature->SetReturnType(funcSignature->ReturnType());
         if (!checker->Relation()->SignatureIsSupertypeOf(signature, funcSignature) &&
             !checker->HasSameAssemblySignature(signature, funcSignature)) {
@@ -149,6 +150,7 @@ void CheckExtensionMethod(checker::ETSChecker *checker, ir::ScriptFunction *exte
 
         checker::SignatureInfo *originalExtensionSigInfo = checker->ProgramAllocator()->New<checker::SignatureInfo>(
             extensionFunc->Signature()->GetSignatureInfo(), checker->ProgramAllocator());
+        ES2PANDA_ASSERT(originalExtensionSigInfo != nullptr);
         originalExtensionSigInfo->minArgCount -= 1U;
         originalExtensionSigInfo->params.erase(originalExtensionSigInfo->params.begin());
         checker::Signature *originalExtensionSignature =
@@ -220,6 +222,7 @@ void DoBodyTypeChecking(ETSChecker *checker, ir::MethodDefinition *node, ir::Scr
     if (scriptFunc->ReturnTypeAnnotation() == nullptr) {
         if (scriptFunc->IsAsyncFunc()) {
             auto returnType = checker->CreateETSAsyncFuncReturnTypeFromBaseType(scriptFunc->Signature()->ReturnType());
+            ES2PANDA_ASSERT(returnType != nullptr);
             scriptFunc->Signature()->SetReturnType(returnType->PromiseType());
             for (auto &returnStatement : scriptFunc->ReturnStatements()) {
                 returnStatement->SetReturnType(checker, returnType);
@@ -248,6 +251,7 @@ void ComposeAsyncImplFuncReturnType(ETSChecker *checker, ir::ScriptFunction *scr
     auto *returnType = checker->ProgramAllocNode<ir::ETSTypeReference>(
         checker->ProgramAllocNode<ir::ETSTypeReferencePart>(objectId, nullptr, nullptr, checker->ProgramAllocator()),
         checker->ProgramAllocator());
+    ES2PANDA_ASSERT(returnType != nullptr);
     objectId->SetParent(returnType->Part());
     returnType->Part()->SetParent(returnType);
     returnType->SetTsType(checker->ProgramAllocator()->New<ETSAsyncFuncReturnType>(checker->ProgramAllocator(),
@@ -317,6 +321,7 @@ void CheckIteratorMethodReturnType(ETSChecker *checker, ir::ScriptFunction *scri
         returnType = checker->GetApparentType(returnType->AsETSTypeParameter()->GetConstraintType());
     }
 
+    ES2PANDA_ASSERT(returnType != nullptr);
     if (returnType->IsETSObjectType() && HasIteratorInterface(returnType->AsETSObjectType())) {
         return;
     }
@@ -511,13 +516,13 @@ void ProcessExclamationMark(ETSChecker *checker, ir::UnaryExpression *expr, chec
 {
     if (checker->IsNullLikeOrVoidExpression(expr->Argument())) {
         auto tsType = checker->CreateETSBooleanType(true);
+        CHECK_NOT_NULL(tsType);
         tsType->AddTypeFlag(checker::TypeFlag::CONSTANT);
         expr->SetTsType(tsType);
         return;
     }
 
-    if (operandType == nullptr || !operandType->IsConditionalExprType()) {
-        checker->LogError(diagnostic::ASSERT_NOT_LOGICAL, {}, expr->Argument()->Start());
+    if (operandType == nullptr || operandType->IsTypeError()) {
         expr->SetTsType(checker->GlobalTypeError());
         return;
     }
@@ -611,7 +616,7 @@ checker::Type *GetIteratorType(ETSChecker *checker, checker::Type *elemType, ir:
         checker->LogError(diagnostic::ITERATOR_TYPE_ABSENT, {}, left->Start());
         return checker->GlobalTypeError();
     }
-    return iterType;
+    return checker->GetNonConstantType(iterType);
 }
 
 bool CheckArgumentVoidType(checker::Type *&funcReturnType, ETSChecker *checker, const std::string &name,
@@ -672,6 +677,7 @@ void InferReturnType(ETSChecker *checker, ir::ScriptFunction *containingFunc, ch
     //  First (or single) return statement in the function:
     funcReturnType =
         stArgument == nullptr ? checker->GlobalVoidType() : checker->GetNonConstantType(stArgument->Check(checker));
+    ES2PANDA_ASSERT(funcReturnType != nullptr);
     if (funcReturnType->IsTypeError()) {
         containingFunc->Signature()->RemoveSignatureFlag(checker::SignatureFlags::NEED_RETURN_TYPE);
         return;
@@ -689,6 +695,7 @@ void InferReturnType(ETSChecker *checker, ir::ScriptFunction *containingFunc, ch
         auto typeAnnotation = arrowFunc->CreateTypeAnnotation(checker);
 
         auto *argumentType = arrowFunc->TsType();
+        ES2PANDA_ASSERT(typeAnnotation != nullptr);
         funcReturnType = typeAnnotation->GetType(checker);
         if (!checker::AssignmentContext(checker->Relation(), arrowFunc, argumentType, funcReturnType,
                                         stArgument->Start(), std::nullopt,
@@ -760,6 +767,7 @@ void ProcessReturnStatements(ETSChecker *checker, ir::ScriptFunction *containing
         checker::Type *argumentType = checker->GetNonConstantType(stArgument->Check(checker));
 
         //  previous return statement(s) don't have any value
+        ES2PANDA_ASSERT(argumentType != nullptr);
         if (funcReturnType->IsETSVoidType() && !argumentType->IsETSVoidType()) {
             checker->LogError(diagnostic::MIXED_VOID_NONVOID, {}, stArgument->Start());
             return;
@@ -788,6 +796,7 @@ bool CheckReturnTypeNecessity(ir::MethodDefinition *node)
     auto *scriptFunc = node->Function();
     needReturnType &= (node->IsNative() || node->IsDeclare());
     needReturnType &= !node->IsConstructor();
+    ES2PANDA_ASSERT(scriptFunc != nullptr);
     needReturnType &= !scriptFunc->IsSetter();
     return needReturnType;
 }

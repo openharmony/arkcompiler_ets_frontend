@@ -20,6 +20,8 @@
 #include "compiler/core/pandagen.h"
 #include "util/dtoa_helper.h"
 
+#include <cstdlib>
+
 namespace ark::es2panda::ir {
 
 inline constexpr size_t BUF_SIZE = 128;
@@ -89,6 +91,7 @@ checker::VerifiedType NumberLiteral::Check(checker::ETSChecker *checker)
 NumberLiteral *NumberLiteral::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     auto *const clone = allocator->New<NumberLiteral>(number_);
+    ES2PANDA_ASSERT(clone != nullptr);
     if (parent != nullptr) {
         clone->SetParent(parent);
     }
@@ -253,7 +256,7 @@ static Span<char> FpToStringDecimalRadixMainCase(FpType number, bool negative, S
         // 8. If −6 < n ≤ 0, return the String consisting of the code unit 0x0030 (DIGIT ZERO), followed by the code
         // unit 0x002E (FULL STOP), followed by −n occurrences of the code unit 0x0030 (DIGIT ZERO), followed by the
         // code units of the k digits of the decimal representation of s.
-        auto length = -n + 2U;
+        int length = -n + 2U;
         auto fracStart = bufferStart + length;
         if (memmove_s(fracStart, buffer.end() - fracStart, bufferStart, k) != EOK) {
             ES2PANDA_UNREACHABLE();
@@ -312,7 +315,7 @@ static char *SmallFpToString(FpType number, bool negative, char *buffer)
         power *= TEN;
     }
     for (int k = digits - 1; k >= 0; k--) {
-        auto digit = s % TEN;
+        auto digit = std::abs(s) % TEN;
         s /= TEN;
         *(buffer + k) = '0' + digit;
     }

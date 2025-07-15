@@ -14,7 +14,7 @@
  */
 
 function foo<T, U>(p: T, q: U): T|U {
-    return p!.toString() > q!.toString() ? p : q
+    return (p! as object).toString() > (q! as object).toString() ? p : q
 }
 
 function main() {

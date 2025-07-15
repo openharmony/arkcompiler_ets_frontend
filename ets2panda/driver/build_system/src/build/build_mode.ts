@@ -26,6 +26,6 @@ export class BuildMode extends BaseMode {
   }
 
   public async run(): Promise<void> {
-    await super.run();
+    await super.runParallel();
   }
 }

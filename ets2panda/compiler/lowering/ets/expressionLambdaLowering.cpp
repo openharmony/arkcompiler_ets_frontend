@@ -37,6 +37,7 @@ static ir::AstNode *ConvertExpression(public_lib::Context *ctx, ir::ArrowFunctio
 
     auto *const block = ctx->AllocNode<ir::BlockStatement>(allocator, std::move(statements));
 
+    ES2PANDA_ASSERT(block);
     block->SetScope(scope);
     block->SetParent(function);
 

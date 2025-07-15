@@ -384,12 +384,12 @@ public:
         return localIndex_;
     }
 
-    [[nodiscard]] util::StringView FunctionalReferenceReferencedMethod() const noexcept
+    [[nodiscard]] MethodDefinition *FunctionalReferenceReferencedMethod() const noexcept
     {
         return functionalReferenceReferencedMethod_;
     }
 
-    void SetFunctionalReferenceReferencedMethod(util::StringView functionalReferenceReferencedMethod)
+    void SetFunctionalReferenceReferencedMethod(MethodDefinition *functionalReferenceReferencedMethod)
     {
         functionalReferenceReferencedMethod_ = functionalReferenceReferencedMethod;
     }
@@ -488,8 +488,15 @@ public:
 
     void AddToExportedClasses(const ir::ClassDeclaration *cls)
     {
-        ES2PANDA_ASSERT(cls->IsExported());
+        ES2PANDA_ASSERT(cls->IsExported() || cls->Definition()->IsGlobal());
         exportedClasses_.push_back(cls);
+    }
+
+    void BatchAddToExportedClasses(const ArenaVector<const ir::ClassDeclaration *> &classes)
+    {
+        for (const auto cls : classes) {
+            AddToExportedClasses(cls);
+        }
     }
 
     [[nodiscard]] const ArenaVector<const ir::ClassDeclaration *> &ExportedClasses() const noexcept
@@ -531,7 +538,7 @@ private:
     static int classCounter_;
     int localIndex_ {};
     std::string localPrefix_ {};
-    util::StringView functionalReferenceReferencedMethod_ {};
+    MethodDefinition *functionalReferenceReferencedMethod_ {};
     ArenaVector<const ir::ClassDeclaration *> exportedClasses_;
 };
 }  // namespace ark::es2panda::ir

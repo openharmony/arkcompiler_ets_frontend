@@ -303,17 +303,9 @@ ir::AstNode *GetClassDefinitionFromClassProperty(ir::AstNode *node)
         return nullptr;
     }
     auto value = node->AsClassProperty()->Value();
-    if (value != nullptr && value->IsETSNewClassInstanceExpression() &&
-        value->AsETSNewClassInstanceExpression()->GetTypeRef() != nullptr &&
-        value->AsETSNewClassInstanceExpression()->GetTypeRef()->IsETSTypeReference()) {
-        auto typeReferencePart = value->AsETSNewClassInstanceExpression()->GetTypeRef()->AsETSTypeReference()->Part();
-        if (typeReferencePart == nullptr) {
-            return nullptr;
-        }
-        auto id = typeReferencePart->Name();
-        if (id != nullptr && id->IsIdentifier()) {
-            return compiler::DeclarationFromIdentifier(id->AsIdentifier());
-        }
+    auto ident = GetIdentFromNewClassExprPart(value);
+    if (ident != nullptr) {
+        return compiler::DeclarationFromIdentifier(ident);
     }
     auto type = node->AsClassProperty()->TypeAnnotation();
     if (type != nullptr && type->IsETSTypeReference()) {
@@ -462,6 +454,9 @@ std::vector<CompletionEntry> GetCompletionFromTSInterfaceDeclaration(ir::TSInter
         auto ident = GetIdentifierFromTSInterfaceHeritage(extend);
         if (ident != nullptr && ident->IsIdentifier()) {
             auto extendInterf = compiler::DeclarationFromIdentifier(ident->AsIdentifier());
+            if (extendInterf == nullptr) {
+                continue;
+            }
             auto extendCom =
                 extendInterf->IsTSInterfaceDeclaration()
                     ? GetCompletionFromTSInterfaceDeclaration(extendInterf->AsTSInterfaceDeclaration(), triggerWord)

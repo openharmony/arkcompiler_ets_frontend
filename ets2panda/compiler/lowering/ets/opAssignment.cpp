@@ -94,7 +94,7 @@ void AdjustBoxingUnboxingFlags(ir::Expression *loweringResult, const ir::Express
                                                  ir::BoxingUnboxingFlags::BOXING_FLAG};
     const ir::BoxingUnboxingFlags oldUnboxingFlag {oldExpr->GetBoxingUnboxingFlags() &
                                                    ir::BoxingUnboxingFlags::UNBOXING_FLAG};
-
+    ES2PANDA_ASSERT(exprToProcess != nullptr);
     if (exprToProcess->TsType()->IsETSPrimitiveType()) {
         loweringResult->SetBoxingUnboxingFlags(oldBoxingFlag);
     } else if (exprToProcess->TsType()->IsETSObjectType()) {

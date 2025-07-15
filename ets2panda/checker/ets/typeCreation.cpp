@@ -103,7 +103,9 @@ ETSStringType *ETSChecker::CreateETSStringLiteralType(util::StringView value)
 
 ETSResizableArrayType *ETSChecker::CreateETSMultiDimResizableArrayType(Type *element, size_t dimSize)
 {
-    ETSResizableArrayType *const arrayType = GlobalBuiltinETSResizableArrayType()->AsETSResizableArrayType();
+    ETSObjectType *type = GlobalBuiltinETSResizableArrayType();
+    ES2PANDA_ASSERT(type != nullptr);
+    ETSResizableArrayType *const arrayType = type->AsETSResizableArrayType();
     ES2PANDA_ASSERT(arrayType->TypeArguments().size() == 1U);
 
     Type *baseArrayType = element;
@@ -119,7 +121,9 @@ ETSResizableArrayType *ETSChecker::CreateETSMultiDimResizableArrayType(Type *ele
 
 ETSResizableArrayType *ETSChecker::CreateETSResizableArrayType(Type *element)
 {
-    ETSResizableArrayType *arrayType = GlobalBuiltinETSResizableArrayType()->AsETSResizableArrayType();
+    ETSObjectType *type = GlobalBuiltinETSResizableArrayType();
+    ES2PANDA_ASSERT(type != nullptr);
+    ETSResizableArrayType *arrayType = type->AsETSResizableArrayType();
     ES2PANDA_ASSERT(arrayType->TypeArguments().size() == 1U);
 
     Substitution *substitution = NewSubstitution();
@@ -137,6 +141,7 @@ ETSArrayType *ETSChecker::CreateETSArrayType(Type *elementType, bool isCachePoll
 
     auto *arrayType = ProgramAllocator()->New<ETSArrayType>(elementType);
 
+    ES2PANDA_ASSERT(arrayType != nullptr);
     std::stringstream ss;
     arrayType->ToAssemblerTypeWithRank(ss);
     // arrayType->SetAssemblerName(util::UString(ss.str(), ProgramAllocator()).View());
@@ -234,6 +239,7 @@ Signature *ETSChecker::CreateSignature(SignatureInfo *info, Type *returnType, ir
     }
     auto signature = ProgramAllocator()->New<Signature>(info, returnType, func);
     auto convertedFlag = ConvertToSignatureFlags(func->Modifiers(), func->Flags());
+    ES2PANDA_ASSERT(signature != nullptr);
     func->HasReceiver() ? signature->AddSignatureFlag(SignatureFlags::EXTENSION_FUNCTION | convertedFlag)
                         : signature->AddSignatureFlag(convertedFlag);
     return signature;
@@ -247,6 +253,7 @@ Signature *ETSChecker::CreateSignature(SignatureInfo *info, Type *returnType, ir
         return nullptr;
     }
     auto signature = ProgramAllocator()->New<Signature>(info, returnType, nullptr);
+    ES2PANDA_ASSERT(signature != nullptr);
     signature->AddSignatureFlag(ConvertToSignatureFlags(ir::ModifierFlags::NONE, sff));
     // synthetic arrow type signature flags
     auto extraFlags = SignatureFlags::ABSTRACT | SignatureFlags::CALL | SignatureFlags::PUBLIC;
@@ -305,8 +312,8 @@ static ETSObjectType *InitializeGlobalBuiltinObjectType(ETSChecker *checker, Glo
             auto *objType = setType(GlobalTypeId::ETS_OBJECT_BUILTIN, create())->AsETSObjectType();
             auto null = checker->GlobalETSNullType();
             auto undef = checker->GlobalETSUndefinedType();
-            setType(GlobalTypeId::ETS_NULLISH_OBJECT, checker->CreateETSUnionType({objType, null, undef}));
-            setType(GlobalTypeId::ETS_NULLISH_TYPE, checker->CreateETSUnionType({null, undef}));
+            setType(GlobalTypeId::ETS_UNION_UNDEFINED_NULL_OBJECT, checker->CreateETSUnionType({objType, null, undef}));
+            setType(GlobalTypeId::ETS_UNION_UNDEFINED_NULL, checker->CreateETSUnionType({null, undef}));
             return objType;
         }
         case GlobalTypeId::ETS_STRING_BUILTIN: {
@@ -426,12 +433,14 @@ std::tuple<util::StringView, SignatureInfo *> ETSChecker::CreateBuiltinArraySign
     arrayType->ToAssemblerTypeWithRank(ss);
 
     auto *info = CreateSignatureInfo();
+    ES2PANDA_ASSERT(info != nullptr);
     info->minArgCount = dim;
 
     for (size_t i = 0; i < dim; i++) {
         util::UString param(std::to_string(i), ProgramAllocator());
         auto *paramVar =
             varbinder::Scope::CreateVar(ProgramAllocator(), param.View(), varbinder::VariableFlags::NONE, nullptr);
+        ES2PANDA_ASSERT(paramVar != nullptr);
         paramVar->SetTsType(GlobalIntType());
 
         info->params.push_back(paramVar);
@@ -455,6 +464,7 @@ Signature *ETSChecker::CreateBuiltinArraySignature(const ETSArrayType *arrayType
 
     auto [internalName, info] = CreateBuiltinArraySignatureInfo(arrayType, dim);
     auto *signature = CreateSignature(info, GlobalVoidType(), ir::ScriptFunctionFlags::NONE, false);
+    ES2PANDA_ASSERT(signature != nullptr);
     signature->SetInternalName(internalName);
     globalArraySignatures_.insert({arrayType, signature});
 
@@ -467,6 +477,7 @@ ETSObjectType *ETSChecker::CreatePromiseOf(Type *type)
     ES2PANDA_ASSERT(promiseType->TypeArguments().size() == 1U);
 
     Substitution *substitution = NewSubstitution();
+    ES2PANDA_ASSERT(promiseType != nullptr);
     EmplaceSubstituted(substitution, promiseType->TypeArguments()[0]->AsETSTypeParameter()->GetOriginal(), type);
 
     return promiseType->Substitute(Relation(), substitution);

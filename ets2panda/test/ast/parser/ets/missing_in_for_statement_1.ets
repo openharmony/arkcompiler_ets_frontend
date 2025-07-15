@@ -19,7 +19,6 @@ for /* @@ label */let i = 0; i < count; ++i) {
 
 /* @@@ label Error SyntaxError: Expected '(', got 'let'. */
 /* @@? 16:30 Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type. */
-/* @@? 16:34 Error TypeError: Function name 'count' used in the wrong context */
 /* @@? 17:5 Error TypeError: Unresolved reference result */
 /* @@? 17:23 Error TypeError: Unresolved reference p */
 /* @@? 17:23 Error TypeError: Indexed access is not supported for such expression type. */

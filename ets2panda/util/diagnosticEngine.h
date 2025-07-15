@@ -60,7 +60,6 @@ public:
     NO_MOVE_SEMANTIC(DiagnosticEngine);
     ~DiagnosticEngine()
     {
-        FlushDiagnostic();
         g_diagnosticEngine = nullptr;
     }
 

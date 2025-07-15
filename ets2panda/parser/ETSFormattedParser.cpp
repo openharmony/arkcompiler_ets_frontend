@@ -106,8 +106,8 @@ ir::TypeNode *ETSParser::ParseTypeFormatPlaceholder(std::optional<ParserImpl::No
 {
     if (!nodeFormat.has_value()) {
         if (insertingNodes_.empty()) {
-            LogError(diagnostic::INSERT_NODE_ABSENT, {}, Lexer()->GetToken().Start());
-            ES2PANDA_UNREACHABLE();
+            LogUnexpectedToken(lexer::TokenType::PUNCTUATOR_FORMAT);
+            return AllocBrokenType(Lexer()->GetToken().Loc());
         }
 
         nodeFormat = GetFormatPlaceholderType();
@@ -161,7 +161,7 @@ ir::Statement *ETSParser::ParseStatementFormatPlaceholder()
 {
     if (insertingNodes_.empty()) {
         LogError(diagnostic::INSERT_NODE_ABSENT, {}, Lexer()->GetToken().Start());
-        ES2PANDA_UNREACHABLE();
+        return AllocBrokenStatement(Lexer()->GetToken().Start());
     }
 
     ParserImpl::NodeFormatType nodeFormat = GetFormatPlaceholderType();
@@ -301,6 +301,7 @@ ir::Statement *ETSParser::CreateStatement(std::string_view const sourceCode)
     }
 
     auto *const blockStmt = AllocNode<ir::BlockStatement>(Allocator(), std::move(statements));
+    ES2PANDA_ASSERT(blockStmt != nullptr);
     blockStmt->SetRange({startLoc, lexer->GetToken().End()});
 
     for (auto *statement : blockStmt->Statements()) {
@@ -378,6 +379,7 @@ ir::AstNode *ETSParser::CreateFormattedClassFieldDefinition(std::string_view sou
     insertingNodes_.swap(insertingNodes);
 
     auto *const property = CreateClassElement(sourceCode, DUMMY_ARRAY, ir::ClassDefinitionModifiers::NONE);
+    ES2PANDA_ASSERT(property != nullptr);
     if (!property->IsTSInterfaceBody() || property->AsTSInterfaceBody()->Body().empty()) {
         LogError(diagnostic::INVALID_CLASS_FIELD, {}, Lexer()->GetToken().Start());
         ES2PANDA_UNREACHABLE();
@@ -394,6 +396,7 @@ ir::AstNode *ETSParser::CreateFormattedClassMethodDefinition(std::string_view so
     insertingNodes_.swap(insertingNodes);
 
     auto *const property = CreateClassElement(sourceCode, DUMMY_ARRAY, ir::ClassDefinitionModifiers::NONE);
+    ES2PANDA_ASSERT(property != nullptr);
     if (!property->IsMethodDefinition()) {
         LogError(diagnostic::INVALID_CLASS_METHOD, {}, Lexer()->GetToken().Start());
         ES2PANDA_UNREACHABLE();
@@ -512,6 +515,7 @@ ir::MethodDefinition *ETSParser::CreateConstructorDefinition(ir::ModifierFlags m
     Lexer()->NextToken();
 
     auto *const methodDefinition = ParseClassMethodDefinition(memberName, modifiers, true);
+    ES2PANDA_ASSERT(methodDefinition != nullptr);
     methodDefinition->SetStart(startLoc);
 
     return methodDefinition;

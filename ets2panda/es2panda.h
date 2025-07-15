@@ -61,6 +61,7 @@ enum class CompilationMode {
     GEN_STD_LIB,
     PROJECT,
     SINGLE_FILE,
+    GEN_ABC_FOR_EXTERNAL_SOURCE,
 };
 // CC-OFFNXT(G.FUD.06) switch-case, ODR
 inline Language ToLanguage(ScriptExtension ext)

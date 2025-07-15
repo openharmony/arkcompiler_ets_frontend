@@ -174,7 +174,10 @@ void ETSChecker::ValidateResolvedIdentifier(ir::Identifier *const ident)
             if (ValidateBinaryExpressionIdentifier(ident, resolvedType)) {
                 return;
             }
-            [[fallthrough]];
+            if (resolved != nullptr && !resolved->Declaration()->PossibleTDZ() && !resolvedType->IsETSFunctionType()) {
+                WrongContextErrorClassifyByType(ident);
+            }
+            break;
         case ir::AstNodeType::UPDATE_EXPRESSION:
         case ir::AstNodeType::UNARY_EXPRESSION:
             if (resolved != nullptr && !resolved->Declaration()->PossibleTDZ()) {
@@ -279,7 +282,7 @@ void ETSChecker::ValidateGenericTypeAliasForClonedNode(ir::TSTypeAliasDeclaratio
 
             ir::TypeNode *typeParamType = nullptr;
 
-            if (exactTypeParams->Params().size() > typeParamIdx) {
+            if (exactTypeParams != nullptr && exactTypeParams->Params().size() > typeParamIdx) {
                 typeParamType = exactTypeParams->Params().at(typeParamIdx);
             } else {
                 typeParamType = typeAliasNode->TypeParams()->Params().at(typeParamIdx)->DefaultType();

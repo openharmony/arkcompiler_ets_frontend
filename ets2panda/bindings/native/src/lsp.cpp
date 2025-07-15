@@ -19,7 +19,7 @@
 #include "common.h"
 #include "panda_types.h"
 #include "public/es2panda_lib.h"
-
+#include "lsp/include/refactors/refactor_types.h"
 #include <cstddef>
 #include <cstdint>
 #include <string>
@@ -28,7 +28,9 @@
 namespace {
 using ark::es2panda::lsp::ClassHierarchy;
 using ark::es2panda::lsp::ClassHierarchyInfo;
+using ark::es2panda::lsp::ClassHierarchyItem;
 using ark::es2panda::lsp::ClassMethodItem;
+using ark::es2panda::lsp::ClassPropertyItem;
 }  // namespace
 
 char *GetStringCopy(KStringPtr &ptr)
@@ -318,15 +320,15 @@ KNativePointer impl_getClassConstructorInfo(KNativePointer context, KInt positio
         properties.emplace_back(GetStringCopy(const_cast<KStringPtr &>(el)));
     }
     LSPAPI const *ctx = GetImpl();
-    auto *info = new RefactorEditInfo(ctx->getClassConstructorInfo(reinterpret_cast<es2panda_Context *>(context),
-                                                                   static_cast<std::size_t>(position), properties));
+    auto *info = new ark::es2panda::lsp::RefactorEditInfo(ctx->getClassConstructorInfo(
+        reinterpret_cast<es2panda_Context *>(context), static_cast<std::size_t>(position), properties));
     return info;
 }
 TS_INTEROP_3(getClassConstructorInfo, KNativePointer, KNativePointer, KInt, KStringArray)
 
 KNativePointer impl_getFileTextChangesFromConstructorInfo(KNativePointer infoPtr)
 {
-    auto *info = reinterpret_cast<RefactorEditInfo *>(infoPtr);
+    auto *info = reinterpret_cast<ark::es2panda::lsp::RefactorEditInfo *>(infoPtr);
     std::vector<void *> ptrs;
     for (auto &el : info->GetFileTextChanges()) {
         ptrs.push_back(new FileTextChanges(el));
@@ -366,57 +368,6 @@ KNativePointer impl_getTextSpanFromConstructorInfo(KNativePointer infoPtr)
     return new TextSpan(info->span);
 }
 TS_INTEROP_1(getTextSpanFromConstructorInfo, KNativePointer, KNativePointer)
-
-KNativePointer impl_getRefactorActionName(KNativePointer refactorActionPtr)
-{
-    auto *refactorAction = reinterpret_cast<ark::es2panda::lsp::RefactorAction *>(refactorActionPtr);
-    return new std::string(refactorAction->name);
-}
-TS_INTEROP_1(getRefactorActionName, KNativePointer, KNativePointer)
-
-KNativePointer impl_getRefactorActionDescription(KNativePointer refactorActionPtr)
-{
-    auto *refactorAction = reinterpret_cast<ark::es2panda::lsp::RefactorAction *>(refactorActionPtr);
-    return new std::string(refactorAction->description);
-}
-TS_INTEROP_1(getRefactorActionDescription, KNativePointer, KNativePointer)
-
-KNativePointer impl_getRefactorActionKind(KNativePointer refactorActionPtr)
-{
-    auto *refactorAction = reinterpret_cast<ark::es2panda::lsp::RefactorAction *>(refactorActionPtr);
-    return new std::string(refactorAction->kind);
-}
-TS_INTEROP_1(getRefactorActionKind, KNativePointer, KNativePointer)
-
-KNativePointer impl_getApplicableRefactors(KNativePointer context, KStringPtr &kindPtr, KInt position)
-{
-    LSPAPI const *ctx = GetImpl();
-    auto *applicableRefactorInfo = new ark::es2panda::lsp::ApplicableRefactorInfo(ctx->getApplicableRefactors(
-        reinterpret_cast<es2panda_Context *>(context), GetStringCopy(kindPtr), static_cast<std::size_t>(position)));
-    return applicableRefactorInfo;
-}
-TS_INTEROP_3(getApplicableRefactors, KNativePointer, KNativePointer, KStringPtr, KInt)
-
-KNativePointer impl_getApplicableRefactorName(KNativePointer applRefsPtr)
-{
-    auto *applRefsInfo = reinterpret_cast<ark::es2panda::lsp::ApplicableRefactorInfo *>(applRefsPtr);
-    return new std::string(applRefsInfo->name);
-}
-TS_INTEROP_1(getApplicableRefactorName, KNativePointer, KNativePointer)
-
-KNativePointer impl_getApplicableRefactorDescription(KNativePointer applRefsPtr)
-{
-    auto *applRefsInfo = reinterpret_cast<ark::es2panda::lsp::ApplicableRefactorInfo *>(applRefsPtr);
-    return new std::string(applRefsInfo->description);
-}
-TS_INTEROP_1(getApplicableRefactorDescription, KNativePointer, KNativePointer)
-
-KNativePointer impl_getRefactorAction(KNativePointer applRefsPtr)
-{
-    auto *applRefsInfo = reinterpret_cast<ark::es2panda::lsp::ApplicableRefactorInfo *>(applRefsPtr);
-    return new ark::es2panda::lsp::RefactorAction(applRefsInfo->action);
-}
-TS_INTEROP_1(getRefactorAction, KNativePointer, KNativePointer)
 
 KNativePointer impl_getCompletionEntryDetailsSymbolDisplayPart(KNativePointer completionEntryDetailsPtr)
 {
@@ -773,14 +724,14 @@ KNativePointer impl_getClassNameFromClassHierarchyInfo(KNativePointer info)
 }
 TS_INTEROP_1(getClassNameFromClassHierarchyInfo, KNativePointer, KNativePointer)
 
-KNativePointer impl_getMethodListFromClassHierarchyInfo(KNativePointer info)
+KNativePointer impl_getMethodItemsFromClassHierarchyInfo(KNativePointer info)
 {
     auto *infoPtr = reinterpret_cast<ClassHierarchyInfo *>(info);
     if (infoPtr == nullptr) {
         return nullptr;
     }
     std::vector<void *> ptrs;
-    for (const auto &element : infoPtr->GetMethodList()) {
+    for (const auto &element : infoPtr->GetMethodItemList()) {
         if (element.second == nullptr) {
             continue;
         }
@@ -788,17 +739,34 @@ KNativePointer impl_getMethodListFromClassHierarchyInfo(KNativePointer info)
     }
     return new std::vector<void *>(ptrs);
 }
-TS_INTEROP_1(getMethodListFromClassHierarchyInfo, KNativePointer, KNativePointer)
+TS_INTEROP_1(getMethodItemsFromClassHierarchyInfo, KNativePointer, KNativePointer)
 
-KNativePointer impl_getDetailFromClassMethodItem(KNativePointer item)
+KNativePointer impl_getPropertyItemsFromClassHierarchyInfo(KNativePointer info)
 {
-    auto *itemPtr = reinterpret_cast<ClassMethodItem *>(item);
+    auto *infoPtr = reinterpret_cast<ClassHierarchyInfo *>(info);
+    if (infoPtr == nullptr) {
+        return nullptr;
+    }
+    std::vector<void *> ptrs;
+    for (const auto &element : infoPtr->GetPropertyItemList()) {
+        if (element.second == nullptr) {
+            continue;
+        }
+        ptrs.push_back(new ClassPropertyItem(*(element.second)));
+    }
+    return new std::vector<void *>(ptrs);
+}
+TS_INTEROP_1(getPropertyItemsFromClassHierarchyInfo, KNativePointer, KNativePointer)
+
+KNativePointer impl_getDetailFromClassHierarchyItem(KNativePointer item)
+{
+    auto *itemPtr = reinterpret_cast<ClassHierarchyItem *>(item);
     if (itemPtr == nullptr) {
         return nullptr;
     }
-    return new std::string(itemPtr->GetFunctionDetail());
+    return new std::string(itemPtr->GetDetail());
 }
-TS_INTEROP_1(getDetailFromClassMethodItem, KNativePointer, KNativePointer)
+TS_INTEROP_1(getDetailFromClassHierarchyItem, KNativePointer, KNativePointer)
 
 KInt impl_getSetterStyleFromClassMethodItem(KNativePointer item)
 {
@@ -810,15 +778,15 @@ KInt impl_getSetterStyleFromClassMethodItem(KNativePointer item)
 }
 TS_INTEROP_1(getSetterStyleFromClassMethodItem, KInt, KNativePointer)
 
-KInt impl_getAccessModifierStyleFromClassMethodItem(KNativePointer item)
+KInt impl_getAccessModifierStyleFromClassHierarchyItem(KNativePointer item)
 {
-    auto *itemPtr = reinterpret_cast<ClassMethodItem *>(item);
+    auto *itemPtr = reinterpret_cast<ClassHierarchyItem *>(item);
     if (itemPtr == nullptr) {
         return 0;
     }
     return static_cast<size_t>(itemPtr->GetAccessModifierStyle());
 }
-TS_INTEROP_1(getAccessModifierStyleFromClassMethodItem, KInt, KNativePointer)
+TS_INTEROP_1(getAccessModifierStyleFromClassHierarchyItem, KInt, KNativePointer)
 
 KInt impl_getAliasScriptElementKind(KNativePointer context, KInt position)
 {
@@ -848,6 +816,68 @@ KNativePointer impl_getClassHierarchies(KNativePointer context, KStringPtr &file
     return new std::vector<void *>(std::move(ptrs));
 }
 TS_INTEROP_3(getClassHierarchies, KNativePointer, KNativePointer, KStringPtr, KInt)
+
+KNativePointer impl_getApplicableRefactors(KNativePointer context, KStringPtr &kindPtr, KInt position)
+{
+    LSPAPI const *ctx = GetImpl();
+    auto *result = new std::vector<ark::es2panda::lsp::ApplicableRefactorInfo>(ctx->getApplicableRefactors(
+        reinterpret_cast<es2panda_Context *>(context), GetStringCopy(kindPtr), static_cast<std::size_t>(position)));
+    return result;
+}
+TS_INTEROP_3(getApplicableRefactors, KNativePointer, KNativePointer, KStringPtr, KInt)
+
+KNativePointer impl_getApplicableRefactorInfoList(KNativePointer infosPtr)
+{
+    auto *infos = reinterpret_cast<std::vector<ark::es2panda::lsp::ApplicableRefactorInfo> *>(infosPtr);
+    std::vector<void *> ptrs;
+    for (auto &info : *infos) {
+        ptrs.push_back(new ark::es2panda::lsp::ApplicableRefactorInfo(info));
+    }
+    return new std::vector<void *>(ptrs);
+}
+TS_INTEROP_1(getApplicableRefactorInfoList, KNativePointer, KNativePointer)
+
+KNativePointer impl_getRefactorActionName(KNativePointer refactorActionPtr)
+{
+    auto *refactorAction = reinterpret_cast<ark::es2panda::lsp::RefactorAction *>(refactorActionPtr);
+    return new std::string(refactorAction->name);
+}
+TS_INTEROP_1(getRefactorActionName, KNativePointer, KNativePointer)
+
+KNativePointer impl_getRefactorActionDescription(KNativePointer refactorActionPtr)
+{
+    auto *refactorAction = reinterpret_cast<ark::es2panda::lsp::RefactorAction *>(refactorActionPtr);
+    return new std::string(refactorAction->description);
+}
+TS_INTEROP_1(getRefactorActionDescription, KNativePointer, KNativePointer)
+
+KNativePointer impl_getRefactorActionKind(KNativePointer refactorActionPtr)
+{
+    auto *refactorAction = reinterpret_cast<ark::es2panda::lsp::RefactorAction *>(refactorActionPtr);
+    return new std::string(refactorAction->kind);
+}
+TS_INTEROP_1(getRefactorActionKind, KNativePointer, KNativePointer)
+
+KNativePointer impl_getApplicableRefactorName(KNativePointer applRefsPtr)
+{
+    auto *applRefsInfo = reinterpret_cast<ark::es2panda::lsp::ApplicableRefactorInfo *>(applRefsPtr);
+    return new std::string(applRefsInfo->name);
+}
+TS_INTEROP_1(getApplicableRefactorName, KNativePointer, KNativePointer)
+
+KNativePointer impl_getApplicableRefactorDescription(KNativePointer applRefsPtr)
+{
+    auto *applRefsInfo = reinterpret_cast<ark::es2panda::lsp::ApplicableRefactorInfo *>(applRefsPtr);
+    return new std::string(applRefsInfo->description);
+}
+TS_INTEROP_1(getApplicableRefactorDescription, KNativePointer, KNativePointer)
+
+KNativePointer impl_getApplicableRefactorAction(KNativePointer applRefsPtr)
+{
+    auto *applRefsInfo = reinterpret_cast<ark::es2panda::lsp::ApplicableRefactorInfo *>(applRefsPtr);
+    return new ark::es2panda::lsp::RefactorAction(applRefsInfo->action);
+}
+TS_INTEROP_1(getApplicableRefactorAction, KNativePointer, KNativePointer)
 
 KNativePointer impl_getClassHierarchyList(KNativePointer infosPtr)
 {
@@ -1187,13 +1217,12 @@ KNativePointer impl_getLocationFromList(KNativePointer listPtr)
 }
 TS_INTEROP_1(getLocationFromList, KNativePointer, KNativePointer)
 
-KBoolean impl_getSafeDeleteInfo(KNativePointer context, KInt position, KStringPtr &path)
+KBoolean impl_getSafeDeleteInfo(KNativePointer context, KInt position)
 {
     LSPAPI const *ctx = GetImpl();
-    return static_cast<KBoolean>(
-        ctx->getSafeDeleteInfo(reinterpret_cast<es2panda_Context *>(context), position, GetStringCopy(path)));
+    return static_cast<KBoolean>(ctx->getSafeDeleteInfo(reinterpret_cast<es2panda_Context *>(context), position));
 }
-TS_INTEROP_3(getSafeDeleteInfo, KBoolean, KNativePointer, KInt, KStringPtr)
+TS_INTEROP_2(getSafeDeleteInfo, KBoolean, KNativePointer, KInt)
 
 KNativePointer impl_toLineColumnOffset(KNativePointer context, KInt position)
 {
@@ -1308,6 +1337,74 @@ KInt impl_getTypeFromTypeHierarchies(KNativePointer infoPtr)
     return static_cast<size_t>(info->type);
 }
 TS_INTEROP_1(getTypeFromTypeHierarchies, KInt, KNativePointer)
+
+KNativePointer impl_getCodeFixesAtPosition(KNativePointer context, KInt startPosition, KInt endPosition,
+                                           KInt *errorCodesPtr, KInt codeLength)
+{
+    CodeFixOptions emptyOptions;
+    std::vector<int> errorCodesInt;
+    if (errorCodesPtr != nullptr && codeLength > 0) {
+        // NOLINTBEGIN(cppcoreguidelines-pro-bounds-pointer-arithmetic,-warnings-as-errors)
+        errorCodesInt = std::vector<int>(reinterpret_cast<int *>(errorCodesPtr),
+                                         reinterpret_cast<int *>(errorCodesPtr) + codeLength);
+        // NOLINTEND(cppcoreguidelines-pro-bounds-pointer-arithmetic,-warnings-as-errors)
+    }
+    LSPAPI const *ctx = GetImpl();
+    auto autofix = ctx->getCodeFixesAtPosition(reinterpret_cast<es2panda_Context *>(context), startPosition,
+                                               endPosition, errorCodesInt, emptyOptions);
+    return new std::vector<CodeFixActionInfo>(autofix);
+}
+TS_INTEROP_5(getCodeFixesAtPosition, KNativePointer, KNativePointer, KInt, KInt, KInt *, KInt)
+
+KNativePointer impl_getCodeFixActionInfos(KNativePointer codeFixActionInfoListPtr)
+{
+    auto *getCodeFixActionInfoList = reinterpret_cast<CodeFixActionInfoList *>(codeFixActionInfoListPtr);
+    std::vector<void *> ptrs;
+    for (auto &el : getCodeFixActionInfoList->infos_) {
+        ptrs.push_back(new CodeFixActionInfo(el));
+    }
+    return new std::vector<void *>(ptrs);
+}
+TS_INTEROP_1(getCodeFixActionInfos, KNativePointer, KNativePointer)
+
+KNativePointer impl_getFileTextChangesFromCodeActionInfo(KNativePointer infoPtr)
+{
+    auto *info = reinterpret_cast<CodeActionInfo *>(infoPtr);
+    std::vector<void *> ptrs;
+    for (auto &el : info->changes_) {
+        ptrs.push_back(new FileTextChanges(el));
+    }
+    return new std::vector<void *>(ptrs);
+}
+TS_INTEROP_1(getFileTextChangesFromCodeActionInfo, KNativePointer, KNativePointer)
+
+KNativePointer impl_getDescriptionFromCodeActionInfo(KNativePointer infoPtr)
+{
+    auto *info = reinterpret_cast<CodeActionInfo *>(infoPtr);
+    return new std::string(info->description_);
+}
+TS_INTEROP_1(getDescriptionFromCodeActionInfo, KNativePointer, KNativePointer)
+
+KNativePointer impl_getFixNameFromCodeFixActionInfo(KNativePointer infoPtr)
+{
+    auto *info = reinterpret_cast<CodeFixActionInfo *>(infoPtr);
+    return new std::string(info->fixName_);
+}
+TS_INTEROP_1(getFixNameFromCodeFixActionInfo, KNativePointer, KNativePointer)
+
+KNativePointer impl_getFixIdFromCodeFixActionInfo(KNativePointer infoPtr)
+{
+    auto *info = reinterpret_cast<CodeFixActionInfo *>(infoPtr);
+    return new std::string(info->fixId_);
+}
+TS_INTEROP_1(getFixIdFromCodeFixActionInfo, KNativePointer, KNativePointer)
+
+KNativePointer impl_getFixAllDescriptionFromCodeFixActionInfo(KNativePointer infoPtr)
+{
+    auto *info = reinterpret_cast<CodeFixActionInfo *>(infoPtr);
+    return new std::string(info->fixAllDescription_);
+}
+TS_INTEROP_1(getFixAllDescriptionFromCodeFixActionInfo, KNativePointer, KNativePointer)
 
 KNativePointer impl_getSpanOfEnclosingComment(KNativePointer context, KInt position, KBoolean onlyMultiLine)
 {

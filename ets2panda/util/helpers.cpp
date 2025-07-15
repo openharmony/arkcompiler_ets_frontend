@@ -766,6 +766,7 @@ bool Helpers::IsAsyncMethod(ir::AstNode const *node)
         return false;
     }
     auto *method = node->AsMethodDefinition();
+    ES2PANDA_ASSERT(method->Function() != nullptr);
     return method->Function()->IsAsyncFunc() && !method->Function()->IsProxy();
 }
 

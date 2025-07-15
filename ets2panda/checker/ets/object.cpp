@@ -186,6 +186,7 @@ bool ETSChecker::ComputeSuperType(ETSObjectType *type)
 void ETSChecker::ValidateImplementedInterface(ETSObjectType *type, Type *interface,
                                               std::unordered_set<Type *> *extendsSet, const lexer::SourcePosition &pos)
 {
+    ES2PANDA_ASSERT(interface != nullptr);
     if (!interface->IsETSObjectType() || !interface->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::INTERFACE)) {
         LogError(diagnostic::NOT_INTERFACE, {}, pos);
         return;
@@ -374,7 +375,7 @@ void ETSChecker::SetUpTypeParameterConstraint(ir::TSTypeParameter *const param)
         traverseReferenced(param->Constraint());
         paramType->SetConstraintType(param->Constraint()->GetType(this));
     } else {
-        paramType->SetConstraintType(GlobalETSNullishObjectType());
+        paramType->SetConstraintType(GlobalETSAnyType());
     }
 
     if (param->DefaultType() != nullptr) {
@@ -394,12 +395,12 @@ ETSTypeParameter *ETSChecker::SetUpParameterType(ir::TSTypeParameter *const para
     }
 
     auto *const paramType = CreateTypeParameter();
-
+    ES2PANDA_ASSERT(paramType != nullptr);
     paramType->AddTypeFlag(TypeFlag::GENERIC);
     paramType->SetDeclNode(param);
     paramType->SetVariable(param->Variable());
     // NOTE: #15026 recursive type parameter workaround
-    paramType->SetConstraintType(GlobalETSNullishObjectType());
+    paramType->SetConstraintType(GlobalETSAnyType());
 
     var->SetTsType(paramType);
     return paramType;
@@ -443,6 +444,13 @@ Type *ETSChecker::BuildBasicInterfaceProperties(ir::TSInterfaceDeclaration *inte
         return GlobalTypeError();
     }
 
+    // Save before we mess with savedContext.
+    bool builtinsInitialized = HasStatus(CheckerStatus::BUILTINS_INITIALIZED);
+
+    auto *enclosingClass = Context().ContainingClass();
+    interfaceType->SetEnclosingType(enclosingClass);
+    CheckerStatus newStatus = CheckerStatus::IN_INTERFACE;
+    auto savedContext = checker::SavedCheckerContext(this, newStatus, interfaceType);
     ConstraintCheckScope ctScope(this);
     if (interfaceDecl->TypeParams() != nullptr) {
         interfaceType->AddTypeFlag(TypeFlag::GENERIC);
@@ -456,7 +464,7 @@ Type *ETSChecker::BuildBasicInterfaceProperties(ir::TSInterfaceDeclaration *inte
     // Skip this check if the builtins are not initialized.
     // They will be initialized in different order,
     // and it is possible that the FunctionType interface is not yet created.
-    if (HasStatus(CheckerStatus::BUILTINS_INITIALIZED)) {
+    if (builtinsInitialized) {
         CheckInterfaceFunctions(interfaceType);
     }
 
@@ -521,6 +529,7 @@ ETSObjectType *ETSChecker::BuildAnonymousClassProperties(ir::ClassDefinition *cl
 {
     auto classType = CreateETSObjectType(classDef, checker::ETSObjectFlags::CLASS);
     classDef->SetTsType(classType);
+    ES2PANDA_ASSERT(classType != nullptr);
     classType->SetSuperType(superType);
     classType->AddObjectFlag(checker::ETSObjectFlags::RESOLVED_SUPER);
 
@@ -546,12 +555,14 @@ static void ResolveDeclaredFieldsOfObject(ETSChecker *checker, const ETSObjectTy
     }
 }
 
+// CC-OFFNXT(huge_method[C++], G.FUN.01-CPP) solid logic
 static void ResolveDeclaredMethodsOfObject(ETSChecker *checker, const ETSObjectType *type, varbinder::ClassScope *scope)
 {
     for (auto &[_, it] : scope->InstanceMethodScope()->Bindings()) {
         (void)_;
         auto *method = it->Declaration()->Node()->AsMethodDefinition();
         auto *function = method->Function();
+        ES2PANDA_ASSERT(function != nullptr);
         if (function->IsProxy()) {
             continue;
         }
@@ -574,7 +585,7 @@ static void ResolveDeclaredMethodsOfObject(ETSChecker *checker, const ETSObjectT
 
         auto *method = it->Declaration()->Node()->AsMethodDefinition();
         auto *function = method->Function();
-
+        ES2PANDA_ASSERT(function != nullptr);
         if (function->IsProxy()) {
             continue;
         }
@@ -728,8 +739,10 @@ void ETSChecker::CreateFunctionTypesFromAbstracts(const std::vector<Signature *>
 
 void ETSChecker::ComputeAbstractsFromInterface(ETSObjectType *interfaceType)
 {
-    auto cached = GetCachedComputedAbstracts()->find(interfaceType);
-    if (cached != GetCachedComputedAbstracts()->end()) {
+    auto cachedComputedAbstracts = GetCachedComputedAbstracts();
+    ES2PANDA_ASSERT(cachedComputedAbstracts != nullptr);
+    auto cached = cachedComputedAbstracts->find(interfaceType);
+    if (cached != cachedComputedAbstracts->end()) {
         return;
     }
 
@@ -742,8 +755,8 @@ void ETSChecker::ComputeAbstractsFromInterface(ETSObjectType *interfaceType)
     ArenaUnorderedSet<ETSObjectType *> abstractInheritanceTarget(ProgramAllocator()->Adapter());
 
     for (auto *interface : interfaceType->Interfaces()) {
-        auto found = GetCachedComputedAbstracts()->find(interface);
-        ES2PANDA_ASSERT(found != GetCachedComputedAbstracts()->end());
+        auto found = cachedComputedAbstracts->find(interface);
+        ES2PANDA_ASSERT(found != cachedComputedAbstracts->end());
 
         if (!abstractInheritanceTarget.insert(found->first).second) {
             continue;
@@ -756,7 +769,7 @@ void ETSChecker::ComputeAbstractsFromInterface(ETSObjectType *interfaceType)
         }
     }
 
-    GetCachedComputedAbstracts()->insert({interfaceType, {merged, abstractInheritanceTarget}});
+    cachedComputedAbstracts->insert({interfaceType, {merged, abstractInheritanceTarget}});
 }
 
 ArenaVector<ETSFunctionType *> &ETSChecker::GetAbstractsForClass(ETSObjectType *classType)
@@ -860,6 +873,7 @@ void ETSChecker::CheckFunctionRedeclarationInInterface(ETSObjectType *classType,
         if (sig == sigFunc) {
             return;
         }
+        ES2PANDA_ASSERT(sigFunc != nullptr);
         if (sigFunc->Function()->Id()->Name() == sig->Function()->Id()->Name()) {
             if (classType->IsSameBasedGeneric(Relation(), sig->Owner())) {
                 return;
@@ -879,6 +893,7 @@ static void CallRedeclarationCheckForCorrectSignature(ir::MethodDefinition *meth
                                                       ETSObjectType *classType, ETSChecker *checker)
 {
     ir::ScriptFunction *func = method->Function();
+    ES2PANDA_ASSERT(func != nullptr);
     if (!func->IsAbstract()) {
         auto *sigFunc = funcType->FindSignature(func);
         checker->CheckFunctionRedeclarationInInterface(classType, similarSignatures, sigFunc);
@@ -1191,6 +1206,12 @@ void ETSChecker::CheckClassDefinition(ir::ClassDefinition *classDef)
     auto *classType = classDef->TsType()->AsETSObjectType();
     if (classType->SuperType() != nullptr) {
         classType->SuperType()->GetDeclNode()->Check(this);
+    }
+
+    if (classType->GetDeclNode() != classDef) {
+        ES2PANDA_ASSERT(IsAnyError());
+        classDef->SetTsType(GlobalTypeError());
+        return;
     }
 
     auto newStatus = checker::CheckerStatus::IN_CLASS;
@@ -1767,6 +1788,7 @@ void ETSChecker::CheckCyclicConstructorCall(Signature *signature)
 
 ETSObjectType *ETSChecker::CheckExceptionOrErrorType(checker::Type *type, const lexer::SourcePosition pos)
 {
+    ES2PANDA_ASSERT(type != nullptr);
     if (!type->IsETSObjectType() || (!Relation()->IsAssignableTo(type, GlobalBuiltinExceptionType()) &&
                                      !Relation()->IsAssignableTo(type, GlobalBuiltinErrorType()))) {
         LogError(diagnostic::CATCH_OR_THROW_OF_INVALID_TYPE,
@@ -1876,7 +1898,11 @@ varbinder::Variable *ETSChecker::GetExtensionFuncVarInGlobalFunction(const ir::M
 {
     auto propertyName = memberExpr->Property()->AsIdentifier()->Name();
     auto *globalFunctionVar = Scope()->FindInGlobal(propertyName, VO::STATIC_METHODS).variable;
-    if (globalFunctionVar == nullptr || !IsExtensionETSFunctionType(globalFunctionVar->TsType())) {
+    if (globalFunctionVar == nullptr) {
+        return nullptr;
+    }
+
+    if (!IsExtensionETSFunctionType(GetTypeOfVariable(globalFunctionVar))) {
         return nullptr;
     }
 
@@ -2253,12 +2279,13 @@ void ETSChecker::WarnForEndlessLoopInGetterSetter(const ir::MemberExpression *co
     }
     auto ident = memberExpr->Property()->AsIdentifier();
     auto parent = memberExpr->Parent();
-    while (parent != nullptr &&
-           (!parent->IsMethodDefinition() || (!parent->AsMethodDefinition()->Function()->IsGetter() &&
-                                              !parent->AsMethodDefinition()->Function()->IsSetter()))) {
+    while (parent != nullptr && (!parent->IsMethodDefinition() || parent->AsMethodDefinition()->Function() == nullptr ||
+                                 (!parent->AsMethodDefinition()->Function()->IsGetter() &&
+                                  !parent->AsMethodDefinition()->Function()->IsSetter()))) {
         parent = parent->Parent();
     }
-    if (parent != nullptr && ident->Name() == parent->AsMethodDefinition()->Function()->Id()->Name()) {
+    if (parent != nullptr && parent->AsMethodDefinition()->Function() != nullptr &&
+        ident->Name() == parent->AsMethodDefinition()->Function()->Id()->Name()) {
         if (parent->AsMethodDefinition()->Function()->IsGetter()) {
             LogDiagnostic(diagnostic::GETTER_LOOP, memberExpr->Property()->AsIdentifier()->Start());
         } else {
@@ -2497,7 +2524,7 @@ Type *ETSChecker::GetApparentType(Type *type)
         apparentTypes_.insert({res, res});
         return res;
     };
-
+    ES2PANDA_ASSERT(type != nullptr);
     if (type->IsETSTypeParameter()) {
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         return cached(GetApparentType(type->AsETSTypeParameter()->GetConstraintType()));
@@ -2538,6 +2565,7 @@ Type const *ETSChecker::GetApparentType(Type const *type) const
     if (auto it = apparentTypes_.find(type); LIKELY(it != apparentTypes_.end())) {
         return it->second;
     }
+    ES2PANDA_ASSERT(type != nullptr);
     // Relaxed for some types
     if (type->IsETSTypeParameter()) {
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)

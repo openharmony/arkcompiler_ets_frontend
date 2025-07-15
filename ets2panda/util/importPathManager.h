@@ -140,6 +140,12 @@ public:
 
     void MarkAsParsed(StringView path);
     util::StringView FormRelativePath(const util::Path &path);
+    std::shared_ptr<const ArkTsConfig> ArkTSConfig() const
+    {
+        return arktsConfig_;
+    }
+
+    void AddToParseList(const ImportMetadata importMetadata);
 
 private:
     util::StringView FormModuleNameSolelyByAbsolutePath(const util::Path &path);
@@ -161,7 +167,6 @@ private:
     std::string TryMatchDynamicPath(std::string_view fixedPath) const;
     StringView GetRealPath(StringView path) const;
 
-    void AddToParseList(const ImportMetadata importMetadata);
 #ifdef USE_UNIX_SYSCALL
     void UnixWalkThroughDirectoryAndAddToParseList(ImportMetadata importMetadata);
 #endif

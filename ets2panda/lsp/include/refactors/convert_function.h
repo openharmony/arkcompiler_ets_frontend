@@ -16,7 +16,7 @@
 #ifndef CONVERT_FUNCTION_H
 #define CONVERT_FUNCTION_H
 
-#include "lsp/include/applicable_refactors.h"
+#include "refactor_types.h"
 
 namespace ark::es2panda::lsp {
 
@@ -30,8 +30,11 @@ constexpr RefactorActionView TO_ARROW_FUNCTION_ACTION {"Convert to arrow functio
 class ConvertFunctionRefactor : public Refactor {
 public:
     ConvertFunctionRefactor();
-    ApplicableRefactorInfo GetAvailableActions(es2panda_Context *context, std::string kind, size_t position) override;
+    ApplicableRefactorInfo GetAvailableActions(const RefactorContext &context) const override;
+    std::unique_ptr<RefactorEditInfo> GetEditsForAction(const RefactorContext &context,
+                                                        const std::string &actionName) const override;
 };
+
 }  // namespace ark::es2panda::lsp
 
 #endif  // CONVERT_FUNCTION_H

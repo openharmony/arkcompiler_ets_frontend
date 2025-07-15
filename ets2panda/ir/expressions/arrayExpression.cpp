@@ -48,6 +48,7 @@ ArrayExpression::ArrayExpression([[maybe_unused]] Tag const tag, ArrayExpression
 ArrayExpression *ArrayExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     auto *const clone = allocator->New<ArrayExpression>(Tag {}, *this, allocator);
+    ES2PANDA_ASSERT(clone);
     if (parent != nullptr) {
         clone->SetParent(parent);
     }
@@ -345,6 +346,7 @@ checker::Type *ArrayExpression::CheckPattern(checker::TSChecker *checker)
         index--;
     }
 
+    ES2PANDA_ASSERT(desc);
     const checker::TupleTypeInfo tupleTypeInfo = {combinedFlags, minLength,
                                                   static_cast<uint32_t>(desc->properties.size()), false};
     return checker->CreateTupleType(desc, std::move(elementFlags), tupleTypeInfo);
@@ -414,6 +416,7 @@ checker::VerifiedType ArrayExpression::Check(checker::ETSChecker *checker)
 
 std::optional<checker::Type *> ArrayExpression::ExtractPossiblePreferredType(checker::Type *type)
 {
+    ES2PANDA_ASSERT(type);
     if (type->IsETSArrayType() || type->IsETSTupleType() || type->IsETSResizableArrayType()) {
         return std::make_optional(type);
     }

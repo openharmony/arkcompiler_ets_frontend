@@ -397,7 +397,17 @@ static bool ExecuteParsingAndCompiling(const CompilationUnit &unit, public_lib::
         AddExternalPrograms(context, unit, program);
     }
 
-    context->parser->ParseScript(unit.input, unit.options.GetCompilationMode() == CompilationMode::GEN_STD_LIB);
+    if (context->config->options->GetCompilationMode() == CompilationMode::GEN_ABC_FOR_EXTERNAL_SOURCE &&
+        context->config->options->GetExtension() == ScriptExtension::ETS) {
+        std::unordered_set<std::string> sourceFileNamesSet;
+        util::UString absolutePath(os::GetAbsolutePath(context->sourceFile->filePath), context->allocator);
+        sourceFileNamesSet.insert(absolutePath.View().Mutf8());
+        context->sourceFileNames.emplace_back(absolutePath.View().Utf8());
+        parser::ETSParser::AddGenExtenralSourceToParseList(context);
+        context->MarkGenAbcForExternal(sourceFileNamesSet, context->parserProgram->ExternalSources());
+    } else {
+        context->parser->ParseScript(unit.input, unit.options.GetCompilationMode() == CompilationMode::GEN_STD_LIB);
+    }
 
     //  We have to check the return status of 'RunVerifierAndPhase` and 'RunPhases` separately because there can be
     //  some internal errors (say, in Post-Conditional check) or terminate options (say in 'CheckOptionsAfterPhase')
@@ -417,10 +427,22 @@ static bool ExecuteParsingAndCompiling(const CompilationUnit &unit, public_lib::
     return !context->diagnosticEngine->IsAnyError();
 }
 
+static pandasm::Program *ClearContextAndReturnProgam(public_lib::Context *context, pandasm::Program *program)
+{
+    context->config = nullptr;
+    context->parser = nullptr;
+    context->checker->SetAnalyzer(nullptr);
+    context->checker = nullptr;
+    context->analyzer = nullptr;
+    context->phaseManager = nullptr;
+    context->parserProgram = nullptr;
+    context->emitter = nullptr;
+    return program;
+}
+
 template <typename Parser, typename VarBinder, typename Checker, typename Analyzer, typename AstCompiler,
           typename CodeGen, typename RegSpiller, typename FunctionEmitter, typename Emitter>
-static pandasm::Program *Compile(const CompilationUnit &unit, CompilerImpl *compilerImpl,
-                                 [[maybe_unused]] public_lib::Context *context)
+static pandasm::Program *Compile(const CompilationUnit &unit, CompilerImpl *compilerImpl, public_lib::Context *context)
 {
     auto config = public_lib::ConfigImpl {};
     context->config = &config;
@@ -434,6 +456,7 @@ static pandasm::Program *Compile(const CompilationUnit &unit, CompilerImpl *comp
                                 : nullptr);
     auto parser =
         Parser(&program, unit.options, unit.diagnosticEngine, static_cast<parser::ParserStatus>(unit.rawParserStatus));
+    parser.SetContext(context);
     context->parser = &parser;
     auto checker = Checker(unit.diagnosticEngine, context->allocator);
     context->checker = &checker;
@@ -464,9 +487,9 @@ static pandasm::Program *Compile(const CompilationUnit &unit, CompilerImpl *comp
     context->checker->Initialize(varbinder);
 
     if (!ExecuteParsingAndCompiling(unit, context)) {
-        return nullptr;
+        return ClearContextAndReturnProgam(context, nullptr);
     }
-    return EmitProgram(compilerImpl, context, unit);
+    return ClearContextAndReturnProgam(context, EmitProgram(compilerImpl, context, unit));
 }
 
 pandasm::Program *CompilerImpl::Compile(const CompilationUnit &unit, public_lib::Context *context)

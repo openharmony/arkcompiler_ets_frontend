@@ -160,6 +160,7 @@ checker::Type *ETSAnalyzer::Check(ir::ClassStaticBlock *st) const
 static void HandleNativeAndAsyncMethods(ETSChecker *checker, ir::MethodDefinition *node)
 {
     auto *scriptFunc = node->Function();
+    ES2PANDA_ASSERT(scriptFunc != nullptr);
     if (node->IsNative() && !node->IsConstructor() && !scriptFunc->IsSetter()) {
         if (scriptFunc->ReturnTypeAnnotation() == nullptr) {
             checker->LogError(diagnostic::NATIVE_WITHOUT_RETURN, {}, scriptFunc->Start());
@@ -377,7 +378,11 @@ checker::Type *ETSAnalyzer::Check(ir::ETSFunctionType *node) const
     checker->CheckFunctionSignatureAnnotations(node->Params(), node->TypeParams(), node->ReturnType());
 
     auto *signatureInfo = checker->ComposeSignatureInfo(node->TypeParams(), node->Params());
-    auto *returnType = checker->ComposeReturnType(node->ReturnType(), node->IsAsync());
+    ES2PANDA_ASSERT(signatureInfo != nullptr);
+    auto *returnType = node->IsExtensionFunction() && node->ReturnType()->IsTSThisType()
+                           ? signatureInfo->params.front()->TsType()
+                           : checker->ComposeReturnType(node->ReturnType(), node->IsAsync());
+
     auto *const signature =
         checker->CreateSignature(signatureInfo, returnType, node->Flags(), node->IsExtensionFunction());
     if (signature == nullptr) {  // #23134
@@ -397,6 +402,7 @@ static bool CheckArrayElementType(ETSChecker *checker, T *newArrayInstanceExpr)
     ES2PANDA_ASSERT(newArrayInstanceExpr != nullptr);
 
     checker::Type *elementType = newArrayInstanceExpr->TypeReference()->GetType(checker);
+    ES2PANDA_ASSERT(elementType != nullptr);
     if (elementType->IsETSPrimitiveType()) {
         return true;
     }
@@ -849,6 +855,11 @@ static bool CheckArrayExpressionElements(ETSChecker *checker, ir::ArrayExpressio
     return allElementsAssignable;
 }
 
+static bool IsPossibleArrayExpressionType(Type const *type)
+{
+    return type->IsETSArrayType() || type->IsETSTupleType() || type->IsETSResizableArrayType();
+}
+
 void ETSAnalyzer::GetUnionPreferredType(ir::Expression *expr, Type *originalType) const
 {
     if (originalType == nullptr || !originalType->IsETSUnionType()) {
@@ -856,7 +867,7 @@ void ETSAnalyzer::GetUnionPreferredType(ir::Expression *expr, Type *originalType
     }
     checker::Type *preferredType = nullptr;
     for (auto &type : originalType->AsETSUnionType()->ConstituentTypes()) {
-        if (type->IsETSArrayType() || type->IsETSTupleType() || type->IsETSResizableArrayType()) {
+        if (IsPossibleArrayExpressionType(type)) {
             if (preferredType != nullptr) {
                 preferredType = nullptr;
                 break;
@@ -889,6 +900,10 @@ checker::Type *ETSAnalyzer::Check(ir::ArrayExpression *expr) const
 
         if (expr->GetPreferredType()->IsETSUnionType()) {
             GetUnionPreferredType(expr, expr->GetPreferredType());
+        }
+
+        if (expr->GetPreferredType() != nullptr && !IsPossibleArrayExpressionType(expr->GetPreferredType())) {
+            expr->SetPreferredType(nullptr);
         }
     }
 
@@ -1212,6 +1227,7 @@ checker::Type *ETSAnalyzer::Check(ir::AwaitExpression *expr) const
     }
 
     checker::Type *argType = checker->GetApparentType(expr->argument_->Check(checker));
+    ES2PANDA_ASSERT(argType != nullptr);
     ArenaVector<Type *> awaitedTypes(checker->ProgramAllocator()->Adapter());
 
     if (argType->IsETSUnionType()) {
@@ -1554,6 +1570,7 @@ checker::Type *ETSAnalyzer::Check(ir::CallExpression *expr) const
 
     checker::TypeStackElement tse(checker, expr, {{diagnostic::CYCLIC_CALLEE, {}}}, expr->Start());
     if (tse.HasTypeError()) {
+        expr->SetTsType(checker->GlobalTypeError());
         return checker->GlobalTypeError();
     }
 
@@ -1564,7 +1581,7 @@ checker::Type *ETSAnalyzer::Check(ir::CallExpression *expr) const
     }
     if (calleeType->IsETSArrowType()) {
         expr->SetUncheckedType(checker->GuaranteedTypeForUncheckedCast(
-            checker->GlobalETSNullishObjectType(), checker->MaybeBoxType(expr->Signature()->ReturnType())));
+            checker->GlobalETSAnyType(), checker->MaybeBoxType(expr->Signature()->ReturnType())));
     } else {
         expr->SetUncheckedType(checker->GuaranteedTypeForUncheckedCallReturn(expr->Signature()));
     }
@@ -1620,7 +1637,7 @@ checker::Type *ETSAnalyzer::Check(ir::ConditionalExpression *expr) const
     checker->Context().CombineSmartCasts(consequentSmartCasts);
 
     if (checker->IsTypeIdenticalTo(consequentType, alternateType)) {
-        expr->SetTsType(checker->GetNonConstantType(consequentType));
+        expr->SetTsType(consequentType);
     } else {
         //  If possible and required update number literal type to the proper value (identical to left-side type)
         if (alternate->IsNumberLiteral() &&
@@ -1663,12 +1680,25 @@ static Type *TransformTypeForMethodReference(ETSChecker *checker, ir::Expression
         return type;  // type is actually used as method
     }
 
-    if (type->AsETSFunctionType()->CallSignatures().at(0)->HasSignatureFlag(SignatureFlags::PRIVATE)) {
+    auto *const functionType = type->AsETSFunctionType();
+    auto &signatures = functionType->CallSignatures();
+
+    if (signatures.at(0)->HasSignatureFlag(SignatureFlags::PRIVATE)) {
         checker->LogError(diagnostic::PRIVATE_METHOD_AS_VALUE, getUseSite());
         return checker->GlobalTypeError();
     }
 
-    if (type->AsETSFunctionType()->CallSignatures().size() > 1) {
+    auto it = signatures.begin();
+    while (it != signatures.end()) {
+        if ((*it)->HasSignatureFlag(SignatureFlags::ABSTRACT) &&
+            !(*it)->Owner()->GetDeclNode()->IsTSInterfaceDeclaration()) {
+            it = signatures.erase(it);
+        } else {
+            ++it;
+        }
+    }
+
+    if (signatures.size() > 1U) {
         checker->LogError(diagnostic::OVERLOADED_METHOD_AS_VALUE, getUseSite());
         return checker->GlobalTypeError();
     }
@@ -1697,6 +1727,7 @@ checker::Type *ETSAnalyzer::Check(ir::Identifier *expr) const
         }
     }
 
+    ES2PANDA_ASSERT(identType != nullptr);
     expr->SetTsType(identType);
     if (!identType->IsTypeError()) {
         checker->Context().CheckIdentifierSmartCastCondition(expr);
@@ -1809,6 +1840,7 @@ checker::Type *ETSAnalyzer::Check(ir::MemberExpression *expr) const
     auto *baseType = checker->GetNonConstantType(checker->GetApparentType(expr->Object()->Check(checker)));
     //  Note: don't use possible smart cast to null-like types.
     //        Such situation should be correctly resolved in the subsequent lowering.
+    ES2PANDA_ASSERT(baseType != nullptr);
     if (baseType->DefinitelyETSNullish() && expr->Object()->IsIdentifier()) {
         baseType = expr->Object()->AsIdentifier()->Variable()->TsType();
     }
@@ -1826,7 +1858,7 @@ checker::Type *ETSAnalyzer::Check(ir::MemberExpression *expr) const
     }
     if (!checker->CheckNonNullish(expr->Object())) {
         auto *invalidType = checker->HasStatus(checker::CheckerStatus::IN_EXTENSION_ACCESSOR_CHECK)
-                                ? checker->GlobalETSNullishType()
+                                ? checker->GlobalETSUnionUndefinedNull()
                                 : checker->InvalidateType(expr);
         return invalidType;
     }
@@ -2562,7 +2594,7 @@ checker::Type *ETSAnalyzer::Check(ir::UnaryExpression *expr) const
         switch (expr->OperatorType()) {
             case lexer::TokenType::PUNCTUATOR_MINUS: {
                 checker::Type *type = checker->CreateETSBigIntLiteralType(argType->AsETSBigIntType()->GetValue());
-
+                ES2PANDA_ASSERT(type != nullptr);
                 // We do not need this const anymore as we are negating the bigint object in runtime
                 type->RemoveTypeFlag(checker::TypeFlag::CONSTANT);
                 expr->argument_->SetTsType(type);
@@ -2892,7 +2924,10 @@ checker::Type *ETSAnalyzer::Check(ir::AnnotationUsage *st) const
     ArenaUnorderedMap<util::StringView, ir::ClassProperty *> fieldMap {checker->ProgramAllocator()->Adapter()};
     for (auto *it : annoDecl->Properties()) {
         auto *field = it->AsClassProperty();
-        fieldMap.insert(std::make_pair(field->Id()->Name(), field));
+        ES2PANDA_ASSERT(field != nullptr);
+        auto *id = field->Id();
+        ES2PANDA_ASSERT(id != nullptr);
+        fieldMap.insert(std::make_pair(id->Name(), field));
     }
 
     if (annoDecl->Properties().size() < st->Properties().size()) {
@@ -2900,7 +2935,7 @@ checker::Type *ETSAnalyzer::Check(ir::AnnotationUsage *st) const
         return ReturnTypeForStatement(st);
     }
 
-    if (st->Properties().size() == 1 &&
+    if (st->Properties().size() == 1 && st->Properties().at(0)->AsClassProperty()->Id() != nullptr &&
         st->Properties().at(0)->AsClassProperty()->Id()->Name() == compiler::Signatures::ANNOTATION_KEY_VALUE) {
         checker->CheckSinglePropertyAnnotation(st, annoDecl);
         fieldMap.clear();
@@ -3005,7 +3040,7 @@ checker::Type *ETSAnalyzer::Check(ir::ForOfStatement *const st) const
     checker::Type *elemType = checker->GlobalTypeError();
 
     if (exprType->IsETSStringType()) {
-        elemType = checker->GetGlobalTypesHolder()->GlobalCharType();
+        elemType = checker->GlobalBuiltinETSStringType();
     } else if (exprType->IsETSArrayType() || exprType->IsETSResizableArrayType()) {
         elemType = checker->GetElementTypeOfArray(exprType);
     } else if (exprType->IsETSObjectType() || exprType->IsETSUnionType() || exprType->IsETSTypeParameter()) {
@@ -3137,6 +3172,7 @@ static bool CheckIsValidReturnTypeAnnotation(ir::ReturnStatement *st, ir::Script
     return true;
 }
 
+// CC-OFFNXT(huge_method[C++], G.FUN.01-CPP) solid logic
 bool ETSAnalyzer::CheckInferredFunctionReturnType(ir::ReturnStatement *st, ir::ScriptFunction *containingFunc,
                                                   checker::Type *&funcReturnType, ir::TypeNode *returnTypeAnnotation,
                                                   ETSChecker *checker) const
@@ -3148,6 +3184,7 @@ bool ETSAnalyzer::CheckInferredFunctionReturnType(ir::ReturnStatement *st, ir::S
     if (containingFunc->ReturnTypeAnnotation() != nullptr) {
         if (containingFunc->IsAsyncFunc()) {
             auto *promiseType = containingFunc->ReturnTypeAnnotation()->GetType(checker);
+            ES2PANDA_ASSERT(promiseType != nullptr);
             if (!promiseType->IsETSObjectType() || promiseType->AsETSObjectType()->TypeArguments().size() != 1) {
                 return false;
             }
@@ -3161,6 +3198,7 @@ bool ETSAnalyzer::CheckInferredFunctionReturnType(ir::ReturnStatement *st, ir::S
 
     // Case when function's return type is defined explicitly:
     if (st->argument_ == nullptr) {
+        ES2PANDA_ASSERT(funcReturnType != nullptr);
         if (!funcReturnType->IsETSVoidType() && funcReturnType != checker->GlobalVoidType() &&
             !funcReturnType->IsETSAsyncFuncReturnType()) {
             checker->LogError(diagnostic::RETURN_WITHOUT_VALUE, {}, st->Start());
@@ -3241,6 +3279,7 @@ checker::Type *ETSAnalyzer::Check(ir::ReturnStatement *st) const
     ir::AstNode *ancestor = util::Helpers::FindAncestorGivenByType(st, ir::AstNodeType::SCRIPT_FUNCTION);
     ES2PANDA_ASSERT(ancestor && ancestor->IsScriptFunction());
 
+    ES2PANDA_ASSERT(ancestor != nullptr);
     auto *containingFunc = ancestor->AsScriptFunction();
     containingFunc->AddFlag(ir::ScriptFunctionFlags::HAS_RETURN);
 
@@ -3484,6 +3523,7 @@ checker::Type *ETSAnalyzer::Check(ir::TSAsExpression *expr) const
 
     checker->CheckAnnotations(expr->TypeAnnotation()->Annotations());
     auto *const targetType = expr->TypeAnnotation()->AsTypeNode()->GetType(checker);
+    ES2PANDA_ASSERT(targetType != nullptr);
     if (targetType->IsTypeError()) {
         return checker->InvalidateType(expr);
     }
@@ -3632,6 +3672,7 @@ checker::Type *ETSAnalyzer::Check(ir::TSQualifiedName *expr) const
 checker::Type *ETSAnalyzer::Check(ir::TSTypeAliasDeclaration *st) const
 {
     ETSChecker *checker = GetETSChecker();
+    auto checkerContext = SavedCheckerContext(checker, CheckerStatus::NO_OPTS, checker->Context().ContainingClass());
 
     checker->CheckAnnotations(st->Annotations());
 

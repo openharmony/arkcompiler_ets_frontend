@@ -33,6 +33,7 @@ ir::VariableDeclaration *CreateVariableDeclaration(checker::ETSChecker *checker,
                                                    ir::Expression *init)
 {
     auto *declarator = checker->AllocNode<ir::VariableDeclarator>(ir::VariableDeclaratorFlag::CONST, ident, init);
+    ES2PANDA_ASSERT(declarator != nullptr);
 
     ArenaVector<ir::VariableDeclarator *> declarators(1, declarator, checker->Allocator()->Adapter());
     auto *declaration = checker->AllocNode<ir::VariableDeclaration>(
@@ -404,6 +405,7 @@ parser::Program *ScopedDebugInfoPlugin::CreateEmptyProgram(std::string_view sour
 
     // Checker doesn't yet have `VarBinder`, must retrieve it from `globalProgram_`.
     parser::Program *program = allocator->New<parser::Program>(allocator, GetETSBinder());
+    ES2PANDA_ASSERT(program != nullptr);
     program->SetSource({sourceFilePath, "", globalProgram_->SourceFileFolder().Utf8(), true, false});
     program->SetPackageInfo(moduleName, util::ModuleKind::MODULE);
     auto *emptyIdent = allocator->New<ir::Identifier>("", allocator);

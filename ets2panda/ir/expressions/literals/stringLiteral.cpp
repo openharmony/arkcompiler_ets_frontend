@@ -60,6 +60,7 @@ checker::VerifiedType StringLiteral::Check(checker::ETSChecker *checker)
 StringLiteral *StringLiteral::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     auto *const clone = allocator->New<StringLiteral>(str_);
+    ES2PANDA_ASSERT(clone != nullptr);
     if (parent != nullptr) {
         clone->SetParent(parent);
     }

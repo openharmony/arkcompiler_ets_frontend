@@ -154,9 +154,10 @@ void DestructuringContext::HandleAssignmentPattern(ir::AssignmentExpression *ass
     if (!checker_->HasStatus(CheckerStatus::IN_CONST_CONTEXT)) {
         defaultType = checker_->GetBaseTypeOfLiteralType(defaultType);
     }
-
+    ES2PANDA_ASSERT(defaultType != nullptr);
     if (validateDefault && assignmentPattern->Right()->IsObjectExpression() &&
         assignmentPattern->Left()->IsObjectPattern()) {
+        ES2PANDA_ASSERT(defaultType != nullptr);
         ValidateObjectLiteralType(defaultType->AsObjectType(), assignmentPattern->Left()->AsObjectPattern());
     }
 
@@ -201,6 +202,7 @@ void DestructuringContext::HandleAssignmentPattern(ir::AssignmentExpression *ass
 
 void ArrayDestructuringContext::ValidateInferredType()
 {
+    ES2PANDA_ASSERT(inferredType_ != nullptr);
     if (!inferredType_->IsArrayType() && !inferredType_->IsUnionType() &&
         (!inferredType_->IsObjectType() || !inferredType_->AsObjectType()->IsTupleType())) {
         checker_->ThrowTypeError(
@@ -322,12 +324,13 @@ Type *ArrayDestructuringContext::CreateTupleTypeForRest(TupleType *tuple)
     uint32_t iterIndex = 0;
 
     Type *tupleElementType = GetTypeFromTupleByIndex(tuple);
-
+    ES2PANDA_ASSERT(desc != nullptr);
     while (tupleElementType != nullptr) {
         ElementFlags memberFlag = ElementFlags::REQUIRED;
         util::StringView memberIndex = util::Helpers::ToStringView(checker_->Allocator(), iterIndex);
         auto *memberVar = varbinder::Scope::CreateVar(checker_->Allocator(), memberIndex,
                                                       varbinder::VariableFlags::PROPERTY, nullptr);
+        ES2PANDA_ASSERT(memberVar != nullptr);
         memberVar->SetTsType(tupleElementType);
         elementFlags.push_back(memberFlag);
         desc->properties.push_back(memberVar);
@@ -528,6 +531,7 @@ void ArrayDestructuringContext::Start()
 
 void ObjectDestructuringContext::ValidateInferredType()
 {
+    ES2PANDA_ASSERT(inferredType_ != nullptr);
     // NOLINTNEXTLINE(clang-analyzer-core.CallAndMessage)
     if (!inferredType_->IsObjectType()) {
         return;
@@ -557,13 +561,16 @@ Type *ObjectDestructuringContext::CreateObjectTypeForRest(ObjectType *objType)
         if (!it->HasFlag(varbinder::VariableFlags::INFERRED_IN_PATTERN)) {
             auto *memberVar =
                 varbinder::Scope::CreateVar(checker_->Allocator(), it->Name(), varbinder::VariableFlags::NONE, nullptr);
+            ES2PANDA_ASSERT(memberVar != nullptr);
             memberVar->SetTsType(it->TsType());
             memberVar->AddFlag(it->Flags());
+            ES2PANDA_ASSERT(desc != nullptr);
             desc->properties.push_back(memberVar);
         }
     }
 
     Type *returnType = checker_->Allocator()->New<ObjectLiteralType>(desc);
+    ES2PANDA_ASSERT(returnType != nullptr);
     returnType->AsObjectType()->AddObjectFlag(ObjectFlags::RESOLVED_MEMBERS);
     return returnType;
 }

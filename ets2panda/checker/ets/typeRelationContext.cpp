@@ -20,6 +20,8 @@ bool AssignmentContext::ValidateArrayTypeInitializerByElement(TypeRelation *rela
                                                               ETSArrayType *target)
 {
     bool ok = true;
+    ES2PANDA_ASSERT(node != nullptr);
+    ES2PANDA_ASSERT(target != nullptr);
     if (target->IsETSTupleType()) {
         return true;
     }
@@ -73,6 +75,7 @@ void InstantiationContext::InstantiateType(ETSObjectType *type, ir::TSTypeParame
     if (typeArgs != nullptr) {
         for (auto *const it : typeArgs->Params()) {
             auto *paramType = it->GetType(checker_);
+            ES2PANDA_ASSERT(paramType != nullptr);
             if (paramType->IsTypeError()) {
                 result_ = paramType;
                 return;

@@ -19,4 +19,6 @@ function main() {
 }
 
 /* @@? 17:16 Error TypeError: The type of parameter 'args' cannot be inferred */
+/* @@? 17:16 Error SyntaxError: Rest parameter should be either array or tuple type. */
 /* @@? 18:26 Error TypeError: The type of parameter 'args' cannot be inferred */
+/* @@? 18:26 Error SyntaxError: Rest parameter should be either array or tuple type. */

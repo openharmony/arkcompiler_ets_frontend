@@ -39,6 +39,7 @@ GlobalDeclTransformer::ResultT GlobalDeclTransformer::TransformStatements(const 
 void GlobalDeclTransformer::VisitFunctionDeclaration(ir::FunctionDeclaration *funcDecl)
 {
     auto *funcExpr = util::NodeAllocator::ForceSetParent<ir::FunctionExpression>(allocator_, funcDecl->Function());
+    ES2PANDA_ASSERT(funcExpr != nullptr);
     funcDecl->Function()->SetStart(funcDecl->Function()->Id()->Start());
     funcExpr->SetRange(funcDecl->Function()->Range());
     ir::MethodDefinitionKind methodKind;
@@ -85,6 +86,7 @@ void GlobalDeclTransformer::VisitVariableDeclaration(ir::VariableDeclaration *va
         if (!varDecl->Annotations().empty()) {
             ArenaVector<ir::AnnotationUsage *> propAnnotations(allocator_->Adapter());
             for (auto *annotationUsage : varDecl->Annotations()) {
+                ES2PANDA_ASSERT(annotationUsage != nullptr);
                 propAnnotations.push_back(annotationUsage->Clone(allocator_, field)->AsAnnotationUsage());
             }
             field->SetAnnotations(std::move(propAnnotations));
@@ -164,6 +166,7 @@ ir::ExpressionStatement *GlobalDeclTransformer::InitTopLevelProperty(ir::ClassPr
     initializer->SetParent(nullptr);
     auto *assignmentExpression = util::NodeAllocator::Alloc<ir::AssignmentExpression>(
         allocator_, ident, initializer, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+    ES2PANDA_ASSERT(assignmentExpression != nullptr);
     assignmentExpression->SetRange({ident->Start(), initializer->End()});
     assignmentExpression->SetTsType(initializer->TsType());
 

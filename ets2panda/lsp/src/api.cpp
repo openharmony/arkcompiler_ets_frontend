@@ -40,6 +40,7 @@
 #include "inlay_hints.h"
 #include "signature_help.h"
 #include "completions_details.h"
+#include "get_name_or_dotted_name_span.h"
 
 using ark::es2panda::lsp::details::GetCompletionEntryDetailsImpl;
 
@@ -111,9 +112,9 @@ std::vector<ClassHierarchyItemInfo> GetClassHierarchies(es2panda_Context *contex
     return GetClassHierarchiesImpl(context, std::string(fileName), pos);
 }
 
-bool GetSafeDeleteInfo(es2panda_Context *context, size_t position, const char *path)
+bool GetSafeDeleteInfo(es2panda_Context *context, size_t position)
 {
-    return GetSafeDeleteInfoImpl(context, position, path);
+    return GetSafeDeleteInfoImpl(context, position);
 }
 
 References GetReferencesAtPosition(es2panda_Context *context, DeclInfo *declInfo)
@@ -191,7 +192,17 @@ DiagnosticReferences GetSyntacticDiagnostics(es2panda_Context *context)
     DiagnosticReferences result {};
     auto ctx = reinterpret_cast<public_lib::Context *>(context);
     const auto &diagnostics = ctx->diagnosticEngine->GetDiagnosticStorage(util::DiagnosticType::SYNTAX);
+    const auto &diagnosticsPluginError =
+        ctx->diagnosticEngine->GetDiagnosticStorage(util::DiagnosticType::PLUGIN_ERROR);
+    const auto &diagnosticsPluginWarning =
+        ctx->diagnosticEngine->GetDiagnosticStorage(util::DiagnosticType::PLUGIN_WARNING);
     for (const auto &diagnostic : diagnostics) {
+        result.diagnostic.push_back(CreateDiagnosticForError(context, *diagnostic));
+    }
+    for (const auto &diagnostic : diagnosticsPluginError) {
+        result.diagnostic.push_back(CreateDiagnosticForError(context, *diagnostic));
+    }
+    for (const auto &diagnostic : diagnosticsPluginWarning) {
         result.diagnostic.push_back(CreateDiagnosticForError(context, *diagnostic));
     }
     return result;
@@ -343,9 +354,13 @@ LineAndCharacter ToLineColumnOffsetWrapper(es2panda_Context *context, size_t pos
 
 // Returns type of refactoring and action that can be performed based
 // on the input kind information and cursor position
-ApplicableRefactorInfo GetApplicableRefactors(es2panda_Context *context, const char *kind, size_t position)
+std::vector<ApplicableRefactorInfo> GetApplicableRefactors(es2panda_Context *context, const char *kind, size_t position)
 {
-    auto result = GetApplicableRefactorsImpl(context, kind, position);
+    RefactorContext refactorContext;
+    refactorContext.context = context;
+    refactorContext.kind = kind;
+    refactorContext.span.pos = position;
+    auto result = GetApplicableRefactorsImpl(&refactorContext);
     return result;
 }
 
@@ -376,14 +391,12 @@ SignatureHelpItems GetSignatureHelpItems(es2panda_Context *context, size_t posit
     auto cancellationToken = ark::es2panda::lsp::CancellationToken(defaultTime, nullptr);
     return ark::es2panda::lsp::GetSignatureHelpItems(context, position, invokedReason, cancellationToken);
 }
-std::vector<CodeFixActionInfo> GetCodeFixesAtPosition(const char *fileName, size_t startPosition, size_t endPosition,
-                                                      std::vector<int> &errorCodes, CodeFixOptions &codeFixOptions)
+std::vector<CodeFixActionInfo> GetCodeFixesAtPosition(es2panda_Context *context, size_t startPosition,
+                                                      size_t endPosition, std::vector<int> &errorCodes,
+                                                      CodeFixOptions &codeFixOptions)
 {
-    Initializer initializer = Initializer();
-    auto context = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
     auto result =
         ark::es2panda::lsp::GetCodeFixesAtPositionImpl(context, startPosition, endPosition, errorCodes, codeFixOptions);
-    initializer.DestroyContext(context);
     return result;
 }
 
@@ -394,6 +407,12 @@ CombinedCodeActionsInfo GetCombinedCodeFix(const char *fileName, const std::stri
     auto context = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
     auto result = ark::es2panda::lsp::GetCombinedCodeFixImpl(context, fixId, codeFixOptions);
     initializer.DestroyContext(context);
+    return result;
+}
+
+TextSpan *GetNameOrDottedNameSpan(es2panda_Context *context, int startPos)
+{
+    auto result = ark::es2panda::lsp::GetNameOrDottedNameSpanImpl(context, startPos);
     return result;
 }
 
@@ -434,7 +453,8 @@ LSPAPI g_lspImpl = {GetDefinitionAtPosition,
                     ProvideInlayHints,
                     GetSignatureHelpItems,
                     GetCodeFixesAtPosition,
-                    GetCombinedCodeFix};
+                    GetCombinedCodeFix,
+                    GetNameOrDottedNameSpan};
 }  // namespace ark::es2panda::lsp
 
 CAPI_EXPORT LSPAPI const *GetImpl()

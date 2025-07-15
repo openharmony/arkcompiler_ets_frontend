@@ -29,8 +29,14 @@ set(ES2PANDA_LSP_SRC
   ./src/find_rename_locations.cpp
   ./src/find_safe_delete_location.cpp
   ./src/find_references.cpp
+  ./src/refactors/refactor_types.cpp
   ./src/applicable_refactors.cpp
+  ./src/refactor_provider.cpp
+  ./src/refactors/convert_chain.cpp
+  ./src/refactors/convert_export.cpp
   ./src/refactors/convert_function.cpp
+  ./src/refactors/convert_import.cpp
+  ./src/refactors/convert_template.cpp
   ./src/formatting/formatting_context.cpp
   ./src/formatting/formatting_settings.cpp
   ./src/formatting/formatting.cpp
@@ -62,6 +68,8 @@ set(ES2PANDA_LSP_SRC
   ./src/register_code_fix/fix_nan_equality.cpp
   ./src/register_code_fix/forgetten_this_property_access.cpp
   ./src/register_code_fix/import_fixes.cpp
+  ./src/register_code_fix/ui_plugin_suggest.cpp
+  ./src/get_name_or_dotted_name_span.cpp
 )
 
 panda_add_library(${LSP_LIB} SHARED ${ES2PANDA_LSP_SRC})

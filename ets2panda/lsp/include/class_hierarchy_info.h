@@ -17,9 +17,9 @@
 #define ES2PANDA_LSP_CLASS_HIERARCHY_INFO_H
 
 #include <memory>
-#include <string>
 #include <unordered_map>
 #include <vector>
+#include "class_hierarchy_item.h"
 #include "public/es2panda_lib.h"
 
 namespace ark::es2panda::lsp {
@@ -43,59 +43,6 @@ public:
 private:
     std::string name_;
     std::string kind_;
-};
-
-enum class SetterStyle { METHOD = 0, SETTER, GETTER };
-
-enum class AccessModifierStyle { PUBLIC = 0, PROTECTED, PRIVATE };
-
-class ClassMethodItem {
-public:
-    ClassMethodItem(std::string detail, SetterStyle setter, AccessModifierStyle access)
-        : detail_(std::move(detail)), setter_(setter), accessModifier_(access)
-    {
-    }
-
-    virtual ~ClassMethodItem() = default;
-
-    ClassMethodItem(const ClassMethodItem &other) = default;
-    ClassMethodItem(ClassMethodItem &&other) = default;
-    ClassMethodItem &operator=(const ClassMethodItem &other) = default;
-    ClassMethodItem &operator=(ClassMethodItem &&other) = default;
-
-    void SetFunctionName(const std::string &functionName)
-    {
-        if (functionName.empty()) {
-            return;
-        }
-        funcName_ = functionName;
-    }
-
-    const std::string &GetFunctionName() const
-    {
-        return funcName_;
-    }
-
-    const std::string &GetFunctionDetail() const
-    {
-        return detail_;
-    }
-
-    SetterStyle GetSetterStyle() const
-    {
-        return setter_;
-    }
-
-    AccessModifierStyle GetAccessModifierStyle() const
-    {
-        return accessModifier_;
-    }
-
-private:
-    std::string funcName_;
-    std::string detail_;
-    SetterStyle setter_;
-    AccessModifierStyle accessModifier_;
 };
 
 class ClassHierarchyInfo {
@@ -122,58 +69,98 @@ public:
         return className_;
     }
 
-    const std::unordered_map<std::string, std::shared_ptr<ClassMethodItem>> &GetMethodList() const
+    const std::unordered_map<std::string, std::shared_ptr<ClassMethodItem>> &GetMethodItemList() const
     {
-        return methods_;
+        return methodItems_;
     }
 
-    bool AddClassMethodItem(const std::shared_ptr<ClassMethodItem> &item)
+    const std::unordered_map<std::string, std::shared_ptr<ClassPropertyItem>> &GetPropertyItemList() const
     {
-        if (item == nullptr || IsItemExist(item)) {
+        return propertyItems_;
+    }
+
+    bool AddItemToMethodList(const std::shared_ptr<ClassMethodItem> &item)
+    {
+        if (item == nullptr) {
             return false;
         }
-        auto funcDetail = item->GetFunctionDetail();
-        methods_[funcDetail] = item;
-        return true;
+        auto detail = item->GetDetail();
+        auto result = methodItems_.try_emplace(detail, item);
+        return result.second;
     }
 
-    void DeleteClassMethodItem(const std::shared_ptr<ClassMethodItem> &item)
+    bool AddItemToPropertyList(const std::shared_ptr<ClassPropertyItem> &item)
+    {
+        if (item == nullptr) {
+            return false;
+        }
+        auto detail = item->GetDetail();
+        auto result = propertyItems_.try_emplace(detail, item);
+        return result.second;
+    }
+
+    void DeleteTargetItemInMethodList(const std::shared_ptr<ClassMethodItem> &item)
     {
         if (item == nullptr) {
             return;
         }
-        auto funcDetail = item->GetFunctionDetail();
-        methods_.erase(funcDetail);
+        auto detail = item->GetDetail();
+        methodItems_.erase(detail);
     }
 
-    void DeleteAllClassMethodItem()
+    void DeleteTargetItemInPropertyList(const std::shared_ptr<ClassPropertyItem> &item)
     {
-        methods_.clear();
+        if (item == nullptr) {
+            return;
+        }
+        auto detail = item->GetDetail();
+        propertyItems_.erase(detail);
     }
 
-    bool IsItemExist(const std::shared_ptr<ClassMethodItem> &item) const
+    void DeleteAllItemsInMethodList()
+    {
+        methodItems_.clear();
+    }
+
+    void DeleteAllItemsInPropertyList()
+    {
+        propertyItems_.clear();
+    }
+
+    bool IsItemExistInMethodList(const std::shared_ptr<ClassMethodItem> &item) const
     {
         if (item == nullptr) {
             return false;
         }
-        auto func = item->GetFunctionDetail();
-        auto iter = methods_.find(func);
-        return iter != methods_.end();
+        auto detail = item->GetDetail();
+        auto iter = methodItems_.find(detail);
+        return iter != methodItems_.end();
+    }
+
+    bool IsItemExistInPropertyList(const std::shared_ptr<ClassPropertyItem> &item) const
+    {
+        if (item == nullptr) {
+            return false;
+        }
+        auto detail = item->GetDetail();
+        auto iter = propertyItems_.find(detail);
+        return iter != propertyItems_.end();
     }
 
 private:
     std::string className_;
-    std::unordered_map<std::string, std::shared_ptr<ClassMethodItem>> methods_;
+    std::unordered_map<std::string, std::shared_ptr<ClassMethodItem>> methodItems_;
+    std::unordered_map<std::string, std::shared_ptr<ClassPropertyItem>> propertyItems_;
 };
 
 using ClassHierarchy = std::vector<ClassHierarchyInfo>;
 
 /**
- * Retrieve the list of undefined virtual functions in the parent class.
+ * Retrieve the list of undefined virtual functions and properties in the parent class.
  *
  * such as ets:
  * class Animal {
- *   private body_: string = '';
+ *   public body_: string = '';
  *
  *   public action(): void {
  *       console.log("need Animal action");
@@ -192,9 +179,9 @@ using ClassHierarchy = std::vector<ClassHierarchyInfo>;
  *       console.log("need Bird Drink");
  *   }
  * }
- *
- * when clicking 'Bird'.
- * ClassHierarchy is [ { "Animal", { detail: sleep(), SetterStyle: METHOD, AccessModifierStyle: PUBLIC } } ].
+ * when clicking 'Bird'. ClassHierarchy is :
+ *  [ { "Animal", { detail: body_: string, ClassDefinitionStyle FIELD, AccessModifierStyle: PUBLIC } },
+ *    { "Animal", { detail: sleep(): void, ClassDefinitionStyle: METHOD, AccessModifierStyle: PUBLIC } } ].
  */
 ClassHierarchy GetClassHierarchyInfoImpl(es2panda_Context *context, size_t position);
 }  // namespace ark::es2panda::lsp
