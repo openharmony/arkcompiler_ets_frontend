@@ -41,11 +41,11 @@ static std::string GetArgumentsSourceView(lexer::Lexer *lexer, const util::Strin
 ir::Expression *ETSParser::ParseFunctionParameterExpression(ir::AnnotatedExpression *const paramIdent, bool isOptional)
 {
     ir::ETSParameterExpression *paramExpression;
+    ES2PANDA_ASSERT(paramIdent != nullptr);
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
         auto const lexerPos = Lexer()->Save().Iterator();
         Lexer()->NextToken();  // eat '='
 
-        ES2PANDA_ASSERT(paramIdent != nullptr);
         if (paramIdent->IsRestElement()) {
             LogError(diagnostic::NO_DEFAULT_FOR_REST);
         }
@@ -76,9 +76,11 @@ ir::Expression *ETSParser::ParseFunctionParameterExpression(ir::AnnotatedExpress
         paramExpression->SetRange({paramIdent->Start(), paramExpression->Initializer()->End()});
     } else if (paramIdent->IsIdentifier()) {
         paramExpression = AllocNode<ir::ETSParameterExpression>(paramIdent->AsIdentifier(), isOptional, Allocator());
+        ES2PANDA_ASSERT(paramExpression != nullptr);
         paramExpression->SetRange({paramIdent->Start(), paramIdent->End()});
     } else {
         paramExpression = AllocNode<ir::ETSParameterExpression>(paramIdent->AsRestElement(), false, Allocator());
+        ES2PANDA_ASSERT(paramExpression != nullptr);
         paramExpression->SetRange({paramIdent->Start(), paramIdent->End()});
     }
     return paramExpression;
@@ -181,6 +183,7 @@ ir::Expression *ETSParser::ParseUnaryOrPrefixUpdateExpression(ExpressionParseFla
     }
 
     ir::Expression *returnExpr = CreateUnaryExpressionFromArgument(argument, operatorType, beginningChar);
+    ES2PANDA_ASSERT(returnExpr != nullptr);
     returnExpr->SetRange({start, argument->End()});
     return returnExpr;
 }
@@ -218,6 +221,7 @@ ir::Expression *ETSParser::ParsePropertyDefinition(ExpressionParseFlags flags)
     if (propertyKind == ir::PropertyKind::INIT) {
         returnProperty =
             AllocNode<ir::Property>(propertyKind, key, value, methodStatus != ParserStatus::NO_OPTS, isComputed);
+        ES2PANDA_ASSERT(returnProperty != nullptr);
         returnProperty->SetRange({start, end});
     } else {
         returnProperty = AllocBrokenExpression(key->Start());

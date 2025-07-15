@@ -1027,6 +1027,7 @@ ir::TypeNode *ETSParser::ParseTypeReference(TypeAnnotationParsingOptions *option
         }
 
         typeRefPart = AllocNode<ir::ETSTypeReferencePart>(typeName, typeParams, typeRefPart, Allocator());
+        ES2PANDA_ASSERT(typeRefPart != nullptr);
         typeRefPart->SetRange({partPos, Lexer()->GetToken().End()});
 
         if (!Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_PERIOD)) {
@@ -1119,6 +1120,7 @@ ir::Statement *ETSParser::CreateReExportDeclarationNode(ir::ETSImportDeclaration
     }
     auto reExport = AllocNode<ir::ETSReExportDeclaration>(reExportDeclaration, std::vector<std::string>(),
                                                           GetProgram()->AbsoluteName(), Allocator());
+    ES2PANDA_ASSERT(reExport != nullptr);
     reExport->AddModifier(modifiers);
     return reExport;
 }
@@ -1242,6 +1244,7 @@ ir::ETSImportDeclaration *ETSParser::ParseImportPathBuildImport(ArenaVector<ir::
         LogExpectedToken(lexer::TokenType::LITERAL_STRING);
         // Try to create DUMMY import source as error placeholder
         auto errorLiteral = AllocNode<ir::StringLiteral>(ERROR_LITERAL);
+        ES2PANDA_ASSERT(errorLiteral != nullptr);
         errorLiteral->SetRange(Lexer()->GetToken().Loc());
         auto *const importDeclaration = AllocNode<ir::ETSImportDeclaration>(
             errorLiteral, util::ImportPathManager::ImportMetadata {}, std::move(specifiers), importKind);
@@ -1331,6 +1334,7 @@ ArenaVector<ir::ETSImportDeclaration *> ETSParser::ParseImportDeclarations()
         auto pos = Lexer()->Save();
         if (!specifiers.empty()) {
             auto *const importDecl = ParseImportPathBuildImport(std::move(specifiers), true, startLoc, importKind);
+            ES2PANDA_ASSERT(importDecl != nullptr);
             statements.push_back(importDecl->AsETSImportDeclaration());
         }
 
@@ -1638,6 +1642,7 @@ ir::AnnotatedExpression *ETSParser::GetAnnotatedExpressionFromParam()
     switch (Lexer()->GetToken().Type()) {
         case lexer::TokenType::LITERAL_IDENT: {
             parameter = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
+            ES2PANDA_ASSERT(parameter != nullptr);
             if (parameter->AsIdentifier()->Decorators().empty()) {
                 parameter->SetRange(Lexer()->GetToken().Loc());
             } else {
@@ -1660,6 +1665,7 @@ ir::AnnotatedExpression *ETSParser::GetAnnotatedExpressionFromParam()
             restIdent->SetRange(Lexer()->GetToken().Loc());
 
             parameter = AllocNode<ir::SpreadElement>(ir::AstNodeType::REST_ELEMENT, Allocator(), restIdent);
+            ES2PANDA_ASSERT(parameter != nullptr);
             parameter->SetRange({startLoc, Lexer()->GetToken().End()});
             break;
         }
@@ -2356,6 +2362,7 @@ ir::FunctionDeclaration *ETSParser::ParseFunctionDeclaration(bool canBeAnonymous
         Lexer()->NextToken();
     }
 
+    ES2PANDA_ASSERT(funcDecl != nullptr);
     funcDecl->SetRange(func->Range());
     func->AddModifier(modifiers);
     func->SetStart(startLoc);

@@ -480,6 +480,7 @@ ir::MethodDefinition *ParserImpl::ParseClassMethod(ClassElementDescriptor *desc,
                       : propName;
     auto *method = AllocNode<ir::MethodDefinition>(desc->methodKind, ident, funcExpr, desc->modifiers, Allocator(),
                                                    desc->isComputed);
+    ES2PANDA_ASSERT(method != nullptr);
     method->SetRange(funcExpr->Range());
 
     return method;
@@ -495,6 +496,7 @@ ir::ClassElement *ParserImpl::ParseClassProperty(ClassElementDescriptor *desc,
 
     if (desc->classMethod) {
         property = ParseClassMethod(desc, properties, propName, &propEnd);
+        ES2PANDA_ASSERT(property != nullptr);
         property->SetRange({desc->propStart, propEnd});
         return property;
     }
@@ -514,7 +516,7 @@ ir::ClassElement *ParserImpl::ParseClassProperty(ClassElementDescriptor *desc,
 
     property =
         AllocNode<ir::ClassProperty>(propName, value, typeAnnotation, desc->modifiers, Allocator(), desc->isComputed);
-
+    ES2PANDA_ASSERT(property != nullptr);
     property->SetRange({desc->propStart, propEnd});
 
     return property;
@@ -685,6 +687,7 @@ ir::MethodDefinition *ParserImpl::BuildImplicitConstructor(ir::ClassDefinitionMo
     auto *key = AllocNode<ir::Identifier>("constructor", Allocator());
 
     if ((modifiers & ir::ClassDefinitionModifiers::SET_CTOR_ID) != 0U) {
+        ES2PANDA_ASSERT(key != nullptr);
         func->SetIdent(key->Clone(Allocator(), nullptr));
     }
 
@@ -710,6 +713,7 @@ void ParserImpl::CreateImplicitConstructor(ir::MethodDefinition *&ctor,
 
     ctor = BuildImplicitConstructor(modifiers, startLoc);
     if ((flags & ir::ModifierFlags::DECLARE) != 0) {
+        ES2PANDA_ASSERT(ctor != nullptr);
         auto *ctorFunc = ctor->Function();
         ES2PANDA_ASSERT(ctorFunc != nullptr);
         ctorFunc->AddFlag(ir::ScriptFunctionFlags::EXTERNAL);
