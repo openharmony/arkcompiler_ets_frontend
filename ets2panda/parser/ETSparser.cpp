@@ -1123,17 +1123,36 @@ ir::Statement *ETSParser::CreateReExportDeclarationNode(ir::ETSImportDeclaration
     return reExport;
 }
 
+ir::Statement *ETSParser::ParseDefaultIfSingleExport(ir::ModifierFlags modifiers)
+{
+    auto tokenType = Lexer()->GetToken().Type();
+    if (tokenType != lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
+        return ParseSingleExport(modifiers);
+    }
+    auto savePos = Lexer()->Save();
+    Lexer()->NextToken();
+    auto isSelectiveExport = Lexer()->TryEatTokenType(lexer::TokenType::LITERAL_IDENT) &&
+                             (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA ||
+                              Lexer()->GetToken().Type() == lexer::TokenType::KEYW_AS ||
+                              Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_BRACE);
+    Lexer()->Rewind(savePos);
+    return !isSelectiveExport ? ParseSingleExport(modifiers) : nullptr;
+}
+
 ir::Statement *ETSParser::ParseExport(lexer::SourcePosition startLoc, ir::ModifierFlags modifiers)
 {
     const size_t exportDefaultMaxSize = 1;
     if (!InAmbientContext() && (GetContext().Status() & ParserStatus::IN_NAMESPACE) != 0) {
         LogError(diagnostic::EXPORT_IN_NAMESPACE);
     }
-    [[maybe_unused]] auto tokenType = Lexer()->GetToken().Type();
     // export a constant variable anonymously, as export default new A()
-    if ((modifiers & ir::ModifierFlags::DEFAULT_EXPORT) != 0U && tokenType != lexer::TokenType::PUNCTUATOR_MULTIPLY &&
-        tokenType != lexer::TokenType::PUNCTUATOR_LEFT_BRACE && tokenType != lexer::TokenType::LITERAL_IDENT) {
-        return ParseSingleExport(modifiers);
+    if ((modifiers & ir::ModifierFlags::DEFAULT_EXPORT) != 0U &&
+        Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_MULTIPLY &&
+        Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
+        auto exportedExpression = ParseDefaultIfSingleExport(modifiers);
+        if (exportedExpression != nullptr) {
+            return exportedExpression;
+        }
     }
 
     ArenaVector<ir::AstNode *> specifiers(Allocator()->Adapter());
@@ -1366,6 +1385,10 @@ ir::ExportNamedDeclaration *ETSParser::ParseSingleExport(ir::ModifierFlags modif
         return ParseSingleExportForAnonymousConst(modifiers);
     }
 
+    if (token.KeywordType() == lexer::TokenType::KEYW_AS) {
+        LogError(diagnostic::ERROR_ARKTS_NO_UMD, {}, token.Start());
+        return nullptr;
+    }
     if (token.Type() != lexer::TokenType::LITERAL_IDENT) {
         LogError(diagnostic::EXPORT_NON_DECLARATION, {}, token.Start());
         return nullptr;
@@ -1498,6 +1521,12 @@ SpecifiersInfo ETSParser::ParseNamedSpecifiers()
     ArenaVector<ir::ImportDefaultSpecifier *> resultDefault(Allocator()->Adapter());
     ArenaVector<ir::ExportSpecifier *> resultExportDefault(Allocator()->Adapter());
 
+    auto token = Lexer()->GetToken();
+    if (token.Ident() == (lexer::TokenToString(lexer::TokenType::KEYW_IMPORT)) &&
+        token.Type() == lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
+        LogError(diagnostic::ERROR_ARKTS_NO_SIDE_EFFECT_IMPORT);
+    }
+
     ParseList(
         lexer::TokenType::PUNCTUATOR_RIGHT_BRACE, lexer::NextTokenFlags::KEYWORD_TO_IDENT,
         [this, &result, &resultDefault, &resultExportDefault, &fileName]() {
@@ -1552,6 +1581,10 @@ void ETSParser::ParseNameSpaceSpecifier(ArenaVector<ir::AstNode *> *specifiers, 
 
 ir::AstNode *ETSParser::ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> *specifiers)
 {
+    if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_STRING) {
+        LogError(diagnostic::ERROR_ARKTS_NO_SIDE_EFFECT_IMPORT);
+        return nullptr;
+    }
     if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
         LogExpectedToken(lexer::TokenType::LITERAL_IDENT);
     }
