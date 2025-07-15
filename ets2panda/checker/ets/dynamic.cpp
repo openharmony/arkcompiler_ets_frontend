@@ -705,6 +705,7 @@ void ETSChecker::BuildLambdaObjectClass(ETSObjectType *functionalInterface, ir::
 {
     auto *invokeMethod = functionalInterface->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>(
         compiler::Signatures::STATIC_INVOKE_METHOD);
+    ES2PANDA_ASSERT(invokeMethod != nullptr);
     auto *invokeSignature = invokeMethod->TsType()->AsETSFunctionType()->CallSignatures()[0];
     ES2PANDA_ASSERT(invokeSignature != nullptr);
     std::stringstream ss;
