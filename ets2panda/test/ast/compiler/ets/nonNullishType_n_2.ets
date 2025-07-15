@@ -13,23 +13,17 @@
  * limitations under the License.
  */
 
-class NonNullableGenericParam<T extends NonNullable<(Object | null)>> {
-  foo(a: T):NonNullable<T>{
-    return a;
-  }
-}
+class A {}
 
-class A{}
-
-type TesterUnionType = Int | A | null | undefined
-type NonNullableTesterUnionType = NonNullable<TesterUnionType>
+type unionType = Int | A | null | undefined
 
 function main(){
-  let a: NonNullable<TesterUnionType>;
-  a = new A();
-  let b: NonNullable<NonNullable<Object>> = new Object();
+  let a: NonNullable<unionType> = new A();
+  a = new Int();
+  a = null;
+  a = undefined;
 }
 
-function foo(param:NonNullable<TesterUnionType>){
-  let a: Object = param
-}
+/* @@? 23:7 Error TypeError: Type 'null' cannot be assigned to type 'Int|A' */
+/* @@? 24:7 Error TypeError: Type 'undefined' cannot be assigned to type 'Int|A' */
+

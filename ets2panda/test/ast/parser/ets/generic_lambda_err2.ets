@@ -18,7 +18,7 @@ function main() {
     foo1("1", 2)
     foo1<int, string>("1", 2)
 
-    let foo2 = <T>(p: T): T! =>p;
+    let foo2 = <T>(p: T): NonNullable<T> =>p;
 
     let foo3 = <T, T>(p: T): T => p;
 
@@ -32,7 +32,7 @@ function main() {
 /* @@? 18:5 Error TypeError: No matching call signature for ("1", Int) */
 /* @@? 19:5 Error TypeError: Expected 1 type arguments, got 2 . */
 /* @@? 19:5 Error TypeError: No matching call signature for ("1", Int) */
-/* @@? 21:32 Error TypeError: Type 'T' is not compatible with the enclosing method's return type 'NonNullable<T>' */
+/* @@? 21:44 Error TypeError: Type 'T' is not compatible with the enclosing method's return type 'NonNullable<T>' */
 /* @@? 23:20 Error TypeError: Duplicate type parameter 'T'. */
 /* @@? 26:5 Error TypeError: Expected 2 arguments, got 1. */
 /* @@? 26:5 Error TypeError: No matching call signature for (Int) */

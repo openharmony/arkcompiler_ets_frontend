@@ -283,6 +283,7 @@ private:
     void ReportIfVarDeclaration(VariableParsingFlags flags) override;
     ir::TypeNode *ParsePotentialFunctionalType(TypeAnnotationParsingOptions *options,
                                                ir::TSTypeParameterDeclaration *typeParamDecl = nullptr);
+    std::pair<ir::TypeNode *, bool> ParseNonNullableType(TypeAnnotationParsingOptions *options);
     std::pair<ir::TypeNode *, bool> GetTypeAnnotationFromToken(TypeAnnotationParsingOptions *options);
     std::pair<ir::TypeNode *, bool> GetTypeAnnotationFromArrowFunction(TypeAnnotationParsingOptions *options);
     std::pair<ir::TypeNode *, bool> GetTypeAnnotationFromParentheses(

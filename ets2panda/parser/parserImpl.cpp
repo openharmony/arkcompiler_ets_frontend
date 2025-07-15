@@ -1220,6 +1220,39 @@ ArenaVector<ir::Expression *> &ParserImpl::ParseExpressionsArrayFormatPlaceholde
     ES2PANDA_UNREACHABLE();
 }
 
+bool ParserImpl::ParsePunctuatorGreaterThan(bool throwError)
+{
+    switch (Lexer()->GetToken().Type()) {
+        case lexer::TokenType::PUNCTUATOR_GREATER_THAN_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_RIGHT_SHIFT: {
+            Lexer()->BackwardToken(lexer::TokenType::PUNCTUATOR_GREATER_THAN, 1);
+            break;
+        }
+        case lexer::TokenType::PUNCTUATOR_RIGHT_SHIFT_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_UNSIGNED_RIGHT_SHIFT: {
+            Lexer()->BackwardToken(lexer::TokenType::PUNCTUATOR_GREATER_THAN, 2U);
+            break;
+        }
+        case lexer::TokenType::PUNCTUATOR_UNSIGNED_RIGHT_SHIFT_EQUAL: {
+            Lexer()->BackwardToken(lexer::TokenType::PUNCTUATOR_GREATER_THAN, 3U);
+            break;
+        }
+        case lexer::TokenType::PUNCTUATOR_GREATER_THAN: {
+            break;
+        }
+        default: {
+            if (throwError) {
+                LogError(diagnostic::EXPECTED_PARAM_GOT_PARAM,
+                         {TokenToString(lexer::TokenType::PUNCTUATOR_GREATER_THAN),
+                          TokenToString(Lexer()->GetToken().Type())});
+            }
+            return false;
+        }
+    }
+    Lexer()->NextToken();  // eat `>`
+    return true;
+}
+
 util::StringView ParserImpl::ParseSymbolIteratorIdentifier() const noexcept
 {
     // Duplicate check - just in case of improper call!

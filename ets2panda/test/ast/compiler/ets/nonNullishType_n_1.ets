@@ -13,18 +13,10 @@
  * limitations under the License.
  */
 
-class Test{}
-
 class A<T> {
-  foo(a: T):Test!{
-    let b : Object! = new Object();
-    let c : (int)! = 0;
-    return a!;
+  foo(a: T):NonNullable<T>{
+    return a;
   }
 }
 
-/* @@? 19:13 Error TypeError: Only type parameters can be used as a nonnullish type  */
-/* @@? 20:13 Error TypeError: Only type parameters can be used as a nonnullish type  */
-/* @@? 21:13 Error TypeError: Only type parameters can be used as a nonnullish type  */
-/* @@? 22:12 Error TypeError: Type 'NonNullable<T>' is not compatible with the enclosing method's return type 'Test'  */
-/* @@? 22:12 Error TypeError: Type 'NonNullable<T>' is not compatible with the enclosing method's return type 'Test'  */
+/* @@? 18:12 Error TypeError: Type 'T' is not compatible with the enclosing method's return type 'NonNullable<T>' */
