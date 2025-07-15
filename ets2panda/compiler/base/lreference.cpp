@@ -320,10 +320,10 @@ void ETSLReference::SetValueGetterSetter(const ir::MemberExpression *memberExpr)
 {
     ES2PANDA_ASSERT(memberExpr->PropVar() != nullptr);
     const auto *sig = memberExpr->PropVar()->TsType()->AsETSFunctionType()->FindSetter();
+    ES2PANDA_ASSERT(sig->Function() != nullptr);
 
     auto argReg = etsg_->AllocReg();
     etsg_->StoreAccumulator(Node(), argReg);
-    ES2PANDA_ASSERT(sig->Function() != nullptr);
     if (sig->Function()->IsStatic()) {
         etsg_->CallExact(Node(), sig->InternalName(), argReg);
     } else if (memberExpr->Object()->IsSuperExpression()) {

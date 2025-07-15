@@ -128,12 +128,13 @@ ir::MethodDefinition *CreateAsyncProxy(checker::ETSChecker *checker, ir::MethodD
                                        ir::ClassDefinition *classDef)
 {
     ir::ScriptFunction *asyncFunc = asyncMethod->Function();
+    ES2PANDA_ASSERT(asyncFunc != nullptr);
     if (!asyncFunc->IsExternal()) {
         checker->VarBinder()->AsETSBinder()->GetRecordTable()->EmplaceSignatures(asyncFunc->Scope(), asyncFunc);
     }
 
     ir::MethodDefinition *implMethod = CreateAsyncImplMethod(checker, asyncMethod, classDef);
-    ES2PANDA_ASSERT(implMethod->Function() != nullptr);
+    ES2PANDA_ASSERT(implMethod != nullptr && implMethod->Function() != nullptr && implMethod->Id() != nullptr);
     varbinder::FunctionScope *implFuncScope = implMethod->Function()->Scope();
     for (auto *decl : asyncFunc->Scope()->Decls()) {
         auto res = asyncFunc->Scope()->Bindings().find(decl->Name());
@@ -163,14 +164,17 @@ ir::MethodDefinition *CreateAsyncProxy(checker::ETSChecker *checker, ir::MethodD
 
 void ComposeAsyncImplMethod(checker::ETSChecker *checker, ir::MethodDefinition *node)
 {
+    ES2PANDA_ASSERT(checker->FindAncestorGivenByType(node, ir::AstNodeType::CLASS_DEFINITION));
     auto *classDef = checker->FindAncestorGivenByType(node, ir::AstNodeType::CLASS_DEFINITION)->AsClassDefinition();
     ir::MethodDefinition *implMethod = CreateAsyncProxy(checker, node, classDef);
 
     implMethod->Check(checker);
     node->SetAsyncPairMethod(implMethod);
 
+    ES2PANDA_ASSERT(node->Function() != nullptr);
     if (node->Function()->IsOverload()) {
         auto *baseOverloadImplMethod = node->BaseOverloadMethod()->AsyncPairMethod();
+        ES2PANDA_ASSERT(implMethod->Function() != nullptr && baseOverloadImplMethod->Function() != nullptr);
         implMethod->Function()->Id()->SetVariable(baseOverloadImplMethod->Function()->Id()->Variable());
         baseOverloadImplMethod->AddOverload(implMethod);
         implMethod->SetParent(baseOverloadImplMethod);
