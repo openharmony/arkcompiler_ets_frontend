@@ -57,6 +57,7 @@ static ir::ClassDefinition *GetUnionAccessClass(public_lib::Context *ctx, varbin
     util::UString unionFieldClassName(util::StringView(name), allocator);
     auto *ident = ctx->AllocNode<ir::Identifier>(unionFieldClassName.View(), allocator);
     auto [decl, var] = varbinder->NewVarDecl<varbinder::ClassDecl>(ident->Start(), ident->Name());
+    ES2PANDA_ASSERT(ident != nullptr);
     ident->SetVariable(var);
 
     auto classCtx = varbinder::LexicalScope<varbinder::ClassScope>(varbinder);
@@ -65,6 +66,7 @@ static ir::ClassDefinition *GetUnionAccessClass(public_lib::Context *ctx, varbin
     ES2PANDA_ASSERT(classDef != nullptr);
     classDef->SetScope(classCtx.GetScope());
     auto *classDecl = ctx->AllocNode<ir::ClassDeclaration>(classDef, allocator);
+    ES2PANDA_ASSERT(classDecl != nullptr);
     classDef->Scope()->BindNode(classDecl->Definition());
     decl->BindNode(classDef);
     var->SetScope(classDef->Scope());
@@ -84,8 +86,9 @@ static std::tuple<varbinder::LocalVariable *, checker::Signature *> CreateNamedA
 {
     auto *allocator = ctx->Allocator();
     auto *checker = ctx->GetChecker()->AsETSChecker();
-
-    auto unionType = checker->GetApparentType(checker->GetNonNullishType(expr->Object()->TsType()))->AsETSUnionType();
+    auto apparentType = checker->GetApparentType(checker->GetNonNullishType(expr->Object()->TsType()));
+    ES2PANDA_ASSERT(apparentType != nullptr);
+    auto unionType = apparentType->AsETSUnionType();
     auto *const accessClass = GetUnionAccessClass(ctx, varbinder, GetAccessClassName(unionType));
     auto methodName = expr->TsType()->AsETSFunctionType()->Name();
 
@@ -104,7 +107,7 @@ static std::tuple<varbinder::LocalVariable *, checker::Signature *> CreateNamedA
                        nullptr, ir::FunctionSignature(nullptr, std::move(params), returnTypeAnno),
                        // CC-OFFNXT(G.FMT.02-CPP) project code style
                        ir::ScriptFunctionFlags::METHOD, ir::ModifierFlags::PUBLIC});
-    ES2PANDA_ASSERT(func != nullptr);
+    ES2PANDA_ASSERT(func != nullptr && methodIdent != nullptr);
     func->SetIdent(methodIdent->Clone(allocator, nullptr));
 
     // Create the synthetic function node
@@ -124,7 +127,7 @@ static std::tuple<varbinder::LocalVariable *, checker::Signature *> CreateNamedA
         auto boundCtx = varbinder::BoundContext(varbinder->AsETSBinder()->GetRecordTable(), accessClass, true);
         CheckLoweredNode(varbinder->AsETSBinder(), checker, method);
     }
-
+    ES2PANDA_ASSERT(method->Id() != nullptr && method->TsType() != nullptr);
     return {method->Id()->Variable()->AsLocalVariable(),
             method->TsType()->AsETSFunctionType()->CallSignatures().front()};
 }
@@ -135,7 +138,9 @@ static varbinder::LocalVariable *CreateNamedAccessProperty(public_lib::Context *
     auto *const allocator = ctx->Allocator();
     auto *checker = ctx->GetChecker()->AsETSChecker();
 
-    auto unionType = checker->GetApparentType(checker->GetNonNullishType(expr->Object()->TsType()))->AsETSUnionType();
+    auto apparentType = checker->GetApparentType(checker->GetNonNullishType(expr->Object()->TsType()));
+    ES2PANDA_ASSERT(apparentType != nullptr);
+    auto unionType = apparentType->AsETSUnionType();
     auto *const accessClass = GetUnionAccessClass(ctx, varbinder, GetAccessClassName(unionType));
     auto propName = expr->Property()->AsIdentifier()->Name();
     auto fieldType = expr->TsType();

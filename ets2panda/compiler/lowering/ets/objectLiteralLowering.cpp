@@ -192,6 +192,7 @@ static void GenerateNewStatements(public_lib::Context *ctx, ir::ObjectExpression
     // Generating: let <genSym>: <TsType> = new <TsType>();
     auto *genSymIdent = Gensym(allocator);
     auto *type = ctx->AllocNode<ir::OpaqueTypeNode>(classType, allocator);
+    ES2PANDA_ASSERT(genSymIdent != nullptr && type != nullptr);
     ss << "let @@I" << addNode(genSymIdent) << ": @@T" << addNode(type) << " = new @@T"
        << addNode(type->Clone(allocator, nullptr)) << "();" << std::endl;
 
@@ -225,7 +226,6 @@ static void GenerateNewStatements(public_lib::Context *ctx, ir::ObjectExpression
         if (isAnonymous && CheckReadonlyAndUpdateCtorArgs(keyIdent, value, ctorArgumentsMap)) {
             continue;
         }
-        ES2PANDA_ASSERT(genSymIdent != nullptr);
         ss << "@@I" << addNode(genSymIdent->Clone(allocator, nullptr)) << ".@@I" << addNode(keyIdent);
 
         if (value->IsBlockExpression()) {
