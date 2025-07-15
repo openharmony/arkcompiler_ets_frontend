@@ -80,7 +80,7 @@ static auto ExtractAst(const parser::Program &program, bool checkFullProgram)
     return astToCheck;
 }
 
-void ASTVerifier::Verify(std::string_view phaseName)
+void ASTVerifier::Verify(std::string_view phaseName) noexcept
 {
     if (context_.diagnosticEngine->IsAnyError()) {
         // NOTE(dkofanov): As for now, the policy is that ASTVerifier doesn't interrupt pipeline if there were errors

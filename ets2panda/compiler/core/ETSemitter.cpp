@@ -141,6 +141,7 @@ static pandasm::Function GenScriptFunction(const ir::ScriptFunction *scriptFunc,
     uint32_t accessFlags = 0;
     if (!scriptFunc->IsStaticBlock()) {
         const auto *methodDef = util::Helpers::GetContainingClassMethodDefinition(scriptFunc);
+        ES2PANDA_ASSERT(methodDef != nullptr);
         accessFlags |= TranslateModifierFlags(methodDef->Modifiers());
     }
     if (scriptFunc->HasRestParameter()) {
@@ -1036,6 +1037,7 @@ pandasm::AnnotationData ETSEmitter::GenAnnotationEnclosingMethod(const ir::Metho
 {
     GenAnnotationRecord(Signatures::ETS_ANNOTATION_ENCLOSING_METHOD);
     pandasm::AnnotationData enclosingMethod(Signatures::ETS_ANNOTATION_ENCLOSING_METHOD);
+    ES2PANDA_ASSERT(methodDef->Function() != nullptr);
     pandasm::AnnotationElement value(
         Signatures::ANNOTATION_KEY_VALUE,
         std::make_unique<pandasm::ScalarValue>(pandasm::ScalarValue::Create<pandasm::Value::Type::METHOD>(
