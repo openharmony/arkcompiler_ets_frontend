@@ -305,6 +305,9 @@ private:
         "Observed",  "ObjectLink", "Watch",        "Track",        "ObservedV2", "Trace",    "ComponentV2",
         "Local",     "Param",      "Once",         "Event",        "Provider",   "Consumer", "Monitor",
         "Computed",  "Type"};
+    const std::unordered_set<std::string_view> stdlibNamespaceList_ = {
+        "StdProcess", "taskpool", "functions",    "containers", "Intl",     "GC",
+        "jsonx",      "proxy",    "unsafeMemory", "reflect",    "StdDebug", "arktest"};
     const std::set<std::string> extensions_ = {".sts", ".ets", ".ts", ".js"};
 
     std::stringstream outputDts_;
