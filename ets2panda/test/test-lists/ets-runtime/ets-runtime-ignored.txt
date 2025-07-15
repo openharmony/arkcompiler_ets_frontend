@@ -16,6 +16,9 @@ nullCoalesc.ets
 #11104
 unboxing.ets
 
+#27863
+UncheckedCasts.ets
+
 #11326
 GenericsTest.ets
 
