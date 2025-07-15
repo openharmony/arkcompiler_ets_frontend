@@ -84,6 +84,7 @@ void StringComparisonLowering::ProcessBinaryExpression(ir::BinaryExpression *exp
     auto *zeroExpr = checker->AllocNode<ir::NumberLiteral>(util::StringView("0"));
     auto *const callee = checker->AllocNode<ir::Identifier>("compareTo", checker->Allocator());
     ES2PANDA_ASSERT(callee != nullptr);
+    ES2PANDA_ASSERT(checker->GlobalBuiltinETSStringType() != nullptr);
     auto *var = checker->GlobalBuiltinETSStringType()->GetProperty(callee->AsIdentifier()->Name(),
                                                                    checker::PropertySearchFlags::SEARCH_METHOD);
     callee->SetVariable(var);
