@@ -24,6 +24,7 @@ export interface ModuleDescriptor {
   name: string;
   moduleType: string;
   srcPath: string;
+  aceModuleJsonPath?: string;
 }
 
 interface Json5Object {
@@ -167,6 +168,10 @@ function createPluginMap(buildSdkPath: string): Record<string, string> {
   return pluginMap;
 }
 
+function addPluginPathConfigs(buildConfig: BuildConfig, module: ModuleDescriptor): void {
+  buildConfig.aceModuleJsonPath = module.aceModuleJsonPath;
+}
+
 export function generateBuildConfigs(
   pathConfig: PathConfig,
   modules?: ModuleDescriptor[]
@@ -222,6 +227,7 @@ export function generateBuildConfigs(
         return depModule!.name;
       })
     };
+    addPluginPathConfigs(allBuildConfigs[module.name], module);
   }
   Object.entries(allBuildConfigs).forEach(([key, config]) => {
     if (enableDeclgen.get(key) === true) {

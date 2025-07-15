@@ -151,6 +151,7 @@ export interface PathConfig {
   declgenOutDir: string;
   cacheDir?: string;
   externalApiPath?: string;
+  aceModuleJsonPath?: string;
 }
 
 export interface DeclgenConfig {

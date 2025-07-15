@@ -1,0 +1,28 @@
+{
+    "1": [
+  {
+    "changes": [
+      {
+        "fileName": "getCodeFixesAtPosition1.ets",
+        "textChanges": [
+          {
+            "span": {
+              "start": 991,
+              "length": 5
+            },
+            "newText": ""
+          }
+        ]
+      },
+      {
+        "fileName": "getCodeFixesAtPosition1.ets",
+        "textChanges": []
+      }
+    ],
+    "description": "Fix Description",
+    "fixName": "Fix",
+    "fixId_": "UI_PLUGIN_SUGGEST",
+    "fixAllDescription_": "Fix All Description"
+  }
+]
+  }

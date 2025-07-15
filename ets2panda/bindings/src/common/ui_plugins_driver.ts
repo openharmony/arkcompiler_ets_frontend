@@ -65,12 +65,14 @@ class PluginContext {
   private program: object | undefined;
   private projectConfig: object | undefined;
   private contextPtr: KNativePointer | undefined;
+  private codingFilePath: string | undefined;
 
   constructor() {
     this.ast = undefined;
     this.program = undefined;
     this.projectConfig = undefined;
     this.contextPtr = undefined;
+    this.codingFilePath = undefined;
   }
 
   public setArkTSAst(ast: object): void {
@@ -103,6 +105,18 @@ class PluginContext {
 
   public getContextPtr(): KNativePointer | undefined {
     return this.contextPtr;
+  }
+
+  public setCodingFilePath(codingFilePath: string): void {
+    this.codingFilePath = codingFilePath;
+  }
+
+  public getCodingFilePath(): string | undefined {
+    return this.codingFilePath;
+  }
+
+  public isCoding(): boolean {
+    return this.codingFilePath !== undefined;
   }
 }
 
