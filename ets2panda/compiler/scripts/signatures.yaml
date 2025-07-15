@@ -767,7 +767,7 @@ signatures:
   - callee: BUILTIN_ARRAY
     method_name: <get>length
     params: []
-    return_type: PRIMITIVE_DOUBLE
+    return_type: PRIMITIVE_INT
     ref: BUILTIN_ARRAY_LENGTH
 
   - callee: BUILTIN_ARRAY
