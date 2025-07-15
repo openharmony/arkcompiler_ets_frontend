@@ -59,7 +59,6 @@ bool IsClassDefinitionWithTupleRest(ir::AstNode *node)
 ir::Expression *CreateMemberOrThisExpression(public_lib::Context *ctx, ir::Expression *funcExpr,
                                              ir::AstNode *definition)
 {
-    auto *checker = ctx->checker->AsETSChecker();
     auto *allocator = ctx->allocator;
 
     if (definition->IsConstructor()) {
@@ -115,7 +114,6 @@ ir::TSTypeParameterInstantiation *CreateTypeParameterInstantiation(public_lib::C
 ir::CallExpression *CreateNewCallExpression(public_lib::Context *ctx, ir::Expression *funcExpr, ir::AstNode *definition,
                                             ir::TSAsExpression *asExpression)
 {
-    auto *checker = ctx->checker->AsETSChecker();
     auto *allocator = ctx->allocator;
 
     ArenaVector<ir::Expression *> callArguments({}, allocator->Adapter());
@@ -155,7 +153,6 @@ ir::CallExpression *CreateNewCallExpression(public_lib::Context *ctx, ir::Expres
 
 ArenaVector<ir::Expression *> CreateFunctionRestParams(public_lib::Context *ctx, ir::AstNode *funcExpr)
 {
-    auto *checker = ctx->checker->AsETSChecker();
     auto *allocator = ctx->allocator;
 
     ArenaVector<ir::Expression *> params {allocator->Adapter()};
@@ -206,7 +203,6 @@ ArenaVector<ir::Expression *> MergeParams(public_lib::Context *ctx,
 
 ir::ArrayExpression *CreateArrayExpression(public_lib::Context *ctx, const ArenaVector<ir::Expression *> &newRestParams)
 {
-    auto *checker = ctx->checker->AsETSChecker();
     auto *allocator = ctx->allocator;
 
     ArenaVector<ir::Expression *> elementsInit(ctx->Allocator()->Adapter());
@@ -253,7 +249,6 @@ ir::TSTypeParameterDeclaration *CreateNewParameterDeclaration(public_lib::Contex
 ir::ScriptFunction *CreateNewScriptFunction(public_lib::Context *ctx, ir::ScriptFunction *scriptFunc,
                                             ArenaVector<ir::Expression *> newParams)
 {
-    auto *checker = ctx->checker->AsETSChecker();
     auto *allocator = ctx->allocator;
 
     ArenaVector<ir::Statement *> statements(allocator->Adapter());
@@ -287,7 +282,6 @@ ir::ScriptFunction *CreateNewScriptFunction(public_lib::Context *ctx, ir::Script
 ir::VariableDeclaration *CreateNewVariableDeclaration(public_lib::Context *ctx, ir::ETSParameterExpression *restParam,
                                                       ir::ArrayExpression *newTuple)
 {
-    auto *checker = ctx->checker->AsETSChecker();
     auto *allocator = ctx->allocator;
 
     util::StringView tupleIdentName = restParam->Ident()->Name();
@@ -325,7 +319,6 @@ ArenaVector<ir::Statement *> CreateReturnOrExpressionStatement(public_lib::Conte
 ir::MethodDefinition *CreateNewMethodDefinition(public_lib::Context *ctx, ir::MethodDefinition *definition,
                                                 ir::FunctionExpression *function)
 {
-    auto *checker = ctx->checker->AsETSChecker();
     auto *allocator = ctx->allocator;
 
     auto *methodKey = definition->AsMethodDefinition()->Key()->AsIdentifier()->Clone(allocator, nullptr);
@@ -340,7 +333,6 @@ ir::MethodDefinition *CreateNewMethodDefinition(public_lib::Context *ctx, ir::Me
 
 void CreateNewMethod(public_lib::Context *ctx, ir::AstNode *node)
 {
-    auto *checker = ctx->checker->AsETSChecker();
     auto *allocator = ctx->allocator;
 
     for (auto definition : node->AsClassDefinition()->Body()) {

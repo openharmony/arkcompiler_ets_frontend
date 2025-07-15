@@ -13,19 +13,20 @@
  * limitations under the License.
  */
 
-#ifndef ES2PANDA_COMPILER_CORE_AST_VERIFIER_INVARIANTS_EVERYCHILDHASVALIDPARENT_H
-#define ES2PANDA_COMPILER_CORE_AST_VERIFIER_INVARIANTS_EVERYCHILDHASVALIDPARENT_H
-
-#include "../invariantBase.h"
-
-namespace ark::es2panda::compiler::ast_verifier {
-
-class EveryChildHasValidParent : public InvariantBase<VerifierInvariants::EVERY_CHILD_HAS_VALID_PARENT> {
-public:
-    using Base::Base;
-    [[nodiscard]] CheckResult operator()(const ir::AstNode *ast);
-};
-
-}  // namespace ark::es2panda::compiler::ast_verifier
-
-#endif  // ES2PANDA_COMPILER_CORE_AST_VERIFIER_INVARIANTS_EVERYCHILDHASVALIDPARENT_H
+ #ifndef ES2PANDA_COMPILER_CORE_AST_VERIFIER_INVARIANTS_EVERYCHILDINPARENTRANGE_H
+ #define ES2PANDA_COMPILER_CORE_AST_VERIFIER_INVARIANTS_EVERYCHILDINPARENTRANGE_H
+ 
+ #include "ast_verifier/invariantBase.h"
+ 
+ namespace ark::es2panda::compiler::ast_verifier {
+ 
+ class EveryChildInParentRange : public InvariantBase<VerifierInvariants::EVERY_CHILD_IN_PARENT_RANGE> {
+ public:
+     using Base::Base;
+     [[nodiscard]] CheckResult operator()(const ir::AstNode *ast);
+ };
+ 
+ }  // namespace ark::es2panda::compiler::ast_verifier
+ 
+ #endif  // ES2PANDA_COMPILER_CORE_AST_VERIFIER_INVARIANTS_EVERYCHILDINPARENTRANGE_H
+ 

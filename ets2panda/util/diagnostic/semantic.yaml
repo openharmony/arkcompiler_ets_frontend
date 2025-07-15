@@ -1532,7 +1532,7 @@ semantic:
   id: 392
   message: "overload declaration cannot contain abstract methods."
  
-- name: INVALID_RECORD_PROPERTY`
+- name: INVALID_RECORD_PROPERTY
   id: 393
   message: "Invalid record property"
 
