@@ -4626,6 +4626,1175 @@
       },
       "import_path": [],
       "is_global": true
+    },
+    {
+      "file_path": "lib.es2015.iterable.d.ts",
+      "api_info": {
+        "line": 1,
+        "problem": "ThisArg",
+        "api_name": "from",
+        "api_type": "MethodSignature",
+        "api_optional": false,
+        "api_func_args": [
+          {
+            "name": "iterable",
+            "type": "Iterable<T> | ArrayLike<T>",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "mapfn",
+            "type": "(v: T, k: number) => U",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "thisArg",
+            "type": "any",
+            "is_optional": false,
+            "has_default": false
+          }
+        ],
+        "parent_api": [
+          {
+            "api_name": "ArrayConstructor",
+            "api_type": "InterfaceDeclaration"
+          }
+        ],
+        "method_return_type": "U[]",
+        "code_kind": 173
+      },
+      "import_path": [],
+      "is_global": true
+    },
+    {
+      "file_path": "lib.es2015.core.d.ts",
+      "api_info": {
+        "line": 1,
+        "problem": "ThisArg",
+        "api_name": "from",
+        "api_type": "MethodSignature",
+        "api_optional": false,
+        "api_func_args": [
+          {
+            "name": "arrayLike",
+            "type": "ArrayLike<T>",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "mapfn",
+            "type": "(v: T, k: number) => U",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "thisArg",
+            "type": "any",
+            "is_optional": false,
+            "has_default": false
+          }
+        ],
+        "parent_api": [
+          {
+            "api_name": "ArrayConstructor",
+            "api_type": "InterfaceDeclaration"
+          }
+        ],
+        "method_return_type": "U[]",
+        "code_kind": 173
+      },
+      "import_path": [],
+      "is_global": true
+    },
+    {
+      "file_path": "lib.es2020.bigint.d.ts",
+      "api_info": {
+        "line": 1,
+        "problem": "ThisArg",
+        "api_name": "from",
+        "api_type": "MethodSignature",
+        "api_optional": false,
+        "api_func_args": [
+          {
+            "name": "arrayLike",
+            "type": "ArrayLike<U>",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "mapfn",
+            "type": "(v: T, k: number) => bigint",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "thisArg",
+            "type": "any",
+            "is_optional": false,
+            "has_default": false
+          }
+        ],
+        "parent_api": [
+          {
+            "api_name": "BigInt64ArrayConstructor",
+            "api_type": "InterfaceDeclaration"
+          }
+        ],
+        "method_return_type": "BigInt64Array",
+        "code_kind": 173
+      },
+      "import_path": [],
+      "is_global": true
+    },
+    {
+      "file_path": "lib.es2020.bigint.d.ts",
+      "api_info": {
+        "line": 1,
+        "problem": "ThisArg",
+        "api_name": "from",
+        "api_type": "MethodSignature",
+        "api_optional": false,
+        "api_func_args": [
+          {
+            "name": "arrayLike",
+            "type": "ArrayLike<U>",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "mapfn",
+            "type": "(v: T, k: number) => bigint",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "thisArg",
+            "type": "any",
+            "is_optional": false,
+            "has_default": false
+          }
+        ],
+        "parent_api": [
+          {
+            "api_name": "BigUint64ArrayConstructor",
+            "api_type": "InterfaceDeclaration"
+          }
+        ],
+        "method_return_type": "BigUint64Array",
+        "code_kind": 173
+      },
+      "import_path": [],
+      "is_global": true
+    },
+    {
+      "file_path": "lib.es2015.iterable.d.ts",
+      "api_info": {
+        "line": 1,
+        "problem": "ThisArg",
+        "api_name": "from",
+        "api_type": "MethodSignature",
+        "api_optional": false,
+        "api_func_args": [
+          {
+            "name": "arrayLike",
+            "type": "Iterable<number>",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "mapfn",
+            "type": "(v: T, k: number) => U",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "thisArg",
+            "type": "any",
+            "is_optional": false,
+            "has_default": false
+          }
+        ],
+        "parent_api": [
+          {
+            "api_name": "Float32ArrayConstructor",
+            "api_type": "InterfaceDeclaration"
+          }
+        ],
+        "method_return_type": "Float32Array",
+        "code_kind": 173
+      },
+      "import_path": [],
+      "is_global": true
+    },
+    {
+      "file_path": "lib.es5.d.ts",
+      "api_info": {
+        "line": 1,
+        "problem": "ThisArg",
+        "api_name": "from",
+        "api_type": "MethodSignature",
+        "api_optional": false,
+        "api_func_args": [
+          {
+            "name": "arrayLike",
+            "type": "ArrayLike<T>",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "mapfn",
+            "type": "(v: T, k: number) => U",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "thisArg",
+            "type": "any",
+            "is_optional": false,
+            "has_default": false
+          }
+        ],
+        "parent_api": [
+          {
+            "api_name": "Float32ArrayConstructor",
+            "api_type": "InterfaceDeclaration"
+          }
+        ],
+        "method_return_type": "Float32Array",
+        "code_kind": 173
+      },
+      "import_path": [],
+      "is_global": true
+    },
+    {
+      "file_path": "lib.es2015.iterable.d.ts",
+      "api_info": {
+        "line": 1,
+        "problem": "ThisArg",
+        "api_name": "from",
+        "api_type": "MethodSignature",
+        "api_optional": false,
+        "api_func_args": [
+          {
+            "name": "arrayLike",
+            "type": "Iterable<number>",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "mapfn",
+            "type": "(v: T, k: number) => U",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "thisArg",
+            "type": "any",
+            "is_optional": false,
+            "has_default": false
+          }
+        ],
+        "parent_api": [
+          {
+            "api_name": "Float64ArrayConstructor",
+            "api_type": "InterfaceDeclaration"
+          }
+        ],
+        "method_return_type": "Float64Array",
+        "code_kind": 173
+      },
+      "import_path": [],
+      "is_global": true
+    },
+    {
+      "file_path": "lib.es5.d.ts",
+      "api_info": {
+        "line": 1,
+        "problem": "ThisArg",
+        "api_name": "from",
+        "api_type": "MethodSignature",
+        "api_optional": false,
+        "api_func_args": [
+          {
+            "name": "arrayLike",
+            "type": "ArrayLike<T>",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "mapfn",
+            "type": "(v: T, k: number) => U",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "thisArg",
+            "type": "any",
+            "is_optional": false,
+            "has_default": false
+          }
+        ],
+        "parent_api": [
+          {
+            "api_name": "Float64ArrayConstructor",
+            "api_type": "InterfaceDeclaration"
+          }
+        ],
+        "method_return_type": "Float64Array",
+        "code_kind": 173
+      },
+      "import_path": [],
+      "is_global": true
+    },
+    {
+      "file_path": "lib.es2015.iterable.d.ts",
+      "api_info": {
+        "line": 1,
+        "problem": "ThisArg",
+        "api_name": "from",
+        "api_type": "MethodSignature",
+        "api_optional": false,
+        "api_func_args": [
+          {
+            "name": "arrayLike",
+            "type": "Iterable<number>",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "mapfn",
+            "type": "(v: T, k: number) => U",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "thisArg",
+            "type": "any",
+            "is_optional": false,
+            "has_default": false
+          }
+        ],
+        "parent_api": [
+          {
+            "api_name": "Int16ArrayConstructor",
+            "api_type": "InterfaceDeclaration"
+          }
+        ],
+        "method_return_type": "Int16Array",
+        "code_kind": 173
+      },
+      "import_path": [],
+      "is_global": true
+    },
+    {
+      "file_path": "lib.es5.d.ts",
+      "api_info": {
+        "line": 1,
+        "problem": "ThisArg",
+        "api_name": "from",
+        "api_type": "MethodSignature",
+        "api_optional": false,
+        "api_func_args": [
+          {
+            "name": "arrayLike",
+            "type": "ArrayLike<T>",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "mapfn",
+            "type": "(v: T, k: number) => U",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "thisArg",
+            "type": "any",
+            "is_optional": false,
+            "has_default": false
+          }
+        ],
+        "parent_api": [
+          {
+            "api_name": "Int16ArrayConstructor",
+            "api_type": "InterfaceDeclaration"
+          }
+        ],
+        "method_return_type": "Int16Array",
+        "code_kind": 173
+      },
+      "import_path": [],
+      "is_global": true
+    },
+    {
+      "file_path": "lib.es2015.iterable.d.ts",
+      "api_info": {
+        "line": 1,
+        "problem": "ThisArg",
+        "api_name": "from",
+        "api_type": "MethodSignature",
+        "api_optional": false,
+        "api_func_args": [
+          {
+            "name": "arrayLike",
+            "type": "Iterable<number>",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "mapfn",
+            "type": "(v: T, k: number) => U",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "thisArg",
+            "type": "any",
+            "is_optional": false,
+            "has_default": false
+          }
+        ],
+        "parent_api": [
+          {
+            "api_name": "Int32ArrayConstructor",
+            "api_type": "InterfaceDeclaration"
+          }
+        ],
+        "method_return_type": "Int32Array",
+        "code_kind": 173
+      },
+      "import_path": [],
+      "is_global": true
+    },
+    {
+      "file_path": "lib.es5.d.ts",
+      "api_info": {
+        "line": 1,
+        "problem": "ThisArg",
+        "api_name": "from",
+        "api_type": "MethodSignature",
+        "api_optional": false,
+        "api_func_args": [
+          {
+            "name": "arrayLike",
+            "type": "ArrayLike<T>",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "mapfn",
+            "type": "(v: T, k: number) => U",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "thisArg",
+            "type": "any",
+            "is_optional": false,
+            "has_default": false
+          }
+        ],
+        "parent_api": [
+          {
+            "api_name": "Int32ArrayConstructor",
+            "api_type": "InterfaceDeclaration"
+          }
+        ],
+        "method_return_type": "Int32Array",
+        "code_kind": 173
+      },
+      "import_path": [],
+      "is_global": true
+    },
+    {
+      "file_path": "lib.es2015.iterable.d.ts",
+      "api_info": {
+        "line": 1,
+        "problem": "ThisArg",
+        "api_name": "from",
+        "api_type": "MethodSignature",
+        "api_optional": false,
+        "api_func_args": [
+          {
+            "name": "arrayLike",
+            "type": "Iterable<number>",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "mapfn",
+            "type": "(v: T, k: number) => U",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "thisArg",
+            "type": "any",
+            "is_optional": false,
+            "has_default": false
+          }
+        ],
+        "parent_api": [
+          {
+            "api_name": "Int8ArrayConstructor",
+            "api_type": "InterfaceDeclaration"
+          }
+        ],
+        "method_return_type": "Int8Array",
+        "code_kind": 173
+      },
+      "import_path": [],
+      "is_global": true
+    },
+    {
+      "file_path": "lib.es5.d.ts",
+      "api_info": {
+        "line": 1,
+        "problem": "ThisArg",
+        "api_name": "from",
+        "api_type": "MethodSignature",
+        "api_optional": false,
+        "api_func_args": [
+          {
+            "name": "arrayLike",
+            "type": "ArrayLike<T>",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "mapfn",
+            "type": "(v: T, k: number) => U",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "thisArg",
+            "type": "any",
+            "is_optional": false,
+            "has_default": false
+          }
+        ],
+        "parent_api": [
+          {
+            "api_name": "Int8ArrayConstructor",
+            "api_type": "InterfaceDeclaration"
+          }
+        ],
+        "method_return_type": "Int8Array",
+        "code_kind": 173
+      },
+      "import_path": [],
+      "is_global": true
+    },
+    {
+      "file_path": "lib.es2015.iterable.d.ts",
+      "api_info": {
+        "line": 1,
+        "problem": "ThisArg",
+        "api_name": "from",
+        "api_type": "MethodSignature",
+        "api_optional": false,
+        "api_func_args": [
+          {
+            "name": "arrayLike",
+            "type": "Iterable<number>",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "mapfn",
+            "type": "(v: T, k: number) => U",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "thisArg",
+            "type": "any",
+            "is_optional": false,
+            "has_default": false
+          }
+        ],
+        "parent_api": [
+          {
+            "api_name": "Uint8ArrayConstructor",
+            "api_type": "InterfaceDeclaration"
+          }
+        ],
+        "method_return_type": "Uint8Array",
+        "code_kind": 173
+      },
+      "import_path": [],
+      "is_global": true
+    },
+    {
+      "file_path": "lib.es5.d.ts",
+      "api_info": {
+        "line": 1,
+        "problem": "ThisArg",
+        "api_name": "from",
+        "api_type": "MethodSignature",
+        "api_optional": false,
+        "api_func_args": [
+          {
+            "name": "arrayLike",
+            "type": "ArrayLike<T>",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "mapfn",
+            "type": "(v: T, k: number) => U",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "thisArg",
+            "type": "any",
+            "is_optional": false,
+            "has_default": false
+          }
+        ],
+        "parent_api": [
+          {
+            "api_name": "Uint8ArrayConstructor",
+            "api_type": "InterfaceDeclaration"
+          }
+        ],
+        "method_return_type": "Uint8Array",
+        "code_kind": 173
+      },
+      "import_path": [],
+      "is_global": true
+    },
+    {
+      "file_path": "lib.es2015.iterable.d.ts",
+      "api_info": {
+        "line": 1,
+        "problem": "ThisArg",
+        "api_name": "from",
+        "api_type": "MethodSignature",
+        "api_optional": false,
+        "api_func_args": [
+          {
+            "name": "arrayLike",
+            "type": "Iterable<number>",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "mapfn",
+            "type": "(v: T, k: number) => U",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "thisArg",
+            "type": "any",
+            "is_optional": false,
+            "has_default": false
+          }
+        ],
+        "parent_api": [
+          {
+            "api_name": "Uint16ArrayConstructor",
+            "api_type": "InterfaceDeclaration"
+          }
+        ],
+        "method_return_type": "Uint16Array",
+        "code_kind": 173
+      },
+      "import_path": [],
+      "is_global": true
+    },
+    {
+      "file_path": "lib.es5.d.ts",
+      "api_info": {
+        "line": 1,
+        "problem": "ThisArg",
+        "api_name": "from",
+        "api_type": "MethodSignature",
+        "api_optional": false,
+        "api_func_args": [
+          {
+            "name": "arrayLike",
+            "type": "ArrayLike<T>",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "mapfn",
+            "type": "(v: T, k: number) => U",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "thisArg",
+            "type": "any",
+            "is_optional": false,
+            "has_default": false
+          }
+        ],
+        "parent_api": [
+          {
+            "api_name": "Uint16ArrayConstructor",
+            "api_type": "InterfaceDeclaration"
+          }
+        ],
+        "method_return_type": "Uint16Array",
+        "code_kind": 173
+      },
+      "import_path": [],
+      "is_global": true
+    },
+    {
+      "file_path": "lib.es2015.iterable.d.ts",
+      "api_info": {
+        "line": 1,
+        "problem": "ThisArg",
+        "api_name": "from",
+        "api_type": "MethodSignature",
+        "api_optional": false,
+        "api_func_args": [
+          {
+            "name": "arrayLike",
+            "type": "Iterable<number>",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "mapfn",
+            "type": "(v: T, k: number) => U",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "thisArg",
+            "type": "any",
+            "is_optional": false,
+            "has_default": false
+          }
+        ],
+        "parent_api": [
+          {
+            "api_name": "Uint32ArrayConstructor",
+            "api_type": "InterfaceDeclaration"
+          }
+        ],
+        "method_return_type": "Uint32Array",
+        "code_kind": 173
+      },
+      "import_path": [],
+      "is_global": true
+    },
+    {
+      "file_path": "lib.es5.d.ts",
+      "api_info": {
+        "line": 1,
+        "problem": "ThisArg",
+        "api_name": "from",
+        "api_type": "MethodSignature",
+        "api_optional": false,
+        "api_func_args": [
+          {
+            "name": "arrayLike",
+            "type": "ArrayLike<T>",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "mapfn",
+            "type": "(v: T, k: number) => U",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "thisArg",
+            "type": "any",
+            "is_optional": false,
+            "has_default": false
+          }
+        ],
+        "parent_api": [
+          {
+            "api_name": "Uint32ArrayConstructor",
+            "api_type": "InterfaceDeclaration"
+          }
+        ],
+        "method_return_type": "Uint32Array",
+        "code_kind": 173
+      },
+      "import_path": [],
+      "is_global": true
+    },
+    {
+      "file_path": "lib.es2015.iterable.d.ts",
+      "api_info": {
+        "line": 1,
+        "problem": "ThisArg",
+        "api_name": "from",
+        "api_type": "MethodSignature",
+        "api_optional": false,
+        "api_func_args": [
+          {
+            "name": "arrayLike",
+            "type": "Iterable<number>",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "mapfn",
+            "type": "(v: T, k: number) => U",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "thisArg",
+            "type": "any",
+            "is_optional": false,
+            "has_default": false
+          }
+        ],
+        "parent_api": [
+          {
+            "api_name": "Uint8ClampedArrayConstructor",
+            "api_type": "InterfaceDeclaration"
+          }
+        ],
+        "method_return_type": "Uint8ClampedArray",
+        "code_kind": 173
+      },
+      "import_path": [],
+      "is_global": true
+    },
+    {
+      "file_path": "lib.es5.d.ts",
+      "api_info": {
+        "line": 1,
+        "problem": "ThisArg",
+        "api_name": "from",
+        "api_type": "MethodSignature",
+        "api_optional": false,
+        "api_func_args": [
+          {
+            "name": "arrayLike",
+            "type": "ArrayLike<T>",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "mapfn",
+            "type": "(v: T, k: number) => U",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "thisArg",
+            "type": "any",
+            "is_optional": false,
+            "has_default": false
+          }
+        ],
+        "parent_api": [
+          {
+            "api_name": "Uint8ClampedArrayConstructor",
+            "api_type": "InterfaceDeclaration"
+          }
+        ],
+        "method_return_type": "Uint8ClampedArray",
+        "code_kind": 173
+      },
+      "import_path": [],
+      "is_global": true
+    },
+    {
+      "file_path": "lib.es2015.core.d.ts",
+      "api_info": {
+        "line": 1,
+        "problem": "ThisArg",
+        "api_name": "find",
+        "api_type": "MethodSignature",
+        "api_optional": false,
+        "api_func_args": [
+          {
+            "name": "predicate",
+            "type": "(this: void, value: T, index: number, obj: T[]) => value is S",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "thisArg",
+            "type": "any",
+            "is_optional": false,
+            "has_default": false
+          }
+        ],
+        "parent_api": [
+          {
+            "api_name": "Array",
+            "api_type": "InterfaceDeclaration"
+          }
+        ],
+        "method_return_type": "S | undefined",
+        "code_kind": 173
+      },
+      "import_path": [],
+      "is_global": true
+    },
+    {
+      "file_path": "lib.es2015.core.d.ts",
+      "api_info": {
+        "line": 1,
+        "problem": "ThisArg",
+        "api_name": "find",
+        "api_type": "MethodSignature",
+        "api_optional": false,
+        "api_func_args": [
+          {
+            "name": "predicate",
+            "type": "(value: T, index: number, obj: T[]) => unknown",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "thisArg",
+            "type": "any",
+            "is_optional": false,
+            "has_default": false
+          }
+        ],
+        "parent_api": [
+          {
+            "api_name": "Array",
+            "api_type": "InterfaceDeclaration"
+          }
+        ],
+        "method_return_type": "T | undefined",
+        "code_kind": 173
+      },
+      "import_path": [],
+      "is_global": true
+    },
+    {
+      "file_path": "lib.es5.d.ts",
+      "api_info": {
+        "line": 1,
+        "problem": "ThisArg",
+        "api_name": "map",
+        "api_type": "MethodSignature",
+        "api_optional": false,
+        "api_func_args": [
+          {
+            "name": "callbackfn",
+            "type": "(value: T, index: number, array: T[]) => U",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "thisArg",
+            "type": "any",
+            "is_optional": false,
+            "has_default": false
+          }
+        ],
+        "parent_api": [
+          {
+            "api_name": "Array",
+            "api_type": "InterfaceDeclaration"
+          }
+        ],
+        "method_return_type": "U[]",
+        "code_kind": 173
+      },
+      "import_path": [],
+      "is_global": true
+    },
+    {
+      "file_path": "lib.es5.d.ts",
+      "api_info": {
+        "line": 1,
+        "problem": "ThisArg",
+        "api_name": "filter",
+        "api_type": "MethodSignature",
+        "api_optional": false,
+        "api_func_args": [
+          {
+            "name": "callbackfn",
+            "type": "(value: T, index: number, array: T[]) => value is S",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "thisArg",
+            "type": "any",
+            "is_optional": false,
+            "has_default": false
+          }
+        ],
+        "parent_api": [
+          {
+            "api_name": "Array",
+            "api_type": "InterfaceDeclaration"
+          }
+        ],
+        "method_return_type": "S[]",
+        "code_kind": 173
+      },
+      "import_path": [],
+      "is_global": true
+    },
+    {
+      "file_path": "lib.es2015.core.d.ts",
+      "api_info": {
+        "line": 1,
+        "problem": "ThisArg",
+        "api_name": "find",
+        "api_type": "MethodSignature",
+        "api_optional": false,
+        "api_func_args": [
+          {
+            "name": "predicate",
+            "type": "(this: void, value: T, index: number, obj: readonly T[]) => value is S",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "thisArg",
+            "type": "any",
+            "is_optional": false,
+            "has_default": false
+          }
+        ],
+        "parent_api": [
+          {
+            "api_name": "ReadonlyArray",
+            "api_type": "InterfaceDeclaration"
+          }
+        ],
+        "method_return_type": "S | undefined",
+        "code_kind": 173
+      },
+      "import_path": [],
+      "is_global": true
+    },
+    {
+      "file_path": "lib.es2015.core.d.ts",
+      "api_info": {
+        "line": 1,
+        "problem": "ThisArg",
+        "api_name": "find",
+        "api_type": "MethodSignature",
+        "api_optional": false,
+        "api_func_args": [
+          {
+            "name": "predicate",
+            "type": "(value: T, index: number, obj: readonly T[]) => unknown",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "thisArg",
+            "type": "any",
+            "is_optional": false,
+            "has_default": false
+          }
+        ],
+        "parent_api": [
+          {
+            "api_name": "ReadonlyArray",
+            "api_type": "InterfaceDeclaration"
+          }
+        ],
+        "method_return_type": "T | undefined",
+        "code_kind": 173
+      },
+      "import_path": [],
+      "is_global": true
+    },
+    {
+      "file_path": "lib.es2015.core.d.ts",
+      "api_info": {
+        "line": 1,
+        "problem": "ThisArg",
+        "api_name": "findIndex",
+        "api_type": "MethodSignature",
+        "api_optional": false,
+        "api_func_args": [
+          {
+            "name": "predicate",
+            "type": "(value: T, index: number, obj: readonly T[]) => unknown",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "thisArg",
+            "type": "any",
+            "is_optional": false,
+            "has_default": false
+          }
+        ],
+        "parent_api": [
+          {
+            "api_name": "ReadonlyArray",
+            "api_type": "InterfaceDeclaration"
+          }
+        ],
+        "method_return_type": "number",
+        "code_kind": 173
+      },
+      "import_path": [],
+      "is_global": true
+    },
+    {
+      "file_path": "lib.es2021.promise.d.ts",
+      "api_info": {
+        "line": 1,
+        "problem": "BuiltinNoCtorFunc",
+        "api_type": "CallSignature",
+        "parent_api": [
+          {
+            "api_name": "AggregateErrorConstructor",
+            "api_type": "InterfaceDeclaration"
+          }
+        ],
+        "code_kind": 179
+      },
+      "import_path": [],
+      "is_global": true
+    },
+    {
+      "file_path": "lib.es2015.core.d.ts",
+      "api_info": {
+        "line": 43,
+        "problem": "ThisArg",
+        "api_name": "findIndex",
+        "api_type": "MethodSignature",
+        "api_optional": false,
+        "api_func_args": [
+          {
+            "name": "predicate",
+            "type": "(value: T, index: number, obj: T[]) => unknown",
+            "is_optional": false,
+            "has_default": false
+          },
+          {
+            "name": "thisArg",
+            "type": "any",
+            "is_optional": false,
+            "has_default": false
+          }
+        ],
+        "parent_api": [
+          {
+            "api_name": "Array",
+            "api_type": "InterfaceDeclaration"
+          }
+        ],
+        "method_return_type": "number",
+        "code_kind": 173
+      },
+      "import_path": [],
+      "is_global": true
     }
   ]
 }
