@@ -48,7 +48,7 @@ export function isMac(): boolean {
 }
 
 export function changeFileExtension(file: string, targetExt: string, originExt = ''): string {
-  let currentExt = originExt.length === 0 ? path.extname(file) : originExt;
+  let currentExt = originExt.length === 0 ? getFileExtension(file) : originExt;
   let fileWithoutExt = file.substring(0, file.lastIndexOf(currentExt));
   return fileWithoutExt + targetExt;
 }
@@ -147,4 +147,27 @@ export function isSubPathOf(targetPath: string, parentDir: string): boolean {
   const resolvedParent = toUnixPath(path.resolve(parentDir));
   const resolvedTarget = toUnixPath(path.resolve(targetPath));
   return resolvedTarget === resolvedParent || resolvedTarget.startsWith(resolvedParent + '/');
+}
+
+/**
+ * Get the full extension of a file, supporting composite extensions like '.d.ts', '.test.ts', '.d.ets', etc.
+ * @param filePath - File path or file name.
+ * @param knownCompositeExts - Optional list of known composite extensions to match against.
+ * @returns The full extension (e.g., '.d.ts'). Returns an empty string if no extension is found.
+ */
+export function getFileExtension(
+  filePath: string,
+  knownCompositeExts: string[] = ['.d.ts', '.test.ts', '.d.ets']
+): string {
+  const baseName = path.basename(filePath);
+
+  // Match known composite extensions first
+  for (const ext of knownCompositeExts) {
+    if (baseName.endsWith(ext)) {
+      return ext;
+    }
+  }
+
+  // Fallback to default behavior: return the last segment after the final dot
+  return path.extname(baseName);
 }
