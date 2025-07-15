@@ -152,6 +152,7 @@ static void HandleFunctionParam(public_lib::Context *ctx, ir::ETSParameterExpres
 
     auto *newDecl = allocator->New<varbinder::ConstDecl>(newVarName.View(), newDeclarator);
     auto *newVar = allocator->New<varbinder::LocalVariable>(newDecl, oldVar->Flags());
+    ES2PANDA_ASSERT(newVar != nullptr);
     newVar->SetTsType(boxedType);
 
     newDeclarator->Id()->AsIdentifier()->SetVariable(newVar);
@@ -162,6 +163,7 @@ static void HandleFunctionParam(public_lib::Context *ctx, ir::ETSParameterExpres
 
     auto *newDeclaration = util::NodeAllocator::ForceSetParent<ir::VariableDeclaration>(
         allocator, ir::VariableDeclaration::VariableDeclarationKind::CONST, allocator, std::move(declVec));
+    ES2PANDA_ASSERT(newDeclaration != nullptr);
     newDeclaration->SetParent(body);
     bodyStmts.insert(bodyStmts.begin(), newDeclaration);
 

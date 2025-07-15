@@ -75,8 +75,11 @@ ScriptFunction *ScriptFunction::Clone(ArenaAllocator *allocator, AstNode *parent
     for (auto *param : Params()) {
         params.push_back(param->Clone(allocator, nullptr)->AsExpression());
     }
+    AnnotationUsage *clonedAnnotationUsage;
     for (auto *annotationUsage : Annotations()) {
-        annotationUsages.push_back(annotationUsage->Clone(allocator, nullptr)->AsAnnotationUsage());
+        clonedAnnotationUsage = annotationUsage->Clone(allocator, nullptr);
+        ES2PANDA_ASSERT(clonedAnnotationUsage != nullptr);
+        annotationUsages.push_back(clonedAnnotationUsage->AsAnnotationUsage());
     }
     auto *res = util::NodeAllocator::ForceSetParent<ScriptFunction>(
         allocator, allocator,

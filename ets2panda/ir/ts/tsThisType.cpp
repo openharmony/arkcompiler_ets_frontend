@@ -81,7 +81,7 @@ checker::Type *TSThisType::GetType([[maybe_unused]] checker::ETSChecker *checker
 TSThisType *TSThisType::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     auto *const clone = allocator->New<TSThisType>(allocator);
-
+    ES2PANDA_ASSERT(clone != nullptr);
     if (parent != nullptr) {
         clone->SetParent(parent);
     }
@@ -89,8 +89,9 @@ TSThisType *TSThisType::Clone(ArenaAllocator *const allocator, AstNode *const pa
     if (!Annotations().empty()) {
         ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
         for (auto *annotationUsage : Annotations()) {
-            ES2PANDA_ASSERT(annotationUsage->Clone(allocator, clone) != nullptr);
-            annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
+            auto *clonedAnnotationUsage = annotationUsage->Clone(allocator, clone);
+            ES2PANDA_ASSERT(clonedAnnotationUsage != nullptr);
+            annotationUsages.push_back(clonedAnnotationUsage->AsAnnotationUsage());
         }
         clone->SetAnnotations(std::move(annotationUsages));
     }
