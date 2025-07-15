@@ -444,7 +444,7 @@ bool TSDeclGen::HandleETSSpecificTypes(const checker::Type *checkerType)
             GenTupleType(checkerType->AsETSTupleType());
             return true;
         case checker::TypeFlag::ETS_ANY:
-            OutDts("any");
+            OutDts("ESObject");
             return true;
         default:
             LogError(diagnostic::UNSUPPORTED_TYPE, {GetDebugTypeName(checkerType)});
@@ -604,7 +604,7 @@ void TSDeclGen::ProcessFuncParameter(varbinder::LocalVariable *param)
         ProcessTypeAnnotationType(typeAnnotation, paramType);
         return;
     }
-    OutDts("any");
+    OutDts("ESObject");
 }
 
 void TSDeclGen::ProcessFuncParameters(const checker::Signature *sig)
@@ -822,7 +822,7 @@ void TSDeclGen::GenObjectType(const checker::ETSObjectType *objectType)
     std::string typeStr = objectType->Name().Mutf8();
     if (objectType->Name().Empty()) {
         LogWarning(diagnostic::EMPTY_TYPE_NAME);
-        OutDts("any");
+        OutDts("ESObject");
     } else {
         if (typeStr == "Exception" || typeStr == "NullPointerError") {
             OutDts("Error");
@@ -1383,7 +1383,7 @@ bool TSDeclGen::ProcessTypeAnnotationSpecificTypes(const checker::Type *checkerT
             OutDts(checkerType->ToString());
             return true;
         case checker::TypeFlag::ETS_ANY:
-            OutDts("any");
+            OutDts("ESObject");
             return true;
         default:
             return false;
@@ -1759,7 +1759,7 @@ void TSDeclGen::GenPartName(std::string &partName)
     } else if (partName == "Exception" || partName == "NullPointerError") {
         partName = "Error";
     } else if (partName == "Any") {
-        partName = "any";
+        partName = "ESObject";
     }
 }
 
@@ -2080,7 +2080,7 @@ void TSDeclGen::GenMethodSignature(const ir::MethodDefinition *methodDef, const 
 
         if (methodDef->TsType() == nullptr) {
             LogWarning(diagnostic::UNTYPED_METHOD, {methodName}, methodIdent->Start());
-            OutDts(": any");
+            OutDts(": ESObject");
             return;
         }
         if (methodDef->TsType()->IsETSFunctionType()) {
@@ -2181,7 +2181,7 @@ void TSDeclGen::ProcessClassPropDeclaration(const ir::ClassProperty *classProp)
         OutDts(propName);
         OutDts(": ");
         if (!state_.inNamespace) {
-            classProp->IsStatic() ? OutDts("any") : GenType(classProp->TsType());
+            classProp->IsStatic() ? OutDts("ESObject") : GenType(classProp->TsType());
         } else {
             ProcessClassPropertyType(classProp);
         }
