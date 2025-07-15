@@ -51,15 +51,44 @@ void ETSChecker::ValidatePropertyAccess(varbinder::Variable *var, ETSObjectType 
     }
 }
 
+bool ETSChecker::IsStaticInvoke(ir::MemberExpression *const expr)
+{
+    ir::Identifier *ident = nullptr;
+    if (expr->Object()->IsIdentifier()) {
+        ident = expr->Object()->AsIdentifier();
+    } else if (expr->Object()->IsMemberExpression()) {
+        auto object = expr->Object();
+
+        while (object->IsMemberExpression()) {
+            object = object->AsMemberExpression()->Object();
+        }
+        if (object->IsIdentifier()) {
+            ident = object->AsIdentifier();
+        }
+    }
+
+    return (ident != nullptr &&
+            (ident->Variable()->Declaration()->IsClassDecl() || ident->Variable()->Declaration()->IsImportDecl()));
+}
+
 void ETSChecker::ValidateCallExpressionIdentifier(ir::Identifier *const ident, Type *const type)
 {
-    if (ident->Variable()->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE) &&
-        ident->Parent()->AsCallExpression()->Callee() != ident) {
+    ir::CallExpression *callExpr = nullptr;
+    if (ident->Parent()->IsMemberExpression() && IsStaticInvoke(ident->Parent()->AsMemberExpression())) {
+        callExpr = ident->Parent()->Parent()->AsCallExpression();
+    } else if (ident->Parent()->IsCallExpression()) {
+        callExpr = ident->Parent()->AsCallExpression();
+    } else {
+        return;
+    }
+
+    if (ident->Variable()->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE) && callExpr->Callee() != ident &&
+        callExpr->Callee() != ident->Parent()) {
         std::ignore =
             TypeError(ident->Variable(), diagnostic::CLASS_OR_IFACE_AS_OBJ, {ident->ToString()}, ident->Start());
     }
 
-    if (ident->Parent()->AsCallExpression()->Callee() != ident) {
+    if (callExpr->Callee() != ident && callExpr->Callee() != ident->Parent()) {
         return;
     }
 

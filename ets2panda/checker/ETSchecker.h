@@ -273,6 +273,7 @@ public:
     void CreateFunctionTypesFromAbstracts(const std::vector<Signature *> &abstracts,
                                           ArenaVector<ETSFunctionType *> *target);
     void CheckCyclicConstructorCall(Signature *signature);
+    void CheckAnnotationReference(const ir::MemberExpression *memberExpr, const varbinder::LocalVariable *prop);
     std::vector<ResolveResult *> ResolveMemberReference(const ir::MemberExpression *memberExpr,
                                                         const ETSObjectType *target);
     varbinder::LocalVariable *ResolveOverloadReference(const ir::Identifier *ident, ETSObjectType *objType,
@@ -803,6 +804,8 @@ public:
     void MakePropertyNonNullish(ETSObjectType *classType, varbinder::LocalVariable *prop);
     void ValidateObjectLiteralForRequiredType(const ETSObjectType *requiredType,
                                               const ir::ObjectExpression *initObjExpr);
+    bool IsStaticInvoke(ir::MemberExpression *const expr);
+    void ValidateCallExpressionIdentifier(ir::Identifier *const ident, Type *const type);
 
     using NamedAccessMeta = std::tuple<ETSObjectType const *, checker::Type const *, const util::StringView>;
     static NamedAccessMeta FormNamedAccessMetadata(varbinder::Variable const *prop);
@@ -996,7 +999,6 @@ private:
     std::pair<const ir::Identifier *, ir::TypeNode *> GetTargetIdentifierAndType(ir::Identifier *ident);
     void NotResolvedError(ir::Identifier *const ident, const varbinder::Variable *classVar,
                           const ETSObjectType *classType);
-    void ValidateCallExpressionIdentifier(ir::Identifier *const ident, Type *const type);
     void ValidateNewClassInstanceIdentifier(ir::Identifier *const ident);
     void ValidateMemberIdentifier(ir::Identifier *const ident);
     void ValidateAssignmentIdentifier(ir::Identifier *const ident, Type *const type);
@@ -1082,8 +1084,8 @@ private:
     // Static invoke
     bool SetStaticInvokeValues(ir::Identifier *const ident, ir::Identifier *classId, ir::Identifier *methodId,
                                varbinder::LocalVariable *instantiateMethod);
-    void CreateTransformedCallee(ir::Identifier *classId, ir::Identifier *methodId, ir::Identifier *const ident,
-                                 varbinder::LocalVariable *instantiateMethod);
+    void CreateTransformedCallee(ir::Identifier *ident, ir::Identifier *classId, ir::Identifier *methodId,
+                                 ir::CallExpression *callExpr);
     bool TryTransformingToStaticInvoke(ir::Identifier *ident, const Type *resolvedType);
 
     // Partial

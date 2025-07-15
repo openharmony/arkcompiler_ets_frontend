@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,10 +13,19 @@
  * limitations under the License.
  */
 
-import * as Src from "./annotation_export"
+namespace NS {
+  export namespace NS1 {
+    export namespace NS2 {
+      export class C {
+        public static $_invoke(): number {
+          return 2
+        }
+      }
+    }
+  }
+}
 
-
-/* @@ label */Src.MyAnno()
-class A{}
-
-/* @@@ label Error TypeError: MyAnno is an annotation therefore cannot be instantiated.  */
+function main(){
+    let a = NS.NS1.NS2.C()
+    arktest.assertEQ(a, 2)
+}

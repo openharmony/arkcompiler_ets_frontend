@@ -113,6 +113,10 @@ semantic:
   id: 12
   message: "Invalid value for annotation field, expected a constant literal."
 
+- name: ANNOTATION_INSTANTIATION
+  id: 396
+  message: "{} is an annotation therefore cannot be instantiated."
+
 - name: ANNOTATION_ON_LAMBDA_LOCAL_TYPE
   id: 5
   message: Annotations without 'SOURCE' cannot be used on lambda expressions, local declarations, or types.
