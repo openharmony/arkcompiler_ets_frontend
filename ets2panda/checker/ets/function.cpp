@@ -2485,12 +2485,18 @@ void ETSChecker::CacheFunctionalInterface(ir::ETSFunctionType *type, ETSObjectTy
     functionalInterfaceCache_.emplace(hash, ifaceType);
 }
 
-void ETSChecker::CollectReturnStatements(ir::AstNode *parent)
+void ETSChecker::CollectReturnStatements(ir::AstNode *parent)  // NOTE: remove with #28178
 {
     parent->Iterate([this](ir::AstNode *childNode) -> void {
         if (childNode->IsScriptFunction()) {
             return;
         }
+
+        auto scope = Scope();
+        if (childNode->IsBlockStatement()) {
+            scope = childNode->AsBlockStatement()->Scope();
+        }
+        checker::ScopeContext scopeCtx(this, scope);
 
         if (childNode->IsReturnStatement()) {
             ir::ReturnStatement *returnStmt = childNode->AsReturnStatement();
