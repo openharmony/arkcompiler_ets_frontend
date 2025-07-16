@@ -486,7 +486,7 @@ Type *ETSChecker::GetTypeOfSetterGetter(varbinder::Variable *const var)
     return propType->FindSetter()->Params()[0]->TsType();
 }
 
-ETSFunctionType *ETSChecker::CreateSyntheticTypeFromOverload(varbinder::Variable *const var)
+Type *ETSChecker::CreateSyntheticTypeFromOverload(varbinder::Variable *const var)
 {
     auto *overloadDeclaration = var->Declaration()->Node()->AsOverloadDeclaration();
     std::vector<Signature *> signatures;
@@ -495,7 +495,10 @@ ETSFunctionType *ETSChecker::CreateSyntheticTypeFromOverload(varbinder::Variable
 
     for (auto *overloadFunction : overloadDeclaration->OverloadedList()) {
         Type *functionType = overloadFunction->Check(this);
-        ES2PANDA_ASSERT(functionType->IsETSFunctionType());
+        if (!functionType->IsETSFunctionType()) {
+            var->SetTsType(GlobalTypeError());
+            return GlobalTypeError();
+        }
         auto *signature = functionType->AsETSFunctionType()->CallSignatures().front();
         if (std::find(signatures.begin(), signatures.end(), signature) != signatures.end()) {
             continue;
