@@ -28,6 +28,8 @@ using AstNodePtr = ir::AstNode *;
 static constexpr std::string_view LAZY_IMPORT_OBJECT_SUFFIX = "%%lazyImportObject-";
 static constexpr std::string_view FIELD_NAME = "value";
 
+static checker::Type *CreateModuleObjectType(public_lib::Context *ctx, ir::ETSImportDeclaration *importDecl);
+
 ir::ClassDeclaration *GetOrCreateLazyImportObjectClass(ark::ArenaAllocator *allocator,
                                                        ir::ETSImportDeclaration *importDecl, parser::Program *program)
 {
@@ -99,13 +101,68 @@ static void AddImportInitializationStatement(public_lib::Context *ctx, ir::ETSIm
     statements->push_back(util::NodeAllocator::ForceSetParent<ir::ExpressionStatement>(allocator, initializer));
 }
 
-checker::Type *CreateModuleObjectType(public_lib::Context *ctx, ir::ETSImportDeclaration *importDecl)
+static void ImportNamespaceObjectTypeAddReExportType(public_lib::Context *ctx, varbinder::ETSBinder *varbinder,
+                                                     ir::ETSImportDeclaration *importDecl,
+                                                     checker::ETSObjectType *lastObjectType)
+{
+    for (auto item : varbinder->AsETSBinder()->ReExportImports()) {
+        if (importDecl->DeclPath() != item->GetProgramPath().Mutf8()) {
+            continue;
+        }
+        auto *reExportType = CreateModuleObjectType(ctx, item->GetETSImportDeclarations());
+        if (reExportType->IsTypeError()) {
+            continue;
+        }
+        ES2PANDA_ASSERT(lastObjectType != nullptr);
+        lastObjectType->AddReExports(reExportType->AsETSObjectType());
+        for (auto node : importDecl->Specifiers()) {
+            if (node->IsImportSpecifier()) {
+                auto specifier = node->AsImportSpecifier();
+                lastObjectType->AddReExportAlias(specifier->Imported()->Name(), specifier->Local()->Name());
+            }
+        }
+    }
+}
+
+static void SetPropertiesForModuleObject(public_lib::Context *ctx, checker::ETSObjectType *moduleObjType,
+                                         const util::StringView &importPath, ir::ETSImportDeclaration *importDecl)
+{
+    auto checker = ctx->GetChecker()->AsETSChecker();
+    auto varbinder = static_cast<varbinder::ETSBinder *>(checker->VarBinder()->AsETSBinder());
+    parser::Program *program =
+        checker->SelectEntryOrExternalProgram(static_cast<varbinder::ETSBinder *>(varbinder), importPath);
+    // Check imported properties before assigning them to module object
+    ES2PANDA_ASSERT(program != nullptr);
+    if (!program->IsASTChecked()) {
+        // NOTE: helps to avoid endless loop in case of recursive imports that uses all bindings
+        program->SetASTChecked();
+        program->Ast()->Check(checker);
+    }
+
+    checker->BindingsModuleObjectAddProperty<checker::PropertyType::INSTANCE_DECL>(
+        moduleObjType, importDecl, program->GlobalClassScope()->StaticFieldScope()->Bindings(), importPath);
+
+    checker->BindingsModuleObjectAddProperty<checker::PropertyType::INSTANCE_METHOD>(
+        moduleObjType, importDecl, program->GlobalClassScope()->StaticMethodScope()->Bindings(), importPath);
+
+    checker->BindingsModuleObjectAddProperty<checker::PropertyType::INSTANCE_DECL>(
+        moduleObjType, importDecl, program->GlobalClassScope()->StaticDeclScope()->Bindings(), importPath);
+
+    checker->BindingsModuleObjectAddProperty<checker::PropertyType::INSTANCE_DECL>(
+        moduleObjType, importDecl, program->GlobalClassScope()->InstanceDeclScope()->Bindings(), importPath);
+
+    checker->BindingsModuleObjectAddProperty<checker::PropertyType::INSTANCE_DECL>(
+        moduleObjType, importDecl, program->GlobalClassScope()->TypeAliasScope()->Bindings(), importPath);
+}
+
+static checker::Type *CreateModuleObjectType(public_lib::Context *ctx, ir::ETSImportDeclaration *importDecl)
 {
     auto checker = ctx->GetChecker()->AsETSChecker();
     auto varbinder = static_cast<varbinder::ETSBinder *>(checker->VarBinder()->AsETSBinder());
     auto allocator = checker->ProgramAllocator();
 
-    const auto importPath = importDecl->DeclPath();
+    const auto importPath = importDecl->DeclPath() == util::ImportPathManager::DUMMY_PATH ? importDecl->ResolvedSource()
+                                                                                          : importDecl->DeclPath();
     auto program = checker->SelectEntryOrExternalProgram(varbinder, importPath);
     if (program == nullptr) {
         return checker->GlobalTypeError();
@@ -124,9 +181,27 @@ checker::Type *CreateModuleObjectType(public_lib::Context *ctx, ir::ETSImportDec
     auto *rootDecl = allocator->New<varbinder::ClassDecl>(moduleName);
     auto *rootVar = allocator->New<varbinder::LocalVariable>(rootDecl, varbinder::VariableFlags::NONE);
     rootVar->SetTsType(moduleObjectType);
-    checker->SetPropertiesForModuleObject(moduleObjectType, importPath, nullptr);
+    ImportNamespaceObjectTypeAddReExportType(ctx, program->VarBinder()->AsETSBinder(), importDecl, moduleObjectType);
+    SetPropertiesForModuleObject(ctx, moduleObjectType, importPath, nullptr);
+    moduleObjectType->AddObjectFlag(checker::ETSObjectFlags::LAZY_IMPORT_OBJECT);
 
     return moduleObjectType;
+}
+
+static void FillVarMapForImportSpecifiers(const ArenaVector<ir::AstNode *> &specifiers, ir::ClassDefinition *classDef,
+                                          ArenaUnorderedMap<varbinder::Variable *, ir::ClassDefinition *> &varMap)
+{
+    for (auto specifier : specifiers) {
+        if (specifier->IsImportSpecifier()) {
+            auto *var = specifier->AsImportSpecifier()->Imported()->Variable();
+            var->AddFlag(varbinder::VariableFlags::DYNAMIC);
+            varMap.insert({var, classDef});
+        } else if (specifier->IsImportNamespaceSpecifier()) {
+            auto *var = specifier->AsImportNamespaceSpecifier()->Local()->Variable();
+            var->AddFlag(varbinder::VariableFlags::DYNAMIC);
+            varMap.insert({var, classDef});
+        }
+    }
 }
 
 static void BuildLazyImportObject(public_lib::Context *ctx, ir::ETSImportDeclaration *importDecl,
@@ -144,11 +219,7 @@ static void BuildLazyImportObject(public_lib::Context *ctx, ir::ETSImportDeclara
     }
 
     auto *classDecl = GetOrCreateLazyImportObjectClass(allocator, importDecl, program);
-    for (auto specifier : importDecl->Specifiers()) {
-        auto var = specifier->AsImportSpecifier()->Imported()->Variable();
-        var->AddFlag(varbinder::VariableFlags::DYNAMIC);
-        varMap.insert({var, classDecl->Definition()});
-    }
+    FillVarMapForImportSpecifiers(importDecl->Specifiers(), classDecl->Definition(), varMap);
 
     const auto className = classDecl->Definition()->Ident()->Name();
     auto found = moduleMap.find(className);
@@ -160,7 +231,6 @@ static void BuildLazyImportObject(public_lib::Context *ctx, ir::ETSImportDeclara
     auto *objType = CreateModuleObjectType(ctx, importDecl)->AsETSObjectType();
     moduleMap.insert({className, objType});
 
-    objType->AddObjectFlag(checker::ETSObjectFlags::LAZY_IMPORT_OBJECT);
     auto moduleType = checker->CreateGradualType(objType, Language::Id::JS);
 
     auto parser = ctx->parser->AsETSParser();
@@ -182,10 +252,6 @@ static void BuildLazyImportObject(public_lib::Context *ctx, ir::ETSImportDeclara
     classDecl->Definition()->EmplaceBody(initializer);
     initializer->SetParent(classDecl->Definition());
 
-    for (auto specifier : importDecl->Specifiers()) {
-        varMap.insert({specifier->AsImportSpecifier()->Imported()->Variable(), classDecl->Definition()});
-    }
-
     program->GlobalClass()->EmplaceBody(classDecl);
     classDecl->SetParent(program->GlobalClass());
 
@@ -195,15 +261,32 @@ static void BuildLazyImportObject(public_lib::Context *ctx, ir::ETSImportDeclara
     classDecl->Check(checker);
 }
 
+static ir::MemberExpression *CreateTripleMemberExpr(ArenaAllocator *allocator, const util::StringView &left,
+                                                    const util::StringView &middle, const util::StringView &right)
+{
+    auto *leftId = allocator->New<ir::Identifier>(left, allocator);
+    auto *middleId = allocator->New<ir::Identifier>(middle, allocator);
+    auto *expr = util::NodeAllocator::ForceSetParent<ir::MemberExpression>(
+        allocator, leftId, middleId, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
+    auto *rightId = allocator->New<ir::Identifier>(right, allocator);
+    return util::NodeAllocator::ForceSetParent<ir::MemberExpression>(
+        allocator, expr, rightId, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
+}
+
 static AstNodePtr TransformIdentifier(ir::Identifier *ident, public_lib::Context *ctx,
                                       const ArenaUnorderedMap<varbinder::Variable *, ir::ClassDefinition *> &varMap)
 {
     auto checker = ctx->GetChecker()->AsETSChecker();
     auto varBinder = checker->VarBinder()->AsETSBinder();
     auto allocator = checker->ProgramAllocator();
+    if (ident->Variable()->Declaration() != nullptr && ident->Variable()->Declaration()->Node() != nullptr &&
+        ident->Variable()->Declaration()->Node()->IsImportNamespaceSpecifier()) {
+        return ident;
+    }
 
     const auto parent = ident->Parent();
-    if (parent->IsImportSpecifier() || parent->IsScriptFunction() || parent->IsMethodDefinition()) {
+    if (parent->IsImportSpecifier() || parent->IsImportNamespaceSpecifier() || parent->IsScriptFunction() ||
+        parent->IsMethodDefinition()) {
         return ident;
     }
 
@@ -212,24 +295,78 @@ static AstNodePtr TransformIdentifier(ir::Identifier *ident, public_lib::Context
         return ident;
     }
 
-    auto newIdent = allocator->New<ir::Identifier>(ident->Variable()->Name(), allocator);
-    auto *leftId = allocator->New<ir::Identifier>(varIt->second->Ident()->Name(), allocator);
-    auto *rightId = allocator->New<ir::Identifier>(FIELD_NAME, allocator);
-
-    auto *expr = util::NodeAllocator::ForceSetParent<ir::MemberExpression>(
-        allocator, leftId, rightId, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
-
-    auto *memberExpr = util::NodeAllocator::ForceSetParent<ir::MemberExpression>(
-        allocator, expr, newIdent, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
-
+    auto *memberExpr =
+        CreateTripleMemberExpr(allocator, varIt->second->Ident()->Name(), FIELD_NAME, ident->Variable()->Name());
     memberExpr->SetParent(parent);
     // Ensure that it will not be incorrectly converted to ArrowType.
     if (parent->IsCallExpression() && parent->AsCallExpression()->Callee() == ident) {
         parent->AsCallExpression()->SetCallee(memberExpr);
     }
     CheckLoweredNode(varBinder, checker, memberExpr);
-
     return memberExpr;
+}
+
+AstNodePtr TransformTsQualifiedName(ir::TSQualifiedName *qualifiedName, public_lib::Context *ctx,
+                                    const ArenaUnorderedMap<varbinder::Variable *, ir::ClassDefinition *> &varMap)
+{
+    auto checker = ctx->GetChecker()->AsETSChecker();
+    auto varBinder = checker->VarBinder()->AsETSBinder();
+    auto allocator = checker->ProgramAllocator();
+    if (!qualifiedName->Left()->IsIdentifier()) {
+        return qualifiedName;
+    }
+    auto *moduleId = qualifiedName->Left()->AsIdentifier();
+    if (moduleId->Variable() != nullptr && moduleId->Variable()->Declaration() != nullptr &&
+        !moduleId->Variable()->Declaration()->Node()->IsImportNamespaceSpecifier()) {
+        return qualifiedName;
+    }
+
+    auto varIt = varMap.find(moduleId->Variable());
+    if (varIt == varMap.end()) {
+        return qualifiedName;
+    }
+    const auto parent = qualifiedName->Parent();
+    auto *newIdent = allocator->New<ir::Identifier>(qualifiedName->Right()->AsIdentifier()->Name(), allocator);
+    auto *memberExpr = CreateTripleMemberExpr(allocator, varIt->second->Ident()->Name(), FIELD_NAME, newIdent->Name());
+    memberExpr->SetParent(parent);
+    // Ensure that it will not be incorrectly converted to ArrowType.
+    if (parent->IsCallExpression() && parent->AsCallExpression()->Callee() == qualifiedName) {
+        parent->AsCallExpression()->SetCallee(memberExpr);
+    }
+    CheckLoweredNode(varBinder, checker, memberExpr);
+    return memberExpr;
+}
+
+AstNodePtr TransformMemberExpression(ir::MemberExpression *memberExpr, public_lib::Context *ctx,
+                                     const ArenaUnorderedMap<varbinder::Variable *, ir::ClassDefinition *> &varMap)
+{
+    auto checker = ctx->GetChecker()->AsETSChecker();
+    auto varBinder = checker->VarBinder()->AsETSBinder();
+    auto allocator = checker->ProgramAllocator();
+    if (!memberExpr->Object()->IsIdentifier() || !memberExpr->Property()->IsIdentifier()) {
+        return memberExpr;
+    }
+    auto *moduleId = memberExpr->Object()->AsIdentifier();
+    if (moduleId->Variable()->Declaration() != nullptr &&
+        !moduleId->Variable()->Declaration()->Node()->IsImportNamespaceSpecifier()) {
+        return memberExpr;
+    }
+    auto varIt = varMap.find(moduleId->Variable());
+    if (varIt == varMap.end()) {
+        return memberExpr;
+    }
+    const auto parent = memberExpr->Parent();
+    auto *newIdent = allocator->New<ir::Identifier>(memberExpr->Property()->AsIdentifier()->Name(), allocator);
+    auto *res = CreateTripleMemberExpr(allocator, varIt->second->Ident()->Name(), FIELD_NAME, newIdent->Name());
+    res->SetParent(parent);
+
+    // Ensure that it will not be incorrectly converted to ArrowType.
+    if (parent->IsCallExpression() && parent->AsCallExpression()->Callee() == memberExpr) {
+        parent->AsCallExpression()->SetCallee(res);
+    }
+    CheckLoweredNode(varBinder, checker, res);
+
+    return res;
 }
 
 bool DynamicImport::PerformForModule(public_lib::Context *ctx, parser::Program *program)
@@ -247,6 +384,12 @@ bool DynamicImport::PerformForModule(public_lib::Context *ctx, parser::Program *
         [ctx, &varMap](ir::AstNode *node) -> AstNodePtr {
             if (node->IsIdentifier() && node->AsIdentifier()->Variable() != nullptr) {
                 return TransformIdentifier(node->AsIdentifier(), ctx, varMap);
+            }
+            if (node->IsTSQualifiedName()) {
+                return TransformTsQualifiedName(node->AsTSQualifiedName(), ctx, varMap);
+            }
+            if (node->IsMemberExpression() && node->AsMemberExpression()->PropVar() != nullptr) {
+                return TransformMemberExpression(node->AsMemberExpression(), ctx, varMap);
             }
             return node;
         },

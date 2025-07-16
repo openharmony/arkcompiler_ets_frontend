@@ -1759,6 +1759,11 @@ void ETSChecker::BindingsModuleObjectAddProperty(checker::ETSObjectType *moduleO
     }
 }
 
+template void ETSChecker::BindingsModuleObjectAddProperty<PropertyType::INSTANCE_DECL>(
+    ETSObjectType *, ir::ETSImportDeclaration *, const varbinder::Scope::VariableMap &, const util::StringView &);
+template void ETSChecker::BindingsModuleObjectAddProperty<PropertyType::INSTANCE_METHOD>(
+    ETSObjectType *, ir::ETSImportDeclaration *, const varbinder::Scope::VariableMap &, const util::StringView &);
+
 util::StringView ETSChecker::FindPropNameForNamespaceImport(const util::StringView &originalName,
                                                             const util::StringView &importPath)
 {
@@ -1799,37 +1804,21 @@ void ETSChecker::SetPropertiesForModuleObject(checker::ETSObjectType *moduleObjT
         program->SetASTChecked();
         program->Ast()->Check(this);
     }
-    if (program->IsDeclForDynamicStaticInterop()) {
-        BindingsModuleObjectAddProperty<checker::PropertyType::INSTANCE_DECL>(
-            moduleObjType, importDecl, program->GlobalClassScope()->StaticFieldScope()->Bindings(), importPath);
 
-        BindingsModuleObjectAddProperty<checker::PropertyType::INSTANCE_METHOD>(
-            moduleObjType, importDecl, program->GlobalClassScope()->StaticMethodScope()->Bindings(), importPath);
+    BindingsModuleObjectAddProperty<checker::PropertyType::STATIC_FIELD>(
+        moduleObjType, importDecl, program->GlobalClassScope()->StaticFieldScope()->Bindings(), importPath);
 
-        BindingsModuleObjectAddProperty<checker::PropertyType::INSTANCE_DECL>(
-            moduleObjType, importDecl, program->GlobalClassScope()->StaticDeclScope()->Bindings(), importPath);
+    BindingsModuleObjectAddProperty<checker::PropertyType::STATIC_METHOD>(
+        moduleObjType, importDecl, program->GlobalClassScope()->StaticMethodScope()->Bindings(), importPath);
 
-        BindingsModuleObjectAddProperty<checker::PropertyType::INSTANCE_DECL>(
-            moduleObjType, importDecl, program->GlobalClassScope()->InstanceDeclScope()->Bindings(), importPath);
+    BindingsModuleObjectAddProperty<checker::PropertyType::STATIC_DECL>(
+        moduleObjType, importDecl, program->GlobalClassScope()->StaticDeclScope()->Bindings(), importPath);
 
-        BindingsModuleObjectAddProperty<checker::PropertyType::INSTANCE_DECL>(
-            moduleObjType, importDecl, program->GlobalClassScope()->TypeAliasScope()->Bindings(), importPath);
-    } else {
-        BindingsModuleObjectAddProperty<checker::PropertyType::STATIC_FIELD>(
-            moduleObjType, importDecl, program->GlobalClassScope()->StaticFieldScope()->Bindings(), importPath);
+    BindingsModuleObjectAddProperty<checker::PropertyType::STATIC_DECL>(
+        moduleObjType, importDecl, program->GlobalClassScope()->InstanceDeclScope()->Bindings(), importPath);
 
-        BindingsModuleObjectAddProperty<checker::PropertyType::STATIC_METHOD>(
-            moduleObjType, importDecl, program->GlobalClassScope()->StaticMethodScope()->Bindings(), importPath);
-
-        BindingsModuleObjectAddProperty<checker::PropertyType::STATIC_DECL>(
-            moduleObjType, importDecl, program->GlobalClassScope()->StaticDeclScope()->Bindings(), importPath);
-
-        BindingsModuleObjectAddProperty<checker::PropertyType::STATIC_DECL>(
-            moduleObjType, importDecl, program->GlobalClassScope()->InstanceDeclScope()->Bindings(), importPath);
-
-        BindingsModuleObjectAddProperty<checker::PropertyType::STATIC_DECL>(
-            moduleObjType, importDecl, program->GlobalClassScope()->TypeAliasScope()->Bindings(), importPath);
-    }
+    BindingsModuleObjectAddProperty<checker::PropertyType::STATIC_DECL>(
+        moduleObjType, importDecl, program->GlobalClassScope()->TypeAliasScope()->Bindings(), importPath);
 }
 
 void ETSChecker::SetrModuleObjectTsType(ir::Identifier *local, checker::ETSObjectType *moduleObjType)
@@ -3159,7 +3148,7 @@ void ETSChecker::ImportNamespaceObjectTypeAddReExportType(ir::ETSImportDeclarati
 
 Type *ETSChecker::GetImportSpecifierObjectType(ir::ETSImportDeclaration *importDecl, ir::Identifier *ident)
 {
-    auto importPath = importDecl->ResolvedSource();
+    auto importPath = importDecl->IsPureDynamic() ? importDecl->DeclPath() : importDecl->ResolvedSource();
     parser::Program *program =
         SelectEntryOrExternalProgram(static_cast<varbinder::ETSBinder *>(VarBinder()), importPath);
     if (program == nullptr) {

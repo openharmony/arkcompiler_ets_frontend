@@ -961,12 +961,6 @@ void InitScopesPhaseETS::VisitImportNamespaceSpecifier(ir::ImportNamespaceSpecif
 
 void InitScopesPhaseETS::VisitImportSpecifier(ir::ImportSpecifier *importSpec)
 {
-    if (importSpec->Parent()->IsETSImportDeclaration() &&
-        importSpec->Parent()->AsETSImportDeclaration()->IsPureDynamic()) {
-        auto [decl, var] = VarBinder()->NewVarDecl<varbinder::LetDecl>(importSpec->Local()->Start(),
-                                                                       importSpec->Local()->Name(), importSpec);
-        var->AddFlag(varbinder::VariableFlags::INITIALIZED);
-    }
     Iterate(importSpec);
 }
 

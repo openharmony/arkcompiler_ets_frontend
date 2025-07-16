@@ -2004,7 +2004,7 @@ checker::Type *ETSAnalyzer::Check(ir::MemberExpression *expr) const
                                                     expr->Property()->AsIdentifier()->Name(), checker);
             reExportType.first != nullptr) {
             baseType = reExportType.first;
-            expr->object_->AsIdentifier()->SetTsType(baseType);
+            expr->object_->SetTsType(baseType);
             expr->property_->AsIdentifier()->SetName(reExportType.second);
         }
     }
@@ -2976,7 +2976,7 @@ checker::Type *ETSAnalyzer::Check(ir::ImportNamespaceSpecifier *st) const
     }
 
     if (importDecl->IsPureDynamic()) {
-        auto *type = checker->GlobalBuiltinDynamicType(importDecl->Language());
+        auto *type = checker->GetImportSpecifierObjectType(importDecl, st->Local()->AsIdentifier())->AsETSObjectType();
         checker->SetrModuleObjectTsType(st->Local(), type);
         return type;
     }
