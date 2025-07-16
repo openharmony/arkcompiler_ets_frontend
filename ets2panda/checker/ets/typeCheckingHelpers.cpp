@@ -1539,7 +1539,9 @@ bool ETSChecker::ResolveLambdaArgumentType(Signature *signature, ir::Expression 
     auto arrowFuncExpr = argument->AsArrowFunctionExpression();
     bool typeValid = true;
     ir::ScriptFunction *const lambda = arrowFuncExpr->Function();
-    if (!NeedTypeInference(lambda)) {
+    // Note: (Issue27688) if lambda is trailing lambda transferred, it must be in recheck.
+    // its type was cleared before the check, so here we need recheck it.
+    if (!NeedTypeInference(lambda) && !lambda->IsTrailingLambda()) {
         return typeValid;
     }
 
