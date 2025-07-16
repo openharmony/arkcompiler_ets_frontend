@@ -223,6 +223,10 @@ static AstNodePtr TransformIdentifier(ir::Identifier *ident, public_lib::Context
         allocator, expr, newIdent, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
 
     memberExpr->SetParent(parent);
+    // Ensure that it will not be incorrectly converted to ArrowType.
+    if (parent->IsCallExpression() && parent->AsCallExpression()->Callee() == ident) {
+        parent->AsCallExpression()->SetCallee(memberExpr);
+    }
     CheckLoweredNode(varBinder, checker, memberExpr);
 
     return memberExpr;

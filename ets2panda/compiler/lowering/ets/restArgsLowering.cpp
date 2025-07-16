@@ -203,9 +203,7 @@ ir::CallExpression *RestArgsLowering::TransformCallExpressionWithRestArgs(ir::Ca
                                                                           public_lib::Context *context)
 {
     checker::Type *calleeType = callExpr->Callee()->TsType();
-    if (calleeType == nullptr || calleeType->IsETSArrowType() ||
-        (callExpr->Callee()->IsMemberExpression() && callExpr->Callee()->AsMemberExpression()->PropVar() != nullptr &&
-         callExpr->Callee()->AsMemberExpression()->PropVar()->HasFlag(varbinder::VariableFlags::DYNAMIC))) {
+    if (calleeType == nullptr || calleeType->IsETSArrowType() || callExpr->Signature()->Function()->IsDynamic()) {
         return callExpr;
     }
 
