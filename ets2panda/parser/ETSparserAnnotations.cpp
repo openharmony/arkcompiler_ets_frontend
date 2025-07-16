@@ -56,23 +56,29 @@ ir::Expression *ETSParser::ParseAnnotationName()
         }
     };
     auto save = Lexer()->Save();
+    ir::Identifier *ident = nullptr;
     Lexer()->NextToken();
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD_PERIOD_PERIOD) {
         Lexer()->Rewind(save);
         expr = ExpectIdentifier();
-        setAnnotation(expr->AsIdentifier());
-        return expr;
-    }
-    Lexer()->Rewind(save);
-    if (Lexer()->Lookahead() == '.') {
-        auto opt = TypeAnnotationParsingOptions::NO_OPTS;
-        expr = ParseTypeReference(&opt);
-        setAnnotation(expr->AsETSTypeReference()->Part()->GetIdent());
+        ident = expr->AsIdentifier();
     } else {
-        expr = ExpectIdentifier();
-        setAnnotation(expr->AsIdentifier());
+        Lexer()->Rewind(save);
+        if (Lexer()->Lookahead() == '.') {
+            auto opt = TypeAnnotationParsingOptions::NO_OPTS;
+            expr = ParseTypeReference(&opt);
+            ident = expr->AsETSTypeReference()->Part()->GetIdent();
+        } else {
+            expr = ExpectIdentifier();
+            ident = expr->AsIdentifier();
+        }
     }
 
+    if (ident->IsBrokenExpression()) {
+        LogError(diagnostic::INVALID_ANNOTATION_NAME, {}, expr->Start());
+    }
+
+    setAnnotation(ident);
     return expr;
 }
 

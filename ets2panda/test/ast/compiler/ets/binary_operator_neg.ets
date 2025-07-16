@@ -16,6 +16,7 @@
 /* @@ label1 */@@/@
 
 /* @@@ label1 Error SyntaxError: Unexpected token '@@'.  */
-/* @@? 21:93 Error SyntaxError: Identifier expected, got 'eos'.  */
-/* @@? 21:93 Error SyntaxError: Unexpected token 'eos'.  */
-/* @@? 21:93 Error SyntaxError: Annotations are not allowed on this type of declaration.  */
+/* @@? 22:93 Error SyntaxError: Identifier expected, got 'eos'.  */
+/* @@? 22:93 Error SyntaxError: Invalid annotation name.  */
+/* @@? 22:93 Error SyntaxError: Unexpected token 'eos'.  */
+/* @@? 22:93 Error SyntaxError: Annotations are not allowed on this type of declaration.  */

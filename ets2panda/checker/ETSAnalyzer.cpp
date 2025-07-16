@@ -2340,9 +2340,12 @@ checker::Type *ETSAnalyzer::Check(ir::AnnotationDeclaration *st) const
         }
     }
 
-    auto *annoDecl = st->GetBaseName()->Variable()->Declaration()->Node()->AsAnnotationDeclaration();
-    if (annoDecl != st && annoDecl->IsDeclare()) {
-        checker->CheckAmbientAnnotation(st, annoDecl);
+    auto baseName = st->GetBaseName();
+    if (!baseName->IsErrorPlaceHolder()) {
+        auto *annoDecl = baseName->Variable()->Declaration()->Node()->AsAnnotationDeclaration();
+        if (annoDecl != st && annoDecl->IsDeclare()) {
+            checker->CheckAmbientAnnotation(st, annoDecl);
+        }
     }
 
     return ReturnTypeForStatement(st);
