@@ -227,6 +227,9 @@ export interface ModuleInfo {
   frameworkMode?: boolean;
   useEmptyPackage?: boolean;
   byteCodeHar: boolean;
+  //for topological order merging
+  dependenciesSet:Set<string>;
+  dependentSet:Set<string>;
 }
 
 export type SetupClusterOptions = {
@@ -314,3 +317,13 @@ export interface DependencyItem {
   ohmUrl: string,
   alias?:string[]
 }
+
+export interface ArkTSConfigObject {
+  compilerOptions: {
+    package: string,
+    baseUrl: string,
+    paths: Record<string, string[]>;
+    dependencies: Record<string, DependencyItem>;
+    useEmptyPackage?: boolean;
+  }
+};

@@ -30,6 +30,7 @@ import {
   LogDataFactory
 } from './logger';
 import { ErrorCode } from './error_code';
+import { ModuleInfo, OHOS_MODULE_TYPE } from './types';
 
 const WINDOWS: string = 'Windows_NT';
 const LINUX: string = 'Linux';
@@ -170,4 +171,14 @@ export function getFileExtension(
 
   // Fallback to default behavior: return the last segment after the final dot
   return path.extname(baseName);
+}
+
+export function hasEntry(moduleInfo: ModuleInfo): boolean {
+  switch (moduleInfo.moduleType) {
+    case OHOS_MODULE_TYPE.SHARED:
+    case OHOS_MODULE_TYPE.HAR:
+      return true;
+    default:
+      return false;
+  }
 }
