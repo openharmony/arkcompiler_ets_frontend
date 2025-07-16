@@ -164,13 +164,13 @@ class A {
 }
 
 function f3(): undefined | Promise<void> { 
-return undefined;
+  return undefined;
 } // type `void` is not allowed in union type
 
 class B {
   m(): undefined | number { 
-return undefined;
-} // type `void` is not allowed in union type
+    return undefined;
+  } // type `void` is not allowed in union type
 }
 
 type ss = void;
@@ -220,8 +220,7 @@ function foocfe(a: number): string | undefined {
   if (a >= 0.0) {
     return "a >= 0";
   }
-
-return undefined;
+  return undefined;
 }
 
 function foocfe2(a: number): string | undefined {
@@ -243,8 +242,7 @@ function greet(hour: number): string | undefined {
   } else {
     return undefined;
   }
-
-return undefined;
+  return undefined;
 }
 
 function logOrReturn(flag: boolean): string | undefined {
@@ -257,8 +255,7 @@ function logOrReturn(flag: boolean): string | undefined {
 
 function justLogs(): string | undefined {
   console.log("Hello!");
-
-return undefined;
+  return undefined;
 }
 
 function getStatus(code: number): string | undefined {
@@ -266,8 +263,7 @@ function getStatus(code: number): string | undefined {
     case 1: return "OK";
     case 2: return "Warning";
   }
-
-return undefined;
+  return undefined;
 }
 
 function tryThing(): string | undefined {
@@ -276,8 +272,7 @@ function tryThing(): string | undefined {
   } catch (e) {
     console.error(e);
   }
-
-return undefined;
+  return undefined;
 }
 
 class A1 {
@@ -307,9 +302,8 @@ class A1 {
       // will return
       return undefined;
     }
-  
-return undefined;
-}
+    return undefined;
+  }
 
   test3(a: number): undefined | boolean {
     if (a > 0.0) {
@@ -322,8 +316,8 @@ return undefined;
   test4(): undefined | boolean {
     // will return
   
-return undefined;
-}
+    return undefined;
+  }
 }
 
 function test(a: number): boolean | undefined {
@@ -349,8 +343,7 @@ function test2(a: number): undefined | boolean {
     // will return
     return undefined;
   }
-
-return undefined;
+  return undefined;
 }
 
 function test3(a: number): undefined | boolean {
@@ -364,7 +357,7 @@ function test3(a: number): undefined | boolean {
 function test4(a: number): undefined | boolean {
   // will return
 
-return undefined;
+  return undefined;
 }
 
 let unionVoid = (()=>{

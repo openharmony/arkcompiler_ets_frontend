@@ -787,7 +787,7 @@ export class TsUtils {
       return false;
     }
     // #14569: Check for Function type.
-    if (this.areCompatibleFunctionals(lhsType, rhsType)) {
+    if (this.skipStructuralTypingCheckForFunctionals(lhsType, rhsType)) {
       return false;
     }
     if (rhsType.isUnion() || lhsType.isUnion()) {
@@ -2035,113 +2035,57 @@ export class TsUtils {
     return type;
   }
 
-  private areCompatibleFunctionals(lhsType: ts.Type, rhsType: ts.Type): boolean {
+  private skipStructuralTypingCheckForFunctionals(lhsType: ts.Type, rhsType: ts.Type): boolean {
     return (
       (this.isStdFunctionType(lhsType) || TsUtils.isFunctionalType(lhsType)) &&
       (this.isStdFunctionType(rhsType) || TsUtils.isFunctionalType(rhsType))
     );
   }
 
-  isIncompatibleFunctionals(lhsTypeNode: ts.TypeNode, rhsExpr: ts.Expression): boolean {
-    if (ts.isUnionTypeNode(lhsTypeNode)) {
-      for (let i = 0; i < lhsTypeNode.types.length; i++) {
-        if (!this.isIncompatibleFunctional(lhsTypeNode.types[i], rhsExpr)) {
-          return false;
+  areCompatibleFunctionalTypes(lhsType: ts.Type, rhsType: ts.Type): boolean {
+    if (lhsType.isUnion()) {
+      for (let i = 0; i < lhsType.types.length; i++) {
+        if (this.areCompatibleFunctionalTypes(lhsType.types[i], rhsType)) {
+          return true;
         }
       }
-      return true;
-    }
-    return this.isIncompatibleFunctional(lhsTypeNode, rhsExpr);
-  }
-
-  private isIncompatibleFunctional(lhsTypeNode: ts.TypeNode, rhsExpr: ts.Expression): boolean {
-    const lhsType = this.tsTypeChecker.getTypeAtLocation(lhsTypeNode);
-    const rhsType = this.tsTypeChecker.getTypeAtLocation(rhsExpr);
-    const lhsParams = this.getLhsFunctionParameters(lhsTypeNode);
-    const rhsParams = this.getRhsFunctionParameters(rhsExpr);
-
-    if (lhsParams !== rhsParams) {
       return false;
     }
 
-    if (TsUtils.isFunctionalType(lhsType)) {
-      const lhsFunctionReturnType = this.getFunctionType(lhsTypeNode);
-      const rhsReturnType = this.getReturnTypeFromExpression(rhsType);
-      if (lhsFunctionReturnType && rhsReturnType) {
-        return TsUtils.isVoidType(lhsFunctionReturnType) && !TsUtils.isVoidType(rhsReturnType);
-      }
+    const lhsSignature = TsUtils.getFunctionalTypeSignature(lhsType);
+    const rhsSignature = TsUtils.getFunctionalTypeSignature(rhsType);
+    if (!lhsSignature || !rhsSignature) {
+      return true;
     }
-    return false;
+
+    if (lhsSignature.parameters.length < rhsSignature.parameters.length) {
+      return false;
+    }
+
+    const lhsReturnType = lhsSignature.getReturnType();
+    const rhsReturnType = rhsSignature.getReturnType();
+    if (lhsReturnType && rhsReturnType) {
+      return !(TsUtils.isVoidType(lhsReturnType) && !TsUtils.isVoidType(rhsReturnType));
+    }
+
+    return true;
   }
 
   static isVoidType(tsType: ts.Type): boolean {
     return (tsType.getFlags() & ts.TypeFlags.Void) !== 0;
   }
 
-  private getRhsFunctionParameters(expr: ts.Expression): number {
-    const type = this.tsTypeChecker.getTypeAtLocation(expr);
-    const signatures = this.tsTypeChecker.getSignaturesOfType(type, ts.SignatureKind.Call);
-    if (signatures.length > 0) {
-      const signature = signatures[0];
-      return signature.parameters.length;
-    }
-    return 0;
-  }
-
-  private getLhsFunctionParameters(typeNode: ts.TypeNode): number {
-    let current: ts.TypeNode = typeNode;
-    while (ts.isTypeReferenceNode(current)) {
-      const symbol = this.tsTypeChecker.getSymbolAtLocation(current.typeName);
-      if (!symbol) {
-        break;
-      }
-
-      const declaration = symbol.declarations?.[0];
-      if (!declaration || !ts.isTypeAliasDeclaration(declaration)) {
-        break;
-      }
-
-      current = declaration.type;
-    }
-    if (ts.isFunctionTypeNode(current)) {
-      return current.parameters.length;
-    }
-    return 0;
-  }
-
-  private getFunctionType(typeNode: ts.TypeNode): ts.Type | undefined {
-    let current: ts.TypeNode = typeNode;
-    while (ts.isTypeReferenceNode(current)) {
-      const symbol = this.tsTypeChecker.getSymbolAtLocation(current.typeName);
-      if (!symbol) {
-        break;
-      }
-
-      const declaration = symbol.declarations?.[0];
-      if (!declaration || !ts.isTypeAliasDeclaration(declaration)) {
-        break;
-      }
-
-      current = declaration.type;
-    }
-    if (ts.isFunctionTypeNode(current)) {
-      return this.tsTypeChecker.getTypeAtLocation(current.type);
-    }
-    return undefined;
-  }
-
-  private getReturnTypeFromExpression(type: ts.Type): ts.Type | undefined {
-    const signatures = this.tsTypeChecker.getSignaturesOfType(type, ts.SignatureKind.Call);
-    if (signatures.length > 0) {
-      const returnType = this.tsTypeChecker.getReturnTypeOfSignature(signatures[0]);
-      return returnType;
-    }
-    return undefined;
-  }
-
   static isFunctionalType(type: ts.Type): boolean {
     const callSigns = type.getCallSignatures();
     return callSigns && callSigns.length > 0;
+  }
+
+  static getFunctionalTypeSignature(type: ts.Type): ts.Signature | undefined {
+    const callSigns = type.getCallSignatures();
+    if (callSigns.length > 0) {
+      return callSigns[0];
+    }
+    return undefined;
   }
 
   static getFunctionReturnType(type: ts.Type): ts.Type | null {

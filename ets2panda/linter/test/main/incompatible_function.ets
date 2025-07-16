@@ -92,3 +92,24 @@ class B {
     return this.arr;
   }
 }
+
+function sleep(time: number): Promise<Object> {
+  return new Promise<Object>((resolve) => setTimeout(resolve, time));
+}
+sleep(100);
+
+const caseName = 'PromiseAnyTest0200';
+console.info(`${caseName} test start`);
+const startTime = Date.now();
+const promises: Promise<Object>[] = [];
+const totalPromises = 1000;
+const delay = 100;
+for (let i = 0; i < totalPromises; i++) {
+  promises.push(
+    new Promise<string>((_, reject) =>
+      setTimeout(() => {
+        reject(new Error(`Failure ${i}`));
+      }, delay)
+    )
+  );
+}
