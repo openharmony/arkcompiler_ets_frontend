@@ -25,4 +25,4 @@ function main(): void {
 /* @@? 18:5 Error SyntaxError: Illegal start of CLASS expression. */
 /* @@? 19:12 Error TypeError: Cannot find type 'A'. */
 /* @@? 19:20 Error TypeError: Cannot find type 'A'. */
-/* @@? 22:3 Error TypeError: Unresolved reference arktest */
+/* @@? 22:22 Error TypeError: Unresolved reference a */

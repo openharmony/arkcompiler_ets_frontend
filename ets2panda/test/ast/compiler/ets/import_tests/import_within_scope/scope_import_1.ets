@@ -18,4 +18,3 @@ namespace ns {
 }
 
 /* @@? 17:5 Error SyntaxError: Import declarations can only be used on the top level and before any other declaration, top level statement or directive. */
-/* @@? 17:12 Error TypeError: Variable 'nsi' has already been declared. */

@@ -19,7 +19,6 @@ class URIError extends WebAssembly {WebAssembly : WeakMap [-6]}
 /* @@? 16:24 Error TypeError: Cannot find type 'WebAssembly'. */
 /* @@? 16:24 Error TypeError: The super type of 'URIError' class is not extensible. */
 /* @@? 16:60 Error SyntaxError: Unexpected token, expected ']'. */
-/* @@? 16:60 Error SyntaxError: Invalid Type. */
 /* @@? 16:60 Error SyntaxError: Unexpected token ']'. */
 /* @@? 16:61 Error SyntaxError: Unexpected token '6'. */
 /* @@? 16:62 Error SyntaxError: Unexpected token ']'. */

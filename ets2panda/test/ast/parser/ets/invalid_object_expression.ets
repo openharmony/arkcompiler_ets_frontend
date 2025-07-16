@@ -24,6 +24,5 @@ let obj: Record<string, number> = {
 /* @@? 18:11 Error TypeError: Property 'viewModel' does not exist on type 'Error' */
 /* @@? 18:24 Error SyntaxError: Unexpected token. */
 /* @@? 18:26 Error SyntaxError: Unexpected token ':'. */
-/* @@? 18:26 Error SyntaxError: Unexpected token ':'. */
-/* @@? 18:26 Error SyntaxError: Unexpected token ':'. */
+/* @@? 18:28 Error SyntaxError: Unexpected token '123'. */
 /* @@? 19:1 Error SyntaxError: Unexpected token '}'. */

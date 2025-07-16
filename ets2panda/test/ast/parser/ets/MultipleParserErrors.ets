@@ -170,7 +170,6 @@ function main(): void {
 /* @@? 28:29 Error TypeError: Native, Abstract and Declare methods cannot have body. */
 /* @@? 34:14 Error SyntaxError: The modifier for a constructor should be limited to access modifiers (private, internal, protected, public), and 'native' modifiers. */
 /* @@? 37:41 Error SyntaxError: Only 'throws' can be used with function types. */
-/* @@? 39:10 Error TypeError: Only abstract or native methods can't have body. */
 /* @@? 39:14 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
 /* @@? 39:14 Error SyntaxError: Unexpected token, expected ',' or ')'. */
 /* @@? 39:14 Error SyntaxError: Unexpected token, expected an identifier. */
@@ -195,7 +194,6 @@ function main(): void {
 /* @@? 47:8 Error SyntaxError: Variable must be initialized or it's type must be declared. */
 /* @@? 47:8 Error TypeError: Missing initializer in const declaration */
 /* @@? 49:13 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
-/* @@? 51:10 Error TypeError: Only abstract or native methods can't have body. */
 /* @@? 51:25 Error SyntaxError: Rest parameter must be the last formal parameter. */
 /* @@? 51:27 Error SyntaxError: Unexpected token '...'. */
 /* @@? 51:30 Error SyntaxError: Unexpected token 'p'. */
@@ -225,17 +223,10 @@ function main(): void {
 /* @@? 92:7 Error TypeError: Variable 'A' has already been declared. */
 /* @@? 92:7 Error TypeError: Merging declarations is not supported, please keep all definitions of classes, interfaces and enums compact in the codebase! */
 /* @@? 93:3 Error SyntaxError: Unexpected token. A constructor, method, accessor, or property was expected. */
-/* @@? 103:25 Error SyntaxError: Rest parameter should be either array or tuple type. */
-/* @@? 104:1 Error TypeError: Function foo with this assembly signature already declared. */
-/* @@? 104:1 Error TypeError: Function foo with this assembly signature already declared. */
-/* @@? 104:32 Error SyntaxError: Rest parameter should be either array or tuple type. */
-/* @@? 115:10 Error TypeError: Only abstract or native methods can't have body. */
-/* @@? 115:26 Error SyntaxError: Unexpected token 'case'. */
-/* @@? 115:26 Error SyntaxError: Unexpected token 'case'. */
-/* @@? 115:26 Error SyntaxError: Unexpected token, expected ',' or ')'. */
-/* @@? 115:26 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
 /* @@? 115:26 Error SyntaxError: Unexpected token, expected an identifier. */
-/* @@? 115:30 Error SyntaxError: Unexpected token ':'. */
+/* @@? 115:26 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
+/* @@? 115:26 Error SyntaxError: Unexpected token, expected ',' or ')'. */
+/* @@? 115:26 Error SyntaxError: Unexpected token 'case'. */
 /* @@? 115:30 Error SyntaxError: Unexpected token ':'. */
 /* @@? 115:32 Error SyntaxError: Unexpected token 'U'. */
 /* @@? 115:32 Error TypeError: Unresolved reference U */
@@ -246,14 +237,10 @@ function main(): void {
 /* @@? 115:38 Error SyntaxError: Unexpected token '{'. */
 /* @@? 116:5 Error SyntaxError: return keyword should be used in function body. */
 /* @@? 116:12 Error TypeError: All return statements in the function should be empty or have a value. */
-/* @@? 119:1 Error TypeError: Function foo with this assembly signature already declared. */
-/* @@? 119:1 Error TypeError: Function foo with this assembly signature already declared. */
-/* @@? 119:10 Error TypeError: Only abstract or native methods can't have body. */
+/* @@? 119:26 Error SyntaxError: Unexpected token 'case'. */
 /* @@? 119:26 Error SyntaxError: Unexpected token, expected an identifier. */
 /* @@? 119:26 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
 /* @@? 119:26 Error SyntaxError: Unexpected token, expected ',' or ')'. */
-/* @@? 119:26 Error SyntaxError: Unexpected token 'case'. */
-/* @@? 119:26 Error SyntaxError: Unexpected token 'case'. */
 /* @@? 119:30 Error SyntaxError: Unexpected token ':'. */
 /* @@? 119:32 Error SyntaxError: Unexpected token 'U'. */
 /* @@? 119:33 Error SyntaxError: Unexpected token ')'. */
@@ -270,15 +257,14 @@ function main(): void {
 /* @@? 127:1 Error SyntaxError: The modifier async cannot be used in an ambient context. */
 /* @@? 132:14 Error SyntaxError: Unexpected token, expected an identifier. */
 /* @@? 137:16 Error SyntaxError: Expected '{', got '='. */
-/* @@? 137:16 Error SyntaxError: Expected ')', got '='. */
-/* @@? 137:16 Error SyntaxError: Catch clause variable cannot have an initializer. */
 /* @@? 137:16 Error SyntaxError: Unexpected token '='. */
+/* @@? 137:16 Error SyntaxError: Expected '{', got '='. */
+/* @@? 137:16 Error SyntaxError: Catch clause variable cannot have an initializer. */
+/* @@? 137:16 Error SyntaxError: Expected ')', got '='. */
 /* @@? 137:18 Error SyntaxError: Unexpected token '0'. */
 /* @@? 137:19 Error SyntaxError: Unexpected token ')'. */
-/* @@? 137:19 Error SyntaxError: Unexpected token ')'. */
-/* @@? 137:19 Error SyntaxError: Unexpected token ')'. */
-/* @@? 141:5 Error TypeError: No matching call signature for assertTrue(Promise<void>, undefined) */
-/* @@? 141:16 Error TypeError: Type 'Promise<void>' is not compatible with type 'boolean' at index 1 */
+/* @@? 137:21 Error SyntaxError: Unexpected token '{'. */
+/* @@? 141:16 Error TypeError: This expression is not callable. */
 /* @@? 145:18 Error TypeError: A is abstract therefore cannot be instantiated. */
 /* @@? 146:16 Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type. */
 /* @@? 148:25 Error TypeError: A is abstract therefore cannot be instantiated. */
@@ -290,8 +276,8 @@ function main(): void {
 /* @@? 161:9 Error SyntaxError: Identifier expected, got 'let'. */
 /* @@? 162:9 Error SyntaxError: Identifier expected, got 'const'. */
 /* @@? 163:9 Error SyntaxError: Identifier expected, got 'new'. */
-/* @@? 164:5 Error TypeError: Reference to foo is ambiguous */
-/* @@? 165:5 Error TypeError: Reference to foo is ambiguous */
+/* @@? 164:5 Error TypeError: This expression is not callable. */
+/* @@? 165:5 Error TypeError: This expression is not callable. */
 /* @@? 166:5 Error TypeError: Expected 1 arguments, got 0. */
 /* @@? 166:5 Error TypeError: No matching call signature */
-/* @@? 295:1 Error SyntaxError: Expected '}', got 'eos'. */
+/* @@? 284:1 Error SyntaxError: Expected '}', got 'end of stream'. */

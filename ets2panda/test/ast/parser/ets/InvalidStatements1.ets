@@ -68,5 +68,4 @@ throw
 /* @@? 47:1 Error SyntaxError: Illegal start of CLASS expression. */
 /* @@? 48:5 Error SyntaxError: Unexpected token 'let'. */
 /* @@? 52:1 Error SyntaxError: Illegal newline after throw. */
-/* @@? 77:1 Error SyntaxError: Expected '}', got 'eos'. */
-/* @@? 77:1 Error SyntaxError: Expected '}', got 'eos'. */
+/* @@? 72:1 Error SyntaxError: Expected '}', got 'end of stream'. */

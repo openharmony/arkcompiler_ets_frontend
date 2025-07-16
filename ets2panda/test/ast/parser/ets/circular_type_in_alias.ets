@@ -28,17 +28,11 @@ type Loop<T, U extends Loop<T, U>> = {
 /* @@? 17:17 Error SyntaxError: Unexpected token 'T'. */
 /* @@? 17:17 Error TypeError: Unresolved reference T */
 /* @@? 17:18 Error SyntaxError: Unexpected token ']'. */
-/* @@? 17:18 Error SyntaxError: Unexpected token ']'. */
-/* @@? 17:18 Error SyntaxError: Unexpected token ']'. */
 /* @@? 17:19 Error SyntaxError: Unexpected token ':'. */
-/* @@? 17:19 Error SyntaxError: Unexpected token ':'. */
+/* @@? 17:21 Error SyntaxError: Unexpected token 'U'. */
 /* @@? 17:21 Error TypeError: Unresolved reference U */
 /* @@? 17:21 Error TypeError: Indexed access is not supported for such expression type. */
 /* @@? 17:26 Error SyntaxError: Unexpected token 'extends'. */
-/* @@? 17:26 Error SyntaxError: Unexpected token 'extends'. */
-/* @@? 17:26 Error SyntaxError: Unexpected token 'extends'. */
 /* @@? 17:34 Error SyntaxError: Unexpected token 'boolean'. */
-/* @@? 17:34 Error SyntaxError: Unexpected token 'boolean'. */
-/* @@? 17:42 Error SyntaxError: Unexpected token '?'. */
 /* @@? 17:44 Error TypeError: Type name 'number' used in the wrong context */
 /* @@? 17:53 Error TypeError: Type name 'string' used in the wrong context */

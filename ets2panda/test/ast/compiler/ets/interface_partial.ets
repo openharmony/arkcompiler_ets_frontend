@@ -38,11 +38,3 @@ function main() {
 /* @@? 29:9 Error TypeError: Variable 'a' has already been declared. */
 /* @@? 29:18 Error TypeError: type I has no property named var_two */
 /* @@? 30:9 Error SyntaxError: Unexpected token 'break'. */
-/* @@? 30:9 Error SyntaxError: Unexpected token, expected ',' or ')'. */
-/* @@? 30:9 Error SyntaxError: Unexpected token 'break'. */
-/* @@? 30:14 Error SyntaxError: Unexpected token, expected an identifier. */
-/* @@? 30:15 Error SyntaxError: Unexpected token 'var_one'. */
-/* @@? 30:15 Error TypeError: Unresolved reference var_one */
-/* @@? 30:22 Error SyntaxError: Unexpected token ')'. */
-/* @@? 30:22 Error SyntaxError: Unexpected token ')'. */
-/* @@? 30:22 Error SyntaxError: Unexpected token ')'. */

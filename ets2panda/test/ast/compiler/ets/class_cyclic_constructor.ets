@@ -41,15 +41,16 @@ class A {
 /* @@? 24:23 Error SyntaxError: Unexpected token '.'. */
 /* @@? 24:31 Error SyntaxError: Field type annotation expected. */
 /* @@? 24:32 Error SyntaxError: Unexpected token '}'. */
-/* @@? 24:34 Error SyntaxError: Unexpected token '='. */
 /* @@? 24:37 Error SyntaxError: Unexpected token. */
 /* @@? 24:38 Error SyntaxError: Unexpected token. */
 /* @@? 24:51 Error SyntaxError: Unexpected token '}'. */
+/* @@? 25:21 Error TypeError: Expected 0 arguments, got 1. */
 /* @@? 25:21 Error TypeError: No matching construct signature for class_cyclic_constructor.A(...tuple) */
+/* @@? 25:27 Error TypeError: Spread argument cannot be passed for ordinary parameter. */
 /* @@? 25:30 Error TypeError: Unresolved reference tuple */
 /* @@? 26:31 Error TypeError: Property 'bar' does not exist on type 'A' */
-/* @@? 26:31 Error TypeError: Property 'bar' does not exist on type 'A' */
 /* @@? 27:5 Error SyntaxError: Unexpected token ')'. */
+/* @@? 27:7 Error SyntaxError: Unexpected token '{'. */
 /* @@? 28:9 Error TypeError: Cannot reference 'this' in this context. */
 /* @@? 28:14 Error TypeError: Property 'x' does not exist on type 'Error' */
 /* @@? 30:1 Error SyntaxError: Unexpected token '}'. */

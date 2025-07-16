@@ -25,12 +25,8 @@ await byteP;
 /* @@? 17:41 Error SyntaxError: Unexpected token, expected ',' or ')'. */
 /* @@? 17:41 Error SyntaxError: Expected '=>', got 'identification literal'. */
 /* @@? 17:41 Error TypeError: Class name 'Object' used in the wrong context */
-/* @@? 17:41 Error TypeError: Class name 'Object' used in the wrong context */
 /* @@? 17:48 Error SyntaxError: Unexpected token ':'. */
-/* @@? 17:48 Error SyntaxError: Unexpected token ':'. */
-/* @@? 17:48 Error SyntaxError: Unexpected token ':'. */
+/* @@? 17:50 Error SyntaxError: Unexpected token 'Object'. */
 /* @@? 17:50 Error TypeError: The type of parameter 'Object' cannot be inferred */
 /* @@? 18:12 Error TypeError: Unresolved reference value */
-/* @@? 20:2 Error SyntaxError: Unexpected token ')'. */
-/* @@? 20:2 Error SyntaxError: Unexpected token ')'. */
 /* @@? 20:2 Error SyntaxError: Unexpected token ')'. */

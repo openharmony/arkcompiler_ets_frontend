@@ -51,9 +51,6 @@ class A {
 /* @@? 23:5 Error TypeError: Cannot reference 'this' in this context. */
 /* @@? 23:10 Error TypeError: Property 'func' does not exist on type 'Error' */
 /* @@? 23:21 Error SyntaxError: Unexpected token 'final'. */
-/* @@? 23:21 Error SyntaxError: Unexpected token, expected ',' or ')'. */
-/* @@? 23:21 Error SyntaxError: Unexpected token 'final'. */
-/* @@? 23:26 Error SyntaxError: Illegal start of CLASS expression. */
-/* @@? 23:39 Error SyntaxError: Expected '{', got ')'. */
+/* @@? 25:3 Error SyntaxError: Unexpected token '}'. */
 /* @@? 26:2 Error SyntaxError: Unexpected token '}'. */
 /* @@? 27:1 Error SyntaxError: Unexpected token '}'. */

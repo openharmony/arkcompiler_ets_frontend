@@ -15,4 +15,4 @@
 
 import {foo} from "./external_local_interface_decl"
 
-
+/* @@? external_local_interface_decl.ets:17:5 Error SyntaxError: Illegal start of INTERFACE expression.  */
