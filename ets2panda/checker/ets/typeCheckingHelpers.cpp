@@ -666,7 +666,11 @@ Type *ETSChecker::GuaranteedTypeForUnionFieldAccess(ir::MemberExpression *member
 {
     const auto &types = etsUnionType->ConstituentTypes();
     ArenaVector<checker::Type *> apparentTypes {Allocator()->Adapter()};
-    const auto &propertyName = memberExpression->Property()->AsIdentifier()->Name();
+    const auto *prop = memberExpression->Property();
+    if (!prop->IsIdentifier() && !prop->IsStringLiteral()) {
+        return GlobalTypeError();
+    }
+    const auto &propertyName = prop->IsIdentifier() ? prop->AsIdentifier()->Name() : prop->AsStringLiteral()->Str();
     for (auto *type : types) {
         auto searchFlags = PropertySearchFlags::SEARCH_FIELD | PropertySearchFlags::SEARCH_METHOD |
                            PropertySearchFlags::SEARCH_IN_BASE;
