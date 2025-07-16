@@ -319,11 +319,10 @@ bool ETSObjectType::ReplaceArgumentInSignature(std::vector<Signature *> &signatu
 void ETSObjectType::AddSignatureFromFunction(std::vector<Signature *> &signatures, PropertySearchFlags flags,
                                              ETSChecker *checker, varbinder::LocalVariable *found) const
 {
-    if (found == nullptr || found->TsType()->IsTypeError()) {
+    if (found == nullptr || !found->TsType()->IsETSFunctionType()) {
         return;
     }
 
-    ES2PANDA_ASSERT(found->TsType()->IsETSFunctionType());
     for (auto *it : found->TsType()->AsETSFunctionType()->CallSignatures()) {
         if (std::find(signatures.begin(), signatures.end(), it) != signatures.end()) {
             continue;
