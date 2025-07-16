@@ -762,7 +762,6 @@ export abstract class BaseMode {
   protected generateModuleInfos(): void {
     this.collectModuleInfos();
     this.generateArkTSConfigForModules();
-    this.generatedependencyFileMap();
     this.collectCompileFiles();
     this.saveHashCache();
   }

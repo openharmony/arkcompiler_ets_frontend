@@ -41,6 +41,8 @@ import {
   ModuleInfo,
 } from '../types';
 import {
+  COMPONENT,
+  KITS,
   LANGUAGE_VERSION,
   SYSTEM_SDK_PATH_FROM_SDK,
   sdkConfigPrefix,
@@ -283,11 +285,21 @@ export class ArkTSConfigGenerator {
 
   private processAlias(moduleInfo: ModuleInfo, dependencySection: Record<string, DependencyItem>): void {
     this.dynamicSDKPaths.forEach(basePath => {
-      if (fs.existsSync(basePath)) {
+      if(basePath.includes(KITS)){
+        return;
+      }
+      if (!fs.existsSync(basePath)) {
+        const logData: LogData = LogDataFactory.newInstance(
+          ErrorCode.BUILDSYSTEM_ALIAS_MODULE_PATH_NOT_EXIST,
+          `alias module ${basePath} not exist.`
+        );
+        this.logger.printErrorAndExit(logData);
+      }
+      if(basePath.includes(COMPONENT)){
+        this.traverseDependencies(basePath, '', false, dependencySection,'component/');
+      }else{
         this.traverseDependencies(basePath, '', false, dependencySection);
         this.traverseDependencies(basePath, '', false, dependencySection,'dynamic/');
-      } else {
-        this.logger.printWarn(`sdk path ${basePath} not exist.`);
       }
     });
 
@@ -337,7 +349,7 @@ export class ArkTSConfigGenerator {
         const isRuntimeAPI = path.basename(currentDir) === 'arkui' && item === 'runtime-api';
         const newRelativePath = isRuntimeAPI
           ? ''
-          : (relativePath ? `${relativePath}.${item}` : item);
+          : (relativePath ? `${relativePath}/${item}` : item);
   
         this.traverseDependencies(
           path.resolve(currentDir, item),
@@ -363,11 +375,12 @@ export class ArkTSConfigGenerator {
     baseName: string,
     relativePath: string,
     isExcludedDir: boolean,
-    prefix: string = ''
+    prefix: string = '',
+    separator: string = '.'
   ): string {
     return prefix + (isExcludedDir
       ? baseName
-      : (relativePath ? `${relativePath}.${baseName}` : baseName)
+      : (relativePath ? `${relativePath}${separator}${baseName}` : baseName)
     );
   }
   
@@ -380,11 +393,14 @@ export class ArkTSConfigGenerator {
       dependencySection,
       prefix = ''
     } = ctx;
-  
-    if (!this.isValidAPIFile(fileName)) return;
-
+    let separator = '.'
+    if (!this.isValidAPIFile(fileName)){
+      separator = '/'
+    }
+    
     const baseName = path.basename(fileName, '.d.ets');
-    const key = this.buildDynamicKey(baseName, relativePath, isExcludedDir, prefix);
+    const normalizedRelativePath = relativePath.replace(/\//g, separator);
+    const key = this.buildDynamicKey(baseName, normalizedRelativePath, isExcludedDir, prefix, separator);
 
     dependencySection[key] = {
       language: 'js',
@@ -392,7 +408,6 @@ export class ArkTSConfigGenerator {
       ohmUrl: getOhmurlByApi(baseName)
     };
   }
-  
 
   private processStaticAlias(aliasName: string, aliasConfig: AliasConfig) {
     this.pathSection[aliasName] = [getInteropFilePathByApi(aliasConfig.originalAPIName, this.dynamicSDKPaths)];

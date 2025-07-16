@@ -23,6 +23,10 @@ import {
 } from '../utils';
 import { PluginDriver } from '../plugins/plugins_driver';
 import {
+  API,
+  ARKTS,
+  COMPONENT,
+  KITS,
   KOALA_WRAPPER_PATH_FROM_SDK,
   PANDA_SDK_PATH_FROM_SDK,
   PROJECT_BUILD_CONFIG_FILE
@@ -190,9 +194,28 @@ function initInteropSDKInfo(buildConfig: BuildConfig): void {
     : [path.resolve(buildConfig.buildSdkPath as string, "../ets1.1/build-tools/interop")];
 
   for (const basePath of basePaths) {
-    const arktsPath = path.resolve(basePath, 'arkts');
-    const apiPath = path.resolve(basePath, 'api');
-    const kitsPath = path.resolve(basePath, 'kits');
+    /**
+     * dynamic public api from 1.1
+     */
+    const arktsPath = path.resolve(basePath, ARKTS);
+    /**
+     * dynamic public api from 1.1
+     */
+    const apiPath = path.resolve(basePath, API);
+    /**
+     * a router file from 1.1, whicl will export * from manay api file
+     * and kit have not runtime_name,is alias for edit,
+     * and will be transformed before compile in 1.1
+     */
+    const kitsPath = path.resolve(basePath, KITS);
+    /**
+     * component is inner api for apiPath and artsPath
+     * bcs apiPath and artsPath is dynamic module,
+     * apiPath will depend component, we should also add component to dependenciesection,
+     * or it will fatal error
+     */
+    const component = path.resolve(basePath, COMPONENT);
+
 
     if (fs.existsSync(arktsPath)) {
       buildConfig.interopSDKPaths.add(arktsPath);
@@ -202,6 +225,9 @@ function initInteropSDKInfo(buildConfig: BuildConfig): void {
     }
     if (fs.existsSync(kitsPath)) {
       buildConfig.interopSDKPaths.add(kitsPath);
+    }
+    if (fs.existsSync(component)) {
+      buildConfig.interopSDKPaths.add(component);
     }
   }
 }

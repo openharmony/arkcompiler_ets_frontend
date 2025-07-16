@@ -127,7 +127,7 @@ export class KitImportTransformer {
                 continue;
             }
     
-            const sourcePath = 'default' + symbolEntry.source.replace(/\.d\.ts$/, '');
+            const sourcePath = 'dynamic/' + symbolEntry.source.replace(/\.d\.ts$/, '');
             if (!grouped.has(sourcePath)) {
                 grouped.set(sourcePath, []);
             }
