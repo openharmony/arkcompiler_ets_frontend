@@ -57,10 +57,11 @@
 /ets2panda/util/plugin.* @yyang16 @mbolshov ^igelhaus ^Prof1983
 /ets2panda/varbinder/ @lirismankarina @akmaevaleksey ^Ekkoruse ^zelentsovdmitry ^igelhaus ^Prof1983
 /test/workload/ignored*.txt     @shirunova_viktoria @kuchkovairina @gavin1012_hw @zhuheng27
-/ets2panda/checker/ets/function.cpp ^vpukhov @gogabr ^igelhaus ^Prof1983
-/ets2panda/checker/ets/helpers.cpp @zelentsovdmitry ^igelhaus ^Prof1983
-/ets2panda/checker/ets/object.cpp @zelentsovdmitry ^vpukhov ^igelhaus ^Prof1983
-/ets2panda/checker/types/ets @gogabr ^igelhaus ^Prof1983 @zelentsovdmitry
+/ets2panda/checker/ets/ @lirismankarina ^igelhaus ^Prof1983
+/ets2panda/checker/ets/function.cpp @gogabr ^vpukhov ^igelhaus ^Prof1983
+/ets2panda/checker/ets/helpers.cpp @xuxjeeee @zelentsovdmitry ^igelhaus ^Prof1983
+/ets2panda/checker/ets/object.cpp @xuxjeeee @zelentsovdmitry ^vpukhov ^igelhaus ^Prof1983
+/ets2panda/checker/types/ets @dkofanov ^igelhaus ^Prof1983
 /ets2panda/checker/types/signature.* ^vpukhov ^igelhaus ^Prof1983 @zelentsovdmitry
 /ets2panda/checker/types/typeFlag.h ^vpukhov ^igelhaus ^Prof1983 @mkaskov
 /ets2panda/checker/types/typeRelation.* ^vpukhov ^igelhaus ^Prof1983 @mkaskov
@@ -81,14 +82,19 @@
 /ets2panda/test/unit/plugin* @mbolshov ^igelhaus ^Prof1983
 /ets2panda/test/unit/public @mbolshov ^igelhaus ^Prof1983
 /ets2panda/checker/types/ets/Nullish.* ^vpukhov @gogabr ^igelhaus ^Prof1983
+/ets2panda/checker/types/ets/etsA* @xuxjeeee ^gogabr ^igelhaus ^Prof1983
+/ets2panda/checker/types/ets/etsE* @ziziziiziziz ^zelentsovdmitry ^igelhaus ^Prof1983
 /ets2panda/checker/types/ets/etsFunctionType.* ^vpukhov @gogabr ^igelhaus ^Prof1983
 /ets2panda/checker/types/ets/etsN* @ziziziiziziz ^zelentsovdmitry ^igelhaus ^Prof1983
 /ets2panda/checker/types/ets/etsT* @xuxjeeee ^gogabr ^igelhaus ^Prof1983
 /ets2panda/checker/types/ets/etsTypeParameter.* ^vpukhov @gogabr ^igelhaus ^Prof1983
 /ets2panda/checker/types/ets/etsUnionType.* @akmaevaleksey ^vpukhov ^igelhaus ^Prof1983
 /ets2panda/checker/types/ets/wildcardType.* ^vpukhov @gogabr ^igelhaus ^Prof1983
-/ets2panda/compiler/lowering/ets/ @akmaevaleksey ^igelhaus ^Prof1983 ^zelentsovdmitry
-/ets2panda/compiler/lowering/ets/lambdaLowering.cpp ^vpukhov @akmaevaleksey @gogabr ^igelhaus ^Prof1983
-/ets2panda/compiler/lowering/ets/optionalLowering.cpp ^vpukhov @akmaevaleksey ^igelhaus ^Prof1983
-/ets2panda/compiler/lowering/ets/unionLowering.cpp ^vpukhov @akmaevaleksey ^igelhaus ^Prof1983
-/ets2panda/compiler/lowering/ets/topLevelStmts/.* ^vpukhov @akmaevaleksey ^igelhaus ^Prof1983
+/ets2panda/compiler/lowering/ets/ @gogabr ^igelhaus ^Prof1983 ^zelentsovdmitry
+/ets2panda/compiler/lowering/ets/const* @ziziziiziziz @lirismankarina ^akmaevaleksey ^igelhaus ^Prof1983
+/ets2panda/compiler/lowering/ets/enum* @ziziziiziziz @dkofanov ^akmaevaleksey ^igelhaus ^Prof1983
+/ets2panda/compiler/lowering/ets/lambdaLowering.cpp @Ekkoruse @gogabr ^vpukhov ^akmaevaleksey ^igelhaus ^Prof1983
+/ets2panda/compiler/lowering/ets/optionalLowering.cpp @akmaevaleksey ^vpukhov ^igelhaus ^Prof1983
+/ets2panda/compiler/lowering/ets/spread* @ziziziiziziz @dkofanov ^akmaevaleksey ^igelhaus ^Prof1983
+/ets2panda/compiler/lowering/ets/unionLowering.cpp @Ekkoruse @akmaevaleksey ^vpukhov ^igelhaus ^Prof1983
+/ets2panda/compiler/lowering/ets/topLevelStmts/.* @lirismankarina @xuxjeeee ^akmaevaleksey ^vpukhov ^igelhaus ^Prof1983
