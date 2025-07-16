@@ -73,46 +73,6 @@ export enum Es2pandaContextState {
     ES2PANDA_STATE_ERROR = 7
 }
 
-export interface ArkTSGlobal {
-  filePath: string;
-  config: object;
-  compilerContext: {
-    program: object;
-    peer: object
-  };
-  es2panda: {
-    _DestroyContext: Function;
-  }
-}
-
-export interface ArkTS {
-  Config: {
-    create: Function;
-  };
-  Context: {
-    createFromString: Function;
-  };
-  EtsScript: {
-    fromContext: Function;
-  };
-  proceedToState: Function;
-  generateTsDeclarationsFromContext: Function;
-  destroyConfig: Function;
-  Es2pandaContextState: typeof Es2pandaContextState;
-}
-
-export enum Es2pandaContextState {
-    ES2PANDA_STATE_NEW = 0,
-    ES2PANDA_STATE_PARSED = 1,
-    ES2PANDA_STATE_SCOPE_INITED = 2,
-    ES2PANDA_STATE_BOUND = 3,
-    ES2PANDA_STATE_CHECKED = 4,
-    ES2PANDA_STATE_LOWERED = 5,
-    ES2PANDA_STATE_ASM_GENERATED = 6,
-    ES2PANDA_STATE_BIN_GENERATED = 7,
-    ES2PANDA_STATE_ERROR = 8
-}
-
 export interface ModuleConfig {
   packageName: string;
   moduleType: string;

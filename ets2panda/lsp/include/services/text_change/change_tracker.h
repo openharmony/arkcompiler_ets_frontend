@@ -29,7 +29,6 @@
 #include "lsp/include/formatting/formatting_context.h"
 #include "lsp/include/formatting/formatting.h"
 #include "lsp/include/internal_api.h"
-#include "util.h"
 #include "public/es2panda_lib.h"
 
 namespace ark::es2panda::lsp {
