@@ -38,9 +38,8 @@ public:
     {
         pandasm::Function *fn = GetFunction(functionName, program_->functionStaticTable);
         ASSERT_TRUE(fn != nullptr) << "Function '" << functionName << "' not found";
-        std::vector<ark::pandasm::Ins> ins = fn->ins;
         bool found = false;
-        for (const auto &i : ins) {
+        for (const auto &i : fn->ins) {
             std::string iStr = i.ToString("", true);
             if (iStr.find(insString) != std::string::npos) {
                 found = true;

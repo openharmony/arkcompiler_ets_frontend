@@ -128,7 +128,7 @@ static pandasm::Function GenScriptFunction(const ir::ScriptFunction *scriptFunc,
             !var->Declaration()->Node()->IsETSParameterExpression()) {
             continue;
         }
-        func.params.back().GetOrCreateMetadata().SetAnnotations(emitter->GenCustomAnnotations(
+        func.params.back().GetOrCreateMetadata()->SetAnnotations(emitter->GenCustomAnnotations(
             var->Declaration()->Node()->AsETSParameterExpression()->Annotations(), var->Name().Mutf8()));
     }
 
