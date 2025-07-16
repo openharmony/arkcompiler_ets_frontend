@@ -1235,3 +1235,7 @@ syntax:
 - name: FUNC_EXPR
   id: 306
   message: "Function expressions are not supported, use arrow functions instead"
+
+- name: DEFAULT_PARAM_IN_DECLARE 
+  id: 307
+  message: "A parameter initializer is only allowed in a function or constructor implementation."

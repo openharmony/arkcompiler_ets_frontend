@@ -16,6 +16,8 @@
 #include "defaultParametersLowering.h"
 #include "compiler/lowering/util.h"
 
+#include <checker/ETSchecker.h>
+
 namespace ark::es2panda::compiler {
 
 static ir::Statement *TransformInitializer(ArenaAllocator *allocator, parser::ETSParser *parser,
@@ -36,6 +38,20 @@ static ir::Statement *TransformInitializer(ArenaAllocator *allocator, parser::ET
     return parser->CreateFormattedStatement("let @@I1: @@T2 = (@@I3 !== undefined) ? @@I4 : (@@E5 as @@T6)", ident,
                                             typeAnnotation->Clone(allocator, nullptr), param->Ident()->Name(),
                                             param->Ident()->Name(), init, typeAnnotation->Clone(allocator, nullptr));
+}
+
+static void ValidateDefaultParamInDeclare(public_lib::Context *ctx, ir::ScriptFunction *function,
+                                          std::vector<ir::ETSParameterExpression *> &params)
+{
+    for (auto param : params) {
+        if (param->Initializer() == nullptr) {
+            continue;
+        }
+        param->SetInitializer(nullptr);
+        if ((function->Flags() & ir::ScriptFunctionFlags::EXTERNAL) != 0U) {
+            ctx->checker->AsETSChecker()->LogError(diagnostic::DEFAULT_PARAM_IN_DECLARE, param->Start());
+        }
+    }
 }
 
 static void TransformFunction(public_lib::Context *ctx, ir::ScriptFunction *function)
@@ -62,7 +78,7 @@ static void TransformFunction(public_lib::Context *ctx, ir::ScriptFunction *func
         return;
     }
     if (!function->HasBody()) {  // #23134
-        ES2PANDA_ASSERT(ctx->diagnosticEngine->IsAnyError());
+        ValidateDefaultParamInDeclare(ctx, function, defaultParams);
         return;
     }
     auto const body = function->Body()->AsBlockStatement();
