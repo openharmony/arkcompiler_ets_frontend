@@ -87,6 +87,7 @@ static ir::Identifier *CreateNewArrayDeclareStatement(public_lib::Context *ctx, 
     auto *const allocator = ctx->allocator;
     auto *const parser = ctx->parser->AsETSParser();
     ir::Identifier *newArrayId = Gensym(allocator);
+    ES2PANDA_ASSERT(newArrayId != nullptr);
     checker::Type *arrayElementType = checker->GetElementTypeOfArray(array->TsType());
 
     // NOTE: If arrayElementType is ETSUnionType(String|Int) or ETSObjectType(private constructor) or ..., we cannot
@@ -333,6 +334,7 @@ static ir::BlockExpression *CreateLoweredExpressionForArray(public_lib::Context 
     ir::Identifier *newArrayId = CreateNewArrayDeclareStatement(ctx, array, statements, newArrayLengthId);
     ES2PANDA_ASSERT(newArrayId != nullptr);
     ir::Identifier *newArrayIndexId = Gensym(allocator);
+    ES2PANDA_ASSERT(newArrayIndexId != nullptr);
     statements.emplace_back(
         parser->CreateFormattedStatement("let @@I1 = 0", newArrayIndexId->Clone(allocator, nullptr)));
     std::vector<ir::AstNode *> newArrayAndIndex {newArrayId->Clone(allocator, nullptr),

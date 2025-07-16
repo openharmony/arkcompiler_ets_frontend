@@ -282,7 +282,7 @@ ir::TSModuleDeclaration *TypedParser::ParseAmbientExternalModuleDeclaration(cons
 
         name = AllocNode<ir::StringLiteral>(Lexer()->GetToken().String());
     }
-
+    ES2PANDA_ASSERT(name != nullptr);
     name->SetRange(Lexer()->GetToken().Loc());
 
     Lexer()->NextToken();
@@ -497,6 +497,7 @@ ir::Statement *TypedParser::ParseInterfaceDeclaration(bool isStatic)
     auto members = ParseTypeLiteralOrInterface();
 
     auto *body = AllocNode<ir::TSInterfaceBody>(std::move(members));
+    ES2PANDA_ASSERT(body != nullptr);
     body->SetRange({bodyStart, Lexer()->GetToken().End()});
 
     const auto isExternal = IsExternal();

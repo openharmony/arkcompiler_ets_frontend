@@ -34,9 +34,13 @@ static ir::BlockExpression *CreateRestArgsBlockExpression(public_lib::Context *c
 
     ArenaVector<ir::Statement *> blockStatements(allocator->Adapter());
     const auto arraySymbol = Gensym(allocator);
+    ES2PANDA_ASSERT(arraySymbol != nullptr);
     const auto argumentSymbol = Gensym(allocator);
+    ES2PANDA_ASSERT(argumentSymbol != nullptr);
     const auto iteratorIndex = Gensym(allocator);
+    ES2PANDA_ASSERT(iteratorIndex != nullptr);
     const auto iteratorSymbol = Gensym(allocator);
+    ES2PANDA_ASSERT(iteratorSymbol != nullptr);
     const auto elementType = checker->GetElementTypeOfArray(spreadElement->Argument()->TsType());
     auto *typeNode = allocator->New<ir::OpaqueTypeNode>(elementType, allocator);
     blockStatements.push_back(
@@ -51,7 +55,6 @@ static ir::BlockExpression *CreateRestArgsBlockExpression(public_lib::Context *c
     args.emplace_back(argumentSymbol->Clone(allocator, nullptr));
     ss << "@@I3[@@I4] = @@I5;";
     args.emplace_back(arraySymbol->Clone(allocator, nullptr));
-    ES2PANDA_ASSERT(iteratorIndex != nullptr);
     args.emplace_back(iteratorIndex->Clone(allocator, nullptr));
     args.emplace_back(iteratorSymbol->Clone(allocator, nullptr));
     ss << "@@I6 = @@I7 + 1;";
@@ -110,6 +113,7 @@ static ir::Expression *CreateRestArgsArray(public_lib::Context *context, ArenaVe
 
     std::stringstream ss;
     auto *genSymIdent = Gensym(allocator);
+    ES2PANDA_ASSERT(genSymIdent != nullptr);
     ss << "let @@I1 : FixedArray<@@T2> = @@E3;";
     ss << "Array.from<@@T4>(@@I5);";
     auto *arrayExpr = checker->AllocNode<ir::ArrayExpression>(std::move(copiedArguments), allocator);

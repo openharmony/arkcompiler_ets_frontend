@@ -71,7 +71,7 @@ ir::Expression *ObjectIndexLowering::ProcessIndexSetAccess(parser::ETSParser *pa
                                                            memberExpression->Property(), assignmentExpression->Right());
         setter = loweringResult;
     }
-    ES2PANDA_ASSERT(loweringResult != nullptr);
+    ES2PANDA_ASSERT(loweringResult != nullptr && setter != nullptr);
     loweringResult->SetParent(assignmentExpression->Parent());
     loweringResult->SetRange(assignmentExpression->Range());
     loweringResult->SetBoxingUnboxingFlags(assignmentExpression->GetBoxingUnboxingFlags());
