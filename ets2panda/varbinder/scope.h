@@ -778,6 +778,7 @@ public:
 
     Variable *AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
                          [[maybe_unused]] ScriptExtension extension) override;
+    Variable *FindLocal(const util::StringView &name, ResolveBindingOptions options) const override;
 };
 
 class LoopScope;

@@ -235,16 +235,14 @@ varbinder::LocalVariable *ETSObjectType::CollectSignaturesForSyntheticType(std::
 
     if ((flags & PropertySearchFlags::SEARCH_STATIC_METHOD) != 0) {
         if (auto *found = GetOwnProperty<PropertyType::STATIC_METHOD>(name);
-            found != nullptr && !found->TsType()->IsTypeError()) {
-            ES2PANDA_ASSERT(found->TsType()->IsETSFunctionType());
+            found != nullptr && found->TsType()->IsETSFunctionType()) {
             AddSignature(signatures, flags, checker, found);
         }
     }
 
     if ((flags & PropertySearchFlags::SEARCH_INSTANCE_METHOD) != 0) {
         if (auto *found = GetOwnProperty<PropertyType::INSTANCE_METHOD>(name);
-            found != nullptr && !found->TsType()->IsTypeError()) {
-            ES2PANDA_ASSERT(found->TsType()->IsETSFunctionType());
+            found != nullptr && found->TsType()->IsETSFunctionType()) {
             AddSignature(signatures, flags, checker, found);
         }
     }
@@ -261,8 +259,7 @@ varbinder::LocalVariable *ETSObjectType::CollectSignaturesForSyntheticType(std::
             !this->IsPartial()) {  // NOTE: issue 24548
             if (auto *found =
                     interface->GetProperty(name, flags | PropertySearchFlags::DISALLOW_SYNTHETIC_METHOD_CREATION);
-                found != nullptr && !found->TsType()->IsTypeError()) {
-                ES2PANDA_ASSERT(found->TsType()->IsETSFunctionType());
+                found != nullptr && found->TsType()->IsETSFunctionType()) {
                 AddSignature(signatures, flags, checker, found);
             }
         }
