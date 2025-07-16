@@ -13,25 +13,20 @@
  * limitations under the License.
  */
 
-#include "formatting/rules_map.h"
+#ifndef TEXT_CHANGE_H
+#define TEXT_CHANGE_H
 
-namespace ark::es2panda::lsp {
+#include "lsp/include/formatting/formatting.h"
+#include "lsp/include/user_preferences.h"
 
-RulesMapCache &RulesMapCache::Instance()
-{
-    static RulesMapCache cache;
-    return cache;
-}
+struct LanguageServiceHost {
+    std::string name = "lsp";
+};
 
-RulesMap &RulesMapCache::GetRulesMap()
-{
-    static RulesMap rulesMap = CreateRulesMap(GetAllRules());
-    return rulesMap;
-}
+struct TextChangesContext {
+    LanguageServiceHost host = {};
+    ark::es2panda::lsp::FormatContext formatContext;
+    ark::es2panda::lsp::UserPreferences preferences;
+};
 
-RulesMap RulesMapCache::CreateRulesMap(const std::vector<RuleSpec> &ruleSpec)
-{
-    return [ruleSpec]([[maybe_unused]] const FormattingContext &ctx) { return ruleSpec; };
-}
-
-}  // namespace ark::es2panda::lsp
+#endif

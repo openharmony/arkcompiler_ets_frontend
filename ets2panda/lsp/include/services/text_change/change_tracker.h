@@ -26,6 +26,7 @@
 #include "public/public.h"
 #include <cstddef>
 #include <ir/typeNode.h>
+#include "text_change_context.h"
 
 namespace ark::es2panda::lsp {
 
