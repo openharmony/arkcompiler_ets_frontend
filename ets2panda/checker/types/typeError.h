@@ -42,6 +42,12 @@ public:
     {
         ss << ERROR_TYPE;
     }
+
+    Type *Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[maybe_unused]] TypeRelation *relation,
+                      [[maybe_unused]] GlobalTypesHolder *globalTypes) override
+    {
+        return this;
+    }
 };
 
 }  // namespace ark::es2panda::checker

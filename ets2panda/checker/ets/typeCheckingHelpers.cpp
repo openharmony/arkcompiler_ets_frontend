@@ -683,8 +683,11 @@ Type *ETSChecker::ResolveUnionUncheckedType(ArenaVector<checker::Type *> &&appar
 Type *ETSChecker::GuaranteedTypeForUnionFieldAccess(ir::MemberExpression *memberExpression, ETSUnionType *etsUnionType)
 {
     const auto &types = etsUnionType->ConstituentTypes();
-    ArenaVector<checker::Type *> apparentTypes {ProgramAllocator()->Adapter()};
+    ArenaVector<checker::Type *> apparentTypes {Allocator()->Adapter()};
     const auto *prop = memberExpression->Property();
+    if (!prop->IsIdentifier() && !prop->IsStringLiteral()) {
+        return GlobalTypeError();
+    }
     const auto &propertyName = prop->IsIdentifier() ? prop->AsIdentifier()->Name() : prop->AsStringLiteral()->Str();
     for (auto *type : types) {
         auto searchFlags = PropertySearchFlags::SEARCH_FIELD | PropertySearchFlags::SEARCH_METHOD |
