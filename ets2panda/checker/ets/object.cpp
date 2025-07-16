@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+#include <cstddef>
 #include "checker/ETSchecker.h"
 #include "checker/ets/typeRelationContext.h"
 #include "checker/types/ets/etsDynamicType.h"
@@ -1758,6 +1759,11 @@ void ETSChecker::CheckCyclicConstructorCall(Signature *signature)
     ES2PANDA_ASSERT(signature->Function());
 
     if (signature->Function()->IsExternal()) {
+        return;
+    }
+
+    // This is a condition set up to handle error scenarios.
+    if (signature->Function()->Body() == nullptr) {
         return;
     }
 
