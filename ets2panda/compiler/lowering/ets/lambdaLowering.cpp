@@ -1443,14 +1443,15 @@ static ir::AstNode *BuildLambdaClassWhenNeeded(public_lib::Context *ctx, ir::Ast
         // so it is correct to pass ETS extension here to isReference()
         if (id->IsReference(ScriptExtension::ETS) && id->TsType() != nullptr && id->TsType()->IsETSFunctionType() &&
             !IsInCalleePosition(id) && !IsEnumFunctionCall(id) && IsValidFunctionDeclVar(var) &&
-            !id->Variable()->HasFlag(varbinder::VariableFlags::DYNAMIC) && !IsOverloadedName(id)) {
+            !IsOverloadedName(id)) {
             return ConvertFunctionReference(ctx, id);
         }
     }
     if (node->IsMemberExpression()) {
         auto *mexpr = node->AsMemberExpression();
         if (mexpr->Kind() == ir::MemberExpressionKind::PROPERTY_ACCESS && mexpr->TsType() != nullptr &&
-            mexpr->TsType()->IsETSFunctionType() && mexpr->Object()->TsType()->IsETSObjectType()) {
+            mexpr->TsType()->IsETSFunctionType() && mexpr->Object()->TsType()->IsETSObjectType() &&
+            mexpr->PropVar() != nullptr && !mexpr->PropVar()->HasFlag(varbinder::VariableFlags::DYNAMIC)) {
             ES2PANDA_ASSERT(mexpr->Property()->IsIdentifier());
             auto *var = mexpr->Object()->TsType()->AsETSObjectType()->GetProperty(
                 mexpr->Property()->AsIdentifier()->Name(),
