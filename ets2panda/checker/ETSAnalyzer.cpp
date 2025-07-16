@@ -1796,9 +1796,7 @@ checker::Type *ETSAnalyzer::Check(ir::ConditionalExpression *expr) const
 static Type *TransformTypeForMethodReference(ETSChecker *checker, ir::Expression *const use, Type *type)
 {
     ES2PANDA_ASSERT(use->IsIdentifier() || use->IsMemberExpression());
-    if (!type->IsETSMethodType() ||
-        (use->IsMemberExpression() && use->AsMemberExpression()->PropVar() != nullptr &&
-         use->AsMemberExpression()->PropVar()->HasFlag(varbinder::VariableFlags::DYNAMIC))) {
+    if (!type->IsETSMethodType()) {
         return type;
     }
     auto const getUseSite = [use]() {
