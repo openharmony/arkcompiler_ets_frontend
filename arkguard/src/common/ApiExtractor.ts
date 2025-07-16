@@ -621,6 +621,7 @@ export namespace ApiExtractor {
 
       if (astNode.exportClause.kind === SyntaxKind.NamespaceExport) {
         mCurrentExportedPropertySet.add(astNode.exportClause.name.getText());
+        mCurrentExportNameSet.add(astNode.exportClause.name.getText());
         return;
       }
     }
