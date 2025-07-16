@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,11 +14,6 @@
  */
 
 
-function foo (p: [int, string]) {
-}
-let x: readonly [int, string] = /* @@ label2 */[]
-/* @@ label */foo(/* @@ label1 */x)
+let tuple: [string,number] = /* @@ label */[]
 
-/* @@@ label Error TypeError: No matching call signature for foo(readonly [Int, String]) */
-/* @@@ label1 Error TypeError: Type 'readonly [Int, String]' is not compatible with type '[Int, String]' at index 1 */
-/* @@@ label2 Error TypeError: Initializer has 0 elements, but tuple requires 2 */
+/* @@@ label Error TypeError: Initializer has 0 elements, but tuple requires 2 */

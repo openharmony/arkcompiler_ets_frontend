@@ -982,15 +982,15 @@ checker::Type *ETSAnalyzer::Check(ir::ArrayExpression *expr) const
         }
 
         expr->SetPreferredType(preferredType);
-
-        if (!ValidArrayExprSizeForTupleSize(checker, preferredType, expr) ||
-            !CheckArrayExpressionElements(checker, expr)) {
-            return checker->InvalidateType(expr);
-        }
     }
 
     if (preferredType == nullptr) {
         return checker->TypeError(expr, diagnostic::UNRESOLVABLE_ARRAY, expr->Start());
+    }
+
+    if (!ValidArrayExprSizeForTupleSize(checker, preferredType, expr) ||
+        (!expr->Elements().empty() && !CheckArrayExpressionElements(checker, expr))) {
+        return checker->InvalidateType(expr);
     }
 
     expr->SetTsType(preferredType);
