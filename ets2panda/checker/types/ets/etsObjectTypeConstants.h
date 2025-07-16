@@ -120,12 +120,6 @@ enum class PropertyType {
     COUNT,
 };
 
-/* Invoke method name in functional interfaces */
-inline std::string FunctionalInterfaceInvokeName(size_t arity, bool hasRest)
-{
-    return (hasRest ? "invokeR" : "invoke") + std::to_string(arity);
-}
-
 }  // namespace ark::es2panda::checker
 
 namespace enumbitops {

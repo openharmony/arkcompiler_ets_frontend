@@ -85,7 +85,7 @@ void GlobalTypesHolder::AddFunctionTypes(ArenaAllocator *allocator)
     addTypes("LambdaR", GlobalTypeId::ETS_LAMBDAR0_CLASS, GlobalTypeId::ETS_LAMBDAR16_CLASS);
 
     builtinNameMappings_.emplace("FunctionN", GlobalTypeId::ETS_FUNCTIONN_CLASS);
-    builtinNameMappings_.emplace("LambdaN", GlobalTypeId::ETS_FUNCTIONN_CLASS);
+    builtinNameMappings_.emplace("LambdaN", GlobalTypeId::ETS_LAMBDAN_CLASS);
 }
 
 void GlobalTypesHolder::AddTupleTypes(ArenaAllocator *allocator)
