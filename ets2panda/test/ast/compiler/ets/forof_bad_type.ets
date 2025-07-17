@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,12 +13,16 @@
  * limitations under the License.
  */
 
-class MyTest {
-    @Consume.
-    private property1;
+declare class A<T> {
+    a: A<T>
+    foo(f: (a: FixedArray<Tadad> | A<T>[]) => void):void
+    bar():A<T>
 }
 
-/* @@? 17:6 Error SyntaxError: Invalid annotation name.  */
-/* @@? 18:5 Error SyntaxError: Identifier expected.  */
-/* @@? 18:5 Error TypeError: '*ERROR_LITERAL*' is not an annotation.  */
-/* @@? 18:22 Error SyntaxError: Field type annotation expected.  */
+new A<number>().bar().a.foo((x) => {
+    for (let e of x) {
+        console.log(e)
+    }
+})
+
+/* @@? 18:27 Error TypeError: Cannot find type 'Tadad'. */

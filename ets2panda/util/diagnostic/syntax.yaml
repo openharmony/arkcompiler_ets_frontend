@@ -648,6 +648,10 @@ syntax:
   id: 159
   message: "Invalid accessor."
 
+- name: INVALID_ANNOTATION_NAME
+  id: 329
+  message: "Invalid annotation name."
+
 - name: UNEXPECTED_TOKEN_IN_PRIVATE
   id: 160
   message: "Unexpected token in private field."

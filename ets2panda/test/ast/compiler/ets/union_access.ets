@@ -13,12 +13,11 @@
  * limitations under the License.
  */
 
-class MyTest {
-    @Consume.
-    private property1;
+class C{}
+class A{}
+
+function foo(x: A | C) {
+    x[x+1]
 }
 
-/* @@? 17:6 Error SyntaxError: Invalid annotation name.  */
-/* @@? 18:5 Error SyntaxError: Identifier expected.  */
-/* @@? 18:5 Error TypeError: '*ERROR_LITERAL*' is not an annotation.  */
-/* @@? 18:22 Error SyntaxError: Field type annotation expected.  */
+/* @@? 20:5 Error TypeError: Indexed access is not supported for such expression type. */
