@@ -1084,6 +1084,8 @@ class CompilerProjectTest(Test):
             self.error = err.decode("utf-8", errors="ignore")
 
     def gen_merged_abc(self, runner):
+        output_abc_name = ""
+        exec_file_path = ""
         # Generate abc inputs
         if (os.path.exists(self.generated_abc_inputs_path)):
             files_info_names = os.listdir(self.generated_abc_inputs_path)
