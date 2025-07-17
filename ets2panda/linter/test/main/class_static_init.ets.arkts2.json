@@ -553,26 +553,6 @@
             "suggest": "Property 'name' has no initializer and is not definitely assigned in the constructor.",
             "rule": "Property 'name' has no initializer and is not definitely assigned in the constructor.",
             "severity": "ERROR"
-        },
-        {
-            "line": 147,
-            "column": 3,
-            "endLine": 147,
-            "endColumn": 5,
-            "problem": "StrictDiagnostic",
-            "suggest": "Property 'id' has no initializer and is not definitely assigned in the constructor.",
-            "rule": "Property 'id' has no initializer and is not definitely assigned in the constructor.",
-            "severity": "ERROR"
-        },
-        {
-            "line": 148,
-            "column": 3,
-            "endLine": 148,
-            "endColumn": 7,
-            "problem": "StrictDiagnostic",
-            "suggest": "Property 'name' has no initializer and is not definitely assigned in the constructor.",
-            "rule": "Property 'name' has no initializer and is not definitely assigned in the constructor.",
-            "severity": "ERROR"
         }
     ]
 }
