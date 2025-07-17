@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,5 +13,15 @@
  * limitations under the License.
  */
 
-export interface I {}
-export type {/* @@ label */I}
+function foo(): void {}
+class A {}
+let a = new A()
+
+export {
+  foo as f1,
+  foo as f2,
+  A as a1,
+  A as a2,
+  a as a3,
+  a as a4
+}

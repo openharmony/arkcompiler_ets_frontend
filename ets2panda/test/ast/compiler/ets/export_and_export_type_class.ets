@@ -15,5 +15,3 @@
 
 export class A {}
 export type {/* @@ label */A}
-
-/* @@@ label Error SyntaxError: Cannot export 'A', it was already exported.  */

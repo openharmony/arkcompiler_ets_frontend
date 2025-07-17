@@ -29,7 +29,7 @@ void ETSModule::Dump(ir::SrcDumper *dumper) const
             dumper->Add("export default ");
         }
 
-        if (IsDeclare()) {
+        if (IsDeclare() && !(parent_ != nullptr && parent_->IsDeclare())) {
             dumper->Add("declare ");
         }
 

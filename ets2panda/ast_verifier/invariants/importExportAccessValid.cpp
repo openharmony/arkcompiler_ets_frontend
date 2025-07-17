@@ -70,7 +70,7 @@ bool ImportExportAccessValid::ValidateExport(const varbinder::Variable *var)
     if (node == nullptr) {
         return false;
     }
-    return node->IsExported();
+    return node->IsExported() || node->HasExportAlias();
 }
 
 bool ImportExportAccessValid::InvariantImportExportMethod(const std::unordered_set<std::string> &importedVariables,
