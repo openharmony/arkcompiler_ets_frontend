@@ -223,6 +223,10 @@ checker::Type *MemberExpression::TraverseUnionMember(checker::ETSChecker *checke
     };
 
     for (auto *const type : unionType->ConstituentTypes()) {
+        if (commonPropType != nullptr && commonPropType->IsTypeError()) {
+            break;
+        }
+
         auto *const apparent = checker->GetApparentType(type);
         ES2PANDA_ASSERT(apparent != nullptr);
         if (apparent->IsETSObjectType()) {
