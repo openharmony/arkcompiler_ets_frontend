@@ -694,7 +694,7 @@ bool SetPreferredTypeForExpression(ETSChecker *checker, ir::Identifier *ident, i
 }
 
 bool ETSChecker::CheckInit(ir::Identifier *ident, ir::TypeNode *typeAnnotation, ir::Expression *init,
-                           checker::Type *annotationType, varbinder::Variable *const bindingVar)
+                           checker::Type *annotationType)
 {
     if (typeAnnotation == nullptr) {
         if (init->IsArrayExpression()) {
@@ -709,9 +709,6 @@ bool ETSChecker::CheckInit(ir::Identifier *ident, ir::TypeNode *typeAnnotation, 
         } else if (init->IsObjectExpression()) {
             LogError(diagnostic::CANNOT_INFER_OBJ_LIT, {ident->Name()}, ident->Start());
             return false;
-        }
-        if (bindingVar != nullptr) {
-            bindingVar->SetTsType(annotationType);
         }
     }
     return SetPreferredTypeForExpression(this, ident, typeAnnotation, init, annotationType);
@@ -840,7 +837,7 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
     checker::Type *initType = nullptr;
     if (init != nullptr) {
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        if (!CheckInit(ident, typeAnnotation, init, annotationType, bindingVar)) {
+        if (!CheckInit(ident, typeAnnotation, init, annotationType)) {
             init->SetTsType(GlobalTypeError());
         } else {
             initType = init->Check(this);
