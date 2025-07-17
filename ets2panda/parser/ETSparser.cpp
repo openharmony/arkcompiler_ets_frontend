@@ -1910,6 +1910,7 @@ ir::Expression *ETSParser::ParseCatchParam()
 void ETSParser::ParseCatchParamTypeAnnotation([[maybe_unused]] ir::AnnotatedExpression *param)
 {
     if (Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_COLON)) {
+        LogError(diagnostic::MULTI_CATCH_DEPRECATED);
         TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
         if (auto *typeAnnotation = ParseTypeAnnotation(&options); typeAnnotation != nullptr) {
             ES2PANDA_ASSERT(param != nullptr);

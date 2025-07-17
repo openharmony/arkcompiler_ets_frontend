@@ -1040,3 +1040,4 @@
     }
   }
 }
+Warning: The catch statement with type annotation is deprecated, use catch(e). [catch-soft-keyword.ets:26:19]

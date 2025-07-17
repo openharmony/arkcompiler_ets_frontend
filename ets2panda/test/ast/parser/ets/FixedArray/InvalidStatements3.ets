@@ -15,7 +15,7 @@
 
 try {
     let x = 77
-} catch(a: exception)
+} catch(a)
 }
 
 try
@@ -41,8 +41,6 @@ function foo() {
 
 for (let i = 1 in [0, 1, 2]) {}
 
-/* @@? 18:9 Error TypeError: Argument must be an instance of 'Exception' or 'Error' */
-/* @@? 18:12 Error TypeError: Cannot find type 'exception'. */
 /* @@? 19:1 Error SyntaxError: Expected '{', got '}'. */
 /* @@? 22:5 Error SyntaxError: Expected '{', got 'let'. */
 /* @@? 23:11 Error SyntaxError: Expected '{', got '('. */

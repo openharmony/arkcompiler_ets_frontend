@@ -16,10 +16,11 @@
 function /* @@ label */foo(): int {
     try {
         return 0;
-    } catch (e: ArithmeticError) {
-
-    } catch (e: ClassCastError) {
-        return 2;
+    } catch (e) {
+        if (e instanceof ArithmeticError) {
+        } else if (e instanceof ClassCastError) {
+            return 2;
+        }
     }
 }
 

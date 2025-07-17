@@ -34,7 +34,7 @@ function f() {
 
 try
     let x: number = 89
-} catch(a: Exception) {
+} catch(a) {
 }
 
 try x: number;
