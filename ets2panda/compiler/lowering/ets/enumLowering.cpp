@@ -167,6 +167,7 @@ template <typename ElementMaker>
     auto *const arrayClassProp = AllocNode<ir::ClassProperty>(
         arrayIdent, arrayExpr, typeAnnotation,
         ir::ModifierFlags::STATIC | ir::ModifierFlags::PRIVATE | ir::ModifierFlags::READONLY, Allocator(), false);
+    ES2PANDA_ASSERT(arrayClassProp != nullptr);
     arrayClassProp->SetParent(enumClass);
     enumClass->EmplaceBody(arrayClassProp);
 
@@ -354,6 +355,7 @@ void EnumLoweringPhase::CreateCCtorForEnumClass(ir::ClassDefinition *const enumC
     auto *const methodDef =
         AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::METHOD, identClone, funcExpr,
                                         ir::ModifierFlags::PRIVATE | ir::ModifierFlags::STATIC, Allocator(), false);
+    ES2PANDA_ASSERT(methodDef != nullptr);
     methodDef->SetParent(enumClass);
     enumClass->EmplaceBody(methodDef);
 }

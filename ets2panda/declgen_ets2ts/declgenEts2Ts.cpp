@@ -618,6 +618,7 @@ void TSDeclGen::GenFunctionType(const checker::ETSFunctionType *etsFunctionType,
     const bool isSetter = methodDef != nullptr ? methodDef->Kind() == ir::MethodDefinitionKind::SET : false;
     // CC-OFFNXT(G.FMT.14-CPP) project code style
     const auto *sig = GetFuncSignature(etsFunctionType, methodDef);
+    ES2PANDA_ASSERT(sig != nullptr);
     if (sig->HasFunction()) {
         GenTypeParameters(sig->Function()->TypeParams());
         const auto *funcBody = sig->Function()->Body();

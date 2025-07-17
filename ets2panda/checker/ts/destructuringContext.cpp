@@ -157,6 +157,7 @@ void DestructuringContext::HandleAssignmentPattern(ir::AssignmentExpression *ass
     ES2PANDA_ASSERT(defaultType != nullptr);
     if (validateDefault && assignmentPattern->Right()->IsObjectExpression() &&
         assignmentPattern->Left()->IsObjectPattern()) {
+        ES2PANDA_ASSERT(defaultType != nullptr);
         ValidateObjectLiteralType(defaultType->AsObjectType(), assignmentPattern->Left()->AsObjectPattern());
     }
 

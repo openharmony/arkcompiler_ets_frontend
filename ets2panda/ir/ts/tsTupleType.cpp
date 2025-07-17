@@ -89,6 +89,7 @@ checker::Type *GetNumberIndexType(ArenaVector<checker::Type *> numberIndexTypes,
 
 static void SetMemberVarType(checker::Type *memberType, varbinder::LocalVariable *memberVar)
 {
+    ES2PANDA_ASSERT(memberType != nullptr);
     memberType->SetVariable(memberVar);
     memberVar->SetTsType(memberType);
 }
