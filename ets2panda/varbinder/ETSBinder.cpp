@@ -345,6 +345,7 @@ void ETSBinder::ResolveInterfaceDeclaration(ir::TSInterfaceDeclaration *decl)
         auto fieldVar =
             ResolvePropertyReference(stmt->AsClassProperty(), decl->Scope()->AsClassScope())
                 ->FindLocal(stmt->AsClassProperty()->Id()->Name(), varbinder::ResolveBindingOptions::BINDINGS);
+        ES2PANDA_ASSERT(fieldVar != nullptr);
         fieldVar->AddFlag(VariableFlags::INITIALIZED);
     }
 
@@ -418,6 +419,7 @@ void ETSBinder::ResolveMethodDefinition(ir::MethodDefinition *methodDef)
     methodDef->ResolveReferences([this](auto *childNode) { ResolveReference(childNode); });
 
     auto *func = methodDef->Function();
+    ES2PANDA_ASSERT(func != nullptr);
     for (auto *anno : func->Annotations()) {
         ResolveReference(anno);
     }
@@ -597,6 +599,7 @@ void AddOverloadFlag(ArenaAllocator *allocator, bool isStdLib, varbinder::Variab
     ES2PANDA_ASSERT(method->Function() != nullptr);
     if (!method->Overloads().empty() && !method->HasOverload(currentNode)) {
         method->AddOverload(currentNode);
+        ES2PANDA_ASSERT(currentNode->Function() != nullptr);
         currentNode->Function()->Id()->SetVariable(importedVar);
         currentNode->Function()->AddFlag(ir::ScriptFunctionFlags::OVERLOAD);
         currentNode->Function()->AddFlag(ir::ScriptFunctionFlags::EXTERNAL_OVERLOAD);
@@ -1497,6 +1500,7 @@ bool ETSBinder::ImportGlobalPropertiesForNotDefaultedExports(varbinder::Variable
             return true;
         }
 
+        ES2PANDA_ASSERT(classElement->Id() != nullptr);
         ThrowRedeclarationError(classElement->Id()->Start(), var, variable, name.Utf8());
     }
 
@@ -1509,6 +1513,7 @@ bool ETSBinder::ImportGlobalPropertiesForNotDefaultedExports(varbinder::Variable
         return true;
     }
 
+    ES2PANDA_ASSERT(classElement->Id() != nullptr);
     ThrowRedeclarationError(classElement->Id()->Start(), var, insRes.first->second, name.Utf8());
     return false;
 }
