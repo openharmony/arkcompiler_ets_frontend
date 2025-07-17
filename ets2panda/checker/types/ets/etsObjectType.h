@@ -439,7 +439,12 @@ private:
     void EnsurePropertiesInstantiated() const
     {
         if (!propertiesInstantiated_) {
+            if (isInstantiatingProperties_) {
+                return;  // avoid infinite recursive call
+            }
+            isInstantiatingProperties_ = true;
             InstantiateProperties();
+            isInstantiatingProperties_ = false;
             propertiesInstantiated_ = true;
         }
     }
@@ -481,6 +486,7 @@ private:
     // for lazy properties instantiation
     TypeRelation *relation_ = nullptr;
     const Substitution *effectiveSubstitution_ = nullptr;
+    mutable bool isInstantiatingProperties_ = false;
     mutable bool propertiesInstantiated_ = false;
     mutable ArenaVector<Signature *> constructSignatures_;
     mutable PropertyHolder properties_;
