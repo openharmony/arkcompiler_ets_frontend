@@ -39,3 +39,23 @@ class D extends A {
 class E { obj: number | string = 1.0; }
 class F extends E { obj: number = 1.0; }     // will be flagged on F vs E => MISMATCH/ERROR
 class G extends F { obj: number = 1.0; }     // will be checked on G vs F => OK
+
+class A1 {}
+class A2 extends A1 {
+  obj: number | string = 0.0;
+}
+class A3 extends A2 {}
+class A4 extends A3 {
+  obj: number = 0.0; // ERROR/MISMATCH => field type is not matching with obj from base class A2
+}
+
+class B1 {
+  obj: number | string = 0.0;
+}
+
+class B2 extends B1 { // no error
+  obj: number | string = 0.0;
+  obj2: number | string = 0.0;
+  obj3: boolean = false;
+  obj4: string = 'hello';
+}
