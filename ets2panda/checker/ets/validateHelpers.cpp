@@ -232,7 +232,7 @@ void ETSChecker::ValidateResolvedIdentifier(ir::Identifier *const ident)
     }
 }
 
-void ETSChecker::ValidateUnaryOperatorOperand(varbinder::Variable *variable)
+void ETSChecker::ValidateUnaryOperatorOperand(varbinder::Variable *variable, ir::Expression *expr)
 {
     if (IsVariableGetterSetter(variable)) {
         return;
@@ -250,7 +250,7 @@ void ETSChecker::ValidateUnaryOperatorOperand(varbinder::Variable *variable)
         }
         if (!HasStatus(CheckerStatus::IN_CONSTRUCTOR | CheckerStatus::IN_STATIC_BLOCK)) {
             std::ignore = TypeError(variable, diagnostic::FIELD_ASSIGN_TYPE_MISMATCH, {fieldType, variable->Name()},
-                                    variable->Declaration()->Node()->Start());
+                                    expr->Start());
         }
 
         if (variable->HasFlag(varbinder::VariableFlags::INIT_IN_STATIC_BLOCK)) {

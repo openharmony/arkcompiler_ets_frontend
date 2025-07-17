@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,21 +13,9 @@
  * limitations under the License.
  */
 
-class A {
-    x: int = 444
+function main(): void {
+    const c = 0;
+    /* @@ label */++c;
 }
 
-let changeAbleVar = new A();
-
-changeAbleVar.x=333
-
-function bar(a:Readonly<A>){
-    /* @@ label */a.x=111
-    console.log(a)
-}
-
-bar(changeAbleVar)
-
-
-/* @@@ label Error TypeError: Cannot assign to a readonly variable x  */
-/* @@@ label Error TypeError: The 'Readonly' property cannot be reassigned.  */
+/* @@@ label Error TypeError: Cannot assign to a constant variable c */
