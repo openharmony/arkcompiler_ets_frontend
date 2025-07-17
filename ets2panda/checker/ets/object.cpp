@@ -311,13 +311,14 @@ bool ETSChecker::CheckDefaultTypeParameter(const ir::TSTypeParameter *param, Typ
                 defaultTypePart->Name()->Check(this);
             }
             auto *const variable = defaultTypePart->GetIdent()->Variable();
-            ES2PANDA_ASSERT(variable != nullptr);
-            if (variable->TsType() == nullptr && (variable->Flags() & varbinder::VariableFlags::TYPE_PARAMETER) != 0U &&
+            auto defaultType = variable == nullptr ? defaultTypePart->TsType() : variable->TsType();
+            if (defaultType == nullptr && variable != nullptr &&
+                (variable->Flags() & varbinder::VariableFlags::TYPE_PARAMETER) != 0U &&
                 typeParameterDecls.count(variable) == 0U) {
                 LogError(diagnostic::TYPE_PARAM_USE_BEFORE_DEFINE,
                          {defaultTypePart->Name()->AsIdentifier()->Name().Utf8()}, node->Start());
                 ok = false;
-            } else if (variable->TsType() != nullptr && variable->TsType()->IsTypeError()) {
+            } else if (defaultType != nullptr && defaultType->IsTypeError()) {
                 ok = false;
             }
         }
