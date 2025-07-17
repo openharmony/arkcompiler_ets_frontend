@@ -1416,7 +1416,7 @@ static bool AppendSignatureInfoParam(ETSChecker *checker, SignatureInfo *sigInfo
     if (!param->IsOptional()) {
         ++sigInfo->minArgCount;
     }
-    ES2PANDA_ASSERT(!param->IsOptional() ||
+    ES2PANDA_ASSERT(!param->IsOptional() || param->Ident()->TsType()->IsTypeError() ||
                     checker->Relation()->IsSupertypeOf(param->Ident()->TsType(), checker->GlobalETSUndefinedType()));
     return true;
 }
