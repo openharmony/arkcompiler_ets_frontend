@@ -137,7 +137,7 @@ static ir::BlockStatement *CreateFunctionBody(ir::MethodDefinition *method, publ
     auto const allocator = ctx->allocator;
     ArenaVector<ir::Statement *> funcStatements(allocator->Adapter());
 
-    ES2PANDA_ASSERT(method->Id());
+    ES2PANDA_ASSERT(method->Id() != nullptr);
     auto *const callee =
         util::NodeAllocator::ForceSetParent<ir::Identifier>(allocator, method->Id()->Name(), allocator);
 
@@ -145,6 +145,7 @@ static ir::BlockStatement *CreateFunctionBody(ir::MethodDefinition *method, publ
     auto *paramInst = CreateTypeParameterInstantiation(method, ctx);
     auto *callExpression = util::NodeAllocator::ForceSetParent<ir::CallExpression>(
         allocator, accessor != nullptr ? accessor : callee, std::move(funcCallArgs), paramInst, false, false);
+    ES2PANDA_ASSERT(callExpression != nullptr);
     callExpression->SetRange(method->Range());  // NOTE: Used to locate the original node when an error occurs
     funcStatements.push_back(util::NodeAllocator::ForceSetParent<ir::ExpressionStatement>(allocator, callExpression));
 
@@ -185,14 +186,15 @@ static void CreateFunctionOverload(ir::MethodDefinition *method, ArenaVector<ir:
     auto const allocator = ctx->allocator;
     auto *funcExpression =
         CreateFunctionExpression(method, ctx, std::move(funcDefinitionArgs), std::move(funcCallArgs));
+    ES2PANDA_ASSERT(funcExpression != nullptr);
     auto *ident = funcExpression->Function()->Id()->Clone(allocator, nullptr);
     auto *const overloadMethod = util::NodeAllocator::ForceSetParent<ir::MethodDefinition>(
         allocator, method->Kind(), ident, funcExpression, method->Modifiers(), allocator, false);
 
+    ES2PANDA_ASSERT(overloadMethod != nullptr && overloadMethod->Function() != nullptr);
     overloadMethod->Function()->AddFlag(ir::ScriptFunctionFlags::OVERLOAD);
     overloadMethod->SetRange(funcExpression->Range());
 
-    ES2PANDA_ASSERT(overloadMethod->Function());
     if (!method->IsDeclare() && method->Parent()->IsTSInterfaceBody()) {
         overloadMethod->Function()->Body()->AsBlockStatement()->Statements().clear();
     }
@@ -238,6 +240,7 @@ static void ClearOptionalParameters(public_lib::Context *ctx, ir::ScriptFunction
 
 static void ProcessGlobalFunctionDefinition(ir::MethodDefinition *method, public_lib::Context *ctx)
 {
+    ES2PANDA_ASSERT(method->Function() != nullptr);
     auto allocator = ctx->allocator;
     ExpandOptionalParameterAnnotationsToUnions(ctx, method->Function());
     auto const &params = method->Function()->Params();
@@ -255,10 +258,12 @@ static void ProcessGlobalFunctionDefinition(ir::MethodDefinition *method, public
 
         for (size_t i = 0; i < params.size() - paramsToCut; ++i) {
             auto param = params[i]->AsETSParameterExpression();
-            callArgs.push_back(param->Ident()->CloneReference(allocator, nullptr)->AsIdentifier());
-            ES2PANDA_ASSERT(param->Ident()->Clone(allocator, nullptr));
-            functionParams.push_back(allocator->New<ir::ETSParameterExpression>(
-                param->Ident()->Clone(allocator, nullptr)->AsIdentifier(), false, allocator));
+            auto cloneRef = param->Ident()->CloneReference(allocator, nullptr);
+            auto clone = param->Ident()->Clone(allocator, nullptr);
+            ES2PANDA_ASSERT(cloneRef != nullptr && clone != nullptr);
+            callArgs.push_back(cloneRef->AsIdentifier());
+            functionParams.push_back(
+                allocator->New<ir::ETSParameterExpression>(clone->AsIdentifier(), false, allocator));
         }
 
         for (size_t i = params.size() - paramsToCut; i < params.size(); ++i) {

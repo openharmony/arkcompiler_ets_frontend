@@ -660,6 +660,7 @@ ir::AstNode *ConstantExpressionLowering::FoldUnaryBooleanConstant(ir::UnaryExpre
     }
 
     auto resNode = util::NodeAllocator::Alloc<ir::BooleanLiteral>(context_->allocator, result);
+    ES2PANDA_ASSERT(resNode != nullptr);
     resNode->SetParent(unary->Parent());
     resNode->SetRange(unary->Range());
     return resNode;

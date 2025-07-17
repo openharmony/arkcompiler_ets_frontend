@@ -159,6 +159,7 @@ checker::Type *ETSPrimitiveType::GetType([[maybe_unused]] checker::ETSChecker *c
 ETSPrimitiveType *ETSPrimitiveType::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     auto *const clone = allocator->New<ETSPrimitiveType>(type_, allocator);
+    ES2PANDA_ASSERT(clone != nullptr);
 
     if (parent != nullptr) {
         clone->SetParent(parent);
@@ -167,8 +168,9 @@ ETSPrimitiveType *ETSPrimitiveType::Clone(ArenaAllocator *const allocator, AstNo
     if (!Annotations().empty()) {
         ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
         for (auto *annotationUsage : Annotations()) {
-            ES2PANDA_ASSERT(annotationUsage->Clone(allocator, clone));
-            annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
+            auto *annotationClone = annotationUsage->Clone(allocator, clone);
+            ES2PANDA_ASSERT(annotationClone != nullptr);
+            annotationUsages.push_back(annotationClone->AsAnnotationUsage());
         }
         clone->SetAnnotations(std::move(annotationUsages));
     }
