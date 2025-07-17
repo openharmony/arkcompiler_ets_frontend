@@ -92,7 +92,8 @@
     "arkts-interop-js2s-call-js-method",
     "arkts-interop-js2s-instanceof-js-type",
     "arkts-interop-js2s-self-addtion-reduction",
-    "arkts-promise-with-void-type-need-undefined-as-resolve-arg"
+    "arkts-promise-with-void-type-need-undefined-as-resolve-arg",
+    "arkts-class-same-type-prop-with-super"
   ],
   "ArkUI": [
     "arkui-no-!!-bidirectional-data-binding",

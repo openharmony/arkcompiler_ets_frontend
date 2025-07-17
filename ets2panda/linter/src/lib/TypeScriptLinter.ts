@@ -7958,6 +7958,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       });
 
       this.handleMissingSuperCallInExtendedClass(node);
+      this.handleFieldTypesMatching(node);
     }
   }
 
@@ -9754,6 +9755,90 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     for (const spec of forbiddenNamed) {
       const autofix = this.autofixer?.removeImportSpecifier(spec, importDeclaration);
       this.incrementCounters(spec, FaultID.LimitedStdLibNoImportConcurrency, autofix);
+    }
+  }
+
+  /**
+   * Returns true if the union type members of subclass field's type
+   * exactly match those of the base class field's type (order-insensitive).
+   * So `number|string` ↔ `string|number` passes, but `number` ↔ `number|string` fails.
+   */
+  private isFieldTypeMatching(derivedType: ts.Type, baseType: ts.Type): boolean {
+    // Split union type strings into trimmed member names
+    const derivedNames = this.tsTypeChecker.
+      typeToString(derivedType).
+      split('|').
+      map((s) => {
+        return s.trim();
+      });
+    const baseNames = this.tsTypeChecker.
+      typeToString(baseType).
+      split('|').
+      map((s) => {
+        return s.trim();
+      });
+
+    // Only match if both unions contain exactly the same members
+    if (derivedNames.length !== baseNames.length) {
+      return false;
+    }
+    return (
+      derivedNames.every((name) => {
+        return baseNames.includes(name);
+      }) &&
+      baseNames.every((name) => {
+        return derivedNames.includes(name);
+      })
+    );
+  }
+
+  /**
+   * Checks that each field in a subclass matches the type of the same-named field
+   * in its base class. If the subclass field's type is not assignable to the
+   * base class field type, emit a diagnostic.
+   */
+  private handleFieldTypesMatching(node: ts.HeritageClause): void {
+    // Only process "extends" clauses
+    if (node.token !== ts.SyntaxKind.ExtendsKeyword) {
+      return;
+    }
+    const derivedClass = node.parent;
+    if (!ts.isClassDeclaration(derivedClass)) {
+      return;
+    }
+
+    // Locate the base class declaration
+    const baseExpr = node.types[0]?.expression;
+    if (!ts.isIdentifier(baseExpr)) {
+      return;
+    }
+    const baseSym = this.tsUtils.trueSymbolAtLocation(baseExpr);
+    const baseClassDecl = baseSym?.declarations?.find(ts.isClassDeclaration);
+    if (!baseClassDecl) {
+      return;
+    }
+
+    // Compare each property in the derived class against the base class
+    for (const member of derivedClass.members) {
+      if (!ts.isPropertyDeclaration(member) || !ts.isIdentifier(member.name) || !member.type) {
+        continue;
+      }
+      const propName = member.name.text;
+      const baseProp = baseClassDecl.members.find((m) => {
+        return ts.isPropertyDeclaration(m) && ts.isIdentifier(m.name) && m.name.text === propName && !!m.type;
+      }) as ts.PropertyDeclaration | undefined;
+      if (!baseProp) {
+        continue;
+      }
+
+      // Get the types
+      const derivedType = this.tsTypeChecker.getTypeAtLocation(member.type);
+      const baseType = this.tsTypeChecker.getTypeAtLocation(baseProp.type!);
+
+      // If the derived type is not assignable to the base type, report
+      if (!this.isFieldTypeMatching(derivedType, baseType)) {
+        this.incrementCounters(member.name, FaultID.FieldTypeMismatch);
+      }
     }
   }
 

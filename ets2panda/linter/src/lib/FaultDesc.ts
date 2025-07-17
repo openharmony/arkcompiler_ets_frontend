@@ -191,6 +191,7 @@ faultDesc[FaultID.EntryAnnotation] = '"@Entry" decorator parameter';
 faultDesc[FaultID.SdkAbilityLifecycleMonitor] =
   'UIAbility of 1.2 needs to be listened by the new StaticAbilityLifecycleCallback';
 faultDesc[FaultID.ProvideAnnotation] = '"@Provide" decorator parameter';
+faultDesc[FaultID.FieldTypeMismatch] = 'Mismatch field types';
 faultDesc[FaultID.InteropJsObjectInheritance] = 'Interop JS class inheritance';
 faultDesc[FaultID.InteropJsObjectTraverseJsInstance] = 'Interop JS object traverse usage';
 faultDesc[FaultID.InteropJsObjectCallStaticFunc] = 'Interop JS function usage';
