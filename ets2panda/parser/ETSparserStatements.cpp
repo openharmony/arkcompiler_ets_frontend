@@ -287,7 +287,9 @@ ir::Statement *ETSParser::ParseInitModuleStatement(StatementParsingFlags flags)
     // In order to build relationship between the current program and initModule program.
     importPathManager_->GatherImportMetadata(const_cast<parser::Program *>(GetContext().GetProgram()),
                                              util::ImportFlags::NONE, expr->Arguments().front()->AsStringLiteral());
-    return AllocNode<ir::ExpressionStatement>(expr);
+    auto initModuleStatement = AllocNode<ir::ExpressionStatement>(expr);
+    ConsumeSemicolon(initModuleStatement);
+    return initModuleStatement;
 }
 
 ir::Statement *ETSParser::ParseAnnotationsInStatement(StatementParsingFlags flags)
