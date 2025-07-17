@@ -22,4 +22,3 @@ class A {
 }
 
 /* @@? 20:12 Error SyntaxError: Unexpected return value. */
-/* @@? 20:12 Error TypeError: All return statements in the function should be empty or have a value. */

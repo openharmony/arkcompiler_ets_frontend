@@ -631,7 +631,7 @@ public:
     Type *GetNonConstantType(Type *type);
     checker::Type *GetElementTypeOfArray(checker::Type *type) const;
     const checker::Type *GetElementTypeOfArray(const checker::Type *type) const;
-    bool IsNullLikeOrVoidExpression(const ir::Expression *expr) const;
+    bool IsNullLikeExpression(const ir::Expression *expr) const;
     bool IsConstantExpression(ir::Expression *expr, Type *type);
     void ValidateUnaryOperatorOperand(varbinder::Variable *variable, ir::Expression *expr);
     void CheckFunctionSignatureAnnotations(const ArenaVector<ir::Expression *> &params,
@@ -769,6 +769,8 @@ public:
                                                     ArenaVector<ir::Expression *> &&args);
     Signature *FindRelativeExtensionGetter(ir::MemberExpression *const expr, ETSFunctionType *funcType);
     Signature *FindRelativeExtensionSetter(ir::MemberExpression *const expr, ETSFunctionType *funcType);
+    static bool IsTypeVoidOrUnionContainsVoid(const Type *const possibleVoidType);
+    void CheckVoidTypeExpression(const ir::Expression *expr);
     Type *GetExtensionAccessorReturnType(ir::MemberExpression *expr);
     // Utility type handler functions
     std::optional<ir::TypeNode *> GetUtilityTypeTypeParamNode(const ir::TSTypeParameterInstantiation *typeParams,

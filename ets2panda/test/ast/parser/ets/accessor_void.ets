@@ -16,5 +16,3 @@
 class A {
     get x/* @@ label */(): void { }
 }
-
-/* @@@ label Error TypeError: Getter must return a value  */

@@ -16,6 +16,4 @@
 class A{
     field_: int;
 }
-get /* @@ label */field(this: A){}
-
-/* @@@ label Error TypeError: Getter must return a value  */
+get field(this: A){}

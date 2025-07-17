@@ -775,7 +775,9 @@ void ETSGen::CheckedReferenceNarrowingObject(const ir::AstNode *node, const chec
 // Implemented on top of the runtime type system, do not relax checks, do not introduce new types
 void ETSGen::CheckedReferenceNarrowing(const ir::AstNode *node, const checker::Type *target)
 {
-    // NOTE(vpukhov): #19701 void refactoring
+    // NOTE(smartin): When void is returned FE validates to not use the value, so accumulator type won't ever be
+    // accessed. Currently setting the target type is necessary, because only in one case we allow this construction,
+    // when a function returns a call to another void function. This case will be eventually removed.
     if (target->IsETSVoidType()) {
         SetAccumulatorType(target);
         return;
@@ -1717,12 +1719,11 @@ void ETSGen::BranchIfNullish(const ir::AstNode *node, Label *ifNullish)
     auto *const type = GetAccumulatorType();
     ES2PANDA_ASSERT(type != nullptr);
 
-    if (type->IsETSVoidType()) {
-        // NOTE(): #19701 need void refactoring
-        Sa().Emit<Jmp>(node, ifNullish);
-    } else if (type->DefinitelyNotETSNullish()) {
-        // no action
-    } else if (type->DefinitelyETSNullish()) {
+    if (type->DefinitelyNotETSNullish()) {
+        return;
+    }
+
+    if (type->DefinitelyETSNullish()) {
         Sa().Emit<Jmp>(node, ifNullish);
     } else if (!type->PossiblyETSNull()) {
         Sa().Emit<JeqzObj>(node, ifNullish);
