@@ -159,6 +159,7 @@ ir::Statement *ObjectIteratorLowering::ProcessObjectIterator(public_lib::Context
         loopVariableIdent = declaration->Declarators().at(0U)->Id()->AsIdentifier()->Clone(allocator, nullptr);
     } else if (left->IsIdentifier()) {
         loopVariableIdent = Gensym(allocator);
+        ES2PANDA_ASSERT(loopVariableIdent != nullptr);
         loopVariableIdent->SetName(left->AsIdentifier()->Name());
     } else {
         ES2PANDA_UNREACHABLE();
@@ -167,7 +168,7 @@ ir::Statement *ObjectIteratorLowering::ProcessObjectIterator(public_lib::Context
 
     // Parse ArkTS code string and create corresponding AST nodes
     auto *const parser = ctx->parser->AsETSParser();
-    ES2PANDA_ASSERT(parser != nullptr);
+    ES2PANDA_ASSERT(parser != nullptr && nextIdent != nullptr && iterIdent != nullptr);
 
     auto *const loweringResult = parser->CreateFormattedStatement(
         whileStatement, iterIdent, forOfStatement->Right(), nextIdent, iterIdent->Clone(allocator, nullptr),

@@ -213,6 +213,7 @@ ir::ArrayExpression *CreateArrayExpression(public_lib::Context *ctx, const Arena
     for (auto tupleElementAnno : newRestParams) {
         auto &tupleElementName = tupleElementAnno->AsETSParameterExpression()->Ident()->AsIdentifier()->Name();
         ir::Expression *arg = ctx->AllocNode<ir::Identifier>(tupleElementName, allocator);
+        ES2PANDA_ASSERT(arg != nullptr);
         arg->SetParent(arrayExpr);
         elements.push_back(arg);
     }
@@ -268,7 +269,9 @@ ir::ScriptFunction *CreateNewScriptFunction(public_lib::Context *ctx, ir::Script
 
     ArenaVector<ir::AnnotationUsage *> annotationUsages {allocator->Adapter()};
     for (auto *annotationUsage : scriptFunc->Annotations()) {
-        annotationUsages.push_back(annotationUsage->Clone(allocator, newScriptFunc)->AsAnnotationUsage());
+        auto *newAnnotationUsage = annotationUsage->Clone(allocator, newScriptFunc);
+        ES2PANDA_ASSERT(newAnnotationUsage != nullptr);
+        annotationUsages.push_back(newAnnotationUsage->AsAnnotationUsage());
     }
     newScriptFunc->SetAnnotations(std::move(annotationUsages));
 

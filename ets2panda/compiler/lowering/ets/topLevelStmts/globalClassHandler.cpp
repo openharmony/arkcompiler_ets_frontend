@@ -159,6 +159,7 @@ ir::ClassDeclaration *GlobalClassHandler::CreateTransformedClass(ir::ETSModule *
 {
     auto className = ns->Ident()->Name();
     auto *ident = NodeAllocator::Alloc<ir::Identifier>(allocator_, className, allocator_);
+    ES2PANDA_ASSERT(ident != nullptr);
     ident->SetRange(ns->Ident()->Range());
 
     auto *classDef = NodeAllocator::Alloc<ir::ClassDefinition>(allocator_, allocator_, ident,
@@ -168,6 +169,8 @@ ir::ClassDeclaration *GlobalClassHandler::CreateTransformedClass(ir::ETSModule *
     classDef->SetRange(ns->Range());
     classDef->AddModifier(ns->Modifiers());
     auto *classDecl = NodeAllocator::Alloc<ir::ClassDeclaration>(allocator_, classDef, allocator_);
+    ES2PANDA_ASSERT(classDecl != nullptr);
+    classDecl->SetRange(ns->Range());
     classDecl->AddModifier(ns->Modifiers());
     classDef->SetNamespaceTransformed();
     ArenaVector<ir::AnnotationUsage *> annotations {allocator_->Adapter()};
@@ -427,6 +430,7 @@ ir::MethodDefinition *GlobalClassHandler::CreateGlobalMethod(const std::string_v
     const auto functionFlags = ir::ScriptFunctionFlags::NONE;
     auto functionModifiers = ir::ModifierFlags::STATIC | ir::ModifierFlags::PUBLIC;
     auto ident = NodeAllocator::Alloc<ir::Identifier>(allocator_, name, allocator_);
+    ES2PANDA_ASSERT(ident != nullptr);
     auto body = NodeAllocator::ForceSetParent<ir::BlockStatement>(allocator_, allocator_, std::move(statements));
     auto funcSignature = ir::FunctionSignature(nullptr, ArenaVector<ir::Expression *>(allocator_->Adapter()), nullptr);
 
@@ -439,9 +443,12 @@ ir::MethodDefinition *GlobalClassHandler::CreateGlobalMethod(const std::string_v
     func->AddModifier(functionModifiers);
 
     auto *funcExpr = NodeAllocator::Alloc<ir::FunctionExpression>(allocator_, func);
+    auto *identClone = ident->Clone(allocator_, nullptr);
+    ES2PANDA_ASSERT(identClone != nullptr);
     auto *methodDef = NodeAllocator::Alloc<ir::MethodDefinition>(allocator_, ir::MethodDefinitionKind::METHOD,
-                                                                 ident->Clone(allocator_, nullptr)->AsExpression(),
-                                                                 funcExpr, functionModifiers, allocator_, false);
+                                                                 identClone->AsExpression(), funcExpr,
+                                                                 functionModifiers, allocator_, false);
+    ES2PANDA_ASSERT(methodDef != nullptr);
     auto minBound = lexer::SourcePosition(globalProgram_);
     auto maxBound = lexer::SourcePosition(globalProgram_);
     if (!body->Statements().empty()) {
@@ -498,6 +505,7 @@ void GlobalClassHandler::AddInitCallToStaticBlock(ir::ClassDefinition *globalCla
 
     auto *blockBody = staticBlock->Function()->Body()->AsBlockStatement();
     auto exprStmt = NodeAllocator::Alloc<ir::ExpressionStatement>(allocator_, callExpr);
+    ES2PANDA_ASSERT(exprStmt != nullptr);
     exprStmt->SetParent(blockBody);
     blockBody->AddStatement(exprStmt);
 }
@@ -598,6 +606,7 @@ ir::ClassStaticBlock *GlobalClassHandler::CreateStaticBlock(ir::ClassDefinition 
 
     auto *funcExpr = NodeAllocator::Alloc<ir::FunctionExpression>(allocator_, func);
     auto *staticBlock = NodeAllocator::Alloc<ir::ClassStaticBlock>(allocator_, funcExpr, allocator_);
+    ES2PANDA_ASSERT(staticBlock != nullptr);
     staticBlock->AddModifier(ir::ModifierFlags::STATIC);
     staticBlock->SetRange({classDef->Start(), classDef->Start()});
     return staticBlock;
@@ -648,6 +657,7 @@ ir::ClassDeclaration *GlobalClassHandler::CreateGlobalClass(const parser::Progra
     const auto rangeToStartOfFile =
         lexer::SourceRange(lexer::SourcePosition(globalProgram), lexer::SourcePosition(globalProgram));
     auto *ident = NodeAllocator::Alloc<ir::Identifier>(allocator_, compiler::Signatures::ETS_GLOBAL, allocator_);
+    ES2PANDA_ASSERT(ident != nullptr);
     ident->SetRange(rangeToStartOfFile);
     auto *classDef =
         NodeAllocator::Alloc<ir::ClassDefinition>(allocator_, allocator_, ident, ir::ClassDefinitionModifiers::GLOBAL,
@@ -655,6 +665,7 @@ ir::ClassDeclaration *GlobalClassHandler::CreateGlobalClass(const parser::Progra
     ES2PANDA_ASSERT(classDef != nullptr);
     classDef->SetRange(rangeToStartOfFile);
     auto *classDecl = NodeAllocator::Alloc<ir::ClassDeclaration>(allocator_, classDef, allocator_);
+    ES2PANDA_ASSERT(classDecl != nullptr);
     classDecl->SetRange(rangeToStartOfFile);
 
     return classDecl;
