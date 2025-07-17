@@ -1077,6 +1077,15 @@ Variable *CatchScope::AddBinding(ArenaAllocator *allocator, Variable *currentVar
     return AddLocal(allocator, currentVariable, newDecl, extension);
 }
 
+Variable *CatchScope::FindLocal(const util::StringView &name, ResolveBindingOptions options) const
+{
+    auto res = Bindings().find(name);
+    if (res == Bindings().end()) {
+        return paramScope_->FindLocal(name, options);
+    }
+    return res->second;
+}
+
 template <typename T, typename... Args>
 Variable *Scope::PropagateBinding(ArenaAllocator *allocator, util::StringView name, Args &&...args)
 {
