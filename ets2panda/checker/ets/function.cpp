@@ -1953,7 +1953,7 @@ bool ETSChecker::CheckOverride(Signature *signature, ETSObjectType *site)
     auto *target = site->GetProperty(signature->Function()->Id()->Name(), flags);
     bool isOverridingAnySignature = false;
 
-    if (target == nullptr || target->TsType() == nullptr || !target->TsType()->IsETSFunctionType()) {
+    if (target == nullptr || target->TsType() == nullptr || target->TsType()->IsTypeError()) {
         return isOverridingAnySignature;
     }
 
