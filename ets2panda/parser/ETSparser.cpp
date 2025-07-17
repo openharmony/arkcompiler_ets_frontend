@@ -155,7 +155,7 @@ void ETSParser::ParseFileHeaderFlag(lexer::SourcePosition startLoc, ArenaVector<
 
     ir::Expression *fileHeaderFlag = ParseStringLiteral();
     auto *exprStatementNode = AllocNode<ir::ExpressionStatement>(fileHeaderFlag);
-
+    ES2PANDA_ASSERT(exprStatementNode != nullptr);
     exprStatementNode->SetRange({startLoc, fileHeaderFlag->End()});
     ConsumeSemicolon(exprStatementNode);
     if (statements != nullptr) {
