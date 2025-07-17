@@ -152,7 +152,7 @@ protected:
     void ValidateGroupedExpression(ir::Expression *lhsExpression);
     ir::Expression *ParseImportExpression();
     ir::Expression *ParseOptionalChain(ir::Expression *leftSideExpr);
-    ir::Expression *ParsePropertyKey(ExpressionParseFlags flags);
+    virtual ir::Expression *ParsePropertyKey(ExpressionParseFlags flags);
     void ValidateAssignmentTarget(ExpressionParseFlags flags, ir::Expression *node);
     void ValidateLvalueAssignmentTarget(ir::Expression *node);
     void ValidateArrowParameterBindings(const ir::Expression *node);
