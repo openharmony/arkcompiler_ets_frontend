@@ -81,10 +81,6 @@ semantic:
   id: 362
   message: "Ambiguous export '{}'"
 
-- name: AMBIGUOUS_FUNC_INIT
-  id: 154
-  message: "Ambiguous function initialization because of multiple overloads"
-
 - name: AMBIGUOUS_FUNC_REF
   id: 126
   message: "Reference to {} is ambiguous"
@@ -96,10 +92,6 @@ semantic:
 - name: AMBIGUOUS_UNION_TYPE_OP
   id: 255
   message: "Ambiguous union type operation"
-
-- name: ANALYSIS_ERRORS
-  id: 119
-  message: "There were errors during assign analysis ({})"
 
 - name: ANNOTATION_ARG_COUNT_MISMATCH
   id: 68
@@ -119,11 +111,11 @@ semantic:
 
 - name: ANNOTATION_ON_LAMBDA_LOCAL_TYPE
   id: 5
-  message: Annotations without 'SOURCE' cannot be used on lambda expressions, local declarations, or types.
+  message: "Annotations without 'SOURCE' cannot be used on lambda expressions, local declarations, or types."
 
 - name: ANNOTATION_POLICY_INVALID
   id: 4
-  message: Invalid value for 'policy' field. The policy must be one of the following:'SOURCE', 'CLASS', or 'RUNTIME'.
+  message: "Invalid value for 'policy' field. The policy must be one of the following:'SOURCE', 'CLASS', or 'RUNTIME'."
 
 - name: ANNOTATION_UNUSED_GENERIC_ALIAS
   id: 71
@@ -166,25 +158,13 @@ semantic:
   id: 227
   message: "Array element at index {} with type '{}' is not compatible with the target array element type '{}'"
 
-- name: ARRAY_ELEMENT_UNASSIGNABLE
-  id: 54
-  message: "Array element type '{}' is not assignable to explicit type '{}'"
-
 - name: ARRAY_LENGTH_MODIFICATION
   id: 24
   message: "Setting the length of an array is not permitted"
 
-- name: ARRAY_OF_NEVER
-  id: 22
-  message: "Cannot use array creation expression with never type."
-
 - name: ARROW_TYPE_MISMATCH
   id: 91
   message: "Type '{}' is not compatible with the enclosing method's return type '{}'"
-
-- name: ASSERT_MESSAGE_NOT_STRING
-  id: 30
-  message: "Assert message must be string"
 
 - name: ASSIGNMENT_INVALID_LHS
   id: 25
@@ -200,16 +180,12 @@ semantic:
 
 - name: ASYNC_FUNCTION_RETURN_TYPE
   id: 1
-  message: Return type of async function must be 'Promise'.
+  message: "Return type of async function must be 'Promise'."
   code_fix_ids: [FixReturnTypeInAsyncFunction]
 
 - name: AWAITED_NOT_PROMISE
   id: 303
   message: "'await' expressions require Promise object as argument."
-
-- name: BINOP_DYN_UNIMPLEMENTED
-  id: 112
-  message: "Unimplemented case in dynamic type comparison."
 
 - name: BINOP_INCOMPARABLE
   id: 114
@@ -219,17 +195,9 @@ semantic:
   id: 105
   message: "Operator '{}' cannot be applied to types '{}' and '{}'."
 
-- name: BINOP_MISMATCHED_ENUMS
-  id: 113
-  message: "Bad operand type, the types of the operands must be the same enum type."
-
 - name: BINOP_NONARITHMETIC_TYPE
   id: 108
   message: "Bad operand type, the types of the operands must be numeric type, enum or String."
-
-- name: BINOP_NOT_LOGICAL
-  id: 110
-  message: "Bad operand type, the types of the operands must be of possible condition type."
 
 - name: BINOP_NOT_REFERENCE
   id: 111
@@ -364,10 +332,6 @@ semantic:
   id: 314
   message: "'{}' is referenced directly or indirectly in its own initializer ot type annotation."
 
-- name: DEFAULT_DYNAMIC_IMPORT
-  id: 352
-  message: "Default import is currently not implemented in dynamic import"
-
 - name: DEFAULT_EXPORT_DIRECT_IMPORTED
   id: 353
   message: "Use the default import syntax to import a default exported element"
@@ -407,57 +371,19 @@ semantic:
   id: 382
   message: "Dymanic Type {} cannot be initialize with an object expression"
 
-- name: ENUMB_REFERENCE_VIA_VAR
-  id: 239
-  message: "Cannot refer to enum members through variable."
-
-- name: ENUM_CONST_MISSING_PROP
-  id: 240
-  message: "Enum constant does not have property '{}'."
-
 - name: ENUM_INVALID_DISCRIMINANT
   id: 162
   message: "Incompatible types. Found: {}, required: char , byte , short , int, long , Char , Byte , Short , Int, Long , String
     or an enum type"
-
-- name: ENUM_NO_SUCH_CONST
-  id: 241
-  message: "No enum constant named '{}' in enum '{}'"
-
-- name: ENUM_NO_SUCH_METHOD
-  id: 242
-  message: "No enum item method called '{}'"
-
-- name: ENUM_NO_SUCH_STATIC_METHOD
-  id: 243
-  message: "No enum type method called '{}'"
-
-- name: ENUM_REFERENCE_VIA_ALIAS
-  id: 238
-  message: "Cannot refer to enum members through type alias."
-
-- name: ENUM_TYPE_INVALID
-  id: 35
-  message: "Invalid enumeration value type."
 
 - name: ERROR_ARKTS_NO_CONDITIONAL_TYPES
   id: 136365
   message: "Conditional type aliases are not supported. Introduce a new type with constraints explicitly, or rewrite logic
     using Object!"
 
-- name: ERROR_ARKTS_NO_DECLARATION_MERGING
-  id: 341
-  message: "Merging declarations is not supported, please keep all definitions of classes, interfaces and enums compact in
-    the codebase!"
-
 - name: ERROR_ARKTS_NO_ENUM_MIXED_TYPES
   id: 342
   message: "Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type."
-
-- name: ERROR_ARKTS_NO_LITERAL_INITIALIZATION_WITHOUT_PARAMETERLESS_CONSTRUCTOR
-  id: 340
-  message: "Initialization with literals is not supported if the type has no parameterless constructor. Declare the parameterless
-    constructor explicitly or remove parametered constructors!"
 
 - name: ERROR_ARKTS_NO_PROPERTIES_BY_INDEX
   id: 343
@@ -499,14 +425,6 @@ semantic:
   id: 176
   message: "The super type of '{}' class is not extensible."
   code_fix_ids: [extendsInterfaceBecomesImplements]
-
-- name: EXTENDS_NON_OBJECT
-  id: 185
-  message: "Extends constraint must be an object"
-
-- name: EXTEND_DYNAMIC
-  id: 102
-  message: "Class {} shouldn't extend dynamic class."
 
 - name: EXTENSION_ACCESSOR_INVALID_CALL
   id: 59
@@ -554,10 +472,6 @@ semantic:
   id: 161
   message: "Control flow redirection statement can not be used out of loop or switch statement."
 
-- name: FOROF_CANT_INFER_SOURCE
-  id: 75
-  message: "Cannot determine source expression type in the 'for-of' statement."
-
 - name: FOROF_SOURCE_NONITERABLE
   id: 76
   message: "'For-of' statement source expression is not of iterable type."
@@ -578,21 +492,9 @@ semantic:
   id: 17
   message: "Only abstract or native methods can't have body."
 
-- name: FUNC_EXPR_INVALID
-  id: 16
-  message: "Invalid function expression"
-
-- name: GENERIC_ALIAS_PARAM_COUNT_MISMATCH
-  id: 157
-  message: "Wrong number of type parameters for generic type alias"
-
 - name: GENERIC_ALIAS_WITHOUT_PARAMS
   id: 155
   message: "Type alias declaration is generic, but too few type arguments were provided"
-
-- name: GENERIC_ERROR_OR_EXCEPTION
-  id: 214
-  message: "Generics are not allowed as '{}' or '{}' subclasses."
 
 - name: GENERIC_TYPE_PARAM_COUNT_MISMATCH
   id: 171
@@ -630,10 +532,6 @@ semantic:
   id: 315
   message: "Interface '{}' cannot simultaneously extend types '{}' and '{}'."
 
-- name: ILLEGAL_NON_NULLISH_TYPE
-  id: 339
-  message: "Only type parameters can be used as a nonnullish type"
-
 - name: ILLEGAL_UNARY_OP
   id: 11
   message: "Illegal unary operator."
@@ -641,14 +539,6 @@ semantic:
 - name: IMPORTED_NOT_EXPORTED
   id: 355
   message: "Imported element not exported '{}'"
-
-- name: IMPORTING_NONEXPORTED_TYPE
-  id: 354
-  message: "Cannot import '{}', imported type imports only exported types."
-
-- name: IMPORT_ARG_NOT_STRING
-  id: 302
-  message: "'import' expressions require string as argument."
 
 - name: IMPORT_NOT_FOUND
   id: 356
@@ -686,18 +576,6 @@ semantic:
   id: 132
   message: "The type of parameter '{}' cannot be inferred"
 
-- name: INFER_FAIL_FOR_LAMBDA_SIG
-  id: 254
-  message: "Cannot deduce call signature"
-
-- name: INFER_FAIL_ON_LAMBDA
-  id: 237
-  message: "Cannot infer arrow function type from context for type: '{}', consider adding type explicitly"
-
-- name: INFER_FAIL_ON_PARAM
-  id: 222
-  message: "The type of parameter '{}' cannot be inferred."
-
 - name: INHERITED_CLASS_TYPE_MISMATCH
   id: 216
   message: "Cannot inherit from class {}, because {} {} is inherited with a different declaration type"
@@ -725,10 +603,6 @@ semantic:
 - name: INSTANCEOF_NONOBJECT
   id: 296
   message: "Using the 'instance of' operator with non-object type '{}'"
-
-- name: INSTANCEOF_NOT_TYPE
-  id: 116
-  message: "Right-hand side of instanceof expression must represent a type."
 
 - name: INTERFACE_EXTENDS_CLASS
   id: 378
@@ -760,7 +634,7 @@ semantic:
 
 - name: INVALID_ANNOTATION_RETENTION
   id: 3
-  message: Annotation '@Retention' can only be applied to annotation declarations.
+  message: "Annotation '@Retention' can only be applied to annotation declarations."
 
 - name: INVALID_ASSIGNMNENT
   id: 318
@@ -826,10 +700,6 @@ semantic:
   id: 299
   message: "Invalid type reference."
 
-- name: INVISIBLE_INDEX_ACCESSOR
-  id: 268
-  message: "Index access method is not visible here."
-
 - name: INVISIBLE_ITERATOR
   id: 272
   message: "Iterator method is not visible here."
@@ -857,7 +727,6 @@ semantic:
 - name: LATE_INITIALIZATION_FIELD_HAS_INVALID_TYPE
   id: 376
   message: "Late-initialized field cannot be nullish types or possibly nullish types."
-
 
 - name: LOCAL_CLASS_INVALID_CTX
   id: 191
@@ -912,10 +781,6 @@ semantic:
   id: 394
   message: "Class methods cannot be overwritten."
 
-- name: METHOD_WRONG_CTX
-  id: 213
-  message: "Method used in wrong context"
-
 - name: MISSING_EXTENSION_ACCESSOR
   id: 246
   message: "Can't find the extension accessor."
@@ -923,10 +788,6 @@ semantic:
 - name: MISSING_INDEX_ACCESSOR_WITH_SIG
   id: 251
   message: "Cannot find index access method with the required signature."
-
-- name: MISSING_INIT_FOR_PARAM
-  id: 253
-  message: "Expected initializer for parameter {}."
 
 - name: MISSING_ITERATOR_METHOD
   id: 258
@@ -949,10 +810,6 @@ semantic:
 - name: MISSING_RETURN_TYPE
   id: 18
   message: "Native and Declare methods should have explicit return type."
-
-- name: MISSING_RETURN_TYPE_2
-  id: 95
-  message: "'{}' doesn't have return type."
 
 - name: MIXED_VOID_NONVOID
   id: 92
@@ -977,10 +834,6 @@ semantic:
 - name: NAMESPACE_CALL
   id: 295
   message: "Namespace style identifier {} is not callable."
-
-- name: NATIVE_WITHOUT_RETURN
-  id: 15
-  message: "'Native' method should have explicit return type"
 
 - name: NATIVE_WITH_BODY
   id: 84
@@ -1052,7 +905,7 @@ semantic:
 
 - name: NO_CALL_SIGNATURE
   id: 2
-  message: Type '{}' has no call signatures.
+  message: "Type '{}' has no call signatures."
   code_fix_ids: [FixAddMissingNewOperator]
 
 - name: NO_INDEX_ACCESS_METHOD
@@ -1128,10 +981,6 @@ semantic:
   id: 107
   message: "Bad operand type, the types of the operands must be numeric type."
 
-- name: OVERLOADED_FUNCTION_REFERENCE
-  id: 229
-  message: "Overloaded function identifier '{}' can not be used as value"
-
 - name: OVERLOADED_MAIN
   id: 373
   message: "Main overload is not enabled"
@@ -1139,10 +988,6 @@ semantic:
 - name: OVERLOADED_METHOD_AS_VALUE
   id: 307
   message: "Overloaded method is used as value"
-
-- name: OVERLOADED_NAME_MUST_ALSO_EXPORTED
-  id: 390
-  message: "Overload alias is exported, then overload functions must also be exported."
 
 - name: OVERLOADED_NAME_MUST_FUNCTION
   id: 384
@@ -1159,10 +1004,6 @@ semantic:
 - name: OVERLOAD_MUST_BOTH_CONSTRUCT
   id: 388
   message: "The overload alias and the overloaded method must either both be constructors or both be non-constructors."
-
-- name: OVERLOAD_NAME_MUST_BE_IDENTIFIER
-  id: 383
-  message: "The name of overload declaration should be an identifier."
 
 - name: OVERLOAD_SAME_ACCESS_MODIFIERS
   id: 386
@@ -1220,7 +1061,6 @@ semantic:
   id: 145
   message: "Property '{}' must be accessed through 'this'"
   code_fix_ids: [ForgottenThisPropertyAccess]
-
 
 - name: PROP_ASSIGN_TO_NUMERIC_INDEX
   id: 324
@@ -1310,10 +1150,6 @@ semantic:
   id: 31
   message: "Only extension function or a class method can return 'this'"
 
-- name: RETURN_TYPE_MISMATCH
-  id: 90
-  message: "Return statement type is not compatible with the enclosing method's return type."
-
 - name: RETURN_WITHOUT_VALUE
   id: 32
   message: "Missing return value."
@@ -1325,10 +1161,6 @@ semantic:
 - name: SETTER_MISSING_IMPL
   id: 189
   message: "{} is not abstract and does not implement setter for {} property in {}"
-
-- name: SETTER_NONVOID
-  id: 85
-  message: "Setter must have void return type"
 
 - name: SIG_INVISIBLE
   id: 139
@@ -1348,7 +1180,7 @@ semantic:
 
 - name: STANDARD_ANNOTATION_REQUIRED
   id: 6
-  message: Only standard annotations are allowed to be applied on annotations.
+  message: "Only standard annotations are allowed to be applied on annotations."
 
 - name: STATIC_INIT_IN_NESTED_CLASS
   id: 14
@@ -1410,17 +1242,9 @@ semantic:
   id: 235
   message: "Using {} is not allowed in constructor"
 
-- name: THIS_OUTSIDE_METHOD_CTX
-  id: 138
-  message: "Cannot reference 'this' in this context."
-
 - name: TUPLEN_NOT_IMPLEMENTED
   id: 279
   message: "Tuple types with arity >16 are not yet implemented"
-
-- name: TUPLE_CONVERSION_FAILURE
-  id: 325
-  message: "Tuple type couldn't be converted "
 
 - name: TUPLE_INDEX_NONCONST
   id: 199
@@ -1480,7 +1304,7 @@ semantic:
 
 - name: TYPE_PARAMETER_AS_ARRAY_ELEMENT_TYPE
   id: 7
-  message: Cannot use array creation expression with type parameter.
+  message: "Cannot use array creation expression with type parameter."
 
 - name: TYPE_PARAM_CIRCULAR_CONSTRAINT
   id: 184
@@ -1493,14 +1317,6 @@ semantic:
 - name: TYPE_PARAM_USE_BEFORE_DEFINE
   id: 183
   message: "Type Parameter {} should be defined before use."
-
-- name: UNCALLABLE_TYPE
-  id: 60
-  message: "Type '{}' has no call signatures."
-
-- name: UNDEFINED_METHOD
-  id: 212
-  message: "Method {} does not exist on this type."
 
 - name: UNDEFINED_PROPERTY
   id: 65
@@ -1530,17 +1346,9 @@ semantic:
   id: 93
   message: "'{}' shouldn't have void return type."
 
-- name: UNIMPLEMENTED_REST_TUPLE
-  id: 328
-  message: "Tuple types for rest arguments are not yet implemented"
-
 - name: UNION_MEMBER_ILLEGAL_TYPE
   id: 245
   message: "Type {} is illegal in union member expression."
-
-- name: UNION_METHOD_SIGNATURE
-  id: 348
-  message: "Union constituent types should have only one common method signature."
 
 - name: UNION_NONCONSTRUCTIBLE
   id: 300
@@ -1609,9 +1417,56 @@ semantic:
 
 graveyard:
 - 8
+- 15
+- 16
+- 22
 - 29
+- 30
+- 35
+- 54
+- 60
+- 75
+- 85
+- 90
+- 95
+- 102
+- 110
+- 112
+- 113
+- 116
+- 119
+- 138
+- 154
+- 157
 - 167
+- 185
+- 212
+- 213
+- 214
+- 222
+- 229
 - 233
 - 234
+- 237
+- 238
+- 239
+- 240
+- 241
+- 242
+- 243
+- 253
+- 254
+- 268
 - 271
+- 302
+- 325
+- 328
+- 339
+- 340
+- 341
+- 348
+- 352
+- 354
+- 383
+- 390
 # See ets_frontend/ets2panda/util/diagnostic/README.md before contributing.
