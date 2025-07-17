@@ -2896,9 +2896,12 @@ checker::Type *ETSAnalyzer::Check(ir::AnnotationDeclaration *st) const
         }
     }
 
-    auto *annoDecl = st->GetBaseName()->Variable()->Declaration()->Node()->AsAnnotationDeclaration();
-    if (annoDecl != st && annoDecl->IsDeclare()) {
-        checker->CheckAmbientAnnotation(st, annoDecl);
+    auto baseName = st->GetBaseName();
+    if (!baseName->IsErrorPlaceHolder()) {
+        auto *annoDecl = baseName->Variable()->Declaration()->Node()->AsAnnotationDeclaration();
+        if (annoDecl != st && annoDecl->IsDeclare()) {
+            checker->CheckAmbientAnnotation(st, annoDecl);
+        }
     }
 
     return ReturnTypeForStatement(st);
@@ -2912,13 +2915,17 @@ checker::Type *ETSAnalyzer::Check(ir::AnnotationUsage *st) const
     ETSChecker *checker = GetETSChecker();
     st->Expr()->Check(checker);
 
-    if (st->GetBaseName()->Variable() == nullptr ||
-        !st->GetBaseName()->Variable()->Declaration()->Node()->IsAnnotationDeclaration()) {
-        checker->LogError(diagnostic::NOT_AN_ANNOTATION, {st->GetBaseName()->Name()}, st->GetBaseName()->Start());
+    auto *baseName = st->GetBaseName();
+    if (baseName->Variable() == nullptr || !baseName->Variable()->Declaration()->Node()->IsAnnotationDeclaration()) {
+        if (!baseName->IsErrorPlaceHolder()) {
+            checker->LogError(diagnostic::NOT_AN_ANNOTATION, {baseName->Name()}, baseName->Start());
+        }
+
+        ES2PANDA_ASSERT(checker->IsAnyError());
         return ReturnTypeForStatement(st);
     }
 
-    auto *annoDecl = st->GetBaseName()->Variable()->Declaration()->Node()->AsAnnotationDeclaration();
+    auto *annoDecl = baseName->Variable()->Declaration()->Node()->AsAnnotationDeclaration();
     annoDecl->Check(checker);
 
     ArenaUnorderedMap<util::StringView, ir::ClassProperty *> fieldMap {checker->ProgramAllocator()->Adapter()};
@@ -2940,7 +2947,7 @@ checker::Type *ETSAnalyzer::Check(ir::AnnotationUsage *st) const
         checker->CheckSinglePropertyAnnotation(st, annoDecl);
         fieldMap.clear();
     } else {
-        checker->CheckMultiplePropertiesAnnotation(st, st->GetBaseName()->Name(), fieldMap);
+        checker->CheckMultiplePropertiesAnnotation(st, baseName->Name(), fieldMap);
     }
 
     checker->ProcessRequiredFields(fieldMap, st, checker);
