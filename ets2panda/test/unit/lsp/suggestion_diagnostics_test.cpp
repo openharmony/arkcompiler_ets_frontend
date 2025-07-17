@@ -134,13 +134,13 @@ TEST_F(LspSuggestionTests, GetSuggestionDiagnostics)
     Initializer initializer = Initializer();
     es2panda_Context *context = initializer.CreateContext("sug-diag.ets", ES2PANDA_STATE_CHECKED, source);
     auto ast = GetAstFromContext<ark::es2panda::ir::AstNode>(context);
-    auto diag = ark::es2panda::lsp::GetSuggestionDiagnosticsImpl(ast);
+    auto diag = ark::es2panda::lsp::GetSuggestionDiagnosticsImpl(ast, context);
     const auto message = "This_may_be_converted_to_an_async_function";
     auto severity = DiagnosticSeverity::Hint;
-    int const startLine = 0;
-    int const endLine = 2;
-    int const startChar = 9;
-    int const endChar = 52;
+    int const startLine = 1;
+    int const endLine = 3;
+    int const startChar = 1;
+    int const endChar = 3;
     ASSERT_EQ(diag.at(0).diagnostic.range_.start.line_, startLine);
     ASSERT_EQ(diag.at(0).diagnostic.range_.end.line_, endLine);
     ASSERT_EQ(diag.at(0).diagnostic.range_.start.character_, startChar);
@@ -162,16 +162,49 @@ TEST_F(LspSuggestionTests, GetSuggestionDiagnostics2)
     initializer.DestroyContext(ctx);
     const auto msg = "This_may_be_converted_to_an_async_function";
     auto severity = DiagnosticSeverity::Hint;
-    int const startLine = 0;
-    int const endLine = 2;
-    int const startChar = 9;
-    int const endChar = 52;
+    int const startLine = 1;
+    int const endLine = 3;
+    int const startChar = 1;
+    int const endChar = 3;
     ASSERT_EQ(diag.diagnostic.at(0).range_.start.line_, startLine);
     ASSERT_EQ(diag.diagnostic.at(0).range_.end.line_, endLine);
     ASSERT_EQ(diag.diagnostic.at(0).range_.start.character_, startChar);
     ASSERT_EQ(diag.diagnostic.at(0).range_.end.character_, endChar);
     ASSERT_EQ(diag.diagnostic.at(0).message_, msg);
     ASSERT_EQ(diag.diagnostic.at(0).severity_, severity);
+}
+
+TEST_F(LspSuggestionTests, GetSuggestionDiagnosticsFixCrash1)
+{
+    Initializer initializer = Initializer();
+    std::vector<std::string> files = {"GetSuggestionDiagnosticsFixCrash1.ets"};
+    std::vector<std::string> texts = {R"delimiter(
+build() {
+    Column() {
+        ForEach(
+            (item: image.PixelMap, index?: number) => {
+                ListItem() {
+                    Column() {
+                        Text('image' + index)
+                    }
+                    .margin(15)
+                }
+                .width('100%')
+            }
+        )
+    }
+}
+)delimiter"};
+    auto filePaths = CreateTempFile(files, texts);
+
+    int const expectedFileCount = 1;
+    ASSERT_EQ(filePaths.size(), expectedFileCount);
+    LSPAPI const *lspApi = GetImpl();
+    auto ctx = initializer.CreateContext(filePaths[0].c_str(), ES2PANDA_STATE_CHECKED);
+    auto diag = lspApi->getSuggestionDiagnostics(ctx);
+    initializer.DestroyContext(ctx);
+    int const expectSize = 0;
+    ASSERT_EQ(diag.diagnostic.size(), expectSize);
 }
 
 TEST_F(LspSuggestionTests, isPromiseHandler)

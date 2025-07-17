@@ -346,7 +346,7 @@ DiagnosticReferences GetSuggestionDiagnostics(es2panda_Context *context)
     auto ctx = reinterpret_cast<public_lib::Context *>(context);
     SetPhaseManager(ctx->phaseManager);
     auto ast = ctx->parserProgram->Ast();
-    auto vec = GetSuggestionDiagnosticsImpl(ast);
+    auto vec = GetSuggestionDiagnosticsImpl(ast, context);
     res.diagnostic.reserve(vec.size());
     for (const auto &diag : vec) {
         res.diagnostic.push_back(diag.diagnostic);
