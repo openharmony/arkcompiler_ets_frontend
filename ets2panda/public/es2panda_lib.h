@@ -233,6 +233,7 @@ struct CAPI_EXPORT es2panda_Impl {
     es2panda_SourcePosition *(*CreateSourcePosition)(es2panda_Context *context, size_t index, size_t line);
     es2panda_SourceRange *(*CreateSourceRange)(es2panda_Context *context, es2panda_SourcePosition *start,
                                                es2panda_SourcePosition *end);
+    size_t (*SourcePositionCol)(es2panda_Context *context, es2panda_SourcePosition *position);
     size_t (*SourcePositionIndex)(es2panda_Context *context, es2panda_SourcePosition *position);
     size_t (*SourcePositionLine)(es2panda_Context *context, es2panda_SourcePosition *position);
     es2panda_SourcePosition *(*SourceRangeStart)(es2panda_Context *context, es2panda_SourceRange *range);

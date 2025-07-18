@@ -14,6 +14,7 @@
  */
 
 #include "es2panda_lib.h"
+#include <cstddef>
 #include <cstring>
 #include <cstdint>
 
@@ -1030,6 +1031,16 @@ extern "C" bool IsAnyError(es2panda_Context *context)
     return reinterpret_cast<Context *>(context)->diagnosticEngine->IsAnyError();
 }
 
+extern "C" size_t SourcePositionCol([[maybe_unused]] es2panda_Context *context, es2panda_SourcePosition *position)
+{
+    static const size_t EMPTY = 1;
+    auto es2pandaPosition = reinterpret_cast<lexer::SourcePosition *>(position);
+    if (es2pandaPosition->Program() == nullptr) {
+        return EMPTY;
+    }
+    return es2pandaPosition->ToLocation().col;
+}
+
 extern "C" size_t SourcePositionIndex([[maybe_unused]] es2panda_Context *context, es2panda_SourcePosition *position)
 {
     return reinterpret_cast<lexer::SourcePosition *>(position)->index;
@@ -1357,6 +1368,7 @@ es2panda_Impl g_impl = {
     AllocMemory,
     CreateSourcePosition,
     CreateSourceRange,
+    SourcePositionCol,
     SourcePositionIndex,
     SourcePositionLine,
     SourceRangeStart,

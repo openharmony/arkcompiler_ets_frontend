@@ -105,6 +105,7 @@ set(PLUGIN_TESTS
     "plugin_proceed_to_state_update_function_expression compile.ets ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
     "plugin_proceed_to_state_create_ets_new_expression compile.ets ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
     "plugin_proceed_to_state_log_diagnostic_with_suggestion compile.ets ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
+    "use_plugin_to_test_column_number compile.ets ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
     "plugin_proceed_to_state_check_jsdoc compile.ets ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
     "plugin_proceed_to_state_check_recheck_trailinglambda compile.ets ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
     "plugin_proceed_to_state_test_global_func_call_dump compile.ets ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
