@@ -308,10 +308,14 @@ static bool HasIteratorInterface(ETSObjectType const *const objectType)
 }
 
 void CheckIteratorMethodReturnType(ETSChecker *checker, ir::ScriptFunction *scriptFunc,
-                                   const lexer::SourcePosition &position,
-                                   [[maybe_unused]] const std::string &methodName)
+                                   const lexer::SourcePosition &position, const std::string &methodName)
 {
     const auto *returnType = scriptFunc->Signature()->ReturnType()->MaybeBaseTypeOfGradualType();
+
+    if (returnType == nullptr) {
+        checker->LogError(diagnostic::MISSING_RETURN_TYPE_2, {util::StringView(methodName)}, position);
+        return;
+    }
 
     if (returnType->IsETSTypeParameter()) {
         returnType = checker->GetApparentType(returnType->AsETSTypeParameter()->GetConstraintType());
@@ -366,6 +370,12 @@ checker::Signature *ResolveCallExtensionFunction(checker::Type *functionType, ch
         auto *signature = checker->ResolveCallExpressionAndTrailingLambda(signatures, expr, expr->Start(), reportFlag);
         if (signature == nullptr) {
             expr->Arguments().erase(expr->Arguments().begin());
+            return nullptr;
+        }
+        if (!signature->HasSignatureFlag(SignatureFlags::EXTENSION_FUNCTION)) {
+            checker->LogError(diagnostic::PROPERTY_NONEXISTENT,
+                              {memberExpr->Property()->AsIdentifier()->Name(), memberExpr->ObjType()->Name()},
+                              memberExpr->Property()->Start());
             return nullptr;
         }
 
@@ -612,6 +622,14 @@ bool CheckReturnType(ETSChecker *checker, checker::Type *funcReturnType, checker
             checker->LogError(diagnostic::UNEXPECTED_VALUE_RETURN, {}, stArgument->Start());
             return false;
         }
+        if (!checker::AssignmentContext(checker->Relation(), stArgument, argumentType, funcReturnType,
+                                        stArgument->Start(), std::nullopt,
+                                        checker::TypeRelationFlag::DIRECT_RETURN | checker::TypeRelationFlag::NO_THROW)
+                 // CC-OFFNXT(G.FMT.02) project code style
+                 .IsAssignable()) {
+            checker->LogError(diagnostic::RETURN_TYPE_MISMATCH, {}, stArgument->Start());
+            return false;
+        }
         return true;
     }
 
@@ -655,6 +673,22 @@ checker::Type *InferReturnType(ETSChecker *checker, ir::ScriptFunction *containi
     return () => {}
     ```
     */
+    if (stArgument != nullptr && stArgument->IsArrowFunctionExpression()) {
+        auto arrowFunc = stArgument->AsArrowFunctionExpression();
+        auto typeAnnotation = arrowFunc->CreateTypeAnnotation(checker);
+
+        auto *argumentType = arrowFunc->TsType();
+        ES2PANDA_ASSERT(typeAnnotation != nullptr);
+        funcReturnType = typeAnnotation->GetType(checker);
+        if (!checker::AssignmentContext(checker->Relation(), arrowFunc, argumentType, funcReturnType,
+                                        stArgument->Start(), std::nullopt,
+                                        checker::TypeRelationFlag::DIRECT_RETURN | checker::TypeRelationFlag::NO_THROW)
+                 // CC-OFFNXT(G.FMT.02) project code style
+                 .IsAssignable()) {
+            checker->LogError(diagnostic::ARROW_TYPE_MISMATCH, {argumentType, funcReturnType}, stArgument->Start());
+            return checker->GlobalTypeError();
+        }
+    }
 
     containingFunc->Signature()->SetReturnType(funcReturnType);
     containingFunc->Signature()->RemoveSignatureFlag(checker::SignatureFlags::NEED_RETURN_TYPE);

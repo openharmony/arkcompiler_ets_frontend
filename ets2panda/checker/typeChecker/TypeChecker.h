@@ -50,6 +50,9 @@ private:
 class ETSTypeChecker : public TypeChecker {
 public:
     explicit ETSTypeChecker(Checker *checker) : TypeChecker(checker) {}
+
+private:
+    void VisitArrowFunctionExpression(ir::ArrowFunctionExpression *node) override;
 };
 
 class JSTypeChecker : public TypeChecker {
