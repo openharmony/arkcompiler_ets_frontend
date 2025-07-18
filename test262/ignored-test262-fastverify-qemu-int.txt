@@ -165,3 +165,6 @@ test262/data/test_es2021/intl402/DisplayNames/options-style-toString-abrupt-thro
 
 #25907
 test262/data/test_es2021/built-ins/Object/create/15.2.3.5-4-194.js
+
+#27389
+test262/data/test_es2021/built-ins/Array/prototype/reduce/call-with-boolean.js
