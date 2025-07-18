@@ -1301,23 +1301,23 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   }
 
   private handlePropertyAccessExpression(node: ts.Node): void {
-    this.handleMakeObserved(node as ts.PropertyAccessExpression);
-    this.handleStateStyles(node as ts.PropertyAccessExpression);
-    this.handleDoubleDollar(node);
-    this.handleQuotedHyphenPropsDeprecated(node as ts.PropertyAccessExpression);
-    this.handleSdkTypeQuery(node as ts.PropertyAccessExpression);
-    this.checkUnionTypes(node as ts.PropertyAccessExpression);
-    this.handleLimitedVoidTypeFromSdkOnPropertyAccessExpression(node as ts.PropertyAccessExpression);
-    this.checkDepricatedIsConcurrent(node as ts.PropertyAccessExpression);
-    this.propertyAccessExpressionForBuiltin(node as ts.PropertyAccessExpression);
-    this.checkConstrutorAccess(node as ts.PropertyAccessExpression);
-    this.handleTaskPoolDeprecatedUsages(node as ts.PropertyAccessExpression);
-    this.handleNoTuplesArraysForPropertyAccessExpression(node as ts.PropertyAccessExpression);
-    this.handleUnsafeOptionalCallComparison(node as ts.PropertyAccessExpression);
-    if (ts.isCallExpression(node.parent) && node === node.parent.expression) {
+    const propertyAccessNode = node as ts.PropertyAccessExpression;
+    this.handleMakeObserved(propertyAccessNode);
+    this.handleStateStyles(propertyAccessNode);
+    this.handleDoubleDollar(propertyAccessNode);
+    this.handleQuotedHyphenPropsDeprecated(propertyAccessNode);
+    this.handleSdkTypeQuery(propertyAccessNode);
+    this.checkUnionTypes(propertyAccessNode);
+    this.handleLimitedVoidTypeFromSdkOnPropertyAccessExpression(propertyAccessNode);
+    this.checkDepricatedIsConcurrent(propertyAccessNode);
+    this.propertyAccessExpressionForBuiltin(propertyAccessNode);
+    this.checkConstrutorAccess(propertyAccessNode);
+    this.handleTaskPoolDeprecatedUsages(propertyAccessNode);
+    this.handleNoTuplesArraysForPropertyAccessExpression(propertyAccessNode);
+    this.handleUnsafeOptionalCallComparison(propertyAccessNode);
+    if (ts.isCallExpression(propertyAccessNode.parent) && propertyAccessNode === propertyAccessNode.parent.expression) {
       return;
     }
-    const propertyAccessNode = node as ts.PropertyAccessExpression;
     const exprSym = this.tsUtils.trueSymbolAtLocation(propertyAccessNode);
     const baseExprSym = this.tsUtils.trueSymbolAtLocation(propertyAccessNode.expression);
     const baseExprType = this.tsTypeChecker.getTypeAtLocation(propertyAccessNode.expression);
@@ -4192,6 +4192,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (!ts.isIdentifier(node)) {
       return;
     }
+    this.checkCollectionsSymbol(node);
     this.handleInterfaceImport(node);
     this.checkAsonSymbol(node);
     const tsIdentifier = node;
@@ -4211,8 +4212,12 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
 
     const isArkTs2 = this.options.arkts2;
-    const isGlobalThis = tsIdentifier.text === 'globalThis';
+    if (isArkTs2) {
+      this.checkWorkerSymbol(tsIdentSym, node);
+      this.checkConcurrencySymbol(tsIdentSym, node);
+    }
 
+    const isGlobalThis = tsIdentifier.text === 'globalThis';
     if (
       isGlobalThis &&
       (tsIdentSym.flags & ts.SymbolFlags.Module) !== 0 &&
@@ -4228,12 +4233,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
     if (isArkTs2 && this.tsTypeChecker.isArgumentsSymbol(tsIdentSym)) {
       this.incrementCounters(node, FaultID.ArgumentsObject);
-    }
-
-    if (isArkTs2) {
-      this.checkWorkerSymbol(tsIdentSym, node);
-      this.checkCollectionsSymbol(tsIdentSym, node);
-      this.checkConcurrencySymbol(tsIdentSym, node);
     }
   }
 
@@ -7851,7 +7850,11 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
   }
 
-  private checkCollectionsSymbol(symbol: ts.Symbol, node: ts.Node): void {
+  private checkCollectionsSymbol(node: ts.Node): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
     const cb = (): void => {
       const parent = node.parent;
       if (!parent) {
@@ -7868,12 +7871,15 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       }
 
       if (ts.isImportSpecifier(parent) && ts.isIdentifier(node)) {
+        if (parent.propertyName && node.text === parent.propertyName.text) {
+          return;
+        }
         const autofix = this.autofixer?.removeImport(node, parent);
         this.incrementCounters(node, FaultID.NoNeedStdLibSendableContainer, autofix);
       }
     };
 
-    this.checkSymbolAndExecute(symbol, COLLECTIONS_TEXT, COLLECTIONS_MODULES, cb);
+    this.checkNodeForUsage(node, COLLECTIONS_TEXT, COLLECTIONS_MODULES, cb);
   }
 
   private checkWorkerSymbol(symbol: ts.Symbol, node: ts.Node): void {
@@ -7905,6 +7911,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       const decl = TsUtils.getDeclaration(symbol);
 
       if (!decl) {
+        cb();
         return;
       }
 
@@ -7917,6 +7924,19 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       ) {
         cb();
       }
+    }
+  }
+
+  private checkNodeForUsage(node: ts.Node, symbolName: string, modules: string[], cb: () => void): void {
+    const symbol = this.tsUtils.trueSymbolAtLocation(node);
+    if (symbol) {
+      this.checkSymbolAndExecute(symbol, symbolName, modules, cb);
+
+      return;
+    }
+
+    if (node.getText() === symbolName) {
+      cb();
     }
   }
 

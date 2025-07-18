@@ -19,7 +19,7 @@
 
 
 
-import { collections as definedCollections } from 'user_defined_worker'; //legal
+import { collections as definedCollections } from './ignore_files/user_defined_collections'; //legal
 
 function tesCollectionsUsage() {
 
@@ -35,4 +35,8 @@ function tesCollectionsUsage() {
 
   let collections6: definedCollections.Array<number>; // legal
 
+}
+
+function test(array: Array<string>) {
+    const map = Map<string, string>();
 }
