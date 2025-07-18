@@ -960,7 +960,7 @@ private:
     Type *GetTypeOfSetterGetter([[maybe_unused]] varbinder::Variable *var);
     void IterateInVariableContext([[maybe_unused]] varbinder::Variable *const var);
     bool CheckInit(ir::Identifier *ident, ir::TypeNode *typeAnnotation, ir::Expression *init,
-                   checker::Type *annotationType, varbinder::Variable *const bindingVar);
+                   checker::Type *annotationType);
     void CheckItemCasesConstant(ArenaVector<ir::SwitchCaseStatement *> const &cases);
     void CheckItemCasesDuplicate(ArenaVector<ir::SwitchCaseStatement *> const &cases);
 

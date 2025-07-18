@@ -63,6 +63,7 @@ let a = [1, 2, 3);
 /* @@? 24:35 Error SyntaxError: Unexpected token '{'. */
 /* @@? 26:7 Error SyntaxError: Unexpected token '||='. */
 /* @@? 28:5 Error TypeError: Variable 'a' has already been declared. */
+/* @@? 28:16 Error TypeError: Bad operand type, the types of the operands must be numeric type, enum or String. */
 /* @@? 28:20 Error SyntaxError: Expected '}', got ')'. */
 /* @@? 30:5 Error TypeError: Variable 'a' has already been declared. */
 /* @@? 30:13 Error SyntaxError: Unexpected token 'import'. */

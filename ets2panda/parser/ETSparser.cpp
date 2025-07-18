@@ -1716,7 +1716,8 @@ ir::Expression *ETSParser::ParseFunctionParameter()
         typeAnnotation->SetParent(paramIdent);
         paramIdent->SetTsTypeAnnotation(typeAnnotation);
         paramIdent->SetEnd(typeAnnotation->End());
-    } else if (!isArrow && !isOptional) {
+    } else if (!isArrow) {
+        isOptional = false;
         LogError(diagnostic::EXPLICIT_PARAM_TYPE);
     }
 
