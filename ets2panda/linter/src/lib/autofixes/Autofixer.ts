@@ -4187,7 +4187,7 @@ export class Autofixer {
 
     return [{ start: newExpr.getStart(), end: newExpr.getEnd(), replacementText }];
   }
-  
+
   fixAppStorageCallExpression(callExpr: ts.CallExpression): Autofix[] | undefined {
     const varDecl = Autofixer.findParentVariableDeclaration(callExpr);
     if (!varDecl || varDecl.type) {
@@ -4776,13 +4776,13 @@ export class Autofixer {
       `${expr.getText()}${callExpr.questionDotToken.getText()}unsafeCall` :
       `${expr.getText()}.unsafeCall`;
 
-    return [{
-      start: expr.getStart(),
-      end: hasOptionalChain ?
-        callExpr.questionDotToken.getEnd() :
-        expr.getEnd(),
-      replacementText
-    }];
+    return [
+      {
+        start: expr.getStart(),
+        end: hasOptionalChain ? callExpr.questionDotToken.getEnd() : expr.getEnd(),
+        replacementText
+      }
+    ];
   }
 
   private static createBuiltInTypeInitializer(type: ts.TypeReferenceNode): ts.Expression | undefined {

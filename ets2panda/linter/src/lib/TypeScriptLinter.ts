@@ -1868,6 +1868,12 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         this.handleMissingReturnType(arrowFunc);
       }
     }
+    if (!ts.isBlock(arrowFunc.body)) {
+      const contextRetType = this.tsTypeChecker.getContextualType(arrowFunc.body);
+      if (contextRetType) {
+        this.checkAssignmentMatching(arrowFunc.body, contextRetType, arrowFunc.body, true);
+      }
+    }
     this.checkDefaultParamBeforeRequired(arrowFunc);
     this.handleLimitedVoidFunction(arrowFunc);
   }
@@ -1875,8 +1881,8 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   private handleFunctionDeclaration(node: ts.Node): void {
     // early exit via exception if cancellation was requested
     this.options.cancellationToken?.throwIfCancellationRequested();
-
     const tsFunctionDeclaration = node as ts.FunctionDeclaration;
+
     if (!tsFunctionDeclaration.type) {
       this.handleMissingReturnType(tsFunctionDeclaration);
     }
@@ -3646,7 +3652,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (!ts.isClassDeclaration(classDecl)) {
       return;
     }
-
+    this.checkIncompatibleFunctionTypes(node);
     const isStatic =
       node.modifiers?.some((mod) => {
         return mod.kind === ts.SyntaxKind.StaticKeyword;
@@ -3660,7 +3666,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (allBaseTypes && allBaseTypes.length > 0) {
       this.checkMethodType(allBaseTypes, methodName, node);
     }
-    this.checkIncompatibleFunctionTypes(node);
   }
 
   private checkMethodType(allBaseTypes: ts.Type[], methodName: string, node: ts.MethodDeclaration): void {
@@ -3703,6 +3708,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       const actualReturnType = this.tsTypeChecker.getTypeAtLocation(returnStmt.expression);
       const actualReturnTypeStr = this.tsTypeChecker.typeToString(actualReturnType);
       if (declaredReturnTypeStr === actualReturnTypeStr) {
+        return;
+      }
+      if (actualReturnType.flags & ts.TypeFlags.Any || declaredReturnType.flags & ts.TypeFlags.Any) {
         return;
       }
       if (this.isSubtypeByBaseTypesList(actualReturnType, declaredReturnType)) {
@@ -7339,10 +7347,46 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
   }
 
+  isExprReturnedFromAsyncFunction(rhsExpr: ts.Expression | undefined, lhsType: ts.Type): ts.Type | undefined {
+    void this;
+    if (!rhsExpr) {
+      return undefined;
+    }
+
+    const enclosingFunction = ts.findAncestor(rhsExpr, ts.isFunctionLike);
+    const isReturnExpr = ts.isReturnStatement(rhsExpr.parent) || ts.isArrowFunction(rhsExpr.parent);
+    if (!enclosingFunction) {
+      return undefined;
+    }
+    if (!isReturnExpr) {
+      return undefined;
+    }
+
+    if (!TsUtils.hasModifier(enclosingFunction.modifiers, ts.SyntaxKind.AsyncKeyword)) {
+      return undefined;
+    }
+
+    const lhsPromiseLikeType = lhsType.isUnion() && lhsType.types.find(TsUtils.isStdPromiseLikeType);
+    if (!lhsPromiseLikeType) {
+      return undefined;
+    }
+
+    if (!TsUtils.isTypeReference(lhsPromiseLikeType) || !lhsPromiseLikeType.typeArguments?.length) {
+      return undefined;
+    }
+    return lhsPromiseLikeType.typeArguments[0];
+  }
+
   private handleArrayTypeImmutable(node: ts.Node, lhsType: ts.Type, rhsType: ts.Type, rhsExpr?: ts.Expression): void {
     if (!this.options.arkts2) {
       return;
     }
+
+    const possibleLhsType = this.isExprReturnedFromAsyncFunction(rhsExpr, lhsType);
+    if (possibleLhsType) {
+      lhsType = possibleLhsType;
+    }
+
     const isArray = this.tsUtils.isArray(lhsType) && this.tsUtils.isArray(rhsType);
     const isTuple =
       this.tsUtils.isOrDerivedFrom(lhsType, TsUtils.isTuple) && this.tsUtils.isOrDerivedFrom(rhsType, TsUtils.isTuple);
@@ -7355,16 +7399,29 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
 
-    if (ts.isAsExpression(node) && ts.isArrayLiteralExpression(node.expression)) {
-      node.expression.elements.forEach((elem) => {
-        if (elem.kind === ts.SyntaxKind.FalseKeyword || elem.kind === ts.SyntaxKind.TrueKeyword) {
-          lhsTypeStr = rhsTypeStr.replace(elem.getText(), 'boolean');
-        }
-      });
+    const possibleLhsTypeStr = this.checkLhsTypeString(node, rhsTypeStr);
+    if (possibleLhsTypeStr) {
+      lhsTypeStr = possibleLhsTypeStr;
     }
+
     if (lhsTypeStr !== rhsTypeStr) {
       this.incrementCounters(node, FaultID.ArrayTypeImmutable);
     }
+  }
+
+  private checkLhsTypeString(node: ts.Node, rhsTypeStr: string): string | undefined {
+    void this;
+    if (!ts.isAsExpression(node) || !ts.isArrayLiteralExpression(node.expression)) {
+      return undefined;
+    }
+    let lhsTypeStr: string | undefined;
+    node.expression.elements.forEach((elem) => {
+      if (elem.kind === ts.SyntaxKind.FalseKeyword || elem.kind === ts.SyntaxKind.TrueKeyword) {
+        lhsTypeStr = rhsTypeStr.replace(elem.getText(), 'boolean');
+      }
+    });
+
+    return lhsTypeStr;
   }
 
   private isSubtypeByBaseTypesList(baseType: ts.Type, actualType: ts.Type): boolean {
