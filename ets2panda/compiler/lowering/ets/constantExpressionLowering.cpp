@@ -1176,13 +1176,19 @@ static varbinder::Variable *ResolveMemberExpressionProperty(ir::MemberExpression
     if (decl->IsClassDecl()) {
         // NOTE(gogabr) : for some reason, ETSGLOBAL points to class declaration instead of definition.
         auto *declNode = decl->AsClassDecl()->Node();
-        auto *classDef = declNode->IsClassDefinition()    ? declNode->AsClassDefinition()
-                         : declNode->IsClassDeclaration() ? declNode->AsClassDeclaration()->Definition()
-                                                          : nullptr;
-        ES2PANDA_ASSERT(classDef != nullptr);
+        if (declNode->IsClassDefinition()) {
+            scope = declNode->AsClassDefinition()->Scope();
+        } else if (declNode->IsClassDeclaration()) {
+            auto *classDef = declNode->AsClassDeclaration()->Definition();
+            if (classDef != nullptr) {
+                // NOLINTNEXTLINE(clang-analyzer-core.CallAndMessage)
+                scope = classDef->Scope();
+            }
+        }
 
-        // NOLINTNEXTLINE(clang-analyzer-core.CallAndMessage)
-        scope = classDef->Scope();
+        if (scope == nullptr) {
+            return nullptr;
+        }
     } else if (decl->IsEnumLiteralDecl()) {
         scope = decl->AsEnumLiteralDecl()->Node()->AsTSEnumDeclaration()->Scope();
     } else {
