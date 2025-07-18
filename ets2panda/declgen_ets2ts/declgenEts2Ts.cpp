@@ -1980,7 +1980,7 @@ bool TSDeclGen::ShouldSkipMethodDeclaration(const ir::MethodDefinition *methodDe
 {
     const auto methodIdent = GetKeyIdent(methodDef->Key());
     const auto methodName = methodIdent->Name().Mutf8();
-    if (methodName.find('#') != std::string::npos || methodName.find("$asyncimpl") != std::string::npos ||
+    if (methodName.find('#') != std::string::npos || methodName.find("%%async-") != std::string::npos ||
         (!state_.inGlobalClass && (methodName == compiler::Signatures::INIT_METHOD ||
                                    methodName == compiler::Signatures::INITIALIZER_BLOCK_INIT))) {
         return true;

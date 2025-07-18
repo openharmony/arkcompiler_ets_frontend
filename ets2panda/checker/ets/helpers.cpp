@@ -27,6 +27,7 @@
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "compiler/lowering/util.h"
 #include "util/helpers.h"
+#include "util/nameMangler.h"
 
 namespace ark::es2panda::checker {
 
@@ -2666,10 +2667,10 @@ static void ReInitScopesForTypeAnnotation(ETSChecker *checker, ir::TypeNode *typ
 
 ir::ClassProperty *ETSChecker::ClassPropToImplementationProp(ir::ClassProperty *classProp, varbinder::ClassScope *scope)
 {
-    classProp->Key()->AsIdentifier()->SetName(
-        util::UString(std::string(compiler::Signatures::PROPERTY) + classProp->Key()->AsIdentifier()->Name().Mutf8(),
-                      ProgramAllocator())
-            .View());
+    std::string newName = util::NameMangler::GetInstance()->CreateMangledNameByTypeAndName(
+        util::NameMangler::PROPERTY, classProp->Key()->AsIdentifier()->Name());
+
+    classProp->Key()->AsIdentifier()->SetName(util::UString(newName, ProgramAllocator()).View());
     classProp->AddModifier(ir::ModifierFlags::PRIVATE);
 
     auto *fieldDecl = ProgramAllocator()->New<varbinder::LetDecl>(classProp->Key()->AsIdentifier()->Name());

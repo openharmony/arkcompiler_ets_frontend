@@ -41,6 +41,7 @@
 #include "checker/types/ets/types.h"
 #include "checker/types/ets/etsPartialTypeParameter.h"
 #include "public/public.h"
+#include "util/nameMangler.h"
 
 #include "assembly-program.h"
 
@@ -220,11 +221,6 @@ static pandasm::Function GenExternalFunction(checker::Signature *signature, bool
     return func;
 }
 
-static std::string GenerateMangledName(const std::string &baseName, const std::string &propName)
-{
-    return baseName + "$" + propName;
-}
-
 void FilterForSimultaneous(varbinder::ETSBinder *varbinder)
 {
     ArenaSet<ir::ClassDefinition *> &classDefinitions = varbinder->GetGlobalRecordTable()->ClassDefinitions();
@@ -258,7 +254,8 @@ void ETSEmitter::GenAnnotation()
     auto *globalRecordTable = varbinder->GetGlobalRecordTable();
     auto baseName = varbinder->GetRecordTable()->RecordName().Mutf8();
     for (auto *annoDecl : globalRecordTable->AnnotationDeclarations()) {
-        auto newBaseName = GenerateMangledName(baseName, annoDecl->GetBaseName()->Name().Mutf8());
+        std::string newBaseName = util::NameMangler::GetInstance()->CreateMangledNameForAnnotation(
+            baseName, annoDecl->GetBaseName()->Name().Mutf8());
         GenCustomAnnotationRecord(annoDecl, newBaseName, annoDecl->IsDeclare());
     }
 
@@ -318,7 +315,8 @@ void ETSEmitter::GenExternalRecord(varbinder::RecordTable *recordTable, const pa
     const auto *varbinder = static_cast<const varbinder::ETSBinder *>(Context()->parserProgram->VarBinder());
     auto baseName = varbinder->GetRecordTable()->RecordName().Mutf8();
     for (auto *annoDecl : recordTable->AnnotationDeclarations()) {
-        auto newBaseName = GenerateMangledName(baseName, annoDecl->GetBaseName()->Name().Mutf8());
+        std::string newBaseName = util::NameMangler::GetInstance()->CreateMangledNameForAnnotation(
+            baseName, annoDecl->GetBaseName()->Name().Mutf8());
         GenCustomAnnotationRecord(annoDecl, newBaseName, isExternalFromCompile || annoDecl->IsDeclare());
     }
 
@@ -786,8 +784,8 @@ LiteralArrayVector ETSEmitter::CreateLiteralArray(std::string &baseName, const i
         ProcessArrayElement(elem, literals, baseName, result);
     }
 
-    std::string litArrayName = GenerateMangledName(baseName, std::to_string(g_litArrayValueCount));
-    ++g_litArrayValueCount;
+    std::string litArrayName =
+        util::NameMangler::GetInstance()->AppendToAnnotationName(baseName, std::to_string(g_litArrayValueCount++));
     result.emplace_back(litArrayName, literals);
     return result;
 }
@@ -807,7 +805,7 @@ void ETSEmitter::CreateLiteralArrayProp(const ir::ClassProperty *prop, std::stri
 
     auto value = prop->Value();
     if (value != nullptr) {
-        std::string newBaseName = GenerateMangledName(baseName, field.name);
+        std::string newBaseName = util::NameMangler::GetInstance()->AppendToAnnotationName(baseName, field.name);
         auto litArray = CreateLiteralArray(newBaseName, value);
         for (const auto &item : litArray) {
             Program()->literalarrayTable.emplace(item.first, item.second);
@@ -868,7 +866,7 @@ pandasm::AnnotationElement ETSEmitter::ProcessArrayType(const ir::ClassProperty 
 {
     ES2PANDA_ASSERT(prop->Id() != nullptr);
     auto propName = prop->Id()->Name().Mutf8();
-    std::string newBaseName = GenerateMangledName(baseName, propName);
+    std::string newBaseName = util::NameMangler::GetInstance()->AppendToAnnotationName(baseName, propName);
     auto litArrays = CreateLiteralArray(newBaseName, init);
 
     for (const auto &item : litArrays) {
@@ -942,7 +940,8 @@ std::vector<pandasm::AnnotationData> ETSEmitter::GenCustomAnnotations(
     for (auto *anno : annotationUsages) {
         auto *annoDecl = anno->GetBaseName()->Variable()->Declaration()->Node()->AsAnnotationDeclaration();
         if (!annoDecl->IsSourceRetention()) {
-            auto newBaseName = GenerateMangledName(baseName, anno->GetBaseName()->Name().Mutf8());
+            std::string newBaseName = util::NameMangler::GetInstance()->CreateMangledNameForAnnotation(
+                baseName, anno->GetBaseName()->Name().Mutf8());
             annotations.emplace_back(GenCustomAnnotation(anno, newBaseName));
         }
     }

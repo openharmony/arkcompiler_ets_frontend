@@ -648,6 +648,7 @@ set(ES2PANDA_LIB_SRC
   util/es2pandaMacros.cpp
   util/helpers.cpp
   util/importPathManager.cpp
+  util/nameMangler.cpp
   util/path.cpp
   util/plugin.cpp
   util/perfMetrics.cpp
