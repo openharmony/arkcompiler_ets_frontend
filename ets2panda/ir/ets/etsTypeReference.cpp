@@ -126,8 +126,14 @@ checker::Type *ETSTypeReference::GetType(checker::ETSChecker *checker)
 
 ETSTypeReference *ETSTypeReference::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const partClone = Part() != nullptr ? Part()->Clone(allocator, nullptr)->AsETSTypeReferencePart() : nullptr;
+    ETSTypeReferencePart *partClone = nullptr;
+    if (Part() != nullptr) {
+        auto *const clone = Part()->Clone(allocator, nullptr);
+        ES2PANDA_ASSERT(clone != nullptr);
+        partClone = clone->AsETSTypeReferencePart();
+    }
     auto *const clone = allocator->New<ETSTypeReference>(partClone, allocator);
+    ES2PANDA_ASSERT(clone != nullptr);
 
     if (partClone != nullptr) {
         partClone->SetParent(clone);
@@ -142,7 +148,9 @@ ETSTypeReference *ETSTypeReference::Clone(ArenaAllocator *const allocator, AstNo
     if (!Annotations().empty()) {
         ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
         for (auto *annotationUsage : Annotations()) {
-            annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
+            auto *annotationClone = annotationUsage->Clone(allocator, nullptr);
+            ES2PANDA_ASSERT(annotationClone != nullptr);
+            annotationUsages.push_back(annotationClone->AsAnnotationUsage());
         }
         clone->SetAnnotations(std::move(annotationUsages));
     }

@@ -95,6 +95,30 @@ static util::StringView CreateCalleeName(ArenaAllocator *allocator)
     return name.View();
 }
 
+static void ProcessTypeParameterProperties(checker::ETSTypeParameter *oldTypeParam,
+                                           checker::ETSTypeParameter *newTypeParam,
+                                           ir::TSTypeParameter *newTypeParamNode, checker::Substitution *substitution,
+                                           public_lib::Context *ctx)
+{
+    auto *checker = ctx->GetChecker()->AsETSChecker();
+    auto *allocator = ctx->allocator;
+    if (auto *oldConstraint = oldTypeParam->GetConstraintType(); oldConstraint != nullptr) {
+        auto *newConstraint = oldConstraint->Substitute(checker->Relation(), substitution);
+        newTypeParam->SetConstraintType(newConstraint);
+        auto *newConstraintNode = allocator->New<ir::OpaqueTypeNode>(newConstraint, allocator);
+        newTypeParamNode->SetConstraint(newConstraintNode);
+        newConstraintNode->SetParent(newTypeParamNode);
+    }
+
+    if (auto *oldDefault = oldTypeParam->GetDefaultType(); oldDefault != nullptr) {
+        auto *newDefault = oldDefault->Substitute(checker->Relation(), substitution);
+        newTypeParam->SetDefaultType(newDefault);
+        auto *newDefaultNode = allocator->New<ir::OpaqueTypeNode>(newDefault, allocator);
+        newTypeParamNode->SetDefaultType(newDefaultNode);
+        newDefaultNode->SetParent(newTypeParamNode);
+    }
+}
+
 static std::pair<ir::TSTypeParameterDeclaration *, checker::Substitution> CloneTypeParams(
     public_lib::Context *ctx, ir::TSTypeParameterDeclaration *oldIrTypeParams, ir::ScriptFunction *enclosingFunction,
     varbinder::Scope *enclosingScope)
@@ -104,7 +128,6 @@ static std::pair<ir::TSTypeParameterDeclaration *, checker::Substitution> CloneT
     }
 
     auto *allocator = ctx->allocator;
-    auto *checker = ctx->GetChecker()->AsETSChecker();
 
     auto *newScope = allocator->New<varbinder::LocalScope>(allocator, enclosingScope);
     auto newTypeParams = ArenaVector<checker::ETSTypeParameter *>(allocator->Adapter());
@@ -118,14 +141,14 @@ static std::pair<ir::TSTypeParameterDeclaration *, checker::Substitution> CloneT
         auto *newTypeParamNode = util::NodeAllocator::ForceSetParent<ir::TSTypeParameter>(allocator, newTypeParamId,
                                                                                           nullptr, nullptr, allocator);
         auto *newTypeParam = allocator->New<checker::ETSTypeParameter>();
-        ES2PANDA_ASSERT(newTypeParam);
-        newTypeParam->SetDeclNode(newTypeParamNode);
-
         auto *newTypeParamDecl = allocator->New<varbinder::TypeParameterDecl>(newTypeParamId->Name());
-        newTypeParamDecl->BindNode(newTypeParamNode);
         auto *newTypeParamVar =
             allocator->New<varbinder::LocalVariable>(newTypeParamDecl, varbinder::VariableFlags::TYPE_PARAMETER);
+        ES2PANDA_ASSERT(newTypeParam != nullptr && newScope != nullptr && newTypeParamDecl != nullptr &&
+                        newTypeParamVar != nullptr);
+        newTypeParam->SetDeclNode(newTypeParamNode);
 
+        newTypeParamDecl->BindNode(newTypeParamNode);
         newTypeParamVar->SetTsType(newTypeParam);
         newScope->InsertBinding(newTypeParamId->Name(), newTypeParamVar);
         newTypeParamId->SetVariable(newTypeParamVar);
@@ -137,23 +160,12 @@ static std::pair<ir::TSTypeParameterDeclaration *, checker::Substitution> CloneT
 
     for (size_t ix = 0; ix < oldIrTypeParams->Params().size(); ix++) {
         auto *oldTypeParam = enclosingFunction->Signature()->TypeParams()[ix]->AsETSTypeParameter();
-
-        if (auto *oldConstraint = oldTypeParam->GetConstraintType(); oldConstraint != nullptr) {
-            auto *newConstraint = oldConstraint->Substitute(checker->Relation(), &substitution);
-            newTypeParams[ix]->SetConstraintType(newConstraint);
-            newTypeParamNodes[ix]->SetConstraint(allocator->New<ir::OpaqueTypeNode>(newConstraint, allocator));
-            newTypeParamNodes[ix]->Constraint()->SetParent(newTypeParamNodes[ix]);
-        }
-        if (auto *oldDefault = oldTypeParam->GetDefaultType(); oldDefault != nullptr) {
-            auto *newDefault = oldDefault->Substitute(checker->Relation(), &substitution);
-            newTypeParams[ix]->SetDefaultType(newDefault);
-            newTypeParamNodes[ix]->SetDefaultType(allocator->New<ir::OpaqueTypeNode>(newDefault, allocator));
-            newTypeParamNodes[ix]->DefaultType()->SetParent(newTypeParamNodes[ix]);
-        }
+        ProcessTypeParameterProperties(oldTypeParam, newTypeParams[ix], newTypeParamNodes[ix], &substitution, ctx);
     }
 
     auto *newIrTypeParams = util::NodeAllocator::ForceSetParent<ir::TSTypeParameterDeclaration>(
         allocator, std::move(newTypeParamNodes), oldIrTypeParams->RequiredParams());
+    ES2PANDA_ASSERT(newIrTypeParams != nullptr);
     newIrTypeParams->SetScope(newScope);
 
     return {newIrTypeParams, std::move(substitution)};
@@ -167,6 +179,7 @@ inline static varbinder::Variable *InitNewParameterVariable(varbinder::VarBinder
                                                             checker::Type *newParamType,
                                                             varbinder::ParamScope *paramScope)
 {
+    ES2PANDA_ASSERT(param != nullptr);
     auto *var = varBinder->AddParamDecl(param);
     var->SetTsType(newParamType);
     var->SetScope(paramScope);
@@ -202,7 +215,7 @@ ParamsAndVarMap CreateLambdaCalleeParameters(public_lib::Context *ctx, ir::Arrow
         auto *oldParamType = oldParam->AsETSParameterExpression()->Ident()->TsType();
         auto *newParamType = oldParamType->Substitute(checker->Relation(), substitution);
         auto *newParam = oldParam->AsETSParameterExpression()->Clone(allocator, nullptr);
-        ES2PANDA_ASSERT(newParam);
+        ES2PANDA_ASSERT(newParam != nullptr);
 
         if (newParam->IsOptional()) {
             newParam->SetOptional(false);
@@ -589,7 +602,7 @@ static ArenaVector<ark::es2panda::ir::Statement *> CreateRestArgumentsArrayReall
                                                 lciInfo->restParameterIdentifier, typeNode);
     }
 
-    ES2PANDA_ASSERT(args);
+    ES2PANDA_ASSERT(args != nullptr);
     return ArenaVector<ir::Statement *>(args->AsBlockStatement()->Statements());
 }
 
@@ -600,9 +613,10 @@ static void CreateInvokeMethodRestParameter(public_lib::Context *ctx, LambdaClas
     auto *checker = ctx->GetChecker()->AsETSChecker();
 
     auto *restIdent = Gensym(allocator);
-    ES2PANDA_ASSERT(restIdent);
+    ES2PANDA_ASSERT(restIdent != nullptr);
     lciInfo->restParameterIdentifier = restIdent->Name();
     auto *spread = allocator->New<ir::SpreadElement>(ir::AstNodeType::REST_ELEMENT, allocator, restIdent);
+    ES2PANDA_ASSERT(spread != nullptr);
     auto *restVar = lciInfo->lambdaSignature->RestVar();
     auto *arr = (restVar != nullptr && restVar->TsType()->IsETSTupleType())
                     ? restVar->TsType()
@@ -1167,12 +1181,13 @@ static ir::ScriptFunction *GetWrappingLambdaParentFunction(public_lib::Context *
             ir::FunctionSignature {nullptr, std::move(params),
                                    allocator->New<ir::OpaqueTypeNode>(signature->ReturnType(), allocator)},
             ir::ScriptFunctionFlags::ARROW});
-
+    ES2PANDA_ASSERT(func != nullptr);
     ArenaVector<ir::Statement *> bodyStmts {allocator->Adapter()};
     ArenaVector<ir::Expression *> callArgs {allocator->Adapter()};
 
     for (auto *p : func->Params()) {
         ir::Identifier *clone = p->AsETSParameterExpression()->Ident()->Clone(allocator, nullptr);
+        ES2PANDA_ASSERT(clone != nullptr);
         if (clone->IsIdentifier() && (clone->IsReference(ScriptExtension::ETS)) &&
             (clone->TypeAnnotation() != nullptr)) {
             clone->SetTsTypeAnnotation(nullptr);
@@ -1317,7 +1332,7 @@ static bool IsFunctionOrMethodCall(checker::ETSChecker *checker, ir::CallExpress
     // Not skip if invoke pattern Union.<field>() where field is of ETSArrowType
     if (callee->IsMemberExpression()) {
         auto me = callee->AsMemberExpression();
-        ES2PANDA_ASSERT(me->TsType());
+        ES2PANDA_ASSERT(me->TsType() != nullptr);
         if (me->Object()->TsType() != nullptr && checker->GetApparentType(me->Object()->TsType())->IsETSUnionType() &&
             me->TsType()->IsETSMethodType()) {
             return true;
@@ -1344,10 +1359,12 @@ static ir::AstNode *InsertInvokeCall(public_lib::Context *ctx, ir::CallExpressio
 
     auto *oldCallee = call->Callee();
     auto *oldType = checker->GetApparentType(oldCallee->TsType());
+    ES2PANDA_ASSERT(oldType != nullptr);
     size_t arity = call->Arguments().size();
     auto *ifaceType = oldType->IsETSObjectType()
                           ? oldType->AsETSObjectType()
                           : oldType->AsETSFunctionType()->ArrowToFunctionalInterfaceDesiredArity(checker, arity);
+    ES2PANDA_ASSERT(ifaceType != nullptr);
     bool hasRestParam =
         (oldType->IsETSFunctionType() && oldType->AsETSFunctionType()->ArrowSignature()->HasRestParameter()) ||
         call->Signature()->HasRestParameter();
@@ -1358,12 +1375,13 @@ static ir::AstNode *InsertInvokeCall(public_lib::Context *ctx, ir::CallExpressio
                                                               checker::PropertySearchFlags::SEARCH_IN_INTERFACES);
     ES2PANDA_ASSERT(prop != nullptr);
     auto *invoke0Id = allocator->New<ir::Identifier>(invokeMethodName, allocator);
-    ES2PANDA_ASSERT(invoke0Id);
+    ES2PANDA_ASSERT(invoke0Id != nullptr);
     invoke0Id->SetTsType(prop->TsType());
     invoke0Id->SetVariable(prop);
 
     auto *newCallee = util::NodeAllocator::ForceSetParent<ir::MemberExpression>(
         allocator, oldCallee, invoke0Id, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
+    ES2PANDA_ASSERT(newCallee != nullptr);
     newCallee->SetTsType(prop->TsType());
     newCallee->SetObjectType(ifaceType);
 

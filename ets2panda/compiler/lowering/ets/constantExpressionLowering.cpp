@@ -1085,6 +1085,7 @@ static ir::AstNode *FoldLogicalUnaryExpression(const ir::UnaryExpression *unary,
 {
     auto resNode =
         util::NodeAllocator::Alloc<ir::BooleanLiteral>(allocator, !TestLiteral(unary->Argument()->AsLiteral()));
+    ES2PANDA_ASSERT(resNode != nullptr);
     resNode->SetParent(const_cast<ir::UnaryExpression *>(unary)->Parent());
     resNode->SetRange(unary->Range());
     return resNode;
