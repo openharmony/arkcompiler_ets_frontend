@@ -13,8 +13,10 @@
  * limitations under the License.
  */
 
-namespace ns {
-    import * as nsi from './export_file';
+let callbackc = (arrElem: JSValue) => {
+    import {a} from
 }
 
 /* @@? 17:5 Error SyntaxError: Import declarations can only be used on the top level and before any other declaration, top level statement or directive. */
+/* @@? 18:1 Error SyntaxError: Unexpected token, expected string literal. */
+/* @@? 22:70 Error SyntaxError: Expected '}', got 'end of stream'. */
