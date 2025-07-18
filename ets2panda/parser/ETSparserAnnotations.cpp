@@ -374,6 +374,9 @@ static lexer::SourcePosition GetExpressionEndLoc(ir::Expression *expr)
         return expr->AsIdentifier()->End();
     }
     auto *part = expr->AsETSTypeReference()->Part();
+    if (part->Name()->IsBrokenExpression()) {
+        return part->Name()->End();
+    }
     return part->Name()->AsTSQualifiedName()->Right()->End();
 }
 
