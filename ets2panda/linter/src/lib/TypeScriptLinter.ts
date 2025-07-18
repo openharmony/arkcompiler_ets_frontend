@@ -4392,8 +4392,8 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
 
-    const isArkTs2 = this.options.arkts2;
-    if (isArkTs2) {
+    const isNewArkTS = this.options.arkts2;
+    if (isNewArkTS) {
       this.checkWorkerSymbol(tsIdentSym, node);
       this.checkConcurrencySymbol(tsIdentSym, node);
     }
@@ -4404,15 +4404,15 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       (tsIdentSym.flags & ts.SymbolFlags.Module) !== 0 &&
       (tsIdentSym.flags & ts.SymbolFlags.Transient) !== 0
     ) {
-      this.handleGlobalThisCase(tsIdentifier, isArkTs2);
+      this.handleGlobalThisCase(tsIdentifier, isNewArkTS);
     } else {
-      if (isArkTs2) {
+      if (isNewArkTS) {
         this.checkLimitedStdlibApi(tsIdentifier, tsIdentSym);
       }
       this.handleRestrictedValues(tsIdentifier, tsIdentSym);
     }
 
-    if (isArkTs2 && this.tsTypeChecker.isArgumentsSymbol(tsIdentSym)) {
+    if (isNewArkTS && this.tsTypeChecker.isArgumentsSymbol(tsIdentSym)) {
       this.incrementCounters(node, FaultID.ArgumentsObject);
     }
   }
