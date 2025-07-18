@@ -14,11 +14,10 @@
  */
 
 {
-  "modelVersion": "5.0.1",
-  "description": "Please describe the basic information.",
-  "dependencies": {
-    "myDep": "file:../dep"
+  modelVersion: '5.0.1',
+  description: 'Please describe the basic information.',
+  dependencies: {
+    myDep: 'file:../dep'
   },
-  "devDependencies": {
-  }
+  devDependencies: {}
 }
