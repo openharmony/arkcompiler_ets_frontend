@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,12 +13,10 @@
  * limitations under the License.
  */
 
-@interface MyAnno {
-    testProperty1: string
-    testProperty2: number
+@interface Anno {
+    testBools: boolean[] = [
+        this.barAttr = 0,
+    ]
 }
 
-@MyAnno({testProperty1: /* @@ label */{s: A}, testProperty2: 1})
-class B{}
-
-/* @@@ label Error SyntaxError: Invalid value for annotation field, expected a constant literal.  */
+/* @@? 17:28 Error SyntaxError: Invalid value for annotation field, expected a constant literal.  */

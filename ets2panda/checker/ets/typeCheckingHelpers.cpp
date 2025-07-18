@@ -1235,6 +1235,12 @@ void ETSChecker::CheckAnnotationPropertyType(ir::ClassProperty *property)
         return;
     }
 
+    // Avoid outputting the same syntax and type errors.
+    if (property->Value()->IsBrokenExpression()) {
+        ES2PANDA_ASSERT(IsAnyError());
+        return;
+    }
+
     LogError(diagnostic::ANNOTATION_FIELD_NONLITERAL, {}, property->Value()->Start());
 }
 
