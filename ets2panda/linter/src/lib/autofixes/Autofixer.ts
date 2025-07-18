@@ -30,7 +30,7 @@ import {
   COMMON_METHOD_IDENTIFIER,
   APPLY_STYLES_IDENTIFIER,
   CustomInterfaceName,
-  ARKUI_PACKAGE_NAME,
+  ARKUI_MODULE,
   VALUE_IDENTIFIER,
   INDENT_STEP,
   ENTRY_DECORATOR_NAME,
@@ -3695,7 +3695,7 @@ export class Autofixer {
     const importDeclaration = ts.factory.createImportDeclaration(
       undefined,
       ts.factory.createImportClause(false, undefined, ts.factory.createNamedImports(importSpecifiers)),
-      ts.factory.createStringLiteral(ARKUI_PACKAGE_NAME, true),
+      ts.factory.createStringLiteral(ARKUI_MODULE, true),
       undefined
     );
 
@@ -5195,10 +5195,8 @@ export class Autofixer {
     ];
   }
 
-  fixPropDecorator(node: ts.Decorator, decoratorName: string): Autofix[] {
-    const newDecorator = ts.factory.createDecorator(
-      ts.factory.createIdentifier(decoratorName + NEW_PROP_DECORATOR_SUFFIX)
-    );
+  fixPropDecorator(node: ts.Identifier, decoratorName: string): Autofix[] {
+    const newDecorator = ts.factory.createIdentifier(decoratorName + NEW_PROP_DECORATOR_SUFFIX);
 
     const text = this.printer.printNode(ts.EmitHint.Unspecified, newDecorator, node.getSourceFile());
     return [{ start: node.getStart(), end: node.getEnd(), replacementText: text }];

@@ -376,7 +376,13 @@ cookBookTag[359] = '"@LocalBuilder" Decorator is not supported (arkui-no-localbu
 cookBookTag[360] =
   '"Repeat" natively supports virtual scrolling capability in ArkTS1.2, so the default virtual scrolling should be disabled (arkui-repeat-disable-default-virtualscroll)';
 cookBookTag[361] =
-  'When using "WrappedBuilder" and "wrapBuilder", generics are required and must be declared as arrow function (arkui-wrapbuilder-require-arrow-func-generic)';
+  'When using "WrappedBuilder", generics are required and must be declared as arrow function (arkui-wrappedbuilder-require-arrow-func-generic)';
+cookBookTag[362] =
+  'When using "wrapBuilder", generics must be declared as arrow function (arkui-wrapbuilder-require-arrow-func-generic)';
+cookBookTag[363] = 'The generic of "BuilderNode" does not accept tuple (arkui-buildernode-generic-no-tuple)';
+cookBookTag[364] =
+  'The "update" interface of "BuilderNode" does not accept an object literal. Please replace it with an instance of the class specified in the generic when creating a new "BuilderNode", and ensure that the instance has the same field values as the literal (arkui-buildernode-update-no-literal)';
+cookBookTag[365] = 'Property "nestingBuilderSupported" is not supported (arkui-buildernode-no-nestingbuildersupported)';
 cookBookTag[370] = 'Sparse array is not supported in ArkTS1.2 (arkts-no-sparse-array)';
 cookBookTag[371] = 'Enum elements cannot be types in ArkTS1.2 (arkts-no-enum-prop-as-type)';
 cookBookTag[372] = 'Smart type differences (arkts-no-ts-like-smart-type)';

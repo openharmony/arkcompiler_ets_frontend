@@ -262,7 +262,11 @@ export enum FaultID {
   PromiseVoidNeedResolveArg,
   RepeatDisableVirtualScroll,
   WrappedBuilderGenericNeedArrowFunc,
+  WrapBuilderGenericNeedArrowFunc,
   NoDeprecatedApi,
+  BuilderNodeGenericNoTuple,
+  BuilderNodeUpdateNoLiteral,
+  BuilderNodeNoNestingBuilderSupported,
   // this should always be last enum
   LAST_ID
 }

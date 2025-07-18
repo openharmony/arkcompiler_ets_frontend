@@ -120,8 +120,12 @@
     "arkui-no-localbuilder-decorator",
     "arkui-statestyles-block-need-arrow-func",
     "arkui-repeat-disable-default-virtualscroll",
+    "arkui-wrappedbuilder-require-arrow-func-generic",
     "arkui-wrapbuilder-require-arrow-func-generic",
-    "arkui-no-deprecated-api"
+    "arkui-no-deprecated-api",
+    "arkui-buildernode-generic-no-tuple",
+    "arkui-buildernode-update-no-literal",
+    "arkui-buildernode-no-nestingbuildersupported"
   ],
   "builtin": [
     "arkts-builtin-thisArgs",

@@ -45,6 +45,26 @@
             "severity": "ERROR"
         },
         {
+            "line": 24,
+            "column": 32,
+            "endLine": 24,
+            "endColumn": 34,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "The ArkUI interface \"$r\" should be imported before it is used (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 26,
+            "column": 33,
+            "endLine": 26,
+            "endColumn": 35,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "The ArkUI interface \"$r\" should be imported before it is used (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
             "line": 35,
             "column": 16,
             "endLine": 35,
@@ -62,6 +82,16 @@
             "problem": "UIInterfaceImport",
             "suggest": "",
             "rule": "The ArkUI interface \"IconOptions\" should be imported before it is used (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 40,
+            "column": 25,
+            "endLine": 40,
+            "endColumn": 27,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "The ArkUI interface \"$r\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         }
     ]

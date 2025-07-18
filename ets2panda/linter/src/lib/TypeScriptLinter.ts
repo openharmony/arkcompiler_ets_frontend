@@ -101,14 +101,17 @@ import {
   ENTRY_DECORATOR_NAME,
   PROVIDE_DECORATOR_NAME,
   PROVIDE_ALLOW_OVERRIDE_PROPERTY_NAME,
-  ARKUI_PACKAGE_NAME,
+  ARKUI_MODULE,
   MAKE_OBSERVED,
-  ARKUI_STATE_MANAGEMENT,
+  STATE_MANAGEMENT_MODULE,
   PropDecoratorName,
   PropFunctionName,
   StorageTypeName,
   customLayoutFunctionName,
-  VIRTUAL_SCROLL_IDENTIFIER
+  VIRTUAL_SCROLL_IDENTIFIER,
+  BUILDERNODE_D_TS,
+  BuilderNodeFunctionName,
+  NESTING_BUILDER_SUPPORTED
 } from './utils/consts/ArkuiConstants';
 import { arkuiImportList } from './utils/consts/ArkuiImportList';
 import type { IdentifierAndArguments, ForbidenAPICheckResult } from './utils/consts/InteropAPI';
@@ -1326,9 +1329,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
   private handlePropertyAccessExpression(node: ts.Node): void {
     const propertyAccessNode = node as ts.PropertyAccessExpression;
-    this.handleMakeObserved(propertyAccessNode);
-    this.handleStateStyles(propertyAccessNode);
-    this.handleDoubleDollar(propertyAccessNode);
+    this.handlePropertyAccessExpressionForUI(propertyAccessNode);
     this.handleQuotedHyphenPropsDeprecated(propertyAccessNode);
     this.handleSdkTypeQuery(propertyAccessNode);
     this.checkUnionTypes(propertyAccessNode);
@@ -1364,6 +1365,13 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.checkFunctionProperty(propertyAccessNode, baseExprSym, baseExprType);
     this.handleSdkForConstructorFuncs(propertyAccessNode);
     this.fixJsImportPropertyAccessExpression(node);
+  }
+
+  private handlePropertyAccessExpressionForUI(node: ts.PropertyAccessExpression): void {
+    this.handleMakeObserved(node);
+    this.handleStateStyles(node);
+    this.handleDoubleDollar(node);
+    this.handlePropertyAccessExprForBuilderNode(node);
   }
 
   private checkSymbolAPI(node: ts.PropertyAccessExpression, exprSym: ts.Symbol | undefined): void {
@@ -5993,6 +6001,8 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleSdkGlobalApi(tsNewExpr);
     this.checkCreatingPrimitiveTypes(tsNewExpr);
     this.handleNoDeprecatedApi(tsNewExpr);
+    this.handleNodeForBuilderNode(tsNewExpr);
+
     if (this.options.advancedClassChecks || this.options.arkts2) {
       const calleeExpr = tsNewExpr.expression;
       const calleeType = this.tsTypeChecker.getTypeAtLocation(calleeExpr);
@@ -6372,6 +6382,8 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleSdkConstructorIface(typeRef);
     this.handleNodeForWrappedBuilder(typeRef);
     this.handleNoDeprecatedApi(typeRef);
+    this.handleNodeForBuilderNode(typeRef);
+
     const isESValue = TsUtils.isEsValueType(typeRef);
     const isPossiblyValidContext = TsUtils.isEsValuePossiblyAllowed(typeRef);
     if (isESValue && !isPossiblyValidContext) {
@@ -7836,13 +7848,12 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.incrementCounters(firstExpr, FaultID.DoubleExclaBindingNotSupported, autofix);
   }
 
-  private handleDoubleDollar(node: ts.Node): void {
+  private handleDoubleDollar(node: ts.PropertyAccessExpression): void {
     if (!this.options.arkts2) {
       return;
     }
 
     if (
-      ts.isPropertyAccessExpression(node) &&
       ts.isIdentifier(node.expression) &&
       node.expression.escapedText === DOUBLE_DOLLAR_IDENTIFIER + THIS_IDENTIFIER
     ) {
@@ -10849,7 +10860,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (!ts.isStringLiteral(moduleSpecifier)) {
       return;
     }
-    if (moduleSpecifier.text !== ARKUI_PACKAGE_NAME && moduleSpecifier.text !== ARKUI_STATE_MANAGEMENT) {
+    if (moduleSpecifier.text !== ARKUI_MODULE && moduleSpecifier.text !== STATE_MANAGEMENT_MODULE) {
       return;
     }
 
@@ -10861,23 +10872,24 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
 
-    const decorators = ts.getDecorators(node);
-    if (!decorators || decorators.length === 0) {
+    const decorator = ts.getDecorators(node)?.[0];
+    if (!decorator) {
       return;
     }
 
-    let decoratorName: string | undefined;
-    if (ts.isIdentifier(decorators[0].expression)) {
-      decoratorName = decorators[0].expression.getText();
-    } else if (ts.isCallExpression(decorators[0].expression) && ts.isIdentifier(decorators[0].expression.expression)) {
-      decoratorName = decorators[0].expression.expression.getText();
+    let identifier: ts.Identifier | undefined;
+    if (ts.isIdentifier(decorator.expression)) {
+      identifier = decorator.expression;
+    } else if (ts.isCallExpression(decorator.expression) && ts.isIdentifier(decorator.expression.expression)) {
+      identifier = decorator.expression.expression;
     }
 
-    if (!decoratorName) {
+    if (!identifier) {
       return;
     }
 
-    const autofix = this.autofixer?.fixPropDecorator(decorators[0], decoratorName);
+    const decoratorName = identifier.getText();
+    const autofix = this.autofixer?.fixPropDecorator(identifier, decoratorName);
     switch (decoratorName) {
       case PropDecoratorName.Prop:
         this.incrementCounters(node, FaultID.PropDecoratorNotSupported, autofix);
@@ -12606,22 +12618,29 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.incrementCounters(node, FaultID.RepeatDisableVirtualScroll, autofix);
   }
 
-  private handleNodeForWrappedBuilder(node: ts.Node): void {
+  private handleNodeForWrappedBuilder(node: ts.TypeReferenceNode | ts.NewExpression | ts.CallExpression): void {
     if (!this.options.arkts2) {
       return;
     }
 
-    if (
-      ts.isTypeReferenceNode(node) && this.isTargetInterface(node.typeName, CustomInterfaceName.WrappedBuilder) ||
-      ts.isNewExpression(node) && this.isTargetInterface(node.expression, CustomInterfaceName.WrappedBuilder) ||
-      ts.isCallExpression(node) && this.isTargetInterface(node.expression, CustomInterfaceName.wrapBuilder)
-    ) {
-      this.incrementCounters(node, FaultID.WrappedBuilderGenericNeedArrowFunc);
+    const identifier = ts.isTypeReferenceNode(node) ? node.typeName : node.expression;
+    if (this.isDeclarationInSameFile(identifier)) {
+      return;
     }
-  }
 
-  private isTargetInterface(node: ts.Node, targetName: string): boolean {
-    return ts.isIdentifier(node) && node.getText() === targetName && !this.isDeclarationInSameFile(node);
+    switch (identifier.getText()) {
+      case CustomInterfaceName.WrappedBuilder:
+        this.incrementCounters(node, FaultID.WrappedBuilderGenericNeedArrowFunc);
+        break;
+      case CustomInterfaceName.wrapBuilder: {
+        const args = node.typeArguments;
+        if (args && args.length > 0 && ts.isTupleTypeNode(args[0])) {
+          this.incrementCounters(node, FaultID.WrapBuilderGenericNeedArrowFunc);
+        }
+        break;
+      }
+      default:
+    }
   }
 
   private checkImportJsonFile(node: ts.ImportDeclaration): void {
@@ -13122,5 +13141,128 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       }
     }
     return true;
+  }
+
+  private handleNodeForBuilderNode(node: ts.TypeReferenceNode | ts.NewExpression): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    const identifier = ts.isTypeReferenceNode(node) ? node.typeName : node.expression;
+    if (
+      identifier.getText() !== CustomInterfaceName.BuilderNode ||
+      !this.isDeclInTargetFile(identifier, BUILDERNODE_D_TS)
+    ) {
+      return;
+    }
+
+    const firstArg = node.typeArguments?.[0];
+    if (firstArg && ts.isTupleTypeNode(firstArg)) {
+      this.incrementCounters(node, FaultID.BuilderNodeGenericNoTuple);
+    }
+  }
+
+  private isDeclInTargetFile(node: ts.Node, targetFile: string): boolean {
+    const decl = this.tsUtils.getDeclarationNode(node);
+    const file = decl?.getSourceFile();
+    if (file !== undefined) {
+      const fileName = path.basename(file.fileName);
+      if (fileName !== targetFile) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  private handlePropertyAccessExprForBuilderNode(node: ts.PropertyAccessExpression): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    const identifier = node.name;
+    if (!ts.isIdentifier(identifier) || !this.isDeclInTargetFile(identifier, BUILDERNODE_D_TS)) {
+      return;
+    }
+
+    const name = identifier.getText();
+    const callExpr = ts.findAncestor(node, ts.isCallExpression);
+    if (!callExpr) {
+      return;
+    }
+
+    switch (name) {
+      case BuilderNodeFunctionName.Update:
+        if (callExpr.arguments.length !== 0 && this.checkArgumentIsLiteral(callExpr.arguments[0])) {
+          this.incrementCounters(callExpr, FaultID.BuilderNodeUpdateNoLiteral);
+        }
+        break;
+      case BuilderNodeFunctionName.Build: {
+        const hasTargetParam = callExpr.arguments.filter(ts.isObjectLiteralExpression).some((literal) => {
+          return literal.properties.some((prop) => {
+            return prop.name?.getText() === NESTING_BUILDER_SUPPORTED;
+          });
+        });
+        if (hasTargetParam) {
+          this.incrementCounters(callExpr, FaultID.BuilderNodeNoNestingBuilderSupported);
+        }
+        break;
+      }
+      default:
+    }
+  }
+
+  private checkArgumentIsLiteral(node: ts.Node): boolean {
+    switch (node.kind) {
+      case ts.SyntaxKind.ObjectLiteralExpression:
+        return true;
+      case ts.SyntaxKind.Identifier:
+        return this.checkIdentifierIsLiteral(node as ts.Identifier);
+      case ts.SyntaxKind.ConditionalExpression:
+        return this.checkConditionalExprIsLiteral(node as ts.ConditionalExpression);
+      case ts.SyntaxKind.CallExpression:
+        return this.checkCallExprIsLiteral(node as ts.CallExpression);
+      default:
+        return false;
+    }
+  }
+
+  private checkIdentifierIsLiteral(node: ts.Identifier): boolean {
+    const decl = this.tsUtils.getDeclarationNode(node);
+    const initalizer = decl && ts.isVariableDeclaration(decl) ? decl.initializer : undefined;
+    if (!initalizer) {
+      return false;
+    }
+    return this.checkArgumentIsLiteral(initalizer);
+  }
+
+  private checkConditionalExprIsLiteral(node: ts.ConditionalExpression): boolean {
+    return this.checkArgumentIsLiteral(node.whenTrue) || this.checkArgumentIsLiteral(node.whenFalse);
+  }
+
+  private checkCallExprIsLiteral(node: ts.CallExpression): boolean {
+    const callExpr = node;
+    let identifier: ts.Identifier | undefined;
+    if (ts.isIdentifier(callExpr.expression)) {
+      identifier = callExpr.expression;
+    } else if (ts.isPropertyAccessExpression(callExpr.expression) && ts.isIdentifier(callExpr.expression.name)) {
+      identifier = callExpr.expression.name;
+    }
+
+    if (!identifier) {
+      return false;
+    }
+    const funcDecl = this.tsUtils.getDeclarationNode(identifier);
+    const body =
+      funcDecl && (ts.isFunctionDeclaration(funcDecl) || ts.isMethodDeclaration(funcDecl)) ? funcDecl.body : undefined;
+    if (!body) {
+      return false;
+    }
+    for (const stmt of body.statements) {
+      if (ts.isReturnStatement(stmt) && stmt.expression) {
+        return this.checkArgumentIsLiteral(stmt.expression);
+      }
+    }
+    return false;
   }
 }
