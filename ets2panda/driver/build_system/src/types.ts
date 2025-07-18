@@ -13,6 +13,11 @@
  * limitations under the License.
  */
 
+export enum RECORD_TYPE {
+  DEFAULT_TYPE = 'OFF',
+  ON_TYPE = 'ON',
+}
+
 export enum BUILD_MODE {
   DEBUG = 'Debug',
   RELEASE = 'Release'
@@ -48,6 +53,7 @@ export interface BuildBaseConfig {
   arktsGlobal: ArkTSGlobal;
   maxWorkers?: number;
   isBuildConfigModified?: boolean;
+  recordType?: RECORD_TYPE;
 }
 
 export interface ArkTSGlobal {
