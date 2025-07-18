@@ -68,7 +68,10 @@ import {
   ModuleInfo,
   ES2PANDA_MODE
 } from '../types';
-import { ArkTSConfigGenerator } from './generate_arktsconfig';
+import {
+  ArkTSConfig,
+  ArkTSConfigGenerator
+} from './generate_arktsconfig';
 import { SetupClusterOptions } from '../types';
 import { KitImportTransformer } from '../plugins/KitImportTransformer';
 
@@ -252,7 +255,7 @@ export abstract class BaseMode {
         // if aliasConfig is set, transform aliasName@kit.xxx to default@ohos.xxx through the plugin
         this.logger.printInfo('Transforming import statements with alias config');
         let transformAst = new KitImportTransformer(arkts, arktsGlobal.compilerContext.program,
-                                                    this.buildConfig.buildSdkPath,this.buildConfig.aliasConfig).transform(ast);
+          this.buildConfig.buildSdkPath, this.buildConfig.aliasConfig).transform(ast);
         PluginDriver.getInstance().getPluginContext().setArkTSAst(transformAst);
       } else {
         PluginDriver.getInstance().getPluginContext().setArkTSAst(ast);
@@ -400,19 +403,6 @@ export abstract class BaseMode {
     const staticDepModules: Map<string, ModuleInfo> = new Map<string, ModuleInfo>();
     this.collectDependencyModules(moduleInfo.packageName, moduleInfo, dynamicDepModules, staticDepModules);
 
-    if (moduleInfo.isMainModule) {
-      this.moduleInfos.forEach((module: ModuleInfo, packageName: string) => {
-        if (module.isMainModule) {
-          return;
-        }
-        this.collectDependencyModules(packageName, module, dynamicDepModules, staticDepModules);
-      });
-      if (moduleInfo.language === LANGUAGE_VERSION.ARKTS_HYBRID) {
-        dynamicDepModules.set(moduleInfo.packageName, moduleInfo);
-      }
-      return [dynamicDepModules, staticDepModules];
-    }
-
     if (moduleInfo.dependencies) {
       moduleInfo.dependencies.forEach((packageName: string) => {
         let depModuleInfo: ModuleInfo | undefined = this.moduleInfos.get(packageName);
@@ -447,10 +437,33 @@ export abstract class BaseMode {
   }
 
   protected generateArkTSConfigForModules(): void {
+    let taskList: ModuleInfo[] = [];
     this.moduleInfos.forEach((moduleInfo: ModuleInfo, moduleRootPath: string) => {
+      if (moduleInfo.dependenciesSet.size === 0) {
+        taskList.push(moduleInfo);
+      }
+
       ArkTSConfigGenerator.getInstance(this.buildConfig, this.moduleInfos)
-        .writeArkTSConfigFile(moduleInfo, this.enableDeclgenEts2Ts, this.buildConfig);
+        .generateArkTSConfigFile(moduleInfo, this.enableDeclgenEts2Ts);
     });
+
+    while (taskList.length > 0) {
+      const task = taskList.pop();
+      const arktsConfig = ArkTSConfigGenerator.getInstance().getArktsConfigPackageName(task!!.packageName)
+      task?.dependencies?.forEach(dependecyModule => {
+        arktsConfig?.mergeArktsConfig(
+          ArkTSConfigGenerator.getInstance().getArktsConfigPackageName(dependecyModule)
+        );
+      });
+      fs.writeFileSync(task!!.arktsConfigFile, JSON.stringify(arktsConfig!!.getCompilerOptions(), null, 2))
+      task?.dependentSet.forEach((dependentTask) => {
+        const dependentModule = this.moduleInfos.get(dependentTask);
+        dependentModule?.dependenciesSet.delete(task.packageName);
+        if (dependentModule?.dependenciesSet.size === 0) {
+          taskList.push(dependentModule);
+        }
+      });
+    }
   }
 
   private collectDepModuleInfos(): void {
@@ -458,6 +471,14 @@ export abstract class BaseMode {
       let [dynamicDepModules, staticDepModules] = this.getDependentModules(moduleInfo);
       moduleInfo.dynamicDepModuleInfos = dynamicDepModules;
       moduleInfo.staticDepModuleInfos = staticDepModules;
+
+      [...dynamicDepModules.keys(), ...staticDepModules.keys()].forEach(depName => {
+        moduleInfo.dependenciesSet.add(depName);
+      });
+      moduleInfo.dependenciesSet.delete(moduleInfo.packageName);
+      moduleInfo.dependencies?.forEach(moduleName => {
+        this.moduleInfos.get(moduleName)?.dependentSet.add(moduleInfo.packageName);
+      });
     });
   }
 
@@ -500,7 +521,9 @@ export abstract class BaseMode {
         declFilesPath: module.declFilesPath,
         dependencies: module.dependencies,
         byteCodeHar: module.byteCodeHar,
-        abcPath: module.abcPath
+        abcPath: module.abcPath,
+        dependenciesSet: new Set(module?.dependencies),
+        dependentSet: new Set(),
       };
       this.moduleInfos.set(module.packageName, moduleInfo);
     });
@@ -520,12 +543,15 @@ export abstract class BaseMode {
       dynamicDepModuleInfos: new Map<string, ModuleInfo>(),
       staticDepModuleInfos: new Map<string, ModuleInfo>(),
       compileFileInfos: [],
-      declgenV1OutPath: this.declgenV1OutPath,
-      declgenV2OutPath: this.declgenV2OutPath,
-      declgenBridgeCodePath: this.declgenBridgeCodePath,
+      declgenV1OutPath: mainModuleInfo?.declgenV1OutPath ?? this.declgenV1OutPath,
+      declgenV2OutPath: mainModuleInfo?.declgenV2OutPath ?? this.declgenV2OutPath,
+      declgenBridgeCodePath: mainModuleInfo?.declgenBridgeCodePath ?? this.declgenBridgeCodePath,
       byteCodeHar: this.byteCodeHar,
       language: mainModuleInfo?.language ?? LANGUAGE_VERSION.ARKTS_1_2,
       declFilesPath: mainModuleInfo?.declFilesPath,
+      dependentSet: new Set(),
+      dependenciesSet: new Set(mainModuleInfo?.dependencies),
+      dependencies: mainModuleInfo?.dependencies ?? []
     };
   }
 
@@ -634,7 +660,7 @@ export abstract class BaseMode {
       }
     });
     this.collectAbcFileFromByteCodeHar();
-    
+
     while (queue.length > 0) {
       const currentFile = queue.shift()!;
       processed.add(currentFile);

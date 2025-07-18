@@ -29,35 +29,100 @@ import {
   ensurePathExists,
   getInteropFilePathByApi,
   getOhmurlByApi,
+  hasEntry,
   isSubPathOf,
   safeRealpath,
   toUnixPath
 } from '../utils';
 import {
   AliasConfig,
+  ArkTSConfigObject,
   BuildConfig,
   DependencyItem,
   DynamicFileContext,
   ModuleInfo,
 } from '../types';
 import {
-  COMPONENT,
-  KITS,
   LANGUAGE_VERSION,
   SYSTEM_SDK_PATH_FROM_SDK,
   sdkConfigPrefix,
 } from '../pre_define';
 
-interface ArkTSConfigObject {
-  compilerOptions: {
-    package: string,
-    baseUrl: string,
-    paths: Record<string, string[]>;
-    entry?: string;
-    dependencies: Record<string, DependencyItem>;
-    useEmptyPackage?: boolean;
+export class ArkTSConfig {
+  config: ArkTSConfigObject;
+
+  constructor(moduleInfo: ModuleInfo) {
+    this.config = {
+      compilerOptions: {
+        package: moduleInfo.packageName,
+        baseUrl: path.resolve(moduleInfo.moduleRootPath, moduleInfo.sourceRoots[0]),
+        paths: {},
+        dependencies: {}
+      }
+    };
   }
-};
+
+  addPathMappings(mappings: Record<string, string[]>): void {
+    const paths = this.config.compilerOptions.paths;
+    for (const [key, value] of Object.entries(mappings)) {
+      if (!paths[key]) {
+        paths[key] = value;
+      } else {
+        paths[key] = [...new Set([...paths[key], ...value])];
+      }
+    }
+  }
+
+  addDependency({ name, item }: { name: string; item: DependencyItem }): void {
+    const deps = this.config.compilerOptions.dependencies;
+    const existing = deps[name];
+
+    if (existing) {
+      const mergedAlias = Array.from(new Set([...(existing.alias ?? []), ...(item.alias ?? [])]));
+      deps[name] = {
+        ...existing,
+        ...item,
+        alias: mergedAlias
+      };
+    } else {
+      deps[name] = item;
+    }
+  }
+
+  addDependencies(deps: Record<string, DependencyItem>): void {
+    Object.entries(deps).forEach(([name, item]) => {
+      this.addDependency({ name, item });
+    });
+  }
+
+  getCompilerOptions(): ArkTSConfigObject {
+    return this.config;
+  }
+
+  getPackageName(): string {
+    return this.config.compilerOptions.package;
+  }
+
+  getDependencies(): Record<string, DependencyItem> {
+    return this.config.compilerOptions.dependencies;
+  }
+
+  getPathSection(): Record<string, string[]> {
+    return this.config.compilerOptions.paths;
+  }
+
+  setUseEmptyPackage(value: boolean = false): void {
+    this.config.compilerOptions.useEmptyPackage = value;
+  }
+
+  mergeArktsConfig(source: ArkTSConfig | undefined): void {
+    if (!source) {
+      return;
+    }
+    this.addDependencies(source.getDependencies());
+    this.addPathMappings(source.getPathSection());
+  }
+}
 
 export class ArkTSConfigGenerator {
   private static instance: ArkTSConfigGenerator | undefined;
@@ -67,11 +132,14 @@ export class ArkTSConfigGenerator {
   private externalApiPaths: string[];
 
   private moduleInfos: Map<string, ModuleInfo>;
-  private pathSection: Record<string, string[]>;
+  private buildConfig: BuildConfig;
 
   private logger: Logger;
   private aliasConfig: Map<string, Map<string, AliasConfig>>;
   private dynamicSDKPaths: Set<string>;
+  private systemPathSection: Record<string, string[]>;
+  private systemDependenciesSection: Record<string, DependencyItem>;
+  private arktsconfigs: Map<string, ArkTSConfig>;
 
   private constructor(buildConfig: BuildConfig, moduleInfos: Map<string, ModuleInfo>) {
     this.logger = Logger.getInstance();
@@ -82,11 +150,17 @@ export class ArkTSConfigGenerator {
     this.stdlibEscompatPath = path.resolve(realPandaStdlibPath, 'escompat');
     this.systemSdkPath = path.resolve(realBuildSdkPath, SYSTEM_SDK_PATH_FROM_SDK);
     this.externalApiPaths = buildConfig.externalApiPaths;
+    this.buildConfig = buildConfig;
 
     this.moduleInfos = moduleInfos;
-    this.pathSection = {};
     this.aliasConfig = buildConfig.aliasConfig;
     this.dynamicSDKPaths = buildConfig.interopSDKPaths;
+
+    this.systemPathSection = {}
+    this.systemDependenciesSection = {};
+    this.arktsconfigs = new Map();
+
+    this.initPathInfo();
   }
 
   public static getInstance(buildConfig?: BuildConfig, moduleInfos?: Map<string, ModuleInfo>): ArkTSConfigGenerator {
@@ -103,7 +177,6 @@ export class ArkTSConfigGenerator {
   public static destroyInstance(): void {
     ArkTSConfigGenerator.instance = undefined;
   }
-
   private generateSystemSdkPathSection(pathSection: Record<string, string[]>): void {
     function traverse(currentDir: string, relativePath: string = '', isExcludedDir: boolean = false, allowedExtensions: string[] = ['.d.ets']): void {
       const items = fs.readdirSync(currentDir);
@@ -147,60 +220,36 @@ export class ArkTSConfigGenerator {
       let kitsPath: string = path.resolve(this.systemSdkPath, 'kits');
       fs.existsSync(kitsPath) ? traverse(kitsPath) : this.logger.printWarn(`sdk path ${kitsPath} not exist.`);
     }
+    pathSection.std = [this.stdlibStdPath];
+    pathSection.escompat = [this.stdlibEscompatPath];
   }
 
-  private getPathSection(moduleInfo: ModuleInfo): Record<string, string[]> {
-    if (Object.keys(this.pathSection).length !== 0) {
-      return this.pathSection;
+  private getPathSection(moduleInfo: ModuleInfo, arktsconfig: ArkTSConfig): void {
+    arktsconfig.addPathMappings(this.systemPathSection);
+  
+    this.getAllFilesToPathSection(moduleInfo, arktsconfig);
+  
+    if (!hasEntry(moduleInfo)) {
+      return;
     }
-
-    this.pathSection.std = [this.stdlibStdPath];
-    this.pathSection.escompat = [this.stdlibEscompatPath];
-
-    this.generateSystemSdkPathSection(this.pathSection);
-
-    this.moduleInfos.forEach((moduleInfo: ModuleInfo, packageName: string) => {
-      if (moduleInfo.language !== LANGUAGE_VERSION.ARKTS_1_2 && moduleInfo.language !== LANGUAGE_VERSION.ARKTS_HYBRID) {
-        return;
-      }
-      if (!moduleInfo.entryFile) {
-        return;
-      }
-      this.handleEntryFile(moduleInfo);
+  
+    if (moduleInfo.language === LANGUAGE_VERSION.ARKTS_1_1) {
+      return;
+    }
+  
+    arktsconfig.addPathMappings({
+      [moduleInfo.packageName]: [moduleInfo.moduleRootPath]
     });
-    return this.pathSection;
   }
-
-  private handleEntryFile(moduleInfo: ModuleInfo): void {
-    try {
-      const stat = fs.statSync(moduleInfo.entryFile);
-      if (!stat.isFile()) {
-        return;
-      }
-      const entryFilePath = moduleInfo.entryFile;
-      const firstLine = fs.readFileSync(entryFilePath, 'utf-8').split('\n')[0];
-      // If the file is an ArkTS 1.2 implementation, configure the path in pathSection.
-      if (moduleInfo.language === LANGUAGE_VERSION.ARKTS_1_2 || moduleInfo.language === LANGUAGE_VERSION.ARKTS_HYBRID && firstLine.includes('use static')) {
-        this.pathSection[moduleInfo.packageName] = [
-          path.resolve(moduleInfo.moduleRootPath, moduleInfo.sourceRoots[0])
-        ];
-      }
-    } catch (error) {
-      const logData: LogData = LogDataFactory.newInstance(
-        ErrorCode.BUILDSYSTEM_HANDLE_ENTRY_FILE,
-        `Error handle entry file for module ${moduleInfo.packageName}`
-      );
-      this.logger.printError(logData);
-    }
-  }
-
+  
+  
   private getOhmurl(file: string, moduleInfo: ModuleInfo): string {
     let unixFilePath: string = file.replace(/\\/g, '/');
     let ohmurl: string = moduleInfo.packageName + '/' + unixFilePath;
     return changeFileExtension(ohmurl, '');
   }
 
-  private getDependenciesSection(moduleInfo: ModuleInfo, dependenciesection: Record<string, DependencyItem>): void {
+  private getDependenciesSection(moduleInfo: ModuleInfo, arktsconfig: ArkTSConfig): void {
     let depModules: Map<string, ModuleInfo> = moduleInfo.dynamicDepModuleInfos;
 
     depModules.forEach((depModuleInfo: ModuleInfo) => {
@@ -209,28 +258,40 @@ export class ArkTSConfigGenerator {
           decl file not found on path ${depModuleInfo.declFilesPath}`);
         return;
       }
-      let declFilesObject = JSON.parse(fs.readFileSync(depModuleInfo.declFilesPath, 'utf-8'));
-      Object.keys(declFilesObject.files).forEach((file: string) => {
-        let ohmurl: string = this.getOhmurl(file, depModuleInfo);
-        dependenciesection[ohmurl] = {
+
+      const declFilesObject = JSON.parse(fs.readFileSync(depModuleInfo.declFilesPath, 'utf-8'));
+      const files = declFilesObject.files;
+
+      Object.keys(files).forEach((file: string) => {
+        const ohmurl: string = this.getOhmurl(file, depModuleInfo);
+        const depItem: DependencyItem = {
           language: 'js',
-          path: declFilesObject.files[file].declPath,
-          ohmUrl: declFilesObject.files[file].ohmUrl
+          path: files[file].declPath,
+          ohmUrl: files[file].ohmUrl
         };
 
-        let absFilePath: string = path.resolve(depModuleInfo.moduleRootPath, file);
-        let entryFileWithoutExtension: string = changeFileExtension(depModuleInfo.entryFile, '');
+        arktsconfig.addDependency({
+          name: ohmurl,
+          item: depItem
+        });
+
+        const absFilePath: string = path.resolve(depModuleInfo.moduleRootPath, file);
+        const entryFileWithoutExtension: string = changeFileExtension(depModuleInfo.entryFile, '');
+
         if (absFilePath === entryFileWithoutExtension) {
-          dependenciesection[depModuleInfo.packageName] = dependenciesection[ohmurl];
+          arktsconfig.addDependency({
+            name: depModuleInfo.packageName,
+            item: depItem
+          });
         }
       });
     });
+    arktsconfig.addDependencies(this.systemDependenciesSection);
   }
 
-  public writeArkTSConfigFile(
+  public generateArkTSConfigFile(
     moduleInfo: ModuleInfo,
-    enableDeclgenEts2Ts: boolean,
-    buildConfig: BuildConfig
+    enableDeclgenEts2Ts: boolean
   ): void {
     if (!moduleInfo.sourceRoots || moduleInfo.sourceRoots.length === 0) {
       const logData: LogData = LogDataFactory.newInstance(
@@ -239,80 +300,34 @@ export class ArkTSConfigGenerator {
       );
       this.logger.printErrorAndExit(logData);
     }
-    let pathSection = this.getPathSection(moduleInfo);
+    let arktsConfig: ArkTSConfig = new ArkTSConfig(moduleInfo);
+    this.arktsconfigs.set(moduleInfo.packageName, arktsConfig);
+    this.getPathSection(moduleInfo, arktsConfig);
 
-    this.getAllFilesToPathSectionForHybrid(moduleInfo, buildConfig);
-    let dependenciesection: Record<string, DependencyItem> = {};
     if (!enableDeclgenEts2Ts) {
-      this.getDependenciesSection(moduleInfo, dependenciesection);
+      this.getDependenciesSection(moduleInfo, arktsConfig);
     }
-    this.processAlias(moduleInfo, dependenciesection);
-    let baseUrl: string = path.resolve(moduleInfo.moduleRootPath, moduleInfo.sourceRoots[0]);
-    if (buildConfig.paths) {
-      Object.entries(buildConfig.paths).map(([key, value]) => {
-        pathSection[key] = value
-      });
-    }
-    let arktsConfig: ArkTSConfigObject = {
-      compilerOptions: {
-        package: moduleInfo.packageName,
-        baseUrl: baseUrl,
-        paths: pathSection,
-        entry: moduleInfo.entryFile,
-        dependencies: dependenciesection
-      }
-    };
 
-    if (moduleInfo.entryFile && moduleInfo.language === LANGUAGE_VERSION.ARKTS_HYBRID) {
-      const entryFilePath = moduleInfo.entryFile;
-      const stat = fs.statSync(entryFilePath);
-      if (fs.existsSync(entryFilePath) && stat.isFile()) {
-        const firstLine = fs.readFileSync(entryFilePath, 'utf-8').split('\n')[0];
-        // If the entryFile is not an ArkTS 1.2 implementation, remove the entry property field.
-        if (!firstLine.includes('use static')) {
-          delete arktsConfig.compilerOptions.entry;
-        }
-      }
-    }
+    this.processAlias(arktsConfig);
 
     if (moduleInfo.frameworkMode) {
-      arktsConfig.compilerOptions.useEmptyPackage = moduleInfo.useEmptyPackage;
+      arktsConfig.setUseEmptyPackage(moduleInfo.useEmptyPackage);
     }
 
     ensurePathExists(moduleInfo.arktsConfigFile);
-    fs.writeFileSync(moduleInfo.arktsConfigFile, JSON.stringify(arktsConfig, null, 2), 'utf-8');
   }
 
-  private processAlias(moduleInfo: ModuleInfo, dependencySection: Record<string, DependencyItem>): void {
-    this.dynamicSDKPaths.forEach(basePath => {
-      if(basePath.includes(KITS)){
-        return;
-      }
-      if (!fs.existsSync(basePath)) {
-        const logData: LogData = LogDataFactory.newInstance(
-          ErrorCode.BUILDSYSTEM_ALIAS_MODULE_PATH_NOT_EXIST,
-          `alias module ${basePath} not exist.`
-        );
-        this.logger.printErrorAndExit(logData);
-      }
-      if(basePath.includes(COMPONENT)){
-        this.traverseDependencies(basePath, '', false, dependencySection,'component/');
-      }else{
-        this.traverseDependencies(basePath, '', false, dependencySection);
-        this.traverseDependencies(basePath, '', false, dependencySection,'dynamic/');
-      }
-    });
-
-    const aliasForPkg: Map<string, AliasConfig> | undefined = this.aliasConfig?.get(moduleInfo.packageName);
+  private processAlias(arktsconfigs: ArkTSConfig): void {
+    const aliasForPkg: Map<string, AliasConfig> | undefined = this.aliasConfig?.get(arktsconfigs.getPackageName());
 
     aliasForPkg?.forEach((aliasConfig, aliasName) => {
-      if(aliasConfig.isStatic){
+      if (aliasConfig.isStatic) {
         return;
       }
       if (aliasConfig.originalAPIName.startsWith('@kit')) {
-        this.processStaticAlias(aliasName, aliasConfig);
-      }else{
-        this.processDynamicAlias(aliasName, aliasConfig,dependencySection);
+        this.processStaticAlias(aliasName, aliasConfig, arktsconfigs);
+      } else {
+        this.processDynamicAlias(aliasName, aliasConfig, arktsconfigs);
       }
     });
   }
@@ -326,11 +341,11 @@ export class ArkTSConfigGenerator {
   ): void {
     const allowedExtensions = ['.d.ets'];
     const items = fs.readdirSync(currentDir);
-  
+
     for (const item of items) {
       const itemPath = path.join(currentDir, item);
       const stat = fs.statSync(itemPath);
-  
+
       if (stat.isFile()) {
         if (this.isAllowedExtension(item, allowedExtensions)) {
           this.processDynamicFile({
@@ -344,13 +359,13 @@ export class ArkTSConfigGenerator {
         }
         continue;
       }
-  
+
       if (stat.isDirectory()) {
         const isRuntimeAPI = path.basename(currentDir) === 'arkui' && item === 'runtime-api';
         const newRelativePath = isRuntimeAPI
           ? ''
           : (relativePath ? `${relativePath}/${item}` : item);
-  
+
         this.traverseDependencies(
           path.resolve(currentDir, item),
           newRelativePath,
@@ -370,7 +385,7 @@ export class ArkTSConfigGenerator {
     const pattern = new RegExp(`^@(${sdkConfigPrefix})\\..+\\.d\\.ets$`, 'i');
     return pattern.test(fileName);
   }
-  
+
   private buildDynamicKey(
     baseName: string,
     relativePath: string,
@@ -383,7 +398,7 @@ export class ArkTSConfigGenerator {
       : (relativePath ? `${relativePath}${separator}${baseName}` : baseName)
     );
   }
-  
+
   private processDynamicFile(ctx: DynamicFileContext): void {
     const {
       filePath,
@@ -394,10 +409,10 @@ export class ArkTSConfigGenerator {
       prefix = ''
     } = ctx;
     let separator = '.'
-    if (!this.isValidAPIFile(fileName)){
+    if (!this.isValidAPIFile(fileName)) {
       separator = '/'
     }
-    
+
     const baseName = path.basename(fileName, '.d.ets');
     const normalizedRelativePath = relativePath.replace(/\//g, separator);
     const key = this.buildDynamicKey(baseName, normalizedRelativePath, isExcludedDir, prefix, separator);
@@ -409,21 +424,33 @@ export class ArkTSConfigGenerator {
     };
   }
 
-  private processStaticAlias(aliasName: string, aliasConfig: AliasConfig) {
-    this.pathSection[aliasName] = [getInteropFilePathByApi(aliasConfig.originalAPIName, this.dynamicSDKPaths)];
+  private processStaticAlias(
+    aliasName: string,
+    aliasConfig: AliasConfig,
+    arktsConfig: ArkTSConfig
+  ): void {
+    const declPath = getInteropFilePathByApi(aliasConfig.originalAPIName, this.dynamicSDKPaths);
+    if (!declPath) {
+      return;
+    }
+
+    arktsConfig.addPathMappings({
+      [aliasName]: [declPath]
+    });
   }
 
   private processDynamicAlias(
     aliasName: string,
     aliasConfig: AliasConfig,
-    dependencySection: Record<string, DependencyItem>
-  ) {
+    arktsConfig: ArkTSConfig
+  ): void {
     const originalName = aliasConfig.originalAPIName;
     const declPath = getInteropFilePathByApi(originalName, this.dynamicSDKPaths);
+
     if (declPath === '') {
       return;
     }
-  
+
     if (!fs.existsSync(declPath)) {
       const logData: LogData = LogDataFactory.newInstance(
         ErrorCode.BUILDSYSTEM_INTEROP_SDK_NOT_FIND,
@@ -432,43 +459,60 @@ export class ArkTSConfigGenerator {
       this.logger.printErrorAndExit(logData);
     }
 
-    const existing = dependencySection[originalName];
-
-    if (existing) {
-      existing.alias = Array.from(new Set([...(existing.alias ?? []), aliasName]));
-    } else {
-      dependencySection[originalName] = {
+    arktsConfig.addDependency({
+      name: originalName,
+      item: {
         language: 'js',
         path: declPath,
         ohmUrl: getOhmurlByApi(originalName),
         alias: [aliasName]
-      };
-    }
+      }
+    });
   }
 
-  public getAllFilesToPathSectionForHybrid(
+  private getAllFilesToPathSection(
     moduleInfo: ModuleInfo,
-    buildConfig: BuildConfig
+    arktsConfig: ArkTSConfig
   ): void {
-    if (moduleInfo?.language !== LANGUAGE_VERSION.ARKTS_HYBRID) {
-      return;
-    }
-
     const moduleRoot = toUnixPath(moduleInfo.moduleRootPath) + '/';
 
-    for (const file of buildConfig.compileFiles) {
+    for (const file of this.buildConfig.compileFiles) {
       const unixFilePath = toUnixPath(file);
 
       if (!isSubPathOf(unixFilePath, moduleRoot)) {
         continue;
       }
 
-      let relativePath = unixFilePath.startsWith(moduleRoot)
-        ? unixFilePath.substring(moduleRoot.length)
-        : unixFilePath;
-
+      let relativePath = unixFilePath.substring(moduleRoot.length);
       const keyWithoutExtension = relativePath.replace(/\.[^/.]+$/, '');
-      this.pathSection[keyWithoutExtension] = [file];
+
+      const pathKey = `${moduleInfo.packageName}/${keyWithoutExtension}`;
+      arktsConfig.addPathMappings({ [pathKey]: [file] });
     }
-  }  
+  }
+
+  private initPathInfo(): void {
+    this.generateSystemSdkPathSection(this.systemPathSection);
+    this.generateSystemSdkDependenciesSection(this.systemDependenciesSection);
+    if (this.buildConfig.paths) {
+      Object.entries(this.buildConfig.paths).map(([key, value]) => {
+        this.systemPathSection[key] = value
+      });
+    }
+  }
+
+  private generateSystemSdkDependenciesSection(dependenciesSection: Record<string, DependencyItem>): void {
+    this.dynamicSDKPaths.forEach(basePath => {
+      if (fs.existsSync(basePath)) {
+        this.traverseDependencies(basePath, '', false, dependenciesSection);
+        this.traverseDependencies(basePath, '', false, dependenciesSection, 'dynamic/');
+      } else {
+        this.logger.printWarn(`sdk path ${basePath} not exist.`);
+      }
+    });
+  }
+
+  public getArktsConfigPackageName(packageName: string): ArkTSConfig | undefined {
+    return this.arktsconfigs.get(packageName);
+  }
 }
