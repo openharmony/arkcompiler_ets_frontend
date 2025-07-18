@@ -2788,6 +2788,7 @@ export class Autofixer {
 
   fixCustomBidirectionalBinding(
     originalExpr: ts.ObjectLiteralExpression,
+    type: ts.TypeNode | undefined,
     currentParam: ts.Identifier,
     customParam: ts.Identifier
   ): Autofix[] | undefined {
@@ -2808,14 +2809,7 @@ export class Autofixer {
       ],
       true
     );
-    const parameter = ts.factory.createParameterDeclaration(
-      undefined,
-      undefined,
-      value,
-      undefined,
-      undefined,
-      undefined
-    );
+    const parameter = ts.factory.createParameterDeclaration(undefined, undefined, value, undefined, type, undefined);
     const arrowFunc = ts.factory.createArrowFunction(
       undefined,
       undefined,

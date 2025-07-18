@@ -171,7 +171,7 @@
                 {
                     "start": 1662,
                     "end": 1685,
-                    "replacementText": "{\n        value: this.value,\n        $value: value => {\n            this.value = value;\n        }\n      }",
+                    "replacementText": "{\n        value: this.value,\n        $value: (value: number) => {\n            this.value = value;\n        }\n      }",
                     "line": 92,
                     "column": 21,
                     "endLine": 92,
@@ -192,7 +192,7 @@
                 {
                     "start": 1700,
                     "end": 1719,
-                    "replacementText": "{\n        str: this.str,\n        $str: value => {\n            this.str = value;\n        }\n      }",
+                    "replacementText": "{\n        str: this.str,\n        $str: (value: string) => {\n            this.str = value;\n        }\n      }",
                     "line": 93,
                     "column": 21,
                     "endLine": 93,

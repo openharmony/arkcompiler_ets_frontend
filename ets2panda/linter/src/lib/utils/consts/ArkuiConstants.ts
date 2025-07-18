@@ -36,7 +36,9 @@ export enum CustomInterfaceName {
   Observed = 'Observed',
   CustomLayout = 'CustomLayout',
   CustomStyles = 'CustomStyles',
-  Repeat = 'Repeat'
+  Repeat = 'Repeat',
+  WrappedBuilder = 'WrappedBuilder',
+  wrapBuilder = 'wrapBuilder'
 }
 
 export enum StorageTypeName {
