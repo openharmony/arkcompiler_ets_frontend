@@ -13,6 +13,18 @@
  * limitations under the License.
  */
 
-export function foo1() {}
-function foo2() {}
-export overload foo {foo1, foo2}
+namespace NS {
+    export function foo1(a: number) {
+        return "invoke1";
+    }
+
+    function foo2(a: string) {
+        return "invoke2";
+    }
+
+    export overload overloadfoo{ foo1, foo2 }
+}
+
+function main() {
+    arktest.assertEQ(NS.overloadfoo(1), "invoke1");
+}

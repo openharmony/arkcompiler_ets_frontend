@@ -1143,10 +1143,6 @@ semantic:
   id: 391
   message: "Overload declaration cannot be called by union."
 
-- name: OVERLOAD_MODIFIERS_ABSTRACT
-  id: 392
-  message: "overload declaration cannot contain abstract methods."
-
 - name: OVERLOAD_MUST_BOTH_CONSTRUCT
   id: 388
   message: "The overload alias and the overloaded method must either both be constructors or both be non-constructors."
@@ -1162,6 +1158,10 @@ semantic:
 - name: OVERLOAD_SAME_ACCESS_MODIFIERS_STATIC_ASYNC
   id: 387
   message: "Overload alias and overloaded method name must have exactly the same modifiers (static, async)."
+
+- name: OVERLOAD_SAME_NAME_METHOD
+  id: 397
+  message: "Method with the same name as overload declaration '{}', overloadlist must list this medhod."
 
 - name: OVERRIDE_DOESNT_OVERRIDE
   id: 136
@@ -1586,6 +1586,7 @@ semantic:
 - name: WRONG_OPERAND_TYPE_FOR_UNARY_EXPRESSION
   id: 347
   message: "Wrong operand type for unary expression"
+
 
 graveyard:
 - 8

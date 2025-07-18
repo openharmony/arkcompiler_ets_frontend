@@ -13,6 +13,21 @@
  * limitations under the License.
  */
 
-export function foo1() {}
-function foo2() {}
-export overload foo {foo1, foo2}
+class A {
+    native foo1(x: number): void;
+    foo2(x: string) {
+        return "invoke1"
+    }
+    native foo3(): void;
+    foo4(x: boolean) {
+        return "invoke2"
+    }
+    overload foo{ foo1, foo2, foo3, foo4 }
+}
+
+
+function main() {
+    let a = new A();
+    arktest.assertEQ(a.foo("abc"), "invoke1");
+    arktest.assertEQ(a.foo(true), "invoke2");
+}

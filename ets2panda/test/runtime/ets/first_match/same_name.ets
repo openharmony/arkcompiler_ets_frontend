@@ -13,6 +13,23 @@
  * limitations under the License.
  */
 
-export function foo1() {}
-function foo2() {}
-export overload foo {foo1, foo2}
+class C {
+    foo(a: number): string {
+        return "invoke1";
+    }
+}
+
+class D extends C {
+    fooString(a: string): string {
+        return "invoke2"
+    }
+    overload foo{ foo, fooString };
+}
+
+function main() {
+    let d = new D();
+    let c: C = d;
+    arktest.assertEQ(d.foo(1), "invoke1")
+    arktest.assertEQ(d.foo("abc"), "invoke2")
+    arktest.assertEQ(c.foo(1), "invoke1")
+}

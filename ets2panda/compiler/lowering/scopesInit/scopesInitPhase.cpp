@@ -1057,75 +1057,69 @@ void InitScopesPhaseETS::MaybeAddOverload(ir::MethodDefinition *method, ir::Iden
 
 void InitScopesPhaseETS::VisitOverloadDeclaration(ir::OverloadDeclaration *overload)
 {
-    auto *curScope = VarBinder()->GetScope();
+    auto *const clsScope = VarBinder()->GetScope()->AsClassScope();
     const auto overloadName = overload->Id();
-    auto res =
-        curScope->Find(overloadName->Name(), overload->IsStatic() ? varbinder::ResolveBindingOptions::ALL_STATIC
-                                                                  : varbinder::ResolveBindingOptions::ALL_NON_STATIC);
-    if (res.variable != nullptr) {
-        VarBinder()->ThrowRedeclaration(overloadName->Start(), res.name, varbinder::DeclType::METHOD);
-    }
+    auto options =
+        (overload->IsStatic() || overload->IsConstructorOverloadDeclaration())
+            ? varbinder::ResolveBindingOptions::STATIC_VARIABLES | varbinder::ResolveBindingOptions::STATIC_DECLARATION
+            : varbinder::ResolveBindingOptions::VARIABLES | varbinder::ResolveBindingOptions::DECLARATION;
 
-    auto result = curScope->FindLocal(overloadName->Name(), varbinder::ResolveBindingOptions::ALL_DECLARATION);
-    if (result != nullptr) {
-        VarBinder()->ThrowLocalRedeclaration(overloadName->Start(), result->Name());
+    auto variable = clsScope->FindLocal(overloadName->Name(), options);
+    if (variable != nullptr) {
+        VarBinder()->ThrowRedeclaration(overloadName->Start(), overloadName->Name(), variable->Declaration()->Type());
     }
 
     Iterate(overload);
     DeclareClassOverload(overload);
 }
 
-varbinder::LocalScope *InitScopesPhaseETS::OverloadTargetScope(ir::OverloadDeclaration *overloadDef,
+varbinder::LocalScope *InitScopesPhaseETS::OverloadTargetScope(ir::OverloadDeclaration *overloaddecl,
                                                                varbinder::ClassScope *clsScope)
 {
     varbinder::LocalScope *targetScope {};
-    if (overloadDef->IsConstructorOverloadDeclaration()) {
-        targetScope = clsScope->StaticMethodScope();
+    if (overloaddecl->IsConstructorOverloadDeclaration()) {
+        targetScope = clsScope->StaticDeclScope();
 
-        auto *found = targetScope->FindLocal(Signatures::CONSTRUCTOR_NAME, varbinder::ResolveBindingOptions::BINDINGS);
+        auto *found = clsScope->StaticMethodScope()->FindLocal(Signatures::CONSTRUCTOR_NAME,
+                                                               varbinder::ResolveBindingOptions::BINDINGS);
         if (found == nullptr ||
-            (!overloadDef->OverloadedList().empty() && overloadDef->OverloadedList().front()->IsIdentifier() &&
-             overloadDef->OverloadedList().front()->AsIdentifier()->Name().Is(Signatures::CONSTRUCTOR_NAME))) {
+            (!overloaddecl->OverloadedList().empty() && overloaddecl->OverloadedList().front()->IsIdentifier() &&
+             overloaddecl->OverloadedList().front()->AsIdentifier()->Name().Is(Signatures::CONSTRUCTOR_NAME))) {
             return targetScope;
         }
         ir::Identifier *anonyConstructor = Allocator()->New<ir::Identifier>(Signatures::CONSTRUCTOR_NAME, Allocator());
-        overloadDef->PushFront(anonyConstructor);
-        anonyConstructor->SetParent(overloadDef);
+        overloaddecl->PushFront(anonyConstructor);
+        anonyConstructor->SetParent(overloaddecl);
     } else {
-        targetScope = overloadDef->IsStatic() ? clsScope->StaticMethodScope() : clsScope->InstanceMethodScope();
+        targetScope = overloaddecl->IsStatic() ? clsScope->StaticDeclScope() : clsScope->InstanceDeclScope();
     }
 
     return targetScope;
 }
 
-void InitScopesPhaseETS::DeclareClassOverload(ir::OverloadDeclaration *overloadDef)
+void InitScopesPhaseETS::DeclareClassOverload(ir::OverloadDeclaration *overloaddecl)
 {
     ES2PANDA_ASSERT(VarBinder()->GetScope()->IsClassScope());
 
-    const auto overloadName = overloadDef->Id();
+    const auto overloadName = overloaddecl->Id();
     auto *const clsScope = VarBinder()->GetScope()->AsClassScope();
-    auto options =
-        overloadDef->IsStatic()
-            ? varbinder::ResolveBindingOptions::STATIC_VARIABLES | varbinder::ResolveBindingOptions::STATIC_DECLARATION
-            : varbinder::ResolveBindingOptions::VARIABLES | varbinder::ResolveBindingOptions::DECLARATION;
-    auto variable = clsScope->FindLocal(overloadName->Name(), options);
-    if (variable != nullptr) {
-        VarBinder()->ThrowRedeclaration(overloadName->Start(), overloadName->Name(), variable->Declaration()->Type());
-    }
 
-    varbinder::LocalScope *targetScope = OverloadTargetScope(overloadDef, clsScope);
-    for (auto *methodName : overloadDef->OverloadedList()) {
+    varbinder::LocalScope *targetScope = OverloadTargetScope(overloaddecl, clsScope);
+    varbinder::LocalScope *serachMethodScope =
+        (overloaddecl->IsStatic() || overloaddecl->IsConstructorOverloadDeclaration())
+            ? clsScope->StaticMethodScope()
+            : clsScope->InstanceMethodScope();
+
+    for (auto *methodName : overloaddecl->OverloadedList()) {
         if (!methodName->IsIdentifier()) {
             continue;
         }
 
-        auto *found =
-            targetScope->FindLocal(methodName->AsIdentifier()->Name(), varbinder::ResolveBindingOptions::BINDINGS);
-
+        auto *found = serachMethodScope->FindLocal(methodName->AsIdentifier()->Name(),
+                                                   varbinder::ResolveBindingOptions::BINDINGS);
         if (found == nullptr) {
             continue;
         }
-
         if (!found->Declaration()->Node()->IsMethodDefinition()) {
             VarBinder()->ThrowError(methodName->Start(), diagnostic::OVERLOADED_NAME_MUST_FUNCTION);
             continue;
@@ -1136,7 +1130,7 @@ void InitScopesPhaseETS::DeclareClassOverload(ir::OverloadDeclaration *overloadD
 
     auto classCtx = varbinder::LexicalScope<varbinder::LocalScope>::Enter(VarBinder(), targetScope);
     auto var = std::get<1>(VarBinder()->NewVarDecl<varbinder::FunctionDecl>(overloadName->Start(), Allocator(),
-                                                                            overloadName->Name(), overloadDef));
+                                                                            overloadName->Name(), overloaddecl));
     var->SetScope(clsScope);
     if (targetScope->HasFlag(varbinder::ScopeFlags::STATIC)) {
         var->AddFlag(varbinder::VariableFlags::STATIC);

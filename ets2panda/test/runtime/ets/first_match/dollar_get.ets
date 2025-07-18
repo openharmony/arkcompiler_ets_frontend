@@ -13,6 +13,21 @@
  * limitations under the License.
  */
 
-export function foo1() {}
-function foo2() {}
-export overload foo {foo1, foo2}
+class A {
+    $_get1(x: number): int {
+        return x.toInt();
+    }
+
+    $_get2(x: string): string {
+        return x;
+    }
+
+    overload $_get { $_get1, $_get2 }
+}
+
+function main() {
+    let a = new A();
+
+    arktest.assertEQ(a[1], 1)
+    arktest.assertEQ(a["abc"], "abc")
+}

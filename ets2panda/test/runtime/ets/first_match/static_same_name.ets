@@ -13,6 +13,21 @@
  * limitations under the License.
  */
 
-export function foo1() {}
-function foo2() {}
-export overload foo {foo1, foo2}
+class C {
+    static foo111(a: number): string {
+        return "static invoke1";
+    }
+}
+
+class D extends C {
+    static fooString(a: string): string {
+        return "static invoke2"
+    }
+    static overload foo111{ foo111, fooString };
+}
+
+function main() {
+    arktest.assertEQ(D.foo111(1), "static invoke1")
+    arktest.assertEQ(D.foo111("abc"), "static invoke2")
+    arktest.assertEQ(C.foo111(1), "static invoke1")
+}

@@ -1388,8 +1388,7 @@ Signature *ETSChecker::ResolveCallExpressionAndTrailingLambda(ArenaVector<Signat
 Signature *ETSChecker::ResolveConstructExpression(ETSObjectType *type, const ArenaVector<ir::Expression *> &arguments,
                                                   const lexer::SourcePosition &pos)
 {
-    auto *var = type->GetProperty(compiler::Signatures::CONSTRUCTOR_OVERLOAD_DEFINITION_NAME,
-                                  PropertySearchFlags::SEARCH_STATIC_METHOD);
+    auto *var = type->GetProperty(compiler::Signatures::CONSTRUCTOR_NAME, PropertySearchFlags::SEARCH_STATIC_METHOD);
     if (var != nullptr && var->TsType()->IsETSFunctionType()) {
         return MatchOrderSignatures(var->TsType()->AsETSFunctionType()->CallSignatures(), nullptr, arguments, pos,
                                     TypeRelationFlag::NONE);

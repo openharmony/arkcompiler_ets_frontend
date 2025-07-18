@@ -26,4 +26,6 @@ class Base2 {
 }
 
 /* @@@ label1 Error TypeError: Overload alias and overloaded method name must have exactly the same modifiers (static, async). */
+/* @@@ label1 Error TypeError: Static property 'fooNumber' must be accessed through it's class 'Base1' */
 /* @@@ label2 Error TypeError: Overload alias and overloaded method name must have exactly the same modifiers (static, async). */
+/* @@@ label2 Error TypeError: Property 'fooString' must be accessed through 'this' */

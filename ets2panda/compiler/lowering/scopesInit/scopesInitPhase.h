@@ -344,8 +344,8 @@ private:
     void DeclareClassMethod(ir::MethodDefinition *method);
     void MaybeAddOverload(ir::MethodDefinition *method, ir::Identifier *methodName, varbinder::Variable *found,
                           varbinder::ClassScope *clsScope, varbinder::LocalScope *targetScope);
-    void DeclareClassOverload(ir::OverloadDeclaration *overloadDef);
-    varbinder::LocalScope *OverloadTargetScope(ir::OverloadDeclaration *overloadDef, varbinder::ClassScope *clsScope);
+    void DeclareClassOverload(ir::OverloadDeclaration *overloaddecl);
+    varbinder::LocalScope *OverloadTargetScope(ir::OverloadDeclaration *overloaddecl, varbinder::ClassScope *clsScope);
 
     void VisitClassStaticBlock(ir::ClassStaticBlock *staticBlock) override;
     void VisitBlockExpression(ir::BlockExpression *blockExpr) override;
