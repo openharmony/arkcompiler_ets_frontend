@@ -20,6 +20,6 @@ export const shortInf: short = /* @@ label1 */1.0 / 0.0
 /* @@@ label Error TypeError: Type 'Double' cannot be assigned to type 'Byte'  */
 /* @@@ label1 Error TypeError: Type 'Double' cannot be assigned to type 'Short'  */
 /* @@@ label2 Error TypeError: Type 'Double' cannot be assigned to type 'Float'  */
-/* @@@ label2 Error TypeError: Floating-point value cannot be converted  */
+/* @@@ label2 Error TypeError: Value is out of range  */
 /* @@@ label1 Error TypeError: Floating-point value cannot be converted  */
 /* @@@ label Error TypeError: Floating-point value cannot be converted  */

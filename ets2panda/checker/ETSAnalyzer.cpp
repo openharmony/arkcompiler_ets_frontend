@@ -2830,6 +2830,14 @@ static bool CheckIfLiteralValueIsAppropriate(ETSChecker *checker, Type *type, ir
         return !number.IsReal() && val >= std::numeric_limits<uint16_t>::min() &&
                val <= std::numeric_limits<uint16_t>::max();
     } else if (number.IsDouble()) {
+        if (relation->IsIdenticalTo(type, checker->GlobalFloatBuiltinType())) {
+            auto doubleVal = number.GetDouble();
+            if (doubleVal < std::numeric_limits<float>::min() || doubleVal > std::numeric_limits<float>::max()) {
+                return false;
+            }
+            auto floatVal = static_cast<float>(doubleVal);
+            return static_cast<double>(floatVal) == doubleVal;
+        }
         return relation->IsIdenticalTo(checker->GlobalDoubleBuiltinType(), type);
     }
     return true;
