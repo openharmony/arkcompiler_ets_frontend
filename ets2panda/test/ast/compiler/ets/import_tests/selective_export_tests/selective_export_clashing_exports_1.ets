@@ -16,5 +16,7 @@
 export function foo(): void {}
 
 export {
-  foo as bar
+  foo as /* @@ label */bar
 }
+
+/* @@@ label Error SyntaxError: Cannot export 'foo', it was already exported.  */

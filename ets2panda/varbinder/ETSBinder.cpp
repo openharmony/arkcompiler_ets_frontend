@@ -190,20 +190,11 @@ void ETSBinder::ResolveReferencesForScopeWithContext(ir::AstNode *node, Scope *s
     ResolveReference(node);
 }
 
-// export { a as b } value => a, key => b
-// value == value and key == key => Warning, value == value and key != key => Ok, value != value and key == key => CTE
-bool ETSBinder::AddSelectiveExportAlias(parser::ETSParser *parser, util::StringView const &path,
-                                        util::StringView const &key, util::StringView const &value,
-                                        ir::AstNode const *decl) noexcept
+bool ETSBinder::AddSelectiveExportAlias(util::StringView const &path, util::StringView const &key,
+                                        util::StringView const &value, ir::AstNode const *decl) noexcept
 {
     if (auto foundMap = selectiveExportAliasMultimap_.find(path); foundMap != selectiveExportAliasMultimap_.end()) {
-        auto inserted = foundMap->second.insert({key, std::make_pair(value, decl)}).second;
-        if (UNLIKELY(!inserted && foundMap->second.find(key)->second.first == value)) {
-            parser->DiagnosticEngine().Log(
-                {util::DiagnosticType::WARNING, diagnostic::DUPLICATE_EXPORT_ALIASES, {key}, decl->Start()});
-            return true;
-        }
-        return inserted;
+        return foundMap->second.insert({key, std::make_pair(value, decl)}).second;
     }
 
     ArenaMap<util::StringView, std::pair<util::StringView, ir::AstNode const *>> map(Allocator()->Adapter());
@@ -764,8 +755,7 @@ Variable *ETSBinder::FindImportSpecifiersVariable(const util::StringView &import
 static bool IsExportedVariable(varbinder::Variable *const var)
 {
     return var != nullptr &&
-           (var->Declaration()->Node()->IsExported() || var->Declaration()->Node()->IsDefaultExported() ||
-            var->Declaration()->Node()->HasExportAlias());
+           (var->Declaration()->Node()->IsExported() || var->Declaration()->Node()->IsDefaultExported());
 }
 
 std::pair<ir::ETSImportDeclaration *, ir::AstNode *> ETSBinder::FindImportDeclInExports(
@@ -902,7 +892,7 @@ void ETSBinder::ValidateImportVariable(const ir::AstNode *node, const util::Stri
 {
     if (node->IsDefaultExported()) {
         ThrowError(importPath->Start(), diagnostic::DEFAULT_EXPORT_DIRECT_IMPORTED);
-    } else if (!node->IsExported() && !node->IsDefaultExported() && !node->HasExportAlias()) {
+    } else if (!node->IsExported() && !node->IsDefaultExported()) {
         ThrowError(importPath->Start(), diagnostic::IMPORTED_NOT_EXPORTED, {imported});
     }
 }
@@ -1022,9 +1012,8 @@ bool ETSBinder::AddImportSpecifiersToTopBindings(Span<parser::Program *const> re
     }
 
     // The first part of the condition will be true, if something was given an alias when exported, but we try
-    // to import it using its original name and if original name is not exported.
-    if (nameToSearchFor == imported && var->Declaration()->Node()->HasExportAlias() &&
-        !var->Declaration()->Node()->IsExported()) {
+    // to import it using its original name.
+    if (nameToSearchFor == imported && var->Declaration()->Node()->HasExportAlias()) {
         ThrowError(importSpecifier->Start(), diagnostic::IMPORT_NOT_FOUND, {imported});
         return false;
     }

@@ -16,3 +16,5 @@
 export class A {}
 
 export type {A as AA};
+
+/* @@? 18:19 Error SyntaxError: Cannot export 'A', it was already exported. */

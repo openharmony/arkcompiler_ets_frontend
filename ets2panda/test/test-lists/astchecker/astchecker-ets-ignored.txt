@@ -164,8 +164,3 @@ ast/parser/ets/unexpected_token_62.ets
 #26984
 ast/parser/ets/primitive_type_method_2.ets
 ast/parser/ets/staticFunctionCallOfObject.ets
-
-# Issue: #27365 Cannot add correct comment to astchecker to see warning with 0:0 position (duplicate export warning)
-ast/compiler/ets/export_type_class_multiple_times.ets
-ast/compiler/ets/export_type_interface_multiple_times.ets
-ast/compiler/ets/import_tests/export_multi_error.ets

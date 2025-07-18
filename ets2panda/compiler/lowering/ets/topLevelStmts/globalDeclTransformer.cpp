@@ -79,7 +79,7 @@ void GlobalDeclTransformer::VisitFunctionDeclaration(ir::FunctionDeclaration *fu
     method->SetRange(funcDecl->Range());
     method->Function()->SetAnnotations(funcDecl->Annotations());
 
-    if (funcDecl->Function()->HasExportAlias()) {
+    if (funcDecl->Function()->IsExported() && funcDecl->Function()->HasExportAlias()) {
         method->AddAstNodeFlags(ir::AstNodeFlags::HAS_EXPORT_ALIAS);
     }
 
@@ -113,7 +113,8 @@ void GlobalDeclTransformer::VisitVariableDeclaration(ir::VariableDeclaration *va
             field->SetAnnotations(std::move(propAnnotations));
         }
 
-        if (varDecl->HasExportAlias() || declarator->HasExportAlias()) {
+        if ((varDecl->IsExported() || declarator->IsExported()) &&
+            (varDecl->HasExportAlias() || declarator->HasExportAlias())) {
             field->AddAstNodeFlags(ir::AstNodeFlags::HAS_EXPORT_ALIAS);
         }
 

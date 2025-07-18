@@ -1751,9 +1751,7 @@ void ETSChecker::BindingsModuleObjectAddProperty(checker::ETSObjectType *moduleO
         if (!var->AsLocalVariable()->Declaration()->Node()->IsValidInCurrentPhase()) {
             continue;
         }
-        if ((var->AsLocalVariable()->Declaration()->Node()->IsExported() ||
-             var->AsLocalVariable()->Declaration()->Node()->HasExportAlias()) &&
-            found) {
+        if ((var->AsLocalVariable()->Declaration()->Node()->IsExported()) && found) {
             if (!aliasedName.Empty()) {
                 moduleObjType->AddReExportAlias(var->Declaration()->Name(), aliasedName);
             }

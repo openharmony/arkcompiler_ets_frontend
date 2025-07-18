@@ -19,4 +19,5 @@ export type {A}
 export type MyA = A
 export type {MyA}
 
-/* @@? 16:1 Warning Warning: Duplicated export aliases for 'MyA'. */
+/* @@? 20:14 Error SyntaxError: The given name 'MyA' is already used in another export. */
+/* @@? 20:14 Error SyntaxError: Cannot export 'MyA', it was already exported. */
