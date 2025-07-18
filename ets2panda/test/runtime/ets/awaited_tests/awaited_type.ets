@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -12,12 +12,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+ 
+function f<T>(x: Awaited<T>) {}
 
-async function foo(): Promise<Object> {
-    let obj: Object = /* @@ label */await null;
-    return /* @@ label1 */null;
+async function ff<U>(x: Promise<U>) {
+    f(await x)
 }
 
-/* @@@ label Error TypeError: Type 'null' can not be awaited, it is not a Promise. */
-/* @@@ label Error TypeError: Type 'null' cannot be assigned to type 'Object' */
-/* @@@ label1 Error TypeError: Type 'null' is not compatible with the enclosing method's return type 'Promise<Object> | Object'  */
+const asyncfunc = async() => {
+    return Promise.resolve(1.0)
+}
+
+function main() {
+    let x = ff<number>(asyncfunc())
+}

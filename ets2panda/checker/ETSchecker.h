@@ -460,6 +460,8 @@ public:
                                                         Substitution *substitution);
     [[nodiscard]] bool EnhanceSubstitutionForFunction(const ArenaVector<Type *> &typeParams, ETSFunctionType *paramType,
                                                       Type *argumentType, Substitution *substitution);
+    [[nodiscard]] bool EnhanceSubstitutionForAwaited(const ArenaVector<Type *> &typeParams, ETSAwaitedType *paramType,
+                                                     Type *argumentType, Substitution *substitution);
     [[nodiscard]] bool EnhanceSubstitutionForUnion(const ArenaVector<Type *> &typeParams, ETSUnionType *paramUn,
                                                    Type *argumentType, Substitution *substitution);
     [[nodiscard]] bool EnhanceSubstitutionForArray(const ArenaVector<Type *> &typeParams, ETSArrayType *paramType,
@@ -806,6 +808,11 @@ public:
     // Readonly
     Type *GetReadonlyType(Type *type);
     void MakePropertiesReadonly(ETSObjectType *classType);
+    // Awaited<T>
+    Type *HandleAwaitedUtilityType(Type *typeToBeAwaited);
+    Type *HandleAwaitExpression(Type *typeToBeAwaited, ir::AwaitExpression *expr);
+    Type *UnwrapPromiseType(checker::Type *type);
+    bool IsPromiseType(Type *type);
     // Required
     Type *HandleRequiredType(Type *typeToBeRequired);
     void MakePropertiesNonNullish(ETSObjectType *classType);

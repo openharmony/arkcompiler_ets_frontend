@@ -20,6 +20,7 @@
 #include "checker/types/ets/etsObjectType.h"
 #include "checker/types/ets/etsTupleType.h"
 #include "checker/types/ets/etsPartialTypeParameter.h"
+#include "checker/types/ets/etsAwaitedType.h"
 #include "checker/types/gradualType.h"
 #include "compiler/lowering/phase.h"
 #include "ir/base/classDefinition.h"
@@ -153,7 +154,8 @@ static bool CheckObjectTypeAndSuperType(ETSChecker *checker, ETSObjectType *type
     auto *classDef = type->GetDeclNode()->AsClassDefinition();
     auto cName = classDef->Ident()->Name();
     if (cName == compiler::Signatures::PARTIAL_TYPE_NAME || cName == compiler::Signatures::READONLY_TYPE_NAME ||
-        cName == compiler::Signatures::REQUIRED_TYPE_NAME || cName == compiler::Signatures::FIXED_ARRAY_TYPE_NAME) {
+        cName == compiler::Signatures::REQUIRED_TYPE_NAME || cName == compiler::Signatures::FIXED_ARRAY_TYPE_NAME ||
+        cName == compiler::Signatures::AWAITED_TYPE_NAME) {
         checker->LogError(diagnostic::USING_RESERVED_NAME_AS_VARIABLE_OR_TYPE_NAME, {cName},
                           type->GetDeclNode()->Start());
         type->SetSuperType(checker->GlobalETSObjectType());
@@ -2669,6 +2671,29 @@ void ETSChecker::AddElementsToModuleObject(ETSObjectType *moduleObj, const util:
     }
 }
 
+static Type *GetApparentTypeUtilityTypes(checker::ETSChecker *checker, Type *type)
+{
+    if (type->IsETSReadonlyType()) {
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+        return checker->GetApparentType(type->AsETSReadonlyType()->GetUnderlying()->GetConstraintType());
+    }
+    if (type->IsETSAwaitedType()) {
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+        return checker->GetApparentType(type->AsETSAwaitedType()->GetUnderlying()->GetConstraintType());
+    }
+    if (type->IsETSPartialTypeParameter()) {
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+        return checker->CreatePartialType(
+            // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+            checker->GetApparentType(type->AsETSPartialTypeParameter()->GetUnderlying()->GetConstraintType()));
+    }
+    if (type->IsETSNonNullishType()) {
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+        return checker->GetApparentType(type->AsETSNonNullishType()->GetUnderlying()->GetConstraintType());
+    }
+    return type;
+}
+
 // This function computes effective runtime view of type
 Type *ETSChecker::GetApparentType(Type *type)
 {
@@ -2712,12 +2737,6 @@ Type *ETSChecker::GetApparentType(Type *type)
             // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
             GetNonNullishType(GetApparentType(type->AsETSNonNullishType()->GetUnderlying()->GetConstraintType())));
     }
-    if (type->IsETSPartialTypeParameter()) {
-        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        return cached(CreatePartialType(
-            // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-            GetApparentType(type->AsETSPartialTypeParameter()->GetUnderlying()->GetConstraintType())));
-    }
     if (type->IsETSArrayType()) {
         return cached(type);
     }
@@ -2734,7 +2753,8 @@ Type *ETSChecker::GetApparentType(Type *type)
         }
         return cached(differ ? CreateETSUnionType(std::move(newConstituent)) : type);
     }
-    return cached(type);
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+    return cached(GetApparentTypeUtilityTypes(this, type));
 }
 
 Type const *ETSChecker::GetApparentType(Type const *type) const

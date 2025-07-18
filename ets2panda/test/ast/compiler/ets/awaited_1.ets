@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,11 +13,23 @@
  * limitations under the License.
  */
 
-async function foo(): Promise<Object> {
-    let obj: Object = /* @@ label */await null;
-    return /* @@ label1 */null;
+interface User {
+    age: Promise<number>
+}
+class Myuser implements User { 
+    age: Promise<number> = delay(1)
+}
+const delay = (value: number): Promise<number> => { 
+    return Promise.resolve(value) 
+} 
+async function identity<Type>(arg: Type): Promise<Type> {
+  return Promise.resolve(arg);
 }
 
-/* @@@ label Error TypeError: Type 'null' can not be awaited, it is not a Promise. */
-/* @@@ label Error TypeError: Type 'null' cannot be assigned to type 'Object' */
-/* @@@ label1 Error TypeError: Type 'null' is not compatible with the enclosing method's return type 'Promise<Object> | Object'  */
+let user = new Myuser()
+type user_name = Promise<number>
+
+async function main() {
+    let awaited_user: number = await user.age
+    let aw: number = await identity<user_name>(user.age)
+}

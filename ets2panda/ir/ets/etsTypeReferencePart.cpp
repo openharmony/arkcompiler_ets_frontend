@@ -161,7 +161,8 @@ static checker::Type *CheckPredefinedBuiltinTypes(checker::ETSChecker *const che
     }
 
     if (ident->Name() == compiler::Signatures::READONLY_TYPE_NAME ||
-        ident->Name() == compiler::Signatures::REQUIRED_TYPE_NAME) {
+        ident->Name() == compiler::Signatures::REQUIRED_TYPE_NAME ||
+        ident->Name() == compiler::Signatures::AWAITED_TYPE_NAME) {
         return checker->HandleUtilityTypeParameterNode(ref->TypeParams(), ident);
     }
     if (ident->Name() == compiler::Signatures::PARTIAL_TYPE_NAME) {

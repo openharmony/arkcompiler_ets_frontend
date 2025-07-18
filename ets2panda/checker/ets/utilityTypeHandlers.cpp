@@ -22,6 +22,7 @@
 #include "ir/expressions/literals/undefinedLiteral.h"
 #include "varbinder/ETSBinder.h"
 #include "checker/types/ets/etsPartialTypeParameter.h"
+#include "checker/types/ets/etsAwaitedType.h"
 #include "util/nameMangler.h"
 
 #include <checker/types/gradualType.h>
@@ -79,8 +80,96 @@ Type *ETSChecker::HandleUtilityTypeParameterNode(const ir::TSTypeParameterInstan
         return HandleRequiredType(baseType);
     }
 
+    if (utilityType == compiler::Signatures::AWAITED_TYPE_NAME) {
+        return HandleAwaitedUtilityType(baseType);
+    }
+
     LogError(diagnostic::UTILITY_TYPE_UNIMPLEMENTED, {}, typeParams->Start());
     return baseType;
+}
+
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// Awaited utility type
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+bool ETSChecker::IsPromiseType(Type *type)
+{
+    if (type->IsETSUnionType()) {
+        for (Type *constituentType : type->AsETSUnionType()->ConstituentTypes()) {
+            if (!IsPromiseType(constituentType)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    return type->IsETSObjectType() && type->AsETSObjectType()->GetOriginalBaseType() == GlobalBuiltinPromiseType();
+}
+
+Type *ETSChecker::UnwrapPromiseType(checker::Type *type)
+{
+    Type *promiseType = GlobalBuiltinPromiseType();
+    while (type->IsETSObjectType() && type->AsETSObjectType()->GetOriginalBaseType() == promiseType) {
+        type = type->AsETSObjectType()->TypeArguments().at(0);
+    }
+    if (!type->IsETSUnionType()) {
+        return type;
+    }
+    const auto &ctypes = type->AsETSUnionType()->ConstituentTypes();
+    auto it = std::find_if(ctypes.begin(), ctypes.end(), [promiseType](checker::Type *t) {
+        return t == promiseType || (t->IsETSObjectType() && t->AsETSObjectType()->GetBaseType() == promiseType);
+    });
+    if (it == ctypes.end()) {
+        return type;
+    }
+    ArenaVector<Type *> newCTypes(ctypes);
+    do {
+        size_t index = it - ctypes.begin();
+        newCTypes[index] = UnwrapPromiseType(ctypes[index]);
+        ++it;
+        it = std::find_if(it, ctypes.end(), [promiseType](checker::Type *t) {
+            return t == promiseType || t->AsETSObjectType()->GetBaseType() == promiseType;
+        });
+    } while (it != ctypes.end());
+    return CreateETSUnionType(std::move(newCTypes));
+}
+
+Type *ETSChecker::HandleAwaitedUtilityType(Type *typeToBeAwaited)
+{
+    if (typeToBeAwaited->IsETSTypeParameter()) {
+        return ProgramAllocator()->New<ETSAwaitedType>(typeToBeAwaited->AsETSTypeParameter());
+    }
+
+    if (typeToBeAwaited->IsETSUnionType()) {
+        ArenaVector<Type *> awaitedTypes(ProgramAllocator()->Adapter());
+        for (Type *type : typeToBeAwaited->AsETSUnionType()->ConstituentTypes()) {
+            Type *unwrapped = IsPromiseType(type) ? type->AsETSObjectType()->TypeArguments().at(0) : type;
+            if (unwrapped->IsETSTypeParameter()) {
+                unwrapped = HandleAwaitedUtilityType(unwrapped);
+            }
+            awaitedTypes.push_back(UnwrapPromiseType(unwrapped));
+        }
+        return CreateETSUnionType(std::move(awaitedTypes));
+    }
+
+    if (IsPromiseType(typeToBeAwaited)) {
+        Type *typeArg = typeToBeAwaited->AsETSObjectType()->TypeArguments().at(0);
+        auto unwrappedType = UnwrapPromiseType(typeArg);
+        return unwrappedType->IsETSTypeParameter() ? HandleAwaitedUtilityType(unwrappedType) : unwrappedType;
+    }
+
+    return typeToBeAwaited;
+}
+
+Type *ETSChecker::HandleAwaitExpression(Type *typeToBeAwaited, ir::AwaitExpression *expr)
+{
+    Relation()->SetFlags(TypeRelationFlag::IGNORE_TYPE_PARAMETERS);
+    if (!typeToBeAwaited->IsETSTypeParameter() &&
+        !Relation()->IsSupertypeOf(GlobalBuiltinPromiseType(), typeToBeAwaited)) {
+        LogError(diagnostic::AWAITED_TYPE_NOT_PROMISE, {typeToBeAwaited}, expr->Start());
+        return typeToBeAwaited;
+    }
+    Relation()->RemoveFlags(TypeRelationFlag::IGNORE_TYPE_PARAMETERS);
+
+    return HandleAwaitedUtilityType(typeToBeAwaited);
 }
 
 // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+

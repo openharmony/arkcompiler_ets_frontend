@@ -14,9 +14,9 @@
  */
 
 async function foo(): Promise<Object> {
-    let obj: Object = await /* @@ label */5;
+    let obj: Object = /* @@ label */await 5;
     return /* @@ label1 */null;
 }
 
-/* @@@ label Error TypeError: 'await' expressions require Promise object as argument.  */
+/* @@@ label Error TypeError: Type 'Int' can not be awaited, it is not a Promise. */
 /* @@@ label1 Error TypeError: Type 'null' is not compatible with the enclosing method's return type 'Promise<Object> | Object'  */

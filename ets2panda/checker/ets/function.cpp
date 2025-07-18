@@ -24,6 +24,7 @@
 #include "checker/ETSchecker.h"
 #include "checker/ets/function_helpers.h"
 #include "checker/ets/typeRelationContext.h"
+#include "checker/types/ets/etsAwaitedType.h"
 #include "checker/types/ets/etsObjectType.h"
 #include "checker/types/ets/etsPartialTypeParameter.h"
 #include "checker/types/gradualType.h"
@@ -132,6 +133,9 @@ bool ETSChecker::EnhanceSubstitutionForType(const ArenaVector<Type *> &typeParam
     }
     if (paramType->IsETSArrayType()) {
         return EnhanceSubstitutionForArray(typeParams, paramType->AsETSArrayType(), argumentType, substitution);
+    }
+    if (paramType->IsETSAwaitedType()) {
+        return EnhanceSubstitutionForAwaited(typeParams, paramType->AsETSAwaitedType(), argumentType, substitution);
     }
 
     return true;
@@ -312,6 +316,15 @@ bool ETSChecker::EnhanceSubstitutionForFunction(const ArenaVector<Type *> &typeP
     res &= enhance(paramSig->ReturnType(), argSig->ReturnType());
 
     return res;
+}
+
+bool ETSChecker::EnhanceSubstitutionForAwaited(const ArenaVector<Type *> &typeParams, ETSAwaitedType *paramType,
+                                               Type *argumentType, Substitution *substitution)
+{
+    auto *argumentAwaitedType =
+        argumentType->IsETSAwaitedType() ? argumentType->AsETSAwaitedType()->GetUnderlying() : argumentType;
+    auto *paramAwaitedType = paramType->GetUnderlying();
+    return EnhanceSubstitutionForType(typeParams, paramAwaitedType, argumentAwaitedType, substitution);
 }
 
 bool ETSChecker::EnhanceSubstitutionForPartialTypeParam(const ArenaVector<Type *> &typeParams,
