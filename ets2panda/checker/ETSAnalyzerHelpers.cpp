@@ -55,6 +55,9 @@ void CheckExtensionIsShadowedInCurrentClassOrInterface(checker::ETSChecker *chec
         return;
     }
 
+    if (methodVariable->TsType()->IsTypeError()) {
+        return;
+    }
     const auto *const funcType = methodVariable->TsType()->AsETSFunctionType();
     for (auto *funcSignature : funcType->CallSignatures()) {
         ES2PANDA_ASSERT(signature != nullptr);
