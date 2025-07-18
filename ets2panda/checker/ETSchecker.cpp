@@ -678,29 +678,34 @@ ETSObjectType *ETSChecker::GlobalBuiltinDynamicType(Language lang) const
 
 ETSObjectType *ETSChecker::GlobalBuiltinBoxType(Type *contents)
 {
-    switch (TypeKind(contents)) {
-        case TypeFlag::ETS_BOOLEAN:
+    ES2PANDA_ASSERT(contents->IsETSReferenceType());
+    if (!contents->IsETSUnboxableObject()) {
+        auto *base = AsETSObjectType(&GlobalTypesHolder::GlobalBoxBuiltinType);
+        auto substitution = Substitution {};
+        ES2PANDA_ASSERT(base != nullptr);
+        substitution.emplace(base->TypeArguments()[0]->AsETSTypeParameter(), contents);
+        return base->Substitute(Relation(), &substitution);
+    }
+
+    switch (contents->AsETSObjectType()->UnboxableKind()) {
+        case ETSObjectFlags::BUILTIN_BOOLEAN:
             return AsETSObjectType(&GlobalTypesHolder::GlobalBooleanBoxBuiltinType);
-        case TypeFlag::BYTE:
+        case ETSObjectFlags::BUILTIN_BYTE:
             return AsETSObjectType(&GlobalTypesHolder::GlobalByteBoxBuiltinType);
-        case TypeFlag::CHAR:
-            return AsETSObjectType(&GlobalTypesHolder::GlobalCharBoxBuiltinType);
-        case TypeFlag::SHORT:
+        case ETSObjectFlags::BUILTIN_SHORT:
             return AsETSObjectType(&GlobalTypesHolder::GlobalShortBoxBuiltinType);
-        case TypeFlag::INT:
+        case ETSObjectFlags::BUILTIN_CHAR:
+            return AsETSObjectType(&GlobalTypesHolder::GlobalCharBoxBuiltinType);
+        case ETSObjectFlags::BUILTIN_INT:
             return AsETSObjectType(&GlobalTypesHolder::GlobalIntBoxBuiltinType);
-        case TypeFlag::LONG:
+        case ETSObjectFlags::BUILTIN_LONG:
             return AsETSObjectType(&GlobalTypesHolder::GlobalLongBoxBuiltinType);
-        case TypeFlag::FLOAT:
+        case ETSObjectFlags::BUILTIN_FLOAT:
             return AsETSObjectType(&GlobalTypesHolder::GlobalFloatBoxBuiltinType);
-        case TypeFlag::DOUBLE:
+        case ETSObjectFlags::BUILTIN_DOUBLE:
             return AsETSObjectType(&GlobalTypesHolder::GlobalDoubleBoxBuiltinType);
         default: {
-            auto *base = AsETSObjectType(&GlobalTypesHolder::GlobalBoxBuiltinType);
-            auto substitution = Substitution {};
-            ES2PANDA_ASSERT(base != nullptr);
-            substitution.emplace(base->TypeArguments()[0]->AsETSTypeParameter(), contents);
-            return base->Substitute(Relation(), &substitution);
+            ES2PANDA_UNREACHABLE();
         }
     }
 }
