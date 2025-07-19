@@ -380,7 +380,7 @@ checker::Type *ETSAnalyzer::Check(ir::SpreadElement *expr) const
     if (expr->PreferredType() != nullptr) {
         expr->Argument()->SetPreferredType(expr->PreferredType());
     }
-    auto type = expr->AsSpreadElement()->Argument()->Check(checker);
+    auto type = expr->Argument()->Check(checker);
     Type *exprType = type->MaybeBaseTypeOfGradualType();
 
     if (exprType->IsETSResizableArrayType()) {
