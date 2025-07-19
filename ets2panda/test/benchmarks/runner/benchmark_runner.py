@@ -30,7 +30,7 @@ def run_and_parse(command: List) -> Dict:
     except (FileNotFoundError, subprocess.CalledProcessError) as e:
         print(f"Error executing command: {e}")
         if isinstance(e, subprocess.CalledProcessError):
-            print(f"Stderr:\n{e.stderr}")
+            print(f"Stdout:\n{e.stdout}\nStderr:\n{e.stderr}")
         return {}
 
     line_regex = re.compile(r":@(?P<phase>[\w\/-]+)\s*:\s*time=(?P<time>[\d\.\w]+)\s*mem=(?P<mem>[\d\.\w]+)")
