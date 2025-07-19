@@ -263,10 +263,7 @@ ir::ClassProperty *ETSChecker::CreateNullishPropertyFromAccessor(ir::MethodDefin
         return CreateNullishProperty(prop, newClassDefinition);
     }
 
-    if (accessor->TsType() == nullptr) {
-        accessor->Parent()->Check(this);
-    }
-
+    ES2PANDA_ASSERT(accessor->TsType()->IsETSFunctionType());
     auto callSign = accessor->TsType()->AsETSFunctionType()->CallSignatures()[0];
 
     ES2PANDA_ASSERT(accessor->Function() != nullptr);
@@ -457,6 +454,7 @@ ir::ETSTypeReference *ETSChecker::BuildSuperPartialTypeReference(
     return superPartialRef;
 }
 
+// CC-OFFNXT(huge_method[C++], G.FUN.01-CPP, G.FUD.05) solid logic
 void ETSChecker::CreatePartialClassDeclaration(ir::ClassDefinition *const newClassDefinition,
                                                ir::ClassDefinition *classDef)
 {
@@ -510,8 +508,15 @@ void ETSChecker::CreatePartialClassDeclaration(ir::ClassDefinition *const newCla
                                                        varbinder::ResolveBindingOptions::VARIABLES) != nullptr) {
                 continue;
             }
-            // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-            newClassDefinition->EmplaceBody(CreateNullishPropertyFromAccessor(method, newClassDefinition));
+
+            if (method->TsType() == nullptr) {
+                method->Parent()->Check(this);
+            }
+
+            if (method->TsType() != nullptr && !method->TsType()->IsTypeError()) {
+                // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+                newClassDefinition->EmplaceBody(CreateNullishPropertyFromAccessor(method, newClassDefinition));
+            }
         }
     }
     if (classDef->IsDeclare()) {
