@@ -552,6 +552,10 @@ typedef struct LSPAPI {
     CombinedCodeActionsInfo (*getCombinedCodeFix)(const char *fileName, const std::string &fixId,
                                                   CodeFixOptions &codeFixOptions);
     TextSpan *(*GetNameOrDottedNameSpan)(es2panda_Context *context, int startPos);
+    es2panda_AstNode *(*getProgramAst)(es2panda_Context *context);
+    es2panda_AstNode *(*getClassDefinition)(es2panda_AstNode *astNode, const std::string &nodeName);
+    es2panda_AstNode *(*getIdentifier)(es2panda_AstNode *astNode, const std::string &nodeName);
+    DefinitionInfo (*getDefinitionDataFromNode)(es2panda_AstNode *astNode, const std::string &nodeName);
 } LSPAPI;
 CAPI_EXPORT LSPAPI const *GetImpl();
 // NOLINTEND

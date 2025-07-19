@@ -1808,3 +1808,35 @@ KInt impl_getOffsetByColAndLine(KNativePointer contextPtr, KInt line, KInt colum
     return impl->getOffsetByColAndLine(context, line, column);
 }
 TS_INTEROP_3(getOffsetByColAndLine, KInt, KNativePointer, KInt, KInt)
+
+KNativePointer impl_getClassDefinition(KNativePointer astNodePtr, KStringPtr &nodeNamePtr)
+{
+    auto ast = reinterpret_cast<es2panda_AstNode *>(astNodePtr);
+    LSPAPI const *impl = GetImpl();
+    return impl->getClassDefinition(ast, nodeNamePtr.data());
+}
+TS_INTEROP_2(getClassDefinition, KNativePointer, KNativePointer, KStringPtr)
+
+KNativePointer impl_getIdentifier(KNativePointer astNodePtr, KStringPtr &nodeNamePtr)
+{
+    auto ast = reinterpret_cast<es2panda_AstNode *>(astNodePtr);
+    LSPAPI const *impl = GetImpl();
+    return impl->getIdentifier(ast, nodeNamePtr.data());
+}
+TS_INTEROP_2(getIdentifier, KNativePointer, KNativePointer, KStringPtr)
+
+KNativePointer impl_getProgramAst(KNativePointer contextPtr)
+{
+    auto context = reinterpret_cast<es2panda_Context *>(contextPtr);
+    LSPAPI const *impl = GetImpl();
+    return impl->getProgramAst(context);
+}
+TS_INTEROP_1(getProgramAst, KNativePointer, KNativePointer)
+
+KNativePointer impl_getDefinitionDataFromNode(KNativePointer astNodePtr, KStringPtr &nodeNamePtr)
+{
+    auto ast = reinterpret_cast<es2panda_AstNode *>(astNodePtr);
+    LSPAPI const *impl = GetImpl();
+    return new DefinitionInfo(impl->getDefinitionDataFromNode(ast, nodeNamePtr.data()));
+}
+TS_INTEROP_2(getDefinitionDataFromNode, KNativePointer, KNativePointer, KStringPtr)

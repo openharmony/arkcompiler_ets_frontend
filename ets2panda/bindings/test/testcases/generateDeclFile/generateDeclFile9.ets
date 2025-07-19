@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+'use static';
 interface FileDataValue {
   fileName: string;
   filePath: string;

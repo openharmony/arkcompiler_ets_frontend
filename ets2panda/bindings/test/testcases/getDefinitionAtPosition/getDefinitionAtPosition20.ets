@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,11 +13,5 @@
  * limitations under the License.
  */
 
-{
-  modelVersion: '5.0.1',
-  description: 'Please describe the basic information.',
-  dependencies: {
-    myDep: 'file:../dep'
-  },
-  devDependencies: {}
-}
+'use static';
+class Foo { }

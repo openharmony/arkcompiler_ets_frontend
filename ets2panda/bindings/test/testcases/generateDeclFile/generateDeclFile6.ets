@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+'use static';
 import { memo, __memo_context_type, __memo_id_type } from "@ohos.arkui.stateManagement";
 import { Text, Column, Component, Button, ClickEvent } from "@ohos.arkui.component";
 

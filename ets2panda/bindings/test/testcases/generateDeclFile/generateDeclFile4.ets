@@ -13,4 +13,20 @@
  * limitations under the License.
  */
 
- let indexStr: string = "modifyDeclFile";
+'use static';
+export class A {
+  Foo(a:number, b:number): number {
+    return a + b;
+  }
+  readTest1(c:number, d:number): number {
+    return a - b;
+  }
+
+  readTest2(e:number, f:number): number {
+    return a * b;
+  }
+
+  readTest3(e:number, f:number): number {
+    return a / b;
+  }
+};

@@ -293,3 +293,11 @@ ets2panda_add_gtest(lsp_api_add_missing_new_operator CPP_SOURCES
 ets2panda_add_gtest(lsp_get_import_file_path_test CPP_SOURCES
     get_import_file_path_test.cpp
 )
+
+ets2panda_add_gtest(lsp_api_get_node_test CPP_SOURCES
+    get_node_test.cpp
+)
+
+ets2panda_add_gtest(lsp_api_get_definition_from_node_test CPP_SOURCES
+    get_definition_from_node_test.cpp
+)

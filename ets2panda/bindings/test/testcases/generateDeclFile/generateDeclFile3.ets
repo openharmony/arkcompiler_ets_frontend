@@ -13,8 +13,12 @@
  * limitations under the License.
  */
 
-export class A {
-  Foo(a:number, b:number): number {
-    return a + b;
-  }
+'use static';
+function A(a:number, b:number): number {
+  return a + b;
 }
+A(1, 2);
+function A(a:number): number {
+  return a;
+}
+A(1);

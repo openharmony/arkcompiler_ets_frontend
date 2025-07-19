@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+'use static';
 function func06(): void {
   EtsStepArkTest();
 }
