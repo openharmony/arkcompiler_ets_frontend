@@ -4333,6 +4333,10 @@ export class Autofixer {
     moduleSpecifier: string,
     defaultSymbol?: ts.Symbol
   ): Autofix[] | undefined {
+    if (!Autofixer.shouldTransformImport(moduleSpecifier)) {
+      return undefined;
+    }
+
     let statements: string[] = [];
     if (importClause.name) {
       const symbolName = importClause.name.text;
@@ -4354,22 +4358,50 @@ export class Autofixer {
         statements
       );
     }
-    if (statements.length <= 0) {
-      return undefined;
-    }
-    let lastImportEnd = this.lastImportEndMap.get(this.sourceFile.fileName);
-    if (!lastImportEnd) {
-      lastImportEnd = this.getLastImportEnd();
-      this.lastImportEndMap.set(this.sourceFile.fileName, lastImportEnd);
-    }
+
+    const originalText = importDecl.getFullText().replace(/\s+/g, ' ').
+      trim();
     return [
-      { start: importDecl.getStart(), end: importDecl.getEnd(), replacementText: '' },
-      {
-        start: lastImportEnd,
-        end: lastImportEnd,
-        replacementText: statements.join(this.getNewLine()) + this.getNewLine()
-      }
+      this.createImportDeclarationFix(importDecl, originalText),
+      this.createInsertStatementsFix(importDecl, statements)
     ];
+  }
+
+  private createImportDeclarationFix(
+    importDecl: ts.ImportDeclaration,
+    originalText: string
+  ): Autofix {
+    return {
+      start: importDecl.getStart(),
+      end: importDecl.getEnd(),
+      replacementText: ""
+    };
+  }
+
+  private createInsertStatementsFix(
+    importDecl: ts.ImportDeclaration,
+    statements: string[]
+  ): Autofix {
+    let replacementText = '';
+    const joinedStatements = statements.join(this.getNewLine());
+    replacementText = this.detectNeedsLeadingNewline(importDecl) ?
+      this.getNewLine() + joinedStatements :
+      joinedStatements;
+
+    return {
+      start: importDecl.getEnd(),
+      end: importDecl.getEnd(),
+      replacementText
+    };
+  }
+
+  private static shouldTransformImport(moduleSpecifier: string): boolean {
+    return moduleSpecifier.endsWith('.js') || moduleSpecifier.startsWith('./') || moduleSpecifier.startsWith('../');
+  }
+
+  private detectNeedsLeadingNewline(importDecl: ts.ImportDeclaration): boolean {
+    const prevToken = ts.getLeadingCommentRanges(this.sourceFile.text, importDecl.getFullStart())?.[0];
+    return !!prevToken && !(/^\s*$/).test(this.sourceFile.text.slice(prevToken.end, importDecl.getStart()));
   }
 
   private getStatementForInterOpImportJsOnNamedBindings(

@@ -15,7 +15,6 @@
 
 let Foo = ESValue.load('./instantiated_js_obj_js').getProperty('Foo');
 let Foo1 = ESValue.load('./instantiated_js_obj_js').getProperty('Foo1');
-
 class A {
     num: number = 1.0;
     constructor() {

@@ -43,7 +43,7 @@
                 {
                     "start": 723,
                     "end": 723,
-                    "replacementText": "let foo = ESValue.load('./interop_not_have_property_js').getProperty('foo');\nlet person = ESValue.load('./interop_not_have_property_js').getProperty('person');\nlet TestHelper = ESValue.load('./interop_not_have_property_js').getProperty('TestHelper');\nlet Machine = ESValue.load('./interop_not_have_property_js').getProperty('Machine');\nlet User = ESValue.load('./interop_not_have_property_js').getProperty('User');\nlet Person = ESValue.load('./interop_not_have_property_js').getProperty('Person');\nlet Employee = ESValue.load('./interop_not_have_property_js').getProperty('Employee');\n",
+                    "replacementText": "let foo = ESValue.load('./interop_not_have_property_js').getProperty('foo');\nlet person = ESValue.load('./interop_not_have_property_js').getProperty('person');\nlet TestHelper = ESValue.load('./interop_not_have_property_js').getProperty('TestHelper');\nlet Machine = ESValue.load('./interop_not_have_property_js').getProperty('Machine');\nlet User = ESValue.load('./interop_not_have_property_js').getProperty('User');\nlet Person = ESValue.load('./interop_not_have_property_js').getProperty('Person');\nlet Employee = ESValue.load('./interop_not_have_property_js').getProperty('Employee');",
                     "line": 17,
                     "column": 1,
                     "endLine": 17,

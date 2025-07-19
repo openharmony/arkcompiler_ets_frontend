@@ -17,7 +17,6 @@ let a = ESValue.load('./interop_equality_judgment_js').getProperty('a');
 let b = ESValue.load('./interop_equality_judgment_js').getProperty('b');
 let c = ESValue.load('./interop_equality_judgment_js').getProperty('c');
 let d = ESValue.load('./interop_equality_judgment_js').getProperty('d');
-
 a.areEqual(b)
 !a.areEqual(b)
 a.areStrictlyEqual(b)

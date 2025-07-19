@@ -31,9 +31,9 @@
                     "endColumn": 51
                 },
                 {
-                    "start": 703,
-                    "end": 703,
-                    "replacementText": "let ff3 = ESValue.load('./interop_import_js_rules_js').getProperty('ff3');\n",
+                    "start": 654,
+                    "end": 654,
+                    "replacementText": "let ff3 = ESValue.load('./interop_import_js_rules_js').getProperty('ff3');",
                     "line": 15,
                     "column": 1,
                     "endLine": 15,
@@ -63,7 +63,7 @@
                 {
                     "start": 703,
                     "end": 703,
-                    "replacementText": "let foo = ESValue.load('./interop_import_js_index_js').getProperty('foo');\n",
+                    "replacementText": "let foo = ESValue.load('./interop_import_js_index_js').getProperty('foo');",
                     "line": 16,
                     "column": 1,
                     "endLine": 16,
@@ -478,26 +478,26 @@
             "endLine": 34,
             "endColumn": 2,
             "problem": "InteropJsObjectTraverseJsInstance",
-          "autofix": [
-            {
-              "start": 970,
-              "end": 989,
-              "replacementText": "let tmp_1 = 0; tmp_1 < arr1.getProperty('length').toNumber(); ++tmp_1",
-              "line": 30,
-              "column": 1,
-              "endLine": 34,
-              "endColumn": 2
-            },
-            {
-              "start": 1008,
-              "end": 1015,
-              "replacementText": "arr1.getProperty(tmp_1).toNumber()",
-              "line": 30,
-              "column": 1,
-              "endLine": 34,
-              "endColumn": 2
-            }
-          ],
+            "autofix": [
+                {
+                    "start": 970,
+                    "end": 989,
+                    "replacementText": "let tmp_1 = 0; tmp_1 < arr1.getProperty('length').toNumber(); ++tmp_1",
+                    "line": 30,
+                    "column": 1,
+                    "endLine": 34,
+                    "endColumn": 2
+                },
+                {
+                    "start": 1008,
+                    "end": 1015,
+                    "replacementText": "arr1.getProperty(tmp_1).toNumber()",
+                    "line": 30,
+                    "column": 1,
+                    "endLine": 34,
+                    "endColumn": 2
+                }
+            ],
             "suggest": "",
             "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js2s-traverse-js-instance)",
             "severity": "ERROR"

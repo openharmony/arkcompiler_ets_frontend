@@ -14,7 +14,6 @@
  */
 let foo = ESValue.load('./unary_operation_js_obj_js.js').getProperty('foo');
 
-
 +foo.getProperty("num").toNumber();
 -foo.getProperty("num").toNumber();
 !foo.getProperty("num").toNumber();

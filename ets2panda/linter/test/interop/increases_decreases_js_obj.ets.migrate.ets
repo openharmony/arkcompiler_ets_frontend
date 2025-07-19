@@ -13,7 +13,6 @@
  * limitations under the License.
  */
 let foo = ESValue.load('./increases_decreases_js_obj_js').getProperty('foo');
-
 let a: number =0.0
 a = foo.getProperty("num").toNumber()
 foo.setProperty(num, a + 1.0)

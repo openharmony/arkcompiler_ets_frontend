@@ -31,9 +31,9 @@
                     "endColumn": 43
                 },
                 {
-                    "start": 685,
-                    "end": 685,
-                    "replacementText": "let foo = ESValue.load('./call_function_js').getProperty('foo');\nlet bar = ESValue.load('./call_function_js').getProperty('bar');\n",
+                    "start": 646,
+                    "end": 646,
+                    "replacementText": "let foo = ESValue.load('./call_function_js').getProperty('foo');\nlet bar = ESValue.load('./call_function_js').getProperty('bar');",
                     "line": 15,
                     "column": 1,
                     "endLine": 15,
@@ -63,7 +63,7 @@
                 {
                     "start": 685,
                     "end": 685,
-                    "replacementText": "let a = ESValue.load('./call_function_js').getProperty('a');\nlet b = ESValue.load('./call_function_js').getProperty('b');\n",
+                    "replacementText": "let a = ESValue.load('./call_function_js').getProperty('a');\nlet b = ESValue.load('./call_function_js').getProperty('b');",
                     "line": 16,
                     "column": 1,
                     "endLine": 16,

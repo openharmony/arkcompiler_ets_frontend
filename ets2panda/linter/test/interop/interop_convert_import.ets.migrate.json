@@ -85,9 +85,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 32,
+            "line": 31,
             "column": 44,
-            "endLine": 32,
+            "endLine": 31,
             "endColumn": 68,
             "problem": "GenericCallNoTypeArgs",
             "suggest": "",
@@ -95,9 +95,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 42,
+            "line": 41,
             "column": 8,
-            "endLine": 42,
+            "endLine": 41,
             "endColumn": 24,
             "problem": "InterOpConvertImport",
             "suggest": "",

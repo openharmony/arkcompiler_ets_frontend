@@ -33,7 +33,7 @@
                 {
                     "start": 650,
                     "end": 650,
-                    "replacementText": "let foo = ESValue.load('./interop_property_num_js').getProperty('foo');\n",
+                    "replacementText": "let foo = ESValue.load('./interop_property_num_js').getProperty('foo');",
                     "line": 16,
                     "column": 1,
                     "endLine": 16,

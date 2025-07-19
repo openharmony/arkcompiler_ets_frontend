@@ -45,6 +45,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 18,
+            "column": 5,
+            "endLine": 18,
+            "endColumn": 29,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
             "line": 19,
             "column": 5,
             "endLine": 19,
@@ -55,19 +65,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 20,
-            "column": 5,
-            "endLine": 20,
-            "endColumn": 29,
-            "problem": "AnyType",
-            "suggest": "",
-            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 26,
+            "line": 25,
             "column": 1,
-            "endLine": 26,
+            "endLine": 25,
             "endColumn": 15,
             "problem": "MathPow",
             "suggest": "",
@@ -75,9 +75,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 30,
+            "line": 29,
             "column": 1,
-            "endLine": 30,
+            "endLine": 29,
             "endColumn": 37,
             "problem": "MathPow",
             "suggest": "",
@@ -85,9 +85,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 36,
+            "line": 35,
             "column": 1,
-            "endLine": 36,
+            "endLine": 35,
             "endColumn": 15,
             "problem": "MathPow",
             "suggest": "",
@@ -95,9 +95,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 48,
+            "line": 47,
             "column": 1,
-            "endLine": 48,
+            "endLine": 47,
             "endColumn": 17,
             "problem": "MathPow",
             "suggest": "",

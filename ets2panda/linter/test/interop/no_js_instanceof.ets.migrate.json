@@ -75,9 +75,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 70,
+            "line": 69,
             "column": 19,
-            "endLine": 70,
+            "endLine": 69,
             "endColumn": 24,
             "problem": "ClassAsObjectError",
             "suggest": "",
@@ -85,9 +85,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 74,
+            "line": 73,
             "column": 21,
-            "endLine": 74,
+            "endLine": 73,
             "endColumn": 26,
             "problem": "ClassAsObjectError",
             "suggest": "",
@@ -95,9 +95,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 78,
+            "line": 77,
             "column": 36,
-            "endLine": 78,
+            "endLine": 77,
             "endColumn": 59,
             "problem": "DynamicCtorCall",
             "suggest": "",

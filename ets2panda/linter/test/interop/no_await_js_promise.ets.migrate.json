@@ -65,9 +65,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 23,
+            "line": 22,
             "column": 16,
-            "endLine": 23,
+            "endLine": 22,
             "endColumn": 28,
             "problem": "LimitedReturnTypeInference",
             "suggest": "",
@@ -75,9 +75,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 27,
+            "line": 26,
             "column": 16,
-            "endLine": 27,
+            "endLine": 26,
             "endColumn": 33,
             "problem": "LimitedReturnTypeInference",
             "suggest": "",
@@ -85,9 +85,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 31,
+            "line": 30,
             "column": 16,
-            "endLine": 31,
+            "endLine": 30,
             "endColumn": 31,
             "problem": "LimitedReturnTypeInference",
             "suggest": "",
@@ -95,9 +95,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 35,
+            "line": 34,
             "column": 16,
-            "endLine": 35,
+            "endLine": 34,
             "endColumn": 30,
             "problem": "LimitedReturnTypeInference",
             "suggest": "",
@@ -105,9 +105,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 39,
+            "line": 38,
             "column": 16,
-            "endLine": 39,
+            "endLine": 38,
             "endColumn": 32,
             "problem": "LimitedReturnTypeInference",
             "suggest": "",
@@ -115,9 +115,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 44,
+            "line": 43,
             "column": 9,
-            "endLine": 44,
+            "endLine": 43,
             "endColumn": 20,
             "problem": "LimitedReturnTypeInference",
             "suggest": "",
@@ -125,9 +125,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 48,
+            "line": 47,
             "column": 13,
-            "endLine": 50,
+            "endLine": 49,
             "endColumn": 4,
             "problem": "LimitedReturnTypeInference",
             "suggest": "",
@@ -135,9 +135,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 53,
+            "line": 52,
             "column": 20,
-            "endLine": 53,
+            "endLine": 52,
             "endColumn": 21,
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
@@ -145,9 +145,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 54,
+            "line": 53,
             "column": 3,
-            "endLine": 56,
+            "endLine": 55,
             "endColumn": 4,
             "problem": "ObjectLiteralProperty",
             "suggest": "",
@@ -155,9 +155,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 54,
+            "line": 53,
             "column": 9,
-            "endLine": 54,
+            "endLine": 53,
             "endColumn": 18,
             "problem": "LimitedReturnTypeInference",
             "suggest": "",
@@ -165,9 +165,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 58,
+            "line": 57,
             "column": 17,
-            "endLine": 60,
+            "endLine": 59,
             "endColumn": 4,
             "problem": "LimitedReturnTypeInference",
             "suggest": "",

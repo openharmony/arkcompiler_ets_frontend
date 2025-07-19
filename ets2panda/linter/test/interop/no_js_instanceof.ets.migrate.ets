@@ -20,7 +20,6 @@ let a = ESValue.load('./no_js_instanceof_file.js').getProperty('a');
 let b = ESValue.load('./no_js_instanceof_file.js').getProperty('b');
 let MyNamespace = ESValue.load('./no_js_instanceof_file.js').getProperty('MyNamespace');
 
-
 class Foo1 {}
 
 let foo1 = new Foo1()
