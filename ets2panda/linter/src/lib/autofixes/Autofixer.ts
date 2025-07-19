@@ -3463,7 +3463,11 @@ export class Autofixer {
       return undefined;
     }
 
-    const replacementText = this.nonCommentPrinter.printNode(ts.EmitHint.Unspecified, replacement, expression.getSourceFile());
+    const replacementText = this.nonCommentPrinter.printNode(
+      ts.EmitHint.Unspecified,
+      replacement,
+      expression.getSourceFile()
+    );
     return [{ start: expression.getStart(), end: expression.getEnd(), replacementText }];
   }
 
@@ -4360,32 +4364,20 @@ export class Autofixer {
       );
     }
 
-    const originalText = importDecl.getFullText().replace(/\s+/g, ' ').
-      trim();
-    return [
-      this.createImportDeclarationFix(importDecl, originalText),
-      this.createInsertStatementsFix(importDecl, statements)
-    ];
+    return [Autofixer.createImportDeclarationFix(importDecl), this.createInsertStatementsFix(importDecl, statements)];
   }
 
-  private createImportDeclarationFix(
-    importDecl: ts.ImportDeclaration,
-    originalText: string
-  ): Autofix {
+  private static createImportDeclarationFix(importDecl: ts.ImportDeclaration): Autofix {
     return {
       start: importDecl.getStart(),
       end: importDecl.getEnd(),
-      replacementText: ""
+      replacementText: ''
     };
   }
 
-  private createInsertStatementsFix(
-    importDecl: ts.ImportDeclaration,
-    statements: string[]
-  ): Autofix {
-    let replacementText = '';
+  private createInsertStatementsFix(importDecl: ts.ImportDeclaration, statements: string[]): Autofix {
     const joinedStatements = statements.join(this.getNewLine());
-    replacementText = this.detectNeedsLeadingNewline(importDecl) ?
+    const replacementText = this.detectNeedsLeadingNewline(importDecl) ?
       this.getNewLine() + joinedStatements :
       joinedStatements;
 
