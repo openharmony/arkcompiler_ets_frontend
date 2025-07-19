@@ -30,8 +30,8 @@
             "endLine": 51,
             "endColumn": 60,
             "problem": "StrictDiagnostic",
-            "suggest": "Argument of type 'string | undefined' is not assignable to parameter of type 'ResourceStr'.",
-            "rule": "Argument of type 'string | undefined' is not assignable to parameter of type 'ResourceStr'.",
+            "suggest": "Argument of type 'string | undefined' is not assignable to parameter of type 'ResourceStr'.\n  Type 'undefined' is not assignable to type 'ResourceStr'.",
+            "rule": "Argument of type 'string | undefined' is not assignable to parameter of type 'ResourceStr'.\n  Type 'undefined' is not assignable to type 'ResourceStr'.",
             "severity": "ERROR"
         },
         {
@@ -100,8 +100,8 @@
             "endLine": 92,
             "endColumn": 15,
             "problem": "StrictDiagnostic",
-            "suggest": "Type 'TestClassC' is not assignable to type 'TestClassD'.",
-            "rule": "Type 'TestClassC' is not assignable to type 'TestClassD'.",
+            "suggest": "Type 'TestClassC' is not assignable to type 'TestClassD'.\n  Types of property 'ccc' are incompatible.\n    Type 'null' is not assignable to type 'string'.",
+            "rule": "Type 'TestClassC' is not assignable to type 'TestClassD'.\n  Types of property 'ccc' are incompatible.\n    Type 'null' is not assignable to type 'string'.",
             "severity": "WARNING"
         },
         {
@@ -120,8 +120,8 @@
             "endLine": 99,
             "endColumn": 15,
             "problem": "StrictDiagnostic",
-            "suggest": "Type 'TestClassC' is not assignable to type 'TestClassD'.",
-            "rule": "Type 'TestClassC' is not assignable to type 'TestClassD'.",
+            "suggest": "Type 'TestClassC' is not assignable to type 'TestClassD'.\n  Types of property 'ccc' are incompatible.\n    Type 'null' is not assignable to type 'string'.",
+            "rule": "Type 'TestClassC' is not assignable to type 'TestClassD'.\n  Types of property 'ccc' are incompatible.\n    Type 'null' is not assignable to type 'string'.",
             "severity": "ERROR"
         },
         {
@@ -130,8 +130,8 @@
             "endLine": 105,
             "endColumn": 15,
             "problem": "StrictDiagnostic",
-            "suggest": "Type 'TestClassC' is not assignable to type 'TestClassD'.",
-            "rule": "Type 'TestClassC' is not assignable to type 'TestClassD'.",
+            "suggest": "Type 'TestClassC' is not assignable to type 'TestClassD'.\n  Types of property 'ccc' are incompatible.\n    Type 'null' is not assignable to type 'string'.",
+            "rule": "Type 'TestClassC' is not assignable to type 'TestClassD'.\n  Types of property 'ccc' are incompatible.\n    Type 'null' is not assignable to type 'string'.",
             "severity": "ERROR"
         },
         {
@@ -140,8 +140,8 @@
             "endLine": 106,
             "endColumn": 15,
             "problem": "StrictDiagnostic",
-            "suggest": "Type 'TestClassC' is not assignable to type 'TestClassD'.",
-            "rule": "Type 'TestClassC' is not assignable to type 'TestClassD'.",
+            "suggest": "Type 'TestClassC' is not assignable to type 'TestClassD'.\n  Types of property 'ccc' are incompatible.\n    Type 'null' is not assignable to type 'string'.",
+            "rule": "Type 'TestClassC' is not assignable to type 'TestClassD'.\n  Types of property 'ccc' are incompatible.\n    Type 'null' is not assignable to type 'string'.",
             "severity": "ERROR"
         }
     ]
