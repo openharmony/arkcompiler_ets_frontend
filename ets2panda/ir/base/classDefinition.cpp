@@ -498,7 +498,7 @@ void ClassDefinition::CopyTo(AstNode *other) const
     otherImpl->functionalReferenceReferencedMethod_ = functionalReferenceReferencedMethod_;
     otherImpl->exportedClasses_ = exportedClasses_;
 
-    JsDocAllowed<AnnotationAllowed<TypedAstNode>>::CopyTo(other);
+    AnnotationAllowed<TypedAstNode>::CopyTo(other);
 }
 
 std::atomic<int> ClassDefinition::classCounter_ = 0;

@@ -328,6 +328,7 @@ ir::ClassDeclaration *EnumLoweringPhase::CreateClass(ir::TSEnumDeclaration *cons
         CreateCCtorForEnumClass(classDef);
     }
     CreateCtorForEnumClass(classDef, enumType);
+    classDecl->SetRange(enumDecl->Range());
 
     return classDecl;
 }
@@ -603,7 +604,6 @@ ir::ClassDeclaration *EnumLoweringPhase::CreateEnumStringClassFromEnumDeclaratio
 
     enumClassDecl->SetParent(enumDecl->Parent());
     ProcessEnumClassDeclaration(enumDecl, flags, enumClassDecl);
-
     return enumClassDecl;
 }
 

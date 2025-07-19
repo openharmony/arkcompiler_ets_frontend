@@ -199,8 +199,7 @@ void VariableDeclaration::Dump(ir::SrcDumper *dumper) const
 
 VariableDeclaration::VariableDeclaration([[maybe_unused]] Tag const tag, VariableDeclaration const &other,
                                          ArenaAllocator *const allocator)
-    : JsDocAllowed<AnnotationAllowed<Statement>>(static_cast<JsDocAllowed<AnnotationAllowed<Statement>> const &>(other),
-                                                 allocator),
+    : AnnotationAllowed<Statement>(static_cast<AnnotationAllowed<Statement> const &>(other)),
       kind_(other.kind_),
       decorators_(allocator->Adapter()),
       declarators_(allocator->Adapter())
@@ -222,8 +221,7 @@ VariableDeclaration::VariableDeclaration([[maybe_unused]] Tag const tag, Variabl
 
 VariableDeclaration::VariableDeclaration([[maybe_unused]] Tag const tag, VariableDeclaration const &other,
                                          ArenaAllocator *const allocator, AstNodeHistory *history)
-    : JsDocAllowed<AnnotationAllowed<Statement>>(
-          static_cast<JsDocAllowed<AnnotationAllowed<Statement>> const &>(other)),
+    : AnnotationAllowed<Statement>(static_cast<AnnotationAllowed<Statement> const &>(other)),
       kind_(other.kind_),
       decorators_(allocator->Adapter()),
       declarators_(allocator->Adapter())
@@ -290,7 +288,7 @@ void VariableDeclaration::CopyTo(AstNode *other) const
     otherImpl->decorators_ = decorators_;
     otherImpl->declarators_ = declarators_;
 
-    JsDocAllowed<AnnotationAllowed<Statement>>::CopyTo(other);
+    AnnotationAllowed<Statement>::CopyTo(other);
 }
 
 }  // namespace ark::es2panda::ir

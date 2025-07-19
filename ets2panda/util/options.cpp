@@ -242,8 +242,6 @@ bool Options::Parse(Span<const char *const> args)
         logLevel_ = Logger::LevelFromString(GetLogLevel());
     }
 
-    parseJsdoc_ = WasSetParseJsdoc();
-
     InitCompilerOptions();
 
     return ProcessEtsSpecificOptions();

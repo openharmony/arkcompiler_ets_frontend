@@ -129,18 +129,6 @@ typedef struct es2panda_OverloadInfo {
     bool returnVoid;
 } es2panda_OverloadInfo;
 
-typedef struct es2panda_JsDocRecord {
-    char *name;
-    char *param;
-    char *comment;
-} es2panda_JsDocRecord;
-
-typedef struct es2panda_JsDocInfo {
-    char **strings;
-    es2panda_JsDocRecord **jsDocRecords;
-    size_t len;
-} es2panda_JsDocInfo;
-
 enum es2panda_ContextState {
     ES2PANDA_STATE_NEW,
     ES2PANDA_STATE_PARSED,
@@ -259,6 +247,9 @@ struct CAPI_EXPORT es2panda_Impl {
     Es2pandaEnum (*Es2pandaEnumFromString)(es2panda_Context *ctx, const char *str);
     char *(*Es2pandaEnumToString)(es2panda_Context *ctx, Es2pandaEnum id);
     es2panda_AstNode *(*DeclarationFromIdentifier)(es2panda_Context *ctx, es2panda_AstNode *node);
+    bool (*IsImportTypeKind)(es2panda_Context *ctx, es2panda_AstNode *node);
+    char *(*JsdocStringFromDeclaration)(es2panda_Context *ctx, es2panda_AstNode *node);
+    char *(*GetLicenseFromRootNode)(es2panda_Context *ctx, es2panda_AstNode *node);
     es2panda_AstNode *(*FirstDeclarationByNameFromNode)(es2panda_Context *ctx, const es2panda_AstNode *node,
                                                         const char *name);
     es2panda_AstNode *(*FirstDeclarationByNameFromProgram)(es2panda_Context *ctx, const es2panda_Program *program,

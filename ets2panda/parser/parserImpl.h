@@ -192,6 +192,7 @@ protected:
     friend class ETSNolintParser;
     friend class lexer::RegExpParser;
     friend class util::SourcePositionHelper;
+    friend class JsdocHelper;
 
     void LogExpectedToken(lexer::TokenType tokenType);
     void LogUnexpectedToken(lexer::TokenType tokenType);

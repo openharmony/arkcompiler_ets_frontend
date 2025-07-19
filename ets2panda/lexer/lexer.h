@@ -124,7 +124,6 @@ public:
     // NOLINTNEXTLINE(google-default-arguments)
     virtual void NextToken(NextTokenFlags flags = NextTokenFlags::NONE);
     virtual void ScanAsteriskPunctuator();
-    bool IsEnableParseJsdoc() const;
 
     Token &GetToken();
     const Token &GetToken() const;
@@ -151,11 +150,6 @@ public:
         return false;
     }
 
-    void SkipCp()
-    {
-        Iterator().SkipCp();
-    }
-
     util::DiagnosticEngine &DiagnosticEngine()
     {
         return diagnosticEngine_;
@@ -173,9 +167,9 @@ public:
 
     LexerPosition Save() const;
     void Rewind(const LexerPosition &pos);
+    void Reset(size_t offset);
     void BackwardToken(TokenType type, size_t offset);
     void ForwardToken(TokenType type, size_t offset);
-    void ForwardToken(TokenType type);
 
     char32_t Lookahead();
     bool CheckArrow();
@@ -188,7 +182,6 @@ public:
     bool HandleDoubleQuoteHelper(const char32_t &end, const char32_t &cp);
     void PrepareStringTokenHelper();
     void FinalizeTokenHelper(util::UString *str, const size_t &startPos, size_t escapeEnd, bool finalize = true);
-    void FinalizeJsDocInfoHelper(util::UString *str, const size_t &startPos, size_t escapeEnd);
     template <char32_t END>
     void ScanString();
 
@@ -262,8 +255,6 @@ public:
         return GetToken().Start();
     }
 
-    size_t GetIndex();
-
 protected:
     void NextToken(Keywords *kws);
     ArenaAllocator *Allocator();
@@ -294,8 +285,6 @@ protected:
     util::StringView SourceView(const util::StringView::Iterator &begin, const util::StringView::Iterator &end) const;
 
     bool SkipWhiteSpacesHelperSlash(char32_t *cp);
-    bool IsValidJsDocStart(char32_t *cp);
-    bool IsValidJsDocEnd(char32_t *cp);
     bool SkipWhiteSpacesHelperDefault(const char32_t &cp);
     void SkipWhiteSpaces();
     void SkipSingleLineComment();
@@ -379,10 +368,6 @@ private:
     util::StringView source_;
     LexerPosition pos_;
     util::DiagnosticEngine &diagnosticEngine_;
-    const parser::ParserContext *GetContext()
-    {
-        return parserContext_;
-    }
 };
 
 class TemplateLiteralParserContext {

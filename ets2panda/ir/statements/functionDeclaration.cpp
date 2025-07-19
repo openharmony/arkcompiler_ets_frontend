@@ -129,7 +129,7 @@ void FunctionDeclaration::CopyTo(AstNode *other) const
     otherImpl->func_ = func_;
     otherImpl->isAnonymous_ = isAnonymous_;
 
-    JsDocAllowed<AnnotationAllowed<Statement>>::CopyTo(other);
+    AnnotationAllowed<Statement>::CopyTo(other);
 }
 
 void FunctionDeclaration::EmplaceDecorators(Decorator *decorators)

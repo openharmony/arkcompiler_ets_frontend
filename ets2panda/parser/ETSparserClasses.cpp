@@ -677,16 +677,29 @@ std::tuple<bool, bool, bool> ETSParser::HandleClassElementModifiers(ir::Modifier
     return {seenStatic, isStepToken, isDefault};
 }
 
-ir::AstNode *ETSParser::ParseClassElementHelper(
-    const ArenaVector<ir::AstNode *> &properties,
-    std::tuple<ir::ClassDefinitionModifiers, ir::ModifierFlags, ir::ModifierFlags> modifierInfo,
-    std::tuple<bool, bool, bool> elementFlag, std::tuple<lexer::SourcePosition, lexer::LexerPosition> posInfo)
+ir::AstNode *ETSParser::ParseClassElement(const ArenaVector<ir::AstNode *> &properties,
+                                          ir::ClassDefinitionModifiers modifiers,
+                                          [[maybe_unused]] ir::ModifierFlags flags)
 {
-    auto [seenStatic, isStepToken, isDefault] = elementFlag;
-    auto [startLoc, savedPos] = posInfo;
-    auto [modifiers, memberModifiers, flags] = modifierInfo;
-    auto delcStartLoc = Lexer()->GetToken().Start();
+    auto startLoc = Lexer()->GetToken().Start();
+
+    ArenaVector<ir::AnnotationUsage *> annotations(Allocator()->Adapter());
+    if (Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_AT)) {
+        annotations = ParseAnnotations(false);
+    }
+
+    ir::ModifierFlags memberModifiers = ir::ModifierFlags::NONE;
+    auto savedPos = Lexer()->Save();  // NOLINT(clang-analyzer-deadcode.DeadStores)
+
+    if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_STATIC &&
+        Lexer()->Lookahead() == lexer::LEX_CHAR_LEFT_BRACE) {
+        return ParseClassStaticBlock();
+    }
+
+    auto [seenStatic, isStepToken, isDefault] = HandleClassElementModifiers(memberModifiers);
+
     ir::AstNode *result = nullptr;
+    auto delcStartLoc = Lexer()->GetToken().Start();
     switch (Lexer()->GetToken().Type()) {
         case lexer::TokenType::KEYW_INTERFACE:
         case lexer::TokenType::KEYW_CLASS:
@@ -715,45 +728,9 @@ ir::AstNode *ETSParser::ParseClassElementHelper(
         }
         default: {
             result = ParseInnerRest(properties, modifiers, memberModifiers, startLoc, isDefault);
+            break;
         }
     }
-    return result;
-}
-
-ir::AstNode *ETSParser::ParseClassElement(const ArenaVector<ir::AstNode *> &properties,
-                                          ir::ClassDefinitionModifiers modifiers,
-                                          [[maybe_unused]] ir::ModifierFlags flags)
-{
-    ArenaVector<ir::JsDocInfo> jsDocInformation(Allocator()->Adapter());
-    if (Lexer()->TryEatTokenType(lexer::TokenType::JS_DOC_START)) {
-        jsDocInformation = ParseJsDocInfos();
-        if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_BRACE ||
-            Lexer()->GetToken().Type() == lexer::TokenType::EOS) {
-            return nullptr;
-        }
-    }
-
-    auto startLoc = Lexer()->GetToken().Start();
-
-    ArenaVector<ir::AnnotationUsage *> annotations(Allocator()->Adapter());
-    if (Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_AT)) {
-        annotations = ParseAnnotations(false);
-    }
-
-    ir::ModifierFlags memberModifiers = ir::ModifierFlags::NONE;
-    auto savedPos = Lexer()->Save();  // NOLINT(clang-analyzer-deadcode.DeadStores)
-
-    if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_STATIC &&
-        Lexer()->Lookahead() == lexer::LEX_CHAR_LEFT_BRACE) {
-        return ParseClassStaticBlock();
-    }
-
-    auto [seenStatic, isStepToken, isDefault] = HandleClassElementModifiers(memberModifiers);
-    auto delcStartLoc = Lexer()->GetToken().Start();
-    ir::AstNode *result = ParseClassElementHelper(properties, std::make_tuple(modifiers, memberModifiers, flags),
-                                                  std::make_tuple(seenStatic, isStepToken, isDefault),
-                                                  std::make_tuple(startLoc, savedPos));
-    ApplyJsDocInfoToClassElement(result, std::move(jsDocInformation));
     ApplyAnnotationsToClassElement(result, std::move(annotations), delcStartLoc);
     return result;
 }
@@ -784,41 +761,6 @@ void *ETSParser::ApplyAnnotationsToClassElement(ir::AstNode *property, ArenaVect
     }
 
     return property;
-}
-
-static ir::JsDocInfo CloneJsDocInfo(ArenaAllocator *const allocator, const ir::JsDocInfo &src)
-{
-    ir::JsDocInfo res(allocator->Adapter());
-    for (const auto &entry : src) {
-        const util::StringView &key = entry.first;
-        const ir::JsDocRecord &record = entry.second;
-
-        util::UString copiedKey {key, allocator};
-        util::UString copiedParam {record.param, allocator};
-        util::UString copiedComment {record.comment, allocator};
-        res.emplace(copiedKey.View(), ir::JsDocRecord(copiedKey.View(), copiedParam.View(), copiedComment.View()));
-    }
-    return res;
-}
-
-void ETSParser::ApplyJsDocInfoToClassElement(ir::AstNode *property, ArenaVector<ir::JsDocInfo> &&jsDocInformation)
-{
-    if (property == nullptr || jsDocInformation.empty()) {
-        return;
-    }
-
-    if (!property->IsTSInterfaceBody()) {
-        ApplyJsDocInfoToSpecificNodeType(property, std::move(jsDocInformation));
-        return;
-    }
-
-    for (auto *node : property->AsTSInterfaceBody()->Body()) {
-        ArenaVector<ir::JsDocInfo> clonedJsDocInformation(Allocator()->Adapter());
-        for (auto const &jsdocInfo : jsDocInformation) {
-            clonedJsDocInformation.emplace_back(CloneJsDocInfo(Allocator(), jsdocInfo));
-        }
-        ApplyJsDocInfoToSpecificNodeType(node, std::move(clonedJsDocInformation));
-    }
 }
 
 ir::MethodDefinition *ETSParser::ParseClassGetterSetterMethod(const ArenaVector<ir::AstNode *> &properties,
@@ -1251,23 +1193,6 @@ ir::MethodDefinition *ETSParser::ParseInterfaceMethod(ir::ModifierFlags flags, i
     return method;
 }
 
-ir::AstNode *ETSParser::ParseJsDocInfoInInterfaceBody()
-{
-    Lexer()->NextToken();  // eat '/**'
-
-    auto jsDocInformation = ParseJsDocInfos();
-    if (Lexer()->GetToken().Type() == lexer::TokenType::EOS ||
-        Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
-        return nullptr;
-    }
-
-    ir::AstNode *result = ParseTypeLiteralOrInterfaceMember();
-    if (result != nullptr) {
-        ApplyJsDocInfoToSpecificNodeType(result, std::move(jsDocInformation));
-    }
-    return result;
-}
-
 ir::AstNode *ETSParser::ParseAnnotationsInInterfaceBody()
 {
     Lexer()->NextToken();  // eat '@'
@@ -1290,10 +1215,6 @@ bool ETSParser::IsFieldStartToken(lexer::TokenType tokenType)
 
 ir::AstNode *ETSParser::ParseTypeLiteralOrInterfaceMember()
 {
-    if (Lexer()->GetToken().Type() == lexer::TokenType::JS_DOC_START) {
-        return ParseJsDocInfoInInterfaceBody();
-    }
-
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_AT) {
         return ParseAnnotationsInInterfaceBody();
     }
