@@ -99,7 +99,7 @@ void InstantiationContext::InstantiateType(ETSObjectType *type, ir::TSTypeParame
         }
     }
 
-    auto pos = (typeArgs == nullptr) ? lexer::SourcePosition() : typeArgs->Range().start;
+    auto pos = (typeArgs == nullptr) ? type->Variable()->Declaration()->Node()->Range().start : typeArgs->Range().start;
     InstantiateType(type, std::move(typeArgTypes), pos);
     ES2PANDA_ASSERT(result_->IsETSObjectType());
     result_->AsETSObjectType()->AddObjectFlag(ETSObjectFlags::NO_OPTS);
