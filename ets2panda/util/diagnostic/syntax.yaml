@@ -411,10 +411,6 @@ syntax:
   id: 172
   message: "Illegal newline after throw."
 
-- name: ILLEGAL_START_EXPRESSION
-  id: 208
-  message: "Illegal start of expression."
-
 - name: ILLEGAL_START_STRUCT_CLASS
   id: 40
   message: "Illegal start of {} expression."
@@ -471,10 +467,6 @@ syntax:
 - name: INDEX_TYPE_NOT_NUMBER
   id: 18
   message: "Index type must be number in index signature."
-
-- name: INITIALIZERS_INTERFACE_PROPS
-  id: 123
-  message: "Initializers are not allowed on interface properties."
 
 - name: INITIALIZERS_IN_AMBIENT_CONTEXTS
   id: 125
@@ -835,10 +827,6 @@ syntax:
   id: 73
   message: "'new.Target' is not allowed here."
 
-- name: NEW_TARGET_WITH_ESCAPED_CHARS
-  id: 74
-  message: "'new.Target' must not contain escaped characters."
-
 - name: NEW_WITH_IMPORT
   id: 60
   message: "Cannot use new with import(...)."
@@ -890,10 +878,6 @@ syntax:
 - name: ONLY_STRING_LITERAL_IN_INIT_MODULE
   id: 321
   message: "initModule() only accept string literal as argument."
-
-- name: ONLY_THROWS_IN_FUN_TYPE
-  id: 103
-  message: "Only 'throws' can be used with function types."
 
 - name: OPTIONAL_VARIABLE
   id: 306
@@ -1002,10 +986,6 @@ syntax:
 - name: REST_AND_DEFAULT_SAME_TIME
   id: 15
   message: "Both optional and rest parameters are not allowed in function's parameter list."
-
-- name: REST_PARAM_LAST
-  id: 236
-  message: "Rest parameter should be the last one."
 
 - name: REST_PARAM_NOT_LAST
   id: 67
@@ -1285,13 +1265,18 @@ graveyard:
 - 29
 - 37
 - 41
+- 74
+- 103
 - 109
+- 123
 - 139
 - 142
 - 152
 - 157
+- 208
 - 218
 - 235
+- 236
 - 272
 - 274
 - 275

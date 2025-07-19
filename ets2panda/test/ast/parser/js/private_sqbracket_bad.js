@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,9 +13,11 @@
  * limitations under the License.
  */
 
-function foo(a : int = 10, /* @@ label */b : int, c : int = 15) : int
-{
-    return a + b;
+class WeAre {
+    #[
 }
-
-/* @@@ label Error SyntaxError: A required parameter cannot follow an optional parameter. */
+/* @@? 17:6 Error SyntaxError: Unexpected token in private field. */
+/* @@? 17:6 Error SyntaxError: Unexpected character in private identifier. */
+/* @@? 18:1 Error SyntaxError: Unexpected token '}'. */
+/* @@? 18:1 Error SyntaxError: Unexpected token, expected ']'. */
+/* @@? 24:1 Error SyntaxError: Expected '}', got 'end of stream'. */

@@ -35,8 +35,11 @@ static bool HasDefaultParameters(const ir::ScriptFunction *function, util::Diagn
         }
 
         if (hasRestParameter) {
-            util::DiagnosticMessageParams diagnosticParams = {};
-            diagnosticEngine.LogDiagnostic(diagnostic::REST_PARAM_LAST, std::move(diagnosticParams), param->Start());
+            // NOTE(pronai): This seems to be covered in parser. As the comment above says, it's unclear why the
+            // lowering is needed.
+            ES2PANDA_UNREACHABLE_POS(param->Start());
+            diagnosticEngine.LogDiagnostic(diagnostic::REST_PARAM_NOT_LAST, util::DiagnosticMessageParams {},
+                                           param->Start());
         }
 
         if (param->IsOptional()) {

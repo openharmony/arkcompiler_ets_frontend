@@ -77,7 +77,6 @@ ast/compiler/ets/readonlyType_5.ets
 ast/parser/ets/InferTypeParamFromParam2.ets
 
 # Issue: #23080
-ast/parser/ets/default_parameter3.ets
 ast/parser/ets/default_parameters_multi_error.ets
 ast/parser/ets/rest_parameter_03.ets
 
