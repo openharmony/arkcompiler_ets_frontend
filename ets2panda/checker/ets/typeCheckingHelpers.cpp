@@ -377,9 +377,6 @@ bool Type::IsETSMethodType() const
     if (type->IsETSTypeAliasType()) {  // NOTE(vpukhov): #20561
         return true;
     }
-    if (type->IsNeverType()) {  // NOTE(vpukhov): #20562 We use ets/never and ts/never simultaneously
-        ES2PANDA_UNREACHABLE();
-    }
     return type->HasTypeFlag(ETS_SANE_REFERENCE_TYPE);
 }
 
