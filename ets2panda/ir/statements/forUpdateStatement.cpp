@@ -127,9 +127,20 @@ checker::VerifiedType ForUpdateStatement::Check(checker::ETSChecker *checker)
 
 ForUpdateStatement *ForUpdateStatement::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const init = init_->Clone(allocator, nullptr);
-    auto *const test = test_->Clone(allocator, nullptr)->AsExpression();
-    auto *const update = update_->Clone(allocator, nullptr)->AsExpression();
+    ir::AstNode *init = nullptr;
+    if (init_ != nullptr) {
+        init = init_->Clone(allocator, nullptr);
+    }
+
+    ir::Expression *test = nullptr;
+    if (test_ != nullptr) {
+        test = test_->Clone(allocator, nullptr)->AsExpression();
+    }
+
+    ir::Expression *update = nullptr;
+    if (update_ != nullptr) {
+        update = update_->Clone(allocator, nullptr)->AsExpression();
+    }
     auto *const body = body_->Clone(allocator, nullptr)->AsStatement();
     auto *const clone = util::NodeAllocator::ForceSetParent<ForUpdateStatement>(allocator, init, test, update, body);
 

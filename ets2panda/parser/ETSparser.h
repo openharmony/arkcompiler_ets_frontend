@@ -318,6 +318,7 @@ private:
         ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS) override;
     // NOLINTNEXTLINE(google-default-arguments)
     ir::Expression *ParsePropertyDefinition(ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS) override;
+    ir::Expression *ParsePropertyKey(ExpressionParseFlags flags) override;
     // NOLINTNEXTLINE(google-default-arguments)
     ir::Expression *ParseDefaultPrimaryExpression(ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
     // NOLINTNEXTLINE(google-default-arguments)
