@@ -231,4 +231,3 @@ function initInteropSDKInfo(buildConfig: BuildConfig): void {
     }
   }
 }
-

@@ -51,3 +51,5 @@ export const KITS: string = 'kit';
 export const API: string = 'api';
 export const ARKTS:string = 'arkts';
 export const COMPONENT:string = 'component';
+
+export const DYNAMIC_PREFIX:string = 'dynamic/';

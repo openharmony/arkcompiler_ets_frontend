@@ -43,6 +43,9 @@ import {
   ModuleInfo,
 } from '../types';
 import {
+  COMPONENT,
+  DYNAMIC_PREFIX,
+  KITS,
   LANGUAGE_VERSION,
   SYSTEM_SDK_PATH_FROM_SDK,
   sdkConfigPrefix,
@@ -460,7 +463,7 @@ export class ArkTSConfigGenerator {
     }
 
     arktsConfig.addDependency({
-      name: originalName,
+      name: DYNAMIC_PREFIX + originalName,
       item: {
         language: 'js',
         path: declPath,
@@ -503,11 +506,20 @@ export class ArkTSConfigGenerator {
 
   private generateSystemSdkDependenciesSection(dependenciesSection: Record<string, DependencyItem>): void {
     this.dynamicSDKPaths.forEach(basePath => {
-      if (fs.existsSync(basePath)) {
-        this.traverseDependencies(basePath, '', false, dependenciesSection);
-        this.traverseDependencies(basePath, '', false, dependenciesSection, 'dynamic/');
+      if(basePath.includes(KITS)){
+        return;
+      }
+      if (!fs.existsSync(basePath)) {
+        const logData: LogData = LogDataFactory.newInstance(
+          ErrorCode.BUILDSYSTEM_ALIAS_MODULE_PATH_NOT_EXIST,
+          `alias module ${basePath} not exist.`
+        );
+        this.logger.printErrorAndExit(logData);
+      }
+      if (basePath.includes(COMPONENT)) {
+        this.traverseDependencies(basePath, '', false, dependenciesSection, 'component/');
       } else {
-        this.logger.printWarn(`sdk path ${basePath} not exist.`);
+        this.traverseDependencies(basePath, '', false, dependenciesSection, DYNAMIC_PREFIX);
       }
     });
   }
