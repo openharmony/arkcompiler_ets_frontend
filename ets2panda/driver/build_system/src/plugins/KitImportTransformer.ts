@@ -22,7 +22,7 @@ import {
     LogDataFactory
 } from '../logger';
 import { ErrorCode } from '../error_code';
-import { KIT_CONFIGS_PATH_FROM_SDK } from '../pre_define';
+import { DYNAMIC_PREFIX, KIT_CONFIGS_PATH_FROM_SDK } from '../pre_define';
 
 export class KitImportTransformer {
 
@@ -127,7 +127,7 @@ export class KitImportTransformer {
                 continue;
             }
     
-            const sourcePath = 'dynamic/' + symbolEntry.source.replace(/\.d\.ts$/, '');
+            const sourcePath = DYNAMIC_PREFIX + symbolEntry.source.replace(/\.d\.ts$/, '');
             if (!grouped.has(sourcePath)) {
                 grouped.set(sourcePath, []);
             }
