@@ -1018,7 +1018,7 @@ private:
     PropertySearchFlags GetSearchFlags(const ir::MemberExpression *memberExpr, const varbinder::Variable *targetRef);
     PropertySearchFlags GetInitialSearchFlags(const ir::MemberExpression *memberExpr);
     Type *GetTypeOfSetterGetter([[maybe_unused]] varbinder::Variable *var);
-    ETSFunctionType *CreateSyntheticTypeFromOverload(varbinder::Variable *const var);
+    Type *CreateSyntheticTypeFromOverload(varbinder::Variable *const var);
     void IterateInVariableContext([[maybe_unused]] varbinder::Variable *const var);
     bool CheckInit(ir::Identifier *ident, ir::TypeNode *typeAnnotation, ir::Expression *init,
                    checker::Type *annotationType, varbinder::Variable *const bindingVar);
