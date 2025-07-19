@@ -1459,7 +1459,8 @@ bool ETSChecker::CheckLambdaAssignable(ir::Expression *param, ir::ScriptFunction
     if (typeAnn == nullptr) {
         return false;
     }
-    if (typeAnn->IsETSTypeReference() && !typeAnn->AsETSTypeReference()->TsType()->IsETSArrayType()) {
+    if (typeAnn->IsETSTypeReference() && !typeAnn->AsETSTypeReference()->TsType()->IsETSArrayType() &&
+        !typeAnn->AsETSTypeReference()->TsType()->IsETSAnyType()) {
         typeAnn = DerefETSTypeReference(typeAnn);
     }
 

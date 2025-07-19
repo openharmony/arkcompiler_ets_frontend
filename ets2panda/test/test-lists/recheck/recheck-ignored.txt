@@ -108,6 +108,7 @@ runtime/ets/trailing_lambda_and_optional_parameterets5.ets
 runtime/ets/trailing_lambda_and_optional_parameterets6.ets
 runtime/ets/trailing_lambda_and_optional_parameterets8.ets
 runtime/ets/trailing_lambda_and_optional_parameterets9.ets
+runtime/ets/any_lambda.ets
 ast/parser/ets/unexpected_token_34.ets
 ast/parser/ets/unexpected_token_54.ets
 runtime/ets/generic_union.ets
