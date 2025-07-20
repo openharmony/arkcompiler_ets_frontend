@@ -126,6 +126,13 @@ struct CompilerOptions {
     bool enableAnnotations;
     // Ability to modify package names using bytecode
     std::string modifiedPkgName {};
+    /**
+     * Column number recording switch for bytecode instructions.
+     * In debug mode: adds column numbers to all bytecode instructions.
+     * In other mode: adds column numbers to call instructions when on,
+     * adds no column numbers when off.
+     */
+    bool enableColumn {false};
 };
 
 enum class ErrorType {

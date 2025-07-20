@@ -400,6 +400,11 @@ bool Options::Parse(int argc, const char **argv)
         "in accordance with ECMAScript2022");
     panda::PandArg<std::string> moduleRecordFieldName("module-record-field-name", "", "Specify the field name "\
         "of module record in unmerged abc");
+    panda::PandArg<bool> opEnableReleaseColumn("enable-release-column", false, "Enable column number information "\
+        "for bytecode instructions in non-debug mode.\n"\
+        "Debug mode: Column numbers are emitted for all instructions.\n"\
+        "Non-debug mode:\n1. Enabled: Column numbers generated for call instructions only.\n"\
+        "2. Disabled: No column number information included.");
 
     // optimizer
     panda::PandArg<bool> opBranchElimination("branch-elimination", false, "Enable branch elimination optimization");
@@ -494,6 +499,7 @@ bool Options::Parse(int argc, const char **argv)
     argparser_->Add(&moduleRecordFieldName);
     argparser_->Add(&opBranchElimination);
     argparser_->Add(&opOptTryCatchFunc);
+    argparser_->Add(&opEnableReleaseColumn);
 
     argparser_->Add(&opDumpSymbolTable);
     argparser_->Add(&opInputSymbolTable);
@@ -698,6 +704,7 @@ bool Options::Parse(int argc, const char **argv)
     compilerOptions_.enableTypeCheck = opEnableTypeCheck.GetValue();
     compilerOptions_.dumpLiteralBuffer = opDumpLiteralBuffer.GetValue();
     compilerOptions_.isDebuggerEvaluateExpressionMode = debuggerEvaluateExpression.GetValue();
+    compilerOptions_.enableColumn = compilerOptions_.isDebug ? true : opEnableReleaseColumn.GetValue();
 
     compilerOptions_.functionThreadCount = functionThreadCount_;
     compilerOptions_.fileThreadCount = fileThreadCount_;
