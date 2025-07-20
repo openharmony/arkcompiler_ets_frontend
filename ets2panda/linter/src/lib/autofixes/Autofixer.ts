@@ -5440,4 +5440,24 @@ export class Autofixer {
 
     return undefined;
   }
+
+  fixSideEffectImport(importDeclNode: ts.ImportDeclaration): Autofix[] {
+    const initModuleCall = ts.factory.createCallExpression(
+      ts.factory.createIdentifier("initModule"),
+      undefined,
+      [importDeclNode.moduleSpecifier]
+    );
+    const expressionStatement = ts.factory.createExpressionStatement(initModuleCall);
+    const replacedText = this.printer.printNode(
+      ts.EmitHint.Unspecified,
+      expressionStatement,
+      importDeclNode.getSourceFile()
+    );
+
+    return [{
+      start: importDeclNode.getStart(),
+      end: importDeclNode.getEnd(),
+      replacementText: replacedText
+    }];
+  }
 }

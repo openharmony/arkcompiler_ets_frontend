@@ -1188,7 +1188,8 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (this.options.arkts2) {
       const importClause = importDeclNode.importClause;
       if (!importClause || !importClause.name && !importClause.namedBindings) {
-        this.incrementCounters(node, FaultID.NoSideEffectImport);
+        const autofix = this.autofixer?.fixSideEffectImport(importDeclNode);
+        this.incrementCounters(node, FaultID.NoSideEffectImport, autofix);
       } else {
         this.updateDataSdkJsonInfo(importDeclNode, importClause);
       }
