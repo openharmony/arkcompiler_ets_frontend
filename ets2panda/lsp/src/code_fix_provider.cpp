@@ -15,17 +15,16 @@
 
 #include "lsp/include/code_fix_provider.h"
 #include <cstddef>
-#include <iostream>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
-#include <regex>
-#include <stdexcept>
+#include "generated/code_fix_register.h"
 #include "lsp/include/internal_api.h"
 
 namespace ark::es2panda::lsp {
 
+// Registers a new code fix and maps it to its diagnostic error codes and fix IDs
 void CodeFixProvider::RegisterCodeFix(const std::string &aliasName, std::unique_ptr<CodeFixRegistration> registration)
 {
     (void)aliasName;
@@ -50,28 +49,19 @@ CodeFixProvider &CodeFixProvider::Instance()
 
 std::string CodeFixProvider::FormatWithArgs(const std::string &text)
 {
-    std::string result = text;
-    const std::string regExp = R"(\{(\d+)\})";
-    std::regex pattern(regExp);
-    std::smatch match;
-    return result;
+    // This function is a placeholder for future implementation of string formatting with arguments.
+    return text;
 }
 
-std::string CodeFixProvider::DiagnosticToString(const DiagnosticAndArguments &diag)
+std::string CodeFixProvider::DiagnosticToString(const codefixes::DiagnosticCode &diag)
 {
-    std::string message;
-    if (diag.arguments.empty()) {
-        message = diag.message.message;
-    } else {
-        message = FormatWithArgs(diag.message.message);
-    }
-    return message;
+    return std::string(diag.GetMessage());
 }
 
 CodeFixAction CodeFixProvider::CreateCodeFixActionWorker(std::string &fixName, std::string &description,
                                                          std::vector<FileTextChanges> &changes, std::string &fixId,
                                                          std::string &fixAllDescription,
-                                                         std::vector<CodeActionCommand> command = {})
+                                                         std::vector<CodeActionCommand> command)
 {
     CodeAction codeAction;
     codeAction.description = description;
@@ -80,23 +70,25 @@ CodeFixAction CodeFixProvider::CreateCodeFixActionWorker(std::string &fixName, s
     return {codeAction, fixName, fixId, fixAllDescription};
 }
 
+// Creates a code fix action that doesn't include fix-all functionality
 CodeFixAction CodeFixProvider::CreateCodeFixActionWithoutFixAll(std::string &fixName,
                                                                 std::vector<FileTextChanges> &changes,
-                                                                DiagnosticAndArguments &description)
+                                                                codefixes::DiagnosticCode &diagCode)
 {
     std::string fixId;
-    std::string descriptionMessage = DiagnosticToString(description);
+    std::string descriptionMessage = DiagnosticToString(diagCode);
     std::string fixAllDescription;
-    return CreateCodeFixActionWorker(fixName, descriptionMessage, changes, fixId, fixAllDescription);
+    return CreateCodeFixActionWorker(fixName, descriptionMessage, changes, fixId, fixAllDescription, {});
 }
 
+// Creates a full code fix action with fix-all and commands
 CodeFixAction CodeFixProvider::CreateCodeFixAction(std::string fixName, std::vector<FileTextChanges> changes,
-                                                   DiagnosticAndArguments &description, std::string fixId,
-                                                   DiagnosticAndArguments &fixAllDescription,
+                                                   codefixes::DiagnosticCode diagCode, std::string fixId,
                                                    std::vector<CodeActionCommand> &command)
 {
-    std::string descriptionMessage = DiagnosticToString(description);
-    std::string fixAllDescriptionMessage = DiagnosticToString(fixAllDescription);
+    auto descriptionMessage = std::string(diagCode.GetMessage());
+    std::string fixAllDescriptionMessage = "Fix all: " + std::string(diagCode.GetMessage());
+
     return CreateCodeFixActionWorker(fixName, descriptionMessage, changes, fixId, fixAllDescriptionMessage,
                                      std::move(command));
 }
@@ -153,14 +145,16 @@ std::unique_ptr<DiagnosticReferences> CodeFixProvider::GetDiagnostics(const Code
     return result;
 }
 
+// Determines whether fix-all should be enabled for this registration based on diagnostic count
 bool CodeFixProvider::ShouldIncludeFixAll(const CodeFixRegistration &registration,
                                           const std::vector<Diagnostic> &diagnostics)
 {
     int maybeFixableDiagnostics = 0;
     const int minFixableDiagnostics = 1;
-    for (size_t i = 0; i <= diagnostics.size(); i++) {
-        if (std::find(registration.GetErrorCodes().begin(), registration.GetErrorCodes().end(), i) !=
-            registration.GetErrorCodes().end()) {
+    for (const auto &diag : diagnostics) {
+        if (std::holds_alternative<int>(diag.code_) &&
+            std::find(registration.GetErrorCodes().begin(), registration.GetErrorCodes().end(),
+                      std::get<int>(diag.code_)) != registration.GetErrorCodes().end()) {
             ++maybeFixableDiagnostics;
             if (maybeFixableDiagnostics > minFixableDiagnostics) {
                 break;
@@ -170,6 +164,7 @@ bool CodeFixProvider::ShouldIncludeFixAll(const CodeFixRegistration &registratio
     return maybeFixableDiagnostics > minFixableDiagnostics;
 }
 
+// Returns all fixes associated with a fixId (used for fix-all)
 CombinedCodeActions CodeFixProvider::GetAllFixes(const CodeFixAllContext &context)
 {
     auto it = fixIdToRegistration_.find(context.fixId);
@@ -180,6 +175,7 @@ CombinedCodeActions CodeFixProvider::GetAllFixes(const CodeFixAllContext &contex
     return registration->GetAllCodeActions(context);
 }
 
+// Iterates through diagnostics matching given error codes and applies callback on each
 void CodeFixProvider::EachDiagnostic(const CodeFixAllContext &context, const std::vector<int> &errorCodes,
                                      const std::function<void(const DiagnosticWithLocation &)> &cb)
 {
@@ -217,6 +213,7 @@ void CodeFixProvider::EachDiagnostic(const CodeFixAllContext &context, const std
     }
 }
 
+// Returns applicable fix actions for a given error code
 std::vector<CodeFixAction> CodeFixProvider::GetFixes(const CodeFixContext &context)
 {
     std::vector<CodeFixAction> result;
@@ -225,14 +222,13 @@ std::vector<CodeFixAction> CodeFixProvider::GetFixes(const CodeFixContext &conte
         const auto &registrations = it->second;
         if (registrations) {
             auto actions = registrations->GetCodeActions(context);
-            for (auto &action : actions) {
-                result.push_back(action);
-            }
+            result.insert(result.end(), actions.begin(), actions.end());
         }
     }
     return result;
 }
 
+// Applies fix-all logic using a callback for each matching diagnostic
 CombinedCodeActions CodeFixProvider::CodeFixAll(
     const CodeFixAllContext &context, const std::vector<int> &errorCodes,
     std::function<void(ChangeTracker &, const DiagnosticWithLocation &)> use)
