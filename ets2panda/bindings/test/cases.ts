@@ -153,6 +153,10 @@ export const testCases: TestCases = {
     expectedFilePath: resolveTestPath('test/expected/getRenameInfo.json'),
     '1': [resolveTestPath('test/testcases/getRenameInfo/getRenameInfo1.ets'), 615]
   },
+  getOffsetByColAndLine: {
+    expectedFilePath: resolveTestPath('test/expected/getOffsetByColAndLine.json'),
+    '1': [resolveTestPath('test/testcases/getOffsetByColAndLine/getOffsetByColAndLine1.ets'), 51, 14]
+  },
   entry: {
     expectedFilePath: '',
     '1': [resolveTestPath('test/testcases/entry/Index.ets'), 615]

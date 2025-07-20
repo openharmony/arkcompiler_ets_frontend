@@ -303,6 +303,17 @@ export class Lsp {
     }
   }
 
+  getOffsetByColAndLine(filename: String, line: number, column: number): number {
+    let ptr: KPointer;
+    const [cfg, ctx] = this.createContext(filename);
+    try {
+      ptr = global.es2panda._getOffsetByColAndLine(ctx, line, column);
+    } finally {
+      this.destroyContext(cfg, ctx);
+    }
+    return ptr;
+  }
+
   getDefinitionAtPosition(filename: String, offset: number): LspDefinitionData {
     let ptr: KPointer;
     const [cfg, ctx] = this.createContext(filename);

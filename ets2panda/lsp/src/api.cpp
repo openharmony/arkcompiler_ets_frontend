@@ -425,6 +425,14 @@ SignatureHelpItems GetSignatureHelpItems(es2panda_Context *context, size_t posit
     auto cancellationToken = ark::es2panda::lsp::CancellationToken(defaultTime, nullptr);
     return ark::es2panda::lsp::GetSignatureHelpItems(context, position, invokedReason, cancellationToken);
 }
+
+size_t GetOffsetByColAndLine(es2panda_Context *context, size_t line, size_t column)
+{
+    auto ctx = reinterpret_cast<public_lib::Context *>(context);
+    auto index = lexer::LineIndex(ctx->parserProgram->SourceCode());
+    return index.GetOffset(lexer::SourceLocation(line, column, ctx->parserProgram));
+}
+
 std::vector<CodeFixActionInfo> GetCodeFixesAtPosition(es2panda_Context *context, size_t startPosition,
                                                       size_t endPosition, std::vector<int> &errorCodes,
                                                       CodeFixOptions &codeFixOptions)
@@ -487,6 +495,7 @@ LSPAPI g_lspImpl = {GetDefinitionAtPosition,
                     GetTodoComments,
                     ProvideInlayHints,
                     GetSignatureHelpItems,
+                    GetOffsetByColAndLine,
                     GetCodeFixesAtPosition,
                     GetCombinedCodeFix,
                     GetNameOrDottedNameSpan};
