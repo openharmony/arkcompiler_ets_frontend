@@ -23,6 +23,7 @@
 #include "checker/ets/typeRelationContext.h"
 #include "checker/types/ets/etsAsyncFuncReturnType.h"
 #include "checker/types/ets/etsObjectType.h"
+#include "checker/types/ets/etsPartialTypeParameter.h"
 #include "checker/types/gradualType.h"
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "ir/base/catchClause.h"
@@ -116,6 +117,10 @@ bool ETSChecker::EnhanceSubstitutionForType(const ArenaVector<Type *> &typeParam
     }
     if (paramType->IsETSReadonlyType()) {
         return EnhanceSubstitutionForReadonly(typeParams, paramType->AsETSReadonlyType(), argumentType, substitution);
+    }
+    if (paramType->IsETSPartialTypeParameter()) {
+        return EnhanceSubstitutionForPartialTypeParam(typeParams, paramType->AsETSPartialTypeParameter(), argumentType,
+                                                      substitution);
     }
     if (paramType->IsGradualType()) {
         return EnhanceSubstitutionForType(typeParams, paramType->AsGradualType()->GetBaseType(), argumentType,
@@ -291,6 +296,18 @@ bool ETSChecker::EnhanceSubstitutionForFunction(const ArenaVector<Type *> &typeP
     res &= enhance(paramSig->ReturnType(), argSig->ReturnType());
 
     return res;
+}
+
+bool ETSChecker::EnhanceSubstitutionForPartialTypeParam(const ArenaVector<Type *> &typeParams,
+                                                        ETSPartialTypeParameter *paramType, Type *argumentType,
+                                                        Substitution *substitution)
+{
+    if (!argumentType->IsETSObjectType() || !argumentType->AsETSObjectType()->IsPartial()) {
+        return false;
+    }
+    ES2PANDA_ASSERT(argumentType->AsETSObjectType()->GetBaseType() != nullptr);
+    return EnhanceSubstitutionForType(typeParams, paramType->GetUnderlying(),
+                                      argumentType->AsETSObjectType()->GetBaseType(), substitution);
 }
 
 // Try to find the base type somewhere in object subtypes. Incomplete, yet safe

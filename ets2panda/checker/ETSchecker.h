@@ -447,6 +447,9 @@ public:
                                                   Type *argumentType, Substitution *substitution);
     [[nodiscard]] bool EnhanceSubstitutionForReadonly(const ArenaVector<Type *> &typeParams, ETSReadonlyType *paramType,
                                                       Type *argumentType, Substitution *substitution);
+    [[nodiscard]] bool EnhanceSubstitutionForPartialTypeParam(const ArenaVector<Type *> &typeParams,
+                                                              ETSPartialTypeParameter *paramType, Type *argumentType,
+                                                              Substitution *substitution);
     [[nodiscard]] bool EnhanceSubstitutionForObject(const ArenaVector<Type *> &typeParams, ETSObjectType *paramType,
                                                     Type *argumentType, Substitution *substitution);
     [[nodiscard]] bool EnhanceSubstitutionForFunction(const ArenaVector<Type *> &typeParams, ETSFunctionType *paramType,
