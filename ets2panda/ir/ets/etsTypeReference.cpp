@@ -112,8 +112,14 @@ checker::Type *ETSTypeReference::GetType(checker::ETSChecker *checker)
 
 ETSTypeReference *ETSTypeReference::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const partClone = part_ != nullptr ? part_->Clone(allocator, nullptr)->AsETSTypeReferencePart() : nullptr;
+    ETSTypeReferencePart *partClone = nullptr;
+    if (part_ != nullptr) {
+        auto *const clone = part_->Clone(allocator, nullptr);
+        ES2PANDA_ASSERT(clone != nullptr);
+        partClone = clone->AsETSTypeReferencePart();
+    }
     auto *const clone = allocator->New<ETSTypeReference>(partClone, allocator);
+    ES2PANDA_ASSERT(clone != nullptr);
 
     if (partClone != nullptr) {
         partClone->SetParent(clone);
