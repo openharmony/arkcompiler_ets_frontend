@@ -53,7 +53,7 @@ import { LibraryTypeCallDiagnosticChecker } from './utils/functions/LibraryTypeC
 import { mergeArrayMaps } from './utils/functions/MergeArrayMaps';
 import { clearPathHelperCache, pathContainsDirectory } from './utils/functions/PathHelper';
 import { processSyncErr } from './utils/functions/ProcessWrite';
-import { LinterInputInfo } from './LinterInputInfo';
+import type { LinterInputInfo } from './LinterInputInfo';
 
 function prepareInputFilesList(cmdOptions: CommandLineOptions): string[] {
   let inputFiles = cmdOptions.inputFiles.map((x) => {
@@ -164,7 +164,7 @@ function lintFiles(
     migrationInfo: migrationInfo,
     cmdProgressInfo: cmdProgressInfo
   };
-  
+
   const lintResult = executeLinter(linterInputInfo);
   if (options.ideInteractive) {
     postProcessCmdProgressBar(cmdProgressInfo);
@@ -176,7 +176,7 @@ function executeLinter(linterInputInfo: LinterInputInfo): LintRunResult {
   const { tsProgram, srcFiles, options, tscStrictDiagnostics, migrationInfo, cmdProgressInfo } = linterInputInfo;
   const projectStats: ProjectStatistics = new ProjectStatistics();
   const problemsInfos: Map<string, ProblemInfo[]> = new Map();
-  let fileCount : number = 0;
+  let fileCount: number = 0;
   for (const srcFile of srcFiles) {
     const linter: BaseTypeScriptLinter = !options.interopCheckMode ?
       new TypeScriptLinter(tsProgram.getTypeChecker(), options, srcFile, tscStrictDiagnostics) :

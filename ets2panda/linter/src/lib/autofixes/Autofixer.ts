@@ -3462,7 +3462,7 @@ export class Autofixer {
       return undefined;
     }
 
-    const replacementText = this.printer.printNode(ts.EmitHint.Unspecified, replacement, expression.getSourceFile());
+    const replacementText = this.nonCommentPrinter.printNode(ts.EmitHint.Unspecified, replacement, expression.getSourceFile());
     return [{ start: expression.getStart(), end: expression.getEnd(), replacementText }];
   }
 
