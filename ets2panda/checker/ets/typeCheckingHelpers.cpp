@@ -568,7 +568,7 @@ static Type *GetTypeFromVarLikeVariableDeclaration(ETSChecker *checker, varbinde
         var->SetTsType(checker->GlobalTypeError());
         return checker->GlobalTypeError();
     }
-    return declNode->Check(checker);
+    return var->SetTsType(declNode->Check(checker));
 }
 
 Type *ETSChecker::GetTypeFromVariableDeclaration(varbinder::Variable *const var)

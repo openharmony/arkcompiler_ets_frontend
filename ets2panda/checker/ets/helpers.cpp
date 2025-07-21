@@ -2188,6 +2188,7 @@ bool IsConstantMemberOrIdentifierExpression(ir::Expression *expression, bool che
     if (var == nullptr) {
         return false;
     }
+    ES2PANDA_ASSERT(var->TsType() != nullptr);
     bool isConst = checkForConst ? (var->TsType()->HasTypeFlag(checker::TypeFlag::CONSTANT)) : true;
     return ((var->Declaration()->IsConstDecl() && isConst) ||
             (var->Declaration()->IsReadonlyDecl() && var->HasFlag(varbinder::VariableFlags::STATIC)));
