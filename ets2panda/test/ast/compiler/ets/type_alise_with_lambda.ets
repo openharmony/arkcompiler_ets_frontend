@@ -16,5 +16,5 @@
 export type L<T9 = () => T>
 
 /* @@? 16:26 Error TypeError: Cannot find type 'T'. */
-/* @@? 21:1 Error SyntaxError: Expected '=', got 'eos'. */
+/* @@? 21:1 Error SyntaxError: Expected '=', got 'end of stream'. */
 /* @@? 21:1 Error SyntaxError: Invalid Type. */
