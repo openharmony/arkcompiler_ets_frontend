@@ -34,6 +34,7 @@
 #include "ir/ts/tsInterfaceBody.h"
 #include "ir/ts/tsTypeAliasDeclaration.h"
 #include "ir/ts/tsTypeParameter.h"
+#include "compiler/lowering/util.h"
 
 #define DEBUG_PRINT 0
 
@@ -82,6 +83,8 @@ void TSDeclGen::CollectIndirectExportDependencies()
             ProcessTypeAliasDependencies(stmt->AsTSTypeAliasDeclaration());
         } else if (stmt->IsClassDeclaration()) {
             ProcessClassDependencies(stmt->AsClassDeclaration());
+        } else if (stmt->IsTSInterfaceDeclaration()) {
+            ProcessInterfaceDependencies(stmt->AsTSInterfaceDeclaration());
         }
     }
 }
@@ -153,11 +156,12 @@ void TSDeclGen::ProcessClassDependencies(const ir::ClassDeclaration *classDecl)
     if (!classDef->IsExported() && !classDef->IsDefaultExported()) {
         return;
     }
-    state_.super = classDef->Super();
 
+    state_.super = classDef->Super();
     if (state_.super != nullptr) {
         AddSuperType(state_.super);
     }
+
     if (classDef->TsType() != nullptr && classDef->TsType()->IsETSObjectType()) {
         ProcessInterfacesDependencies(classDef->TsType()->AsETSObjectType()->Interfaces());
     }
@@ -206,6 +210,57 @@ void TSDeclGen::ProcessClassMethodDependencies(const ir::MethodDefinition *metho
     if (!methodDef->IsExported() && !methodDef->IsExportedType() && !methodDef->IsDefaultExported()) {
         return;
     }
+    auto methDefFunc = methodDef->Function();
+    if (methDefFunc == nullptr) {
+        return;
+    }
+    auto sig = methDefFunc->Signature();
+    GenSeparated(
+        sig->Params(), [this](varbinder::LocalVariable *param) { AddSuperType(param->TsType()); }, "");
+
+    AddSuperType(sig->ReturnType());
+}
+
+void TSDeclGen::ProcessInterfaceDependencies(const ir::TSInterfaceDeclaration *interfaceDecl)
+{
+    if (interfaceDecl->Id()->Name().Mutf8().find('#') != std::string::npos) {
+        return;
+    }
+
+    if (!interfaceDecl->IsExported() && !interfaceDecl->IsExportedType()) {
+        return;
+    }
+
+    if (interfaceDecl->TsType() != nullptr && interfaceDecl->TsType()->IsETSObjectType()) {
+        ProcessInterfacesDependencies(interfaceDecl->TsType()->AsETSObjectType()->Interfaces());
+    }
+
+    if (interfaceDecl->TypeParams() != nullptr) {
+        GenSeparated(
+            interfaceDecl->TypeParams()->Params(),
+            [this](ir::TSTypeParameter *param) {
+                if (param->Constraint() == nullptr) {
+                    return;
+                }
+                AddSuperType(param->Constraint());
+            },
+            "");
+    }
+
+    ProcessInterfacePropDependencies(interfaceDecl);
+}
+
+void TSDeclGen::ProcessInterfacePropDependencies(const ir::TSInterfaceDeclaration *interfaceDecl)
+{
+    for (const auto *prop : interfaceDecl->Body()->Body()) {
+        if (prop->IsMethodDefinition()) {
+            ProcessInterfaceMethodDependencies(prop->AsMethodDefinition());
+        }
+    }
+}
+
+void TSDeclGen::ProcessInterfaceMethodDependencies(const ir::MethodDefinition *methodDef)
+{
     auto methDefFunc = methodDef->Function();
     if (methDefFunc == nullptr) {
         return;
@@ -268,7 +323,10 @@ void TSDeclGen::GenDeclarations()
     for (auto *globalStatement : program_->Ast()->Statements()) {
         ResetState();
         ResetClassNode();
-        if (globalStatement->IsClassDeclaration()) {
+        const auto jsdoc = compiler::JsdocStringFromDeclaration(globalStatement);
+        if (jsdoc.Utf8().find(NON_INTEROP_FLAG) != std::string_view::npos) {
+            continue;
+        } else if (globalStatement->IsClassDeclaration()) {
             GenClassDeclaration(globalStatement->AsClassDeclaration());
         } else if (globalStatement->IsTSInterfaceDeclaration()) {
             GenInterfaceDeclaration(globalStatement->AsTSInterfaceDeclaration());
@@ -368,14 +426,6 @@ void TSDeclGen::GenType(const checker::Type *checkerType)
     importSet_.insert(checkerType->ToString());
 
     if (HandleBasicTypes(checkerType)) {
-        return;
-    }
-    if (checkerType->HasTypeFlag(checker::TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC)) {
-        OutDts("number");
-        return;
-    }
-    if (checkerType->IsETSStringEnumType()) {
-        OutDts("string");
         return;
     }
 
@@ -1628,8 +1678,6 @@ void TSDeclGen::ProcessInterfaceBody(const ir::TSInterfaceBody *body)
     for (auto *prop : body->Body()) {
         if (prop->IsMethodDefinition()) {
             ProcessInterfaceMethodDefinition(prop->AsMethodDefinition());
-        } else if (prop->IsClassProperty()) {
-            GenPropDeclaration(prop->AsClassProperty());
         }
     }
 }
@@ -1830,14 +1878,14 @@ void TSDeclGen::HandleClassDeclarationTypeInfo(const ir::ClassDefinition *classD
         HandleClassInherit(super);
     }
 
-    if (classDef->TsType() != nullptr && classDef->TsType()->IsETSObjectType() &&
-        !classDef->TsType()->AsETSObjectType()->Interfaces().empty()) {
+    if (!classDef->Implements().empty()) {
+        OutDts(" implements ");
+        GenSeparated(classDef->Implements(), [this](ir::TSClassImplements *impl) { HandleClassInherit(impl->Expr()); });
+    } else if (classDef->TsType() != nullptr && classDef->TsType()->IsETSObjectType() &&
+               !classDef->TsType()->AsETSObjectType()->Interfaces().empty()) {
         OutDts(" implements ");
         const auto &interfaces = classDef->TsType()->AsETSObjectType()->Interfaces();
         GenSeparated(interfaces, [this](checker::ETSObjectType *interface) { GenType(interface); });
-    } else if (!classDef->Implements().empty()) {
-        OutDts(" implements ");
-        GenSeparated(classDef->Implements(), [this](ir::TSClassImplements *impl) { HandleClassInherit(impl->Expr()); });
     }
 
     OutDts(" {");
@@ -1895,7 +1943,10 @@ void TSDeclGen::ProcessClassBody(const ir::ClassDefinition *classDef)
     state_.inClass = true;
     std::unordered_set<std::string> processedMethods;
     for (const auto *prop : classDef->Body()) {
-        if (classDef->IsEnumTransformed()) {
+        const auto jsdoc = compiler::JsdocStringFromDeclaration(prop);
+        if (jsdoc.Utf8().find(NON_INTEROP_FLAG) != std::string_view::npos) {
+            continue;
+        } else if (classDef->IsEnumTransformed()) {
             if (prop->IsClassProperty()) {
                 state_.inEnum = true;
                 GenPropDeclaration(prop->AsClassProperty());
