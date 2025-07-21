@@ -73,6 +73,7 @@ checker::Type *ETSUndefinedType::GetType([[maybe_unused]] checker::ETSChecker *c
 ETSUndefinedType *ETSUndefinedType::Clone(ArenaAllocator *allocator, AstNode *parent)
 {
     auto *const clone = allocator->New<ir::ETSUndefinedType>(allocator);
+    ES2PANDA_ASSERT(clone);
 
     if (parent != nullptr) {
         clone->SetParent(parent);
@@ -151,6 +152,7 @@ ETSNullType *ETSNullType::Clone(ArenaAllocator *allocator, AstNode *parent)
     if (!Annotations().empty()) {
         ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
         for (auto *annotationUsage : Annotations()) {
+            ES2PANDA_ASSERT(annotationUsage->Clone(allocator, clone));
             annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
         }
         clone->SetAnnotations(std::move(annotationUsages));

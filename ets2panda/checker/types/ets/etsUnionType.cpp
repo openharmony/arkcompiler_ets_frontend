@@ -65,6 +65,7 @@ bool ETSUnionType::TypeRelatedToSomeType(TypeRelation *relation, Type *source, E
 Type *ETSUnionType::ComputeAssemblerLUB(ETSChecker *checker, ETSUnionType *un)
 {
     auto *const apparent = checker->GetApparentType(un);
+    ES2PANDA_ASSERT(apparent != nullptr);
     if (!apparent->IsETSUnionType()) {
         return apparent;
     }
@@ -265,6 +266,7 @@ void ETSUnionType::LinearizeAndEraseIdentical(TypeRelation *relation, ArenaVecto
     size_t const initialSz = types.size();
     for (size_t i = 0; i < initialSz; ++i) {
         auto ct = types[i];
+        ES2PANDA_ASSERT(ct != nullptr);
         if (ct->IsETSUnionType()) {
             auto const &otherTypes = ct->AsETSUnionType()->ConstituentTypes();
             types.insert(types.end(), otherTypes.begin(), otherTypes.end());
@@ -481,6 +483,7 @@ checker::Type *ETSUnionType::GetAssignableBuiltinType(
     return assignableType;
 }
 
+// CC-OFFNXT(G.FUN.01, huge_method) solid logic
 bool ETSUnionType::ExtractType(checker::ETSChecker *checker, checker::ETSObjectType *sourceType,
                                ArenaVector<Type *> &unionTypes) noexcept
 {
@@ -499,6 +502,7 @@ bool ETSUnionType::ExtractType(checker::ETSChecker *checker, checker::ETSObjectT
             constituentType = constituentType->AsETSTypeParameter()->GetConstraintType();
         } else if (constituentType->HasTypeFlag(checker::TypeFlag::GENERIC)) {
             constituentType = constituentType->Clone(checker);
+            ES2PANDA_ASSERT(constituentType != nullptr);
             constituentType->RemoveTypeFlag(checker::TypeFlag::GENERIC);
         }
 
@@ -561,7 +565,7 @@ bool ETSUnionType::ExtractType(checker::ETSChecker *checker, checker::ETSArrayTy
 
         if (checker->Relation()->IsIdenticalTo(constituentType, sourceType)) {
             rc = true;
-            unionTypes.erase(it);
+            it = unionTypes.erase(it);
             continue;
         }
         if (checker->Relation()->IsSupertypeOf(constituentType, sourceType)) {

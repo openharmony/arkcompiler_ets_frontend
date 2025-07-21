@@ -297,55 +297,103 @@
                   }
                 ],
                 "returnType": {
-                  "type": "TSArrayType",
-                  "elementType": {
-                    "type": "ETSTypeReference",
-                    "part": {
-                      "type": "ETSTypeReferencePart",
-                      "name": {
-                        "type": "Identifier",
-                        "name": "String",
-                        "decorators": [],
-                        "loc": {
-                          "start": {
-                            "line": 17,
-                            "column": 61,
-                            "program": "optional_union_paramter.ets"
-                          },
-                          "end": {
-                            "line": 17,
-                            "column": 67,
-                            "program": "optional_union_paramter.ets"
-                          }
-                        }
-                      },
+                  "type": "ETSTypeReference",
+                  "part": {
+                    "type": "ETSTypeReferencePart",
+                    "name": {
+                      "type": "Identifier",
+                      "name": "Array",
+                      "decorators": [],
                       "loc": {
                         "start": {
-                          "line": 17,
-                          "column": 61,
+                          "line": 1,
+                          "column": 1,
                           "program": "optional_union_paramter.ets"
                         },
                         "end": {
-                          "line": 17,
-                          "column": 68,
+                          "line": 1,
+                          "column": 3,
+                          "program": "optional_union_paramter.ets"
+                        }
+                      }
+                    },
+                    "typeParams": {
+                      "type": "TSTypeParameterInstantiation",
+                      "params": [
+                        {
+                          "type": "ETSTypeReference",
+                          "part": {
+                            "type": "ETSTypeReferencePart",
+                            "name": {
+                              "type": "Identifier",
+                              "name": "String",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 3,
+                                  "program": "optional_union_paramter.ets"
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 3,
+                                  "program": "optional_union_paramter.ets"
+                                }
+                              }
+                            },
+                            "loc": {
+                              "start": {
+                                "line": 1,
+                                "column": 3,
+                                "program": "optional_union_paramter.ets"
+                              },
+                              "end": {
+                                "line": 1,
+                                "column": 3,
+                                "program": "optional_union_paramter.ets"
+                              }
+                            }
+                          },
+                          "loc": {
+                            "start": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "optional_union_paramter.ets"
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "optional_union_paramter.ets"
+                            }
+                          }
+                        }
+                      ],
+                      "loc": {
+                        "start": {
+                          "line": 1,
+                          "column": 3,
+                          "program": "optional_union_paramter.ets"
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 3,
                           "program": "optional_union_paramter.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
-                        "line": 17,
-                        "column": 61,
+                        "line": 1,
+                        "column": 1,
                         "program": "optional_union_paramter.ets"
                       },
                       "end": {
-                        "line": 17,
-                        "column": 68,
+                        "line": 1,
+                        "column": 3,
                         "program": "optional_union_paramter.ets"
                       }
                     }
                   },
-                  "annotations": [],
                   "loc": {
                     "start": {
                       "line": 17,
@@ -424,6 +472,158 @@
                     }
                   }
                 },
+                "annotations": [
+                  {
+                    "expr_": {
+                      "type": "ETSTypeReference",
+                      "part": {
+                        "type": "ETSTypeReferencePart",
+                        "name": {
+                          "type": "TSQualifiedName",
+                          "left": {
+                            "type": "Identifier",
+                            "name": "functions",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 17,
+                                "column": 18,
+                                "program": "optional_union_paramter.ets"
+                              },
+                              "end": {
+                                "line": 19,
+                                "column": 6,
+                                "program": "optional_union_paramter.ets"
+                              }
+                            }
+                          },
+                          "right": {
+                            "type": "Identifier",
+                            "name": "OptionalParametersAnnotation",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 17,
+                                "column": 18,
+                                "program": "optional_union_paramter.ets"
+                              },
+                              "end": {
+                                "line": 19,
+                                "column": 6,
+                                "program": "optional_union_paramter.ets"
+                              }
+                            }
+                          },
+                          "loc": {
+                            "start": {
+                              "line": 17,
+                              "column": 18,
+                              "program": "optional_union_paramter.ets"
+                            },
+                            "end": {
+                              "line": 19,
+                              "column": 6,
+                              "program": "optional_union_paramter.ets"
+                            }
+                          }
+                        },
+                        "loc": {
+                          "start": {
+                            "line": 17,
+                            "column": 18,
+                            "program": "optional_union_paramter.ets"
+                          },
+                          "end": {
+                            "line": 19,
+                            "column": 6,
+                            "program": "optional_union_paramter.ets"
+                          }
+                        }
+                      },
+                      "loc": {
+                        "start": {
+                          "line": 17,
+                          "column": 18,
+                          "program": "optional_union_paramter.ets"
+                        },
+                        "end": {
+                          "line": 19,
+                          "column": 6,
+                          "program": "optional_union_paramter.ets"
+                        }
+                      }
+                    },
+                    "properties": [
+                      {
+                        "type": "ClassProperty",
+                        "key": {
+                          "type": "Identifier",
+                          "name": "minArgCount",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 17,
+                              "column": 18,
+                              "program": "optional_union_paramter.ets"
+                            },
+                            "end": {
+                              "line": 19,
+                              "column": 6,
+                              "program": "optional_union_paramter.ets"
+                            }
+                          }
+                        },
+                        "value": {
+                          "type": "NumberLiteral",
+                          "value": 1,
+                          "loc": {
+                            "start": {
+                              "line": 17,
+                              "column": 18,
+                              "program": "optional_union_paramter.ets"
+                            },
+                            "end": {
+                              "line": 19,
+                              "column": 6,
+                              "program": "optional_union_paramter.ets"
+                            }
+                          }
+                        },
+                        "static": false,
+                        "readonly": false,
+                        "declare": false,
+                        "optional": false,
+                        "computed": false,
+                        "definite": false,
+                        "decorators": [],
+                        "loc": {
+                          "start": {
+                            "line": 17,
+                            "column": 18,
+                            "program": "optional_union_paramter.ets"
+                          },
+                          "end": {
+                            "line": 19,
+                            "column": 6,
+                            "program": "optional_union_paramter.ets"
+                          }
+                        }
+                      }
+                    ],
+                    "loc": {
+                      "start": {
+                        "line": 17,
+                        "column": 18,
+                        "program": "optional_union_paramter.ets"
+                      },
+                      "end": {
+                        "line": 19,
+                        "column": 6,
+                        "program": "optional_union_paramter.ets"
+                      }
+                    }
+                  }
+                ],
                 "loc": {
                   "start": {
                     "line": 17,

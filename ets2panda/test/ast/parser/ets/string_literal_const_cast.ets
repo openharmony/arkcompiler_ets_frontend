@@ -17,7 +17,6 @@ let x = "literal str" as const
 
 /* @@? 16:26 Error SyntaxError: Invalid Type. */
 /* @@? 16:26 Error SyntaxError: Unexpected token 'const'. */
-/* @@? 24:1 Error SyntaxError: Identifier expected, got 'eos'. */
-/* @@? 24:1 Error SyntaxError: Variable must be initialized or it's type must be declared. */
-/* @@? 24:1 Error SyntaxError: Variable must be initialized or it's type must be declared. */
-/* @@? 24:1 Error TypeError: Missing initializer in const declaration */
+/* @@? 23:1 Error SyntaxError: Identifier expected, got 'end of stream'. */
+/* @@? 23:1 Error SyntaxError: Variable must be initialized or it's type must be declared. */
+/* @@? 23:1 Error TypeError: Missing initializer in const declaration */

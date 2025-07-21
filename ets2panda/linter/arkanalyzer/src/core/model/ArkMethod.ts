@@ -15,7 +15,16 @@
 
 import { ArkParameterRef, ArkThisRef } from '../base/Ref';
 import { ArkAssignStmt, ArkReturnStmt, Stmt } from '../base/Stmt';
-import { ClassType, EnumValueType, FunctionType, GenericType, LiteralType, Type, UnionType } from '../base/Type';
+import {
+    AliasType,
+    ClassType,
+    EnumValueType,
+    FunctionType,
+    GenericType,
+    LiteralType,
+    Type,
+    UnionType
+} from '../base/Type';
 import { Value } from '../base/Value';
 import { Cfg } from '../graph/Cfg';
 import { ViewTree } from '../graph/ViewTree';
@@ -24,17 +33,17 @@ import { ArkClass, ClassCategory } from './ArkClass';
 import { MethodSignature, MethodSubSignature } from './ArkSignature';
 import { BodyBuilder } from './builder/BodyBuilder';
 import { ArkExport, ExportType } from './ArkExport';
-import { ANONYMOUS_METHOD_PREFIX, DEFAULT_ARK_METHOD_NAME } from '../common/Const';
+import { ANONYMOUS_METHOD_PREFIX, DEFAULT_ARK_METHOD_NAME, LEXICAL_ENV_NAME_PREFIX } from '../common/Const';
 import { getColNo, getLineNo, LineCol, setCol, setLine } from '../base/Position';
 import { ArkBaseModel, ModifierType } from './ArkBaseModel';
 import { ArkError, ArkErrorCode } from '../common/ArkError';
 import { CALL_BACK } from '../common/EtsConst';
-import { Scene } from '../../Scene';
 import { Constant } from '../base/Constant';
 import { Local } from '../base/Local';
 import { ArkFile, Language } from './ArkFile';
 import { CONSTRUCTOR_NAME } from '../common/TSConst';
 import { MethodParameter } from './builder/ArkMethodBuilder';
+import { TypeInference } from '../common/TypeInference';
 
 export const arkMethodNodeKind = [
     'MethodDeclaration',
@@ -623,45 +632,46 @@ export class ArkMethod extends ArkBaseModel implements ArkExport {
             }
             return args.length >= min && args.length <= max;
         });
-        const scene = this.getDeclaringArkFile().getScene();
         return (
-            signatures?.find(p => {
-                const parameters = p.getMethodSubSignature().getParameters();
-                for (let i = 0; i < parameters.length; i++) {
-                    if (!args[i]) {
-                        return parameters[i].isOptional();
-                    }
-                    const isMatched = this.matchParam(parameters[i].getType(), args[i], scene);
-                    if (!isMatched) {
-                        return false;
-                    }
-                }
-                return true;
-            }) ??
+            signatures?.find(p => this.isMatched(p.getMethodSubSignature().getParameters(), args)) ??
             signatures?.[0] ??
             this.getSignature()
         );
     }
 
-    private matchParam(paramType: Type, arg: Value, scene: Scene): boolean {
-        const argType = arg.getType();
-        if (arg instanceof Local) {
-            const stmt = arg.getDeclaringStmt();
-            if (stmt instanceof ArkAssignStmt && stmt.getRightOp() instanceof Constant) {
-                arg = stmt.getRightOp();
+    private isMatched(parameters: MethodParameter[], args: Value[], isArrowFunc: boolean = false): boolean {
+        for (let i = 0; i < parameters.length; i++) {
+            if (!args[i]) {
+                return isArrowFunc ? true : parameters[i].isOptional();
+            }
+            const paramType = parameters[i].getType();
+            const isMatched = this.matchParam(paramType, args[i]);
+            if (!isMatched) {
+                return false;
+            } else if (paramType instanceof EnumValueType || paramType instanceof LiteralType) {
+                return true;
             }
         }
+        return true;
+    }
+
+    private matchParam(paramType: Type, arg: Value): boolean {
+        if (paramType instanceof EnumValueType || paramType instanceof LiteralType) {
+            arg = ArkMethod.parseArg(arg);
+        }
+        const argType = arg.getType();
+        if (paramType instanceof AliasType && !(argType instanceof AliasType)) {
+            paramType = TypeInference.replaceAliasType(paramType);
+        }
         if (paramType instanceof UnionType) {
-            let matched = false;
-            for (const e of paramType.getTypes()) {
-                if (argType.constructor === e.constructor) {
-                    matched = true;
-                    break;
-                }
-            }
-            return matched;
+            return !!paramType.getTypes().find(p => this.matchParam(p, arg));
         } else if (argType instanceof FunctionType && paramType instanceof FunctionType) {
-            return argType.getMethodSignature().getParamLength() === paramType.getMethodSignature().getParamLength();
+            if (argType.getMethodSignature().getParamLength() > paramType.getMethodSignature().getParamLength()) {
+                return false;
+            }
+            const parameters = paramType.getMethodSignature().getMethodSubSignature().getParameters();
+            const args = argType.getMethodSignature().getMethodSubSignature().getParameters().filter(p => !p.getName().startsWith(LEXICAL_ENV_NAME_PREFIX));
+            return this.isMatched(parameters, args, true);
         } else if (paramType instanceof ClassType && paramType.getClassSignature().getClassName().includes(CALL_BACK)) {
             return argType instanceof FunctionType;
         } else if (paramType instanceof LiteralType && arg instanceof Constant) {
@@ -682,6 +692,19 @@ export class ArkMethod extends ArkBaseModel implements ArkExport {
             }
         }
         return argType.constructor === paramType.constructor;
+    }
+
+    private static parseArg(arg: Value): Value {
+        if (arg instanceof Local) {
+            const stmt = arg.getDeclaringStmt();
+            const argType = arg.getType();
+            if (argType instanceof EnumValueType && argType.getConstant()) {
+                arg = argType.getConstant()!;
+            } else if (stmt instanceof ArkAssignStmt && stmt.getRightOp() instanceof Constant) {
+                arg = stmt.getRightOp();
+            }
+        }
+        return arg;
     }
 
     public getOuterMethod(): ArkMethod | undefined {

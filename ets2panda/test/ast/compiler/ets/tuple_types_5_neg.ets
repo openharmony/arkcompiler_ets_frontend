@@ -21,9 +21,5 @@ function main(): void {
 /* @@? 18:21 Error SyntaxError: Invalid Type. */
 /* @@? 18:21 Error SyntaxError: Unexpected token, expected ',' or ']'. */
 /* @@? 18:21 Error SyntaxError: Unexpected token '...'. */
-/* @@? 18:21 Error SyntaxError: Unexpected token '...'. */
-/* @@? 18:21 Error SyntaxError: Unexpected token '...'. */
+/* @@? 18:24 Error SyntaxError: Unexpected token 'number'. */
 /* @@? 18:32 Error SyntaxError: Unexpected token ']'. */
-/* @@? 18:32 Error SyntaxError: Unexpected token ']'. */
-/* @@? 18:32 Error SyntaxError: Unexpected token ']'. */
-/* @@? 18:34 Error SyntaxError: Unexpected token '='. */

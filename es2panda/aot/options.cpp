@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -451,6 +451,9 @@ bool Options::Parse(int argc, const char **argv)
     panda::PandArg<std::string> dstPkgName("dst-package-name", "", "This is for modify pacakge name in input abc"\
         " file, and should always be used with srcPkgName. dstPkgName what targeting package name will be"\
         " modified to.");
+    panda::PandArg<bool> enableEtsImplements(
+        "enable-ets-implements", false,
+        "Allow es2abc to pass static ETS implementation information from source files to bytecode");
 
     // aop transform
     panda::PandArg<std::string> transformLib("transform-lib", "", "aop transform lib file path");
@@ -524,6 +527,7 @@ bool Options::Parse(int argc, const char **argv)
 
     argparser_->Add(&srcPkgName);
     argparser_->Add(&dstPkgName);
+    argparser_->Add(&enableEtsImplements);
 
     argparser_->PushBackTail(&inputFile);
     argparser_->EnableTail();
@@ -752,6 +756,7 @@ bool Options::Parse(int argc, const char **argv)
     compilerOptions_.patchFixOptions.coldFix = coldFix;
 
     compilerOptions_.enableAnnotations = enableAnnotations.GetValue();
+    compilerOptions_.enableEtsImplements = enableEtsImplements.GetValue();
 
     bool transformLibIsEmpty = transformLib.GetValue().empty();
     if (!transformLibIsEmpty) {

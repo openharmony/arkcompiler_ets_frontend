@@ -29,9 +29,9 @@ inline std::string DepAnalyzerTestsBinPathGet()
 
 inline std::string DepAnalyzerTestsPathGet(size_t testFolderNum, size_t testFileNum)
 {
-    return std::string("<%= TESTS_FOLDER %>") + std::to_string(testFolderNum) +
+    return std::string(std::filesystem::canonical(std::string("<%= TESTS_FOLDER %>") + std::to_string(testFolderNum) +
            ark::es2panda::util::Path::GetPathDelimiter() + std::string("file") +
-           std::to_string(testFileNum) + std::string(".ets");
+           std::to_string(testFileNum) + std::string(".ets")));
 }
 
 }  // namespace test::utils

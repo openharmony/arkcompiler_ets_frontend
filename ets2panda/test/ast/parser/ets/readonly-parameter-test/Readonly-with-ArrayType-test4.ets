@@ -18,4 +18,4 @@ function foo (x: Readonly<int[]>) {
     let x1 : int[]
     x1 = /* @@ label */x
 }
-/* @@@ label Error TypeError: Type 'readonly int[]' cannot be assigned to type 'int[]' */
+/* @@? 19:24 Error TypeError: Type 'Readonly<Array<Int>>' cannot be assigned to type 'Array<Int>' */

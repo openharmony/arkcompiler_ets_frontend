@@ -354,8 +354,8 @@ void FunctionEmitter::GenScopeVariableInfo(pandasm::Function *func, const varbin
     if (iter == lastIter || *iter == scope->ScopeEnd()) {
         return;
     }
-    uint32_t count = iter - instructions.begin();
-    uint32_t start = count;
+    size_t count = iter - instructions.begin();
+    size_t start = count;
 
     auto checkNodeIsValid = [](const ir::AstNode *node) { return node != nullptr && node != FIRST_NODE_OF_FUNCTION; };
     // NOTE(dslynko, #19090): need to track start location for each local variable
@@ -438,6 +438,9 @@ static void UpdateLiteralBufferId([[maybe_unused]] ark::pandasm::Ins *ins, [[may
 
 void Emitter::AddProgramElement(ProgramElement *programElement)
 {
+    if (programElement->Function() == nullptr) {
+        return;
+    }
     prog_->strings.insert(programElement->Strings().begin(), programElement->Strings().end());
 
     uint32_t newLiteralBufferIndex = literalBufferIndex_;
@@ -535,7 +538,8 @@ pandasm::Program *Emitter::Finalize(bool dumpDebugInfo, std::string_view globalC
         dumper.Dump();
     }
 
-    if (context_->parserProgram->VarBinder()->IsGenStdLib()) {
+    if (context_->parserProgram->VarBinder()->IsGenStdLib() ||
+        context_->parserProgram->VarBinder()->Program()->IsGenAbcForExternal()) {
         auto it = prog_->recordTable.find(std::string(globalClass));
         if (it != prog_->recordTable.end()) {
             prog_->recordTable.erase(it);

@@ -17,13 +17,13 @@ interface I {}
 class A implements I {}
 class B implements I {}
 
-function clear_accumlator_type(Is: I[]): I[] {
+function clear_accumlator_type(Is: FixedArray<I>): FixedArray<I> {
   return Is;
 }
 
 function main() {
-  let As: A[] = new A[1];
-  let Is: I[] = As as I[];
+  let As: FixedArray<A> = new A[1];
+  let Is: FixedArray<I> = As as FixedArray<I>;
 
   let caught = false;
   try {
@@ -31,7 +31,7 @@ function main() {
     // Verifier warning 24: Impossible array check cast
     // Element type in array in accumulator is of incompatible type 'A'.
     // Instruction 'checkcast' will always throw an exception here. It may be a sign of possible error here.
-    let Bs: B[] = Is as B[];
+    let Bs: FixedArray<B> = Is as FixedArray<B>;
   } catch (e: ClassCastError) {
     caught = true;
   } catch (e) {
@@ -43,6 +43,6 @@ function main() {
   // Verifier warning 24: Impossible array check cast
   // Element type in array in accumulator is of incompatible type 'B'.
   // Instruction 'checkcast' will always throw an exception here. It may be a sign of possible error here.
-  let As2 = Is as A[];
+  let As2 = Is as FixedArray<A>;
 }
 

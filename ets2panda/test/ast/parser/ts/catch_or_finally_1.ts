@@ -31,5 +31,5 @@ try /* @@ label6 */[] /* @@ label7 */finally {}
 /* @@? 20:38 Error SyntaxError: Unexpected token 'finally'. */
 /* @@? 20:38 Error SyntaxError: Unexpected token 'finally'. */
 /* @@? 20:38 Error SyntaxError: Unexpected token 'finally'. */
-/* @@? 36:1 Error SyntaxError: Expected '}', got 'eos'. */
+/* @@? 36:1 Error SyntaxError: Expected '}', got 'end of stream'. */
 /* @@? 36:1 Error SyntaxError: Missing catch or finally clause. */

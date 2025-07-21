@@ -86,14 +86,16 @@ checker::VerifiedType ArrowFunctionExpression::Check(checker::ETSChecker *checke
 }
 
 ArrowFunctionExpression::ArrowFunctionExpression(ArrowFunctionExpression const &other, ArenaAllocator *const allocator)
-    : AnnotationAllowed<Expression>(static_cast<Expression const &>(other), allocator)
+    : JsDocAllowed<AnnotationAllowed<Expression>>(static_cast<Expression const &>(other), allocator)
 {
+    ES2PANDA_ASSERT(other.func_->Clone(allocator, this));
     func_ = other.func_->Clone(allocator, this)->AsScriptFunction();
 }
 
 ArrowFunctionExpression *ArrowFunctionExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     auto *const clone = allocator->New<ArrowFunctionExpression>(*this, allocator);
+    ES2PANDA_ASSERT(clone);
 
     if (parent != nullptr) {
         clone->SetParent(parent);
@@ -120,6 +122,7 @@ ir::TypeNode *ArrowFunctionExpression::CreateReturnNodeFromType(checker::ETSChec
     auto *ident = checker->AllocNode<ir::Identifier>(util::StringView(""), checker->Allocator());
     auto *const part = checker->AllocNode<ir::ETSTypeReferencePart>(ident, checker->Allocator());
     auto *returnNode = checker->AllocNode<ir::ETSTypeReference>(part, checker->Allocator());
+    ES2PANDA_ASSERT(returnNode);
     returnNode->SetTsType(returnType);
     return returnNode;
 }

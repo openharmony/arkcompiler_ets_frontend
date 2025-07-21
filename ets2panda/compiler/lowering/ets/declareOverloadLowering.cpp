@@ -30,11 +30,11 @@ void GenerateOverloadHelperParams(public_lib::Context *ctx, uint32_t minArg, siz
     if (!hasRestVar) {
         for (size_t idx = 0; idx < maxArg; ++idx) {
             auto *id = Gensym(allocator);
-            auto *typeAnnotation =
-                checker->AllocNode<ir::OpaqueTypeNode>(checker->GlobalETSNullishObjectType(), allocator);
+            auto *typeAnnotation = ctx->AllocNode<ir::OpaqueTypeNode>(checker->GlobalETSAnyType(), allocator);
             id->SetTsTypeAnnotation(typeAnnotation);
             typeAnnotation->SetParent(id);
-            auto *param = checker->AllocNode<ir::ETSParameterExpression>(id, false, allocator);
+            auto *param = ctx->AllocNode<ir::ETSParameterExpression>(id, false, allocator);
+            ES2PANDA_ASSERT(param);
             param->SetOptional(idx >= minArg);
             params.push_back(param);
         }
@@ -42,14 +42,14 @@ void GenerateOverloadHelperParams(public_lib::Context *ctx, uint32_t minArg, siz
     }
 
     auto *restIdent = Gensym(allocator);
-    auto *spread = checker->AllocNode<ir::SpreadElement>(ir::AstNodeType::REST_ELEMENT, allocator, restIdent);
-    auto *arr = checker->CreateETSArrayType(checker->GlobalETSNullishObjectType(), false);
-    auto *typeAnnotation = checker->AllocNode<ir::OpaqueTypeNode>(arr, allocator);
+    auto *spread = ctx->AllocNode<ir::SpreadElement>(ir::AstNodeType::REST_ELEMENT, allocator, restIdent);
+    auto *arr = checker->CreateETSArrayType(checker->GlobalETSAnyType(), false);
+    auto *typeAnnotation = ctx->AllocNode<ir::OpaqueTypeNode>(arr, allocator);
 
     spread->SetTsTypeAnnotation(typeAnnotation);
     spread->SetTsType(arr);
     restIdent->SetTsType(arr);
-    auto *param = checker->AllocNode<ir::ETSParameterExpression>(spread, nullptr, allocator);
+    auto *param = ctx->AllocNode<ir::ETSParameterExpression>(spread, nullptr, allocator);
 
     restIdent->SetParent(spread);
     typeAnnotation->SetParent(spread);
@@ -69,22 +69,23 @@ void BuildOverloadHelperFunction(public_lib::Context *ctx, ir::MethodDefinition 
     auto params = ArenaVector<ir::Expression *>(allocator->Adapter());
     GenerateOverloadHelperParams(ctx, minArg, maxArg, hasRestVar, params);
 
-    auto *returnType = returnVoid ? checker->GlobalVoidType() : checker->GlobalETSNullishObjectType();
-    auto *returnAnno = checker->AllocNode<ir::OpaqueTypeNode>(returnType, allocator);
+    auto *returnType = returnVoid ? checker->GlobalVoidType() : checker->GlobalETSAnyType();
+    auto *returnAnno = ctx->AllocNode<ir::OpaqueTypeNode>(returnType, allocator);
 
     ir::ScriptFunctionFlags functionFlag = method->Function()->Flags();
-    auto *func = checker->AllocNode<ir::ScriptFunction>(
+    auto *func = ctx->AllocNode<ir::ScriptFunction>(
         allocator,
         ir::ScriptFunction::ScriptFunctionData {nullptr, ir::FunctionSignature(nullptr, std::move(params), returnAnno),
                                                 functionFlag, method->Function()->Modifiers()});
-    auto *methodId = checker->AllocNode<ir::Identifier>(method->Id()->Name(), allocator);
+    auto *methodId = ctx->AllocNode<ir::Identifier>(method->Id()->Name(), allocator);
     func->SetIdent(methodId);
-    auto *funcExpr = checker->AllocNode<ir::FunctionExpression>(func);
+    auto *funcExpr = ctx->AllocNode<ir::FunctionExpression>(func);
     auto *methodIdClone = methodId->Clone(allocator, nullptr);
-    auto *helperOverload = checker->AllocNode<ir::MethodDefinition>(method->Kind(), methodIdClone, funcExpr,
-                                                                    method->Modifiers(), allocator, false);
+    auto *helperOverload = ctx->AllocNode<ir::MethodDefinition>(method->Kind(), methodIdClone, funcExpr,
+                                                                method->Modifiers(), allocator, false);
 
     method->AddOverload(helperOverload);
+    ES2PANDA_ASSERT(helperOverload->Function());
     helperOverload->Function()->ClearFlag((ir::ScriptFunctionFlags::OVERLOAD));
     helperOverload->SetParent(method);
 

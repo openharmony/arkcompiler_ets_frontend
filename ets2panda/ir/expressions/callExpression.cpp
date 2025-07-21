@@ -41,10 +41,10 @@ void CallExpression::TransformChildren(const NodeTransformer &cb, std::string_vi
         }
     }
 
-    if (trailingBlock_ != nullptr) {
-        if (auto *transformedNode = cb(trailingBlock_); trailingBlock_ != transformedNode) {
-            trailingBlock_->SetTransformedNode(transformationName, transformedNode);
-            trailingBlock_ = transformedNode->AsBlockStatement();
+    if (trailingLambdaInfo_.block != nullptr) {
+        if (auto *transformedNode = cb(trailingLambdaInfo_.block); trailingLambdaInfo_.block != transformedNode) {
+            trailingLambdaInfo_.block->SetTransformedNode(transformationName, transformedNode);
+            trailingLambdaInfo_.block = transformedNode->AsBlockStatement();
         }
     }
 }
@@ -61,8 +61,8 @@ void CallExpression::Iterate(const NodeTraverser &cb) const
         cb(it);
     }
 
-    if (trailingBlock_ != nullptr) {
-        cb(trailingBlock_);
+    if (trailingLambdaInfo_.block != nullptr) {
+        cb(trailingLambdaInfo_.block);
     }
 }
 
@@ -96,11 +96,11 @@ void CallExpression::Dump(ir::SrcDumper *dumper) const
         }
     }
     dumper->Add(")");
-    if (trailingBlock_ != nullptr) {
-        if (isTrailingBlockInNewLine_) {
+    if (trailingLambdaInfo_.block != nullptr) {
+        if (trailingLambdaInfo_.isBlockInNewLine) {
             dumper->Endl();
         }
-        trailingBlock_->Dump(dumper);
+        trailingLambdaInfo_.block->Dump(dumper);
     }
 }
 
@@ -129,7 +129,8 @@ CallExpression::CallExpression(CallExpression const &other, ArenaAllocator *cons
       arguments_(allocator->Adapter()),
       signature_(other.signature_),
       trailingComma_(other.trailingComma_),
-      isTrailingBlockInNewLine_(other.isTrailingBlockInNewLine_)
+      trailingLambdaInfo_({other.trailingLambdaInfo_.block, other.trailingLambdaInfo_.isBlockInNewLine,
+                           other.trailingLambdaInfo_.isTrailingCall})
 {
     callee_ = other.callee_->Clone(allocator, this)->AsExpression();
     typeParams_ = other.typeParams_ != nullptr ? other.typeParams_->Clone(allocator, this) : nullptr;
@@ -138,13 +139,15 @@ CallExpression::CallExpression(CallExpression const &other, ArenaAllocator *cons
         arguments_.emplace_back(argument->Clone(allocator, this)->AsExpression());
     }
 
-    trailingBlock_ =
-        other.trailingBlock_ != nullptr ? other.trailingBlock_->Clone(allocator, this)->AsBlockStatement() : nullptr;
+    trailingLambdaInfo_.block = other.trailingLambdaInfo_.block != nullptr
+                                    ? other.trailingLambdaInfo_.block->Clone(allocator, this)->AsBlockStatement()
+                                    : nullptr;
 }
 
 CallExpression *CallExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     auto *const clone = allocator->New<CallExpression>(*this, allocator);
+    ES2PANDA_ASSERT(clone != nullptr);
     if (parent != nullptr) {
         clone->SetParent(parent);
     }
@@ -163,9 +166,9 @@ void CallExpression::SetTypeParams(TSTypeParameterInstantiation *typeParams) noe
 
 void CallExpression::SetTrailingBlock(ir::BlockStatement *const block) noexcept
 {
-    trailingBlock_ = block;
-    if (trailingBlock_ != nullptr) {
-        trailingBlock_->SetParent(this);
+    trailingLambdaInfo_.block = block;
+    if (trailingLambdaInfo_.block != nullptr) {
+        trailingLambdaInfo_.block->SetParent(this);
     }
 }
 

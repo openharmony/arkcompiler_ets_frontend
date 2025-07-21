@@ -125,8 +125,14 @@ public:
         return parseList_;
     }
 
+    [[nodiscard]] ArenaVector<ParseInfo> &ParseList()
+    {
+        return parseList_;
+    }
+
     util::StringView FormModuleName(const util::Path &path, const lexer::SourcePosition &srcPos);
-    ImportMetadata GatherImportMetadata(const parser::ParserContext &context, ir::StringLiteral *importPath);
+    ImportMetadata GatherImportMetadata(parser::Program *program, ImportFlags importFlags,
+                                        ir::StringLiteral *importPath);
     void AddImplicitPackageImportToParseList(StringView packageDir, const lexer::SourcePosition &srcPos);
 
     // API version for resolving paths. Kept only for API compatibility. Doesn't support 'dynamicPath'.
@@ -134,6 +140,12 @@ public:
 
     void MarkAsParsed(StringView path);
     util::StringView FormRelativePath(const util::Path &path);
+    std::shared_ptr<const ArkTsConfig> ArkTSConfig() const
+    {
+        return arktsConfig_;
+    }
+
+    void AddToParseList(const ImportMetadata importMetadata);
 
 private:
     util::StringView FormModuleNameSolelyByAbsolutePath(const util::Path &path);
@@ -155,7 +167,6 @@ private:
     std::string TryMatchDynamicPath(std::string_view fixedPath) const;
     StringView GetRealPath(StringView path) const;
 
-    void AddToParseList(const ImportMetadata importMetadata);
 #ifdef USE_UNIX_SYSCALL
     void UnixWalkThroughDirectoryAndAddToParseList(ImportMetadata importMetadata);
 #endif
@@ -170,6 +181,7 @@ private:
     util::DiagnosticEngine &diagnosticEngine_;
     std::string_view pathDelimiter_ {ark::os::file::File::GetPathDelim()};
     mutable const lexer::SourcePosition *srcPos_ {};
+    bool isDynamic_ = false;
 };
 
 }  // namespace ark::es2panda::util

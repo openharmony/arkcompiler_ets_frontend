@@ -581,55 +581,103 @@
             "optional": false,
             "computed": false,
             "typeAnnotation": {
-              "type": "TSArrayType",
-              "elementType": {
-                "type": "ETSTypeReference",
-                "part": {
-                  "type": "ETSTypeReferencePart",
-                  "name": {
-                    "type": "Identifier",
-                    "name": "C",
-                    "decorators": [],
-                    "loc": {
-                      "start": {
-                        "line": 25,
-                        "column": 18,
-                        "program": "lowering-interaction.ets"
-                      },
-                      "end": {
-                        "line": 25,
-                        "column": 19,
-                        "program": "lowering-interaction.ets"
-                      }
-                    }
-                  },
+              "type": "ETSTypeReference",
+              "part": {
+                "type": "ETSTypeReferencePart",
+                "name": {
+                  "type": "Identifier",
+                  "name": "Array",
+                  "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 25,
-                      "column": 18,
+                      "line": 1,
+                      "column": 1,
                       "program": "lowering-interaction.ets"
                     },
                     "end": {
-                      "line": 25,
-                      "column": 20,
+                      "line": 1,
+                      "column": 3,
+                      "program": "lowering-interaction.ets"
+                    }
+                  }
+                },
+                "typeParams": {
+                  "type": "TSTypeParameterInstantiation",
+                  "params": [
+                    {
+                      "type": "ETSTypeReference",
+                      "part": {
+                        "type": "ETSTypeReferencePart",
+                        "name": {
+                          "type": "Identifier",
+                          "name": "C",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "lowering-interaction.ets"
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "lowering-interaction.ets"
+                            }
+                          }
+                        },
+                        "loc": {
+                          "start": {
+                            "line": 1,
+                            "column": 3,
+                            "program": "lowering-interaction.ets"
+                          },
+                          "end": {
+                            "line": 1,
+                            "column": 3,
+                            "program": "lowering-interaction.ets"
+                          }
+                        }
+                      },
+                      "loc": {
+                        "start": {
+                          "line": 1,
+                          "column": 3,
+                          "program": "lowering-interaction.ets"
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 3,
+                          "program": "lowering-interaction.ets"
+                        }
+                      }
+                    }
+                  ],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 3,
+                      "program": "lowering-interaction.ets"
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 3,
                       "program": "lowering-interaction.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 25,
-                    "column": 18,
+                    "line": 1,
+                    "column": 1,
                     "program": "lowering-interaction.ets"
                   },
                   "end": {
-                    "line": 25,
-                    "column": 20,
+                    "line": 1,
+                    "column": 3,
                     "program": "lowering-interaction.ets"
                   }
                 }
               },
-              "annotations": [],
               "loc": {
                 "start": {
                   "line": 25,
@@ -713,55 +761,103 @@
                       "type": "Identifier",
                       "name": "base",
                       "typeAnnotation": {
-                        "type": "TSArrayType",
-                        "elementType": {
-                          "type": "ETSTypeReference",
-                          "part": {
-                            "type": "ETSTypeReferencePart",
-                            "name": {
-                              "type": "Identifier",
-                              "name": "C",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 27,
-                                  "column": 22,
-                                  "program": "lowering-interaction.ets"
-                                },
-                                "end": {
-                                  "line": 27,
-                                  "column": 23,
-                                  "program": "lowering-interaction.ets"
-                                }
-                              }
-                            },
+                        "type": "ETSTypeReference",
+                        "part": {
+                          "type": "ETSTypeReferencePart",
+                          "name": {
+                            "type": "Identifier",
+                            "name": "Array",
+                            "decorators": [],
                             "loc": {
                               "start": {
-                                "line": 27,
-                                "column": 22,
+                                "line": 1,
+                                "column": 1,
                                 "program": "lowering-interaction.ets"
                               },
                               "end": {
-                                "line": 27,
-                                "column": 24,
+                                "line": 1,
+                                "column": 3,
+                                "program": "lowering-interaction.ets"
+                              }
+                            }
+                          },
+                          "typeParams": {
+                            "type": "TSTypeParameterInstantiation",
+                            "params": [
+                              {
+                                "type": "ETSTypeReference",
+                                "part": {
+                                  "type": "ETSTypeReferencePart",
+                                  "name": {
+                                    "type": "Identifier",
+                                    "name": "C",
+                                    "decorators": [],
+                                    "loc": {
+                                      "start": {
+                                        "line": 1,
+                                        "column": 3,
+                                        "program": "lowering-interaction.ets"
+                                      },
+                                      "end": {
+                                        "line": 1,
+                                        "column": 3,
+                                        "program": "lowering-interaction.ets"
+                                      }
+                                    }
+                                  },
+                                  "loc": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "lowering-interaction.ets"
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "lowering-interaction.ets"
+                                    }
+                                  }
+                                },
+                                "loc": {
+                                  "start": {
+                                    "line": 1,
+                                    "column": 3,
+                                    "program": "lowering-interaction.ets"
+                                  },
+                                  "end": {
+                                    "line": 1,
+                                    "column": 3,
+                                    "program": "lowering-interaction.ets"
+                                  }
+                                }
+                              }
+                            ],
+                            "loc": {
+                              "start": {
+                                "line": 1,
+                                "column": 3,
+                                "program": "lowering-interaction.ets"
+                              },
+                              "end": {
+                                "line": 1,
+                                "column": 3,
                                 "program": "lowering-interaction.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
-                              "line": 27,
-                              "column": 22,
+                              "line": 1,
+                              "column": 1,
                               "program": "lowering-interaction.ets"
                             },
                             "end": {
-                              "line": 27,
-                              "column": 24,
+                              "line": 1,
+                              "column": 3,
                               "program": "lowering-interaction.ets"
                             }
                           }
                         },
-                        "annotations": [],
                         "loc": {
                           "start": {
                             "line": 27,

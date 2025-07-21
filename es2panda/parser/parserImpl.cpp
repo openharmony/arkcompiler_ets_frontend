@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -117,9 +117,8 @@ Program ParserImpl::Parse(const SourceFile &sourceFile, const CompilerOptions &o
     program_.SetDebug(options.isDebug);
     program_.SetTargetApiVersion(options.targetApiVersion);
     program_.SetTargetApiSubVersion(options.targetApiSubVersion);
-    if (util::Helpers::IsSupportAnnotationVersion(program_.TargetApiVersion())) {
-        program_.SetEnableAnnotations(options.enableAnnotations);
-    }
+    program_.SetEnableAnnotations(options.enableAnnotations);
+    program_.SetEnableEtsImplements(options.enableEtsImplements);
     program_.SetShared(sourceFile.isSharedModule);
     program_.SetModuleRecordFieldName(options.moduleRecordFieldName);
     program_.SetSourceLang(sourceFile.sourceLang);

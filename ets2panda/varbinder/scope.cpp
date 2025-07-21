@@ -450,6 +450,7 @@ Variable *ParamScope::AddParameter(ArenaAllocator *allocator, Decl *newDecl, Var
     ES2PANDA_ASSERT(newDecl->IsParameterDecl());
 
     auto *param = allocator->New<LocalVariable>(newDecl, flags);
+    ES2PANDA_ASSERT(param != nullptr);
     param->SetScope(this);
 
     params_.emplace_back(param);
@@ -513,13 +514,12 @@ Variable *AnnotationParamScope::AddBinding([[maybe_unused]] ArenaAllocator *allo
                                            [[maybe_unused]] ScriptExtension extension)
 {
     auto *ident = newDecl->Node()->AsClassProperty()->Id();
+    ES2PANDA_ASSERT(ident != nullptr);
     auto annoVar = allocator->New<LocalVariable>(newDecl, VariableFlags::PROPERTY);
     auto var = InsertBinding(ident->Name(), annoVar).first->second;
     if (var != nullptr) {
         var->SetScope(this);
-        if (ident != nullptr) {
-            ident->SetVariable(var);
-        }
+        ident->SetVariable(var);
     }
     return var;
 }
@@ -671,7 +671,7 @@ Scope::InsertResult GlobalScope::InsertImpl(const util::StringView &name, Variab
         ES2PANDA_ASSERT(var->Declaration()->Name().Utf8().find(compiler::Signatures::ETS_GLOBAL) == std::string::npos);
         const auto *const node = var->Declaration()->Node();
 
-        if (!(node->IsExported() || node->IsDefaultExported() || node->IsExportedType())) {
+        if (!(node->IsExported() || node->IsDefaultExported())) {
             return Scope::InsertResult {Bindings().end(), false};
         }
     }
@@ -748,6 +748,7 @@ void ModuleScope::AddImportDecl(ir::ImportDeclaration *importDecl, ImportDeclLis
 
 void ModuleScope::AddExportDecl(ir::AstNode *exportDecl, ExportDecl *decl)
 {
+    ES2PANDA_ASSERT(decl != nullptr);
     decl->BindNode(exportDecl);
 
     ArenaVector<ExportDecl *> decls(allocator_->Adapter());
@@ -777,6 +778,7 @@ Variable *ModuleScope::AddImport(ArenaAllocator *allocator, Variable *currentVar
     }
 
     auto *variable = allocator->New<ModuleVariable>(newDecl, VariableFlags::NONE);
+    ES2PANDA_ASSERT(variable != nullptr);
     variable->ExoticName() = newDecl->AsImportDecl()->ImportName();
     InsertBinding(newDecl->Name(), variable);
     return variable;
@@ -896,6 +898,10 @@ Variable *ClassScope::FindLocal(const util::StringView &name, ResolveBindingOpti
 
 void ClassScope::SetBindingProps(Decl *newDecl, BindingProps *props, bool isStatic)
 {
+    if (newDecl->IsImportDecl()) {
+        return;
+    }
+
     switch (newDecl->Type()) {
         case DeclType::CONST:
             [[fallthrough]];
@@ -990,11 +996,15 @@ Variable *ClassScope::AddBinding(ArenaAllocator *allocator, [[maybe_unused]] Var
         return nullptr;
     }
 
-    if (auto node = newDecl->Node();
-        node->IsStatement() &&
-        (node->AsStatement()->IsMethodDefinition() || node->IsClassProperty() || node->IsClassStaticBlock()) &&
-        node->AsStatement()->AsClassElement()->Value() != nullptr) {
-        props.SetFlagsType(VariableFlags::INITIALIZED);
+    if (auto node = newDecl->Node(); node->IsStatement() && (node->AsStatement()->IsMethodDefinition() ||
+                                                             node->IsClassProperty() || node->IsClassStaticBlock())) {
+        if (node->AsStatement()->AsClassElement()->Value() != nullptr) {
+            props.SetFlagsType(VariableFlags::INITIALIZED);
+        }
+
+        if (node->IsClassProperty() && node->AsClassProperty()->NeedInitInStaticBlock()) {
+            props.SetFlagsType(VariableFlags::INIT_IN_STATIC_BLOCK);
+        }
     }
 
     var->SetScope(this);
@@ -1029,6 +1039,7 @@ void LoopDeclarationScope::ConvertToVariableScope(ArenaAllocator *allocator)
 
     if (loopType_ == ScopeType::LOOP_DECL) {
         auto *parentVarScope = Parent()->EnclosingVariableScope();
+        ES2PANDA_ASSERT(parentVarScope != nullptr);
         slotIndex_ = std::max(slotIndex_, parentVarScope->LexicalSlots());
         evalBindings_ = parentVarScope->EvalBindings();
         initScope_ = allocator->New<LocalScope>(allocator, Parent());

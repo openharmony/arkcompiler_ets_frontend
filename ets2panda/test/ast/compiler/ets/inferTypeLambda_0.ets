@@ -13,11 +13,11 @@
  * limitations under the License.
  */
 
-function foo<T>(arr:Array<T>, f:(a:Array<T>)=>string){
+function foo<T>(arr:T[], f:(a:T[])=>string){
     return f(arr[0])  // CTE
 }
 
-function bar(arr:Array<number>){
+function bar(arr:number[]){
     return foo(arr, (a):string=>{
         let res = a.toString();
         return res

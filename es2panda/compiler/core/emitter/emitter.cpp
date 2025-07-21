@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -1227,6 +1227,11 @@ void Emitter::GenBufferLiterals(ArenaVector<std::pair<int32_t, std::vector<Liter
             case ir::LiteralTag::ASYNC_GENERATOR_METHOD: {
                 valueLit.tag_ = panda::panda_file::LiteralTag::ASYNCGENERATORMETHOD;
                 valueLit.value_ = literal->GetMethod().Mutf8();
+                break;
+            }
+            case ir::LiteralTag::ETS_IMPLEMENTS: {
+                valueLit.tag_ = panda::panda_file::LiteralTag::ETS_IMPLEMENTS;
+                valueLit.value_ = literal->GetString().Mutf8();
                 break;
             }
             case ir::LiteralTag::NULL_VALUE: {

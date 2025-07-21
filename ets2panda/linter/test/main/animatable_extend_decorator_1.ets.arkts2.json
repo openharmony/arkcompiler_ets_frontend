@@ -25,13 +25,73 @@
             "severity": "ERROR"
         },
         {
+            "line": 24,
+            "column": 30,
+            "endLine": 24,
+            "endColumn": 32,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 30,
+            "column": 32,
+            "endLine": 30,
+            "endColumn": 36,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 33,
+            "column": 46,
+            "endLine": 33,
+            "endColumn": 48,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 33,
+            "column": 51,
+            "endLine": 33,
+            "endColumn": 54,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 33,
+            "column": 57,
+            "endLine": 33,
+            "endColumn": 59,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 36,
+            "column": 14,
+            "endLine": 36,
+            "endColumn": 16,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 16,
             "column": 2,
             "endLine": 16,
             "endColumn": 18,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"AnimatableExtend\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -41,7 +101,7 @@
             "endColumn": 7,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Entry\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -51,7 +111,7 @@
             "endColumn": 11,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Component\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -61,7 +121,7 @@
             "endColumn": 9,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"State\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -71,7 +131,7 @@
             "endColumn": 11,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Column\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -81,7 +141,7 @@
             "endColumn": 11,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Text\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -91,7 +151,7 @@
             "endColumn": 50,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Curve\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -101,7 +161,7 @@
             "endColumn": 13,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Button\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         }
     ]

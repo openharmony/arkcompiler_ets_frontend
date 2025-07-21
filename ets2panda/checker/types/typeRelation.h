@@ -62,7 +62,6 @@ enum class TypeRelationFlag : uint32_t {
     NO_THROW_GENERIC_TYPEALIAS = 1U << 24U,
     OVERRIDING_CONTEXT = 1U << 25U,
     IGNORE_REST_PARAM = 1U << 26U,
-    STRING_TO_CHAR = 1U << 27U,
 
     ASSIGNMENT_CONTEXT = WIDENING | BOXING | UNBOXING,
     BRIDGE_CHECK = OVERRIDING_CONTEXT | IGNORE_TYPE_PARAMETERS | NO_RETURN_TYPE_CHECK,
@@ -156,11 +155,6 @@ public:
         return (flags_ & TypeRelationFlag::UNBOXING) != 0;
     }
 
-    bool ApplyStringToChar() const
-    {
-        return (flags_ & TypeRelationFlag::STRING_TO_CHAR) != 0;
-    }
-
     bool NoReturnTypeCheck() const
     {
         return (flags_ & TypeRelationFlag::NO_RETURN_TYPE_CHECK) != 0;
@@ -232,6 +226,11 @@ public:
     const Checker *GetChecker() const
     {
         return checker_;
+    }
+
+    void SetChecker(Checker *checker)
+    {
+        checker_ = checker;
     }
 
     ir::Expression *GetNode() const

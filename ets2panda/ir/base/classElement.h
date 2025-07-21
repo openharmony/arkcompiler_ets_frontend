@@ -112,7 +112,10 @@ public:
 
     [[nodiscard]] virtual PrivateFieldKind ToPrivateFieldKind(bool isStatic) const = 0;
 
+    void CopyTo(AstNode *other) const override;
+
 protected:
+    friend class SizeOfNodeTest;
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
     Expression *key_;
     Expression *value_;

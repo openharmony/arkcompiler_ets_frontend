@@ -111,3 +111,7 @@ fatal:
 - name: MISSING_OUTPUT_FILE
   id: 25
   message: "Output file path must be specified."
+
+- name: SIMULTANEOUSLY_MARK_FAILED
+  id: 26
+  message: "simultaneously compile is not work because of input file paths error."

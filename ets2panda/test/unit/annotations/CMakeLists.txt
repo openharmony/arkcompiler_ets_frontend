@@ -38,3 +38,6 @@ ets2panda_add_gtest(annotations_for_namespace
 ets2panda_add_gtest(annotations_module
     CPP_SOURCES annotations_module.cpp
 )
+ets2panda_add_gtest(annotations_for_functional_objects
+    CPP_SOURCES annotations_for_functional_objects.cpp
+)

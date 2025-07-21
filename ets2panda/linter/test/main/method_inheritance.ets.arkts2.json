@@ -55,6 +55,26 @@
             "severity": "ERROR"
         },
         {
+            "line": 52,
+            "column": 31,
+            "endLine": 52,
+            "endColumn": 32,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 52,
+            "column": 43,
+            "endLine": 52,
+            "endColumn": 44,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 61,
             "column": 15,
             "endLine": 61,
@@ -89,6 +109,186 @@
             "column": 30,
             "endLine": 71,
             "endColumn": 45,
+            "problem": "MethodInheritRule",
+            "suggest": "",
+            "rule": "Overridden method parameters and return types must respect type inheritance principles (arkts-method-inherit-rule)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 72,
+            "column": 23,
+            "endLine": 72,
+            "endColumn": 25,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 83,
+            "column": 41,
+            "endLine": 83,
+            "endColumn": 42,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 101,
+            "column": 15,
+            "endLine": 101,
+            "endColumn": 16,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 104,
+            "column": 15,
+            "endLine": 104,
+            "endColumn": 16,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 107,
+            "column": 15,
+            "endLine": 107,
+            "endColumn": 16,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 124,
+            "column": 7,
+            "endLine": 124,
+            "endColumn": 14,
+            "problem": "MethodInheritRule",
+            "suggest": "",
+            "rule": "Overridden method parameters and return types must respect type inheritance principles (arkts-method-inherit-rule)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 127,
+            "column": 3,
+            "endLine": 127,
+            "endColumn": 7,
+            "problem": "MethodInheritRule",
+            "suggest": "",
+            "rule": "Overridden method parameters and return types must respect type inheritance principles (arkts-method-inherit-rule)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 130,
+            "column": 8,
+            "endLine": 130,
+            "endColumn": 20,
+            "problem": "MethodInheritRule",
+            "suggest": "",
+            "rule": "Overridden method parameters and return types must respect type inheritance principles (arkts-method-inherit-rule)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 143,
+            "column": 7,
+            "endLine": 143,
+            "endColumn": 14,
+            "problem": "MethodInheritRule",
+            "suggest": "",
+            "rule": "Overridden method parameters and return types must respect type inheritance principles (arkts-method-inherit-rule)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 146,
+            "column": 3,
+            "endLine": 146,
+            "endColumn": 7,
+            "problem": "MethodInheritRule",
+            "suggest": "",
+            "rule": "Overridden method parameters and return types must respect type inheritance principles (arkts-method-inherit-rule)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 149,
+            "column": 8,
+            "endLine": 149,
+            "endColumn": 20,
+            "problem": "MethodInheritRule",
+            "suggest": "",
+            "rule": "Overridden method parameters and return types must respect type inheritance principles (arkts-method-inherit-rule)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 175,
+            "column": 10,
+            "endLine": 175,
+            "endColumn": 17,
+            "problem": "MethodInheritRule",
+            "suggest": "",
+            "rule": "Overridden method parameters and return types must respect type inheritance principles (arkts-method-inherit-rule)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 180,
+            "column": 11,
+            "endLine": 180,
+            "endColumn": 13,
+            "problem": "MethodInheritRule",
+            "suggest": "",
+            "rule": "Overridden method parameters and return types must respect type inheritance principles (arkts-method-inherit-rule)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 185,
+            "column": 11,
+            "endLine": 185,
+            "endColumn": 16,
+            "problem": "MethodInheritRule",
+            "suggest": "",
+            "rule": "Overridden method parameters and return types must respect type inheritance principles (arkts-method-inherit-rule)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 189,
+            "column": 11,
+            "endLine": 189,
+            "endColumn": 13,
+            "problem": "MethodInheritRule",
+            "suggest": "",
+            "rule": "Overridden method parameters and return types must respect type inheritance principles (arkts-method-inherit-rule)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 204,
+            "column": 10,
+            "endLine": 204,
+            "endColumn": 17,
+            "problem": "MethodInheritRule",
+            "suggest": "",
+            "rule": "Overridden method parameters and return types must respect type inheritance principles (arkts-method-inherit-rule)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 209,
+            "column": 11,
+            "endLine": 209,
+            "endColumn": 13,
+            "problem": "MethodInheritRule",
+            "suggest": "",
+            "rule": "Overridden method parameters and return types must respect type inheritance principles (arkts-method-inherit-rule)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 214,
+            "column": 11,
+            "endLine": 214,
+            "endColumn": 16,
             "problem": "MethodInheritRule",
             "suggest": "",
             "rule": "Overridden method parameters and return types must respect type inheritance principles (arkts-method-inherit-rule)",

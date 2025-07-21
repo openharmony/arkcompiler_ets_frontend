@@ -21,6 +21,4 @@ var not_ok = false
 
 // Second level import import with both types of error
 /* @@? import_2.ets:17:17 Error TypeError: Type 'int' cannot be assigned to type 'String' */
-/* @@? import_2.ets:20:1 Error TypeError: Unresolved reference var */
-/* @@? import_2.ets:20:5 Error SyntaxError: Unexpected token 'not_ok'.  */
-/* @@? import_2.ets:20:5 Error TypeError: Unresolved reference not_ok  */
+/* @@? import_2.ets:20:5 Error SyntaxError: 'var' keyword is not supported. Use 'let' instead. */

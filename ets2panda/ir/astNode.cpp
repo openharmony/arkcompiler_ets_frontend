@@ -231,6 +231,20 @@ std::string AstNode::DumpEtsSrc() const
     return dumper.Str();
 }
 
+std::string AstNode::DumpDecl() const
+{
+    ir::SrcDumper dumper {this, true};
+    dumper.Run();
+    return dumper.Str();
+}
+
+std::string AstNode::IsolatedDumpDecl() const
+{
+    ir::SrcDumper dumper {this, true, true};
+    dumper.Run();
+    return dumper.Str();
+}
+
 void AstNode::SetOriginalNode(AstNode *originalNode) noexcept
 {
     originalNode_ = originalNode;
@@ -243,7 +257,6 @@ AstNode *AstNode::OriginalNode() const noexcept
 
 void AstNode::SetTransformedNode(std::string_view const transformationName, AstNode *transformedNode)
 {
-    ES2PANDA_ASSERT(!transformedNode_.has_value());
     transformedNode->SetOriginalNode(this);
     transformedNode_ = std::make_optional(std::make_pair(transformationName, transformedNode));
 }
@@ -257,5 +270,62 @@ void AstNode::CleanUp()
     if (IsTyped()) {
         this->AsTyped()->SetTsType(nullptr);
     }
+}
+
+bool AstNode::IsReadonly() const noexcept
+{
+    return (flags_ & ModifierFlags::READONLY) != 0;
+}
+
+// NOTE: For readonly parameter type
+bool AstNode::IsReadonlyType() const noexcept
+{
+    return (flags_ & ModifierFlags::READONLY_PARAMETER) != 0;
+}
+
+bool AstNode::IsOptionalDeclaration() const noexcept
+{
+    return (flags_ & ModifierFlags::OPTIONAL) != 0;
+}
+
+bool AstNode::IsDefinite() const noexcept
+{
+    return (flags_ & ModifierFlags::DEFINITE) != 0;
+}
+
+bool AstNode::IsConstructor() const noexcept
+{
+    return (flags_ & ModifierFlags::CONSTRUCTOR) != 0;
+}
+
+bool AstNode::IsOverride() const noexcept
+{
+    return (flags_ & ModifierFlags::OVERRIDE) != 0;
+}
+
+AstNode *AstNode::ShallowClone(ArenaAllocator *allocator)
+{
+    auto clone = Construct(allocator);
+    CopyTo(clone);
+    return clone;
+}
+
+void AstNode::CopyTo(AstNode *other) const
+{
+    ES2PANDA_ASSERT(other->type_ == type_);
+
+    other->parent_ = parent_;
+    other->range_ = range_;
+    other->flags_ = flags_;
+    other->astNodeFlags_ = astNodeFlags_;
+    other->boxingUnboxingFlags_ = boxingUnboxingFlags_;
+    other->variable_ = variable_;
+    other->originalNode_ = originalNode_;
+    other->transformedNode_ = transformedNode_;
+}
+
+AstNode *AstNode::Construct([[maybe_unused]] ArenaAllocator *allocator)
+{
+    ES2PANDA_UNREACHABLE();
 }
 }  // namespace ark::es2panda::ir

@@ -92,7 +92,6 @@ public:
 
     void SetContext(public_lib::Context *context)
     {
-        ES2PANDA_ASSERT(!context_);
         context_ = context;
     }
 
@@ -160,11 +159,17 @@ public:
     }
 
     void ThrowPrivateFieldMismatch(const lexer::SourcePosition &pos, const util::StringView &name) const;
-    void ThrowRedeclaration(const lexer::SourcePosition &pos, const util::StringView &name) const;
+    void ThrowRedeclaration(const lexer::SourcePosition &pos, const util::StringView &name, DeclType declType) const;
+    void ThrowLocalRedeclaration(const lexer::SourcePosition &pos, const util::StringView &name) const;
     void ThrowUnresolvableType(const lexer::SourcePosition &pos, const util::StringView &name) const;
     void ThrowTDZ(const lexer::SourcePosition &pos, const util::StringView &name) const;
     void ThrowInvalidCapture(const lexer::SourcePosition &pos, const util::StringView &name) const;
-    virtual void ThrowError(const lexer::SourcePosition &pos, const std::string_view msg) const;
+    void ThrowError(const lexer::SourcePosition &pos, const diagnostic::DiagnosticKind &kind) const
+    {
+        ThrowError(pos, kind, util::DiagnosticMessageParams {});
+    }
+    virtual void ThrowError(const lexer::SourcePosition &pos, const diagnostic::DiagnosticKind &kind,
+                            const util::DiagnosticMessageParams &params) const;
     virtual bool IsGlobalIdentifier(const util::StringView &str) const;
 
     void PropagateDirectEval() const;
@@ -382,7 +387,7 @@ T *VarBinder::AddTsDecl(const lexer::SourcePosition &pos, Args &&...args)
     T *decl = Allocator()->New<T>(std::forward<Args>(args)...);
 
     if (scope_->AddTsDecl(Allocator(), decl, Extension()) == nullptr) {
-        ThrowRedeclaration(pos, decl->Name());
+        ThrowRedeclaration(pos, decl->Name(), decl->Type());
     }
 
     return decl;
@@ -394,7 +399,7 @@ T *VarBinder::AddDecl(const lexer::SourcePosition &pos, Args &&...args)
     T *decl = Allocator()->New<T>(std::forward<Args>(args)...);
 
     if (scope_->AddDecl(Allocator(), decl, Extension()) == nullptr) {
-        ThrowRedeclaration(pos, decl->Name());
+        ThrowRedeclaration(pos, decl->Name(), decl->Type());
     }
 
     return decl;
@@ -404,10 +409,12 @@ template <typename T, typename... Args>
 std::tuple<T *, varbinder::Variable *> VarBinder::NewVarDecl(const lexer::SourcePosition &pos, Args &&...args)
 {
     T *decl = Allocator()->New<T>(std::forward<Args>(args)...);
-    varbinder::Variable *var = scope_->AddDecl(Allocator(), decl, Extension());
+    auto *allocator = Allocator();
+    auto extension = Extension();
+    varbinder::Variable *var = scope_->AddDecl(allocator, decl, extension);
 
     if (var == nullptr) {
-        ThrowRedeclaration(pos, decl->Name());
+        ThrowRedeclaration(pos, decl->Name(), decl->Type());
         var = scope_->FindLocal(decl->Name(), ResolveBindingOptions::BINDINGS);
     }
 

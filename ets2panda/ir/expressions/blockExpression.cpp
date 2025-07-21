@@ -40,6 +40,7 @@ BlockExpression::BlockExpression([[maybe_unused]] Tag const tag, BlockExpression
 BlockExpression *BlockExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     auto *const clone = allocator->New<BlockExpression>(Tag {}, *this, allocator);
+    ES2PANDA_ASSERT(clone);
     if (parent != nullptr) {
         clone->SetParent(parent);
     }

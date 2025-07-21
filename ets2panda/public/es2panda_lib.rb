@@ -1302,7 +1302,7 @@ module Es2pandaLibApi
   end
 
   def template_extends_classes
-    %w[Annotated Typed AnnotationAllowed]
+    %w[Annotated Typed AnnotationAllowed JsDocAllowed]
   end
 
   def primitive_types
@@ -1380,6 +1380,8 @@ module Es2pandaLibApi
       es2panda_Options
       es2panda_Path
       es2panda_OverloadInfo
+      es2panda_JsDocRecord
+      es2panda_JsDocInfo
     ]
   end
 
@@ -1494,6 +1496,8 @@ module Es2pandaLibApi
       class_data.template_extends = template_extends(class_definition.extends)
       flag_name = @ast_node_mapping.find { |elem| elem[1] == class_definition.name }&.first
       class_data.ast_node_type_value = Enums.get_astnodetype_value(flag_name)
+      next if class_definition.name == 'NumberLiteral'  # it is defined manually
+
       @classes['ir'][class_definition.name] = class_data
     end
 

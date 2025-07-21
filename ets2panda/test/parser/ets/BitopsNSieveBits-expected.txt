@@ -79,23 +79,71 @@
                       "type": "Identifier",
                       "name": "isPrime",
                       "typeAnnotation": {
-                        "type": "TSArrayType",
-                        "elementType": {
-                          "type": "ETSPrimitiveType",
+                        "type": "ETSTypeReference",
+                        "part": {
+                          "type": "ETSTypeReferencePart",
+                          "name": {
+                            "type": "Identifier",
+                            "name": "Array",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 1,
+                                "column": 1,
+                                "program": "BitopsNSieveBits.ets"
+                              },
+                              "end": {
+                                "line": 1,
+                                "column": 3,
+                                "program": "BitopsNSieveBits.ets"
+                              }
+                            }
+                          },
+                          "typeParams": {
+                            "type": "TSTypeParameterInstantiation",
+                            "params": [
+                              {
+                                "type": "ETSPrimitiveType",
+                                "loc": {
+                                  "start": {
+                                    "line": 1,
+                                    "column": 3,
+                                    "program": "BitopsNSieveBits.ets"
+                                  },
+                                  "end": {
+                                    "line": 1,
+                                    "column": 3,
+                                    "program": "BitopsNSieveBits.ets"
+                                  }
+                                }
+                              }
+                            ],
+                            "loc": {
+                              "start": {
+                                "line": 1,
+                                "column": 3,
+                                "program": "BitopsNSieveBits.ets"
+                              },
+                              "end": {
+                                "line": 1,
+                                "column": 3,
+                                "program": "BitopsNSieveBits.ets"
+                              }
+                            }
+                          },
                           "loc": {
                             "start": {
-                              "line": 17,
-                              "column": 26,
+                              "line": 1,
+                              "column": 1,
                               "program": "BitopsNSieveBits.ets"
                             },
                             "end": {
-                              "line": 17,
-                              "column": 29,
+                              "line": 1,
+                              "column": 3,
                               "program": "BitopsNSieveBits.ets"
                             }
                           }
                         },
-                        "annotations": [],
                         "loc": {
                           "start": {
                             "line": 17,
@@ -1908,23 +1956,71 @@
                   }
                 ],
                 "returnType": {
-                  "type": "TSArrayType",
-                  "elementType": {
-                    "type": "ETSPrimitiveType",
+                  "type": "ETSTypeReference",
+                  "part": {
+                    "type": "ETSTypeReferencePart",
+                    "name": {
+                      "type": "Identifier",
+                      "name": "Array",
+                      "decorators": [],
+                      "loc": {
+                        "start": {
+                          "line": 1,
+                          "column": 1,
+                          "program": "BitopsNSieveBits.ets"
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 3,
+                          "program": "BitopsNSieveBits.ets"
+                        }
+                      }
+                    },
+                    "typeParams": {
+                      "type": "TSTypeParameterInstantiation",
+                      "params": [
+                        {
+                          "type": "ETSPrimitiveType",
+                          "loc": {
+                            "start": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "BitopsNSieveBits.ets"
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "BitopsNSieveBits.ets"
+                            }
+                          }
+                        }
+                      ],
+                      "loc": {
+                        "start": {
+                          "line": 1,
+                          "column": 3,
+                          "program": "BitopsNSieveBits.ets"
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 3,
+                          "program": "BitopsNSieveBits.ets"
+                        }
+                      }
+                    },
                     "loc": {
                       "start": {
-                        "line": 35,
-                        "column": 43,
+                        "line": 1,
+                        "column": 1,
                         "program": "BitopsNSieveBits.ets"
                       },
                       "end": {
-                        "line": 35,
-                        "column": 46,
+                        "line": 1,
+                        "column": 3,
                         "program": "BitopsNSieveBits.ets"
                       }
                     }
                   },
-                  "annotations": [],
                   "loc": {
                     "start": {
                       "line": 35,
@@ -1950,23 +2046,71 @@
                             "type": "Identifier",
                             "name": "isPrime",
                             "typeAnnotation": {
-                              "type": "TSArrayType",
-                              "elementType": {
-                                "type": "ETSPrimitiveType",
+                              "type": "ETSTypeReference",
+                              "part": {
+                                "type": "ETSTypeReferencePart",
+                                "name": {
+                                  "type": "Identifier",
+                                  "name": "Array",
+                                  "decorators": [],
+                                  "loc": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 1,
+                                      "program": "BitopsNSieveBits.ets"
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "BitopsNSieveBits.ets"
+                                    }
+                                  }
+                                },
+                                "typeParams": {
+                                  "type": "TSTypeParameterInstantiation",
+                                  "params": [
+                                    {
+                                      "type": "ETSPrimitiveType",
+                                      "loc": {
+                                        "start": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "BitopsNSieveBits.ets"
+                                        },
+                                        "end": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "BitopsNSieveBits.ets"
+                                        }
+                                      }
+                                    }
+                                  ],
+                                  "loc": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "BitopsNSieveBits.ets"
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "BitopsNSieveBits.ets"
+                                    }
+                                  }
+                                },
                                 "loc": {
                                   "start": {
-                                    "line": 37,
-                                    "column": 18,
+                                    "line": 1,
+                                    "column": 1,
                                     "program": "BitopsNSieveBits.ets"
                                   },
                                   "end": {
-                                    "line": 37,
-                                    "column": 21,
+                                    "line": 1,
+                                    "column": 3,
                                     "program": "BitopsNSieveBits.ets"
                                   }
                                 }
                               },
-                              "annotations": [],
                               "loc": {
                                 "start": {
                                   "line": 37,
@@ -2677,23 +2821,71 @@
                             "type": "Identifier",
                             "name": "result",
                             "typeAnnotation": {
-                              "type": "TSArrayType",
-                              "elementType": {
-                                "type": "ETSPrimitiveType",
+                              "type": "ETSTypeReference",
+                              "part": {
+                                "type": "ETSTypeReferencePart",
+                                "name": {
+                                  "type": "Identifier",
+                                  "name": "Array",
+                                  "decorators": [],
+                                  "loc": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 1,
+                                      "program": "BitopsNSieveBits.ets"
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "BitopsNSieveBits.ets"
+                                    }
+                                  }
+                                },
+                                "typeParams": {
+                                  "type": "TSTypeParameterInstantiation",
+                                  "params": [
+                                    {
+                                      "type": "ETSPrimitiveType",
+                                      "loc": {
+                                        "start": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "BitopsNSieveBits.ets"
+                                        },
+                                        "end": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "BitopsNSieveBits.ets"
+                                        }
+                                      }
+                                    }
+                                  ],
+                                  "loc": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "BitopsNSieveBits.ets"
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "BitopsNSieveBits.ets"
+                                    }
+                                  }
+                                },
                                 "loc": {
                                   "start": {
-                                    "line": 47,
-                                    "column": 17,
+                                    "line": 1,
+                                    "column": 1,
                                     "program": "BitopsNSieveBits.ets"
                                   },
                                   "end": {
-                                    "line": 47,
-                                    "column": 20,
+                                    "line": 1,
+                                    "column": 3,
                                     "program": "BitopsNSieveBits.ets"
                                   }
                                 }
                               },
-                              "annotations": [],
                               "loc": {
                                 "start": {
                                   "line": 47,

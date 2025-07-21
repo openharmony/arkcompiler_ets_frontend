@@ -91,6 +91,9 @@ static void TransformFunction(public_lib::Context *ctx, ir::ScriptFunction *func
         auto const param = defaultParams.at(dfltIdx);
         auto stmt = TransformInitializer(allocator, parser, param);
         body->Statements()[dfltIdx] = stmt;
+        // From a developer's perspective, this locational information is more intuitive.
+        stmt->SetParent(param);
+        RefineSourceRanges(stmt);
         stmt->SetParent(body);
     }
 }

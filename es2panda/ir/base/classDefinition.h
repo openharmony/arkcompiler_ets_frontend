@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -231,6 +231,16 @@ public:
         return isSendable_;
     }
 
+    void SetImplementFromEts()
+    {
+        isImplementFromEts_ = true;
+    }
+
+    bool IsImplementFromEts() const
+    {
+        return isImplementFromEts_;
+    }
+
     void SetClassDecoratorPresent()
     {
         isClassDecoratorPresent_ = true;
@@ -249,6 +259,16 @@ public:
     size_t ExpectedPropertyCount() const
     {
         return classExpectedPropertyCount_;
+    }
+
+    void SetEtsImplementsMessage(util::StringView message)
+    {
+        etsImplementsMessage_ = message;
+    }
+
+    util::StringView GetEtsImplementsMessage() const
+    {
+        return etsImplementsMessage_;
     }
 
     void CalculateClassExpectedPropertyCount();
@@ -309,7 +329,9 @@ private:
     bool hasPrivateElement_ {false};
     bool isSendable_ {false};
     bool isClassDecoratorPresent_ {false};
+    bool isImplementFromEts_ {false};
     size_t classExpectedPropertyCount_ {0};
+    util::StringView etsImplementsMessage_ {""};
 };
 
 }  // namespace panda::es2panda::ir

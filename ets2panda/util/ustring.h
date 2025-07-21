@@ -156,8 +156,6 @@ public:
     template <typename T>
     static void Mutf8Encode(T *str, char32_t cu);
 
-    bool IsConvertibleToChar() const;
-
     class Iterator {
     public:
         static char32_t constexpr INVALID_CP = std::numeric_limits<char32_t>::max();
@@ -204,6 +202,7 @@ public:
 
         inline void Reset(size_t offset)
         {
+            ES2PANDA_ASSERT(sv_.begin() + offset <= sv_.end());
             iter_ = sv_.begin() + offset;
         }
 
@@ -362,6 +361,7 @@ private:
     void Alloc()
     {
         str_ = allocator_->New<ArenaString>(allocator_->Adapter());
+        ES2PANDA_ASSERT(str_ != nullptr);
     }
 
 protected:
@@ -483,6 +483,7 @@ std::string StringView::EscapeSymbol() const
 template <typename T>
 void StringView::Utf8Encode(T *str, char32_t cu)
 {
+    ES2PANDA_ASSERT(str != nullptr);
     if (cu < Constants::UTF8_1BYTE_LIMIT) {
         str->push_back(static_cast<char>(cu));
     } else if (cu < Constants::UTF8_2BYTE_LIMIT) {

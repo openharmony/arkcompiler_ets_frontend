@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import { rcp } from '@kit.RemoteCommunicationKit';
+import mainRcp,{ rcp } from '@kit.RemoteCommunicationKit';
 class LI implements rcp.WriteFile{
   write(buffer: ArrayBuffer): Promise<number | void> { // Error
     throw new Error('Method not implemented.');
@@ -40,5 +40,17 @@ export  class LocalDataSource implements IDataSourcePrefetching {
 
   cancel(index: number): void | Promise<void> {
     throw new Error("LocalDataSource Method not implemented.");
+  }
+}
+
+class L3 implements mainRcp.WriteFile {
+  write(buffer: ArrayBuffer): Promise<number | void> { // error
+    throw new Error('Method not implemented.');
+  }
+}
+
+class L4 implements rcp.WriteFile {
+  write(buffer: ArrayBuffer): Promise<number | void> { // error
+    throw new Error('Method not implemented.');
   }
 }

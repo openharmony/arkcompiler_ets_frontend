@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -49,6 +49,7 @@ Program::Program(Program &&other)
       useDefineSemantic_(other.useDefineSemantic_),
       isShared_(other.isShared_),
       enableAnnotations_(other.enableAnnotations_),
+      enableEtsImplements_(other.enableEtsImplements_),
       targetApiSubVersion_(other.targetApiSubVersion_),
       moduleRecordFieldName_(other.moduleRecordFieldName_),
       sourceLang_(other.sourceLang_)
@@ -80,6 +81,7 @@ Program &Program::operator=(Program &&other)
     useDefineSemantic_ = other.useDefineSemantic_;
     isShared_ = other.isShared_;
     enableAnnotations_ = other.enableAnnotations_;
+    enableEtsImplements_ = other.enableEtsImplements_;
     targetApiSubVersion_ = other.targetApiSubVersion_;
     moduleRecordFieldName_ = other.moduleRecordFieldName_;
     sourceLang_ = other.sourceLang_;

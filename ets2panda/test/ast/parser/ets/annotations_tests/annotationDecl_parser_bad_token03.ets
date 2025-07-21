@@ -19,7 +19,6 @@
 
 /* @@@ label1 Error SyntaxError: Identifier expected, got ':'.  */
 /* @@? 17:35 Error SyntaxError: number is a predefined type, cannot be used as an identifier  */
-/* @@? 17:35 Error SyntaxError: number is a predefined type, cannot be used as an identifier  */
 /* @@? 18:1 Error SyntaxError: Identifier expected, got '}'.  */
 /* @@? 17:5 Error TypeError: Unresolved reference testProperty2 */
 /* @@? 17:5 Error TypeError: Invalid value for annotation field, expected a constant literal. */

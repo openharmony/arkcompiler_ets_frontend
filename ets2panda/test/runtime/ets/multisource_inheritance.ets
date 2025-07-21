@@ -18,7 +18,15 @@
 }
 
 abstract class Abstract {
-    instance_field: number = -1
+    private _instance_field: number = -1
+
+    get instance_field(): number{
+        return this._instance_field;
+    }
+
+    set instance_field(v: number) {
+        this._instance_field = v;
+    }
 }
 
 class Base extends Abstract {

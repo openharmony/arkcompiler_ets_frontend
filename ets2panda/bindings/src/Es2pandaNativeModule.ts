@@ -14,7 +14,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { KNativePointer as KPtr, KInt, KBoolean, KNativePointer, KDouble, KUInt, KStringPtr } from './InteropTypes';
+import { KNativePointer as KPtr, KInt, KBoolean, KNativePointer, KDouble, KUInt, KStringPtr, KInt32ArrayPtr } from './InteropTypes';
 import { Es2pandaNativeModule as GeneratedEs2pandaNativeModule } from './generated/Es2pandaNativeModule';
 import { loadNativeModuleLibrary, registerNativeModuleLibraryName } from './loadLibraries';
 import { throwError } from './utils';
@@ -42,6 +42,10 @@ export class Es2pandaNativeModule {
     throw new Error('Not implemented');
   }
   _ContextErrorMessage(context: KPtr): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _GetAllErrorMessages(context: KPtr): KPtr {
     throw new Error('Not implemented');
   }
 
@@ -142,6 +146,298 @@ export class Es2pandaNativeModule {
   }
 
   _getDefinitionAtPosition(context: KNativePointer, position: KInt): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getTypeHierarchies(searchContext: KNativePointer, context: KNativePointer, position: KInt): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getFileNameFromTypeHierarchiesInfo(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getNameFromTypeHierarchiesInfo(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getTypeFromTypeHierarchiesInfo(ptr: KNativePointer): KInt {
+    throw new Error('Not implemented');
+  }
+
+  _getPositionFromTypeHierarchiesInfo(ptr: KNativePointer): KInt {
+    throw new Error('Not implemented');
+  }
+
+  _getSuperFromTypeHierarchiesInfo(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getSubFromTypeHierarchiesInfo(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getFileNameFromTypeHierarchies(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getNameFromTypeHierarchies(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getTypeFromTypeHierarchies(ptr: KNativePointer): KInt {
+    throw new Error('Not implemented');
+  }
+
+  _getPosFromTypeHierarchies(ptr: KNativePointer): KInt {
+    throw new Error('Not implemented');
+  }
+
+  _getSubOrSuper(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getClassHierarchyInfo(context: KNativePointer, position: KInt): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _castToClassHierarchyInfos(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getClassNameFromClassHierarchyInfo(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getMethodItemsFromClassHierarchyInfo(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getPropertyItemsFromClassHierarchyInfo(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getDetailFromClassHierarchyItem(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getAccessModifierStyleFromClassHierarchyItem(ptr: KNativePointer): KInt {
+    throw new Error('Not implemented');
+  }
+
+  _getSetterStyleFromClassMethodItem(ptr: KNativePointer): KInt {
+    throw new Error('Not implemented');
+  }
+
+  _getAliasScriptElementKind(ptr: KNativePointer, position: KInt): KInt {
+    throw new Error('Not implemented');
+  }
+
+  _getClassPropertyInfo(context: KNativePointer, position: KInt, shouldCollectInherited: boolean): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getFieldsInfoFromPropertyInfo(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getNameFromPropertyInfo(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getFieldListPropertyFromPropertyInfo(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getModifierKindsFromPropertyInfo(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getDisplayNameFromPropertyInfo(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getStartFromPropertyInfo(ptr: KNativePointer): KInt {
+    throw new Error('Not implemented');
+  }
+
+  _getEndFromPropertyInfo(ptr: KNativePointer): KInt {
+    throw new Error('Not implemented');
+  }
+
+  _getKindFromPropertyInfo(ptr: KNativePointer): KInt {
+    throw new Error('Not implemented');
+  }
+
+  _organizeImports(context: KNativePointer, filename: String): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getFileTextChanges(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getTextChangesFromFileTextChanges(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getFileNameFromFileTextChanges(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getTextSpanFromTextChange(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getNewTextFromTextChange(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _findSafeDeleteLocation(context: KNativePointer, declInfo: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getSafeDeleteLocations(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getSafeDeleteLocationUri(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getSafeDeleteLocationStart(ptr: KNativePointer): KInt {
+    throw new Error('Not implemented');
+  }
+
+  _getSafeDeleteLocationLength(ptr: KNativePointer): KInt {
+    throw new Error('Not implemented');
+  }
+
+  _getCompletionEntryDetails(entryName: String, filename: String, context: KNativePointer, position: KInt): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getCompletionEntryDetailsEntryName(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getCompletionEntryDetailsKind(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getCompletionEntryDetailsKindModifier(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getCompletionEntryDetailsFileName(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getCompletionEntryDetailsSymbolDisplayPart(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getRefactorActionName(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getRefactorActionDescription(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getRefactorActionKind(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getApplicableRefactorAction(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getApplicableRefactorName(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getApplicableRefactorDescription(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getApplicableRefactors(context: KNativePointer, kind: String, position: KInt): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getApplicableRefactorInfoList(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getClassConstructorInfo(context: KNativePointer, position: number, strArryPtr: string[] | Uint8Array): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getFileTextChangesFromConstructorInfo(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getFileNameFromConstructorInfo(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getTextChangeFromConstructorInfo(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getNewTextFromConstructorInfo(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getTextSpanFromConstructorInfo(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getClassHierarchies(context: KNativePointer, fileName: String, position: number): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getClassHierarchyList(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getPosFromClassHierarchyItemInfo(ptr: KNativePointer): KInt {
+    throw new Error('Not implemented');
+  }
+
+  _getKindFromClassHierarchyItemInfo(ptr: KNativePointer): KInt {
+    throw new Error('Not implemented');
+  }
+
+  _getDescriptionFromClassHierarchyItemInfo(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getOverriddenFromClassHierarchyItemInfo(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getOverridingFromClassHierarchyItemInfo(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getImplementedFromClassHierarchyItemInfo(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getImplementingFromClassHierarchyItemInfo(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getFileNameFromClassRelationDetails(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getPosFromClassRelationDetails(ptr: KNativePointer): KInt {
+    throw new Error('Not implemented');
+  }
+
+  _getKindFromClassRelationDetails(ptr: KNativePointer): KInt {
     throw new Error('Not implemented');
   }
 
@@ -268,7 +564,7 @@ export class Es2pandaNativeModule {
     throw new Error('Not implemented');
   }
 
-  _getSpanOfEnclosingComment(filename: String, position: KInt): KPtr {
+  _getSpanOfEnclosingComment(context: KNativePointer, position: KInt, onlyMultiLine: boolean): KPtr {
     throw new Error('Not implemented');
   }
 
@@ -431,6 +727,128 @@ export class Es2pandaNativeModule {
   _toLineColumnOffset(context: KNativePointer, position: KInt): KPtr {
     throw new Error('Not implemented');
   }
+
+  _getSafeDeleteInfo(context: KNativePointer, position: KInt): boolean {
+    throw new Error('Not implemented');
+  }
+
+  _getCodeFixesAtPosition(context: KNativePointer, startPosition: KInt, endPosition: KInt,
+    errorCodesPtr: KInt32ArrayPtr, codeLength: KInt): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getCodeFixActionInfos(infoPtr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getFileTextChangesFromCodeActionInfo(infoPtr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getDescriptionFromCodeActionInfo(infoPtr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getFixNameFromCodeFixActionInfo(infoPtr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getFixIdFromCodeFixActionInfo(infoPtr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getFixAllDescriptionFromCodeFixActionInfo(infoPtr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getInlayHintText(ptr: KPtr): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getInlayHintNumber(ptr: KPtr): KInt {
+    throw new Error('Not implemented');
+  }
+
+  _getInlayHintKind(ptr: KPtr): KInt {
+    throw new Error('Not implemented');
+  }
+
+  _getInlayHintWhitespaceBefore(ptr: KPtr): KBoolean {
+    throw new Error('Not implemented');
+  }
+
+  _getInlayHintWhitespaceAfter(ptr: KPtr): KBoolean {
+    throw new Error('Not implemented');
+  }
+
+  _getInlayHintList(context: KPtr, span: KPtr): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getInlayHints(context: KPtr): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _createTextSpan(start: KInt, length: KInt): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getSignatureHelpParameterDocumentation(ptr: KPtr): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getSignatureHelpParameterDisplayParts(ptr: KPtr): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getSignatureHelpParameterName(ptr: KPtr): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getSignatureHelpItemPrefix(ptr: KPtr): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getSignatureHelpItemSuffix(ptr: KPtr): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getSignatureHelpItemSeparator(ptr: KPtr): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getSignatureHelpItemParameter(ptr: KPtr): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getSignatureHelpItemDocumentation(ptr: KPtr): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getSignatureHelpItem(ptr: KPtr): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getApplicableSpan(ptr: KPtr): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getSelectedItemIndex(ptr: KPtr): KInt {
+    throw new Error('Not implemented');
+  }
+
+  _getArgumentIndex(ptr: KPtr): KInt {
+    throw new Error('Not implemented');
+  }
+
+  _getArgumentCount(ptr: KPtr): KInt {
+    throw new Error('Not implemented');
+  }
+
+  _getSignatureHelpItems(context: KPtr, position: KInt): KPtr {
+    throw new Error('Not implemented');
+  }
+
 }
 
 export function initEs2panda(): Es2pandaNativeModule {

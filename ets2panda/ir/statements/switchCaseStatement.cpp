@@ -66,6 +66,7 @@ void SwitchCaseStatement::Dump(ir::SrcDumper *dumper) const
         dumper->Add("default:");
     }
     if (!consequent_.empty()) {
+        dumper->Add(" {");
         dumper->IncrIndent();
         dumper->Endl();
         for (auto cs : consequent_) {
@@ -75,6 +76,8 @@ void SwitchCaseStatement::Dump(ir::SrcDumper *dumper) const
             }
         }
         dumper->DecrIndent();
+        dumper->Endl();
+        dumper->Add("}");
     }
 }
 

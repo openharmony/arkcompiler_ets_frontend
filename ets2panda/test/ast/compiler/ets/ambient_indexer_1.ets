@@ -22,4 +22,3 @@ declare class A {
 // Extra empty line special for equal position like in file "ambient_indexer_2.ets"
 // #23399 Error almost has not ideal position, problem in generated code
 /* @@? 19:5 Error TypeError: Cannot find type 'stringdd'. */
-/* @@? 19:5 Error TypeError: Cannot find type 'stringdd'. */

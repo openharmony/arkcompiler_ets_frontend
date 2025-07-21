@@ -185,10 +185,11 @@ varbinder::LocalVariable *ETSObjectType::CreateSyntheticVarFromEverySignature(co
                                                                               varbinder::VariableFlags::METHOD);
 
     ETSFunctionType *funcType = CreateMethodTypeForProp(name);
+    ES2PANDA_ASSERT(funcType != nullptr);
     for (auto &s : signatures) {
         funcType->AddCallSignature(s);
     }
-
+    ES2PANDA_ASSERT(res != nullptr);
     res->SetTsType(funcType);
     funcType->SetVariable(res);
 
@@ -199,8 +200,9 @@ varbinder::LocalVariable *ETSObjectType::CreateSyntheticVarFromEverySignature(co
 
 ETSFunctionType *ETSObjectType::CreateMethodTypeForProp(const util::StringView &name) const
 {
-    ES2PANDA_ASSERT(GetRelation() != nullptr);
-    return GetRelation()->GetChecker()->AsETSChecker()->CreateETSMethodType(name, {{}, Allocator()->Adapter()});
+    ES2PANDA_ASSERT(GetRelation() != nullptr && GetRelation()->GetChecker() != nullptr);
+    auto *checker = GetRelation()->GetChecker()->AsETSChecker();
+    return checker->CreateETSMethodType(name, {{}, Allocator()->Adapter()});
 }
 
 static void AddSignature(std::vector<Signature *> &signatures, PropertySearchFlags flags, ETSChecker *checker,
@@ -911,6 +913,7 @@ varbinder::LocalVariable *ETSObjectType::CopyProperty(varbinder::LocalVariable *
     if (copiedPropType->Variable() == prop) {
         copiedPropType->SetVariable(copiedProp);
     }
+    ES2PANDA_ASSERT(copiedProp != nullptr);
     copiedProp->SetTsType(copiedPropType);
     return copiedProp;
 }
@@ -930,6 +933,7 @@ Type *ETSObjectType::Instantiate(ArenaAllocator *const allocator, TypeRelation *
     auto *const copiedType = checker->CreateETSObjectType(declNode_, flags_);
     ES2PANDA_ASSERT(copiedType->internalName_ == internalName_);
     ES2PANDA_ASSERT(copiedType->name_ == name_);
+    ES2PANDA_ASSERT(copiedType != nullptr);
     copiedType->typeFlags_ = typeFlags_;
     copiedType->RemoveObjectFlag(ETSObjectFlags::CHECKED_COMPATIBLE_ABSTRACTS |
                                  ETSObjectFlags::INCOMPLETE_INSTANTIATION | ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY);
@@ -972,12 +976,13 @@ static varbinder::LocalVariable *CopyPropertyWithTypeArguments(varbinder::LocalV
     auto *const checker = relation->GetChecker()->AsETSChecker();
     auto *const varType = ETSChecker::IsVariableGetterSetter(prop) ? prop->TsType() : checker->GetTypeOfVariable(prop);
     auto *const copiedPropType = SubstituteVariableType(relation, substitution, varType);
-    auto *const copiedProp = prop->Copy(checker->Allocator(), prop->Declaration());
+    auto *const copiedProp = prop->Copy(checker->ProgramAllocator(), prop->Declaration());
     // NOTE: some situation copiedPropType we get here are types cached in Checker,
     // uncontrolled SetVariable will pollute the cache.
     if (copiedPropType->Variable() == prop || copiedPropType->Variable() == nullptr) {
         copiedPropType->SetVariable(copiedProp);
     }
+    ES2PANDA_ASSERT(copiedProp != nullptr);
     copiedProp->SetTsType(copiedPropType);
     return copiedProp;
 }
@@ -1028,6 +1033,7 @@ static Substitution *ComputeEffectiveSubstitution(TypeRelation *const relation,
 void ETSObjectType::SetCopiedTypeProperties(TypeRelation *const relation, ETSObjectType *const copiedType,
                                             ArenaVector<Type *> &&newTypeArgs, ETSObjectType *base)
 {
+    ES2PANDA_ASSERT(copiedType != nullptr);
     copiedType->typeFlags_ = typeFlags_;
     copiedType->RemoveObjectFlag(ETSObjectFlags::CHECKED_COMPATIBLE_ABSTRACTS |
                                  ETSObjectFlags::INCOMPLETE_INSTANTIATION | ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY);
@@ -1085,7 +1091,7 @@ ETSObjectType *ETSObjectType::Substitute(TypeRelation *relation, const Substitut
     auto *const checker = relation->GetChecker()->AsETSChecker();
     auto *base = GetOriginalBaseType();
 
-    ArenaVector<Type *> newTypeArgs {checker->Allocator()->Adapter()};
+    ArenaVector<Type *> newTypeArgs {Allocator()->Adapter()};
     const bool anyChange = SubstituteTypeArgs(relation, newTypeArgs, substitution);
     // Lambda types can capture type params in their bodies, normal classes cannot.
     // NOTE: gogabr. determine precise conditions where we do not need to copy.
@@ -1144,6 +1150,7 @@ ETSObjectType *ETSObjectType::SubstituteArguments(TypeRelation *relation, ArenaV
     auto *substitution = checker->NewSubstitution();
 
     ES2PANDA_ASSERT(baseType_ == nullptr);
+    ES2PANDA_ASSERT(substitution != nullptr);
     ES2PANDA_ASSERT(typeArguments_.size() == arguments.size());
 
     for (size_t ix = 0; ix < typeArguments_.size(); ix++) {

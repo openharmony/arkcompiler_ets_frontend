@@ -26,7 +26,8 @@ function getFuncWithArgsZero(func: (() => void) | (() => Promise<void>)) {
 function getFunctionArgumentsCount(funcStr: string): number {
     const regex = new RegExp("^[0123456789]$", "g")
     let count = ""
-    for(let str of funcStr) {
+    for(let ch of funcStr) {
+        let str = ch;
         if(regex.test(str)) {
             count = str
         }

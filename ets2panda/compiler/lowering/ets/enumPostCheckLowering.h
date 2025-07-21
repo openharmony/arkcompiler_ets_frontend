@@ -50,6 +50,7 @@ private:
     ir::Expression *HandleUnionTypeForCalls(checker::ETSUnionType *unionType, ir::Expression *expr,
                                             ir::TSAsExpression *tsAsExpr, EnumCastType castType);
 
+    public_lib::Context *context_ {nullptr};
     parser::ETSParser *parser_ {nullptr};
     checker::ETSChecker *checker_ {nullptr};
     varbinder::ETSBinder *varbinder_ {nullptr};

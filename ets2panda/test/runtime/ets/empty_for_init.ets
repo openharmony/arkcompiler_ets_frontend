@@ -13,7 +13,6 @@
  * limitations under the License.
  */
 
-
 let foo = (() => {
     for (let i = 0; i < 1;) {
     }

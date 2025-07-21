@@ -59,11 +59,9 @@ public:
     void ProcessProgramStatements(parser::Program *program, const ArenaVector<ir::Statement *> &statements,
                                   GlobalClassHandler::ModuleDependencies &moduleDependencies);
     void VerifyTypeExports(const ArenaVector<parser::Program *> &programs);
-    void VerifyType(ir::Statement *stmt, std::set<util::StringView> &exportedTypes,
-                    std::set<util::StringView> &exportedStatements,
+    void VerifyType(ir::Statement *stmt, std::set<util::StringView> &exportedStatements,
                     std::map<util::StringView, ir::AstNode *> &typesMap);
-    void HandleSimpleType(std::set<util::StringView> &exportedTypes, std::set<util::StringView> &exportedStatements,
-                          ir::Statement *stmt, util::StringView name, lexer::SourcePosition pos);
+    void HandleSimpleType(std::set<util::StringView> &exportedStatements, ir::Statement *stmt, util::StringView name);
 
     void VerifySingleExportDefault(const ArenaVector<parser::Program *> &programs);
     void AddExportFlags(ir::AstNode *node, util::StringView originalFieldName, lexer::SourcePosition startLoc,
@@ -153,7 +151,7 @@ private:
         exportMap.insert({program_->SourceFilePath(), newMap});
     }
 
-    void RestoreImportExportDecls()
+    void RestoreImportExportDecls() noexcept
     {
         imExDecl_->fieldMap_ = fieldMapPrev_;
         imExDecl_->exportNameMap_ = exportNameMapPrev_;

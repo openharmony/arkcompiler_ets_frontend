@@ -18,7 +18,7 @@ function main(): void {
     let b: short = 20000;
     let c: int = 2000000;
     let d: long = 200000000000;
-    let e: float = 2.2;
+    let e: float = 2.2f;
     let f: double = 2.2222222222;
     let g: double[] = [a, b, c, d, e, f];
     assertEQ(g[0], 2)
@@ -32,9 +32,9 @@ function main(): void {
     const i: short = 2;
     const j: int = 2;
     const k: long = 2;
-    const l: float = 2.0;
+    const l: float = 2.0f;
     const m: double = 2.0;
-    const n: byte[] = [h, i, j, k, l, m];
+    const n: byte[] = [h, i, j, k, Float.toByte(l), Double.toByte(m)];
     assertEQ(n[0], 2)
     assertEQ(n[1], 2)
     assertEQ(n[2], 2)

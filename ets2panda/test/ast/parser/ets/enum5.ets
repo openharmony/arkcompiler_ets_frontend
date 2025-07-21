@@ -19,5 +19,5 @@ enum MissingCommaEnum {
 /* @@ label1 */}
 
 /* @@@ label Error SyntaxError: Unexpected token, expected ',' or '}'. */
-/* @@? 18:17 Error TypeError: Unresolved reference Green */
+/* @@@ label Error TypeError: Unresolved reference Green */
 /* @@@ label1 Error SyntaxError: Unexpected token '}'. */

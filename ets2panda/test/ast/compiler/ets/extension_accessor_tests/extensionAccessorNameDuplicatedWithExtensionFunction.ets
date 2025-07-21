@@ -30,4 +30,3 @@ set name/* @@ label2 */(this: B, n: string) {
 
 /* @@@ label1 Error TypeError: Function name with this assembly signature already declared.  */
 /* @@@ label2 Error TypeError: Function name with this assembly signature already declared.  */
-/* @@@ label2 Error TypeError: Function name with this assembly signature already declared.  */

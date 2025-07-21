@@ -20,18 +20,87 @@ import { GLOBAL_THIS_NAME, THIS_NAME } from './TSConst';
 import { TEMP_LOCAL_PREFIX } from './Const';
 import { ArkClass, ClassCategory } from '../model/ArkClass';
 import { LocalSignature } from '../model/ArkSignature';
-import { ModelUtils } from './ModelUtils';
 import { Local } from '../base/Local';
 import { ArkMethod } from '../model/ArkMethod';
 import path from 'path';
 import { ClassType } from '../base/Type';
 import { AbstractFieldRef } from '../base/Ref';
 import { ArkNamespace } from '../model/ArkNamespace';
-import { TypeInference } from './TypeInference';
+import Logger, { LOG_MODULE_TYPE } from '../../utils/logger';
+import { Sdk } from '../../Config';
+import ts from 'ohos-typescript';
+import fs from 'fs';
+
+const logger = Logger.getLogger(LOG_MODULE_TYPE.ARKANALYZER, 'SdkUtils');
 
 export class SdkUtils {
+    private static esVersion: string = 'ES2017';
+    private static esVersionMap: Map<string, string> = new Map<string, string>([
+        ['ES2017', 'lib.es2020.d.ts'],
+        ['ES2021', 'lib.es2021.d.ts']
+    ]);
 
     private static sdkImportMap: Map<string, ArkFile> = new Map<string, ArkFile>();
+    public static BUILT_IN_NAME = 'built-in';
+    private static BUILT_IN_PATH = 'node_modules/ohos-typescript/lib';
+    public static BUILT_IN_SDK: Sdk = {
+        moduleName: '',
+        name: `${SdkUtils.BUILT_IN_NAME}`,
+        path: ''
+    };
+
+    public static setEsVersion(buildProfile: any): void {
+        const accessChain = 'buildOption.arkOptions.tscConfig.targetESVersion';
+        const version = accessChain.split('.').reduce((acc, key) => acc?.[key], buildProfile);
+        if (version && this.esVersionMap.has(version)) {
+            this.esVersion = version;
+        }
+    }
+
+    public static fetchBuiltInFiles(): string[] {
+        let builtInPath = this.BUILT_IN_PATH;
+        try {
+            // If arkanalyzer is used as dependency by other project, the base directory should be the module path.
+            const moduleRoot = path.dirname(path.dirname(require.resolve('ohos-typescript')));
+            builtInPath = path.join(moduleRoot, 'lib');
+            logger.debug(`arkanalyzer is used as dependency, so using builtin sdk file in ${builtInPath}.`);
+        } catch {
+            logger.debug(`use builtin sdk file in ${builtInPath}.`);
+        }
+        let filePath = path.resolve(builtInPath, this.esVersionMap.get(this.esVersion) ?? '');
+        if (!fs.existsSync(filePath)) {
+            logger.error(`built in directory ${filePath} is not exist, please check!`);
+            // This is the temporarily solution for linter, will update with using config to set builtin sdk path
+            builtInPath = 'dist';
+            filePath = path.resolve(builtInPath, this.esVersionMap.get(this.esVersion) ?? '');
+            logger.debug(`use new builtin sdk file in ${builtInPath}.`);
+            if (!fs.existsSync(filePath)) {
+                logger.error(`new built in directory ${filePath} is not exist, please check!`);
+                return [];
+            }
+        }
+        this.BUILT_IN_SDK.path = path.resolve(builtInPath);
+        const result = new Set<string>();
+        this.dfsFiles(filePath, result);
+        return Array.from(result);
+    }
+
+    private static dfsFiles(filePath: string, files: Set<string>): void {
+        const sourceFile = ts.createSourceFile(filePath, fs.readFileSync(filePath, 'utf8'), ts.ScriptTarget.Latest);
+        const references = sourceFile.libReferenceDirectives;
+        references.forEach(ref => {
+            this.dfsFiles(path.join(path.dirname(filePath), `lib.${ref.fileName}.d.ts`), files);
+        });
+        files.add(filePath);
+    }
+
+    /*
+     * Set static field to be null, then all related objects could be freed by GC.
+     * Class SdkUtils is only internally used by ArkAnalyzer type inference, the dispose method should be called at the end of type inference.
+     */
+    public static dispose(): void {
+        this.sdkImportMap.clear();
+    }
 
     public static buildSdkImportMap(file: ArkFile): void {
         const fileName = path.basename(file.getName());
@@ -44,7 +113,7 @@ export class SdkUtils {
         return this.sdkImportMap.get(from);
     }
 
-    public static buildGlobalMap(file: ArkFile, globalMap: Map<string, ArkExport>): void {
+    public static loadGlobalAPI(file: ArkFile, globalMap: Map<string, ArkExport>): void {
         const isGlobalPath = file
             .getScene()
             .getOptions()
@@ -52,20 +121,59 @@ export class SdkUtils {
         if (!isGlobalPath) {
             return;
         }
-        ModelUtils.getAllClassesInFile(file).forEach(cls => {
+        file.getClasses().forEach(cls => {
             if (!cls.isAnonymousClass() && !cls.isDefaultArkClass()) {
-                SdkUtils.loadClass(globalMap, cls);
+                this.loadAPI(cls, globalMap);
             }
             if (cls.isDefaultArkClass()) {
                 cls.getMethods()
                     .filter(mtd => !mtd.isDefaultArkMethod() && !mtd.isAnonymousMethod())
-                    .forEach(mtd => globalMap.set(mtd.getName(), mtd));
+                    .forEach(mtd => this.loadAPI(mtd, globalMap));
             }
         });
-        const defaultArkMethod = file.getDefaultClass().getDefaultArkMethod();
-        if (defaultArkMethod) {
-            TypeInference.inferTypeInMethod(defaultArkMethod);
+        file.getDefaultClass().getDefaultArkMethod()
+            ?.getBody()
+            ?.getAliasTypeMap()
+            ?.forEach(a => this.loadAPI(a[0], globalMap, true));
+        file.getNamespaces().forEach(ns => this.loadAPI(ns, globalMap));
+    }
+
+    public static mergeGlobalAPI(file: ArkFile, globalMap: Map<string, ArkExport>): void {
+        const isGlobalPath = file
+            .getScene()
+            .getOptions()
+            .sdkGlobalFolders?.find(x => file.getFilePath().includes(path.sep + x + path.sep));
+        if (!isGlobalPath) {
+            return;
         }
+        file.getClasses().forEach(cls => {
+            if (!cls.isAnonymousClass() && !cls.isDefaultArkClass()) {
+                this.loadClass(globalMap, cls);
+            }
+        });
+    }
+
+    public static loadAPI(api: ArkExport, globalMap: Map<string, ArkExport>, override: boolean = false): void {
+        const old = globalMap.get(api.getName());
+        if (!old) {
+            globalMap.set(api.getName(), api);
+        } else if (override) {
+            logger.trace(`${old.getSignature()} is override`);
+            globalMap.set(api.getName(), api);
+        } else {
+            logger.trace(`duplicated api: ${api.getSignature()}`);
+        }
+    }
+
+    public static postInferredSdk(file: ArkFile, globalMap: Map<string, ArkExport>): void {
+        const isGlobalPath = file
+            .getScene()
+            .getOptions()
+            .sdkGlobalFolders?.find(x => file.getFilePath().includes(path.sep + x + path.sep));
+        if (!isGlobalPath) {
+            return;
+        }
+        const defaultArkMethod = file.getDefaultClass().getDefaultArkMethod();
         defaultArkMethod
             ?.getBody()
             ?.getLocals()
@@ -75,25 +183,22 @@ export class SdkUtils {
                     this.loadGlobalLocal(local, defaultArkMethod, globalMap);
                 }
             });
-        defaultArkMethod
-            ?.getBody()
-            ?.getAliasTypeMap()
-            ?.forEach(a => globalMap.set(a[0].getName(), a[0]));
-        ModelUtils.getAllNamespacesInFile(file).forEach(ns => globalMap.set(ns.getName(), ns));
     }
 
     private static loadClass(globalMap: Map<string, ArkExport>, cls: ArkClass): void {
         const old = globalMap.get(cls.getName());
-        if (old instanceof ArkClass) {
-            if (old.getCategory() === ClassCategory.CLASS) {
-                this.copyMethod(cls, old);
+        if (cls === old) {
+            return;
+        } else if (old instanceof ArkClass && old.getDeclaringArkFile().getProjectName() === cls.getDeclaringArkFile().getProjectName()) {
+            if (old.getCategory() === ClassCategory.CLASS || old.getCategory() === ClassCategory.INTERFACE) {
+                this.copyMembers(cls, old);
             } else {
-                this.copyMethod(old, cls);
+                this.copyMembers(old, cls);
                 globalMap.delete(cls.getName());
-                globalMap.set(cls.getName(), cls);
+                this.loadAPI(cls, globalMap, true);
             }
-        } else if (!old) {
-            globalMap.set(cls.getName(), cls);
+        } else {
+            this.loadAPI(cls, globalMap, true);
         }
     }
 
@@ -105,29 +210,25 @@ export class SdkUtils {
             const instance = globalMap.get(name + 'Interface');
             const attr = globalMap.get(name + COMPONENT_ATTRIBUTE);
             if (attr instanceof ArkClass && instance instanceof ArkClass) {
-                instance
-                    .getMethods()
-                    .filter(m => !attr.getMethodWithName(m.getName()))
-                    .forEach(m => attr.addMethod(m));
+                this.copyMembers(instance, attr);
                 globalMap.set(name, attr);
                 return;
             }
         }
         const old = globalMap.get(name);
-        if (!old) {
-            globalMap.set(name, local);
-        } else if (old instanceof ArkClass && local.getType() instanceof ClassType) {
-            const localConstructor = scene.getClass((local.getType() as ClassType).getClassSignature());
-            if (localConstructor) {
-                localConstructor
-                    .getMethods()
-                    .filter(m => !old.getMethodWithName(m.getName()))
-                    .forEach(m => old.addMethod(m));
+        if (old instanceof ArkClass && local.getType() instanceof ClassType) {
+            const localConstructor = globalMap.get((local.getType() as ClassType).getClassSignature().getClassName());
+            if (localConstructor instanceof ArkClass) {
+                this.copyMembers(localConstructor, old);
+            } else {
+                this.loadAPI(local, globalMap, true);
             }
+        } else {
+            this.loadAPI(local, globalMap, true);
         }
     }
 
-    private static copyMethod(from: ArkClass, to: ArkClass): void {
+    private static copyMembers(from: ArkClass, to: ArkClass): void {
         from.getMethods().forEach(method => {
             const dist = method.isStatic() ? to.getStaticMethodWithName(method.getName()) : to.getMethodWithName(method.getName());
             const distSignatures = dist?.getDeclareSignatures();
@@ -135,6 +236,12 @@ export class SdkUtils {
                 method.getDeclareSignatures()?.forEach(x => distSignatures.push(x));
             } else {
                 to.addMethod(method);
+            }
+        });
+        from.getFields().forEach(field => {
+            const dist = field.isStatic() ? to.getStaticFieldWithName(field.getName()) : to.getFieldWithName(field.getName());
+            if (!dist) {
+                to.addField(field);
             }
         });
     }

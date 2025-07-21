@@ -700,9 +700,9 @@ std::pair<std::string_view, std::string_view> Helpers::SplitSignature(std::strin
 
 std::vector<std::string> const &Helpers::StdLib()
 {
-    static std::vector<std::string> stdlib {"std/core",       "std/math",        "std/containers",        "std/time",
-                                            "std/interop/js", "std/debug",       "std/debug/concurrency", "std/testing",
-                                            "escompat",       "std/concurrency", "std/annotations"};
+    static std::vector<std::string> stdlib {"std/core", "std/math",        "std/containers",        "std/interop/js",
+                                            "std/time", "std/debug",       "std/debug/concurrency", "std/testing",
+                                            "escompat", "std/concurrency", "std/annotations",       "std/interop"};
     return stdlib;
 }
 
@@ -766,7 +766,14 @@ bool Helpers::IsAsyncMethod(ir::AstNode const *node)
         return false;
     }
     auto *method = node->AsMethodDefinition();
+    ES2PANDA_ASSERT(method->Function() != nullptr);
     return method->Function()->IsAsyncFunc() && !method->Function()->IsProxy();
+}
+
+bool Helpers::IsGlobalVar(const ark::es2panda::varbinder::Variable *var)
+{
+    return var->Declaration()->Node()->IsClassDeclaration() &&
+           var->Declaration()->Node()->AsClassDeclaration()->Definition()->IsGlobal();
 }
 
 }  // namespace ark::es2panda::util

@@ -30,3 +30,11 @@ ets2panda_add_gtest(top_level_statements_test
 ets2panda_add_gtest(node_history_test
     CPP_SOURCES node_history.cpp
 )
+
+ets2panda_add_gtest(convert_primitive_cast_method_call
+    CPP_SOURCES convert_primitive_cast_method_call.cpp
+)
+
+ets2panda_add_gtest(interface_object_literal_test
+    CPP_SOURCES interface_object_literal.cpp
+)

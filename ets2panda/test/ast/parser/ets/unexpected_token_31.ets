@@ -18,15 +18,14 @@ function foo(...^number: int[]): int {
 }
 
 /* @@? 16:10 Error TypeError: Only abstract or native methods can't have body. */
+/* @@? 16:14 Error SyntaxError: Rest parameter should be either array or tuple type. */
 /* @@? 16:17 Error SyntaxError: Unexpected token, expected an identifier. */
 /* @@? 16:18 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
 /* @@? 16:18 Error SyntaxError: Rest parameter must be the last formal parameter. */
 /* @@? 16:31 Error SyntaxError: Unexpected token ')'. */
-/* @@? 16:31 Error SyntaxError: Unexpected token ')'. */
-/* @@? 16:32 Error SyntaxError: Unexpected token ':'. */
 /* @@? 16:32 Error SyntaxError: Unexpected token ':'. */
 /* @@? 16:34 Error SyntaxError: Unexpected token 'int'. */
-/* @@? 16:34 Error SyntaxError: Unexpected token 'int'. */
+/* @@? 16:38 Error SyntaxError: Unexpected token '{'. */
 /* @@? 17:5 Error SyntaxError: return keyword should be used in function body. */
 /* @@? 17:12 Error TypeError: Type name 'number' used in the wrong context */
 /* @@? 17:12 Error TypeError: Indexed access is not supported for such expression type. */

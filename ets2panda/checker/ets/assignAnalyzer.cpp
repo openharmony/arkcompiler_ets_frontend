@@ -190,16 +190,11 @@ void AssignAnalyzer::Analyze(const ir::AstNode *node)
     AnalyzeNodes(node);
 }
 
-void AssignAnalyzer::Warning(const std::string_view message, const lexer::SourcePosition &pos)
+void AssignAnalyzer::Warning(const diagnostic::DiagnosticKind &kind, const util::DiagnosticMessageParams &list,
+                             const lexer::SourcePosition &pos)
 {
     ++numErrors_;
-    checker_->Warning(message, pos);
-}
-
-void AssignAnalyzer::Warning(const util::DiagnosticMessageParams &list, const lexer::SourcePosition &pos)
-{
-    ++numErrors_;
-    checker_->ReportWarning(list, pos);
+    checker_->LogDiagnostic(kind, list, pos);
 }
 
 void AssignAnalyzer::AnalyzeNodes(const ir::AstNode *node)
@@ -485,7 +480,9 @@ void AssignAnalyzer::ProcessClassDefStaticFields(const ir::ClassDefinition *clas
     for (const auto it : classDef->Body()) {
         if (it->IsClassStaticBlock() ||
             (it->IsStatic() && it->IsMethodDefinition() &&
-             it->AsMethodDefinition()->Key()->AsIdentifier()->Name().Is(compiler::Signatures::INIT_METHOD))) {
+             (it->AsMethodDefinition()->Key()->AsIdentifier()->Name().Is(compiler::Signatures::INIT_METHOD) ||
+              it->AsMethodDefinition()->Key()->AsIdentifier()->Name().StartsWith(
+                  compiler::Signatures::INITIALIZER_BLOCK_INIT)))) {
             AnalyzeNodes(it);
             ClearPendingExits();
         }
@@ -535,11 +532,14 @@ static bool IsInitialConstructor(const ir::AstNode *node)
     }
 
     const auto methodDef = node->AsMethodDefinition();
+    ES2PANDA_ASSERT(methodDef != nullptr);
     if (methodDef->Function()->Body() == nullptr || methodDef->Function()->IsExternal()) {
         return false;
     }
 
-    const auto funcBody = node->AsMethodDefinition()->Function()->Body()->AsBlockStatement();
+    const auto *func = node->AsMethodDefinition()->Function();
+    ES2PANDA_ASSERT(func != nullptr);
+    const auto funcBody = func->Body()->AsBlockStatement();
 
     return !(!funcBody->Statements().empty() && funcBody->Statements()[0]->IsExpressionStatement() &&
              funcBody->Statements()[0]->AsExpressionStatement()->GetExpression()->IsCallExpression() &&
@@ -554,7 +554,7 @@ static bool IsInitialConstructor(const ir::AstNode *node)
 void AssignAnalyzer::AnalyzeMethodDef(const ir::MethodDefinition *methodDef)
 {
     auto *func = methodDef->Function();
-
+    ES2PANDA_ASSERT(func != nullptr);
     if (func->Body() == nullptr || func->IsProxy()) {
         return;
     }
@@ -1016,10 +1016,6 @@ void AssignAnalyzer::AnalyzeId(const ir::Identifier *id)
         return;  // inside ObjectExpression
     }
 
-    if (id->Parent()->IsTypeofExpression() && id->Parent()->AsTypeofExpression()->Argument() == id) {
-        return;  // according to the spec 'typeof' works on uninitialized variables too
-    }
-
     if (id->Parent()->IsBinaryExpression()) {
         const ir::BinaryExpression *binExpr = id->Parent()->AsBinaryExpression();
         if ((binExpr->OperatorType() == lexer::TokenType::PUNCTUATOR_EQUAL ||
@@ -1211,8 +1207,11 @@ util::StringView AssignAnalyzer::GetVariableType(const ir::AstNode *node) const
 util::StringView AssignAnalyzer::GetVariableName(const ir::AstNode *node) const
 {
     switch (node->Type()) {
-        case ir::AstNodeType::CLASS_PROPERTY:
-            return node->AsClassProperty()->Id()->Name();
+        case ir::AstNodeType::CLASS_PROPERTY: {
+            const ir::Identifier *identifier = node->AsClassProperty()->Id();
+            ES2PANDA_ASSERT(identifier != nullptr);
+            return identifier->Name();
+        }
         case ir::AstNodeType::VARIABLE_DECLARATOR:
             return node->AsVariableDeclarator()->Id()->AsIdentifier()->Name();
         default:
@@ -1284,7 +1283,9 @@ varbinder::Variable *AssignAnalyzer::GetBoundVariable(const ir::AstNode *node)
     varbinder::Variable *ret = nullptr;
 
     if (node->IsClassProperty()) {
-        ret = node->AsClassProperty()->Id()->Variable();
+        const ir::Identifier *identifier = node->AsClassProperty()->Id();
+        ES2PANDA_ASSERT(identifier != nullptr);
+        ret = identifier->Variable();
     } else if (node->IsVariableDeclarator()) {
         ret = node->AsVariableDeclarator()->Id()->AsIdentifier()->Variable();
     } else {
@@ -1354,6 +1355,17 @@ const ir::AstNode *AssignAnalyzer::GetDeclaringNode(const ir::AstNode *node)
     return ret;
 }
 
+static bool IsDefaultValueType(const Type *type, bool isNonReadonlyField)
+{
+    if (type == nullptr) {
+        return false;
+    }
+    return (type->IsETSPrimitiveType() || type->IsETSNeverType() || type->IsETSUndefinedType() ||
+            type->IsETSNullType() ||
+            (type->PossiblyETSUndefined() && (!type->HasTypeFlag(checker::TypeFlag::GENERIC) ||
+                                              (isNonReadonlyField && !CHECK_GENERIC_NON_READONLY_PROPERTIES))));
+}
+
 bool AssignAnalyzer::VariableHasDefaultValue(const ir::AstNode *node)
 {
     ES2PANDA_ASSERT(node != nullptr);
@@ -1371,11 +1383,7 @@ bool AssignAnalyzer::VariableHasDefaultValue(const ir::AstNode *node)
     } else {
         ES2PANDA_UNREACHABLE();
     }
-
-    return type != nullptr &&
-           (type->IsETSPrimitiveType() ||
-            (type->PossiblyETSUndefined() && (!type->HasTypeFlag(checker::TypeFlag::GENERIC) ||
-                                              (isNonReadonlyField && !CHECK_GENERIC_NON_READONLY_PROPERTIES))));
+    return IsDefaultValueType(type, isNonReadonlyField);
 }
 
 void AssignAnalyzer::LetInit(const ir::AstNode *node)
@@ -1406,9 +1414,9 @@ void AssignAnalyzer::LetInit(const ir::AstNode *node)
 
         if (classDef_ == globalClass_ || (adr < classFirstAdr_ || adr >= firstAdr_)) {
             if (declNode->IsClassProperty() && classDef_ != declNode->Parent()) {
-                Warning({"Cannot assign to '", name, "' because it is a read-only property."}, pos);
+                Warning(diagnostic::ASSIGN_TO_READONLY, {name}, pos);
             } else if (!uninits_.IsMember(adr)) {
-                Warning({Capitalize(type).c_str(), " '", name, "' might already have been assigned."}, pos);
+                Warning(diagnostic::MAYBE_REASSIGNED, {Capitalize(type).c_str(), name}, pos);
             } else {
                 uninit(adr);
             }
@@ -1446,6 +1454,10 @@ void AssignAnalyzer::CheckInit(const ir::AstNode *node)
             // property of an other class
             return;
         }
+
+        if (node->IsDefinite()) {
+            return;
+        }
     }
 
     if (classDef_ == globalClass_ || (adr < classFirstAdr_ || adr >= firstAdr_)) {
@@ -1462,8 +1474,7 @@ void AssignAnalyzer::CheckInit(const ir::AstNode *node)
             if (node->IsClassProperty()) {
                 checker_->LogError(diagnostic::PROPERTY_MAYBE_MISSING_INIT, {name}, pos);
             } else {
-                ss << Capitalize(type) << " '" << name << "' is used before being assigned.";
-                Warning(ss.str(), pos);
+                checker_->LogError(diagnostic::USE_BEFORE_INIT, {Capitalize(type), name}, pos);
             }
         }
     }

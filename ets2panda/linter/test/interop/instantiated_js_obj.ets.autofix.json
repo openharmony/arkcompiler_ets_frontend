@@ -15,31 +15,29 @@
     ],
     "result": [
         {
-            "line": 17,
+            "line": 16,
             "column": 1,
-            "endLine": 17,
-            "endColumn": 51,
-            "problem": "ImportAfterStatement",
-            "suggest": "",
-            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 17,
-            "column": 1,
-            "endLine": 17,
+            "endLine": 16,
             "endColumn": 51,
             "problem": "InterOpImportJs",
             "autofix": [
                 {
-                    "start": 618,
-                    "end": 668,
-                    "replacementText": ""
+                    "start": 605,
+                    "end": 655,
+                    "replacementText": "",
+                    "line": 16,
+                    "column": 1,
+                    "endLine": 16,
+                    "endColumn": 51
                 },
                 {
-                    "start": 668,
-                    "end": 668,
-                    "replacementText": "let GeneratedImportVar_1 = ESObject.load('./instantiated_js_obj_js');\nlet Foo = GeneratedImportVar_1.getPropertyByName('Foo');\nlet Foo1 = GeneratedImportVar_1.getPropertyByName('Foo1');\n"
+                    "start": 655,
+                    "end": 655,
+                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('./instantiated_js_obj_js');\nlet Foo = GeneratedImportVar_1.getProperty('Foo');\nlet Foo1 = GeneratedImportVar_1.getProperty('Foo1');\n",
+                    "line": 16,
+                    "column": 1,
+                    "endLine": 16,
+                    "endColumn": 51
                 }
             ],
             "suggest": "",
@@ -47,16 +45,83 @@
             "severity": "ERROR"
         },
         {
-            "line": 23,
+            "line": 18,
+            "column": 19,
+            "endLine": 18,
+            "endColumn": 20,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 684,
+                    "end": 685,
+                    "replacementText": "1.0",
+                    "line": 18,
+                    "column": 19,
+                    "endLine": 18,
+                    "endColumn": 20
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 22,
             "column": 1,
-            "endLine": 23,
+            "endLine": 22,
             "endColumn": 13,
             "problem": "InstantiatedJsOjbect",
             "autofix": [
                 {
+                    "start": 715,
+                    "end": 727,
+                    "replacementText": "Foo.instantiate(ESValue.wrap(123))",
+                    "line": 22,
+                    "column": 1,
+                    "endLine": 22,
+                    "endColumn": 13
+                }
+            ],
+            "suggest": "",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 22,
+            "column": 9,
+            "endLine": 22,
+            "endColumn": 12,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 723,
+                    "end": 726,
+                    "replacementText": "123.0",
+                    "line": 22,
+                    "column": 9,
+                    "endLine": 22,
+                    "endColumn": 12
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 23,
+            "column": 1,
+            "endLine": 23,
+            "endColumn": 17,
+            "problem": "InstantiatedJsOjbect",
+            "autofix": [
+                {
                     "start": 728,
-                    "end": 740,
-                    "replacementText": "Foo.instantiate(ESObject.wrap(123))"
+                    "end": 744,
+                    "replacementText": "Foo.instantiate(ESValue.wrap('hello'))",
+                    "line": 23,
+                    "column": 1,
+                    "endLine": 23,
+                    "endColumn": 17
                 }
             ],
             "suggest": "",
@@ -71,9 +136,13 @@
             "problem": "InstantiatedJsOjbect",
             "autofix": [
                 {
-                    "start": 741,
-                    "end": 757,
-                    "replacementText": "Foo.instantiate(ESObject.wrap('hello'))"
+                    "start": 745,
+                    "end": 761,
+                    "replacementText": "Foo.instantiate(ESValue.wrap(new A()))",
+                    "line": 24,
+                    "column": 1,
+                    "endLine": 24,
+                    "endColumn": 17
                 }
             ],
             "suggest": "",
@@ -81,16 +150,20 @@
             "severity": "ERROR"
         },
         {
-            "line": 25,
+            "line": 26,
             "column": 1,
-            "endLine": 25,
-            "endColumn": 17,
+            "endLine": 26,
+            "endColumn": 15,
             "problem": "InstantiatedJsOjbect",
             "autofix": [
                 {
-                    "start": 758,
-                    "end": 774,
-                    "replacementText": "Foo.instantiate(ESObject.wrap(new A()))"
+                    "start": 782,
+                    "end": 796,
+                    "replacementText": "Foo.instantiate(ESValue.wrap(a.num))",
+                    "line": 26,
+                    "column": 1,
+                    "endLine": 26,
+                    "endColumn": 15
                 }
             ],
             "suggest": "",
@@ -101,13 +174,17 @@
             "line": 27,
             "column": 1,
             "endLine": 27,
-            "endColumn": 15,
+            "endColumn": 11,
             "problem": "InstantiatedJsOjbect",
             "autofix": [
                 {
-                    "start": 795,
-                    "end": 809,
-                    "replacementText": "Foo.instantiate(ESObject.wrap(a.num))"
+                    "start": 797,
+                    "end": 807,
+                    "replacementText": "Foo.instantiate(ESValue.wrap(a))",
+                    "line": 27,
+                    "column": 1,
+                    "endLine": 27,
+                    "endColumn": 11
                 }
             ],
             "suggest": "",
@@ -115,16 +192,41 @@
             "severity": "ERROR"
         },
         {
-            "line": 28,
-            "column": 1,
-            "endLine": 28,
+            "line": 29,
+            "column": 10,
+            "endLine": 29,
             "endColumn": 11,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 843,
+                    "end": 844,
+                    "replacementText": "1.0",
+                    "line": 29,
+                    "column": 10,
+                    "endLine": 29,
+                    "endColumn": 11
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 31,
+            "column": 1,
+            "endLine": 31,
+            "endColumn": 16,
             "problem": "InstantiatedJsOjbect",
             "autofix": [
                 {
-                    "start": 810,
-                    "end": 820,
-                    "replacementText": "Foo.instantiate(ESObject.wrap(a))"
+                    "start": 848,
+                    "end": 863,
+                    "replacementText": "Foo.instantiate(ESValue.wrap(test()))",
+                    "line": 31,
+                    "column": 1,
+                    "endLine": 31,
+                    "endColumn": 16
                 }
             ],
             "suggest": "",
@@ -135,13 +237,17 @@
             "line": 32,
             "column": 1,
             "endLine": 32,
-            "endColumn": 16,
+            "endColumn": 23,
             "problem": "InstantiatedJsOjbect",
             "autofix": [
                 {
-                    "start": 861,
-                    "end": 876,
-                    "replacementText": "Foo.instantiate(ESObject.wrap(test()))"
+                    "start": 864,
+                    "end": 886,
+                    "replacementText": "Foo1.instantiate(ESValue.wrap(123), ESValue.wrap('hello'))",
+                    "line": 32,
+                    "column": 1,
+                    "endLine": 32,
+                    "endColumn": 23
                 }
             ],
             "suggest": "",
@@ -149,20 +255,24 @@
             "severity": "ERROR"
         },
         {
-            "line": 33,
-            "column": 1,
-            "endLine": 33,
-            "endColumn": 23,
-            "problem": "InstantiatedJsOjbect",
+            "line": 32,
+            "column": 10,
+            "endLine": 32,
+            "endColumn": 13,
+            "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 877,
-                    "end": 899,
-                    "replacementText": "Foo1.instantiate(ESObject.wrap(123), ESObject.wrap('hello'))"
+                    "start": 873,
+                    "end": 876,
+                    "replacementText": "123.0",
+                    "line": 32,
+                    "column": 10,
+                    "endLine": 32,
+                    "endColumn": 13
                 }
             ],
             "suggest": "",
-            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         }
     ]

@@ -13,16 +13,5 @@
         "See the License for the specific language governing permissions and",
         "limitations under the License."
     ],
-    "result": [
-        {
-            "line": 16,
-            "column": 1,
-            "endLine": 16,
-            "endColumn": 52,
-            "problem": "ImportAfterStatement",
-            "suggest": "",
-            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
-            "severity": "ERROR"
-        }
-    ]
+    "result": []
 }

@@ -23,6 +23,8 @@ function main() : void {
     refInt(b); // primitive widening before boxing is not allowed
 }
 
+/* @@@ label Error TypeError: Expected 0 arguments, got 1. */
 /* @@@ label Error TypeError: No matching construct signature for std.core.Short(int)  */
+/* @@? 19:44 Error TypeError: Type 'int' is not compatible with type 'short' at index 1 */
 /* @@@ label1 Error TypeError: Type 'int' cannot be assigned to type 'short'  */
 /* @@@ label2 Error TypeError: Type 'int' cannot be assigned to type 'short'  */

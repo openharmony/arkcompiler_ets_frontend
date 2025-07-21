@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -110,6 +110,13 @@ private:
 
 using AopTransformFuncDef = int (*)(const char *);
 
+struct DirectiveScanConfig {
+    const lexer::LineIndex &lineIndex;
+    bool enableSendableClass;
+    bool enableSendableFunc;
+    bool enableEtsImplements;
+};
+
 class Helpers {
 public:
     Helpers() = delete;
@@ -163,8 +170,7 @@ public:
     template <typename T>
     static T BaseName(T const &path, T const &delims = std::string(panda::os::file::File::GetPathDelim()));
     static bool ReadFileToBuffer(const std::string &file, std::stringstream &ss);
-    static void ScanDirectives(ir::ScriptFunction *func, const lexer::LineIndex &lineIndex, bool enableSendableClass,
-                               bool enableSendableFunc);
+    static void ScanDirectives(ir::ScriptFunction *func, const DirectiveScanConfig &scanConfig);
     static std::string GetHashString(const std::string &str);
     static std::wstring Utf8ToUtf16(const std::string &utf8);
     template <typename T, typename... Args>
@@ -182,6 +188,8 @@ public:
         const std::map<std::string, std::unordered_set<std::string>> &resolveDepsRelation);
     static bool IsDefaultApiVersion(int apiVersion, std::string subApiVersion);
     static bool IsSupportLazyImportVersion(int apiVersion, std::string subApiVersion);
+    static bool IsSupportLazyImportDefaultVersion(int apiVersion);
+    static bool IsSupportEtsImplementsVersion(int apiVersion);
     static bool IsEnableExpectedPropertyCountApiVersion(int apiVersion);
     static bool IsSupportAnnotationVersion(int apiVersion);
 
@@ -197,6 +205,7 @@ public:
     static constexpr std::string_view USE_CONCURRENT = "use concurrent";
     static constexpr std::string_view USE_SENDABLE = "use sendable";
     static constexpr std::string_view USE_SHARED = "use shared";
+    static constexpr std::string_view IMPLEMENTS_STATIC = "implements static:";
     static constexpr std::string_view STRING_EMPTY = ""; // Default tag value, or tag of GlobalScope and ModuleScope
     static constexpr std::string_view CLASS_SCOPE_TAG = "~";
     static constexpr std::string_view FUNCTION_TAG = "*";
@@ -230,8 +239,7 @@ public:
 
 private:
     static bool SetFuncFlagsForDirectives(const ir::StringLiteral *strLit, ir::ScriptFunction *func,
-                                          const lexer::LineIndex &lineIndex, bool enableSendableClass,
-                                          bool enableSendableFunc);
+                                          const DirectiveScanConfig &scanConfig);
 };
 
 template <typename T>

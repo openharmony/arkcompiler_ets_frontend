@@ -17,7 +17,7 @@ import type ts from 'typescript';
 
 export type ArrayAccess = {
   pos: number;
-  accessingIdentifier: 'number' | ts.Identifier;
+  accessingIdentifier: 'number' | ts.Identifier | ts.Expression;
   arrayIdent: ts.Identifier;
 };
 
@@ -34,5 +34,6 @@ export enum LoopConditionChecked {
 
 export enum CheckResult {
   SKIP,
+  HAS_ARRAY_ACCES,
   CHECKED
 }

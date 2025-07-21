@@ -91,6 +91,13 @@ checker::Type *GetNumberIndexType(ArenaVector<checker::Type *> numberIndexTypes,
     return numberIndexType;
 }
 
+static void SetMemberVarType(checker::Type *memberType, varbinder::LocalVariable *memberVar)
+{
+    ES2PANDA_ASSERT(memberType != nullptr);
+    memberType->SetVariable(memberVar);
+    memberVar->SetTsType(memberType);
+}
+
 checker::Type *TSTupleType::GetType(checker::TSChecker *checker)
 {
     if (TsType() != nullptr) {
@@ -98,6 +105,7 @@ checker::Type *TSTupleType::GetType(checker::TSChecker *checker)
     }
 
     checker::ObjectDescriptor *desc = checker->Allocator()->New<checker::ObjectDescriptor>(checker->Allocator());
+    ES2PANDA_ASSERT(desc != nullptr);
     checker::NamedTupleMemberPool namedMembers(checker->Allocator()->Adapter());
     ArenaVector<checker::ElementFlags> elementFlags(checker->Allocator()->Adapter());
     checker::ElementFlags combinedFlags = checker::ElementFlags::NO_OPTS;
@@ -123,14 +131,12 @@ checker::Type *TSTupleType::GetType(checker::TSChecker *checker)
                 minLength++;
             }
 
-            memberType->SetVariable(memberVar);
-            memberVar->SetTsType(memberType);
+            SetMemberVarType(memberType, memberVar);
             numberIndexTypes.push_back(memberType);
             namedMembers.insert({memberVar, namedMember->Label()->AsIdentifier()->Name()});
         } else {
             checker::Type *memberType = it->GetType(checker);
-            memberType->SetVariable(memberVar);
-            memberVar->SetTsType(memberType);
+            SetMemberVarType(memberType, memberVar);
             memberFlag = checker::ElementFlags::REQUIRED;
             numberIndexTypes.push_back(memberType);
             minLength++;

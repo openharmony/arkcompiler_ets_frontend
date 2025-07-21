@@ -89,11 +89,6 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSImportDeclaration *node
     ES2PANDA_UNREACHABLE();
 }
 
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSLaunchExpression *expr) const
-{
-    ES2PANDA_UNREACHABLE();
-}
-
 checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSNewArrayInstanceExpression *expr) const
 {
     ES2PANDA_UNREACHABLE();
@@ -140,6 +135,11 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSTypeReference *node) co
 }
 
 checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSTypeReferencePart *node) const
+{
+    ES2PANDA_UNREACHABLE();
+}
+
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSNonNullishTypeNode *node) const
 {
     ES2PANDA_UNREACHABLE();
 }

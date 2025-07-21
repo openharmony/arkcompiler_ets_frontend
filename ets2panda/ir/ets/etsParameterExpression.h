@@ -49,6 +49,7 @@ public:
     void SetIdent(Identifier *ident) noexcept
     {
         ident_ = ident;
+        ES2PANDA_ASSERT(ident_);
         ident_->SetParent(this);
     }
 
@@ -117,7 +118,11 @@ public:
         v->Accept(this);
     }
 
+    ETSParameterExpression *Construct(ArenaAllocator *allocator) override;
+    void CopyTo(AstNode *other) const override;
+
 private:
+    friend class SizeOfNodeTest;
     Identifier *ident_;
     Expression *initializer_ = nullptr;
     SpreadElement *spread_ = nullptr;

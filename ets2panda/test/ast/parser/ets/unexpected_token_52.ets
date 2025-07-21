@@ -25,12 +25,9 @@ let a = {
 /* @@? 17:12 Error SyntaxError: Expected '{', got '('. */
 /* @@? 17:12 Error SyntaxError: Unexpected token. */
 /* @@? 17:13 Error SyntaxError: Unexpected token ')'. */
-/* @@? 17:13 Error SyntaxError: Unexpected token ')'. */
-/* @@? 17:13 Error SyntaxError: Unexpected token ')'. */
-/* @@? 17:16 Error SyntaxError: Unexpected token ','. */
+/* @@? 17:14 Error SyntaxError: Unexpected token '{'. */
 /* @@? 17:16 Error SyntaxError: Unexpected token ','. */
 /* @@? 18:5 Error SyntaxError: Unexpected token '...'. */
-/* @@? 18:9 Error SyntaxError: Unexpected token ','. */
-/* @@? 18:9 Error SyntaxError: Unexpected token ','. */
+/* @@? 18:8 Error SyntaxError: Unexpected token 'a'. */
 /* @@? 18:9 Error SyntaxError: Unexpected token ','. */
 /* @@? 19:1 Error SyntaxError: Unexpected token '}'. */

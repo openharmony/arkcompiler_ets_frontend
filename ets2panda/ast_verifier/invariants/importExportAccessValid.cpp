@@ -85,6 +85,13 @@ bool ImportExportAccessValid::InvariantImportExportMethod(const std::unordered_s
         return true;
     }
 
+    if (signature == nullptr || signature->Owner() == nullptr) {
+        // NOTE(vpukhov): Add a synthetic owner for dynamic signatures
+        ES2PANDA_ASSERT(
+            callExpr->AsCallExpression()->Callee()->TsType()->HasTypeFlag(checker::TypeFlag::ETS_DYNAMIC_FLAG));
+        return true;
+    }
+
     if (signature != nullptr && varCallee->Declaration() != nullptr && varCallee->Declaration()->Node() != nullptr &&
         !IsContainedIn(varCallee->Declaration()->Node(), signature->Owner()->GetDeclNode()) &&
         varCallee->Declaration()->Node() != signature->Owner()->GetDeclNode()) {

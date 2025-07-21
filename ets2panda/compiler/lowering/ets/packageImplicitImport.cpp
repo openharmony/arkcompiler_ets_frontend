@@ -46,8 +46,8 @@ static void ValidateFolderContainOnlySamePackageFiles(const public_lib::Context 
             return;
         }
 
-        if ((prog1->ModuleName() != prog2->ModuleName()) &&
-            (prog1->SourceFile().GetAbsoluteParentFolder() == prog2->SourceFile().GetAbsoluteParentFolder())) {
+        if (prog1->ModuleName() != prog2->ModuleName() &&
+            prog1->SourceFile().GetAbsoluteParentFolder() == prog2->SourceFile().GetAbsoluteParentFolder()) {
             // There exist 2 files in the same folder, with different package names
             //
             // Showing the full path would be more informative, but it also leaks it to the stdout, which is

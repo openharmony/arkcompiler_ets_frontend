@@ -28,7 +28,9 @@ ETSParameterExpression::ETSParameterExpression(AnnotatedExpression *const identO
 {
     SetOptional(isOptional);
 
-    ES2PANDA_ASSERT(identOrSpread != nullptr);
+    if (identOrSpread == nullptr) {
+        return;
+    }
     identOrSpread->SetParent(this);
     SetRange(identOrSpread->Range());
     if (identOrSpread->IsIdentifier()) {
@@ -245,6 +247,7 @@ ETSParameterExpression *ETSParameterExpression::Clone(ArenaAllocator *const allo
         initializer->SetParent(clone);
     }
 
+    ES2PANDA_ASSERT(clone);
     if (parent != nullptr) {
         clone->SetParent(parent);
     }
@@ -261,4 +264,24 @@ ETSParameterExpression *ETSParameterExpression::Clone(ArenaAllocator *const allo
 
     return clone;
 }
+
+ETSParameterExpression *ETSParameterExpression::Construct(ArenaAllocator *allocator)
+{
+    return allocator->New<ETSParameterExpression>(nullptr, false, allocator);
+}
+
+void ETSParameterExpression::CopyTo(AstNode *other) const
+{
+    auto otherImpl = other->AsETSParameterExpression();
+
+    otherImpl->ident_ = ident_;
+    otherImpl->initializer_ = initializer_;
+    otherImpl->spread_ = spread_;
+    otherImpl->savedLexer_ = savedLexer_;
+    otherImpl->extraValue_ = extraValue_;
+    otherImpl->isOptional_ = isOptional_;
+
+    AnnotationAllowed<Expression>::CopyTo(other);
+}
+
 }  // namespace ark::es2panda::ir

@@ -103,10 +103,13 @@ void ETSWarningAnalyzer::AnalyzeClassMethodForFinalModifier(const ir::MethodDefi
             if (!potentialDescendant->IsDescendantOf(classAsETSObject)) {
                 continue;
             }
-            const util::StringView bodyMethodName =
-                ETSChecker::GetSignatureFromMethodDefinition(bodyPart->AsMethodDefinition())->Function()->Id()->Name();
+            auto signature = ETSChecker::GetSignatureFromMethodDefinition(bodyPart->AsMethodDefinition());
+            ES2PANDA_ASSERT(signature != nullptr);
+            const util::StringView bodyMethodName = signature->Function()->Id()->Name();
+            const auto *func = methodDef->Function();
+            ES2PANDA_ASSERT(func != nullptr);
             if (bodyPart->IsOverride() && bodyMethodName != compiler::Signatures::CTOR &&
-                bodyMethodName == methodDef->Function()->Id()->Name()) {
+                bodyMethodName == func->Id()->Name()) {
                 suggestFinal = false;
                 break;
             }
@@ -210,13 +213,13 @@ void ETSWarningAnalyzer::ETSWarningsProhibitTopLevelStatements(const ir::AstNode
     }
 
     for (const auto *itBody : classDef->Body()) {
-        if (!itBody->IsMethodDefinition() ||
+        if (!itBody->IsMethodDefinition() || itBody->AsMethodDefinition()->Id() == nullptr ||
             itBody->AsMethodDefinition()->Id()->Name() != compiler::Signatures::INIT_METHOD) {
             continue;
         }
-
-        for (const auto *statement :
-             itBody->AsMethodDefinition()->Function()->Body()->AsBlockStatement()->Statements()) {
+        const auto *func = itBody->AsMethodDefinition()->Function();
+        ES2PANDA_ASSERT(func != nullptr);
+        for (const auto *statement : func->Body()->AsBlockStatement()->Statements()) {
             if (program_->NodeContainsETSNolint(statement, ETSWarnings::ETS_PROHIBIT_TOP_LEVEL_STATEMENTS)) {
                 continue;
             }
@@ -421,23 +424,17 @@ void ETSWarningAnalyzer::ETSWarningImplicitBoxingUnboxing(const ir::AstNode *nod
     node->Iterate([&](auto *childNode) { ETSWarningImplicitBoxingUnboxing(childNode); });
 }
 
-void ETSWarningAnalyzer::LogWarning(const std::string &message, const lexer::SourcePosition &position)
-{
-    diagnosticEngine_.LogWarning(message, position);
-}
-
 void ETSWarningAnalyzer::LogWarning(const diagnostic::DiagnosticKind &diagnostic,
                                     const lexer::SourcePosition &position) const
 {
-    util::DiagnosticMessageParams diagnosticParams;
-    this->LogWarning(diagnostic, diagnosticParams, position);
+    this->LogWarning(diagnostic, {}, position);
 }
 
 void ETSWarningAnalyzer::LogWarning(const diagnostic::DiagnosticKind &diagnostic,
-                                    util::DiagnosticMessageParams &diagnosticParams,
+                                    const util::DiagnosticMessageParams &diagnosticParams,
                                     const lexer::SourcePosition &position) const
 {
-    diagnosticEngine_.LogWarning(diagnostic, std::move(diagnosticParams), position);
+    diagnosticEngine_.LogDiagnostic(diagnostic, diagnosticParams, position);
 }
 
 }  // namespace ark::es2panda::checker

@@ -449,7 +449,7 @@
             "loc": {
               "start": {
                 "line": 22,
-                "column": 24,
+                "column": 14,
                 "program": "getterOverride.ets"
               },
               "end": {

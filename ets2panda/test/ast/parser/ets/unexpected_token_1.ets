@@ -18,4 +18,3 @@ import num from @^&
 /* @@? 16:17 Error SyntaxError: Unexpected token, expected string literal. */
 /* @@? 16:17 Error TypeError: Bad operand type, the types of the operands must be numeric type. */
 /* @@? 16:19 Error SyntaxError: Unexpected token '&'. */
-/* @@? 22:1 Error SyntaxError: Unexpected token 'eos'. */

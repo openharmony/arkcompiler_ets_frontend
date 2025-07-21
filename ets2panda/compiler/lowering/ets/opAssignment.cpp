@@ -94,7 +94,7 @@ void AdjustBoxingUnboxingFlags(ir::Expression *loweringResult, const ir::Express
                                                  ir::BoxingUnboxingFlags::BOXING_FLAG};
     const ir::BoxingUnboxingFlags oldUnboxingFlag {oldExpr->GetBoxingUnboxingFlags() &
                                                    ir::BoxingUnboxingFlags::UNBOXING_FLAG};
-
+    ES2PANDA_ASSERT(exprToProcess != nullptr);
     if (exprToProcess->TsType()->IsETSPrimitiveType()) {
         loweringResult->SetBoxingUnboxingFlags(oldBoxingFlag);
     } else if (exprToProcess->TsType()->IsETSObjectType()) {
@@ -102,9 +102,10 @@ void AdjustBoxingUnboxingFlags(ir::Expression *loweringResult, const ir::Express
     }
 }
 
-static ir::OpaqueTypeNode *CreateProxyTypeNode(checker::ETSChecker *checker, ir::Expression *expr)
+static ir::OpaqueTypeNode *CreateProxyTypeNode(public_lib::Context *ctx, ir::Expression *expr)
 {
     auto *lcType = expr->TsType();
+    auto *checker = ctx->checker->AsETSChecker();
     if (checker->IsExtensionETSFunctionType(lcType) && expr->IsMemberExpression() &&
         expr->AsMemberExpression()->HasMemberKind(ir::MemberExpressionKind::EXTENSION_ACCESSOR)) {
         lcType = expr->AsMemberExpression()->ExtensionAccessorType();
@@ -112,7 +113,7 @@ static ir::OpaqueTypeNode *CreateProxyTypeNode(checker::ETSChecker *checker, ir:
     if (auto *lcTypeAsPrimitive = checker->MaybeUnboxInRelation(lcType); lcTypeAsPrimitive != nullptr) {
         lcType = lcTypeAsPrimitive;
     }
-    return checker->AllocNode<ir::OpaqueTypeNode>(lcType, checker->Allocator());
+    return ctx->AllocNode<ir::OpaqueTypeNode>(lcType, ctx->Allocator());
 }
 
 static std::string GenFormatForExpression(ir::Expression *expr, size_t ix1, size_t ix2)
@@ -254,15 +255,15 @@ static ir::Expression *ConstructOpAssignmentResult(public_lib::Context *ctx, ir:
 {
     auto *allocator = ctx->allocator;
     auto *parser = ctx->parser->AsETSParser();
-    auto *checker = ctx->checker->AsETSChecker();
 
     const auto opEqual = assignment->OperatorType();
     ES2PANDA_ASSERT(opEqual != lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
 
     auto *const left = assignment->Left();
     auto *const right = assignment->Right();
+    right->SetBoxingUnboxingFlags(ir::BoxingUnboxingFlags::NONE);
 
-    auto *exprType = CreateProxyTypeNode(checker, left);
+    auto *exprType = CreateProxyTypeNode(ctx, left);
     ir::Expression *retVal = nullptr;
 
     // Create temporary variable(s) if left hand of assignment is not defined by simple identifier[s]
@@ -371,6 +372,7 @@ static ir::Expression *ConstructUpdateResult(public_lib::Context *ctx, ir::Updat
     ArgumentInfo argInfo {};
     argInfo.objType = checker->GlobalVoidType();
     argInfo.propType = checker->GlobalVoidType();
+    argInfo.id3 = Gensym(allocator);
 
     // Parse ArkTS code string and create the corresponding AST node(s)
     // We have to use extra caution with types and `as` conversions because of smart types, which we cannot reproduce in
@@ -382,17 +384,17 @@ static ir::Expression *ConstructUpdateResult(public_lib::Context *ctx, ir::Updat
 
     // NOLINTBEGIN(readability-magic-numbers)
     if (upd->IsPrefix()) {
-        argInfo.newAssignmentStatements += GenFormatForExpression(argument, 7U, 8U) + " = (" +
-                                           GenFormatForExpression(argument, 9U, 10U) + opSign + " 1" + suffix +
-                                           ") as @@T11;";
+        argInfo.newAssignmentStatements +=
+            "const @@I7 = (" + GenFormatForExpression(argument, 8U, 9U) + opSign + " 1" + suffix + ") as @@T10;";
+        argInfo.newAssignmentStatements += GenFormatForExpression(argument, 11U, 12U) + " = @@I13; @@I14";
         return parser->CreateFormattedExpression(
             argInfo.newAssignmentStatements, argInfo.id1, argInfo.object, argInfo.objType, argInfo.id2,
-            argInfo.property, argInfo.propType, GetClone(allocator, argInfo.id1), GetClone(allocator, argInfo.id2),
-            GetClone(allocator, argInfo.id1), GetClone(allocator, argInfo.id2), argument->TsType());
+            argInfo.property, argInfo.propType, argInfo.id3, GetClone(allocator, argInfo.id1),
+            GetClone(allocator, argInfo.id2), argument->TsType(), GetClone(allocator, argInfo.id1),
+            GetClone(allocator, argInfo.id2), GetClone(allocator, argInfo.id3), GetClone(allocator, argInfo.id3));
     }
 
     // upd is postfix
-    argInfo.id3 = Gensym(allocator);
     argInfo.newAssignmentStatements += "const @@I7 = " + GenFormatForExpression(argument, 8, 9) + " as @@T10;" +
                                        GenFormatForExpression(argument, 11U, 12U) + " = (@@I13 " + opSign + " 1" +
                                        suffix + ") as @@T14; @@I15;";
@@ -406,11 +408,11 @@ static ir::Expression *ConstructUpdateResult(public_lib::Context *ctx, ir::Updat
 
 static ir::AstNode *HandleUpdate(public_lib::Context *ctx, ir::UpdateExpression *upd)
 {
-    auto *checker = ctx->checker->AsETSChecker();
-
     auto *const scope = NearestScope(upd);
 
     ir::Expression *loweringResult = ConstructUpdateResult(ctx, upd);
+
+    auto *checker = ctx->checker->AsETSChecker();
 
     auto expressionCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(checker->VarBinder(), scope);
     checker::SavedCheckerContext scc {checker, checker::CheckerStatus::IGNORE_VISIBILITY, ContainingClass(upd)};
@@ -426,7 +428,8 @@ static ir::AstNode *HandleUpdate(public_lib::Context *ctx, ir::UpdateExpression 
             return node;
         },
         "");
-    InitScopesPhaseETS::RunExternalNode(loweringResult, ctx->checker->VarBinder());
+
+    InitScopesPhaseETS::RunExternalNode(loweringResult, checker->VarBinder());
 
     checker->VarBinder()->AsETSBinder()->ResolveReferencesForScopeWithContext(loweringResult,
                                                                               NearestScope(loweringResult));

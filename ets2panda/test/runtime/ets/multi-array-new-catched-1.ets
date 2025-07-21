@@ -14,15 +14,15 @@
  */
 
 function main(): void {
-   let A: Array<number> = new Array<number>();
-   let a: Number[][][];
+  let A: Array<number> = new Array<number>();
+  let a: FixedArray<FixedArray<FixedArray<Number>>>;
 
-   let catched = false;
-   try {
-     a = new Number[A.length + 2.][4][A.length + 3.00001];
-   } catch (e: TypeError) {
-     catched = true;
-   }
+  let catched = false;
+  try {
+    a = new Number[A.length + 2.][4][A.length + 3.00001];
+  } catch (e: TypeError) {
+    catched = true;
+  }
 
-   assertTrue(catched)
+  assertTrue(catched)
 }

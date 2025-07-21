@@ -84,10 +84,6 @@ warning:
   id: 18
   message: "Property '{}' might not have been initialized."
 
-- name: USE_BEFORE_INIT
-  id: 19
-  message: "{} '{}' is used before being assigned."
-
 - name: MAYBE_FALLTHROUGH
   id: 20
   message: "Possible fall-through into case"

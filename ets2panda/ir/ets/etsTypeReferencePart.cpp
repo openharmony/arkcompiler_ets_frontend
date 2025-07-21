@@ -93,6 +93,62 @@ checker::VerifiedType ETSTypeReferencePart::Check(checker::ETSChecker *checker)
     return {this, checker->GetAnalyzer()->Check(this)};
 }
 
+static checker::Type *HandleFixedArrayType(checker::ETSChecker *const checker, ETSTypeReferencePart *ref)
+{
+    auto typeParams = ref->TypeParams();
+    if (typeParams == nullptr || typeParams->Params().size() != 1) {
+        checker->LogError(diagnostic::FIXED_ARRAY_PARAM_ERROR, {}, ref->Start());
+        return checker->GlobalTypeError();
+    }
+    return checker->CreateETSArrayType(typeParams->Params()[0]->GetType(checker), ref->IsReadonlyType());
+}
+
+static checker::Type *HandlePartialType(checker::ETSChecker *const checker, ETSTypeReferencePart *ref)
+{
+    auto *baseType = checker->HandleUtilityTypeParameterNode(ref->TypeParams(), ref->GetIdent());
+    if (baseType != nullptr && baseType->IsETSObjectType() && !baseType->AsETSObjectType()->TypeArguments().empty()) {
+        // we treat Partial<A<T,D>> class as a different copy from A<T,D> now,
+        // but not a generic type param for Partial<>
+        if (ref->TypeParams() != nullptr) {
+            for (auto &typeRef : ref->TypeParams()->Params()) {
+                checker::InstantiationContext ctx(checker, baseType->AsETSObjectType(),
+                                                  typeRef->AsETSTypeReference()->Part()->TypeParams(), ref->Start());
+                baseType = ctx.Result();
+            }
+        }
+    }
+    return baseType;
+}
+
+static checker::Type *CheckPredefinedBuiltinTypes(checker::ETSChecker *const checker, ETSTypeReferencePart *ref)
+{
+    auto const ident = ref->GetIdent();
+    if (ident->Name() == compiler::Signatures::ANY_TYPE_NAME) {
+        return checker->GlobalETSAnyType();
+    }
+    if (ident->Name() == compiler::Signatures::UNDEFINED) {
+        return checker->GlobalETSUndefinedType();
+    }
+    if (ident->Name() == compiler::Signatures::NULL_LITERAL) {
+        return checker->GlobalETSNullType();
+    }
+    if (ident->Name() == compiler::Signatures::NEVER_TYPE_NAME) {
+        return checker->GlobalETSNeverType();
+    }
+
+    if (ident->Name() == compiler::Signatures::READONLY_TYPE_NAME ||
+        ident->Name() == compiler::Signatures::REQUIRED_TYPE_NAME) {
+        return checker->HandleUtilityTypeParameterNode(ref->TypeParams(), ident);
+    }
+    if (ident->Name() == compiler::Signatures::PARTIAL_TYPE_NAME) {
+        return HandlePartialType(checker, ref);
+    }
+    if (ident->Name() == compiler::Signatures::FIXED_ARRAY_TYPE_NAME) {
+        return HandleFixedArrayType(checker, ref);
+    }
+    return nullptr;
+}
+
 [[maybe_unused]] static bool CheckTypeAliaLoop(ETSTypeReferencePart *ref, varbinder::Variable *variable)
 {
     auto typeAliasDecl = variable->Declaration()->Node()->AsTSTypeAliasDeclaration();
@@ -120,7 +176,7 @@ checker::Type *ETSTypeReferencePart::HandleInternalTypes(checker::ETSChecker *co
 {
     ES2PANDA_ASSERT(name_->IsIdentifier() || name_->IsTSQualifiedName());
 
-    Identifier *ident = GetIdent();
+    Identifier *const ident = GetIdent();
     varbinder::Variable *variable = nullptr;
 
     if (name_->IsIdentifier()) {
@@ -143,29 +199,8 @@ checker::Type *ETSTypeReferencePart::HandleInternalTypes(checker::ETSChecker *co
                                         variable->Declaration()->AsTypeAliasDecl()->Node()->AsTSTypeAliasDeclaration());
     }
 
-    if (ident->Name() == compiler::Signatures::UNDEFINED) {
-        return checker->GlobalETSUndefinedType();
-    }
-
-    if (ident->Name() == compiler::Signatures::NULL_LITERAL) {
-        return checker->GlobalETSNullType();
-    }
-
-    if (ident->Name() == compiler::Signatures::NEVER_TYPE_NAME) {
-        return checker->GlobalETSNeverType();
-    }
-
-    if (ident->Name() == compiler::Signatures::READONLY_TYPE_NAME ||
-        ident->Name() == compiler::Signatures::REQUIRED_TYPE_NAME) {
-        return checker->HandleUtilityTypeParameterNode(typeParams_, ident);
-    }
-
-    if (ident->Name() == compiler::Signatures::PARTIAL_TYPE_NAME) {
-        return HandlePartialType(checker, ident);
-    }
-
-    if (ident->Name() == compiler::Signatures::FIXED_ARRAY_TYPE_NAME) {
-        return HandleFixedArrayType(checker);
+    if (auto res = CheckPredefinedBuiltinTypes(checker, this); res != nullptr) {
+        return res;
     }
 
     if (ident->IsErrorPlaceHolder()) {
@@ -173,35 +208,6 @@ checker::Type *ETSTypeReferencePart::HandleInternalTypes(checker::ETSChecker *co
     }
 
     return nullptr;
-}
-
-checker::Type *ETSTypeReferencePart::HandleFixedArrayType(checker::ETSChecker *const checker)
-{
-    if (typeParams_ == nullptr || typeParams_->Params().size() != 1) {
-        checker->LogError(diagnostic::FIXED_ARRAY_PARAM_ERROR, {}, Start());
-        return checker->GlobalTypeError();
-    }
-    checker::Type *type = checker->CreateETSArrayType(typeParams_->Params()[0]->GetType(checker), IsReadonlyType());
-    SetTsType(type);
-    return type;
-}
-
-checker::Type *ETSTypeReferencePart::HandlePartialType(checker::ETSChecker *const checker,
-                                                       const Identifier *const ident)
-{
-    auto *baseType = checker->HandleUtilityTypeParameterNode(typeParams_, ident);
-    if (baseType != nullptr && baseType->IsETSObjectType() && !baseType->AsETSObjectType()->TypeArguments().empty()) {
-        // we treat Partial<A<T,D>> class as a different copy from A<T,D> now,
-        // but not a generic type param for Partial<>
-        if (typeParams_ != nullptr) {
-            for (auto &typeRef : typeParams_->Params()) {
-                checker::InstantiationContext ctx(checker, baseType->AsETSObjectType(),
-                                                  typeRef->AsETSTypeReference()->Part()->typeParams_, Start());
-                baseType = ctx.Result();
-            }
-        }
-    }
-    return baseType;
 }
 
 checker::Type *ETSTypeReferencePart::GetType(checker::ETSChecker *checker)
@@ -257,6 +263,7 @@ ETSTypeReferencePart *ETSTypeReferencePart::Clone(ArenaAllocator *const allocato
         prevClone->SetParent(clone);
     }
 
+    ES2PANDA_ASSERT(clone);
     if (parent != nullptr) {
         clone->SetParent(parent);
     }
@@ -274,4 +281,21 @@ ir::Identifier *ETSTypeReferencePart::GetIdent()
     }
     return name_->AsIdentifier();
 }
+
+ETSTypeReferencePart *ETSTypeReferencePart::Construct(ArenaAllocator *allocator)
+{
+    return allocator->New<ETSTypeReferencePart>(nullptr, nullptr, nullptr, allocator);
+}
+
+void ETSTypeReferencePart::CopyTo(AstNode *other) const
+{
+    auto otherImpl = other->AsETSTypeReferencePart();
+
+    otherImpl->name_ = name_;
+    otherImpl->typeParams_ = typeParams_;
+    otherImpl->prev_ = prev_;
+
+    TypeNode::CopyTo(other);
+}
+
 }  // namespace ark::es2panda::ir

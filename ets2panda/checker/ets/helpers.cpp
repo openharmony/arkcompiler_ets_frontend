@@ -24,6 +24,7 @@
 #include "compiler/lowering/util.h"
 
 namespace ark::es2panda::checker {
+
 varbinder::Variable *ETSChecker::FindVariableInFunctionScope(const util::StringView name)
 {
     return Scope() != nullptr ? Scope()->FindInFunctionScope(name, varbinder::ResolveBindingOptions::ALL).variable
@@ -58,6 +59,7 @@ varbinder::Variable *ETSChecker::FindVariableInGlobal(const ir::Identifier *cons
 
 bool ETSChecker::IsVariableStatic(const varbinder::Variable *var)
 {
+    CHECK_NOT_NULL(var);
     if (var->HasFlag(varbinder::VariableFlags::METHOD)) {
         return var->TsType()->IsETSFunctionType() &&
                var->TsType()->AsETSFunctionType()->CallSignatures()[0]->HasSignatureFlag(SignatureFlags::STATIC);
@@ -288,8 +290,12 @@ Type *ETSChecker::ResolveIdentifier(ir::Identifier *ident)
     if (resolved == nullptr) {
         resolved = ExtraCheckForResolvedError(ident);
         if (resolved == nullptr) {
+            if (VarBinder()->GetScope()->IsClassScope() && this->IsAnyError()) {
+                return ident->SetTsType(GlobalTypeError());
+            }
             auto [decl, var] = VarBinder()->NewVarDecl<varbinder::LetDecl>(
-                ident->Start(), !ident->IsErrorPlaceHolder() ? ident->Name() : compiler::GenName(Allocator()).View());
+                ident->Start(),
+                !ident->IsErrorPlaceHolder() ? ident->Name() : compiler::GenName(ProgramAllocator()).View());
             var->SetScope(VarBinder()->GetScope());
             ident->SetVariable(var);
             decl->BindNode(ident);
@@ -525,7 +531,7 @@ void ETSChecker::ResolveReturnStatement(checker::Type *funcReturnType, checker::
 
 checker::Type *ETSChecker::CheckArrayElements(ir::ArrayExpression *init)
 {
-    ArenaVector<checker::Type *> elementTypes(Allocator()->Adapter());
+    ArenaVector<checker::Type *> elementTypes(ProgramAllocator()->Adapter());
     for (auto *elementNode : init->AsArrayExpression()->Elements()) {
         Type *elementType = elementNode->Check(this);
         if (elementType->IsTypeError()) {
@@ -549,7 +555,7 @@ checker::Type *ETSChecker::CheckArrayElements(ir::ArrayExpression *init)
 
     if (elementTypes.empty()) {
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        return Allocator()->New<ETSArrayType>(GlobalETSObjectType());
+        return ProgramAllocator()->New<ETSArrayType>(GlobalETSObjectType());
     }
     auto const isNumeric = [](checker::Type *ct) { return ct->HasTypeFlag(TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC); };
     auto const isChar = [](checker::Type *ct) { return ct->HasTypeFlag(TypeFlag::CHAR); };
@@ -559,7 +565,7 @@ checker::Type *ETSChecker::CheckArrayElements(ir::ArrayExpression *init)
             : CreateETSUnionType(std::move(elementTypes));
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    return Allocator()->New<ETSArrayType>(arrayElementType);
+    return CreateETSResizableArrayType(arrayElementType);
 }
 
 void ETSChecker::InferAliasLambdaType(ir::TypeNode *localTypeAnnotation, ir::ArrowFunctionExpression *init)
@@ -597,9 +603,14 @@ void ETSChecker::InferAliasLambdaType(ir::TypeNode *localTypeAnnotation, ir::Arr
 checker::Type *ETSChecker::FixOptionalVariableType(varbinder::Variable *const bindingVar, ir::ModifierFlags flags,
                                                    ir::Expression *init)
 {
+    ES2PANDA_ASSERT(bindingVar != nullptr);
     if ((flags & ir::ModifierFlags::OPTIONAL) != 0) {
-        if (init != nullptr && bindingVar->TsType()->IsETSPrimitiveType()) {
-            init->SetBoxingUnboxingFlags(GetBoxingFlag(bindingVar->TsType()));
+        if (init != nullptr) {
+            auto *type = bindingVar->TsType();
+            ES2PANDA_ASSERT(type != nullptr);
+            if (type->IsETSPrimitiveType()) {
+                init->SetBoxingUnboxingFlags(GetBoxingFlag(bindingVar->TsType()));
+            }
         }
         auto *variableType = bindingVar->TsType() != nullptr ? bindingVar->TsType() : GlobalTypeError();
         bindingVar->SetTsType(CreateETSUnionType({GlobalETSUndefinedType(), variableType}));
@@ -614,37 +625,36 @@ checker::Type *PreferredObjectTypeFromAnnotation(checker::Type *annotationType)
     }
 
     checker::Type *resolvedType = nullptr;
+    int objectTypeCount = 0;
     for (auto constituentType : annotationType->AsETSUnionType()->ConstituentTypes()) {
         if (constituentType->IsETSObjectType()) {
-            if (resolvedType != nullptr) {
-                return nullptr;
+            objectTypeCount++;
+            if (resolvedType == nullptr) {
+                resolvedType = constituentType;
             }
-            resolvedType = constituentType;
         }
     }
 
-    return resolvedType;
+    // If there's exactly one object type, return it
+    if (objectTypeCount == 1) {
+        return resolvedType;
+    }
+
+    // If there are multiple object types, return the union type itself
+    // so that our union resolution logic can handle it
+    if (objectTypeCount > 1) {
+        return annotationType;
+    }
+
+    // If there are no object types, return nullptr
+    return nullptr;
 }
 
-bool ETSChecker::CheckInit(ir::Identifier *ident, ir::TypeNode *typeAnnotation, ir::Expression *init,
-                           checker::Type *annotationType, varbinder::Variable *const bindingVar)
+bool SetPreferredTypeForExpression(ETSChecker *checker, ir::Identifier *ident, ir::TypeNode *typeAnnotation,
+                                   ir::Expression *init, checker::Type *annotationType)
 {
-    if (typeAnnotation == nullptr) {
-        if (init->IsArrayExpression()) {
-            annotationType = CheckArrayElements(init->AsArrayExpression());
-            if (bindingVar != nullptr) {
-                bindingVar->SetTsType(annotationType);
-            }
-        }
-
-        if (init->IsObjectExpression()) {
-            LogError(diagnostic::CANNOT_INFER_OBJ_LIT, {ident->Name()}, ident->Start());
-            return false;
-        }
-    }
-
     if (init->IsMemberExpression() && init->AsMemberExpression()->Object()->IsObjectExpression()) {
-        LogError(diagnostic::MEMBER_OF_OBJECT_LIT, {}, ident->Start());
+        checker->LogError(diagnostic::MEMBER_OF_OBJECT_LIT, {}, ident->Start());
     }
 
     if (annotationType != nullptr && annotationType->HasTypeFlag(TypeFlag::TYPE_ERROR)) {
@@ -652,12 +662,12 @@ bool ETSChecker::CheckInit(ir::Identifier *ident, ir::TypeNode *typeAnnotation, 
     }
 
     if ((init->IsMemberExpression()) && (annotationType != nullptr)) {
-        SetArrayPreferredTypeForNestedMemberExpressions(init->AsMemberExpression(), annotationType);
+        checker->SetArrayPreferredTypeForNestedMemberExpressions(init->AsMemberExpression(), annotationType);
     }
 
     if (init->IsArrayExpression() && (annotationType != nullptr) && !annotationType->IsETSDynamicType()) {
         if (annotationType->IsETSTupleType() &&
-            !IsArrayExprSizeValidForTuple(init->AsArrayExpression(), annotationType->AsETSTupleType())) {
+            !checker->IsArrayExprSizeValidForTuple(init->AsArrayExpression(), annotationType->AsETSTupleType())) {
             return false;
         }
 
@@ -668,12 +678,43 @@ bool ETSChecker::CheckInit(ir::Identifier *ident, ir::TypeNode *typeAnnotation, 
         init->AsObjectExpression()->SetPreferredType(PreferredObjectTypeFromAnnotation(annotationType));
     }
 
+    if (init->IsETSNewArrayInstanceExpression() && annotationType != nullptr) {
+        init->AsETSNewArrayInstanceExpression()->SetPreferredType(annotationType);
+    }
+    if (init->IsETSNewMultiDimArrayInstanceExpression() && annotationType != nullptr) {
+        init->AsETSNewMultiDimArrayInstanceExpression()->SetPreferredType(annotationType);
+    }
+
     if (typeAnnotation != nullptr && init->IsArrowFunctionExpression()) {
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        InferAliasLambdaType(typeAnnotation, init->AsArrowFunctionExpression());
+        checker->InferAliasLambdaType(typeAnnotation, init->AsArrowFunctionExpression());
     }
 
     return true;
+}
+
+bool ETSChecker::CheckInit(ir::Identifier *ident, ir::TypeNode *typeAnnotation, ir::Expression *init,
+                           checker::Type *annotationType, varbinder::Variable *const bindingVar)
+{
+    if (typeAnnotation == nullptr) {
+        if (init->IsArrayExpression()) {
+            annotationType = CheckArrayElements(init->AsArrayExpression());
+        } else if (init->IsETSNewArrayInstanceExpression()) {
+            annotationType = init->AsETSNewArrayInstanceExpression()->TypeReference()->GetType(this);
+            annotationType = CreateETSResizableArrayType(annotationType);
+        } else if (init->IsETSNewMultiDimArrayInstanceExpression()) {
+            auto multiArray = init->AsETSNewMultiDimArrayInstanceExpression();
+            annotationType = multiArray->TypeReference()->GetType(this);
+            annotationType = CreateETSMultiDimResizableArrayType(annotationType, multiArray->Dimensions().size());
+        } else if (init->IsObjectExpression()) {
+            LogError(diagnostic::CANNOT_INFER_OBJ_LIT, {ident->Name()}, ident->Start());
+            return false;
+        }
+        if (bindingVar != nullptr) {
+            bindingVar->SetTsType(annotationType);
+        }
+    }
+    return SetPreferredTypeForExpression(this, ident, typeAnnotation, init, annotationType);
 }
 
 void ETSChecker::CheckEnumType(ir::Expression *init, checker::Type *initType, const util::StringView &varName)
@@ -725,6 +766,7 @@ static void CheckAssignForDeclare(ir::Identifier *ident, ir::TypeNode *typeAnnot
         return;
     }
     const bool isConst = (flags & ir::ModifierFlags::CONST) != 0;
+    ES2PANDA_ASSERT(init != nullptr);
     bool numberLiteralButNotBigInt = init->IsNumberLiteral() && !init->IsBigIntLiteral();
     bool multilineLiteralWithNoEmbedding =
         init->IsTemplateLiteral() && init->AsTemplateLiteral()->Expressions().empty();
@@ -750,6 +792,10 @@ static void CheckRecordType(ir::Expression *init, checker::Type *annotationType,
     auto properties = objectExpr->Properties();
 
     for (const auto &property : properties) {
+        if (!property->IsProperty()) {
+            checker->LogError(diagnostic::IMPROPER_NESTING_INTERFACE, {}, property->Start());
+            continue;
+        }
         ES2PANDA_ASSERT(property->IsProperty());
         auto p = property->AsProperty();
 
@@ -772,6 +818,7 @@ static void CheckRecordType(ir::Expression *init, checker::Type *annotationType,
 checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::TypeNode *typeAnnotation,
                                                     ir::Expression *init, ir::ModifierFlags const flags)
 {
+    ES2PANDA_ASSERT(ident != nullptr);
     varbinder::Variable *const bindingVar = ident->Variable();
     checker::Type *annotationType = nullptr;
 
@@ -849,7 +896,7 @@ void ETSChecker::VariableTypeFromInitializer(varbinder::Variable *variable, Type
 
     ES2PANDA_ASSERT(annotationType->IsETSPrimitiveType());
     //  We suppose here that all required checks were passed and correct conversion is possible without accuracy loss
-    variable->SetTsType(TypeConverter::ConvertConstantTypes(initType, annotationType, Allocator()));
+    variable->SetTsType(TypeConverter::ConvertConstantTypes(initType, annotationType, ProgramAllocator()));
 }
 
 static checker::Type *ResolveGetter(checker::ETSChecker *checker, ir::MemberExpression *const expr,
@@ -889,7 +936,7 @@ Signature *ETSChecker::FindRelativeExtensionGetter(ir::MemberExpression *const e
         return sig;
     }
 
-    ArenaVector<ir::Expression *> arguments(Allocator()->Adapter());
+    ArenaVector<ir::Expression *> arguments(ProgramAllocator()->Adapter());
     arguments.insert(arguments.begin(), expr->Object());
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     Signature *signature = ValidateSignatures(funcType->GetExtensionAccessorSigs(), nullptr, arguments, expr->Start(),
@@ -911,7 +958,7 @@ Signature *ETSChecker::FindRelativeExtensionSetter(ir::MemberExpression *expr, E
     }
 
     Signature *signature = nullptr;
-    ArenaVector<ir::Expression *> arguments(Allocator()->Adapter());
+    ArenaVector<ir::Expression *> arguments(ProgramAllocator()->Adapter());
     arguments.insert(arguments.begin(), expr->Object());
     if (expr->Parent()->IsAssignmentExpression()) {
         arguments.emplace_back(expr->Parent()->AsAssignmentExpression()->Right());
@@ -956,8 +1003,8 @@ checker::Type *ETSChecker::GetExtensionAccessorReturnType(ir::MemberExpression *
         auto signature = FindRelativeExtensionSetter(expr, eAccType);
         if (signature != nullptr && !expr->Parent()->IsUpdateExpression()) {
             // for a.m += otherExpr, we need to validateSignature again.
-            ArenaVector<ir::Expression *> arguments(Allocator()->Adapter());
-            ArenaVector<Signature *> candidateSig(Allocator()->Adapter());
+            ArenaVector<ir::Expression *> arguments(ProgramAllocator()->Adapter());
+            ArenaVector<Signature *> candidateSig(ProgramAllocator()->Adapter());
             candidateSig.emplace_back(signature);
             arguments.emplace_back(expr->Object());
             arguments.emplace_back(expr->Parent()->AsAssignmentExpression()->Right());
@@ -1056,7 +1103,7 @@ std::pair<Type *, Type *> ETSChecker::CheckTestNullishCondition(Type *testedType
         return {GlobalETSUndefinedType(), RemoveUndefinedType(actualType)};
     }
 
-    return {GlobalETSNullishType(), GetNonNullishType(actualType)};
+    return {GlobalETSUnionUndefinedNull(), GetNonNullishType(actualType)};
 }
 
 // Auxiliary method to reduce the size of common 'CheckTestSmartCastConditions' function.
@@ -1139,6 +1186,11 @@ checker::Type *CheckerContext::GetUnionOfTypes(checker::Type *const type1, check
         return type1 == nullptr ? type2 : type1;
     }
 
+    const auto never = parent_->AsETSChecker()->GlobalETSNeverType();
+    if (type1 == never || type2 == never) {
+        return type1 == never ? type2 : type1;
+    }
+
     return parent_->AsETSChecker()->CreateETSUnionType({type1, type2});
 }
 
@@ -1175,9 +1227,9 @@ checker::Type *CheckerContext::GetIntersectionOfTypes(checker::Type *const type1
         return type1;
     }
 
-    ArenaVector<Type *> typeSet1(checker->Allocator()->Adapter());
-    ArenaVector<Type *> typeSet2(checker->Allocator()->Adapter());
-    ArenaVector<Type *> intersection(checker->Allocator()->Adapter());
+    ArenaVector<Type *> typeSet1(checker->ProgramAllocator()->Adapter());
+    ArenaVector<Type *> typeSet2(checker->ProgramAllocator()->Adapter());
+    ArenaVector<Type *> intersection(checker->ProgramAllocator()->Adapter());
 
     if (type1->IsETSUnionType()) {
         typeSet1 = type1->AsETSUnionType()->ConstituentTypes();
@@ -1522,7 +1574,7 @@ bool ETSChecker::CheckMinimumTypeArgsPresent(const ir::TSTypeAliasDeclaration *t
 ir::TypeNode *ETSChecker::ResolveTypeNodeForTypeArg(const ir::TSTypeAliasDeclaration *typeAliasNode,
                                                     const ir::TSTypeParameterInstantiation *typeParams, size_t idx)
 {
-    if (typeParams->Params().size() > idx) {
+    if (typeParams != nullptr && typeParams->Params().size() > idx) {
         return typeParams->Params().at(idx);
     }
 
@@ -1532,38 +1584,46 @@ ir::TypeNode *ETSChecker::ResolveTypeNodeForTypeArg(const ir::TSTypeAliasDeclara
 Type *ETSChecker::HandleTypeAlias(ir::Expression *const name, const ir::TSTypeParameterInstantiation *const typeParams,
                                   ir::TSTypeAliasDeclaration *const typeAliasNode)
 {
-    // NOTE (mmartin): modify for default params
-    if ((typeParams == nullptr) != (typeAliasNode->TypeParams() == nullptr)) {
-        if (typeParams == nullptr) {
+    if (typeParams == nullptr && typeAliasNode->TypeParams() != nullptr) {
+        auto declTypeParams = typeAliasNode->TypeParams()->Params();
+        auto isAllTypeParamsHasDefaultType =
+            std::find_if(declTypeParams.begin(), declTypeParams.end(), [](ir::TSTypeParameter *param) {
+                return param->DefaultType() == nullptr;
+            }) == declTypeParams.end();
+        if (!isAllTypeParamsHasDefaultType) {
             LogError(diagnostic::GENERIC_ALIAS_WITHOUT_PARAMS, {}, name->Start());
             return GlobalTypeError();
         }
+    }
 
+    if (typeParams != nullptr && typeAliasNode->TypeParams() == nullptr) {
         LogError(diagnostic::NON_GENERIC_ALIAS_WITH_PARAMS, {}, typeParams->Start());
         return GlobalTypeError();
     }
 
-    if (typeParams == nullptr) {
+    if (typeParams == nullptr && typeAliasNode->TypeParams() == nullptr) {
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         return GetReferencedTypeBase(name);
     }
 
-    for (auto *const origTypeParam : typeParams->Params()) {
-        origTypeParam->Check(this);
+    if (typeParams != nullptr) {
+        for (auto *const origTypeParam : typeParams->Params()) {
+            origTypeParam->Check(this);
+        }
+        if (CheckMinimumTypeArgsPresent(typeAliasNode, typeParams)) {
+            return GlobalTypeError();
+        }
     }
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     Type *const aliasType = GetReferencedTypeBase(name);
     auto *substitution = NewSubstitution();
 
-    if (CheckMinimumTypeArgsPresent(typeAliasNode, typeParams)) {
-        return GlobalTypeError();
-    }
-
     std::set<Type *> parametersNeedToBeBoxed;
     auto expandedAliasType = aliasType->Substitute(Relation(), substitution);
     CollectAliasParametersForBoxing(expandedAliasType, parametersNeedToBeBoxed, false);
 
+    ES2PANDA_ASSERT(substitution != nullptr);
     for (std::size_t idx = 0; idx < typeAliasNode->TypeParams()->Params().size(); ++idx) {
         auto *typeAliasTypeName = typeAliasNode->TypeParams()->Params().at(idx)->Name();
         auto *typeAliasType = typeAliasTypeName->Variable()->TsType();
@@ -1599,7 +1659,7 @@ std::vector<util::StringView> ETSChecker::GetNameForSynteticObjectType(const uti
 
     while (std::getline(ss, token, delimiter)) {
         if (!token.empty()) {
-            util::UString sV(token, Allocator());
+            util::UString sV(token, ProgramAllocator());
             syntheticName.emplace_back(sV.View());
         }
     }
@@ -1634,9 +1694,7 @@ void ETSChecker::BindingsModuleObjectAddProperty(checker::ETSObjectType *moduleO
     for (auto [_, var] : bindings) {
         (void)_;
         auto [found, aliasedName] = FindSpecifierForModuleObject(importDecl, var->AsLocalVariable()->Name());
-        if ((var->AsLocalVariable()->Declaration()->Node()->IsExported() ||
-             var->AsLocalVariable()->Declaration()->Node()->IsExportedType()) &&
-            found) {
+        if ((var->AsLocalVariable()->Declaration()->Node()->IsExported()) && found) {
             if (!aliasedName.Empty()) {
                 moduleObjType->AddReExportAlias(var->Declaration()->Name(), aliasedName);
             }
@@ -1680,9 +1738,10 @@ void ETSChecker::SetPropertiesForModuleObject(checker::ETSObjectType *moduleObjT
     parser::Program *program =
         SelectEntryOrExternalProgram(static_cast<varbinder::ETSBinder *>(VarBinder()), importPath);
     // Check imported properties before assigning them to module object
+    ES2PANDA_ASSERT(program != nullptr);
     if (!program->IsASTChecked()) {
         // NOTE: helps to avoid endless loop in case of recursive imports that uses all bindings
-        program->MarkASTAsChecked();
+        program->SetASTChecked();
         program->Ast()->Check(this);
     }
 
@@ -1750,6 +1809,8 @@ Type *ETSChecker::ResolveReferencedType(varbinder::LocalVariable *refVar, const 
     switch (refVar->Declaration()->Node()->Type()) {
         case ir::AstNodeType::TS_INTERFACE_DECLARATION:
             return GetTypeFromInterfaceReference(refVar);
+        case ir::AstNodeType::TS_ENUM_DECLARATION:
+            return GlobalTypeError();
         case ir::AstNodeType::CLASS_DECLARATION:
         case ir::AstNodeType::STRUCT_DECLARATION:
         case ir::AstNodeType::CLASS_DEFINITION:
@@ -1769,6 +1830,29 @@ Type *ETSChecker::ResolveReferencedType(varbinder::LocalVariable *refVar, const 
         default:
             ES2PANDA_UNREACHABLE();
     }
+}
+
+checker::Type *ETSChecker::GetElementTypeOfArray(checker::Type *type)
+{
+    if (type->IsTypeError()) {
+        return GlobalTypeError();
+    }
+    if (type->IsETSArrayType()) {
+        return type->AsETSArrayType()->ElementType();
+    }
+
+    ES2PANDA_ASSERT(type->IsETSResizableArrayType());
+    return type->AsETSResizableArrayType()->ElementType();
+}
+
+const checker::Type *ETSChecker::GetElementTypeOfArray(const checker::Type *type) const
+{
+    if (type->IsETSArrayType()) {
+        return type->AsETSArrayType()->ElementType();
+    }
+
+    ES2PANDA_ASSERT(type->IsETSResizableArrayType());
+    return type->AsETSResizableArrayType()->ElementType();
 }
 
 void ETSChecker::ConcatConstantString(util::UString &target, Type *type)
@@ -1827,7 +1911,7 @@ Type *ETSChecker::HandleStringConcatenation(Type *leftType, Type *rightType)
         return GlobalETSStringLiteralType();
     }
 
-    util::UString concatenated(Allocator());
+    util::UString concatenated(ProgramAllocator());
     ConcatConstantString(concatenated, leftType);
     ConcatConstantString(concatenated, rightType);
 
@@ -1962,6 +2046,7 @@ Type *ETSChecker::CheckSwitchDiscriminant(ir::Expression *discriminant)
 {
     discriminant->Check(this);
     auto *discriminantType = GetNonConstantType(MaybeUnboxExpression(discriminant));
+    ES2PANDA_ASSERT(discriminantType != nullptr);
     if (!discriminantType->HasTypeFlag(TypeFlag::VALID_SWITCH_TYPE)) {
         if (!(discriminantType->IsETSObjectType() &&
               discriminantType->AsETSObjectType()->HasObjectFlag(
@@ -2030,7 +2115,7 @@ std::string ETSChecker::GetStringFromIdentifierValue(checker::Type *caseType) co
         }
         case TypeFlag::ETS_OBJECT: {
             VarBinder()->ThrowError(caseType->AsETSObjectType()->Variable()->Declaration()->Node()->Start(),
-                                    "not implemented");
+                                    diagnostic::NOT_IMPLEMENTED);
             return "error";
         }
         default: {
@@ -2039,7 +2124,7 @@ std::string ETSChecker::GetStringFromIdentifierValue(checker::Type *caseType) co
     }
 }
 
-bool IsConstantMemberOrIdentifierExpression(ir::Expression *expression)
+bool IsConstantMemberOrIdentifierExpression(ir::Expression *expression, bool checkForConst = false)
 {
     varbinder::Variable *var = nullptr;
     if (expression->IsIdentifier()) {
@@ -2047,8 +2132,13 @@ bool IsConstantMemberOrIdentifierExpression(ir::Expression *expression)
     } else if (expression->IsMemberExpression()) {
         var = expression->AsMemberExpression()->PropVar();
     }
-    return var != nullptr && (var->Declaration()->IsConstDecl() ||
-                              (var->Declaration()->IsReadonlyDecl() && var->HasFlag(varbinder::VariableFlags::STATIC)));
+
+    if (var == nullptr) {
+        return false;
+    }
+    bool isConst = checkForConst ? (var->TsType()->HasTypeFlag(checker::TypeFlag::CONSTANT)) : true;
+    return ((var->Declaration()->IsConstDecl() && isConst) ||
+            (var->Declaration()->IsReadonlyDecl() && var->HasFlag(varbinder::VariableFlags::STATIC)));
 }
 
 static bool IsValidSwitchType(checker::Type *caseType)
@@ -2205,7 +2295,7 @@ void ETSChecker::CheckIdentifierSwitchCase(ir::Expression *currentCase, ir::Expr
 {
     currentCase->Check(this);
 
-    if (!IsConstantMemberOrIdentifierExpression(currentCase)) {
+    if (!IsConstantMemberOrIdentifierExpression(currentCase, true)) {
         return;
     }
 
@@ -2268,7 +2358,7 @@ ETSObjectType *ETSChecker::GetRelevantArgumentedTypeFromChild(ETSObjectType *con
         auto *relevantType = CreateETSObjectType(child->GetDeclNode(), child->ObjectFlags());
 
         ArenaVector<Type *> params = child->TypeArguments();
-
+        ES2PANDA_ASSERT(relevantType != nullptr);
         relevantType->SetTypeArguments(std::move(params));
         relevantType->SetEnclosingType(child->EnclosingType());
         relevantType->SetSuperType(child->SuperType());
@@ -2285,6 +2375,7 @@ void ETSChecker::EmplaceSubstituted(Substitution *substitution, ETSTypeParameter
 {
     // *only* reference type may be substituted, no exceptions
     ES2PANDA_ASSERT(typeArg->IsETSReferenceType());
+    ES2PANDA_ASSERT(substitution != nullptr);
     substitution->emplace(tparam, typeArg);
 }
 
@@ -2304,7 +2395,7 @@ util::StringView ETSChecker::GetHashFromTypeArguments(const ArenaVector<Type *> 
         ss << it << compiler::Signatures::MANGLE_SEPARATOR;
     }
 
-    return util::UString(ss.str(), Allocator()).View();
+    return util::UString(ss.str(), ProgramAllocator()).View();
 }
 
 util::StringView ETSChecker::GetHashFromSubstitution(const Substitution *substitution, const bool extensionFuncFlag)
@@ -2330,7 +2421,7 @@ util::StringView ETSChecker::GetHashFromSubstitution(const Substitution *substit
     if (extensionFuncFlag) {
         ss << "extensionFunctionType;";
     }
-    return util::UString(ss.str(), Allocator()).View();
+    return util::UString(ss.str(), ProgramAllocator()).View();
 }
 
 util::StringView ETSChecker::GetHashFromFunctionType(ir::ETSFunctionType *type)
@@ -2338,7 +2429,9 @@ util::StringView ETSChecker::GetHashFromFunctionType(ir::ETSFunctionType *type)
     std::stringstream ss;
     for (auto *p : type->Params()) {
         auto *const param = p->AsETSParameterExpression();
-        param->TypeAnnotation()->GetType(this)->ToString(ss, true);
+        auto *paramType = param->TypeAnnotation()->GetType(this);
+        ES2PANDA_ASSERT(paramType != nullptr);
+        paramType->ToString(ss, true);
         ss << ";";
     }
 
@@ -2346,11 +2439,15 @@ util::StringView ETSChecker::GetHashFromFunctionType(ir::ETSFunctionType *type)
         if (type->ReturnType()->IsTSThisType()) {
             type->Params()[0]->AsETSParameterExpression()->TypeAnnotation()->TsType()->ToString(ss, true);
         } else {
-            type->ReturnType()->GetType(this)->ToString(ss, true);
+            auto *returnType = type->ReturnType()->GetType(this);
+            ES2PANDA_ASSERT(returnType != nullptr);
+            returnType->ToString(ss, true);
         }
         ss << "extensionFunction;";
     } else {
-        type->ReturnType()->GetType(this)->ToString(ss, true);
+        auto *returnType = type->ReturnType()->GetType(this);
+        ES2PANDA_ASSERT(returnType != nullptr);
+        returnType->ToString(ss, true);
     }
 
     ss << ";";
@@ -2363,7 +2460,7 @@ util::StringView ETSChecker::GetHashFromFunctionType(ir::ETSFunctionType *type)
         ss << "rethrows;";
     }
 
-    return util::UString(ss.str(), Allocator()).View();
+    return util::UString(ss.str(), ProgramAllocator()).View();
 }
 
 ETSObjectType *ETSChecker::GetOriginalBaseType(Type *const object)
@@ -2548,7 +2645,7 @@ bool ETSChecker::IsInLocalClass(const ir::AstNode *node) const
 ir::Expression *ETSChecker::GenerateImplicitInstantiateArg(const std::string &className)
 {
     std::string implicitInstantiateArgument = "()=>{return new " + className + "()}";
-    parser::Program program(Allocator(), VarBinder());
+    parser::Program program(ProgramAllocator(), VarBinder());
     auto parser = parser::ETSParser(&program, nullptr, DiagnosticEngine());
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *argExpr = parser.CreateExpression(implicitInstantiateArgument);
@@ -2577,14 +2674,15 @@ ir::ClassProperty *ETSChecker::ClassPropToImplementationProp(ir::ClassProperty *
 {
     classProp->Key()->AsIdentifier()->SetName(
         util::UString(std::string(compiler::Signatures::PROPERTY) + classProp->Key()->AsIdentifier()->Name().Mutf8(),
-                      Allocator())
+                      ProgramAllocator())
             .View());
     classProp->AddModifier(ir::ModifierFlags::PRIVATE);
 
-    auto *fieldDecl = Allocator()->New<varbinder::LetDecl>(classProp->Key()->AsIdentifier()->Name());
+    auto *fieldDecl = ProgramAllocator()->New<varbinder::LetDecl>(classProp->Key()->AsIdentifier()->Name());
+    ES2PANDA_ASSERT(fieldDecl != nullptr);
     fieldDecl->BindNode(classProp);
 
-    auto fieldVar = scope->InstanceFieldScope()->AddDecl(Allocator(), fieldDecl, ScriptExtension::ETS);
+    auto fieldVar = scope->InstanceFieldScope()->AddDecl(ProgramAllocator(), fieldDecl, ScriptExtension::ETS);
     fieldVar->AddFlag(varbinder::VariableFlags::PROPERTY);
     fieldVar->SetScope(scope->InstanceFieldScope());
 
@@ -2598,6 +2696,7 @@ ir::ClassProperty *ETSChecker::ClassPropToImplementationProp(ir::ClassProperty *
     return classProp;
 }
 
+// CC-OFFNXT(huge_method[C++], G.FUN.01-CPP) solid logic
 void ETSChecker::GenerateGetterSetterBody(ArenaVector<ir::Statement *> &stmts, ArenaVector<ir::Expression *> &params,
                                           ir::ClassProperty *const field, varbinder::FunctionParamScope *paramScope,
                                           bool isSetter)
@@ -2607,18 +2706,20 @@ void ETSChecker::GenerateGetterSetterBody(ArenaVector<ir::Statement *> &stmts, A
     ir::Expression *baseExpression;
     if ((field->Modifiers() & ir::ModifierFlags::SUPER_OWNER) != 0U) {
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        baseExpression = Allocator()->New<ir::SuperExpression>();
+        baseExpression = ProgramAllocator()->New<ir::SuperExpression>();
     } else {
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        baseExpression = Allocator()->New<ir::ThisExpression>();
+        baseExpression = ProgramAllocator()->New<ir::ThisExpression>();
     }
     baseExpression->SetParent(classDef);
     baseExpression->SetTsType(classDef->TsType());
 
     auto *memberExpression =
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        AllocNode<ir::MemberExpression>(baseExpression, field->Key()->AsIdentifier()->Clone(Allocator(), nullptr),
-                                        ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
+        ProgramAllocNode<ir::MemberExpression>(baseExpression,
+                                               // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+                                               field->Key()->AsIdentifier()->Clone(ProgramAllocator(), nullptr),
+                                               ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
     memberExpression->SetTsType(field->TsType());
     memberExpression->SetPropVar(field->Key()->Variable()->AsLocalVariable());
     memberExpression->SetRange(classDef->Range());
@@ -2628,15 +2729,15 @@ void ETSChecker::GenerateGetterSetterBody(ArenaVector<ir::Statement *> &stmts, A
 
     if (!isSetter) {
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        stmts.push_back(AllocNode<ir::ReturnStatement>(memberExpression));
+        stmts.push_back(ProgramAllocNode<ir::ReturnStatement>(memberExpression));
         return;
     }
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *paramIdent = field->Key()->AsIdentifier()->Clone(Allocator(), nullptr);
+    auto *paramIdent = field->Key()->AsIdentifier()->Clone(ProgramAllocator(), nullptr);
     if (field->TypeAnnotation() != nullptr) {
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        auto *const typeAnnotation = field->TypeAnnotation()->Clone(Allocator(), paramIdent);
+        auto *const typeAnnotation = field->TypeAnnotation()->Clone(ProgramAllocator(), paramIdent);
         paramIdent->SetTsTypeAnnotation(typeAnnotation);
         ReInitScopesForTypeAnnotation(this, typeAnnotation, paramScope);
     } else {
@@ -2644,12 +2745,12 @@ void ETSChecker::GenerateGetterSetterBody(ArenaVector<ir::Statement *> &stmts, A
     }
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *paramExpression = AllocNode<ir::ETSParameterExpression>(paramIdent, false, Allocator());
+    auto *paramExpression = ProgramAllocNode<ir::ETSParameterExpression>(paramIdent, false, ProgramAllocator());
     paramExpression->SetRange(paramIdent->Range());
 
-    auto [paramVar, node] = paramScope->AddParamDecl(Allocator(), VarBinder(), paramExpression);
+    auto [paramVar, node] = paramScope->AddParamDecl(ProgramAllocator(), VarBinder(), paramExpression);
     if (node != nullptr) {
-        VarBinder()->ThrowRedeclaration(node->Start(), paramVar->Name());
+        VarBinder()->ThrowRedeclaration(node->Start(), paramVar->Name(), paramVar->Declaration()->Type());
     }
 
     paramIdent->SetVariable(paramVar);
@@ -2657,19 +2758,19 @@ void ETSChecker::GenerateGetterSetterBody(ArenaVector<ir::Statement *> &stmts, A
     params.push_back(paramExpression);
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto ident = AllocNode<ir::Identifier>(paramExpression->Ident()->Name(), Allocator());
+    auto ident = ProgramAllocNode<ir::Identifier>(paramExpression->Ident()->Name(), ProgramAllocator());
     ident->SetVariable(paramExpression->Variable());
     auto *assignmentExpression =
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        AllocNode<ir::AssignmentExpression>(memberExpression, ident, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+        ProgramAllocNode<ir::AssignmentExpression>(memberExpression, ident, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
     ident->SetParent(assignmentExpression);
     assignmentExpression->SetTsType(paramVar->TsType());
 
     assignmentExpression->SetRange({field->Start(), field->End()});
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    stmts.push_back(AllocNode<ir::ExpressionStatement>(assignmentExpression));
+    stmts.push_back(ProgramAllocNode<ir::ExpressionStatement>(assignmentExpression));
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    stmts.push_back(Allocator()->New<ir::ReturnStatement>(nullptr));
+    stmts.push_back(ProgramAllocator()->New<ir::ReturnStatement>(nullptr));
 }
 
 static ir::BlockStatement *GenGetterSetterBodyHelper(ETSChecker *checker, ArenaVector<ir::Statement *> &stmts,
@@ -2679,7 +2780,8 @@ static ir::BlockStatement *GenGetterSetterBodyHelper(ETSChecker *checker, ArenaV
     if (property->IsDeclare()) {
         return nullptr;
     }
-    auto *body = checker->AllocNode<ir::BlockStatement>(checker->Allocator(), std::move(stmts));
+    auto *body = checker->ProgramAllocNode<ir::BlockStatement>(checker->ProgramAllocator(), std::move(stmts));
+    ES2PANDA_ASSERT(body != nullptr);
     body->SetScope(functionScope);
     return body;
 }
@@ -2689,14 +2791,16 @@ static std::tuple<ir::ScriptFunction *, varbinder::FunctionScope *, ir::Modifier
     ir::ClassProperty *const property, ir::ClassProperty *const field, varbinder::ClassScope *classScope, bool isSetter,
     ETSChecker *checker)
 {
-    auto *paramScope = checker->Allocator()->New<varbinder::FunctionParamScope>(checker->Allocator(), classScope);
-    auto *functionScope = checker->Allocator()->New<varbinder::FunctionScope>(checker->Allocator(), paramScope);
+    auto *paramScope =
+        checker->ProgramAllocator()->New<varbinder::FunctionParamScope>(checker->ProgramAllocator(), classScope);
+    auto *functionScope =
+        checker->ProgramAllocator()->New<varbinder::FunctionScope>(checker->ProgramAllocator(), paramScope);
 
     functionScope->BindParamScope(paramScope);
     paramScope->BindFunctionScope(functionScope);
 
-    ArenaVector<ir::Expression *> params(checker->Allocator()->Adapter());
-    ArenaVector<ir::Statement *> stmts(checker->Allocator()->Adapter());
+    ArenaVector<ir::Expression *> params(checker->ProgramAllocator()->Adapter());
+    ArenaVector<ir::Statement *> stmts(checker->ProgramAllocator()->Adapter());
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     checker->GenerateGetterSetterBody(stmts, params, field, paramScope, isSetter);
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
@@ -2705,7 +2809,7 @@ static std::tuple<ir::ScriptFunction *, varbinder::FunctionScope *, ir::Modifier
     auto *returnTypeAnn = isSetter || field->TypeAnnotation() == nullptr
                               ? nullptr
                               // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-                              : field->TypeAnnotation()->Clone(checker->Allocator(), nullptr);
+                              : field->TypeAnnotation()->Clone(checker->ProgramAllocator(), nullptr);
     ReInitScopesForTypeAnnotation(checker, returnTypeAnn, paramScope);
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     ir::ModifierFlags modifierFlag =
@@ -2713,8 +2817,8 @@ static std::tuple<ir::ScriptFunction *, varbinder::FunctionScope *, ir::Modifier
          static_cast<ir::ModifierFlags>(property->Modifiers() & ir::ModifierFlags::DECLARE) |
          (isSetter ? ir::ModifierFlags::SETTER : ir::ModifierFlags::GETTER));
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *func = checker->AllocNode<ir::ScriptFunction>(
-        checker->Allocator(),
+    auto *func = checker->ProgramAllocNode<ir::ScriptFunction>(
+        checker->ProgramAllocator(),
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         ir::ScriptFunction::ScriptFunctionData {GenGetterSetterBodyHelper(checker, stmts, property, functionScope),
                                                 ir::FunctionSignature(nullptr, std::move(params), returnTypeAnn),
@@ -2734,27 +2838,33 @@ ir::MethodDefinition *ETSChecker::GenerateDefaultGetterSetter(ir::ClassProperty 
     func->SetRange(field->Range());
     func->SetScope(functionScope);
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *methodIdent = property->Key()->AsIdentifier()->Clone(checker->Allocator(), nullptr);
+    auto *methodIdent = property->Key()->AsIdentifier()->Clone(checker->ProgramAllocator(), nullptr);
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *funcExpr = checker->AllocNode<ir::FunctionExpression>(func);
+    auto *funcExpr = checker->ProgramAllocNode<ir::FunctionExpression>(func);
+    CHECK_NOT_NULL(funcExpr);
     funcExpr->SetRange(func->Range());
     func->AddFlag(ir::ScriptFunctionFlags::METHOD);
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *method = checker->AllocNode<ir::MethodDefinition>(
+    auto *method = checker->ProgramAllocNode<ir::MethodDefinition>(
         isSetter ? ir::MethodDefinitionKind::SET : ir::MethodDefinitionKind::GET, methodIdent, funcExpr, modifierFlag,
-        checker->Allocator(), false);
-    auto *decl = checker->Allocator()->New<varbinder::FunctionDecl>(checker->Allocator(),
-                                                                    property->Key()->AsIdentifier()->Name(), method);
-    auto *var = checker->Allocator()->New<varbinder::LocalVariable>(decl, varbinder::VariableFlags::VAR);
+        checker->ProgramAllocator(), false);
+    auto *decl = checker->ProgramAllocator()->New<varbinder::FunctionDecl>(
+        checker->ProgramAllocator(), property->Key()->AsIdentifier()->Name(), method);
+    auto *var = checker->ProgramAllocator()->New<varbinder::LocalVariable>(decl, varbinder::VariableFlags::VAR);
+    CHECK_NOT_NULL(var);
     var->AddFlag(varbinder::VariableFlags::METHOD);
 
     methodIdent->SetVariable(var);
 
-    method->Id()->SetMutator();
+    auto *methodId = method->Id();
+    CHECK_NOT_NULL(methodId);
+    methodId->SetMutator();
     method->SetRange(field->Range());
+    auto *methodFunc = method->Function();
+    CHECK_NOT_NULL(methodFunc);
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    method->Function()->SetIdent(method->Id()->Clone(checker->Allocator(), nullptr));
-    method->Function()->AddModifier(method->Modifiers());
+    methodFunc->SetIdent(methodId->Clone(checker->ProgramAllocator(), nullptr));
+    methodFunc->AddModifier(method->Modifiers());
     method->SetVariable(var);
     method->SetParent(field->Parent());
 
@@ -2778,7 +2888,7 @@ ir::ClassProperty *GetImplementationClassProp(ETSChecker *checker, ir::ClassProp
         auto *const scope = checker->Scope()->AsClassScope();
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         auto *const classProp = checker->ClassPropToImplementationProp(
-            interfaceProp->Clone(checker->Allocator(), originalProp->Parent()), scope);
+            interfaceProp->Clone(checker->ProgramAllocator(), originalProp->Parent()), scope);
         classType->AddProperty<PropertyType::INSTANCE_FIELD>(classProp->Key()->Variable()->AsLocalVariable());
         classDef->Body().push_back(classProp);
         return classProp;
@@ -2798,6 +2908,8 @@ void ETSChecker::SetupGetterSetterFlags(ir::ClassProperty *originalProp, ETSObje
                                         ir::MethodDefinition *getter, ir::MethodDefinition *setter,
                                         const bool inExternal)
 {
+    auto getProgram = [](ir::AstNode *node) { return node->Range().start.Program(); };
+
     auto *const classDef = classType->GetDeclNode()->AsClassDefinition();
     for (auto &method : {getter, setter}) {
         if (method == nullptr) {
@@ -2809,19 +2921,21 @@ void ETSChecker::SetupGetterSetterFlags(ir::ClassProperty *originalProp, ETSObje
 
         method->TsType()->AddTypeFlag(tflag);
         method->Variable()->SetTsType(method->TsType());
+        auto *func = method->Function();
+        ES2PANDA_ASSERT(func != nullptr);
         if (((originalProp->Modifiers() & mflag) != 0U)) {
-            method->Function()->AddModifier(ir::ModifierFlags::OVERRIDE);
+            func->AddModifier(ir::ModifierFlags::OVERRIDE);
         }
 
-        if (inExternal) {
-            method->Function()->AddFlag(ir::ScriptFunctionFlags::EXTERNAL);
+        if (inExternal && !getProgram(originalProp)->IsGenAbcForExternal()) {
+            func->AddFlag(ir::ScriptFunctionFlags::EXTERNAL);
         }
 
         if (originalProp->IsDeclare()) {
             method->AddModifier(ir::ModifierFlags::DECLARE);
-            method->Function()->AddModifier(ir::ModifierFlags::DECLARE);
+            func->AddModifier(ir::ModifierFlags::DECLARE);
         }
-        this->CheckOverride(method->Function()->Signature());
+        this->CheckOverride(func->Signature());
         method->SetParent(classDef);
         classType->AddProperty<checker::PropertyType::INSTANCE_METHOD>(method->Variable()->AsLocalVariable());
     }
@@ -2831,7 +2945,7 @@ void ETSChecker::GenerateGetterSetterPropertyAndMethod(ir::ClassProperty *origin
 {
     auto *const classDef = classType->GetDeclNode()->AsClassDefinition();
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *interfaceProp = originalProp->Clone(Allocator(), originalProp->Parent());
+    auto *interfaceProp = originalProp->Clone(ProgramAllocator(), originalProp->Parent());
     interfaceProp->ClearModifier(ir::ModifierFlags::GETTER_SETTER);
 
     auto *const scope = Scope()->AsClassScope();
@@ -2858,9 +2972,9 @@ void ETSChecker::GenerateGetterSetterPropertyAndMethod(ir::ClassProperty *origin
             : nullptr;
 
     auto *const methodScope = scope->InstanceMethodScope();
-    auto *const decl = Allocator()->New<varbinder::FunctionDecl>(Allocator(), name, getter);
+    auto *const decl = ProgramAllocator()->New<varbinder::FunctionDecl>(ProgramAllocator(), name, getter);
 
-    auto *var = methodScope->AddDecl(Allocator(), decl, ScriptExtension::ETS);
+    auto *var = methodScope->AddDecl(ProgramAllocator(), decl, ScriptExtension::ETS);
     if (var == nullptr) {
         auto *const prevDecl = methodScope->FindDecl(name);
         for (const auto &method : {getter, setter}) {
@@ -2883,6 +2997,7 @@ void ETSChecker::GenerateGetterSetterPropertyAndMethod(ir::ClassProperty *origin
     }
 }
 
+// CC-OFFNXT(huge_method[C++], G.FUN.01-CPP) solid logic
 bool ETSChecker::TryTransformingToStaticInvoke(ir::Identifier *const ident, const Type *resolvedType)
 {
     ES2PANDA_ASSERT(ident->Parent()->IsCallExpression());
@@ -2913,9 +3028,9 @@ bool ETSChecker::TryTransformingToStaticInvoke(ir::Identifier *const ident, cons
         return true;
     }
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *classId = AllocNode<ir::Identifier>(className, Allocator());
+    auto *classId = ProgramAllocNode<ir::Identifier>(className, ProgramAllocator());
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *methodId = AllocNode<ir::Identifier>(propertyName, Allocator());
+    auto *methodId = ProgramAllocNode<ir::Identifier>(propertyName, ProgramAllocator());
     if (propertyName == compiler::Signatures::STATIC_INSTANTIATE_METHOD) {
         methodId->SetVariable(instantiateMethod);
     } else if (propertyName == compiler::Signatures::STATIC_INVOKE_METHOD) {
@@ -2924,7 +3039,8 @@ bool ETSChecker::TryTransformingToStaticInvoke(ir::Identifier *const ident, cons
 
     auto *transformedCallee =
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        AllocNode<ir::MemberExpression>(classId, methodId, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
+        ProgramAllocNode<ir::MemberExpression>(classId, methodId, ir::MemberExpressionKind::PROPERTY_ACCESS, false,
+                                               false);
 
     classId->SetRange(ident->Range());
     methodId->SetRange(ident->Range());
@@ -2935,6 +3051,7 @@ bool ETSChecker::TryTransformingToStaticInvoke(ir::Identifier *const ident, cons
     callExpr->SetCallee(transformedCallee);
 
     if (instantiateMethod != nullptr) {
+        auto lexScope {varbinder::LexicalScope<varbinder::Scope>::Enter(VarBinder(), compiler::NearestScope(callExpr))};
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         auto *argExpr = GenerateImplicitInstantiateArg(std::string(className));
 
@@ -2962,6 +3079,7 @@ void ETSChecker::ImportNamespaceObjectTypeAddReExportType(ir::ETSImportDeclarati
         if (reExportType->IsTypeError()) {
             continue;
         }
+        ES2PANDA_ASSERT(lastObjectType != nullptr);
         lastObjectType->AddReExports(reExportType->AsETSObjectType());
         for (auto node : importDecl->Specifiers()) {
             if (node->IsImportSpecifier()) {
@@ -2985,15 +3103,17 @@ Type *ETSChecker::GetImportSpecifierObjectType(ir::ETSImportDeclaration *importD
     auto const internalName =
         util::UString(
             moduleName.Mutf8().append(compiler::Signatures::METHOD_SEPARATOR).append(compiler::Signatures::ETS_GLOBAL),
-            Allocator())
+            ProgramAllocator())
             .View();
 
-    auto *moduleObjectType = Allocator()->New<ETSObjectType>(
-        Allocator(), moduleName, internalName, std::make_tuple(ident, checker::ETSObjectFlags::CLASS, Relation()));
+    auto *moduleObjectType =
+        ProgramAllocator()->New<ETSObjectType>(ProgramAllocator(), moduleName, internalName,
+                                               std::make_tuple(ident, checker::ETSObjectFlags::CLASS, Relation()));
 
-    auto *rootDecl = Allocator()->New<varbinder::ClassDecl>(moduleName);
+    auto *rootDecl = ProgramAllocator()->New<varbinder::ClassDecl>(moduleName);
     varbinder::LocalVariable *rootVar =
-        Allocator()->New<varbinder::LocalVariable>(rootDecl, varbinder::VariableFlags::NONE);
+        ProgramAllocator()->New<varbinder::LocalVariable>(rootDecl, varbinder::VariableFlags::NONE);
+    ES2PANDA_ASSERT(rootVar != nullptr);
     rootVar->SetTsType(moduleObjectType);
 
     ImportNamespaceObjectTypeAddReExportType(importDecl, moduleObjectType, ident);
@@ -3006,9 +3126,12 @@ Type *ETSChecker::GetImportSpecifierObjectType(ir::ETSImportDeclaration *importD
 
 ETSChecker::NamedAccessMeta ETSChecker::FormNamedAccessMetadata(varbinder::Variable const *prop)
 {
+    CHECK_NOT_NULL(prop);
     const auto *field = prop->Declaration()->Node()->AsClassProperty();
     const auto *owner = field->Parent()->AsClassDefinition();
-    return {owner->TsType()->AsETSObjectType(), field->TsType(), field->Id()->Name()};
+    auto *fieldId = field->Id();
+    CHECK_NOT_NULL(fieldId);
+    return {owner->TsType()->AsETSObjectType(), field->TsType(), fieldId->Name()};
 }
 
 void ETSChecker::ETSObjectTypeDeclNode(ETSChecker *checker, ETSObjectType *const objectType)
@@ -3030,12 +3153,14 @@ ir::CallExpression *ETSChecker::CreateExtensionAccessorCall(ETSChecker *checker,
     ir::Expression *callExpr = nullptr;
     if (expr->Object()->IsETSNewClassInstanceExpression()) {
         args.insert(args.begin(), expr->Object());
-        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        callExpr = checker->AllocNode<ir::CallExpression>(expr->Property(), std::move(args), nullptr, false, false);
+        callExpr =
+            // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+            checker->ProgramAllocNode<ir::CallExpression>(expr->Property(), std::move(args), nullptr, false, false);
     } else {
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        callExpr = checker->AllocNode<ir::CallExpression>(expr, std::move(args), nullptr, false, false);
+        callExpr = checker->ProgramAllocNode<ir::CallExpression>(expr, std::move(args), nullptr, false, false);
     }
+    ES2PANDA_ASSERT(callExpr != nullptr);
     callExpr->SetRange(expr->Range());
     return callExpr->AsCallExpression();
 }
@@ -3109,7 +3234,7 @@ checker::ETSFunctionType *ETSChecker::IntersectSignatureSets(const checker::ETSF
         std::swap(left, right);
     }
 
-    ArenaVector<checker::Signature *> intersection {Allocator()->Adapter()};
+    ArenaVector<checker::Signature *> intersection {ProgramAllocator()->Adapter()};
 
     for (const auto sig : left->CallSignatures()) {
         auto found = right->FindSpecificSignature(

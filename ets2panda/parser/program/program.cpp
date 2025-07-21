@@ -14,6 +14,8 @@
  */
 
 #include "program.h"
+#include "macros.h"
+#include "public/public.h"
 
 #include "compiler/core/CFG.h"
 #include "generated/signatures.h"
@@ -30,10 +32,18 @@ Program::Program(ArenaAllocator *allocator, varbinder::VarBinder *varbinder)
       varbinder_(varbinder),
       externalSources_(allocator_->Adapter()),
       directExternalSources_(allocator_->Adapter()),
-      extension_(varbinder->Extension()),
+      extension_(varbinder != nullptr ? varbinder->Extension() : ScriptExtension::INVALID),
       etsnolintCollection_(allocator_->Adapter()),
-      cfg_(allocator_->New<compiler::CFG>(allocator_))
+      cfg_(allocator_->New<compiler::CFG>(allocator_)),
+      functionScopes_(allocator_->Adapter())
 {
+}
+
+bool Program::IsGenAbcForExternal() const
+{
+    return VarBinder()->GetContext()->config->options->GetCompilationMode() ==
+               CompilationMode::GEN_ABC_FOR_EXTERNAL_SOURCE &&
+           genAbcForExternalSource_;
 }
 
 std::string Program::Dump() const
@@ -50,11 +60,15 @@ void Program::DumpSilent() const
 
 varbinder::ClassScope *Program::GlobalClassScope()
 {
+    ES2PANDA_ASSERT(globalClass_ != nullptr);
+    ES2PANDA_ASSERT(globalClass_->Scope() != nullptr);
     return globalClass_->Scope()->AsClassScope();
 }
 
 const varbinder::ClassScope *Program::GlobalClassScope() const
 {
+    ES2PANDA_ASSERT(globalClass_ != nullptr);
+    ES2PANDA_ASSERT(globalClass_->Scope() != nullptr);
     return globalClass_->Scope()->AsClassScope();
 }
 
@@ -84,6 +98,7 @@ void Program::SetPackageInfo(const util::StringView &name, util::ModuleKind kind
 // NOTE(vpukhov): part of ongoing design
 void Program::MaybeTransformToDeclarationModule()
 {
+    ES2PANDA_ASSERT(ast_ != nullptr);
     if (IsPackage() || ast_->Statements().empty()) {
         return;
     }
@@ -110,6 +125,37 @@ bool Program::NodeContainsETSNolint(const ir::AstNode *node, ETSWarnings warning
     }
 
     return nodeEtsnolints->second.find(warning) != nodeEtsnolints->second.end();
+}
+
+void Program::SetFlag(ProgramFlags flag)
+{
+    ES2PANDA_ASSERT(VarBinder() != nullptr && VarBinder()->GetContext() != nullptr);
+    auto compilingState = VarBinder()->GetContext()->compilingState;
+    if (compilingState == public_lib::CompilingState::MULTI_COMPILING_INIT ||
+        compilingState == public_lib::CompilingState::MULTI_COMPILING_FOLLOW) {
+        programFlags_ |= flag;
+    }
+}
+
+bool Program::GetFlag(ProgramFlags flag) const
+{
+    return (programFlags_ & flag) != 0U;
+}
+
+void Program::ClearASTCheckedStatus()
+{
+    programFlags_ &= ~ProgramFlags::AST_CHECKED;
+}
+
+void Program::SetASTChecked()
+{
+    programFlags_ |= ProgramFlags::AST_CHECKED;
+}
+
+bool Program::IsASTChecked()
+{
+    return ((programFlags_ & ProgramFlags::AST_CHECKED) != 0U) ||
+           ((programFlags_ & ProgramFlags::AST_CHECK_PROCESSED) != 0U);
 }
 
 Program::~Program()  // NOLINT(modernize-use-equals-default)

@@ -22,6 +22,8 @@
 #include "public/es2panda_lib.h"
 #include "public/public.h"
 
+namespace {
+
 using ark::es2panda::lsp::Initializer;
 
 TEST_F(LSPAPITests, GetTypeOfSymbolAtLocation1)
@@ -143,3 +145,5 @@ TEST_F(LSPAPITests, GetTypeOfSymbolAtLocation2)
     ASSERT_TRUE(type->IsETSUnionType());
     initializer.DestroyContext(ctx);
 }
+
+}  // namespace

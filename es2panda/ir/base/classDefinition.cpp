@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -212,6 +212,11 @@ int32_t ClassDefinition::CreateClassPublicBuffer(compiler::PandaGen *pg, util::B
         util::UString fieldTypeLitId(fieldTypeIdxStr, pg->Allocator());
         buf->Add(pg->Allocator()->New<TaggedLiteral>(LiteralTag::LITERALARRAY, fieldTypeLitId.View()));
     }
+
+    if (IsImplementFromEts()) {
+        buf->Add(pg->Allocator()->New<TaggedLiteral>(LiteralTag::ETS_IMPLEMENTS, etsImplementsMessage_));
+    }
+
     return pg->AddLiteralBuffer(buf);
 }
 

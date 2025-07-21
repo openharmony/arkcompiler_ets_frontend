@@ -15,16 +15,6 @@
     ],
     "result": [
         {
-            "line": 17,
-            "column": 1,
-            "endLine": 17,
-            "endColumn": 49,
-            "problem": "ImportAfterStatement",
-            "suggest": "",
-            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
-            "severity": "ERROR"
-        },
-        {
             "line": 20,
             "column": 5,
             "endLine": 20,
@@ -52,6 +42,16 @@
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 30,
+            "column": 11,
+            "endLine": 30,
+            "endColumn": 33,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
             "severity": "ERROR"
         }
     ]

@@ -20,11 +20,13 @@
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
+#include "mem/arena_allocator.h"
+#include "utils/arena_containers.h"
 
 namespace ark::es2panda::ir {
 
 ScriptFunction::ScriptFunction(ArenaAllocator *allocator, ScriptFunctionData &&data)
-    : AnnotationAllowed<AstNode>(AstNodeType::SCRIPT_FUNCTION, data.flags, allocator),
+    : JsDocAllowed<AnnotationAllowed<AstNode>>(AstNodeType::SCRIPT_FUNCTION, data.flags, allocator),
       irSignature_(std::move(data.signature)),
       body_(data.body),
       funcFlags_(data.funcFlags),
@@ -62,6 +64,7 @@ std::size_t ScriptFunction::FormalParamsLength() const noexcept
 void ScriptFunction::SetIdent(Identifier *id) noexcept
 {
     id_ = id;
+    ES2PANDA_ASSERT(id_ != nullptr);
     id_->SetParent(this);
 }
 
@@ -87,6 +90,7 @@ ScriptFunction *ScriptFunction::Clone(ArenaAllocator *allocator, AstNode *parent
                                                   : nullptr,
                 HasReceiver()},
             funcFlags_, flags_, lang_});
+    ES2PANDA_ASSERT(res != nullptr);
     res->SetParent(parent);
     res->SetAnnotations(std::move(annotationUsages));
     return res;
@@ -162,6 +166,32 @@ void ScriptFunction::Dump(ir::AstDumper *dumper) const
                  {"throwMarker", AstDumper::Optional(throwMarker)}});
 }
 
+void ScriptFunction::DumpCheckerTypeForDeclGen(ir::SrcDumper *dumper) const
+{
+    if (!dumper->IsDeclgen()) {
+        return;
+    }
+
+    if (IsConstructor()) {
+        return;
+    }
+
+    if (Signature() == nullptr) {
+        return;
+    }
+
+    if (Signature()->ReturnType() == nullptr) {
+        return;
+    }
+
+    auto typeStr = dumper->IsIsolatedDeclgen() ? GetIsolatedDeclgenReturnType() : Signature()->ReturnType()->ToString();
+
+    dumper->Add(": ");
+    dumper->Add(typeStr);
+
+    dumper->PushTask([dumper, typeStr] { dumper->DumpNode(typeStr); });
+}
+
 void ScriptFunction::Dump(ir::SrcDumper *dumper) const
 {
     if (TypeParams() != nullptr) {
@@ -177,36 +207,51 @@ void ScriptFunction::Dump(ir::SrcDumper *dumper) const
         }
     }
     dumper->Add(")");
-    if (ReturnTypeAnnotation() != nullptr) {
+    if (ReturnTypeAnnotation() != nullptr && !dumper->IsDeclgen()) {
         dumper->Add(": ");
         ReturnTypeAnnotation()->Dump(dumper);
     }
-
+    DumpCheckerTypeForDeclGen(dumper);
     if (IsThrowing()) {
         dumper->Add(" throws");
     } else if (IsRethrowing()) {
         dumper->Add(" rethrows");
     }
-
-    if (HasBody()) {
-        if (IsArrow()) {
-            dumper->Add(" =>");
-        }
-        if (body_->IsBlockStatement()) {
-            dumper->Add(" {");
-            if (!body_->AsBlockStatement()->Statements().empty()) {
-                dumper->IncrIndent();
-                dumper->Endl();
-                body_->Dump(dumper);
-                dumper->DecrIndent();
-                dumper->Endl();
-            }
-            dumper->Add("}");
-        } else {
-            dumper->Add(" ");
-            body_->Dump(dumper);
-        }
+    if (dumper->IsDeclgen()) {
+        dumper->Add(";");
+        dumper->Endl();
+        return;
     }
+    DumpBody(dumper);
+}
+
+void ScriptFunction::DumpBody(ir::SrcDumper *dumper) const
+{
+    if (!HasBody()) {
+        dumper->Endl();
+        return;
+    }
+
+    if (IsArrow()) {
+        dumper->Add(" =>");
+    }
+
+    if (body_->IsBlockStatement()) {
+        dumper->Add(" {");
+        const auto &statements = body_->AsBlockStatement()->Statements();
+        if (!statements.empty()) {
+            dumper->IncrIndent();
+            dumper->Endl();
+            body_->Dump(dumper);
+            dumper->DecrIndent();
+            dumper->Endl();
+        }
+        dumper->Add("}");
+    } else {
+        dumper->Add(" ");
+        body_->Dump(dumper);
+    }
+
     if (!IsArrow()) {
         dumper->Endl();
     }
@@ -229,5 +274,33 @@ checker::Type *ScriptFunction::Check(checker::TSChecker *checker)
 checker::VerifiedType ScriptFunction::Check(checker::ETSChecker *checker)
 {
     return {this, checker->GetAnalyzer()->Check(this)};
+}
+
+ScriptFunction *ScriptFunction::Construct(ArenaAllocator *allocator)
+{
+    auto adapter = allocator->Adapter();
+    return allocator->New<ScriptFunction>(
+        allocator,
+        ScriptFunctionData {nullptr, FunctionSignature(nullptr, ArenaVector<Expression *>(adapter), nullptr)});
+}
+
+void ScriptFunction::CopyTo(AstNode *other) const
+{
+    auto otherImpl = other->AsScriptFunction();
+
+    otherImpl->id_ = id_;
+
+    otherImpl->irSignature_.CopyFrom(irSignature_);
+
+    otherImpl->body_ = body_;
+    otherImpl->scope_ = scope_;
+    otherImpl->funcFlags_ = funcFlags_;
+    otherImpl->signature_ = signature_;
+    otherImpl->preferredReturnType_ = preferredReturnType_;
+    otherImpl->lang_ = lang_;
+    otherImpl->returnStatements_ = returnStatements_;
+    otherImpl->isolatedDeclGenInferType_ = isolatedDeclGenInferType_;
+
+    JsDocAllowed<AnnotationAllowed<AstNode>>::CopyTo(other);
 }
 }  // namespace ark::es2panda::ir

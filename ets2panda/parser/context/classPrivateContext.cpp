@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,7 +24,9 @@ namespace ark::es2panda::parser {
 bool ClassPrivateContext::AddElement(const ir::ClassElement *elem)
 {
     bool newPropIsStatic = elem->IsStatic();
-    util::StringView newPropName = elem->Id()->Name();
+    auto id = elem->Id();
+    ES2PANDA_ASSERT(id != nullptr);
+    util::StringView newPropName = id->Name();
     ir::MethodDefinitionKind newPropMethodKind = ir::MethodDefinitionKind::METHOD;
 
     if (elem->IsMethodDefinition()) {
@@ -61,7 +63,9 @@ bool ClassPrivateContext::AddElement(const ir::ClassElement *elem)
 bool ClassPrivateContext::FindElement(const ir::Identifier *elem) const
 {
     for (const auto *it : elements_) {
-        if (it->Id()->Name().Compare(elem->Name()) == 0) {
+        auto id = it->Id();
+        ES2PANDA_ASSERT(id != nullptr);
+        if (id->Name().Compare(elem->Name()) == 0) {
             return true;
         }
     }

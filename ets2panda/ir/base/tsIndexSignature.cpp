@@ -83,6 +83,7 @@ TSIndexSignature *TSIndexSignature::Clone(ArenaAllocator *const allocator, AstNo
     auto *const param = param_ != nullptr ? param_->Clone(allocator, nullptr)->AsExpression() : nullptr;
     auto *const typeAnnotation = typeAnnotation_->Clone(allocator, nullptr);
     auto *const clone = allocator->New<TSIndexSignature>(param, typeAnnotation, readonly_);
+    ES2PANDA_ASSERT(clone != nullptr);
 
     if (parent != nullptr) {
         clone->SetParent(parent);

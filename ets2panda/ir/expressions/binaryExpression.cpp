@@ -99,6 +99,7 @@ BinaryExpression *BinaryExpression::Clone(ArenaAllocator *const allocator, AstNo
     auto *const left = left_ != nullptr ? left_->Clone(allocator, nullptr)->AsExpression() : nullptr;
     auto *const right = right_ != nullptr ? right_->Clone(allocator, nullptr)->AsExpression() : nullptr;
     auto *const clone = allocator->New<BinaryExpression>(left, right, operator_);
+    ES2PANDA_ASSERT(clone);
 
     if (operationType_ != nullptr) {
         clone->SetOperationType(operationType_);

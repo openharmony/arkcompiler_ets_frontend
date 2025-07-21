@@ -14,7 +14,8 @@
  */
 
 function main() {
-    let a = [c'b', c'c']
-    let r = [c'a', ...a, c'd']
+    let a:FixedArray<char> = [c'b', c'c']
+    let r:FixedArray<char> = [c'a', ...a, c'd']
     assertTrue(r.length == 4 && (new String(r) == "abcd"))
-}
+  }
+  

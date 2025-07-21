@@ -17,4 +17,3 @@ declare interface IterableInterface  {
   [Symbol.iterator]: Iterable
 }
 /* @@? 17:22 Error TypeError: Type 'Iterable<T>' is generic but type argument were not provided. */
-/* @@? 17:22 Error TypeError: Type 'Iterable<T>' is generic but type argument were not provided. */

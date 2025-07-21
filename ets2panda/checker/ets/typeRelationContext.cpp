@@ -20,6 +20,8 @@ bool AssignmentContext::ValidateArrayTypeInitializerByElement(TypeRelation *rela
                                                               ETSArrayType *target)
 {
     bool ok = true;
+    ES2PANDA_ASSERT(node != nullptr);
+    ES2PANDA_ASSERT(target != nullptr);
     if (target->IsETSTupleType()) {
         return true;
     }
@@ -47,8 +49,7 @@ bool InstantiationContext::ValidateTypeArguments(ETSObjectType *type, ir::TSType
 {
     if (checker_->HasStatus(CheckerStatus::IN_INSTANCEOF_CONTEXT)) {
         if (typeArgs != nullptr) {
-            checker_->ReportWarning(
-                {"Type parameter is erased from type '", type->Name(), "' when used in instanceof expression."}, pos);
+            checker_->LogDiagnostic(diagnostic::INSTANCEOF_ERASED, {type->Name()}, pos);
         }
         result_ = type;
         return true;
@@ -74,6 +75,7 @@ void InstantiationContext::InstantiateType(ETSObjectType *type, ir::TSTypeParame
     if (typeArgs != nullptr) {
         for (auto *const it : typeArgs->Params()) {
             auto *paramType = it->GetType(checker_);
+            ES2PANDA_ASSERT(paramType != nullptr);
             if (paramType->IsTypeError()) {
                 result_ = paramType;
                 return;

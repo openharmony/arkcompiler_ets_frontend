@@ -23,7 +23,5 @@ enum HEHE
 /* @@? 17:9 Error SyntaxError: Identifier expected, got '='. */
 /* @@? 17:11 Error SyntaxError: Unexpected token, expected ',' or '}'. */
 /* @@? 17:21 Error SyntaxError: Unexpected token ','. */
-/* @@? 17:21 Error SyntaxError: Unexpected token ','. */
-/* @@? 17:21 Error SyntaxError: Unexpected token ','. */
 /* @@? 18:5 Error TypeError: Unresolved reference Green */
 /* @@? 19:1 Error SyntaxError: Unexpected token '}'. */

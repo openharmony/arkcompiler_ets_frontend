@@ -21,5 +21,5 @@ let callback = () => {for /* @@ label1 */aa !== /* @@ label2 */arr[idx]/* @@ lab
 /* @@@ label2 Error TypeError: Unresolved reference arr */
 /* @@@ label2 Error TypeError: Indexed access is not supported for such expression type. */
 /* @@@ label3 Error SyntaxError: Invalid left-hand side in 'For[In/Of]Statement'. */
-/* @@? 26:1 Error SyntaxError: Unexpected token 'eos'. */
-/* @@? 26:1 Error SyntaxError: Expected '}', got 'eos'. */
+/* @@? 26:1 Error SyntaxError: Unexpected token 'end of stream'. */
+/* @@? 26:1 Error SyntaxError: Expected '}', got 'end of stream'. */

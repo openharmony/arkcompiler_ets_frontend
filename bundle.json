@@ -38,6 +38,12 @@
                 },
                 {
                     "name": "//arkcompiler/ets_frontend/es2panda:es2panda"
+                },
+                {
+                    "name": "//arkcompiler/ets_frontend/ets2panda/driver/build_system:ohos_ets_build_system"
+                },
+                {
+                    "name": "//arkcompiler/ets_frontend/ets2panda:libes2panda_public"
                 }
             ],
             "test": [

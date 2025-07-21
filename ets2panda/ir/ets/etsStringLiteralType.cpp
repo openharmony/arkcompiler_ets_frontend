@@ -82,6 +82,7 @@ ETSStringLiteralType *ETSStringLiteralType::Clone(ArenaAllocator *allocator, Ast
     if (!Annotations().empty()) {
         ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
         for (auto *annotationUsage : Annotations()) {
+            ES2PANDA_ASSERT(annotationUsage->Clone(allocator, clone));
             annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
         }
         clone->SetAnnotations(std::move(annotationUsages));

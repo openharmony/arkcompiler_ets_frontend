@@ -131,6 +131,7 @@ ir::TSImportEqualsDeclaration *TSParser::ParseTsImportEqualsDeclaration(const le
     }
 
     auto *id = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
+    ES2PANDA_ASSERT(id != nullptr);
     id->SetRange(Lexer()->GetToken().Loc());
     Lexer()->NextToken();  // eat id name
 
@@ -190,6 +191,7 @@ ir::ExportDefaultDeclaration *TSParser::ParseExportDefaultDeclaration(const lexe
 
     lexer::SourcePosition endLoc = declNode->End();
     auto *exportDeclaration = AllocNode<ir::ExportDefaultDeclaration>(declNode, isExportEquals);
+    ES2PANDA_ASSERT(exportDeclaration != nullptr);
     exportDeclaration->SetRange({startLoc, endLoc});
 
     if (eatSemicolon) {
@@ -265,6 +267,7 @@ ir::Statement *TSParser::ParseNamedExportDeclaration(const lexer::SourcePosition
     lexer::SourcePosition endLoc = decl->End();
     ArenaVector<ir::ExportSpecifier *> specifiers(Allocator()->Adapter());
     auto *exportDeclaration = AllocNode<ir::ExportNamedDeclaration>(Allocator(), decl, std::move(specifiers));
+    ES2PANDA_ASSERT(exportDeclaration != nullptr);
     exportDeclaration->SetRange({startLoc, endLoc});
 
     return exportDeclaration;
@@ -293,6 +296,7 @@ ir::Statement *TSParser::ParseExportDeclaration(StatementParsingFlags flags)
         }
         default: {
             auto ret = ParseNamedExportDeclaration(startLoc);
+            ES2PANDA_ASSERT(ret != nullptr);
             if (ret->IsBrokenStatement()) {
                 return ret;
             }
@@ -322,6 +326,7 @@ ir::Statement *TSParser::ParseConstStatement(StatementParsingFlags flags)
     }
 
     auto *variableDecl = ParseVariableDeclaration(VariableParsingFlags::CONST | VariableParsingFlags::NO_SKIP_VAR_KIND);
+    ES2PANDA_ASSERT(variableDecl != nullptr);
     variableDecl->SetStart(constVarStar);
     ConsumeSemicolon(variableDecl);
 
@@ -364,8 +369,10 @@ ir::Statement *TSParser::ParseImportDeclaration([[maybe_unused]] StatementParsin
         source = ParseFromClause(false);
     }
 
+    ES2PANDA_ASSERT(source != nullptr);
     lexer::SourcePosition endLoc = source->End();
     auto *importDeclaration = AllocNode<ir::ImportDeclaration>(source, std::move(specifiers));
+    ES2PANDA_ASSERT(importDeclaration != nullptr);
     importDeclaration->SetRange({startLoc, endLoc});
 
     ConsumeSemicolon(importDeclaration);

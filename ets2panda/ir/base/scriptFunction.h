@@ -18,7 +18,7 @@
 
 #include "checker/types/signature.h"
 #include "ir/annotationAllowed.h"
-#include "ir/statements/annotationUsage.h"
+#include "ir/jsDocAllowed.h"
 #include "ir/statements/returnStatement.h"
 #include "ir/astNode.h"
 #include "scriptFunctionSignature.h"
@@ -35,8 +35,9 @@ namespace ark::es2panda::ir {
 class TSTypeParameterDeclaration;
 class TypeNode;
 class AnnotationUsage;
+class FunctionSignature;
 
-class ScriptFunction : public AnnotationAllowed<AstNode> {
+class ScriptFunction : public JsDocAllowed<AnnotationAllowed<AstNode>> {
 public:
     // Need to reduce the number of constructor parameters to pass OHOS CI code check
     struct ScriptFunctionData {
@@ -354,6 +355,16 @@ public:
     checker::Type *Check(checker::TSChecker *checker) override;
     checker::VerifiedType Check(checker::ETSChecker *checker) override;
 
+    void SetIsolatedDeclgenReturnType(std::string type) noexcept
+    {
+        isolatedDeclGenInferType_ = std::move(type);
+    }
+
+    [[nodiscard]] std::string GetIsolatedDeclgenReturnType() const noexcept
+    {
+        return isolatedDeclGenInferType_;
+    }
+
     void Accept(ASTVisitorT *v) override
     {
         v->Accept(this);
@@ -366,7 +377,14 @@ public:
         preferredReturnType_ = nullptr;
     }
 
+protected:
+    ScriptFunction *Construct(ArenaAllocator *allocator) override;
+    void CopyTo(AstNode *other) const override;
+
 private:
+    void DumpBody(ir::SrcDumper *dumper) const;
+    void DumpCheckerTypeForDeclGen(ir::SrcDumper *dumper) const;
+    friend class SizeOfNodeTest;
     Identifier *id_ {};
     FunctionSignature irSignature_;
     AstNode *body_;
@@ -376,6 +394,7 @@ private:
     checker::Type *preferredReturnType_ {};
     es2panda::Language lang_;
     ArenaVector<ReturnStatement *> returnStatements_;
+    std::string isolatedDeclGenInferType_;
 };
 }  // namespace ark::es2panda::ir
 

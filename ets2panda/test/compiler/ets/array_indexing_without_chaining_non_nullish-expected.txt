@@ -707,55 +707,103 @@
             "optional": false,
             "computed": false,
             "typeAnnotation": {
-              "type": "TSArrayType",
-              "elementType": {
-                "type": "ETSTypeReference",
-                "part": {
-                  "type": "ETSTypeReferencePart",
-                  "name": {
-                    "type": "Identifier",
-                    "name": "Object",
-                    "decorators": [],
-                    "loc": {
-                      "start": {
-                        "line": 18,
-                        "column": 11,
-                        "program": "array_indexing_without_chaining_non_nullish.ets"
-                      },
-                      "end": {
-                        "line": 18,
-                        "column": 17,
-                        "program": "array_indexing_without_chaining_non_nullish.ets"
-                      }
-                    }
-                  },
+              "type": "ETSTypeReference",
+              "part": {
+                "type": "ETSTypeReferencePart",
+                "name": {
+                  "type": "Identifier",
+                  "name": "Array",
+                  "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 18,
-                      "column": 11,
+                      "line": 1,
+                      "column": 1,
                       "program": "array_indexing_without_chaining_non_nullish.ets"
                     },
                     "end": {
-                      "line": 18,
-                      "column": 18,
+                      "line": 1,
+                      "column": 3,
+                      "program": "array_indexing_without_chaining_non_nullish.ets"
+                    }
+                  }
+                },
+                "typeParams": {
+                  "type": "TSTypeParameterInstantiation",
+                  "params": [
+                    {
+                      "type": "ETSTypeReference",
+                      "part": {
+                        "type": "ETSTypeReferencePart",
+                        "name": {
+                          "type": "Identifier",
+                          "name": "Object",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "array_indexing_without_chaining_non_nullish.ets"
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "array_indexing_without_chaining_non_nullish.ets"
+                            }
+                          }
+                        },
+                        "loc": {
+                          "start": {
+                            "line": 1,
+                            "column": 3,
+                            "program": "array_indexing_without_chaining_non_nullish.ets"
+                          },
+                          "end": {
+                            "line": 1,
+                            "column": 3,
+                            "program": "array_indexing_without_chaining_non_nullish.ets"
+                          }
+                        }
+                      },
+                      "loc": {
+                        "start": {
+                          "line": 1,
+                          "column": 3,
+                          "program": "array_indexing_without_chaining_non_nullish.ets"
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 3,
+                          "program": "array_indexing_without_chaining_non_nullish.ets"
+                        }
+                      }
+                    }
+                  ],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 3,
+                      "program": "array_indexing_without_chaining_non_nullish.ets"
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 3,
                       "program": "array_indexing_without_chaining_non_nullish.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 18,
-                    "column": 11,
+                    "line": 1,
+                    "column": 1,
                     "program": "array_indexing_without_chaining_non_nullish.ets"
                   },
                   "end": {
-                    "line": 18,
-                    "column": 18,
+                    "line": 1,
+                    "column": 3,
                     "program": "array_indexing_without_chaining_non_nullish.ets"
                   }
                 }
               },
-              "annotations": [],
               "loc": {
                 "start": {
                   "line": 18,

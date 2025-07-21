@@ -40,10 +40,6 @@ semantic:
   id: 7
   message: Cannot use array creation expression with type parameter.
 
-- name: NOT_COND_TYPE
-  id: 8
-  message: "Condition must be of possible condition type"
-
 - name: VOID_IN_LOGIC
   id: 9
   message: "An expression of type 'void' cannot be tested for truthiness"
@@ -123,10 +119,6 @@ semantic:
 - name: TEMPLATE_COUNT_MISMATCH
   id: 28
   message: "Invalid string template expression"
-
-- name: ASSERT_NOT_LOGICAL
-  id: 29
-  message: "Bad operand type, the type of the operand must be boolean type."
 
 - name: ASSERT_MESSAGE_NOT_STRING
   id: 30
@@ -260,7 +252,7 @@ semantic:
   id: 62
   message: "need to specify target type for class composite"
 
-- name: CKASS_COMPOSITE_INVALID_TARGET
+- name: CLASS_COMPOSITE_INVALID_TARGET
   id: 63
   message: "Target type for class composite needs to be an object type, found '{}'"
 
@@ -550,7 +542,7 @@ semantic:
 
 - name: MAIN_PARAM_NOT_ARR_OF_STRING
   id: 135
-  message: "Only 'string[]' type argument is allowed."
+  message: "Only 'FixedArray<string>' type argument is allowed."
 
 - name: OVERRIDE_DOESNT_OVERRIDE
   id: 136
@@ -630,7 +622,7 @@ semantic:
 
 - name: GENERIC_ALIAS_WITHOUT_PARAMS
   id: 155
-  message: "Type alias declaration is generic, but no type parameters were provided"
+  message: "Type alias declaration is generic, but too few type arguments were provided"
 
 - name: NON_GENERIC_ALIAS_WITH_PARAMS
   id: 156
@@ -1158,7 +1150,7 @@ semantic:
 
 - name: NO_PARAMLESS_CTOR
   id: 291
-  message: "type {} has no parameterless constructor"
+  message: "Type {} has no parameterless constructor. Initialization with literals is not supported if the type has no parameterless constructor. Declare the parameterless constructor explicitly or remove parametered constructors!"
 
 - name: EXPR_NONCONSTRUCTIBLE
   id: 292
@@ -1368,6 +1360,10 @@ semantic:
   id: 343
   message: "Indexed signatures are not allowed. Use arrays instead!"
 
+- name: USE_BEFORE_INIT
+  id: 344
+  message: "{} '{}' is used before being assigned."
+
 - name: TYPE_NOT_FOUND
   id: 345
   message: "Cannot find type '{}'."
@@ -1492,10 +1488,58 @@ semantic:
   id: 381
   message: "Circular call function"
 
+- name: DYMANIC_INIT_WITH_OBJEXPR
+  id: 382
+  message: "Dymanic Type {} cannot be initialize with an object expression"
+
+- name: OVERLOAD_NAME_MUST_BE_IDENTIFIER
+  id: 383
+  message: "The name of overload declaration should be an identifier."
+
+- name: OVERLOADED_NAME_MUST_FUNCTION
+  id: 384
+  message: "overloaded name must refer to an accessible method."
+
+- name: DUPLICATE_OVERLOADED_NAME
+  id: 385
+  message: "Duplicate overloaded method."
+
+- name: OVERLOAD_SAME_ACCESS_MODIFIERS
+  id: 386
+  message: "Overload alias and overloaded method name must have exactly the same modifiers (public, private, protected)."
+
+- name: OVERLOAD_SAME_ACCESS_MODIFIERS_STATIC_ASYNC
+  id: 387
+  message: "Overload alias and overloaded method name must have exactly the same modifiers (static, async)."
+
+- name: OVERLOAD_MUST_BOTH_CONSTRUCT
+  id: 388
+  message: "The overload alias and the overloaded method must either both be constructors or both be non-constructors."
+
+- name: OVERLOADED_NAME_REFER_TO_OVERLOAD_FUNCTION
+  id: 389
+  message: "The overloaded name '{}' can't refer to a function with overload signatures."
+
+- name: OVERLOADED_NAME_MUST_ALSO_EXPORTED
+  id: 390
+  message: "Overload alias is exported, then overload functions must also be exported."
+
+- name: OVERLOADED_UNION_CALL
+  id: 391
+  message: "Overload declaration cannot be called by union."
+
+- name: OVERLOAD_MODIFIERS_ABSTRACT
+  id: 392
+  message: "overload declaration cannot contain abstract methods."
+ 
+- name: INVALID_RECORD_PROPERTY
+  id: 393
+  message: "Invalid record property"
+
 - name: INVALID_LAMBDA_PARAMETER
-  id: 395
+  id: 394
   message: "Invalid lambda parameter. Expected: 'identifier(: type)?', 'identifier?(: type)?' or '...identifier(: type)?'."
 
 - name: TYPEOF_IN_ANNOTATION
-  id: 382
+  id: 395
   message: "'typeof' is not allowed in type annotations."

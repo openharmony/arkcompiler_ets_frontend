@@ -89,6 +89,7 @@ checker::Type *TSTypeLiteral::GetType(checker::TSChecker *checker)
 
     checker::ObjectDescriptor *desc = checker->Allocator()->New<checker::ObjectDescriptor>(checker->Allocator());
     checker::Type *type = checker->Allocator()->New<checker::ObjectLiteralType>(desc);
+    ES2PANDA_ASSERT(type != nullptr);
     type->SetVariable(Variable());
 
     SetTsType(type);

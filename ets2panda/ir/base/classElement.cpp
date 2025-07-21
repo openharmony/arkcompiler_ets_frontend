@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -46,4 +46,18 @@ bool ClassElement::IsPrivateElement() const noexcept
 
     return key_->IsIdentifier() && key_->AsIdentifier()->IsPrivateIdent();
 }
+
+void ClassElement::CopyTo(AstNode *other) const
+{
+    auto otherImpl = other->AsClassElement();
+
+    otherImpl->key_ = key_;
+    otherImpl->value_ = value_;
+    otherImpl->decorators_ = decorators_;
+    otherImpl->isComputed_ = isComputed_;
+    otherImpl->enumMember_ = enumMember_;
+
+    TypedStatement::CopyTo(other);
+}
+
 }  // namespace ark::es2panda::ir

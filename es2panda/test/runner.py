@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+# Copyright (c) 2021-2025 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -1085,6 +1085,8 @@ class CompilerProjectTest(Test):
             self.error = err.decode("utf-8", errors="ignore")
 
     def gen_merged_abc(self, runner):
+        output_abc_name = ""
+        exec_file_path = ""
         # Generate abc inputs
         if (os.path.exists(self.generated_abc_inputs_path)):
             files_info_names = os.listdir(self.generated_abc_inputs_path)

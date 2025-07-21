@@ -28,4 +28,3 @@ function foo1() {
 /* @@? 22:20 Error TypeError: Unresolved reference test */
 /* @@? 23:9 Error SyntaxError: Identifier expected, got 'undefined'. */
 /* @@? 24:1 Error SyntaxError: Variable must be initialized or it's type must be declared. */
-/* @@? 24:1 Error SyntaxError: Variable must be initialized or it's type must be declared. */

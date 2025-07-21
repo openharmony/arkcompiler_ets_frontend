@@ -27,5 +27,4 @@ function foo() {
 /* @@? 16:1 Error TypeError: Unresolved reference a */
 /* @@? 20:1 Error TypeError: Unresolved reference c */
 /* @@? 24:5 Error SyntaxError: Unexpected token 'void'. */
-/* @@? 24:10 Error SyntaxError: Unexpected token '='. */
 /* @@? 24:18 Error TypeError: Unresolved reference asyncGenerator */

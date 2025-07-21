@@ -439,6 +439,158 @@
                     }
                   }
                 },
+                "annotations": [
+                  {
+                    "expr_": {
+                      "type": "ETSTypeReference",
+                      "part": {
+                        "type": "ETSTypeReferencePart",
+                        "name": {
+                          "type": "TSQualifiedName",
+                          "left": {
+                            "type": "Identifier",
+                            "name": "functions",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 17,
+                                "column": 6,
+                                "program": "lambdaAsFunctionParam.ets"
+                              },
+                              "end": {
+                                "line": 19,
+                                "column": 4,
+                                "program": "lambdaAsFunctionParam.ets"
+                              }
+                            }
+                          },
+                          "right": {
+                            "type": "Identifier",
+                            "name": "OptionalParametersAnnotation",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 17,
+                                "column": 6,
+                                "program": "lambdaAsFunctionParam.ets"
+                              },
+                              "end": {
+                                "line": 19,
+                                "column": 4,
+                                "program": "lambdaAsFunctionParam.ets"
+                              }
+                            }
+                          },
+                          "loc": {
+                            "start": {
+                              "line": 17,
+                              "column": 6,
+                              "program": "lambdaAsFunctionParam.ets"
+                            },
+                            "end": {
+                              "line": 19,
+                              "column": 4,
+                              "program": "lambdaAsFunctionParam.ets"
+                            }
+                          }
+                        },
+                        "loc": {
+                          "start": {
+                            "line": 17,
+                            "column": 6,
+                            "program": "lambdaAsFunctionParam.ets"
+                          },
+                          "end": {
+                            "line": 19,
+                            "column": 4,
+                            "program": "lambdaAsFunctionParam.ets"
+                          }
+                        }
+                      },
+                      "loc": {
+                        "start": {
+                          "line": 17,
+                          "column": 6,
+                          "program": "lambdaAsFunctionParam.ets"
+                        },
+                        "end": {
+                          "line": 19,
+                          "column": 4,
+                          "program": "lambdaAsFunctionParam.ets"
+                        }
+                      }
+                    },
+                    "properties": [
+                      {
+                        "type": "ClassProperty",
+                        "key": {
+                          "type": "Identifier",
+                          "name": "minArgCount",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 17,
+                              "column": 6,
+                              "program": "lambdaAsFunctionParam.ets"
+                            },
+                            "end": {
+                              "line": 19,
+                              "column": 4,
+                              "program": "lambdaAsFunctionParam.ets"
+                            }
+                          }
+                        },
+                        "value": {
+                          "type": "NumberLiteral",
+                          "value": 0,
+                          "loc": {
+                            "start": {
+                              "line": 17,
+                              "column": 6,
+                              "program": "lambdaAsFunctionParam.ets"
+                            },
+                            "end": {
+                              "line": 19,
+                              "column": 4,
+                              "program": "lambdaAsFunctionParam.ets"
+                            }
+                          }
+                        },
+                        "static": false,
+                        "readonly": false,
+                        "declare": false,
+                        "optional": false,
+                        "computed": false,
+                        "definite": false,
+                        "decorators": [],
+                        "loc": {
+                          "start": {
+                            "line": 17,
+                            "column": 6,
+                            "program": "lambdaAsFunctionParam.ets"
+                          },
+                          "end": {
+                            "line": 19,
+                            "column": 4,
+                            "program": "lambdaAsFunctionParam.ets"
+                          }
+                        }
+                      }
+                    ],
+                    "loc": {
+                      "start": {
+                        "line": 17,
+                        "column": 6,
+                        "program": "lambdaAsFunctionParam.ets"
+                      },
+                      "end": {
+                        "line": 19,
+                        "column": 4,
+                        "program": "lambdaAsFunctionParam.ets"
+                      }
+                    }
+                  }
+                ],
                 "loc": {
                   "start": {
                     "line": 17,

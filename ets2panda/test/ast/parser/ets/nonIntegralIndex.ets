@@ -18,5 +18,3 @@ export class Test {
      u[/* @@ label */i] = 0.0
   }
 }
-
-/* @@@ label Error TypeError: Type 'double' cannot be used as an index type. Only primitive or unboxable integral types can be used as index.  */

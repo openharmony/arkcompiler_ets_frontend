@@ -15,19 +15,9 @@
     ],
     "result": [
         {
-            "line": 18,
+            "line": 17,
             "column": 1,
-            "endLine": 18,
-            "endColumn": 57,
-            "problem": "ImportAfterStatement",
-            "suggest": "",
-            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 18,
-            "column": 1,
-            "endLine": 18,
+            "endLine": 17,
             "endColumn": 57,
             "problem": "InterOpImportJs",
             "suggest": "",
@@ -35,9 +25,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 19,
+            "line": 18,
             "column": 9,
-            "endLine": 19,
+            "endLine": 18,
             "endColumn": 14,
             "problem": "InteropObjectProperty",
             "suggest": "",
@@ -49,26 +39,6 @@
             "column": 9,
             "endLine": 19,
             "endColumn": 14,
-            "problem": "InteropJsObjectUsage",
-            "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 19,
-            "column": 9,
-            "endLine": 19,
-            "endColumn": 14,
-            "problem": "BinaryOperations",
-            "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 20,
-            "column": 9,
-            "endLine": 20,
-            "endColumn": 14,
             "problem": "InteropObjectProperty",
             "suggest": "",
             "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
@@ -76,22 +46,22 @@
         },
         {
             "line": 20,
-            "column": 9,
+            "column": 1,
             "endLine": 20,
-            "endColumn": 14,
-            "problem": "InteropJsObjectUsage",
+            "endColumn": 2,
+            "problem": "InterOpImportJsDataCompare",
             "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "rule": "Importing data directly from the \"JS\" module for comparison is not supported (arkts-interop-js2s-compare-js-data)",
             "severity": "ERROR"
         },
         {
             "line": 20,
-            "column": 9,
+            "column": 5,
             "endLine": 20,
-            "endColumn": 14,
-            "problem": "BinaryOperations",
+            "endColumn": 6,
+            "problem": "InterOpImportJsDataCompare",
             "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
+            "rule": "Importing data directly from the \"JS\" module for comparison is not supported (arkts-interop-js2s-compare-js-data)",
             "severity": "ERROR"
         },
         {
@@ -126,9 +96,9 @@
         },
         {
             "line": 22,
-            "column": 5,
+            "column": 6,
             "endLine": 22,
-            "endColumn": 6,
+            "endColumn": 7,
             "problem": "InterOpImportJsDataCompare",
             "suggest": "",
             "rule": "Importing data directly from the \"JS\" module for comparison is not supported (arkts-interop-js2s-compare-js-data)",
@@ -156,8 +126,18 @@
         },
         {
             "line": 24,
-            "column": 1,
+            "column": 5,
             "endLine": 24,
+            "endColumn": 6,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 26,
+            "column": 1,
+            "endLine": 26,
             "endColumn": 2,
             "problem": "InterOpImportJsDataCompare",
             "suggest": "",
@@ -165,20 +145,10 @@
             "severity": "ERROR"
         },
         {
-            "line": 24,
-            "column": 6,
-            "endLine": 24,
-            "endColumn": 7,
-            "problem": "InterOpImportJsDataCompare",
-            "suggest": "",
-            "rule": "Importing data directly from the \"JS\" module for comparison is not supported (arkts-interop-js2s-compare-js-data)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 27,
-            "column": 1,
-            "endLine": 27,
-            "endColumn": 2,
+            "line": 26,
+            "column": 5,
+            "endLine": 26,
+            "endColumn": 6,
             "problem": "InterOpImportJsDataCompare",
             "suggest": "",
             "rule": "Importing data directly from the \"JS\" module for comparison is not supported (arkts-interop-js2s-compare-js-data)",
@@ -189,15 +159,15 @@
             "column": 5,
             "endLine": 27,
             "endColumn": 6,
-            "problem": "InterOpImportJsDataCompare",
+            "problem": "NumericSemantics",
             "suggest": "",
-            "rule": "Importing data directly from the \"JS\" module for comparison is not supported (arkts-interop-js2s-compare-js-data)",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
-            "line": 30,
+            "line": 29,
             "column": 5,
-            "endLine": 30,
+            "endLine": 29,
             "endColumn": 10,
             "problem": "NumericSemantics",
             "suggest": "",
@@ -205,9 +175,19 @@
             "severity": "ERROR"
         },
         {
-            "line": 30,
+            "line": 29,
+            "column": 9,
+            "endLine": 29,
+            "endColumn": 10,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 29,
             "column": 12,
-            "endLine": 30,
+            "endLine": 29,
             "endColumn": 17,
             "problem": "NumericSemantics",
             "suggest": "",
@@ -215,9 +195,19 @@
             "severity": "ERROR"
         },
         {
-            "line": 36,
+            "line": 29,
+            "column": 16,
+            "endLine": 29,
+            "endColumn": 17,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 35,
             "column": 11,
-            "endLine": 36,
+            "endLine": 35,
             "endColumn": 12,
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
@@ -225,9 +215,29 @@
             "severity": "ERROR"
         },
         {
-            "line": 38,
+            "line": 35,
+            "column": 16,
+            "endLine": 35,
+            "endColumn": 17,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 35,
+            "column": 22,
+            "endLine": 35,
+            "endColumn": 23,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 37,
             "column": 5,
-            "endLine": 38,
+            "endLine": 37,
             "endColumn": 15,
             "problem": "NumericSemantics",
             "suggest": "",
@@ -235,9 +245,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 38,
+            "line": 37,
             "column": 17,
-            "endLine": 38,
+            "endLine": 37,
             "endColumn": 27,
             "problem": "NumericSemantics",
             "suggest": "",
@@ -245,9 +255,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 44,
+            "line": 43,
             "column": 1,
-            "endLine": 44,
+            "endLine": 43,
             "endColumn": 6,
             "problem": "InterOpImportJsDataCompare",
             "suggest": "",
@@ -255,9 +265,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 44,
+            "line": 43,
             "column": 9,
-            "endLine": 44,
+            "endLine": 43,
             "endColumn": 14,
             "problem": "InterOpImportJsDataCompare",
             "suggest": "",
@@ -265,9 +275,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 44,
+            "line": 43,
             "column": 1,
-            "endLine": 44,
+            "endLine": 43,
             "endColumn": 6,
             "problem": "InteropObjectProperty",
             "suggest": "",
@@ -275,53 +285,13 @@
             "severity": "ERROR"
         },
         {
-            "line": 44,
-            "column": 1,
-            "endLine": 44,
-            "endColumn": 6,
-            "problem": "InteropJsObjectUsage",
-            "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 44,
-            "column": 1,
-            "endLine": 44,
-            "endColumn": 6,
-            "problem": "BinaryOperations",
-            "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 44,
+            "line": 43,
             "column": 9,
-            "endLine": 44,
+            "endLine": 43,
             "endColumn": 14,
             "problem": "InteropObjectProperty",
             "suggest": "",
             "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 44,
-            "column": 9,
-            "endLine": 44,
-            "endColumn": 14,
-            "problem": "InteropJsObjectUsage",
-            "suggest": "",
-            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 44,
-            "column": 9,
-            "endLine": 44,
-            "endColumn": 14,
-            "problem": "BinaryOperations",
-            "suggest": "",
-            "rule": "Binary operations on js objects (arkts-interop-js2s-binary-op)",
             "severity": "ERROR"
         }
     ]

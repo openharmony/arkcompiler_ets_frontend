@@ -201,55 +201,103 @@
                         }
                       },
                       "typeAnnotation": {
-                        "type": "TSArrayType",
-                        "elementType": {
-                          "type": "ETSTypeReference",
-                          "part": {
-                            "type": "ETSTypeReferencePart",
-                            "name": {
-                              "type": "Identifier",
-                              "name": "number",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 16,
-                                  "column": 20,
-                                  "program": "functions_with_ambiguous_rest_parameter.ets"
-                                },
-                                "end": {
-                                  "line": 16,
-                                  "column": 26,
-                                  "program": "functions_with_ambiguous_rest_parameter.ets"
-                                }
-                              }
-                            },
+                        "type": "ETSTypeReference",
+                        "part": {
+                          "type": "ETSTypeReferencePart",
+                          "name": {
+                            "type": "Identifier",
+                            "name": "Array",
+                            "decorators": [],
                             "loc": {
                               "start": {
-                                "line": 16,
-                                "column": 20,
+                                "line": 1,
+                                "column": 1,
                                 "program": "functions_with_ambiguous_rest_parameter.ets"
                               },
                               "end": {
-                                "line": 16,
-                                "column": 27,
+                                "line": 1,
+                                "column": 3,
+                                "program": "functions_with_ambiguous_rest_parameter.ets"
+                              }
+                            }
+                          },
+                          "typeParams": {
+                            "type": "TSTypeParameterInstantiation",
+                            "params": [
+                              {
+                                "type": "ETSTypeReference",
+                                "part": {
+                                  "type": "ETSTypeReferencePart",
+                                  "name": {
+                                    "type": "Identifier",
+                                    "name": "number",
+                                    "decorators": [],
+                                    "loc": {
+                                      "start": {
+                                        "line": 1,
+                                        "column": 3,
+                                        "program": "functions_with_ambiguous_rest_parameter.ets"
+                                      },
+                                      "end": {
+                                        "line": 1,
+                                        "column": 3,
+                                        "program": "functions_with_ambiguous_rest_parameter.ets"
+                                      }
+                                    }
+                                  },
+                                  "loc": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "functions_with_ambiguous_rest_parameter.ets"
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "functions_with_ambiguous_rest_parameter.ets"
+                                    }
+                                  }
+                                },
+                                "loc": {
+                                  "start": {
+                                    "line": 1,
+                                    "column": 3,
+                                    "program": "functions_with_ambiguous_rest_parameter.ets"
+                                  },
+                                  "end": {
+                                    "line": 1,
+                                    "column": 3,
+                                    "program": "functions_with_ambiguous_rest_parameter.ets"
+                                  }
+                                }
+                              }
+                            ],
+                            "loc": {
+                              "start": {
+                                "line": 1,
+                                "column": 3,
+                                "program": "functions_with_ambiguous_rest_parameter.ets"
+                              },
+                              "end": {
+                                "line": 1,
+                                "column": 3,
                                 "program": "functions_with_ambiguous_rest_parameter.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
-                              "line": 16,
-                              "column": 20,
+                              "line": 1,
+                              "column": 1,
                               "program": "functions_with_ambiguous_rest_parameter.ets"
                             },
                             "end": {
-                              "line": 16,
-                              "column": 27,
+                              "line": 1,
+                              "column": 3,
                               "program": "functions_with_ambiguous_rest_parameter.ets"
                             }
                           }
                         },
-                        "annotations": [],
                         "loc": {
                           "start": {
                             "line": 16,
@@ -419,55 +467,103 @@
                             }
                           },
                           "typeAnnotation": {
-                            "type": "TSArrayType",
-                            "elementType": {
-                              "type": "ETSTypeReference",
-                              "part": {
-                                "type": "ETSTypeReferencePart",
-                                "name": {
-                                  "type": "Identifier",
-                                  "name": "string",
-                                  "decorators": [],
-                                  "loc": {
-                                    "start": {
-                                      "line": 20,
-                                      "column": 20,
-                                      "program": "functions_with_ambiguous_rest_parameter.ets"
-                                    },
-                                    "end": {
-                                      "line": 20,
-                                      "column": 26,
-                                      "program": "functions_with_ambiguous_rest_parameter.ets"
-                                    }
-                                  }
-                                },
+                            "type": "ETSTypeReference",
+                            "part": {
+                              "type": "ETSTypeReferencePart",
+                              "name": {
+                                "type": "Identifier",
+                                "name": "Array",
+                                "decorators": [],
                                 "loc": {
                                   "start": {
-                                    "line": 20,
-                                    "column": 20,
+                                    "line": 1,
+                                    "column": 1,
                                     "program": "functions_with_ambiguous_rest_parameter.ets"
                                   },
                                   "end": {
-                                    "line": 20,
-                                    "column": 27,
+                                    "line": 1,
+                                    "column": 3,
+                                    "program": "functions_with_ambiguous_rest_parameter.ets"
+                                  }
+                                }
+                              },
+                              "typeParams": {
+                                "type": "TSTypeParameterInstantiation",
+                                "params": [
+                                  {
+                                    "type": "ETSTypeReference",
+                                    "part": {
+                                      "type": "ETSTypeReferencePart",
+                                      "name": {
+                                        "type": "Identifier",
+                                        "name": "string",
+                                        "decorators": [],
+                                        "loc": {
+                                          "start": {
+                                            "line": 1,
+                                            "column": 3,
+                                            "program": "functions_with_ambiguous_rest_parameter.ets"
+                                          },
+                                          "end": {
+                                            "line": 1,
+                                            "column": 3,
+                                            "program": "functions_with_ambiguous_rest_parameter.ets"
+                                          }
+                                        }
+                                      },
+                                      "loc": {
+                                        "start": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "functions_with_ambiguous_rest_parameter.ets"
+                                        },
+                                        "end": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "functions_with_ambiguous_rest_parameter.ets"
+                                        }
+                                      }
+                                    },
+                                    "loc": {
+                                      "start": {
+                                        "line": 1,
+                                        "column": 3,
+                                        "program": "functions_with_ambiguous_rest_parameter.ets"
+                                      },
+                                      "end": {
+                                        "line": 1,
+                                        "column": 3,
+                                        "program": "functions_with_ambiguous_rest_parameter.ets"
+                                      }
+                                    }
+                                  }
+                                ],
+                                "loc": {
+                                  "start": {
+                                    "line": 1,
+                                    "column": 3,
+                                    "program": "functions_with_ambiguous_rest_parameter.ets"
+                                  },
+                                  "end": {
+                                    "line": 1,
+                                    "column": 3,
                                     "program": "functions_with_ambiguous_rest_parameter.ets"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
-                                  "line": 20,
-                                  "column": 20,
+                                  "line": 1,
+                                  "column": 1,
                                   "program": "functions_with_ambiguous_rest_parameter.ets"
                                 },
                                 "end": {
-                                  "line": 20,
-                                  "column": 27,
+                                  "line": 1,
+                                  "column": 3,
                                   "program": "functions_with_ambiguous_rest_parameter.ets"
                                 }
                               }
                             },
-                            "annotations": [],
                             "loc": {
                               "start": {
                                 "line": 20,
@@ -807,5 +903,6 @@
     }
   }
 }
+TypeError: Function foo with this assembly signature already declared. [functions_with_ambiguous_rest_parameter.ets:20:1]
 TypeError: Call to `foo` is ambiguous  [functions_with_ambiguous_rest_parameter.ets:25:5]
 TypeError: Reference to foo is ambiguous [functions_with_ambiguous_rest_parameter.ets:25:5]

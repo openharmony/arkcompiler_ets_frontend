@@ -70,6 +70,7 @@ const OBJECT_API: Map<string, number> = new Map([
     ['getOwnPropertyDescriptor', 0],
     ['getOwnPropertyDescriptors', 0],
     ['getOwnPropertyNames', 0],
+    ['hasOwn', 0],
     ['isExtensible', 0],
     ['isFrozen', 0],
     ['isSealed', 0],
@@ -175,11 +176,14 @@ export class InteropBackwardDFACheck implements BaseChecker {
             const invoke = stmt.getInvokeExpr();
             let isReflect = false;
             let paramIdx = -1;
-            if (invoke && invoke instanceof ArkInstanceInvokeExpr) {
-                if (invoke.getBase().getName() === 'Reflect') {
+            if (invoke && invoke instanceof ArkStaticInvokeExpr) {
+                const classSig = invoke.getMethodSignature().getDeclaringClassSignature();
+                if (
+                    classSig.getDeclaringFileSignature().getProjectName() === 'built-in' &&
+                    classSig.getDeclaringNamespaceSignature()?.getNamespaceName() === 'Reflect'
+                ) {
                     isReflect = true;
-                    paramIdx =
-                        REFLECT_API.get(invoke.getMethodSignature().getMethodSubSignature().getMethodName()) ?? -1;
+                    paramIdx = REFLECT_API.get(invoke.getMethodSignature().getMethodSubSignature().getMethodName()) ?? -1;
                 }
             }
             if (invoke && invoke instanceof ArkStaticInvokeExpr) {
@@ -213,7 +217,7 @@ export class InteropBackwardDFACheck implements BaseChecker {
 
     private reportIssue(objDefInfo: ObjDefInfo, apiLang: Language, isReflect: boolean) {
         const problemStmt = objDefInfo.problemStmt;
-        const problemStmtMtd = problemStmt.getCfg()?.getDeclaringMethod();
+        const problemStmtMtd = problemStmt.getCfg().getDeclaringMethod();
         const problemStmtLang = problemStmtMtd?.getLanguage();
         const objLanguage = objDefInfo.objLanguage;
         if (objLanguage === Language.UNKNOWN || problemStmtLang === Language.UNKNOWN) {

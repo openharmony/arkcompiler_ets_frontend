@@ -15,13 +15,33 @@
     ],
     "result": [
         {
-            "line": 17,
+            "line": 16,
             "column": 1,
-            "endLine": 17,
+            "endLine": 16,
             "endColumn": 38,
-            "problem": "ImportAfterStatement",
+            "problem": "InterOpImportJs",
+            "autofix": [
+                {
+                    "start": 606,
+                    "end": 643,
+                    "replacementText": "",
+                    "line": 16,
+                    "column": 1,
+                    "endLine": 16,
+                    "endColumn": 38
+                },
+                {
+                    "start": 958,
+                    "end": 958,
+                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('../main/js_lib');\nlet Cjs = GeneratedImportVar_1.getProperty('Cjs');\n",
+                    "line": 16,
+                    "column": 1,
+                    "endLine": 16,
+                    "endColumn": 38
+                }
+            ],
             "suggest": "",
-            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
+            "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
             "severity": "ERROR"
         },
         {
@@ -32,14 +52,22 @@
             "problem": "InterOpImportJs",
             "autofix": [
                 {
-                    "start": 619,
-                    "end": 656,
-                    "replacementText": ""
+                    "start": 644,
+                    "end": 681,
+                    "replacementText": "",
+                    "line": 17,
+                    "column": 1,
+                    "endLine": 17,
+                    "endColumn": 38
                 },
                 {
-                    "start": 971,
-                    "end": 971,
-                    "replacementText": "let GeneratedImportVar_1 = ESObject.load('../main/js_lib');\nlet Cjs = GeneratedImportVar_1.getPropertyByName('Cjs');\n"
+                    "start": 958,
+                    "end": 958,
+                    "replacementText": "let GeneratedImportVar_2 = ESValue.load('../main/js_lib');\nlet fjs = GeneratedImportVar_2.getProperty('fjs');\n",
+                    "line": 17,
+                    "column": 1,
+                    "endLine": 17,
+                    "endColumn": 38
                 }
             ],
             "suggest": "",
@@ -50,28 +78,26 @@
             "line": 18,
             "column": 1,
             "endLine": 18,
-            "endColumn": 38,
-            "problem": "ImportAfterStatement",
-            "suggest": "",
-            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 18,
-            "column": 1,
-            "endLine": 18,
-            "endColumn": 38,
+            "endColumn": 64,
             "problem": "InterOpImportJs",
             "autofix": [
                 {
-                    "start": 657,
-                    "end": 694,
-                    "replacementText": ""
+                    "start": 682,
+                    "end": 745,
+                    "replacementText": "",
+                    "line": 18,
+                    "column": 1,
+                    "endLine": 18,
+                    "endColumn": 64
                 },
                 {
-                    "start": 971,
-                    "end": 971,
-                    "replacementText": "let GeneratedImportVar_2 = ESObject.load('../main/js_lib');\nlet fjs = GeneratedImportVar_2.getPropertyByName('fjs');\n"
+                    "start": 958,
+                    "end": 958,
+                    "replacementText": "let GeneratedImportVar_3 = ESValue.load('./jsfiles/preview_import_js');\nlet CPreview = GeneratedImportVar_3.getProperty('CPreview');\nlet bar = GeneratedImportVar_3.getProperty('bar');\nlet foo = GeneratedImportVar_3.getProperty('foo');\n",
+                    "line": 18,
+                    "column": 1,
+                    "endLine": 18,
+                    "endColumn": 64
                 }
             ],
             "suggest": "",
@@ -82,28 +108,26 @@
             "line": 19,
             "column": 1,
             "endLine": 19,
-            "endColumn": 64,
-            "problem": "ImportAfterStatement",
-            "suggest": "",
-            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 19,
-            "column": 1,
-            "endLine": 19,
-            "endColumn": 64,
+            "endColumn": 44,
             "problem": "InterOpImportJs",
             "autofix": [
                 {
-                    "start": 695,
-                    "end": 758,
-                    "replacementText": ""
+                    "start": 746,
+                    "end": 789,
+                    "replacementText": "",
+                    "line": 19,
+                    "column": 1,
+                    "endLine": 19,
+                    "endColumn": 44
                 },
                 {
-                    "start": 971,
-                    "end": 971,
-                    "replacementText": "let GeneratedImportVar_3 = ESObject.load('./jsfiles/preview_import_js');\nlet CPreview = GeneratedImportVar_3.getPropertyByName('CPreview');\nlet bar = GeneratedImportVar_3.getPropertyByName('bar');\nlet foo = GeneratedImportVar_3.getPropertyByName('foo');\n"
+                    "start": 958,
+                    "end": 958,
+                    "replacementText": "let GeneratedImportVar_4 = ESValue.load('./interop_import_js_js');\nlet myAaa = GeneratedImportVar_4.getProperty('aaa');\n",
+                    "line": 19,
+                    "column": 1,
+                    "endLine": 19,
+                    "endColumn": 44
                 }
             ],
             "suggest": "",
@@ -114,28 +138,26 @@
             "line": 20,
             "column": 1,
             "endLine": 20,
-            "endColumn": 44,
-            "problem": "ImportAfterStatement",
-            "suggest": "",
-            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 20,
-            "column": 1,
-            "endLine": 20,
-            "endColumn": 44,
+            "endColumn": 57,
             "problem": "InterOpImportJs",
             "autofix": [
                 {
-                    "start": 759,
-                    "end": 802,
-                    "replacementText": ""
+                    "start": 790,
+                    "end": 846,
+                    "replacementText": "",
+                    "line": 20,
+                    "column": 1,
+                    "endLine": 20,
+                    "endColumn": 57
                 },
                 {
-                    "start": 971,
-                    "end": 971,
-                    "replacementText": "let GeneratedImportVar_4 = ESObject.load('./interop_import_js_js');\nlet myAaa = GeneratedImportVar_4.getPropertyByName('aaa');\n"
+                    "start": 958,
+                    "end": 958,
+                    "replacementText": "let GeneratedImportVar_5 = ESValue.load('./interop_import_js_js');\nlet myAaa = GeneratedImportVar_5.getProperty('aaa');\nlet ClassA = GeneratedImportVar_5.getProperty('ClassA');\nlet Dog = GeneratedImportVar_5.getProperty('Dog');\n",
+                    "line": 20,
+                    "column": 1,
+                    "endLine": 20,
+                    "endColumn": 57
                 }
             ],
             "suggest": "",
@@ -146,28 +168,26 @@
             "line": 21,
             "column": 1,
             "endLine": 21,
-            "endColumn": 57,
-            "problem": "ImportAfterStatement",
-            "suggest": "",
-            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 21,
-            "column": 1,
-            "endLine": 21,
-            "endColumn": 57,
+            "endColumn": 53,
             "problem": "InterOpImportJs",
             "autofix": [
                 {
-                    "start": 803,
-                    "end": 859,
-                    "replacementText": ""
+                    "start": 847,
+                    "end": 899,
+                    "replacementText": "",
+                    "line": 21,
+                    "column": 1,
+                    "endLine": 21,
+                    "endColumn": 53
                 },
                 {
-                    "start": 971,
-                    "end": 971,
-                    "replacementText": "let GeneratedImportVar_5 = ESObject.load('./interop_import_js_js');\nlet myAaa = GeneratedImportVar_5.getPropertyByName('aaa');\nlet ClassA = GeneratedImportVar_5.getPropertyByName('ClassA');\nlet Dog = GeneratedImportVar_5.getPropertyByName('Dog');\n"
+                    "start": 958,
+                    "end": 958,
+                    "replacementText": "let GeneratedImportVar_6 = ESValue.load('./interop_import_js_js');\n",
+                    "line": 21,
+                    "column": 1,
+                    "endLine": 21,
+                    "endColumn": 53
                 }
             ],
             "suggest": "",
@@ -178,60 +198,26 @@
             "line": 22,
             "column": 1,
             "endLine": 22,
-            "endColumn": 53,
-            "problem": "ImportAfterStatement",
-            "suggest": "",
-            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 22,
-            "column": 1,
-            "endLine": 22,
-            "endColumn": 53,
-            "problem": "InterOpImportJs",
-            "autofix": [
-                {
-                    "start": 860,
-                    "end": 912,
-                    "replacementText": ""
-                },
-                {
-                    "start": 971,
-                    "end": 971,
-                    "replacementText": "let GeneratedImportVar_6 = ESObject.load('./interop_import_js_js');\n"
-                }
-            ],
-            "suggest": "",
-            "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 23,
-            "column": 1,
-            "endLine": 23,
-            "endColumn": 59,
-            "problem": "ImportAfterStatement",
-            "suggest": "",
-            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 23,
-            "column": 1,
-            "endLine": 23,
             "endColumn": 59,
             "problem": "InterOpImportJs",
             "autofix": [
                 {
-                    "start": 913,
-                    "end": 971,
-                    "replacementText": ""
+                    "start": 900,
+                    "end": 958,
+                    "replacementText": "",
+                    "line": 22,
+                    "column": 1,
+                    "endLine": 22,
+                    "endColumn": 59
                 },
                 {
-                    "start": 971,
-                    "end": 971,
-                    "replacementText": "let GeneratedImportVar_7 = ESObject.load('./interop_import_js_js');\nlet Wiki = GeneratedImportVar_7.getPropertyByName('Wiki');\nlet Doge = GeneratedImportVar_7.getPropertyByName('Dog');\n"
+                    "start": 958,
+                    "end": 958,
+                    "replacementText": "let GeneratedImportVar_7 = ESValue.load('./interop_import_js_js');\nlet Wiki = GeneratedImportVar_7.getProperty('Wiki');\nlet Doge = GeneratedImportVar_7.getProperty('Dog');\n",
+                    "line": 22,
+                    "column": 1,
+                    "endLine": 22,
+                    "endColumn": 59
                 }
             ],
             "suggest": "",

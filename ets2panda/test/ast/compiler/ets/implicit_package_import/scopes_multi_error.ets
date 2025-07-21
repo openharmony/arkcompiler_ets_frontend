@@ -29,6 +29,7 @@ export default function TestFunc(): void {}
 export default function TestFuncToo(): void {}
 
 /* @@? 20:10 Error TypeError: Main overload is not enabled */
+/* @@? 20:15 Error TypeError: Only 'FixedArray<string>' type argument is allowed. */
 /* @@? 24:10 Error TypeError: Main overload is not enabled */
 /* @@? 24:10 Error TypeError: 0 or 1 argument are allowed */
 /* @@? 29:16 Error TypeError: Only one default export is allowed in a module */

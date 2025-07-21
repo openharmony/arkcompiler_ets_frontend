@@ -209,7 +209,7 @@ private:
 
         if (!Relation()->OnlyCheckWidening()) {
             ES2PANDA_ASSERT(Relation()->GetNode());
-            Relation()->GetNode()->SetTsType(Checker()->Allocator()->New<TargetType>(static_cast<TType>(value)));
+            Relation()->GetNode()->SetTsType(Checker()->ProgramAllocator()->New<TargetType>(static_cast<TType>(value)));
         }
     }
 };

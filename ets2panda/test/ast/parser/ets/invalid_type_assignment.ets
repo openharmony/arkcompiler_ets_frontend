@@ -26,8 +26,5 @@ type AxeX = Point['x'];
 /* @@? 20:30 Error SyntaxError: Label must be followed by a loop statement. */
 /* @@? 20:30 Error TypeError: Type name 'number' used in the wrong context */
 /* @@? 21:19 Error SyntaxError: Unexpected token, expected ']'. */
-/* @@? 21:19 Error SyntaxError: Invalid Type. */
 /* @@? 21:19 Error SyntaxError: Unexpected token ']'. */
-/* @@? 21:19 Error SyntaxError: Unexpected token ']'. */
-/* @@? 21:22 Error SyntaxError: Unexpected token ']'. */
 /* @@? 21:22 Error SyntaxError: Unexpected token ']'. */

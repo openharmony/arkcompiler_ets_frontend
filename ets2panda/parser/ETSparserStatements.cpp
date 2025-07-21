@@ -72,7 +72,6 @@
 #include "ir/statements/doWhileStatement.h"
 #include "ir/statements/breakStatement.h"
 #include "ir/statements/debuggerStatement.h"
-#include "ir/ets/etsLaunchExpression.h"
 #include "ir/ets/etsClassLiteral.h"
 #include "ir/ets/etsPrimitiveType.h"
 #include "ir/ets/etsPackageDeclaration.h"
@@ -145,10 +144,6 @@ static ir::Statement *ValidateExportableStatement(ETSParser *parser, ir::Stateme
         if (stmt->IsETSModule()) {
             return stmt;
         }
-        if ((memberModifiers & ir::ModifierFlags::EXPORT_TYPE) != 0U &&
-            !(stmt->IsClassDeclaration() || stmt->IsTSInterfaceDeclaration() || stmt->IsTSTypeAliasDeclaration())) {
-            parser->LogError(diagnostic::ONLY_EXPORT_CLASS_OR_INTERFACE, {}, stmt->Start());
-        }
         if (stmt->IsAnnotationDeclaration()) {
             if ((memberModifiers & ir::ModifierFlags::DEFAULT_EXPORT) != 0U) {
                 parser->LogError(diagnostic::INVALID_EXPORT_DEFAULT, {}, stmt->Start());
@@ -156,8 +151,7 @@ static ir::Statement *ValidateExportableStatement(ETSParser *parser, ir::Stateme
         }
         stmt->AddModifier(memberModifiers);
     } else {
-        if ((memberModifiers &
-             (ir::ModifierFlags::EXPORT | ir::ModifierFlags::DEFAULT_EXPORT | ir::ModifierFlags::EXPORT_TYPE)) != 0U) {
+        if ((memberModifiers & (ir::ModifierFlags::EXPORT | ir::ModifierFlags::DEFAULT_EXPORT)) != 0U) {
             parser->LogError(diagnostic::EXPORT_NON_DECLARATION, {}, pos);
         }
     }
@@ -166,9 +160,7 @@ static ir::Statement *ValidateExportableStatement(ETSParser *parser, ir::Stateme
 }
 bool ETSParser::IsExportedDeclaration(ir::ModifierFlags memberModifiers)
 {
-    return (memberModifiers & ir::ModifierFlags::EXPORTED) != 0U &&
-           (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_MULTIPLY ||
-            Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE);
+    return (memberModifiers & ir::ModifierFlags::EXPORTED) != 0U;
 }
 
 bool ETSParser::IsInitializerBlockStart() const
@@ -180,7 +172,8 @@ bool ETSParser::IsInitializerBlockStart() const
     auto savedPos = Lexer()->Save();
     Lexer()->NextToken();
     const bool validStart = Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE &&
-                            (GetContext().Status() & ParserStatus::IN_NAMESPACE) != 0;
+                            ((GetContext().Status() & ParserStatus::IN_NAMESPACE) != 0 ||
+                             (GetContext().Status() & ParserStatus::IN_PACKAGE) != 0);
     Lexer()->Rewind(savedPos);
     return validStart;
 }
@@ -188,12 +181,8 @@ bool ETSParser::IsInitializerBlockStart() const
 ir::Statement *ETSParser::ParseTopLevelDeclStatement(StatementParsingFlags flags)
 {
     auto [memberModifiers, startLoc] = ParseMemberModifiers();
-    if (IsExportedDeclaration(memberModifiers)) {
-        return ParseExport(startLoc, memberModifiers);
-    }
 
-    if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_GET ||
-        Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_SET) {
+    if (CheckAccessorDeclaration(memberModifiers)) {
         return ParseAccessorWithReceiver(memberModifiers);
     }
 
@@ -202,6 +191,7 @@ ir::Statement *ETSParser::ParseTopLevelDeclStatement(StatementParsingFlags flags
     switch (token.Type()) {
         case lexer::TokenType::KEYW_FUNCTION: {
             result = ParseFunctionDeclaration(false, memberModifiers);
+            ES2PANDA_ASSERT(result != nullptr);
             result->SetStart(startLoc);
             break;
         }
@@ -236,14 +226,33 @@ ir::Statement *ETSParser::ParseTopLevelDeclStatement(StatementParsingFlags flags
         }
     }
 
+    if (result == nullptr && IsExportedDeclaration(memberModifiers)) {
+        return ParseExport(startLoc, memberModifiers);
+    }
+
     return ValidateExportableStatement(this, result, memberModifiers, startLoc);
 }
 
 ir::Statement *ETSParser::ParseTopLevelStatement()
 {
     const auto flags = StatementParsingFlags::ALLOW_LEXICAL;
+    ArenaVector<ir::JsDocInfo> jsDocInformation(Allocator()->Adapter());
+    if (Lexer()->TryEatTokenType(lexer::TokenType::JS_DOC_START)) {
+        jsDocInformation = ParseJsDocInfos();
+    }
 
+    if (Lexer()->GetToken().Type() == lexer::TokenType::EOS ||
+        ((GetContext().Status() & ParserStatus::IN_NAMESPACE) != 0 &&
+         Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_BRACE)) {
+        return nullptr;
+    }
+    GetContext().Status() |= ParserStatus::ALLOW_JS_DOC_START;
     auto result = ParseTopLevelDeclStatement(flags);
+    GetContext().Status() ^= ParserStatus::ALLOW_JS_DOC_START;
+    if (result != nullptr) {
+        ApplyJsDocInfoToSpecificNodeType(result, std::move(jsDocInformation));
+    }
+
     if (result == nullptr) {
         result = ParseStatement(flags);
     }
@@ -289,7 +298,7 @@ bool ETSParser::ValidateForInStatement()
 
 ir::Statement *ETSParser::ParseDebuggerStatement()
 {
-    LogUnexpectedToken(lexer::TokenType::KEYW_DEBUGGER);
+    LogError(diagnostic::ERROR_ARKTS_NO_DEBUGGER_STATEMENT);
     return AllocBrokenStatement(Lexer()->GetToken().Loc());
 }
 
@@ -331,6 +340,7 @@ ir::Statement *ETSParser::ParseTryStatement()
     ArenaVector<std::pair<compiler::LabelPair, const ir::Statement *>> finalizerInsertions(Allocator()->Adapter());
 
     auto *tryStatement = AllocNode<ir::TryStatement>(body, std::move(catchClauses), finalizer, finalizerInsertions);
+    ES2PANDA_ASSERT(tryStatement != nullptr);
     tryStatement->SetRange({startLoc, endLoc});
     ConsumeSemicolon(tryStatement);
 

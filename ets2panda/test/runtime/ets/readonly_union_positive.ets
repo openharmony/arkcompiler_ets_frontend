@@ -63,42 +63,45 @@ function getReadonlyWithNull(param: readonly string[] | null): string {
 function main(): void {
     // Test basic readonly union - the core fix
     let result1 = getTypeInfo("hello");
-    assertEQ(result1, "string");
+    arktest.assertEQ(result1, "string");
     
     let result2 = getTypeInfo([1, 2, 3] as readonly number[]);
-    assertEQ(result2, "array");
+    arktest.assertEQ(result2, "array");
     
     // Test readonly generic union
     let result3 = getTypeInfoGeneric(true);
-    assertEQ(result3, "boolean");
+    arktest.assertEQ(result3, "boolean");
+    
+    let result4 = getTypeInfoGeneric([10, 20] as readonly Array<number>);
+    arktest.assertEQ(result4, "generic_array");
     
     let result5 = getMultiUnionType(true);
-    assertEQ(result5, "boolean");
+    arktest.assertEQ(result5, "boolean");
     
     let result6 = getMultiUnionType(42);
-    assertEQ(result6, "number");
+    arktest.assertEQ(result6, "number");
     
     let result7 = getMultiUnionType(["a", "b"] as readonly string[]);
-    assertEQ(result7, "readonly_string_array");
+    arktest.assertEQ(result7, "readonly_string_array");
     
     // Test readonly number[] | readonly string[]
     let result8 = getDoubleReadonlyArrays([1, 2] as readonly number[]);
-    assertEQ(result8, "readonly_array");
+    arktest.assertEQ(result8, "readonly_array");
     
     let result9 = getDoubleReadonlyArrays(["x", "y"] as readonly string[]);
-    assertEQ(result9, "readonly_array");
+    arktest.assertEQ(result9, "readonly_array");
     
     // Test readonly tuple
     let result10 = getTupleUnion(true);
-    assertEQ(result10, "boolean");
+    arktest.assertEQ(result10, "boolean");
     
     let result11 = getTupleUnion([42, "test"] as readonly [number, string]);
-    assertEQ(result11, "readonly_tuple");
+    arktest.assertEQ(result11, "readonly_tuple");
     
     // Test readonly with null
     let result12 = getReadonlyWithNull(null);
-    assertEQ(result12, "null");
+    arktest.assertEQ(result12, "null");
     
     let result13 = getReadonlyWithNull(["test"] as readonly string[]);
-    assertEQ(result13, "readonly_string_array");
+    arktest.assertEQ(result13, "readonly_string_array");
 } 

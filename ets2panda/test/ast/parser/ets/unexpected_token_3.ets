@@ -38,5 +38,5 @@ function labeledTest01(): int {
 
 /* @@@ label Error SyntaxError: Unexpected token, expected an identifier. */
 /* @@@ label1 Error SyntaxError: Unexpected token '^'. */
-/* @@@ label1 Error SyntaxError: Unexpected token '^'. */
+/* @@? 27:57 Error SyntaxError: Unexpected token 'label1'. */
 /* @@? 27:57 Error TypeError: Identifier 'label1' is used in wrong context. */

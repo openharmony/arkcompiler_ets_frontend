@@ -25,6 +25,9 @@ struct Program;
 namespace ark::es2panda::compiler {
 class CompileQueue;
 
+void HandleGenerateDecl(const parser::Program &program, util::DiagnosticEngine &diagnosticEngine,
+                        const std::string &outputPath, bool isIsolatedDeclgen);
+
 class CompilationUnit {
 public:
     explicit CompilationUnit(const SourceFile &i, const util::Options &o, uint32_t s, ScriptExtension e,
@@ -52,7 +55,7 @@ public:
     NO_MOVE_SEMANTIC(CompilerImpl);
     ~CompilerImpl() = default;
 
-    pandasm::Program *Compile(const CompilationUnit &unit);
+    pandasm::Program *Compile(const CompilationUnit &unit, public_lib::Context *context);
 
     std::vector<util::Plugin> const &Plugins()
     {

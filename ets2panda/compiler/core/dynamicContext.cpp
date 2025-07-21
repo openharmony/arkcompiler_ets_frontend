@@ -69,6 +69,7 @@ LexEnvContext::LexEnvContext(LoopEnvScope *envScope, PandaGen *pg, LabelTarget t
     }
 
     catchTable_ = Cg()->CreateCatchTable();
+    ES2PANDA_ASSERT(catchTable_ != nullptr);
     const auto &labelSet = catchTable_->LabelSet();
     const auto *node = envScope_->Scope()->Node();
 
@@ -222,6 +223,7 @@ void ETSTryContext::EmitFinalizer(
     // First compile of the finaly clause, executed if the statement executed normally
     tryStmt_->FinallyBlock()->Compile(etsg);
 
+    ES2PANDA_ASSERT(finalizerTable != nullptr);
     etsg->Branch(tryStmt_, finalizerTable->LabelSet().CatchEnd());
 
     for (std::pair<compiler::LabelPair, const ir::Statement *> insertion : finalizerInsertions) {

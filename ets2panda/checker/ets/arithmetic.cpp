@@ -557,15 +557,16 @@ checker::Type *ETSChecker::CheckBinaryOperatorLogical(ir::Expression *left, ir::
     return CreateETSUnionType({MaybeBoxExpression(left), MaybeBoxExpression(right)});
 }
 
+// NOTE: code inside this function follows the broken logic
 bool ETSChecker::CheckValidEqualReferenceType(checker::Type *const leftType, checker::Type *const rightType)
 {
-    auto isGlobalObjectType {[](checker::Type *const type) -> bool {
-        return type->IsETSObjectType() && type->AsETSObjectType()->IsGlobalETSObjectType();
+    auto isRelaxedType {[](checker::Type *const type) -> bool {
+        return (type->IsETSObjectType() && type->AsETSObjectType()->IsGlobalETSObjectType()) || type->IsETSAnyType() ||
+               type->IsETSNullType() || type->IsETSUndefinedType();
     }};
 
-    // Equality expression is always allowed for Object, undefined and null
-    if (isGlobalObjectType(leftType) || isGlobalObjectType(rightType) || leftType->IsETSUndefinedType() ||
-        rightType->IsETSUndefinedType() || leftType->IsETSNullType() || rightType->IsETSNullType()) {
+    // Equality expression is always allowed for *magic types*
+    if (isRelaxedType(leftType) || isRelaxedType(rightType)) {
         return true;
     }
 
@@ -652,10 +653,10 @@ static Type *CheckOperatorEqualDynamic(ETSChecker *checker, BinaryArithmOperands
     }
     if (otherExp->TsType()->IsETSReferenceType()) {
         // have to prevent casting dyn_exp via ApplyCast without nullish flag
-        return checker->GlobalETSNullishObjectType();
+        return checker->GlobalETSAnyType();
     }
     checker->LogError(diagnostic::BINOP_DYN_UNIMPLEMENTED, {}, ops.expr->Start());
-    return checker->GlobalETSNullishObjectType();
+    return checker->GlobalETSAnyType();
 }
 
 static Type *HandelReferenceBinaryEquality(ETSChecker *checker, BinaryArithmOperands const &ops)
@@ -837,6 +838,7 @@ Type *ETSChecker::CheckBinaryOperatorNullishCoalescing(ir::Expression *left, ir:
         return leftType;
     }
     leftType = GetNonNullishType(leftType);
+    ES2PANDA_ASSERT(leftType != nullptr);
     if (leftType->IsTypeError()) {
         ES2PANDA_ASSERT(IsAnyError());
         return GlobalTypeError();
@@ -1141,10 +1143,6 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperator(ir::Expression *left,
     Context().CheckTestSmartCastCondition(operationType);
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     checker::Type *rightType = right->Check(this);
-
-    if (rightType == nullptr) {
-        rightType = right->Check(this);
-    }
 
     if (right->IsTypeNode()) {
         rightType = right->AsTypeNode()->GetType(this);

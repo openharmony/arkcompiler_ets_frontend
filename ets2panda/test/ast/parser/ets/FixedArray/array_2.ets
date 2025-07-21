@@ -15,9 +15,7 @@
 
 let c: FixedArray<Double> = [0.33 /* @@ label */0.66 0.99]
 
-/* @@? 16:49 Error SyntaxError: Unexpected token, expected ',' or ']'. */
-/* @@? 16:49 Error SyntaxError: Unexpected token '0.66'. */
+/* @@@ label Error SyntaxError: Unexpected token, expected ',' or ']'. */
+/* @@@ label Error SyntaxError: Unexpected token '0.66'. */
 /* @@? 16:54 Error SyntaxError: Unexpected token '0.99'. */
-/* @@? 16:58 Error SyntaxError: Unexpected token ']'. */
-/* @@? 16:58 Error SyntaxError: Unexpected token ']'. */
 /* @@? 16:58 Error SyntaxError: Unexpected token ']'. */

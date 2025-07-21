@@ -66,6 +66,7 @@ static bool HasDefaultParameters(const ir::ScriptFunction *function, util::Diagn
 static ir::TSTypeParameterDeclaration *CreateParameterDeclaraion(ir::MethodDefinition *method, public_lib::Context *ctx)
 {
     auto const allocator = ctx->allocator;
+    ES2PANDA_ASSERT(method->Function());
     if (method->Function()->TypeParams() == nullptr || method->Function()->TypeParams()->Params().empty()) {
         return nullptr;
     }
@@ -93,6 +94,7 @@ static ir::FunctionSignature CreateFunctionSignature(ir::MethodDefinition *metho
     auto const allocator = ctx->allocator;
 
     ir::TSTypeParameterDeclaration *typeParamDecl = CreateParameterDeclaraion(method, ctx);
+    ES2PANDA_ASSERT(method->Function());
     auto *returnTypeAnnotation =
         method->Function()->ReturnTypeAnnotation() != nullptr
             ? method->Function()->ReturnTypeAnnotation()->Clone(allocator, nullptr)->AsTypeNode()
@@ -106,7 +108,8 @@ static ir::TSTypeParameterInstantiation *CreateTypeParameterInstantiation(ir::Me
 {
     auto const allocator = ctx->allocator;
 
-    if (method->Function()->TypeParams() == nullptr || method->Function()->TypeParams()->Params().empty()) {
+    if ((method->Function() != nullptr && method->Function()->TypeParams() == nullptr) ||
+        method->Function()->TypeParams()->Params().empty()) {
         return nullptr;
     }
     ArenaVector<ir::TypeNode *> selfParams(allocator->Adapter());
@@ -134,6 +137,7 @@ static ir::BlockStatement *CreateFunctionBody(ir::MethodDefinition *method, publ
     auto const allocator = ctx->allocator;
     ArenaVector<ir::Statement *> funcStatements(allocator->Adapter());
 
+    ES2PANDA_ASSERT(method->Id());
     auto *const callee =
         util::NodeAllocator::ForceSetParent<ir::Identifier>(allocator, method->Id()->Name(), allocator);
 
@@ -166,6 +170,7 @@ static ir::FunctionExpression *CreateFunctionExpression(ir::MethodDefinition *me
         allocator, allocator,
         ir::ScriptFunction::ScriptFunctionData {
             body, std::move(signature), method->Function()->Flags(), {}, method->Function()->Language()});
+    ES2PANDA_ASSERT(method->Function());
     funcNode->AddModifier(method->Function()->Modifiers());
     funcNode->SetRange({startLoc, endLoc});
 
@@ -187,6 +192,7 @@ static void CreateFunctionOverload(ir::MethodDefinition *method, ArenaVector<ir:
     overloadMethod->Function()->AddFlag(ir::ScriptFunctionFlags::OVERLOAD);
     overloadMethod->SetRange(funcExpression->Range());
 
+    ES2PANDA_ASSERT(overloadMethod->Function());
     if (!method->IsDeclare() && method->Parent()->IsTSInterfaceBody()) {
         overloadMethod->Function()->Body()->AsBlockStatement()->Statements().clear();
     }
@@ -198,6 +204,7 @@ static void CreateFunctionOverload(ir::MethodDefinition *method, ArenaVector<ir:
 
 static void ExpandOptionalParameterAnnotationsToUnions(public_lib::Context *ctx, ir::ScriptFunction *function)
 {
+    ES2PANDA_ASSERT(function);
     auto allocator = ctx->allocator;
 
     for (auto p : function->Params()) {
@@ -222,6 +229,7 @@ static void ClearOptionalParameters(public_lib::Context *ctx, ir::ScriptFunction
         if (oldParam->IsOptional()) {
             param = util::NodeAllocator::ForceSetParent<ir::ETSParameterExpression>(allocator, oldParam->Ident(), false,
                                                                                     allocator);
+            ES2PANDA_ASSERT(param);
             param->SetParent(function);
         }
         ES2PANDA_ASSERT(!param->AsETSParameterExpression()->IsOptional());
@@ -248,7 +256,7 @@ static void ProcessGlobalFunctionDefinition(ir::MethodDefinition *method, public
         for (size_t i = 0; i < params.size() - paramsToCut; ++i) {
             auto param = params[i]->AsETSParameterExpression();
             callArgs.push_back(param->Ident()->CloneReference(allocator, nullptr)->AsIdentifier());
-
+            ES2PANDA_ASSERT(param->Ident()->Clone(allocator, nullptr));
             functionParams.push_back(allocator->New<ir::ETSParameterExpression>(
                 param->Ident()->Clone(allocator, nullptr)->AsIdentifier(), false, allocator));
         }

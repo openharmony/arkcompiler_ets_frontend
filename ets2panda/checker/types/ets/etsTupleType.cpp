@@ -123,13 +123,13 @@ void ETSTupleType::AssignmentTarget(TypeRelation *const relation, Type *const so
 Type *ETSTupleType::Substitute(TypeRelation *relation, const Substitution *substitution)
 {
     auto *const checker = relation->GetChecker()->AsETSChecker();
-    ArenaVector<Type *> newTypeList(checker->Allocator()->Adapter());
+    ArenaVector<Type *> newTypeList(checker->ProgramAllocator()->Adapter());
 
     for (auto *const tupleTypeListElement : GetTupleTypesList()) {
         newTypeList.emplace_back(tupleTypeListElement->Substitute(relation, substitution));
     }
 
-    return checker->Allocator()->New<ETSTupleType>(checker, std::move(newTypeList));
+    return checker->ProgramAllocator()->New<ETSTupleType>(checker, std::move(newTypeList));
 }
 
 void ETSTupleType::IsSubtypeOf(TypeRelation *const relation, Type *target)
@@ -196,6 +196,7 @@ Type *ETSTupleType::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[ma
 {
     auto *const checker = relation->GetChecker()->AsETSChecker();
     auto *const tupleType = allocator->New<ETSTupleType>(checker, GetTupleTypesList());
+    ES2PANDA_ASSERT(tupleType != nullptr);
     tupleType->typeFlags_ = typeFlags_;
     return tupleType;
 }

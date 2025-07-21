@@ -206,23 +206,71 @@
                             "type": "Identifier",
                             "name": "foo",
                             "typeAnnotation": {
-                              "type": "TSArrayType",
-                              "elementType": {
-                                "type": "ETSUndefinedType",
+                              "type": "ETSTypeReference",
+                              "part": {
+                                "type": "ETSTypeReferencePart",
+                                "name": {
+                                  "type": "Identifier",
+                                  "name": "Array",
+                                  "decorators": [],
+                                  "loc": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 1,
+                                      "program": "array_with_undefined_type.ets"
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 4,
+                                      "program": "array_with_undefined_type.ets"
+                                    }
+                                  }
+                                },
+                                "typeParams": {
+                                  "type": "TSTypeParameterInstantiation",
+                                  "params": [
+                                    {
+                                      "type": "ETSUndefinedType",
+                                      "loc": {
+                                        "start": {
+                                          "line": 1,
+                                          "column": 4,
+                                          "program": "array_with_undefined_type.ets"
+                                        },
+                                        "end": {
+                                          "line": 1,
+                                          "column": 4,
+                                          "program": "array_with_undefined_type.ets"
+                                        }
+                                      }
+                                    }
+                                  ],
+                                  "loc": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 4,
+                                      "program": "array_with_undefined_type.ets"
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 4,
+                                      "program": "array_with_undefined_type.ets"
+                                    }
+                                  }
+                                },
                                 "loc": {
                                   "start": {
-                                    "line": 17,
-                                    "column": 14,
+                                    "line": 1,
+                                    "column": 1,
                                     "program": "array_with_undefined_type.ets"
                                   },
                                   "end": {
-                                    "line": 17,
-                                    "column": 23,
+                                    "line": 1,
+                                    "column": 4,
                                     "program": "array_with_undefined_type.ets"
                                   }
                                 }
                               },
-                              "annotations": [],
                               "loc": {
                                 "start": {
                                   "line": 17,

@@ -17,8 +17,11 @@ let x: int[ = [1,2,3]
 let y: int = x [0]
 
 /* @@? 16:13 Error SyntaxError: Unexpected token, expected ']'. */
-/* @@? 16:13 Error SyntaxError: Invalid Type. */
 /* @@? 16:13 Error SyntaxError: Unexpected token ']'. */
-/* @@? 16:13 Error SyntaxError: Unexpected token ']'. */
-/* @@? 16:13 Error SyntaxError: Unexpected token ']'. */
+/* @@? 16:13 Error TypeError: Indexed access is not supported for such expression type. */
+/* @@? 16:17 Error SyntaxError: Unexpected token, expected ']'. */
+/* @@? 16:18 Error SyntaxError: Unexpected token '2'. */
+/* @@? 16:19 Error SyntaxError: Unexpected token ','. */
+/* @@? 16:20 Error SyntaxError: Unexpected token '3'. */
+/* @@? 16:21 Error SyntaxError: Unexpected token ']'. */
 /* @@? 17:14 Error TypeError: Indexed access is not supported for such expression type. */

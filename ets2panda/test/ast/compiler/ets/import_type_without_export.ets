@@ -17,5 +17,3 @@ import type {A, C} from /* @@ label */'./export_type.ets'
 
 let a = new A();
 let b = new C();
-
-/* @@@ label Error TypeError: Cannot import 'C', imported type imports only exported types.  */

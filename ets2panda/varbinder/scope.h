@@ -216,6 +216,7 @@ public:
 
     Variable *AddDecl(ArenaAllocator *allocator, Decl *decl, ScriptExtension extension)
     {
+        ES2PANDA_ASSERT(decl != nullptr);
         auto *var =
             AddBinding(allocator, FindLocal(decl->Name(), varbinder::ResolveBindingOptions::BINDINGS), decl, extension);
         if (var != nullptr) {
@@ -574,6 +575,16 @@ public:
         return internalName_;
     }
 
+    void SetEmitted()
+    {
+        emitted_ = true;
+    }
+
+    bool IsEmitted() const
+    {
+        return emitted_;
+    }
+
     Variable *AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
                          [[maybe_unused]] ScriptExtension extension) override;
     Variable *InsertBindingIfAbsentInScope(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
@@ -582,6 +593,7 @@ public:
 private:
     util::StringView name_ {};
     util::StringView internalName_ {};
+    bool emitted_ {false};
 };
 
 class ClassScope : public LocalScope {
@@ -864,6 +876,7 @@ public:
     {
         auto *paramScope = allocator->New<FunctionParamScope>(allocator, this);
         paramScope_ = paramScope;
+        ES2PANDA_ASSERT(paramScope_ != nullptr);
         paramScope_->BindFunctionScope(this);
     }
 
@@ -971,7 +984,7 @@ std::pair<varbinder::Variable *, bool> Scope::AddDecl(ArenaAllocator *allocator,
 
     auto *decl = allocator->New<DeclType>(name);
     variable = allocator->New<VariableType>(decl, flags);
-
+    ES2PANDA_ASSERT(variable != nullptr);
     decls_.emplace_back(decl);
     bindings_.insert({decl->Name(), variable});
     variable->SetScope(this);

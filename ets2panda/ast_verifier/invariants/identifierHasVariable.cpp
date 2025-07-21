@@ -25,8 +25,8 @@ public:
     ExceptionsMatcher(const IdentifierHasVariable *inv, const ir::Identifier *ast) : inv_(inv), ast_(ast) {}
     bool Match()
     {
-        auto res = IsLengthProp() || IsEmptyName() || IsInObjectExpr() || IsInPackageDecl() || IsUtilityType() ||
-                   IsUnionMemberAccess() || IsFixedArrayType();
+        auto res = IsLengthProp() || IsEmptyName() || IsInObjectExpr() || IsInPackageDecl() || IsBuiltinType() ||
+                   IsUnionMemberAccess();
         return res;
     }
 
@@ -69,16 +69,13 @@ private:
         return false;
     }
 
-    bool IsUtilityType()
+    bool IsBuiltinType()
     {
+        auto name = ast_->Name();
         // NOTE(mmartin): find a better solution to handle utility type resolution
-        return ast_->Name().Is(Signatures::PARTIAL_TYPE_NAME) || ast_->Name().Is(Signatures::REQUIRED_TYPE_NAME) ||
-               ast_->Name().Is(Signatures::READONLY_TYPE_NAME);
-    }
-
-    bool IsFixedArrayType()
-    {
-        return ast_->Name().Is(Signatures::FIXED_ARRAY_TYPE_NAME);
+        return name.Is(Signatures::PARTIAL_TYPE_NAME) || name.Is(Signatures::REQUIRED_TYPE_NAME) ||
+               name.Is(Signatures::READONLY_TYPE_NAME) || name.Is(Signatures::FIXED_ARRAY_TYPE_NAME) ||
+               name.Is(compiler::Signatures::ANY_TYPE_NAME);
     }
 
     bool IsUnionMemberAccess()

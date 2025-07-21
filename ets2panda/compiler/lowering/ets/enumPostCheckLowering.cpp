@@ -50,7 +50,7 @@ static std::string TypeToString(checker::Type *type)
     return ss.str();
 }
 
-static util::StringView TypeAnnotationToString(ir::ETSTypeReference *typeAnnotation, checker::ETSChecker *checker)
+static util::StringView TypeAnnotationToString(ir::ETSTypeReference *typeAnnotation, public_lib::Context *ctx)
 {
     std::stringstream ss;
     std::function<void(ir::AstNode *)> typeAnnoToStringImpl = [&ss, &typeAnnoToStringImpl](ir::AstNode *node) -> void {
@@ -62,7 +62,7 @@ static util::StringView TypeAnnotationToString(ir::ETSTypeReference *typeAnnotat
     typeAnnotation->Iterate(typeAnnoToStringImpl);
     std::string res = ss.str();
     res.erase(res.size() - 1);
-    return util::UString {res, checker->Allocator()}.View();
+    return util::UString {res, ctx->Allocator()}.View();
 }
 
 static bool IsValidEnumCasting(checker::Type *type, EnumCastType castType)
@@ -113,44 +113,44 @@ static EnumCastType NeedHandleEnumCasting(ir::TSAsExpression *node)
     return IsValidEnumCasting(expr->TsType(), castType) ? castType : EnumCastType::NONE;
 }
 
-static ir::CallExpression *CallStaticEnumMethod(checker::ETSChecker *checker, parser::ETSParser *parser,
+static ir::CallExpression *CallStaticEnumMethod(public_lib::Context *ctx, parser::ETSParser *parser,
                                                 std::string_view className, std::string_view methodName,
                                                 ir::Expression *argument)
 {
     auto classId = parser->CreateExpression(className);
-    auto methodId = checker->AllocNode<ir::Identifier>(methodName, checker->Allocator());
-    auto callee = checker->AllocNode<ir::MemberExpression>(classId, methodId, ir::MemberExpressionKind::PROPERTY_ACCESS,
-                                                           false, false);
-
-    ArenaVector<ir::Expression *> callArguments({argument}, checker->Allocator()->Adapter());
-    return checker->AllocNode<ir::CallExpression>(callee, std::move(callArguments), nullptr, false);
+    auto methodId = ctx->AllocNode<ir::Identifier>(methodName, ctx->Allocator());
+    auto callee = ctx->AllocNode<ir::MemberExpression>(classId, methodId, ir::MemberExpressionKind::PROPERTY_ACCESS,
+                                                       false, false);
+    ArenaVector<ir::Expression *> callArguments({argument}, ctx->Allocator()->Adapter());
+    return ctx->AllocNode<ir::CallExpression>(callee, std::move(callArguments), nullptr, false);
 }
 
-static ir::CallExpression *CallInstanceEnumMethod(checker::ETSChecker *checker, std::string_view methodName,
+static ir::CallExpression *CallInstanceEnumMethod(public_lib::Context *ctx, std::string_view methodName,
                                                   ir::Expression *thisArg)
 {
-    auto methodId = checker->AllocNode<ir::Identifier>(methodName, checker->Allocator());
-    auto callee = checker->AllocNode<ir::MemberExpression>(thisArg, methodId, ir::MemberExpressionKind::PROPERTY_ACCESS,
-                                                           false, false);
+    auto methodId = ctx->AllocNode<ir::Identifier>(methodName, ctx->Allocator());
+    auto callee = ctx->AllocNode<ir::MemberExpression>(thisArg, methodId, ir::MemberExpressionKind::PROPERTY_ACCESS,
+                                                       false, false);
 
-    ArenaVector<ir::Expression *> callArguments({}, checker->Allocator()->Adapter());
-    auto callExpr = checker->AllocNode<ir::CallExpression>(callee, std::move(callArguments), nullptr, false);
+    ArenaVector<ir::Expression *> callArguments({}, ctx->Allocator()->Adapter());
+    auto callExpr = ctx->AllocNode<ir::CallExpression>(callee, std::move(callArguments), nullptr, false);
     callExpr->SetRange(thisArg->Range());
     return callExpr;
 }
 
-static ir::CallExpression *CreateCallInstanceEnumExpression(checker::ETSChecker *checker, ir::AstNode *const node,
+static ir::CallExpression *CreateCallInstanceEnumExpression(public_lib::Context *ctx, ir::AstNode *const node,
                                                             std::string_view methodName)
 {
     ES2PANDA_ASSERT(node->IsExpression());
     auto expr = node->AsExpression();
     auto parent = expr->Parent();
 
-    auto *callExpr = CallInstanceEnumMethod(checker, methodName, expr);
+    auto *callExpr = CallInstanceEnumMethod(ctx, methodName, expr);
     callExpr->SetParent(parent);
 
     auto *calleeClass = FindEnclosingClass(expr);
 
+    auto *checker = ctx->checker->AsETSChecker();
     auto *varBinder = checker->VarBinder()->AsETSBinder();
 
     auto *nearestScope = NearestScope(parent);
@@ -165,23 +165,21 @@ static ir::CallExpression *CreateCallInstanceEnumExpression(checker::ETSChecker 
     return callExpr;
 }
 
-[[nodiscard]] static ir::ETSTypeReference *MakeTypeReference(checker::ETSChecker *const checker,
-                                                             const std::string &name)
+[[nodiscard]] static ir::ETSTypeReference *MakeTypeReference(public_lib::Context *ctx, const std::string &name)
 {
-    auto allocator = checker->Allocator();
-    auto *const ident = checker->AllocNode<ir::Identifier>(util::UString(name, allocator).View(), allocator);
-    auto *const referencePart = checker->AllocNode<ir::ETSTypeReferencePart>(ident, allocator);
-    return checker->AllocNode<ir::ETSTypeReference>(referencePart, allocator);
+    auto allocator = ctx->Allocator();
+    auto *const ident = ctx->AllocNode<ir::Identifier>(util::UString(name, allocator).View(), allocator);
+    auto *const referencePart = ctx->AllocNode<ir::ETSTypeReferencePart>(ident, allocator);
+    return ctx->AllocNode<ir::ETSTypeReference>(referencePart, allocator);
 }
 
-static ir::IfStatement *CreateEnumIfStatement(checker::ETSChecker *const checker, ir::Identifier *ident,
+static ir::IfStatement *CreateEnumIfStatement(public_lib::Context *ctx, ir::Identifier *ident,
                                               const std::string &enumName, ir::Statement *consequent)
 {
-    auto enumType = MakeTypeReference(checker, enumName);
-    auto clonedIdent = ident->Clone(checker->Allocator(), nullptr);
-    auto ifTestExpr =
-        checker->AllocNode<ir::BinaryExpression>(clonedIdent, enumType, lexer::TokenType::KEYW_INSTANCEOF);
-    return checker->AllocNode<ir::IfStatement>(ifTestExpr, consequent, nullptr);
+    auto enumType = MakeTypeReference(ctx, enumName);
+    auto clonedIdent = ident->Clone(ctx->Allocator(), nullptr);
+    auto ifTestExpr = ctx->AllocNode<ir::BinaryExpression>(clonedIdent, enumType, lexer::TokenType::KEYW_INSTANCEOF);
+    return ctx->AllocNode<ir::IfStatement>(ifTestExpr, consequent, nullptr);
 }
 
 ir::Statement *EnumPostCheckLoweringPhase::CreateStatement(const std::string &src, ir::Expression *ident,
@@ -189,11 +187,11 @@ ir::Statement *EnumPostCheckLoweringPhase::CreateStatement(const std::string &sr
 {
     std::vector<ir::AstNode *> nodes;
     if (ident != nullptr) {
-        nodes.push_back(ident->Clone(checker_->Allocator(), nullptr));
+        nodes.push_back(ident->Clone(context_->Allocator(), nullptr));
     }
 
     if (init != nullptr) {
-        nodes.push_back(init->Clone(checker_->Allocator(), nullptr));
+        nodes.push_back(init->Clone(context_->Allocator(), nullptr));
     }
 
     auto statements = parser_->CreateFormattedStatements(src, nodes);
@@ -211,14 +209,14 @@ ir::Expression *EnumPostCheckLoweringPhase::HandleEnumTypeCasting(checker::Type 
     // Generate fromValue call;
     if (type->IsETSEnumType()) {
         auto exprType = expr->TsType();
-        if (exprType->IsETSEnumType() ||
+        if (exprType->IsETSEnumType() || exprType->IsETSAnyType() ||
             (exprType->IsETSObjectType() && exprType->AsETSObjectType()->IsGlobalETSObjectType())) {
             return expr;
         }
-        auto name = TypeAnnotationToString(tsAsExpr->TypeAnnotation()->AsETSTypeReference(), checker_);
+        auto name = TypeAnnotationToString(tsAsExpr->TypeAnnotation()->AsETSTypeReference(), context_);
         transformedExpr = GenerateFromValueCall(expr, name);
     } else {
-        transformedExpr = CallInstanceEnumMethod(checker_, checker::ETSEnumType::VALUE_OF_METHOD_NAME, expr);
+        transformedExpr = CallInstanceEnumMethod(context_, checker::ETSEnumType::VALUE_OF_METHOD_NAME, expr);
     }
     transformedExpr->SetRange(expr->Range());
     transformedExpr->SetParent(expr->Parent());
@@ -233,7 +231,7 @@ void EnumPostCheckLoweringPhase::CreateStatementForUnionConstituentType(EnumCast
 {
     auto createInstanceOfStatement = [this, &statements, &ident, &type](ir::Expression *callExpr) {
         auto consequent = CreateStatement("@@I1 = @@E2;", ident, callExpr);
-        auto ifStatement = CreateEnumIfStatement(checker_, ident, TypeToString(type), consequent);
+        auto ifStatement = CreateEnumIfStatement(context_, ident, TypeToString(type), consequent);
         auto prevStatement = statements.back();
         if (prevStatement != nullptr && prevStatement->IsIfStatement()) {
             prevStatement->AsIfStatement()->SetAlternate(ifStatement);
@@ -243,8 +241,8 @@ void EnumPostCheckLoweringPhase::CreateStatementForUnionConstituentType(EnumCast
     switch (castType) {
         case EnumCastType::CAST_TO_STRING: {
             if (type->IsETSStringEnumType()) {
-                auto callExpr = CallInstanceEnumMethod(checker_, checker::ETSEnumType::VALUE_OF_METHOD_NAME,
-                                                       ident->Clone(checker_->Allocator(), nullptr)->AsExpression());
+                auto callExpr = CallInstanceEnumMethod(context_, checker::ETSEnumType::VALUE_OF_METHOD_NAME,
+                                                       ident->Clone(context_->Allocator(), nullptr)->AsExpression());
                 callExpr->SetRange(tsAsExpr->Expr()->Range());
                 createInstanceOfStatement(callExpr);
             }
@@ -252,8 +250,8 @@ void EnumPostCheckLoweringPhase::CreateStatementForUnionConstituentType(EnumCast
         }
         case EnumCastType::CAST_TO_INT: {
             if (type->IsETSIntEnumType()) {
-                auto callExpr = CallInstanceEnumMethod(checker_, checker::ETSEnumType::VALUE_OF_METHOD_NAME,
-                                                       ident->Clone(checker_->Allocator(), nullptr)->AsExpression());
+                auto callExpr = CallInstanceEnumMethod(context_, checker::ETSEnumType::VALUE_OF_METHOD_NAME,
+                                                       ident->Clone(context_->Allocator(), nullptr)->AsExpression());
                 callExpr->SetRange(tsAsExpr->Expr()->Range());
                 createInstanceOfStatement(callExpr);
             }
@@ -263,9 +261,9 @@ void EnumPostCheckLoweringPhase::CreateStatementForUnionConstituentType(EnumCast
             // int and Boxed Int can be casted to int enum
             if (type->IsIntType() || (type->IsETSObjectType() &&
                                       type->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::BUILTIN_INT))) {
-                auto name = TypeAnnotationToString(tsAsExpr->TypeAnnotation()->AsETSTypeReference(), checker_);
+                auto name = TypeAnnotationToString(tsAsExpr->TypeAnnotation()->AsETSTypeReference(), context_);
                 auto callExpr =
-                    GenerateFromValueCall(ident->Clone(checker_->Allocator(), nullptr)->AsExpression(), name);
+                    GenerateFromValueCall(ident->Clone(context_->Allocator(), nullptr)->AsExpression(), name);
                 callExpr->SetRange(tsAsExpr->Expr()->Range());
                 createInstanceOfStatement(callExpr);
             }
@@ -273,9 +271,9 @@ void EnumPostCheckLoweringPhase::CreateStatementForUnionConstituentType(EnumCast
         }
         case EnumCastType::CAST_TO_STRING_ENUM: {
             if (type->IsETSStringType()) {
-                auto name = TypeAnnotationToString(tsAsExpr->TypeAnnotation()->AsETSTypeReference(), checker_);
+                auto name = TypeAnnotationToString(tsAsExpr->TypeAnnotation()->AsETSTypeReference(), context_);
                 auto callExpr =
-                    GenerateFromValueCall(ident->Clone(checker_->Allocator(), nullptr)->AsExpression(), name);
+                    GenerateFromValueCall(ident->Clone(context_->Allocator(), nullptr)->AsExpression(), name);
                 callExpr->SetRange(tsAsExpr->Expr()->Range());
                 createInstanceOfStatement(callExpr);
             }
@@ -295,16 +293,16 @@ ir::Expression *EnumPostCheckLoweringPhase::HandleUnionTypeForCalls(checker::ETS
      * For given union type:  number | string | Enum | otherTypes, this method generate instanceof trees to ensuring
      * all union constituent types are handled correctly with enum related casting.
      */
-    auto *const allocator = checker_->Allocator();
+    auto *const allocator = context_->Allocator();
     auto *genSymIdent = Gensym(allocator);
-    ArenaVector<ir::Statement *> statements(checker_->Allocator()->Adapter());
+    ArenaVector<ir::Statement *> statements(allocator->Adapter());
     const std::string createSrc = "let @@I1 = @@E2";
     statements.push_back(CreateStatement(createSrc, genSymIdent, expr));
     for (auto type : unionType->ConstituentTypes()) {
         CreateStatementForUnionConstituentType(castType, genSymIdent, type, tsAsExpr, statements);
     }
     statements.push_back(CreateStatement("@@I1", genSymIdent, nullptr));
-    auto block = checker_->AllocNode<ir::BlockExpression>(std::move(statements));
+    auto block = context_->AllocNode<ir::BlockExpression>(std::move(statements));
     return block;
 }
 
@@ -332,7 +330,7 @@ ir::AstNode *EnumPostCheckLoweringPhase::GenerateValueOfCall(ir::AstNode *const 
         node->RemoveAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF);
         return node;
     }
-    auto *callExpr = CreateCallInstanceEnumExpression(checker_, node, checker::ETSEnumType::VALUE_OF_METHOD_NAME);
+    auto *callExpr = CreateCallInstanceEnumExpression(context_, node, checker::ETSEnumType::VALUE_OF_METHOD_NAME);
     node->RemoveAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF);
     return callExpr;
 }
@@ -340,7 +338,7 @@ ir::AstNode *EnumPostCheckLoweringPhase::GenerateValueOfCall(ir::AstNode *const 
 ir::Expression *EnumPostCheckLoweringPhase::GenerateFromValueCall(ir::Expression *const node, util::StringView name)
 {
     auto *callExpr =
-        CallStaticEnumMethod(checker_, parser_, name.Utf8(), checker::ETSEnumType::FROM_VALUE_METHOD_NAME, node);
+        CallStaticEnumMethod(context_, parser_, name.Utf8(), checker::ETSEnumType::FROM_VALUE_METHOD_NAME, node);
     callExpr->SetRange(node->Range());
     return callExpr;
 }
@@ -349,7 +347,7 @@ ir::SwitchStatement *EnumPostCheckLoweringPhase::GenerateGetOrdinalCallForSwitch
 {
     node->AddAstNodeFlags(ir::AstNodeFlags::RECHECK);
     auto *discrminant =
-        CreateCallInstanceEnumExpression(checker_, node->Discriminant(), checker::ETSEnumType::GET_ORDINAL_METHOD_NAME);
+        CreateCallInstanceEnumExpression(context_, node->Discriminant(), checker::ETSEnumType::GET_ORDINAL_METHOD_NAME);
     node->SetDiscriminant(discrminant);
 
     for (auto *ele : node->Cases()) {
@@ -358,7 +356,7 @@ ir::SwitchStatement *EnumPostCheckLoweringPhase::GenerateGetOrdinalCallForSwitch
             continue;
         }
         auto *newTest =
-            CreateCallInstanceEnumExpression(checker_, ele->Test(), checker::ETSEnumType::GET_ORDINAL_METHOD_NAME);
+            CreateCallInstanceEnumExpression(context_, ele->Test(), checker::ETSEnumType::GET_ORDINAL_METHOD_NAME);
         ele->SetTest(newTest);
     }
     return node;
@@ -370,6 +368,7 @@ bool EnumPostCheckLoweringPhase::PerformForModule(public_lib::Context *ctx, pars
         return true;
     }
 
+    context_ = ctx;
     parser_ = ctx->parser->AsETSParser();
     checker_ = ctx->checker->AsETSChecker();
     varbinder_ = ctx->parserProgram->VarBinder()->AsETSBinder();
@@ -386,8 +385,8 @@ bool EnumPostCheckLoweringPhase::PerformForModule(public_lib::Context *ctx, pars
                     checker_->Context().SetContainingClass(
                         parentClass->AsClassDefinition()->TsType()->AsETSObjectType());
                 }
-                node->Check(checker_);
                 node->RemoveAstNodeFlags(ir::AstNodeFlags::RECHECK);
+                node->Check(checker_);
                 if (node->IsExpression() && node->AsExpression()->TsType() != nullptr &&
                     !node->AsExpression()->TsType()->IsETSIntEnumType()) {
                     node->RemoveAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF);

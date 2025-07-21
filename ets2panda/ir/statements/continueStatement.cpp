@@ -73,6 +73,7 @@ ContinueStatement *ContinueStatement::Clone(ArenaAllocator *const allocator, Ast
 {
     auto *const ident = ident_ != nullptr ? ident_->Clone(allocator, nullptr) : nullptr;
     auto *const clone = util::NodeAllocator::ForceSetParent<ContinueStatement>(allocator, ident);
+    ES2PANDA_ASSERT(clone != nullptr);
 
     if (parent != nullptr) {
         clone->SetParent(parent);

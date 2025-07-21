@@ -57,8 +57,27 @@ util::UString GenName(ArenaAllocator *const allocator)
 
 void SetSourceRangesRecursively(ir::AstNode *node, const lexer::SourceRange &range)
 {
+    ES2PANDA_ASSERT(node != nullptr);
     node->SetRange(range);
     node->IterateRecursively([](ir::AstNode *n) { n->SetRange(n->Parent()->Range()); });
+}
+
+ir::AstNode *RefineSourceRanges(ir::AstNode *node)
+{
+    auto const isDummyLoc = [](lexer::SourceRange const &range, ir::AstNode *ast) {
+        return (range.start.index == 0 && range.start.line == 0) || (range.end.index < range.start.index) ||
+               (range.start.index < ast->Parent()->Start().index) || (range.end.index > ast->Parent()->End().index);
+    };
+
+    auto const refine = [isDummyLoc](ir::AstNode *ast) {
+        if (isDummyLoc(ast->Range(), ast) && ast->Parent() != nullptr) {
+            ast->SetRange(ast->Parent()->Range());
+        }
+    };
+
+    refine(node);
+    node->IterateRecursively(refine);
+    return node;
 }
 
 // Function to clear expression node types and identifier node variables (for correct re-binding and re-checking)
@@ -135,16 +154,27 @@ static bool IsGeneratedForUtilityType(ir::AstNode const *ast)
     return false;
 }
 
+static bool IsGeneratedDynamicClass(ir::AstNode const *ast)
+{
+    if (ast->IsClassDeclaration()) {
+        auto &name = ast->AsClassDeclaration()->Definition()->Ident()->Name();
+        return name.Is(Signatures::JSNEW_CLASS) || name.Is(Signatures::JSCALL_CLASS);
+    }
+
+    return false;
+}
+
 static void ClearHelper(parser::Program *prog)
 {
     ResetGlobalClass(prog);
+    prog->ClearASTCheckedStatus();
     // #24256 Should be removed when code refactoring on checker is done and no ast node allocated in checker.
     auto &stmts = prog->Ast()->Statements();
     // clang-format off
     stmts.erase(std::remove_if(stmts.begin(), stmts.end(),
         [](ir::AstNode *ast) -> bool {
             return !ast->HasAstNodeFlags(ir::AstNodeFlags::NOCLEANUP) ||
-                IsGeneratedForUtilityType(ast);
+                IsGeneratedForUtilityType(ast) || IsGeneratedDynamicClass(ast);
         }),
         stmts.end());
     // clang-format on
@@ -192,6 +222,7 @@ varbinder::Scope *Rebind(PhaseManager *phaseManager, varbinder::ETSBinder *varBi
 void Recheck(PhaseManager *phaseManager, varbinder::ETSBinder *varBinder, checker::ETSChecker *checker,
              ir::AstNode *node)
 {
+    RefineSourceRanges(node);
     if (node->IsProgram()) {
         auto program = node->AsETSModule()->Program();
         if (program->IsPackage()) {
@@ -233,6 +264,10 @@ void Recheck(PhaseManager *phaseManager, varbinder::ETSBinder *varBinder, checke
 // NOTE: used to get the declaration from identifier in Plugin API and LSP
 ir::AstNode *DeclarationFromIdentifier(const ir::Identifier *node)
 {
+    if (node == nullptr) {
+        return nullptr;
+    }
+
     auto idVar = node->Variable();
     if (idVar == nullptr) {
         return nullptr;
@@ -247,6 +282,7 @@ ir::AstNode *DeclarationFromIdentifier(const ir::Identifier *node)
 // Note: run varbinder and checker on the new node generated in lowering phases (without ClearTypesVariablesAndScopes)
 void CheckLoweredNode(varbinder::ETSBinder *varBinder, checker::ETSChecker *checker, ir::AstNode *node)
 {
+    RefineSourceRanges(node);
     InitScopesPhaseETS::RunExternalNode(node, varBinder);
     auto *scope = NearestScope(node);
     varBinder->ResolveReferencesForScopeWithContext(node, scope);

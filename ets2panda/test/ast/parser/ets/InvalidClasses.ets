@@ -90,7 +90,7 @@ interface I1 {
 /* @@? 26:18 Error SyntaxError: Native method cannot be async. */
 /* @@? 27:5 Error TypeError: Non abstract class has abstract method. */
 /* @@? 27:20 Error SyntaxError: Abstract method cannot be async. */
-/* @@? 35:5 Error SyntaxError: Only one static block is allowed. */
+/* @@? 35:5 Error SyntaxError: Only one static block is allowed in one namespace or class. */
 /* @@? 38:10 Error SyntaxError: Duplicated modifier is not allowed. */
 /* @@? 41:5 Error SyntaxError: The special predefined method '$_get' should have exactly one required parameter. */
 /* @@? 41:5 Error SyntaxError: The special predefined method '$_get' cannot be asynchronous. */
@@ -129,5 +129,4 @@ interface I1 {
 /* @@? 74:25 Error SyntaxError: Extension Accessor must have a receiver. */
 /* @@? 78:8 Error SyntaxError: Label must be followed by a loop statement. */
 /* @@? 78:8 Error TypeError: Type name 'number' used in the wrong context */
-/* @@? 79:1 Error SyntaxError: Unexpected token '}'. */
 /* @@? 79:1 Error SyntaxError: Unexpected token '}'. */

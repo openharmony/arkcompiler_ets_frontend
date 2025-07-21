@@ -12,7 +12,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use static'
 
 import { ff1 } from "./interop_import_js_rules_js"
 
@@ -20,6 +19,6 @@ export {ff1} // imported from js. Error is shown
 
 export { ff2 } from "./interop_import_js_rules_js" // ff2 is imported from js. Error is shown
 
-export { MyDecorator } from "./oh_modules/ets_decorator" // MyDecorator is imported from arkts1. Error is shown
-
 export { foo as bar } from "./oh_modules/reflect_export" // foo is imported from arkts1.2. No error.
+
+export * as namespace2 from "./interop_import_js_rules_js"

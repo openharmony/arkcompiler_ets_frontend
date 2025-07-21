@@ -13,7 +13,11 @@
  * limitations under the License.
  */
 
-import { Component, Provide, Column } from '@kit.ArkUI';
+import {
+  Component,
+  Provide,
+  Column,
+} from '@kit.ArkUI';
 
 @Component
 struct Index {

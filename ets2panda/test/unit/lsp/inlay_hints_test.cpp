@@ -48,7 +48,7 @@ TEST_F(LSPInlayHintsTests, VisitCallOrNewExpressionTest)
     preferences.SetDisableSuggestions(true);
     preferences.SetIncludeInlayParameterNameHints(UserPreferences::IncludeInlayParameterNameHints::ALL);
 
-    ark::es2panda::lsp::InlayHintList result = {};
+    InlayHintList result = {};
 
     ark::es2panda::lsp::Initializer initializer;
     const auto ctx = initializer.CreateContext(filePath[0].c_str(), ES2PANDA_STATE_CHECKED);
@@ -61,7 +61,7 @@ TEST_F(LSPInlayHintsTests, VisitCallOrNewExpressionTest)
     parent->FindChild([&callExprNode, parent, &result](ark::es2panda::ir::AstNode *childNode) {
         if (childNode->IsCallExpression()) {
             callExprNode = childNode;
-            GetCallExpTypeForHints(callExprNode, parent, &result);
+            ark::es2panda::lsp::GetCallExpTypeForHints(callExprNode, parent, &result);
         }
         return false;
     });
@@ -70,9 +70,8 @@ TEST_F(LSPInlayHintsTests, VisitCallOrNewExpressionTest)
     const std::string p1 = "param1";
     const std::string p2 = "param2";
     ASSERT_NE(callExprNode, nullptr);
-    std::vector<ark::es2panda::lsp::InlayHint> expectedHints = {
-        {p1, num1, ark::es2panda::lsp::InlayHintKind::PARAMETER, false, true},
-        {p2, num2, ark::es2panda::lsp::InlayHintKind::PARAMETER, false, true}};
+    std::vector<InlayHint> expectedHints = {{p1, num1, InlayHintKind::PARAMETER, false, true},
+                                            {p2, num2, InlayHintKind::PARAMETER, false, true}};
 
     ASSERT_EQ(result.hints.size(), expectedHints.size());
     for (size_t i = 0; i < expectedHints.size(); i++) {
@@ -82,7 +81,6 @@ TEST_F(LSPInlayHintsTests, VisitCallOrNewExpressionTest)
         ASSERT_EQ(result.hints[i].whitespaceBefore, expectedHints[i].whitespaceBefore);
         ASSERT_EQ(result.hints[i].whitespaceAfter, expectedHints[i].whitespaceAfter);
     }
-
     initializer.DestroyContext(ctx);
 }
 
@@ -111,7 +109,7 @@ let classText = text.className;
 
     const auto filePath = CreateTempFile(files, fileContent);
 
-    ark::es2panda::lsp::InlayHintList result = {};
+    InlayHintList result = {};
     const size_t size = 4;
     const std::string enum2 = "2";
     const std::string enum3 = "3";
@@ -131,7 +129,7 @@ let classText = text.className;
 
     parent->FindChild([parent, &result](ark::es2panda::ir::AstNode *childNode) {
         if (childNode->IsAssignmentExpression()) {
-            GetEnumTypeForHints(childNode, parent, &result);
+            ark::es2panda::lsp::GetEnumTypeForHints(childNode, parent, &result);
         }
         return false;
     });
@@ -171,7 +169,7 @@ TEST_F(LSPInlayHintsTests, VisitFunctionLikeForParameterTypeTest)
     const size_t i3 = 3;
     const auto filePaths = CreateTempFile(files, fileContent);
     ASSERT_EQ(filePaths.size(), i1);
-    ark::es2panda::lsp::InlayHintList result = {};
+    InlayHintList result = {};
     ark::es2panda::lsp::Initializer initializer;
 
     const auto ctx = initializer.CreateContext(filePaths[i0].c_str(), ES2PANDA_STATE_CHECKED);
@@ -223,7 +221,7 @@ TEST_F(LSPInlayHintsTests, VisitFunctionDeclarationLikeForReturnTypeTest1)
     const size_t i3 = 3;
     const auto filePaths = CreateTempFile(files, fileContent);
     ASSERT_EQ(filePaths.size(), i1);
-    ark::es2panda::lsp::InlayHintList result;
+    InlayHintList result;
     ark::es2panda::lsp::Initializer initializer;
     const auto ctx = initializer.CreateContext(filePaths[i0].c_str(), ES2PANDA_STATE_CHECKED);
     ASSERT_NE(ctx, nullptr);
@@ -268,7 +266,7 @@ TEST_F(LSPInlayHintsTests, VisitFunctionDeclarationLikeForReturnTypeTest2)
 
     const auto filePaths = CreateTempFile(files, fileContent);
     ASSERT_EQ(filePaths.size(), i1);
-    ark::es2panda::lsp::InlayHintList result;
+    InlayHintList result;
     ark::es2panda::lsp::Initializer initializer;
     const auto ctx = initializer.CreateContext(filePaths[i0].c_str(), ES2PANDA_STATE_CHECKED);
     ASSERT_NE(ctx, nullptr);
@@ -310,7 +308,7 @@ TEST_F(LSPInlayHintsTests, VisitVariableLikeDeclarationTest)
     const size_t i2 = 2;
     const auto filePaths = CreateTempFile(files, fileContent);
     ASSERT_EQ(filePaths.size(), i1);
-    ark::es2panda::lsp::InlayHintList result;
+    InlayHintList result;
     ark::es2panda::lsp::Initializer initializer;
     const auto ctx = initializer.CreateContext(filePaths[i0].c_str(), ES2PANDA_STATE_CHECKED);
     ASSERT_NE(ctx, nullptr);

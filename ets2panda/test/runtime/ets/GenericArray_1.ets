@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-function createMap<K, V>(keys: K[], values: V[]): Map<K, V> {
+function createMap<K, V>(keys: FixedArray<K>, values: FixedArray<V>): Map<K, V> {
   assertEQ(keys.length, values.length)
   let map = new Map<K, V>();
   for (let i = 0; i < keys.length; i++) {

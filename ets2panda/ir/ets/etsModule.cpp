@@ -14,6 +14,7 @@
  */
 
 #include "etsModule.h"
+#include "utils/arena_containers.h"
 
 namespace ark::es2panda::ir {
 
@@ -51,6 +52,23 @@ void ETSModule::Dump(ir::SrcDumper *dumper) const
     if (IsNamespace()) {
         dumper->Add("}");
     }
+}
+
+ETSModule *ETSModule::Construct(ArenaAllocator *allocator)
+{
+    ArenaVector<Statement *> statementList(allocator->Adapter());
+    return allocator->New<ETSModule>(allocator, std::move(statementList), nullptr, ModuleFlag::NONE, nullptr);
+}
+
+void ETSModule::CopyTo(AstNode *other) const
+{
+    auto otherImpl = other->AsETSModule();
+
+    otherImpl->ident_ = ident_;
+    otherImpl->flag_ = flag_;
+    otherImpl->program_ = program_;
+
+    JsDocAllowed<AnnotationAllowed<BlockStatement>>::CopyTo(other);
 }
 
 }  // namespace ark::es2panda::ir

@@ -26,11 +26,14 @@ import {
 } from '../error_code';
 import {
   changeFileExtension,
-  ensurePathExists
+  ensurePathExists,
+  isSubPathOf,
+  toUnixPath
 } from '../utils';
 import {
   BuildConfig,
-  ModuleInfo
+  ModuleInfo,
+  PathsConfig
 } from '../types';
 import {
   LANGUAGE_VERSION,
@@ -49,8 +52,9 @@ interface ArkTSConfigObject {
     baseUrl: string,
     paths: Record<string, string[]>;
     dependencies: string[] | undefined;
-    entry: string;
+    entry?: string;
     dynamicPaths: Record<string, DynamicPathItem>;
+    useEmptyPackage?: boolean;
   }
 };
 
@@ -96,11 +100,15 @@ export class ArkTSConfigGenerator {
   }
 
   private generateSystemSdkPathSection(pathSection: Record<string, string[]>): void {
-    function traverse(currentDir: string, relativePath: string = '', isExcludedDir: boolean = false): void {
+    function traverse(currentDir: string, relativePath: string = '', isExcludedDir: boolean = false, allowedExtensions: string[] = ['.d.ets']): void {
       const items = fs.readdirSync(currentDir);
       for (const item of items) {
         const itemPath = path.join(currentDir, item);
         const stat = fs.statSync(itemPath);
+        const isAllowedFile = allowedExtensions.some(ext => item.endsWith(ext));
+        if (stat.isFile() && !isAllowedFile) {
+          continue;
+        }
 
         if (stat.isFile()) {
           const basename = path.basename(item, '.d.ets');
@@ -147,15 +155,38 @@ export class ArkTSConfigGenerator {
     this.generateSystemSdkPathSection(this.pathSection);
 
     this.moduleInfos.forEach((moduleInfo: ModuleInfo, packageName: string) => {
-       if (moduleInfo.language === LANGUAGE_VERSION.ARKTS_1_2) {
-          this.pathSection[moduleInfo.packageName] = [
-            path.resolve(moduleInfo.moduleRootPath, moduleInfo.sourceRoots[0])
-          ];
-       }
-
+      if (moduleInfo.language !== LANGUAGE_VERSION.ARKTS_1_2 && moduleInfo.language !== LANGUAGE_VERSION.ARKTS_HYBRID) {
+        return;
+      }
+      if (!moduleInfo.entryFile) {
+        return;
+      }
+      this.handleEntryFile(moduleInfo);
     });
-
     return this.pathSection;
+  }
+
+  private handleEntryFile(moduleInfo: ModuleInfo): void {
+    try {
+      const stat = fs.statSync(moduleInfo.entryFile);
+      if (!stat.isFile()) {
+        return;
+      }
+      const entryFilePath = moduleInfo.entryFile;
+      const firstLine = fs.readFileSync(entryFilePath, 'utf-8').split('\n')[0];
+      // If the file is an ArkTS 1.2 implementation, configure the path in pathSection.
+      if (moduleInfo.language === LANGUAGE_VERSION.ARKTS_1_2 || moduleInfo.language === LANGUAGE_VERSION.ARKTS_HYBRID && firstLine.includes('use static')) {
+        this.pathSection[moduleInfo.packageName] = [
+          path.resolve(moduleInfo.moduleRootPath, moduleInfo.sourceRoots[0])
+        ];
+      }
+    } catch (error) {
+      const logData: LogData = LogDataFactory.newInstance(
+        ErrorCode.BUILDSYSTEM_HANDLE_ENTRY_FILE,
+        `Error handle entry file for module ${moduleInfo.packageName}`
+      );
+      this.logger.printError(logData);
+    }
   }
 
   private getDependenciesSection(moduleInfo: ModuleInfo, dependenciesSection: string[]): void {
@@ -198,7 +229,11 @@ export class ArkTSConfigGenerator {
     });
   }
 
-  public writeArkTSConfigFile(moduleInfo: ModuleInfo): void {
+  public writeArkTSConfigFile(
+    moduleInfo: ModuleInfo,
+    enableDeclgenEts2Ts: boolean,
+    buildConfig: BuildConfig
+  ): void {
     if (!moduleInfo.sourceRoots || moduleInfo.sourceRoots.length === 0) {
       const logData: LogData = LogDataFactory.newInstance(
         ErrorCode.BUILDSYSTEM_SOURCEROOTS_NOT_SET_FAIL,
@@ -209,11 +244,20 @@ export class ArkTSConfigGenerator {
     let pathSection = this.getPathSection();
     let dependenciesSection: string[] = [];
     this.getDependenciesSection(moduleInfo, dependenciesSection);
+    this.getAllFilesToPathSectionForHybrid(moduleInfo, buildConfig);
 
     let dynamicPathSection: Record<string, DynamicPathItem> = {};
-    this.getDynamicPathSection(moduleInfo, dynamicPathSection);
+
+    if (!enableDeclgenEts2Ts) {
+      this.getDynamicPathSection(moduleInfo, dynamicPathSection);
+    }
 
     let baseUrl: string = path.resolve(moduleInfo.moduleRootPath, moduleInfo.sourceRoots[0]);
+    if (buildConfig.paths) {
+      Object.entries(buildConfig.paths).map(([key, value]) => {
+        pathSection[key] = value
+      });
+    }
     let arktsConfig: ArkTSConfigObject = {
       compilerOptions: {
         package: moduleInfo.packageName,
@@ -225,7 +269,49 @@ export class ArkTSConfigGenerator {
       }
     };
 
+    if (moduleInfo.entryFile && moduleInfo.language === LANGUAGE_VERSION.ARKTS_HYBRID) {
+      const entryFilePath = moduleInfo.entryFile;
+      const stat = fs.statSync(entryFilePath);
+      if (fs.existsSync(entryFilePath) && stat.isFile()) {
+        const firstLine = fs.readFileSync(entryFilePath, 'utf-8').split('\n')[0];
+        // If the entryFile is not an ArkTS 1.2 implementation, remove the entry property field.
+        if (!firstLine.includes('use static')) {
+          delete arktsConfig.compilerOptions.entry;
+        }
+      }
+    }
+
+    if (moduleInfo.frameworkMode) {
+      arktsConfig.compilerOptions.useEmptyPackage = moduleInfo.useEmptyPackage;
+    }
+
     ensurePathExists(moduleInfo.arktsConfigFile);
     fs.writeFileSync(moduleInfo.arktsConfigFile, JSON.stringify(arktsConfig, null, 2), 'utf-8');
+  }
+
+  public getAllFilesToPathSectionForHybrid(
+    moduleInfo: ModuleInfo,
+    buildConfig: BuildConfig
+  ): void {
+    if (moduleInfo?.language !== LANGUAGE_VERSION.ARKTS_HYBRID) {
+      return;
+    }
+
+    const projectRoot = toUnixPath(buildConfig.projectRootPath) + '/';
+    const moduleRoot = toUnixPath(moduleInfo.moduleRootPath);
+
+    for (const file of buildConfig.compileFiles) {
+      const unixFilePath = toUnixPath(file);
+
+      if (!isSubPathOf(unixFilePath, moduleRoot)) {
+        continue;
+      }
+
+      let relativePath = unixFilePath.startsWith(projectRoot)
+        ? unixFilePath.substring(projectRoot.length)
+        : unixFilePath;
+      const keyWithoutExtension = relativePath.replace(/\.[^/.]+$/, '');
+      this.pathSection[keyWithoutExtension] = [file];
+    }
   }
 }

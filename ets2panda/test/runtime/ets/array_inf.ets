@@ -14,29 +14,30 @@
  */
 
 class A {
-    foo(p: Object[]): int {
+    foo(p: FixedArray<Object>): int {
         let s = 0
         for (let v of p) {
             s += v instanceof A ? 1 : 0
         }
         return s
     }
-    bar(p: A[]): int {
+    bar(p: FixedArray<A>): int {
         let s = 0
         for (let v of p) {
             s += v instanceof A ? 1 : 0
         }
         return s
     }
-}
-
-
-class B extends A{}
-
-function main() {
+  }
+  
+  
+  class B extends A{}
+  
+  function main() {
     assertEQ(new A().foo([new Object(), new Long(), new Int()]), 0)
     assertEQ(new A().foo([new A(), new A(), new Object()]), 2)
     assertEQ(new A().foo(["aaa", new A(), new Object()]), 1)
     assertEQ(new A().foo([1, "hello", new A()]), 1)
     assertEQ(new A().bar([new B(), new B(), new A()]), 3)
-}
+  }
+  

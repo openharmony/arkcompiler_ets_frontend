@@ -286,23 +286,71 @@
                 "expression": false,
                 "params": [],
                 "returnType": {
-                  "type": "TSArrayType",
-                  "elementType": {
-                    "type": "ETSPrimitiveType",
+                  "type": "ETSTypeReference",
+                  "part": {
+                    "type": "ETSTypeReferencePart",
+                    "name": {
+                      "type": "Identifier",
+                      "name": "Array",
+                      "decorators": [],
+                      "loc": {
+                        "start": {
+                          "line": 1,
+                          "column": 1,
+                          "program": "array_type_from_literal.ets"
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 3,
+                          "program": "array_type_from_literal.ets"
+                        }
+                      }
+                    },
+                    "typeParams": {
+                      "type": "TSTypeParameterInstantiation",
+                      "params": [
+                        {
+                          "type": "ETSPrimitiveType",
+                          "loc": {
+                            "start": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "array_type_from_literal.ets"
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "array_type_from_literal.ets"
+                            }
+                          }
+                        }
+                      ],
+                      "loc": {
+                        "start": {
+                          "line": 1,
+                          "column": 3,
+                          "program": "array_type_from_literal.ets"
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 3,
+                          "program": "array_type_from_literal.ets"
+                        }
+                      }
+                    },
                     "loc": {
                       "start": {
-                        "line": 16,
-                        "column": 17,
+                        "line": 1,
+                        "column": 1,
                         "program": "array_type_from_literal.ets"
                       },
                       "end": {
-                        "line": 16,
-                        "column": 20,
+                        "line": 1,
+                        "column": 3,
                         "program": "array_type_from_literal.ets"
                       }
                     }
                   },
-                  "annotations": [],
                   "loc": {
                     "start": {
                       "line": 16,
@@ -455,23 +503,71 @@
                 "expression": false,
                 "params": [],
                 "returnType": {
-                  "type": "TSArrayType",
-                  "elementType": {
-                    "type": "ETSPrimitiveType",
+                  "type": "ETSTypeReference",
+                  "part": {
+                    "type": "ETSTypeReferencePart",
+                    "name": {
+                      "type": "Identifier",
+                      "name": "Array",
+                      "decorators": [],
+                      "loc": {
+                        "start": {
+                          "line": 1,
+                          "column": 1,
+                          "program": "array_type_from_literal.ets"
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 3,
+                          "program": "array_type_from_literal.ets"
+                        }
+                      }
+                    },
+                    "typeParams": {
+                      "type": "TSTypeParameterInstantiation",
+                      "params": [
+                        {
+                          "type": "ETSPrimitiveType",
+                          "loc": {
+                            "start": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "array_type_from_literal.ets"
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "array_type_from_literal.ets"
+                            }
+                          }
+                        }
+                      ],
+                      "loc": {
+                        "start": {
+                          "line": 1,
+                          "column": 3,
+                          "program": "array_type_from_literal.ets"
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 3,
+                          "program": "array_type_from_literal.ets"
+                        }
+                      }
+                    },
                     "loc": {
                       "start": {
-                        "line": 20,
-                        "column": 17,
+                        "line": 1,
+                        "column": 1,
                         "program": "array_type_from_literal.ets"
                       },
                       "end": {
-                        "line": 20,
-                        "column": 20,
+                        "line": 1,
+                        "column": 3,
                         "program": "array_type_from_literal.ets"
                       }
                     }
                   },
-                  "annotations": [],
                   "loc": {
                     "start": {
                       "line": 20,
@@ -509,23 +605,71 @@
                           }
                         },
                         "typeAnnotation": {
-                          "type": "TSArrayType",
-                          "elementType": {
-                            "type": "ETSPrimitiveType",
+                          "type": "ETSTypeReference",
+                          "part": {
+                            "type": "ETSTypeReferencePart",
+                            "name": {
+                              "type": "Identifier",
+                              "name": "Array",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 1,
+                                  "program": "array_type_from_literal.ets"
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 3,
+                                  "program": "array_type_from_literal.ets"
+                                }
+                              }
+                            },
+                            "typeParams": {
+                              "type": "TSTypeParameterInstantiation",
+                              "params": [
+                                {
+                                  "type": "ETSPrimitiveType",
+                                  "loc": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "array_type_from_literal.ets"
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "array_type_from_literal.ets"
+                                    }
+                                  }
+                                }
+                              ],
+                              "loc": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 3,
+                                  "program": "array_type_from_literal.ets"
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 3,
+                                  "program": "array_type_from_literal.ets"
+                                }
+                              }
+                            },
                             "loc": {
                               "start": {
-                                "line": 21,
-                                "column": 18,
+                                "line": 1,
+                                "column": 1,
                                 "program": "array_type_from_literal.ets"
                               },
                               "end": {
-                                "line": 21,
-                                "column": 21,
+                                "line": 1,
+                                "column": 3,
                                 "program": "array_type_from_literal.ets"
                               }
                             }
                           },
-                          "annotations": [],
                           "loc": {
                             "start": {
                               "line": 21,

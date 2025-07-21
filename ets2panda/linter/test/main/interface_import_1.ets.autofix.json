@@ -15,6 +15,48 @@
     ],
     "result": [
         {
+            "line": 21,
+            "column": 24,
+            "endLine": 21,
+            "endColumn": 25,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 698,
+                    "end": 699,
+                    "replacementText": "0.0",
+                    "line": 21,
+                    "column": 24,
+                    "endLine": 21,
+                    "endColumn": 25
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 51,
+            "column": 26,
+            "endLine": 51,
+            "endColumn": 27,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1041,
+                    "end": 1042,
+                    "replacementText": "0.0",
+                    "line": 51,
+                    "column": 26,
+                    "endLine": 51,
+                    "endColumn": 27
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 60,
             "column": 1,
             "endLine": 64,
@@ -24,7 +66,11 @@
                 {
                     "start": 1099,
                     "end": 1169,
-                    "replacementText": "function cardStyle(this: TextAttribute): this {\n    this.backgroundColor(Color.Green);\n    return this;\n}"
+                    "replacementText": "function cardStyle(this: TextAttribute): this {\n    this.backgroundColor(Color.Green);\n    return this;\n}",
+                    "line": 60,
+                    "column": 1,
+                    "endLine": 64,
+                    "endColumn": 2
                 }
             ],
             "suggest": "",
@@ -41,11 +87,36 @@
                 {
                     "start": 1171,
                     "end": 1256,
-                    "replacementText": "@AnimatableExtend\nfunction animatableWidth(this: ColumnAttribute, width: number): this {\n    this.width(width);\n    return this;\n}"
+                    "replacementText": "@AnimatableExtend\nfunction animatableWidth(this: ColumnAttribute, width: number): this {\n    this.width(width);\n    return this;\n}",
+                    "line": 66,
+                    "column": 1,
+                    "endLine": 69,
+                    "endColumn": 2
                 }
             ],
             "suggest": "",
             "rule": "\"@AnimatableExtend\" decorator should be transformed to use receiver (arkui-animatableextend-use-receiver)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 73,
+            "column": 26,
+            "endLine": 73,
+            "endColumn": 27,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 1316,
+                    "end": 1317,
+                    "replacementText": "0.0",
+                    "line": 73,
+                    "column": 26,
+                    "endLine": 73,
+                    "endColumn": 27
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -58,7 +129,11 @@
                 {
                     "start": 1374,
                     "end": 1386,
-                    "replacementText": "$$(this.value)"
+                    "replacementText": "$$(this.value)",
+                    "line": 78,
+                    "column": 16,
+                    "endLine": 78,
+                    "endColumn": 28
                 }
             ],
             "suggest": "",
@@ -75,11 +150,15 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, State, Column, Button, Text, Row, TextAttribute, ColumnAttribute, AnimatableExtend, $$, ImageFit } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  State,\n  Column,\n  Button,\n  Text,\n  Row,\n  TextAttribute,\n  ColumnAttribute,\n  AnimatableExtend,\n  $$,\n  ImageFit,\n} from '@kit.ArkUI';",
+                    "line": 86,
+                    "column": 36,
+                    "endLine": 86,
+                    "endColumn": 44
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Entry\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -92,11 +171,15 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, State, Column, Button, Text, Row, TextAttribute, ColumnAttribute, AnimatableExtend, $$, ImageFit } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  State,\n  Column,\n  Button,\n  Text,\n  Row,\n  TextAttribute,\n  ColumnAttribute,\n  AnimatableExtend,\n  $$,\n  ImageFit,\n} from '@kit.ArkUI';",
+                    "line": 86,
+                    "column": 36,
+                    "endLine": 86,
+                    "endColumn": 44
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Component\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -109,11 +192,15 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, State, Column, Button, Text, Row, TextAttribute, ColumnAttribute, AnimatableExtend, $$, ImageFit } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  State,\n  Column,\n  Button,\n  Text,\n  Row,\n  TextAttribute,\n  ColumnAttribute,\n  AnimatableExtend,\n  $$,\n  ImageFit,\n} from '@kit.ArkUI';",
+                    "line": 86,
+                    "column": 36,
+                    "endLine": 86,
+                    "endColumn": 44
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"State\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -126,11 +213,15 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, State, Column, Button, Text, Row, TextAttribute, ColumnAttribute, AnimatableExtend, $$, ImageFit } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  State,\n  Column,\n  Button,\n  Text,\n  Row,\n  TextAttribute,\n  ColumnAttribute,\n  AnimatableExtend,\n  $$,\n  ImageFit,\n} from '@kit.ArkUI';",
+                    "line": 86,
+                    "column": 36,
+                    "endLine": 86,
+                    "endColumn": 44
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"State\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -143,11 +234,15 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, State, Column, Button, Text, Row, TextAttribute, ColumnAttribute, AnimatableExtend, $$, ImageFit } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  State,\n  Column,\n  Button,\n  Text,\n  Row,\n  TextAttribute,\n  ColumnAttribute,\n  AnimatableExtend,\n  $$,\n  ImageFit,\n} from '@kit.ArkUI';",
+                    "line": 86,
+                    "column": 36,
+                    "endLine": 86,
+                    "endColumn": 44
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Column\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -160,11 +255,15 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, State, Column, Button, Text, Row, TextAttribute, ColumnAttribute, AnimatableExtend, $$, ImageFit } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  State,\n  Column,\n  Button,\n  Text,\n  Row,\n  TextAttribute,\n  ColumnAttribute,\n  AnimatableExtend,\n  $$,\n  ImageFit,\n} from '@kit.ArkUI';",
+                    "line": 86,
+                    "column": 36,
+                    "endLine": 86,
+                    "endColumn": 44
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Button\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -177,11 +276,15 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, State, Column, Button, Text, Row, TextAttribute, ColumnAttribute, AnimatableExtend, $$, ImageFit } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  State,\n  Column,\n  Button,\n  Text,\n  Row,\n  TextAttribute,\n  ColumnAttribute,\n  AnimatableExtend,\n  $$,\n  ImageFit,\n} from '@kit.ArkUI';",
+                    "line": 86,
+                    "column": 36,
+                    "endLine": 86,
+                    "endColumn": 44
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Text\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -194,11 +297,15 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, State, Column, Button, Text, Row, TextAttribute, ColumnAttribute, AnimatableExtend, $$, ImageFit } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  State,\n  Column,\n  Button,\n  Text,\n  Row,\n  TextAttribute,\n  ColumnAttribute,\n  AnimatableExtend,\n  $$,\n  ImageFit,\n} from '@kit.ArkUI';",
+                    "line": 86,
+                    "column": 36,
+                    "endLine": 86,
+                    "endColumn": 44
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Component\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -211,11 +318,15 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, State, Column, Button, Text, Row, TextAttribute, ColumnAttribute, AnimatableExtend, $$, ImageFit } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  State,\n  Column,\n  Button,\n  Text,\n  Row,\n  TextAttribute,\n  ColumnAttribute,\n  AnimatableExtend,\n  $$,\n  ImageFit,\n} from '@kit.ArkUI';",
+                    "line": 86,
+                    "column": 36,
+                    "endLine": 86,
+                    "endColumn": 44
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"State\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -228,11 +339,15 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, State, Column, Button, Text, Row, TextAttribute, ColumnAttribute, AnimatableExtend, $$, ImageFit } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  State,\n  Column,\n  Button,\n  Text,\n  Row,\n  TextAttribute,\n  ColumnAttribute,\n  AnimatableExtend,\n  $$,\n  ImageFit,\n} from '@kit.ArkUI';",
+                    "line": 86,
+                    "column": 36,
+                    "endLine": 86,
+                    "endColumn": 44
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Row\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -245,11 +360,15 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, State, Column, Button, Text, Row, TextAttribute, ColumnAttribute, AnimatableExtend, $$, ImageFit } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  State,\n  Column,\n  Button,\n  Text,\n  Row,\n  TextAttribute,\n  ColumnAttribute,\n  AnimatableExtend,\n  $$,\n  ImageFit,\n} from '@kit.ArkUI';",
+                    "line": 86,
+                    "column": 36,
+                    "endLine": 86,
+                    "endColumn": 44
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"AnimatableExtend\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -262,11 +381,15 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, State, Column, Button, Text, Row, TextAttribute, ColumnAttribute, AnimatableExtend, $$, ImageFit } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  State,\n  Column,\n  Button,\n  Text,\n  Row,\n  TextAttribute,\n  ColumnAttribute,\n  AnimatableExtend,\n  $$,\n  ImageFit,\n} from '@kit.ArkUI';",
+                    "line": 86,
+                    "column": 36,
+                    "endLine": 86,
+                    "endColumn": 44
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Component\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -279,11 +402,15 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, State, Column, Button, Text, Row, TextAttribute, ColumnAttribute, AnimatableExtend, $$, ImageFit } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  State,\n  Column,\n  Button,\n  Text,\n  Row,\n  TextAttribute,\n  ColumnAttribute,\n  AnimatableExtend,\n  $$,\n  ImageFit,\n} from '@kit.ArkUI';",
+                    "line": 86,
+                    "column": 36,
+                    "endLine": 86,
+                    "endColumn": 44
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"State\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -296,11 +423,15 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, State, Column, Button, Text, Row, TextAttribute, ColumnAttribute, AnimatableExtend, $$, ImageFit } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  State,\n  Column,\n  Button,\n  Text,\n  Row,\n  TextAttribute,\n  ColumnAttribute,\n  AnimatableExtend,\n  $$,\n  ImageFit,\n} from '@kit.ArkUI';",
+                    "line": 86,
+                    "column": 36,
+                    "endLine": 86,
+                    "endColumn": 44
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Row\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -313,11 +444,15 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, State, Column, Button, Text, Row, TextAttribute, ColumnAttribute, AnimatableExtend, $$, ImageFit } from '@kit.ArkUI';"
+                    "replacementText": "\n\nimport {\n  Entry,\n  Component,\n  State,\n  Column,\n  Button,\n  Text,\n  Row,\n  TextAttribute,\n  ColumnAttribute,\n  AnimatableExtend,\n  $$,\n  ImageFit,\n} from '@kit.ArkUI';",
+                    "line": 86,
+                    "column": 36,
+                    "endLine": 86,
+                    "endColumn": 44
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"ImageFit\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         }
     ]

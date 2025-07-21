@@ -56,7 +56,11 @@ public:
 
     [[nodiscard]] ETSTypeReference *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
+    ETSTypeReference *Construct(ArenaAllocator *allocator) override;
+    void CopyTo(AstNode *other) const override;
+
 private:
+    friend class SizeOfNodeTest;
     ir::ETSTypeReferencePart *part_;
 };
 }  // namespace ark::es2panda::ir

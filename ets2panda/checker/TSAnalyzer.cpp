@@ -74,6 +74,7 @@ checker::Type *TSAnalyzer::Check(ir::TSIndexSignature *node) const
     checker::ObjectDescriptor *desc = checker->Allocator()->New<checker::ObjectDescriptor>(checker->Allocator());
     checker::ObjectType *placeholder = checker->Allocator()->New<checker::ObjectLiteralType>(desc);
 
+    ES2PANDA_ASSERT(placeholder != nullptr);
     if (node->Kind() == ir::TSIndexSignature::TSIndexSignatureKind::NUMBER) {
         placeholder->Desc()->numberIndexInfo = info;
     } else {
@@ -107,6 +108,7 @@ checker::Type *TSAnalyzer::Check(ir::TSMethodSignature *node) const
     }
 
     returnType->Check(checker);
+    ES2PANDA_ASSERT(callSignature != nullptr);
     callSignature->SetReturnType(returnType->GetType(checker));
 
     return nullptr;
@@ -280,12 +282,13 @@ checker::Type *TSAnalyzer::Check(ir::ArrayExpression *expr) const
             util::StringView memberIndex = util::Helpers::ToStringView(checker->Allocator(), index);
             varbinder::LocalVariable *tupleMember = varbinder::Scope::CreateVar(
                 checker->Allocator(), memberIndex, varbinder::VariableFlags::PROPERTY, nullptr);
-
+            ES2PANDA_ASSERT(tupleMember != nullptr);
             if (inConstContext) {
                 tupleMember->AddFlag(varbinder::VariableFlags::READONLY);
             }
 
             tupleMember->SetTsType(*it);
+            ES2PANDA_ASSERT(desc != nullptr);
             desc->properties.push_back(tupleMember);
         }
 
@@ -326,7 +329,7 @@ checker::Type *TSAnalyzer::Check(ir::ArrowFunctionExpression *expr) const
     if (funcVar != nullptr && funcVar->TsType() == nullptr) {
         funcVar->SetTsType(funcType);
     }
-
+    ES2PANDA_ASSERT(signature != nullptr);
     signature->SetReturnType(checker->HandleFunctionReturn(expr->Function()));
 
     if (!expr->Function()->Body()->IsExpression()) {
@@ -569,7 +572,7 @@ checker::Type *TSAnalyzer::Check(ir::FunctionExpression *expr) const
     if (funcVar != nullptr && funcVar->TsType() == nullptr) {
         funcVar->SetTsType(funcType);
     }
-
+    ES2PANDA_ASSERT(signature != nullptr);
     signature->SetReturnType(checker->HandleFunctionReturn(expr->Function()));
 
     expr->Function()->Body()->Check(checker);
@@ -787,6 +790,7 @@ void TSAnalyzer::CheckNonComputed(checker::ObjectDescriptor *desc, ir::Expressio
 
     auto *memberVar = varbinder::Scope::CreateVar(checker->Allocator(), propName, flags, it);
 
+    ES2PANDA_ASSERT(memberVar != nullptr);
     if (inConstContext) {
         memberVar->AddFlag(varbinder::VariableFlags::READONLY);
     } else {
@@ -798,7 +802,7 @@ void TSAnalyzer::CheckNonComputed(checker::ObjectDescriptor *desc, ir::Expressio
     if (prop->Key()->IsNumberLiteral()) {
         memberVar->AddFlag(varbinder::VariableFlags::NUMERIC_NAME);
     }
-
+    ES2PANDA_ASSERT(desc != nullptr);
     varbinder::LocalVariable *foundMember = desc->FindProperty(propName);
     allPropertiesMap.insert({propName, it->Start()});
 
@@ -876,6 +880,7 @@ checker::Type *TSAnalyzer::Check(ir::ObjectExpression *expr) const
     }
 
     checker::Type *returnType = checker->Allocator()->New<checker::ObjectLiteralType>(desc);
+    ES2PANDA_ASSERT(returnType != nullptr);
     returnType->AsObjectType()->AddObjectFlag(checker::ObjectFlags::RESOLVED_MEMBERS |
                                               checker::ObjectFlags::CHECK_EXCESS_PROPS);
     return returnType;
@@ -1342,6 +1347,7 @@ static void CheckSimpleVariableDeclaration(checker::TSChecker *checker, ir::Vari
             initializerType = checker->GetBaseTypeOfLiteralType(initializerType);
         }
 
+        ES2PANDA_ASSERT(initializerType != nullptr);
         if (initializerType->IsNullType()) {
             checker->ThrowTypeError(
                 {"Cannot infer type for variable '", declarator->Id()->AsIdentifier()->Name(), "'."},
@@ -1729,6 +1735,7 @@ static void AddEnumValueDeclaration(checker::TSChecker *checker, double number, 
 
     if (res == nullptr) {
         auto *decl = checker->Allocator()->New<varbinder::EnumDecl>(memberStr);
+        ES2PANDA_ASSERT(decl != nullptr);
         decl->BindNode(variable->Declaration()->Node());
         enumScope->AddDecl(checker->Allocator(), decl, ScriptExtension::TS);
         res = enumScope->FindLocal(memberStr, varbinder::ResolveBindingOptions::BINDINGS);
@@ -1740,6 +1747,7 @@ static void AddEnumValueDeclaration(checker::TSChecker *checker, double number, 
         ES2PANDA_ASSERT(res->IsEnumVariable());
         enumVar = res->AsEnumVariable();
         auto *decl = checker->Allocator()->New<varbinder::EnumDecl>(memberStr);
+        ES2PANDA_ASSERT(decl != nullptr);
         decl->BindNode(variable->Declaration()->Node());
         enumVar->ResetDecl(decl);
     }
@@ -1846,6 +1854,7 @@ checker::Type *TSAnalyzer::Check(ir::TSEnumDeclaration *st) const
     if (enumVar->TsType() == nullptr) {
         checker::ScopeContext scopeCtx(checker, st->Scope());
         checker::Type *enumType = InferType(checker, st->IsConst(), st);
+        ES2PANDA_ASSERT(enumType != nullptr);
         enumType->SetVariable(enumVar);
         enumVar->SetTsType(enumType);
     }
@@ -1953,6 +1962,7 @@ checker::Type *TSAnalyzer::Check(ir::TSInterfaceDeclaration *st) const
                 checker->Allocator()->New<checker::ObjectDescriptor>(checker->Allocator());
             resolvedType =
                 checker->Allocator()->New<checker::InterfaceType>(checker->Allocator(), st->Id()->Name(), desc);
+            ES2PANDA_ASSERT(resolvedType != nullptr);
             resolvedType->SetVariable(var);
             var->SetTsType(resolvedType);
         }

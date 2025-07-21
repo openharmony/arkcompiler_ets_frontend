@@ -92,7 +92,11 @@ public:
         v->Accept(this);
     }
 
+    TSTypeParameter *Construct(ArenaAllocator *allocator) override;
+    void CopyTo(AstNode *other) const override;
+
 private:
+    friend class SizeOfNodeTest;
     Identifier *name_;
     TypeNode *constraint_;
     TypeNode *defaultType_;

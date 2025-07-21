@@ -32,12 +32,18 @@ class B1 extends A1 {
 }
 
 class A2 {
-    fld: Boolean[]
+    private _fld: Boolean[] = []
     constructor(p: Boolean[], q: Boolean[]) {
         this.fld = [...p, ...q]
     }
     meth() : Boolean[] {
         return [true, ...this.fld, false]
+    }
+    get fld(): Boolean[]{
+        return this._fld;
+    }
+    set fld(v: Boolean[]) {
+        this._fld = v;
     }
 }
 
@@ -76,4 +82,3 @@ function main() {
     assertTrue(arr4[3] == false && arr4[4] == false)
 
 }
-

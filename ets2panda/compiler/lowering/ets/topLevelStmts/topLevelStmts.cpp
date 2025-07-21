@@ -48,21 +48,42 @@ static bool CheckProgramSourcesConsistency(parser::Program *program)
     return success;
 }
 
+static void CheckFileHeaderFlag(parser::Program *program)
+{
+    auto &statements = program->Ast()->Statements();
+    if (statements.empty()) {
+        return;
+    }
+
+    if (!statements.front()->IsExpressionStatement()) {
+        return;
+    }
+
+    // If further processing based on "use static" is required later, such as throwing a warning or modifying the node,
+    // perform the operation here.
+    auto *expansion = statements.front()->AsExpressionStatement()->GetExpression();
+    if (expansion->IsStringLiteral() && expansion->AsStringLiteral()->Str() == Signatures::STATIC_PROGRAM_FLAG) {
+        statements.erase(statements.begin());
+        return;
+    }
+}
+
 bool TopLevelStatements::Perform(public_lib::Context *ctx, parser::Program *program)
 {
+    CheckFileHeaderFlag(program);
     auto imports = ImportExportDecls(program->VarBinder()->AsETSBinder(), ctx->parser->AsETSParser());
     imports.ParseDefaultSources();
     if (!CheckProgramSourcesConsistency(program)) {
         // NOTE(vpukhov): enforce compilation failure
     }
 
-    GlobalClassHandler globalClass(ctx->parser->AsETSParser(), program->Allocator());
+    GlobalClassHandler globalClass(ctx->parser->AsETSParser(), ctx->Allocator());
     for (auto &[package, extPrograms] : program->ExternalSources()) {
         auto moduleDependencies = imports.HandleGlobalStmts(extPrograms);
         globalClass.SetupGlobalClass(extPrograms, &moduleDependencies);
     }
 
-    ArenaVector<parser::Program *> mainModule(program->Allocator()->Adapter());
+    ArenaVector<parser::Program *> mainModule(ctx->Allocator()->Adapter());
     mainModule.emplace_back(program);
     auto moduleDependencies = imports.HandleGlobalStmts(mainModule);
     globalClass.SetupGlobalClass(mainModule, &moduleDependencies);

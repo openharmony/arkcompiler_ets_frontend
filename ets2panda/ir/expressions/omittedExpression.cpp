@@ -60,6 +60,7 @@ checker::VerifiedType OmittedExpression::Check(checker::ETSChecker *checker)
 OmittedExpression *OmittedExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     auto *const clone = allocator->New<OmittedExpression>();
+    ES2PANDA_ASSERT(clone != nullptr);
     if (parent != nullptr) {
         clone->SetParent(parent);
     }

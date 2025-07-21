@@ -243,7 +243,7 @@ std::optional<std::string> ToTypeName(std::string_view typeSignature, checker::G
     pandasm::Type type = pandasm::Type::FromDescriptor(typeSignature);
 
     auto *checkerType = PrimitiveToCheckerType(type.GetId(), globalTypes);
-    ES2PANDA_ASSERT(checkerType);
+    ES2PANDA_ASSERT(checkerType != nullptr);
     return checkerType->ToString();
 }
 

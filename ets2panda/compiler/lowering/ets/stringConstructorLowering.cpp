@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -70,8 +70,9 @@ ir::Expression *ReplaceStringConstructor(public_lib::Context *const ctx,
 
         // For the case when the constructor parameter is "null" or "undefined"
         if (argType->IsETSNullType() || argType->IsETSUndefinedType()) {
-            auto *literal = argType->IsETSNullType() ? checker->AllocNode<ir::StringLiteral>("null")
-                                                     : checker->AllocNode<ir::StringLiteral>("undefined");
+            auto *literal = argType->IsETSNullType() ? ctx->AllocNode<ir::StringLiteral>("null")
+                                                     : ctx->AllocNode<ir::StringLiteral>("undefined");
+            ES2PANDA_ASSERT(literal != nullptr);
             literal->SetParent(newClassInstExpr->Parent());
 
             // Run checker
@@ -84,7 +85,7 @@ ir::Expression *ReplaceStringConstructor(public_lib::Context *const ctx,
         auto exprCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(checker->VarBinder(), scope);
 
         // Generate temporary variable
-        auto const tmpIdentName = GenName(checker->Allocator());
+        auto const tmpIdentName = GenName(ctx->Allocator());
 
         // Create BlockExpression
         ir::Expression *blockExpr = nullptr;

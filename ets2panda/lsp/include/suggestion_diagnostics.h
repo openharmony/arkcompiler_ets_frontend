@@ -38,6 +38,7 @@ bool HasSupportedNumberOfArguments(ir::AstNode *node);
 bool IsFixablePromiseArgument(ir::AstNode *node, std::unordered_map<std::string, bool> &visitedFunc);
 std::string GetKeyFromNode(ir::AstNode *node);
 bool CanBeConvertedToAsync(ir::AstNode *node);
+bool HasPropertyAccessExpressionWithName(ir::AstNode *node, const std::string &func);
 
 }  // namespace ark::es2panda::lsp
 

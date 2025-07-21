@@ -2,7 +2,7 @@
 # coding: utf-8
 
 """
-Copyright (c) 2021 Huawei Device Co., Ltd.
+Copyright (c) 2021-2025 Huawei Device Co., Ltd.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -58,6 +58,8 @@ def parse_args():
                              'its value will be the path of input file if not specified')
     parser.add_argument("--enable-annotations", action='store_true',
                         help='whether annotations are enabled or not')
+    parser.add_argument("--enable-ets-implements", action='store_true',
+                        help='whether ets implements are enabled or not'),
     parser.add_argument("--enable-release-column", action='store_true',
                         help='enable column number information for bytecode instructions in non-debug mode.')
     arguments = parser.parse_args()
@@ -109,6 +111,9 @@ def gen_abc_info(input_arguments):
     if input_arguments.enable_annotations:
         src_index = cmd.index(input_arguments.src_js)
         cmd.insert(src_index, '--enable-annotations')
+    if input_arguments.enable_ets_implements:
+        src_index = cmd.index(input_arguments.src_js)
+        cmd.insert(src_index, '--enable-ets-implements')
         # insert d.ts option to cmd later
     if input_arguments.enable_release_column:
         src_index = cmd.index(input_arguments.src_js)

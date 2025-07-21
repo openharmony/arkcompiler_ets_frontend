@@ -41,5 +41,5 @@ function main(){
 /* @@@ label Error TypeError: type C has no property named field3  */
 /* @@@ label2 Error TypeError: Property field2 is not visible here.  */
 /* @@@ label3 Error TypeError: Type '"some str"' is not compatible with type 'double' at property 'field1'  */
-/* @@@ label4 Error TypeError: type C2 has no parameterless constructor  */
+/* @@@ label4 Error TypeError: Type C2 has no parameterless constructor. Initialization with literals is not supported if the type has no parameterless constructor. Declare the parameterless constructor explicitly or remove parametered constructors!  */
 /* @@@ label5 Error TypeError: Signature constructor(): void is not visible here.  */

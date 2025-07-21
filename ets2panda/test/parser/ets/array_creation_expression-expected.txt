@@ -854,87 +854,135 @@
             "optional": false,
             "computed": false,
             "typeAnnotation": {
-              "type": "TSArrayType",
-              "elementType": {
-                "type": "ETSUnionType",
-                "types": [
-                  {
-                    "type": "ETSTypeReference",
-                    "part": {
-                      "type": "ETSTypeReferencePart",
-                      "name": {
-                        "type": "Identifier",
-                        "name": "T",
-                        "decorators": [],
-                        "loc": {
-                          "start": {
-                            "line": 27,
-                            "column": 20,
-                            "program": "array_creation_expression.ets"
+              "type": "ETSTypeReference",
+              "part": {
+                "type": "ETSTypeReferencePart",
+                "name": {
+                  "type": "Identifier",
+                  "name": "Array",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": "array_creation_expression.ets"
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 3,
+                      "program": "array_creation_expression.ets"
+                    }
+                  }
+                },
+                "typeParams": {
+                  "type": "TSTypeParameterInstantiation",
+                  "params": [
+                    {
+                      "type": "ETSUnionType",
+                      "types": [
+                        {
+                          "type": "ETSTypeReference",
+                          "part": {
+                            "type": "ETSTypeReferencePart",
+                            "name": {
+                              "type": "Identifier",
+                              "name": "T",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 3,
+                                  "program": "array_creation_expression.ets"
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 3,
+                                  "program": "array_creation_expression.ets"
+                                }
+                              }
+                            },
+                            "loc": {
+                              "start": {
+                                "line": 1,
+                                "column": 3,
+                                "program": "array_creation_expression.ets"
+                              },
+                              "end": {
+                                "line": 1,
+                                "column": 3,
+                                "program": "array_creation_expression.ets"
+                              }
+                            }
                           },
-                          "end": {
-                            "line": 27,
-                            "column": 21,
-                            "program": "array_creation_expression.ets"
+                          "loc": {
+                            "start": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "array_creation_expression.ets"
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "array_creation_expression.ets"
+                            }
+                          }
+                        },
+                        {
+                          "type": "ETSUndefinedType",
+                          "loc": {
+                            "start": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "array_creation_expression.ets"
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "array_creation_expression.ets"
+                            }
                           }
                         }
-                      },
+                      ],
                       "loc": {
                         "start": {
-                          "line": 27,
-                          "column": 20,
+                          "line": 1,
+                          "column": 3,
                           "program": "array_creation_expression.ets"
                         },
                         "end": {
-                          "line": 27,
-                          "column": 23,
+                          "line": 1,
+                          "column": 3,
                           "program": "array_creation_expression.ets"
                         }
                       }
-                    },
-                    "loc": {
-                      "start": {
-                        "line": 27,
-                        "column": 20,
-                        "program": "array_creation_expression.ets"
-                      },
-                      "end": {
-                        "line": 27,
-                        "column": 23,
-                        "program": "array_creation_expression.ets"
-                      }
                     }
-                  },
-                  {
-                    "type": "ETSUndefinedType",
-                    "loc": {
-                      "start": {
-                        "line": 27,
-                        "column": 24,
-                        "program": "array_creation_expression.ets"
-                      },
-                      "end": {
-                        "line": 27,
-                        "column": 33,
-                        "program": "array_creation_expression.ets"
-                      }
+                  ],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 3,
+                      "program": "array_creation_expression.ets"
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 3,
+                      "program": "array_creation_expression.ets"
                     }
                   }
-                ],
+                },
                 "loc": {
                   "start": {
-                    "line": 27,
-                    "column": 19,
+                    "line": 1,
+                    "column": 1,
                     "program": "array_creation_expression.ets"
                   },
                   "end": {
-                    "line": 27,
-                    "column": 33,
+                    "line": 1,
+                    "column": 3,
                     "program": "array_creation_expression.ets"
                   }
                 }
               },
-              "annotations": [],
               "loc": {
                 "start": {
                   "line": 27,

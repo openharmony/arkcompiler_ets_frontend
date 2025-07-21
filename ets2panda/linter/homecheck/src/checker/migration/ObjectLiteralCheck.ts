@@ -68,7 +68,7 @@ export class ObjectLiteralCheck implements BaseChecker {
 
         for (let arkFile of scene.getFiles()) {
             const topLevelVarMap: Map<string, Stmt[]> = new Map();
-            this.collectImportedVar(topLevelVarMap, arkFile);
+            this.collectImportedVar(topLevelVarMap, arkFile, scene);
             this.collectTopLevelVar(topLevelVarMap, arkFile, scene);
 
             const handleClass = (cls: ArkClass): void => {
@@ -101,12 +101,12 @@ export class ObjectLiteralCheck implements BaseChecker {
             this.checkFromStmt(stmt, scene, result, topLevelVarMap, checkAll, visited);
             result.forEach(s => this.addIssueReport(s, (s as ArkAssignStmt).getRightOp()));
             if (!checkAll.value) {
-                this.addIssueReport(stmt, rightOp);
+                this.addIssueReport(stmt, rightOp, checkAll.value);
             }
         }
     }
 
-    private collectImportedVar(importVarMap: Map<string, Stmt[]>, file: ArkFile) {
+    private collectImportedVar(importVarMap: Map<string, Stmt[]>, file: ArkFile, scene: Scene) {
         file.getImportInfos().forEach(importInfo => {
             const exportInfo = importInfo.getLazyExportInfo();
             if (exportInfo === null) {
@@ -120,6 +120,7 @@ export class ObjectLiteralCheck implements BaseChecker {
             if (!declaringStmt) {
                 return;
             }
+            DVFGHelper.buildSingleDVFG(declaringStmt.getCfg().getDeclaringMethod(), scene);
             importVarMap.set(arkExport.getName(), [declaringStmt]);
         });
     }
@@ -201,20 +202,14 @@ export class ObjectLiteralCheck implements BaseChecker {
                     DVFGHelper.buildSingleDVFG(declaringMtd, scene);
                     this.visited.add(declaringMtd);
                 }
-                declaringMtd
-                    .getReturnStmt()
-                    .forEach(r => this.checkFromStmt(r, scene, res, topLevelVarMap, checkAll, visited, depth + 1));
+                declaringMtd.getReturnStmt().forEach(r => this.checkFromStmt(r, scene, res, topLevelVarMap, checkAll, visited, depth + 1));
             });
             const paramRef = this.isFromParameter(currentStmt);
             if (paramRef) {
                 const paramIdx = paramRef.getIndex();
-                const callsites = this.cg.getInvokeStmtByMethod(
-                    currentStmt.getCfg().getDeclaringMethod().getSignature()
-                );
+                const callsites = this.cg.getInvokeStmtByMethod(currentStmt.getCfg().getDeclaringMethod().getSignature());
                 this.processCallsites(callsites, scene);
-                this.collectArgDefs(paramIdx, callsites, scene).forEach(d =>
-                    this.checkFromStmt(d, scene, res, topLevelVarMap, checkAll, visited, depth + 1)
-                );
+                this.collectArgDefs(paramIdx, callsites, scene).forEach(d => this.checkFromStmt(d, scene, res, topLevelVarMap, checkAll, visited, depth + 1));
             }
             current.getIncomingEdge().forEach(e => worklist.push(e.getSrcNode() as DVFGNode));
         }
@@ -359,11 +354,14 @@ export class ObjectLiteralCheck implements BaseChecker {
         });
     }
 
-    private addIssueReport(stmt: Stmt, operand: Value): void {
+    private addIssueReport(stmt: Stmt, operand: Value, checkAll: boolean = true): void {
         const severity = this.rule.alert ?? this.metaData.severity;
         const warnInfo = this.getLineAndColumn(stmt, operand);
         const problem = 'ObjectLiteral';
-        const desc = `${this.metaData.description} (${this.rule.ruleId.replace('@migration/', '')})`;
+        let desc = `${this.metaData.description} (${this.rule.ruleId.replace('@migration/', '')})`;
+        if (!checkAll) {
+            desc = `Can not check when function call chain depth exceeds ${CALL_DEPTH_LIMIT}, please check it manually (${this.rule.ruleId.replace('@migration/', '')})`;
+        }
         let defects = new Defects(
             warnInfo.line,
             warnInfo.startCol,
@@ -382,7 +380,7 @@ export class ObjectLiteralCheck implements BaseChecker {
     }
 
     private getLineAndColumn(stmt: Stmt, operand: Value): WarnInfo {
-        const arkFile = stmt.getCfg()?.getDeclaringMethod().getDeclaringArkFile();
+        const arkFile = stmt.getCfg().getDeclaringMethod().getDeclaringArkFile();
         const originPosition = stmt.getOperandOriginalPosition(operand);
         if (arkFile && originPosition) {
             const originPath = arkFile.getFilePath();

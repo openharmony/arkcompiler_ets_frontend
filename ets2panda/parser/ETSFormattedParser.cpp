@@ -112,8 +112,7 @@ ir::TypeNode *ETSParser::ParseTypeFormatPlaceholder(std::optional<ParserImpl::No
 
         nodeFormat = GetFormatPlaceholderType();
         if (std::get<0>(*nodeFormat) || std::get<1>(*nodeFormat) != TYPE_FORMAT_NODE) {
-            LogError(diagnostic::INVALID_NODE_TYPE, {}, Lexer()->GetToken().Start());
-            ES2PANDA_UNREACHABLE();
+            return nullptr;
         }
     }
 
@@ -200,8 +199,7 @@ ir::AstNode *ETSParser::ParseTypeParametersFormatPlaceholder()
     auto *const insertingNode = insertingNodes_[placeholderNumber];
     if (insertingNode != nullptr && !insertingNode->IsTSTypeParameterDeclaration() &&
         !insertingNode->IsTSTypeParameterInstantiation()) {
-        LogError(diagnostic::INVALID_INSERT_NODE, {}, Lexer()->GetToken().Start());
-        ES2PANDA_UNREACHABLE();
+        return nullptr;
     }
 
     Lexer()->NextToken();
@@ -303,6 +301,7 @@ ir::Statement *ETSParser::CreateStatement(std::string_view const sourceCode)
     }
 
     auto *const blockStmt = AllocNode<ir::BlockStatement>(Allocator(), std::move(statements));
+    ES2PANDA_ASSERT(blockStmt != nullptr);
     blockStmt->SetRange({startLoc, lexer->GetToken().End()});
 
     for (auto *statement : blockStmt->Statements()) {
@@ -333,6 +332,25 @@ ir::Statement *ETSParser::CreateFormattedStatement(std::string_view const source
     return statement;
 }
 
+ir::TypeNode *ETSParser::CreateFormattedTypeAnnotation(std::string_view const sourceCode)
+{
+    util::UString source {sourceCode, Allocator()};
+    auto const isp = InnerSourceParser(this);
+    auto const lexer = InitLexer({GetContext().FormattingFileName(), source.View().Utf8()});
+    lexer->NextToken();
+    TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::NO_OPTS;
+    return ParseTypeAnnotation(&options);
+}
+
+ir::TypeNode *ETSParser::CreateFormattedTypeAnnotation(std::string_view const sourceCode,
+                                                       std::vector<ir::AstNode *> &args)
+{
+    insertingNodes_.swap(args);
+    auto typeAnnotation = CreateFormattedTypeAnnotation(sourceCode);
+    insertingNodes_.swap(args);
+    return typeAnnotation;
+}
+
 ArenaVector<ir::Statement *> ETSParser::CreateStatements(std::string_view const sourceCode)
 {
     util::UString source {sourceCode, Allocator()};
@@ -361,6 +379,7 @@ ir::AstNode *ETSParser::CreateFormattedClassFieldDefinition(std::string_view sou
     insertingNodes_.swap(insertingNodes);
 
     auto *const property = CreateClassElement(sourceCode, DUMMY_ARRAY, ir::ClassDefinitionModifiers::NONE);
+    ES2PANDA_ASSERT(property != nullptr);
     if (!property->IsTSInterfaceBody() || property->AsTSInterfaceBody()->Body().empty()) {
         LogError(diagnostic::INVALID_CLASS_FIELD, {}, Lexer()->GetToken().Start());
         ES2PANDA_UNREACHABLE();
@@ -377,6 +396,7 @@ ir::AstNode *ETSParser::CreateFormattedClassMethodDefinition(std::string_view so
     insertingNodes_.swap(insertingNodes);
 
     auto *const property = CreateClassElement(sourceCode, DUMMY_ARRAY, ir::ClassDefinitionModifiers::NONE);
+    ES2PANDA_ASSERT(property != nullptr);
     if (!property->IsMethodDefinition()) {
         LogError(diagnostic::INVALID_CLASS_METHOD, {}, Lexer()->GetToken().Start());
         ES2PANDA_UNREACHABLE();
@@ -495,6 +515,7 @@ ir::MethodDefinition *ETSParser::CreateConstructorDefinition(ir::ModifierFlags m
     Lexer()->NextToken();
 
     auto *const methodDefinition = ParseClassMethodDefinition(memberName, modifiers, true);
+    ES2PANDA_ASSERT(methodDefinition != nullptr);
     methodDefinition->SetStart(startLoc);
 
     return methodDefinition;

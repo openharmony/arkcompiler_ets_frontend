@@ -84,13 +84,13 @@ TEST_F(GlobalETSObjectTypeTest, ETSArrayContainGlobalETSObject)
         << "    private readonly prop: number;\n"
         << "    constructor() {\n"
         << "        this.prop = 0.0;}\n"
-        << "    constructor(a: K[]) {\n"
+        << "    constructor(a: FixedArray<K>) {\n"
         << "        this.prop = 1.0;}\n}"
         << "class B<K> {\n"
         << "    private readonly prop: number;\n"
         << "    constructor() {\n"
         << "        this.prop = 0.0;}\n"
-        << "    constructor(a: readonly K[]) {\n"
+        << "    constructor(a: readonly FixedArray<K>) {\n"
         << "        this.prop = 1.0;}\n}"
         << "let a = new A<Object>();\n let b = new B<Object>();";
 

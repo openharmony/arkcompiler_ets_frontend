@@ -22,4 +22,3 @@ importet lock1 = new ArkTSUt../main;
 /* @@? 16:30 Error SyntaxError: Identifier expected.  */
 /* @@? 16:31 Error SyntaxError: Identifier expected.  */
 /* @@? 16:31 Error TypeError: Invalid type reference.  */
-/* @@? 16:32 Error TypeError: Function name 'main' used in the wrong context  */

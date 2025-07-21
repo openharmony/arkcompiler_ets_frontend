@@ -49,16 +49,6 @@
             "column": 14,
             "endLine": 26,
             "endColumn": 15,
-            "problem": "ConstructorIface",
-            "suggest": "",
-            "rule": "Construct signatures are not supported in interfaces (arkts-no-ctor-signatures-iface)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 26,
-            "column": 14,
-            "endLine": 26,
-            "endColumn": 15,
             "problem": "DynamicCtorCall",
             "suggest": "",
             "rule": "\"new\" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)",
@@ -72,16 +62,6 @@
             "problem": "LimitedReturnTypeInference",
             "suggest": "",
             "rule": "Function return type inference is limited (arkts-no-implicit-return-types)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 30,
-            "column": 14,
-            "endLine": 30,
-            "endColumn": 15,
-            "problem": "ConstructorIface",
-            "suggest": "",
-            "rule": "Construct signatures are not supported in interfaces (arkts-no-ctor-signatures-iface)",
             "severity": "ERROR"
         },
         {

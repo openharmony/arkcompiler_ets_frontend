@@ -25,3 +25,4 @@ function main(): void {
 /* @@? 16:5 Error TypeError: Unresolved reference a */
 /* @@? 20:6 Error SyntaxError: Label must be followed by a loop statement. */
 /* @@? 20:6 Error SyntaxError: Unexpected token '='. */
+/* @@? 20:8 Error SyntaxError: Unexpected token 'b'. */

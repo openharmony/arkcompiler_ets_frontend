@@ -15,9 +15,9 @@
     ],
     "result": [
         {
-            "line": 16,
+            "line": 24,
             "column": 7,
-            "endLine": 16,
+            "endLine": 24,
             "endColumn": 35,
             "problem": "AnyType",
             "suggest": "",
@@ -25,9 +25,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 16,
+            "line": 24,
             "column": 24,
-            "endLine": 16,
+            "endLine": 24,
             "endColumn": 35,
             "problem": "GenericCallNoTypeArgs",
             "suggest": "",
@@ -35,9 +35,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 20,
+            "line": 28,
             "column": 7,
-            "endLine": 20,
+            "endLine": 28,
             "endColumn": 33,
             "problem": "AnyType",
             "suggest": "",
@@ -45,9 +45,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 20,
+            "line": 28,
             "column": 7,
-            "endLine": 20,
+            "endLine": 28,
             "endColumn": 33,
             "problem": "AnyType",
             "suggest": "",
@@ -55,9 +55,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 20,
+            "line": 28,
             "column": 24,
-            "endLine": 20,
+            "endLine": 28,
             "endColumn": 33,
             "problem": "GenericCallNoTypeArgs",
             "suggest": "",
@@ -65,9 +65,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 25,
+            "line": 33,
             "column": 3,
-            "endLine": 25,
+            "endLine": 33,
             "endColumn": 37,
             "problem": "AnyType",
             "suggest": "",
@@ -75,9 +75,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 25,
+            "line": 33,
             "column": 3,
-            "endLine": 25,
+            "endLine": 33,
             "endColumn": 37,
             "problem": "AnyType",
             "suggest": "",
@@ -85,9 +85,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 25,
+            "line": 33,
             "column": 27,
-            "endLine": 25,
+            "endLine": 33,
             "endColumn": 36,
             "problem": "GenericCallNoTypeArgs",
             "suggest": "",
@@ -95,9 +95,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 26,
+            "line": 34,
             "column": 10,
-            "endLine": 26,
+            "endLine": 34,
             "endColumn": 23,
             "problem": "StructuralIdentity",
             "suggest": "",
@@ -105,9 +105,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 26,
+            "line": 34,
             "column": 39,
-            "endLine": 26,
+            "endLine": 34,
             "endColumn": 48,
             "problem": "GenericCallNoTypeArgs",
             "suggest": "",
@@ -115,9 +115,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 32,
+            "line": 40,
             "column": 7,
-            "endLine": 32,
+            "endLine": 40,
             "endColumn": 35,
             "problem": "UnknownType",
             "suggest": "",
@@ -125,9 +125,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 32,
+            "line": 40,
             "column": 22,
-            "endLine": 32,
+            "endLine": 40,
             "endColumn": 35,
             "problem": "GenericCallNoTypeArgs",
             "suggest": "",
@@ -135,9 +135,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 35,
+            "line": 43,
             "column": 30,
-            "endLine": 35,
+            "endLine": 43,
             "endColumn": 39,
             "problem": "GenericCallNoTypeArgs",
             "suggest": "",
@@ -145,9 +145,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 51,
+            "line": 59,
             "column": 10,
-            "endLine": 51,
+            "endLine": 59,
             "endColumn": 19,
             "problem": "StructuralIdentity",
             "suggest": "",
@@ -155,29 +155,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 51,
+            "line": 59,
             "column": 10,
-            "endLine": 51,
-            "endColumn": 19,
-            "problem": "GenericCallNoTypeArgs",
-            "suggest": "",
-            "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 55,
-            "column": 10,
-            "endLine": 55,
-            "endColumn": 19,
-            "problem": "StructuralIdentity",
-            "suggest": "",
-            "rule": "Structural typing is not supported (arkts-no-structural-typing)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 55,
-            "column": 10,
-            "endLine": 55,
+            "endLine": 59,
             "endColumn": 19,
             "problem": "GenericCallNoTypeArgs",
             "suggest": "",
@@ -185,9 +165,29 @@
             "severity": "ERROR"
         },
         {
-            "line": 68,
+            "line": 63,
+            "column": 10,
+            "endLine": 63,
+            "endColumn": 19,
+            "problem": "StructuralIdentity",
+            "suggest": "",
+            "rule": "Structural typing is not supported (arkts-no-structural-typing)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 63,
+            "column": 10,
+            "endLine": 63,
+            "endColumn": 19,
+            "problem": "GenericCallNoTypeArgs",
+            "suggest": "",
+            "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 76,
             "column": 12,
-            "endLine": 68,
+            "endLine": 76,
             "endColumn": 21,
             "problem": "StructuralIdentity",
             "suggest": "",
@@ -195,9 +195,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 68,
+            "line": 76,
             "column": 12,
-            "endLine": 68,
+            "endLine": 76,
             "endColumn": 21,
             "problem": "GenericCallNoTypeArgs",
             "suggest": "",
@@ -205,9 +205,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 72,
+            "line": 80,
             "column": 12,
-            "endLine": 72,
+            "endLine": 80,
             "endColumn": 21,
             "problem": "StructuralIdentity",
             "suggest": "",
@@ -215,10 +215,30 @@
             "severity": "ERROR"
         },
         {
-            "line": 72,
+            "line": 80,
             "column": 12,
-            "endLine": 72,
+            "endLine": 80,
             "endColumn": 21,
+            "problem": "GenericCallNoTypeArgs",
+            "suggest": "",
+            "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 93,
+            "column": 77,
+            "endLine": 93,
+            "endColumn": 93,
+            "problem": "DynamicCtorCall",
+            "suggest": "",
+            "rule": "\"new\" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 106,
+            "column": 52,
+            "endLine": 106,
+            "endColumn": 63,
             "problem": "GenericCallNoTypeArgs",
             "suggest": "",
             "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",

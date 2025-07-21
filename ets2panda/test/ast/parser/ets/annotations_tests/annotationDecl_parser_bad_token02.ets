@@ -20,7 +20,6 @@
 
 /* @@? 18:18 Error SyntaxError: Identifier expected, got ':'.  */
 /* @@? 18:20 Error SyntaxError: number is a predefined type, cannot be used as an identifier  */
-/* @@? 18:20 Error SyntaxError: number is a predefined type, cannot be used as an identifier  */
 /* @@? 19:1 Error SyntaxError: Identifier expected, got '}'.  */
 /* @@? 18:5 Error TypeError: Unresolved reference testProperty2 */
 /* @@? 18:5 Error TypeError: Invalid value for annotation field, expected a constant literal. */

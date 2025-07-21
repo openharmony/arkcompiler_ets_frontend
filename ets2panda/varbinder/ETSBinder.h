@@ -154,9 +154,18 @@ public:
     [[nodiscard]] ArenaVector<parser::Program *> GetExternalProgram(util::StringView sourceName,
                                                                     const ir::StringLiteral *importPath);
 
-    ir::ETSImportDeclaration *FindImportDeclInReExports(const ir::ETSImportDeclaration *const import,
-                                                        const util::StringView &imported,
-                                                        const ir::StringLiteral *const importPath);
+    std::pair<ir::ETSImportDeclaration *, ir::AstNode *> FindImportDeclInReExports(
+        const ir::ETSImportDeclaration *const import, const util::StringView &imported,
+        const ir::StringLiteral *const importPath);
+    std::pair<ir::ETSImportDeclaration *, ir::AstNode *> FindImportDeclInNamedExports(
+        const ir::ETSImportDeclaration *const import, const util::StringView &imported,
+        const ir::StringLiteral *const importPath);
+    std::pair<ir::ETSImportDeclaration *, ir::AstNode *> FindImportDeclInExports(
+        const ir::ETSImportDeclaration *const import, const util::StringView &imported,
+        const ir::StringLiteral *const importPath);
+    ir::ETSImportDeclaration *FindImportDeclIn(const ir::ETSImportDeclaration *const import,
+                                               const util::StringView &imported,
+                                               const ir::StringLiteral *const importPath);
     void AddImportNamespaceSpecifiersToTopBindings(Span<parser::Program *const> records,
                                                    ir::ImportNamespaceSpecifier *namespaceSpecifier,
                                                    const ir::ETSImportDeclaration *import);
@@ -165,12 +174,15 @@ public:
     void AddImportDefaultSpecifiersToTopBindings(Span<parser::Program *const> records,
                                                  ir::ImportDefaultSpecifier *importDefaultSpecifier,
                                                  const ir::ETSImportDeclaration *import);
-    void ValidateImportVariable(const ir::AstNode *node, const ir::ETSImportDeclaration *const import,
-                                const util::StringView &imported, const ir::StringLiteral *const importPath);
+    void ValidateImportVariable(const ir::AstNode *node, const util::StringView &imported,
+                                const ir::StringLiteral *const importPath);
     Variable *FindImportSpecifiersVariable(const util::StringView &imported,
                                            const varbinder::Scope::VariableMap &globalBindings,
                                            Span<parser::Program *const> record);
     Variable *FindStaticBinding(Span<parser::Program *const> records, const ir::StringLiteral *importPath);
+    Variable *AddImportSpecifierFromReExport(ir::AstNode *importSpecifier, const ir::ETSImportDeclaration *const import,
+                                             const util::StringView &imported,
+                                             const ir::StringLiteral *const importPath);
     void AddSpecifiersToTopBindings(ir::AstNode *const specifier, const ir::ETSImportDeclaration *const import);
     void AddDynamicSpecifiersToTopBindings(ir::AstNode *const specifier, const ir::ETSImportDeclaration *const import);
 
@@ -187,7 +199,12 @@ public:
     void BuildProxyMethod(ir::ScriptFunction *func, const util::StringView &containingClassName, bool isExternal);
     void AddFunctionThisParam(ir::ScriptFunction *func);
 
-    void ThrowError(const lexer::SourcePosition &pos, const std::string_view msg) const override;
+    void ThrowError(const lexer::SourcePosition &pos, const diagnostic::DiagnosticKind &kind) const
+    {
+        ThrowError(pos, kind, util::DiagnosticMessageParams {});
+    }
+    void ThrowError(const lexer::SourcePosition &pos, const diagnostic::DiagnosticKind &kind,
+                    const util::DiagnosticMessageParams &params) const override;
     bool IsGlobalIdentifier(const util::StringView &str) const override;
 
     void SetDefaultImports(ArenaVector<ir::ETSImportDeclaration *> defaultImports) noexcept
@@ -282,6 +299,8 @@ private:
     void ImportAllForeignBindings(ir::AstNode *specifier, const varbinder::Scope::VariableMap &globalBindings,
                                   const parser::Program *importProgram, const varbinder::GlobalScope *importGlobalScope,
                                   const ir::ETSImportDeclaration *import);
+    void ThrowRedeclarationError(const lexer::SourcePosition &pos, const Variable *const var,
+                                 const Variable *const variable, util::StringView localName);
 
     RecordTable globalRecordTable_;
     RecordTable *recordTable_;

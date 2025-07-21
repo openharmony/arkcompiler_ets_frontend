@@ -15,35 +15,54 @@
     ],
     "result": [
         {
-            "line": 17,
+            "line": 16,
             "column": 1,
-            "endLine": 17,
+            "endLine": 16,
             "endColumn": 52,
-            "problem": "ImportAfterStatement",
+            "problem": "InterOpImportJs",
+            "autofix": [
+                {
+                    "start": 605,
+                    "end": 656,
+                    "replacementText": "",
+                    "line": 16,
+                    "column": 1,
+                    "endLine": 16,
+                    "endColumn": 52
+                },
+                {
+                    "start": 656,
+                    "end": 656,
+                    "replacementText": "let GeneratedImportVar_1 = ESValue.load('./interop_equality_judgment_js');\nlet a = GeneratedImportVar_1.getProperty('a');\nlet b = GeneratedImportVar_1.getProperty('b');\n",
+                    "line": 16,
+                    "column": 1,
+                    "endLine": 16,
+                    "endColumn": 52
+                }
+            ],
             "suggest": "",
-            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
+            "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
             "severity": "ERROR"
         },
         {
             "line": 17,
             "column": 1,
             "endLine": 17,
-            "endColumn": 52,
-            "problem": "InterOpImportJs",
+            "endColumn": 7,
+            "problem": "InteropEqualityJudgment",
             "autofix": [
                 {
-                    "start": 618,
-                    "end": 669,
-                    "replacementText": ""
-                },
-                {
-                    "start": 669,
-                    "end": 669,
-                    "replacementText": "let GeneratedImportVar_1 = ESObject.load('./interop_equality_judgment_js');\nlet a = GeneratedImportVar_1.getPropertyByName('a');\nlet b = GeneratedImportVar_1.getPropertyByName('b');\n"
+                    "start": 657,
+                    "end": 663,
+                    "replacementText": "a.areEqual(b)",
+                    "line": 17,
+                    "column": 1,
+                    "endLine": 17,
+                    "endColumn": 7
                 }
             ],
             "suggest": "",
-            "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
+            "rule": "\"JS\" objects can't be used directly as operands of the equality operators (arkts-interop-js2s-equality-judgment)",
             "severity": "ERROR"
         },
         {
@@ -54,9 +73,13 @@
             "problem": "InteropEqualityJudgment",
             "autofix": [
                 {
-                    "start": 670,
-                    "end": 676,
-                    "replacementText": "a.areEqual(b)"
+                    "start": 664,
+                    "end": 670,
+                    "replacementText": "!a.areEqual(b)",
+                    "line": 18,
+                    "column": 1,
+                    "endLine": 18,
+                    "endColumn": 7
                 }
             ],
             "suggest": "",
@@ -67,13 +90,17 @@
             "line": 19,
             "column": 1,
             "endLine": 19,
-            "endColumn": 7,
+            "endColumn": 8,
             "problem": "InteropEqualityJudgment",
             "autofix": [
                 {
-                    "start": 677,
-                    "end": 683,
-                    "replacementText": "!a.areEqual(b)"
+                    "start": 671,
+                    "end": 678,
+                    "replacementText": "a.areStrictlyEqual(b)",
+                    "line": 19,
+                    "column": 1,
+                    "endLine": 19,
+                    "endColumn": 8
                 }
             ],
             "suggest": "",
@@ -88,26 +115,13 @@
             "problem": "InteropEqualityJudgment",
             "autofix": [
                 {
-                    "start": 684,
-                    "end": 691,
-                    "replacementText": "a.areStrictlyEqual(b)"
-                }
-            ],
-            "suggest": "",
-            "rule": "\"JS\" objects can't be used directly as operands of the equality operators (arkts-interop-js2s-equality-judgment)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 21,
-            "column": 1,
-            "endLine": 21,
-            "endColumn": 8,
-            "problem": "InteropEqualityJudgment",
-            "autofix": [
-                {
-                    "start": 692,
-                    "end": 699,
-                    "replacementText": "!a.areStrictlyEqual(b)"
+                    "start": 679,
+                    "end": 686,
+                    "replacementText": "!a.areStrictlyEqual(b)",
+                    "line": 20,
+                    "column": 1,
+                    "endLine": 20,
+                    "endColumn": 8
                 }
             ],
             "suggest": "",

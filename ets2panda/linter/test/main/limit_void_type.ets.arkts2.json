@@ -88,7 +88,7 @@
             "line": 29,
             "column": 15,
             "endLine": 29,
-            "endColumn": 38,
+            "endColumn": 40,
             "problem": "LimitedVoidType",
             "suggest": "",
             "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
@@ -98,7 +98,7 @@
             "line": 29,
             "column": 16,
             "endLine": 29,
-            "endColumn": 35,
+            "endColumn": 37,
             "problem": "FunctionExpression",
             "suggest": "",
             "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)",
@@ -155,6 +155,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 41,
+            "column": 29,
+            "endLine": 41,
+            "endColumn": 33,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 42,
             "column": 8,
             "endLine": 42,
@@ -162,6 +172,16 @@
             "problem": "LimitedVoidType",
             "suggest": "",
             "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 42,
+            "column": 37,
+            "endLine": 42,
+            "endColumn": 41,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -182,6 +202,16 @@
             "problem": "LimitedVoidType",
             "suggest": "",
             "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 45,
+            "column": 15,
+            "endLine": 45,
+            "endColumn": 25,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
             "severity": "ERROR"
         },
         {
@@ -415,6 +445,36 @@
             "severity": "ERROR"
         },
         {
+            "line": 83,
+            "column": 19,
+            "endLine": 83,
+            "endColumn": 20,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 83,
+            "column": 22,
+            "endLine": 83,
+            "endColumn": 23,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 83,
+            "column": 25,
+            "endLine": 83,
+            "endColumn": 26,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 85,
             "column": 19,
             "endLine": 85,
@@ -538,7 +598,7 @@
             "line": 102,
             "column": 7,
             "endLine": 102,
-            "endColumn": 32,
+            "endColumn": 33,
             "problem": "DestructuringDeclaration",
             "suggest": "",
             "rule": "Destructuring variable declarations are not supported (arkts-no-destruct-decls)",
@@ -656,9 +716,9 @@
         },
         {
             "line": 117,
-            "column": 46,
+            "column": 47,
             "endLine": 117,
-            "endColumn": 47,
+            "endColumn": 48,
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
             "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
@@ -718,7 +778,7 @@
             "line": 126,
             "column": 10,
             "endLine": 126,
-            "endColumn": 34,
+            "endColumn": 36,
             "problem": "FunctionExpression",
             "suggest": "",
             "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)",
@@ -726,9 +786,9 @@
         },
         {
             "line": 126,
-            "column": 27,
+            "column": 28,
             "endLine": 126,
-            "endColumn": 30,
+            "endColumn": 31,
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
@@ -836,6 +896,16 @@
         },
         {
             "line": 144,
+            "column": 1,
+            "endLine": 144,
+            "endColumn": 6,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 144,
             "column": 9,
             "endLine": 144,
             "endColumn": 13,
@@ -918,7 +988,27 @@
             "line": 162,
             "column": 16,
             "endLine": 162,
+            "endColumn": 36,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 162,
+            "column": 16,
+            "endLine": 162,
             "endColumn": 20,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 165,
+            "column": 8,
+            "endLine": 165,
+            "endColumn": 21,
             "problem": "LimitedVoidType",
             "suggest": "",
             "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
@@ -932,6 +1022,16 @@
             "problem": "LimitedVoidType",
             "suggest": "",
             "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 168,
+            "column": 6,
+            "endLine": 168,
+            "endColumn": 8,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)",
             "severity": "ERROR"
         },
         {
@@ -1016,9 +1116,309 @@
         },
         {
             "line": 203,
-            "column": 5,
+            "column": 6,
             "endLine": 203,
-            "endColumn": 9,
+            "endColumn": 10,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 211,
+            "column": 29,
+            "endLine": 211,
+            "endColumn": 42,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 211,
+            "column": 38,
+            "endLine": 211,
+            "endColumn": 42,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 212,
+            "column": 12,
+            "endLine": 212,
+            "endColumn": 13,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 217,
+            "column": 30,
+            "endLine": 217,
+            "endColumn": 43,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 217,
+            "column": 39,
+            "endLine": 217,
+            "endColumn": 43,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 218,
+            "column": 11,
+            "endLine": 218,
+            "endColumn": 12,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 224,
+            "column": 5,
+            "endLine": 224,
+            "endColumn": 7,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 224,
+            "column": 9,
+            "endLine": 224,
+            "endColumn": 13,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 224,
+            "column": 16,
+            "endLine": 224,
+            "endColumn": 21,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 225,
+            "column": 8,
+            "endLine": 225,
+            "endColumn": 21,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 225,
+            "column": 8,
+            "endLine": 225,
+            "endColumn": 12,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 225,
+            "column": 24,
+            "endLine": 225,
+            "endColumn": 29,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 226,
+            "column": 9,
+            "endLine": 226,
+            "endColumn": 22,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 226,
+            "column": 9,
+            "endLine": 226,
+            "endColumn": 13,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 226,
+            "column": 25,
+            "endLine": 226,
+            "endColumn": 26,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 228,
+            "column": 31,
+            "endLine": 228,
+            "endColumn": 44,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 228,
+            "column": 40,
+            "endLine": 228,
+            "endColumn": 44,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 229,
+            "column": 14,
+            "endLine": 229,
+            "endColumn": 16,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 231,
+            "column": 21,
+            "endLine": 231,
+            "endColumn": 23,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 238,
+            "column": 38,
+            "endLine": 238,
+            "endColumn": 51,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 238,
+            "column": 47,
+            "endLine": 238,
+            "endColumn": 51,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 246,
+            "column": 22,
+            "endLine": 246,
+            "endColumn": 35,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 246,
+            "column": 31,
+            "endLine": 246,
+            "endColumn": 35,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 250,
+            "column": 35,
+            "endLine": 250,
+            "endColumn": 48,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 250,
+            "column": 44,
+            "endLine": 250,
+            "endColumn": 48,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 251,
+            "column": 11,
+            "endLine": 251,
+            "endColumn": 15,
+            "problem": "SwitchExpression",
+            "suggest": "",
+            "rule": "The switch expression type must be of type char, byte, short, int, long, string or enum (arkts-switch-expr)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 252,
+            "column": 10,
+            "endLine": 252,
+            "endColumn": 11,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 253,
+            "column": 10,
+            "endLine": 253,
+            "endColumn": 11,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 257,
+            "column": 22,
+            "endLine": 257,
+            "endColumn": 35,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 257,
+            "column": 31,
+            "endLine": 257,
+            "endColumn": 35,
             "problem": "LimitedVoidType",
             "suggest": "",
             "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",

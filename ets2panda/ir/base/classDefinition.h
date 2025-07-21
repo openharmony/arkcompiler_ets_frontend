@@ -18,10 +18,11 @@
 
 #include "varbinder/scope.h"
 #include "varbinder/variable.h"
+#include "ir/srcDump.h"
 #include "ir/annotationAllowed.h"
 #include "ir/astNode.h"
 #include "ir/expressions/identifier.h"
-#include "ir/srcDump.h"
+#include "ir/jsDocAllowed.h"
 #include "ir/statements/annotationUsage.h"
 #include "ir/statements/classDeclaration.h"
 #include "util/language.h"
@@ -56,6 +57,7 @@ enum class ClassDefinitionModifiers : uint32_t {
     STRING_ENUM_TRANSFORMED = 1U << 14U,
     INT_ENUM_TRANSFORMED = 1U << 15U,
     FROM_STRUCT = 1U << 16U,
+    FUNCTIONAL_REFERENCE = 1U << 17U,
     DECLARATION_ID_REQUIRED = DECLARATION | ID_REQUIRED,
     ETS_MODULE = NAMESPACE_TRANSFORMED | GLOBAL
 };
@@ -68,7 +70,7 @@ struct enumbitops::IsAllowedType<ark::es2panda::ir::ClassDefinitionModifiers> : 
 
 namespace ark::es2panda::ir {
 
-class ClassDefinition : public AnnotationAllowed<TypedAstNode> {
+class ClassDefinition : public JsDocAllowed<AnnotationAllowed<TypedAstNode>> {
 public:
     ClassDefinition() = delete;
     ~ClassDefinition() override = default;
@@ -81,8 +83,9 @@ public:
                              ArenaVector<TSClassImplements *> &&implements, MethodDefinition *ctor,
                              Expression *superClass, ArenaVector<AstNode *> &&body, ClassDefinitionModifiers modifiers,
                              ModifierFlags flags, Language lang)
-        : AnnotationAllowed<TypedAstNode>(AstNodeType::CLASS_DEFINITION, flags,
-                                          ArenaVector<AnnotationUsage *>(body.get_allocator())),
+        : JsDocAllowed<AnnotationAllowed<TypedAstNode>>(AstNodeType::CLASS_DEFINITION, flags,
+                                                        ArenaVector<AnnotationUsage *>(body.get_allocator()),
+                                                        ArenaVector<JsDocInfo>(body.get_allocator())),
           ident_(ident),
           typeParams_(typeParams),
           superTypeParams_(superTypeParams),
@@ -102,7 +105,7 @@ public:
     // CC-OFFNXT(G.FUN.01-CPP) solid logic
     explicit ClassDefinition(ArenaAllocator *allocator, Identifier *ident, ArenaVector<AstNode *> &&body,
                              ClassDefinitionModifiers modifiers, ModifierFlags flags, Language lang)
-        : AnnotationAllowed<TypedAstNode>(AstNodeType::CLASS_DEFINITION, flags, allocator),
+        : JsDocAllowed<AnnotationAllowed<TypedAstNode>>(AstNodeType::CLASS_DEFINITION, flags, allocator),
           ident_(ident),
           implements_(allocator->Adapter()),
           body_(std::move(body)),
@@ -118,7 +121,7 @@ public:
 
     explicit ClassDefinition(ArenaAllocator *allocator, Identifier *ident, ClassDefinitionModifiers modifiers,
                              ModifierFlags flags, Language lang)
-        : AnnotationAllowed<TypedAstNode>(AstNodeType::CLASS_DEFINITION, flags, allocator),
+        : JsDocAllowed<AnnotationAllowed<TypedAstNode>>(AstNodeType::CLASS_DEFINITION, flags, allocator),
           ident_(ident),
           implements_(allocator->Adapter()),
           body_(allocator->Adapter()),
@@ -381,6 +384,16 @@ public:
         return localIndex_;
     }
 
+    [[nodiscard]] MethodDefinition *FunctionalReferenceReferencedMethod() const noexcept
+    {
+        return functionalReferenceReferencedMethod_;
+    }
+
+    void SetFunctionalReferenceReferencedMethod(MethodDefinition *functionalReferenceReferencedMethod)
+    {
+        functionalReferenceReferencedMethod_ = functionalReferenceReferencedMethod;
+    }
+
     [[nodiscard]] const std::string &LocalPrefix() const noexcept
     {
         return localPrefix_;
@@ -475,14 +488,26 @@ public:
 
     void AddToExportedClasses(const ir::ClassDeclaration *cls)
     {
-        ES2PANDA_ASSERT(cls->IsExported());
+        ES2PANDA_ASSERT(cls->IsExported() || cls->Definition()->IsGlobal());
         exportedClasses_.push_back(cls);
+    }
+
+    void BatchAddToExportedClasses(const ArenaVector<const ir::ClassDeclaration *> &classes)
+    {
+        for (const auto cls : classes) {
+            AddToExportedClasses(cls);
+        }
     }
 
     [[nodiscard]] const ArenaVector<const ir::ClassDeclaration *> &ExportedClasses() const noexcept
     {
         return exportedClasses_;
     }
+
+protected:
+    ClassDefinition *Construct(ArenaAllocator *allocator) override;
+
+    void CopyTo(AstNode *other) const override;
 
 private:
     void CompileStaticFieldInitializers(compiler::PandaGen *pg, compiler::VReg classReg,
@@ -491,7 +516,10 @@ private:
     // This method is needed by OHOS CI code checker
     void DumpBody(ir::SrcDumper *dumper) const;
     void DumpGlobalClass(ir::SrcDumper *dumper) const;
+    void DumpPrefix(ir::SrcDumper *dumper) const;
+    bool RegisterUnexportedForDeclGen(ir::SrcDumper *dumper) const;
 
+    friend class SizeOfNodeTest;
     varbinder::LocalScope *scope_ {nullptr};
     util::StringView internalName_ {};
     Identifier *ident_ {};
@@ -508,8 +536,9 @@ private:
     TSEnumDeclaration *origEnumDecl_ {};
     ClassDeclaration *anonClass_ {nullptr};
     static int classCounter_;
-    const int localIndex_ {};
-    const std::string localPrefix_ {};
+    int localIndex_ {};
+    std::string localPrefix_ {};
+    MethodDefinition *functionalReferenceReferencedMethod_ {};
     ArenaVector<const ir::ClassDeclaration *> exportedClasses_;
 };
 }  // namespace ark::es2panda::ir

@@ -67,9 +67,11 @@ ir::Expression *ETSParser::ParseAnnotationName()
         if (Lexer()->Lookahead() == '.') {
             auto opt = TypeAnnotationParsingOptions::NO_OPTS;
             expr = ParseTypeReference(&opt);
+            ES2PANDA_ASSERT(expr != nullptr);
             ident = expr->AsETSTypeReference()->Part()->GetIdent();
         } else {
             expr = ExpectIdentifier();
+            ES2PANDA_ASSERT(expr != nullptr);
             ident = expr->AsIdentifier();
         }
     }
@@ -100,6 +102,7 @@ ir::AnnotationDeclaration *ETSParser::ParseAnnotationDeclaration(ir::ModifierFla
     lexer::SourcePosition endLoc = Lexer()->GetToken().End();
 
     auto *annotationDecl = AllocNode<ir::AnnotationDeclaration>(expr, std::move(properties), Allocator());
+    ES2PANDA_ASSERT(annotationDecl != nullptr);
     annotationDecl->SetRange({startLoc, endLoc});
     annotationDecl->AddModifier(flags);
     return annotationDecl;
@@ -134,12 +137,15 @@ ArenaVector<ir::AstNode *> ETSParser::ParseAnnotationProperties(ir::ModifierFlag
         }
 
         auto *fieldName = ExpectIdentifier();
+        ES2PANDA_ASSERT(fieldName != nullptr);
         if (fieldName->IsErrorPlaceHolder()) {
             //  Try to recover from error: simplest strategy: only one step ahead.
             //  Probably we can seek for identifier till the enclosing right brace (staring after the next comma?)
             //  if the simplest case failed.
             auto const pos = Lexer()->Save();
-            if (auto *fieldName1 = ExpectIdentifier(); fieldName1->IsErrorPlaceHolder()) {
+            auto *fieldName1 = ExpectIdentifier();
+            ES2PANDA_ASSERT(fieldName1 != nullptr);
+            if (fieldName1->IsErrorPlaceHolder()) {
                 Lexer()->Rewind(pos);
             } else {
                 fieldName = fieldName1;
@@ -223,6 +229,7 @@ ir::AstNode *ETSParser::ParseAnnotationProperty(ir::Identifier *fieldName, ir::M
     memberModifiers |= ir::ModifierFlags::ABSTRACT;
     auto *field =
         AllocNode<ir::ClassProperty>(fieldName, initializer, typeAnnotation, memberModifiers, Allocator(), false);
+    ES2PANDA_ASSERT(field != nullptr);
     field->SetRange({fieldName->Start(), initializer != nullptr ? initializer->End() : endLoc});
     return field;
 }
@@ -289,24 +296,17 @@ void ETSParser::ApplyAnnotationsToNode(ir::AstNode *node, ArenaVector<ir::Annota
     ApplyAnnotationsToSpecificNodeType(node, std::move(annotations), pos);
 }
 
-void ETSParser::ApplyAnnotationsToArrayType(ir::AstNode *node, ArenaVector<ir::AnnotationUsage *> &&annotations,
-                                            lexer::SourcePosition pos)
-{
-    const auto *elementType = node->AsTSArrayType()->ElementType();
-    while (elementType->IsTSArrayType()) {
-        elementType = elementType->AsTSArrayType()->ElementType();
-    }
-    ApplyAnnotationsToNode(const_cast<ir::TypeNode *>(elementType), std::move(annotations), pos);
-}
-
 // CC-OFFNXT(huge_method,huge_cyclomatic_complexity,G.FUN.01-CPP) big switch-case, solid logic
 void ETSParser::ApplyAnnotationsToSpecificNodeType(ir::AstNode *node, ArenaVector<ir::AnnotationUsage *> &&annotations,
                                                    lexer::SourcePosition pos)
 {
     switch (node->Type()) {
-        case ir::AstNodeType::METHOD_DEFINITION:
-            node->AsMethodDefinition()->Function()->SetAnnotations(std::move(annotations));
+        case ir::AstNodeType::METHOD_DEFINITION: {
+            auto *func = node->AsMethodDefinition()->Function();
+            ES2PANDA_ASSERT(func != nullptr);
+            func->SetAnnotations(std::move(annotations));
             break;
+        }
         case ir::AstNodeType::CLASS_DECLARATION:
             node->AsClassDeclaration()->Definition()->SetAnnotations(std::move(annotations));
             break;
@@ -341,7 +341,7 @@ void ETSParser::ApplyAnnotationsToSpecificNodeType(ir::AstNode *node, ArenaVecto
             node->AsETSTypeReference()->SetAnnotations(std::move(annotations));
             break;
         case ir::AstNodeType::TS_ARRAY_TYPE:
-            ApplyAnnotationsToArrayType(node, std::move(annotations), pos);
+            node->AsTSArrayType()->SetAnnotations(std::move(annotations));
             break;
         case ir::AstNodeType::ETS_TUPLE:
             node->AsETSTuple()->SetAnnotations(std::move(annotations));
@@ -374,10 +374,14 @@ void ETSParser::ApplyAnnotationsToSpecificNodeType(ir::AstNode *node, ArenaVecto
 
 static lexer::SourcePosition GetExpressionEndLoc(ir::Expression *expr)
 {
+    ES2PANDA_ASSERT(expr != nullptr);
     if (expr->IsIdentifier()) {
         return expr->AsIdentifier()->End();
     }
     auto *part = expr->AsETSTypeReference()->Part();
+    if (part->Name()->IsBrokenExpression()) {
+        return part->Name()->AsIdentifier()->End();
+    }
     return part->Name()->AsTSQualifiedName()->Right()->End();
 }
 
@@ -397,6 +401,7 @@ ir::AnnotationUsage *ETSParser::ParseAnnotationUsage()
         } else if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
             // handle single field annotation
             auto *singleParamName = AllocNode<ir::Identifier>(compiler::Signatures::ANNOTATION_KEY_VALUE, Allocator());
+            ES2PANDA_ASSERT(singleParamName != nullptr);
             singleParamName->SetRange({Lexer()->GetToken().Start(), Lexer()->GetToken().End()});
 
             const auto savePos = Lexer()->GetToken().Start();
@@ -407,16 +412,26 @@ ir::AnnotationUsage *ETSParser::ParseAnnotationUsage()
 
             auto *singleParam = AllocNode<ir::ClassProperty>(singleParamName, initializer, nullptr,
                                                              ir::ModifierFlags::ANNOTATION_USAGE, Allocator(), false);
+            ES2PANDA_ASSERT(singleParam != nullptr);
             singleParam->SetRange(
                 {singleParamName->Start(), initializer != nullptr ? initializer->End() : singleParamName->End()});
             properties.push_back(singleParam);
         }
+
+        auto *annotationUsage = AllocNode<ir::AnnotationUsage>(expr, std::move(properties));
+        annotationUsage->AddModifier(flags);
+        annotationUsage->SetRange({startLoc, Lexer()->GetToken().End()});
+
         ExpectToken(lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS, true);  // eat ')'
+
+        return annotationUsage;
     }
 
     auto *annotationUsage = AllocNode<ir::AnnotationUsage>(expr, std::move(properties));
+    ES2PANDA_ASSERT(annotationUsage != nullptr);
     annotationUsage->AddModifier(flags);
-    annotationUsage->SetRange({startLoc, Lexer()->GetToken().End()});
+    annotationUsage->SetRange({startLoc, GetExpressionEndLoc(expr)});
+
     return annotationUsage;
 }
 

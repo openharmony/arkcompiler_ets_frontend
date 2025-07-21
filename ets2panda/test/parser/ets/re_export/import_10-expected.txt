@@ -374,4 +374,4 @@
     }
   }
 }
-TypeError: Ambiguous export "foo" [re_export_4.ets:17:8]
+TypeError: Ambiguous export 'foo' [re_export_4.ets:17:8]

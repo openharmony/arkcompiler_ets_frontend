@@ -61,7 +61,6 @@ MySpace.C.a // CTE
 /* @@? 49:9 Error TypeError: 'privateVariable' is not exported in 'MySpace'  */
 /* @@? 51:9 Error TypeError: 'foo' is not exported in 'MySpace'  */
 /* @@? 53:13 Error TypeError: 'C' is not exported in 'MySpace'  */
-/* @@? 55:27 Error TypeError: 'C' is not exported in 'MySpace'  */
 /* @@? 57:9 Error TypeError: 'C' is not exported in 'MySpace'  */
 /* @@? 42:28 Error TypeError: 'myInterface' is not exported in 'MySpace'  */
 /* @@? 46:10 Error TypeError: 'Anno' is not exported in 'MySpace'  */

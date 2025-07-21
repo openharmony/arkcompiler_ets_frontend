@@ -70,7 +70,8 @@ void ImportExportDecls::PopulateAliasMap(const ir::ExportNamedDeclaration *decl,
 {
     for (auto spec : decl->Specifiers()) {
         if (!varbinder_->AddSelectiveExportAlias(path, spec->Local()->Name(), spec->Exported()->Name(), decl)) {
-            parser_->LogError(diagnostic::DUPLICATE_EXPORT_NAME, {spec->Local()->Name().Mutf8()}, lastExportErrorPos_);
+            parser_->LogError(diagnostic::DUPLICATE_EXPORT_NAME, {spec->Local()->Name().Mutf8()},
+                              spec->Exported()->Start());
             lastExportErrorPos_ = lexer::SourcePosition();
         }
     }
@@ -132,6 +133,7 @@ void ImportExportDecls::HandleSelectiveExportWithAlias(util::StringView original
                                    !declItem->second->HasExportAlias();
             if (!alreadyExported && declItem->second->IsVariableDeclaration()) {
                 auto declarator = declItem->second->AsVariableDeclaration()->GetDeclaratorByName(exportName);
+                ES2PANDA_ASSERT(declarator != nullptr);
                 alreadyExported |=
                     ((declarator->Modifiers() & ir::ModifierFlags::EXPORTED) != 0) && !declarator->HasExportAlias();
             }
@@ -199,9 +201,7 @@ void ImportExportDecls::VisitExportNamedDeclaration(ir::ExportNamedDeclaration *
             }
             exportDefaultName_ = local->Name();
         }
-        if (exportDecl->IsExportedType()) {
-            exportedTypes_.insert(local->Name());
-        }
+
         if (!exportNameMap_.emplace(local->Name(), local->Start()).second) {
             lastExportErrorPos_ = local->Start();
             parser_->LogError(diagnostic::DUPLICATE_EXPORT_NAME, {local->Name().Mutf8()}, lastExportErrorPos_);
@@ -223,90 +223,48 @@ void ImportExportDecls::VisitETSImportDeclaration(ir::ETSImportDeclaration *impo
     }
 }
 
-void ImportExportDecls::HandleSimpleType(std::set<util::StringView> &exportedTypes,
-                                         std::set<util::StringView> &exportedStatements, ir::Statement *stmt,
-                                         util::StringView name, lexer::SourcePosition pos)
+void ImportExportDecls::HandleSimpleType(std::set<util::StringView> &exportedStatements, ir::Statement *stmt,
+                                         util::StringView name)
 {
     if (stmt->IsExported()) {
         exportedStatements.insert(name);
-    }
-
-    if (!stmt->IsExportedType()) {
-        return;
-    }
-
-    if (exportedStatements.find(name) != exportedStatements.end()) {
-        parser_->LogError(diagnostic::NAME_CANNOT_BE_EXPORTED_AND_TYPE_EXPORTED, {name.Mutf8()}, pos);
-    }
-
-    if (exportedTypes.find(name) != exportedTypes.end()) {
-        parser_->LogError(diagnostic::CANNOT_EXPORT_SAME_TYPE_TWICE, {name.Mutf8()}, pos);
-    } else {
-        exportedTypes.insert(name);
     }
 }
 
 void ImportExportDecls::VerifyTypeExports(const ArenaVector<parser::Program *> &programs)
 {
-    std::set<util::StringView> exportedTypes;
     std::set<util::StringView> exportedStatements;
     std::map<util::StringView, ir::AstNode *> typesMap;
 
     for (const auto &program : programs) {
         for (auto stmt : program->Ast()->Statements()) {
-            VerifyType(stmt, exportedTypes, exportedStatements, typesMap);
+            VerifyType(stmt, exportedStatements, typesMap);
         }
     }
 }
 
-void ImportExportDecls::VerifyType(ir::Statement *stmt, std::set<util::StringView> &exportedTypes,
-                                   std::set<util::StringView> &exportedStatements,
+void ImportExportDecls::VerifyType(ir::Statement *stmt, std::set<util::StringView> &exportedStatements,
                                    std::map<util::StringView, ir::AstNode *> &typesMap)
 {
     if (stmt->IsClassDeclaration()) {
+        if (!stmt->IsDeclare() && stmt->AsClassDeclaration()->Definition()->Language().IsDynamic()) {
+            parser_->LogError(diagnostic::EXPORT_WITHOUT_DECLARE_IN_DECL_MODULE, {}, stmt->Start());
+        }
         typesMap.insert({stmt->AsClassDeclaration()->Definition()->Ident()->Name(), stmt});
-        return HandleSimpleType(exportedTypes, exportedStatements, stmt,
-                                stmt->AsClassDeclaration()->Definition()->Ident()->Name(), stmt->Start());
+        return HandleSimpleType(exportedStatements, stmt, stmt->AsClassDeclaration()->Definition()->Ident()->Name());
     }
 
     if (stmt->IsTSInterfaceDeclaration()) {
+        if (!stmt->IsDeclare() && stmt->AsTSInterfaceDeclaration()->Language().IsDynamic()) {
+            parser_->LogError(diagnostic::EXPORT_WITHOUT_DECLARE_IN_DECL_MODULE, {}, stmt->Start());
+        }
         typesMap.insert({stmt->AsTSInterfaceDeclaration()->Id()->Name(), stmt});
-        return HandleSimpleType(exportedTypes, exportedStatements, stmt, stmt->AsTSInterfaceDeclaration()->Id()->Name(),
-                                stmt->Start());
+        return HandleSimpleType(exportedStatements, stmt, stmt->AsTSInterfaceDeclaration()->Id()->Name());
     }
 
     if (stmt->IsTSTypeAliasDeclaration()) {
         typesMap.insert({stmt->AsTSTypeAliasDeclaration()->Id()->Name(), stmt});
-        return HandleSimpleType(exportedTypes, exportedStatements, stmt, stmt->AsTSTypeAliasDeclaration()->Id()->Name(),
-                                stmt->Start());
-    }
-
-    if (!stmt->IsExportedType()) {
-        return;
-    }
-
-    if (!stmt->IsExportNamedDeclaration()) {
-        parser_->LogError(diagnostic::ONLY_EXPORT_CLASS_OR_INTERFACE, {}, stmt->Start());
-        return;
-    }
-
-    for (auto spec : stmt->AsExportNamedDeclaration()->Specifiers()) {
-        util::StringView name = spec->Local()->Name();
-        util::StringView nameFind = spec->Exported()->Name();
-
-        auto element = typesMap.find(nameFind);
-        if (element == typesMap.end()) {
-            parser_->LogError(diagnostic::ONLY_EXPORT_CLASS_OR_INTERFACE, {}, spec->Local()->Start());
-            continue;
-        }
-        if (!element->second->IsExportedType()) {
-            element->second->AddModifier(ir::ModifierFlags::EXPORT_TYPE);
-        }
-        HandleSimpleType(exportedTypes, exportedStatements, stmt, name, spec->Local()->Start());
-        if (!name.Is(nameFind.Mutf8())) {
-            element->second->AddAstNodeFlags(ir::AstNodeFlags::HAS_EXPORT_ALIAS);
-            HandleSimpleType(exportedTypes, exportedStatements, stmt, nameFind, spec->Local()->Start());
-        }
+        return HandleSimpleType(exportedStatements, stmt, stmt->AsTSTypeAliasDeclaration()->Id()->Name());
     }
 }
 
@@ -319,7 +277,7 @@ void ImportExportDecls::VerifySingleExportDefault(const ArenaVector<parser::Prog
             return;
         }
         if (metDefaultExport) {
-            logger.LogSemanticError("Only one default export is allowed in a module", stmt->Start());
+            logger.LogDiagnostic(diagnostic::MULTIPLE_DEFAULT_EXPORTS, util::DiagnosticMessageParams {}, stmt->Start());
         }
         metDefaultExport = true;
     };

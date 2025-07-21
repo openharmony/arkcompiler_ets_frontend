@@ -19,4 +19,4 @@ class C {
 
 let c: C = /* @@ label */{};
 
-/* @@@ label Error TypeError: type C has no parameterless constructor  */
+/* @@@ label Error TypeError: Type C has no parameterless constructor. Initialization with literals is not supported if the type has no parameterless constructor. Declare the parameterless constructor explicitly or remove parametered constructors!  */

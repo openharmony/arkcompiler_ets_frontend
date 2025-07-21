@@ -12,8 +12,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use static'
-
 import { X } from "./oh_modules/reflect_export"
 
 export function foo(prx: Object) {
@@ -29,3 +27,34 @@ export function bar(obj: Object) {
 foo(new X()); //illegal
 
 bar(new X()); //illegal
+
+import {Reflect1} from "./oh_modules/reflect_export"
+import {obj_Reflect1} from "./oh_modules/reflect_export"
+import {objInter} from "./oh_modules/reflect_export"
+
+function reflect_method2(prx: Object) {
+    Reflect.get(prx, 'a')  // 'hello'
+    Reflect.set(prx, 'a', 'world')  // true
+    Reflect.ownKeys(prx)  // ['a']
+}
+
+reflect_method2(new Reflect1());
+Reflect.get(new Reflect1(), 'a')
+Reflect.set(new Reflect1(), 'a', 'world')
+Reflect.ownKeys(new Reflect1())
+let obj = new Reflect1()
+reflect_method2(obj);
+Reflect.get(obj, 'a')
+Reflect.set(obj, 'a', 'world')
+Reflect.ownKeys(obj)
+
+reflect_method2(obj_Reflect1);
+Reflect.get(obj_Reflect1, 'a')
+Reflect.set(obj_Reflect1, 'a', 'world')
+Reflect.ownKeys(obj_Reflect1)
+
+reflect_method2(objInter);
+Reflect.get(objInter, 'a')
+Reflect.set(objInter, 'a', 'world')
+Reflect.ownKeys(objInter)
+

@@ -117,16 +117,17 @@ checker::Type *ETSTuple::GetType(checker::ETSChecker *const checker)
         return checker->InvalidateType(this);
     }
 
-    ArenaVector<checker::Type *> typeList(checker->Allocator()->Adapter());
+    ArenaVector<checker::Type *> typeList(checker->ProgramAllocator()->Adapter());
 
     for (auto *const typeAnnotation : GetTupleTypeAnnotationsList()) {
         auto *const checkedType = typeAnnotation->GetType(checker);
         typeList.emplace_back(checkedType);
     }
 
-    auto *tupleType = checker->Allocator()->New<checker::ETSTupleType>(checker, typeList);
+    auto *tupleType = checker->ProgramAllocator()->New<checker::ETSTupleType>(checker, typeList);
 
     if (IsReadonlyType()) {
+        ES2PANDA_ASSERT(checker->GetReadonlyType(tupleType));
         tupleType = checker->GetReadonlyType(tupleType)->AsETSTupleType();
     }
 
@@ -137,6 +138,7 @@ checker::Type *ETSTuple::GetType(checker::ETSChecker *const checker)
 ETSTuple *ETSTuple::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     auto *const clone = allocator->New<ETSTuple>(allocator, size_);
+    ES2PANDA_ASSERT(clone);
 
     clone->AddModifier(flags_);
 

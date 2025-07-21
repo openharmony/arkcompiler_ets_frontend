@@ -24,7 +24,6 @@ let func3: (f: (a: number, b: string) => FixedArray<number>): FixedArray<number>
 
 
 /* @@? 19:8 Error TypeError: 'void' used as type annotation. */
-/* @@? 19:8 Error TypeError: 'void' used as type annotation. */
 /* @@? 22:61 Error SyntaxError: Unexpected token, expected '=>'. */
 /* @@? 22:61 Error SyntaxError: Unexpected token, expected '('. */
 /* @@? 22:61 Error SyntaxError: Invalid Type. */

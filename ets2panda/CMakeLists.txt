@@ -61,6 +61,7 @@ if(PANDA_WITH_ETS)
       "      \"@ohos.util.PlainArray\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}api${DELIM}@ohos.util.PlainArray.ets\"],\n"
       "      \"@ohos.util.Queue\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}api${DELIM}@ohos.util.Queue.ets\"],\n"
       "      \"@ohos.util.Stack\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}api${DELIM}@ohos.util.Stack.ets\"],\n"
+      "      \"@ohos.util.stream\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}api${DELIM}@ohos.util.stream.ets\"],\n"
       "      \"@ohos.util\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}api${DELIM}@ohos.util.ets\"],\n"
       "      \"@ohos.util.TreeMap\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}api${DELIM}@ohos.util.TreeMap.ets\"],\n"
       "      \"@ohos.util.TreeSet\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}api${DELIM}@ohos.util.TreeSet.ets\"],\n"
@@ -69,6 +70,7 @@ if(PANDA_WITH_ETS)
       "      \"@ohos.xml\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}api${DELIM}@ohos.xml.ets\"],\n"
       "      \"@ohos.base\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}api${DELIM}@ohos.base.ets\"],\n"
       "      \"@arkts.math.Decimal\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}arkts${DELIM}@arkts.math.Decimal.ets\"],\n"
+      "      \"@arkts.collections\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}arkts${DELIM}@arkts.collections.ets\"],\n"
       "      \"import_tests\": [\"${CMAKE_CURRENT_SOURCE_DIR}/test/parser/ets/import_tests\"]\n"
       "    },\n"
       "    \"dynamicPaths\": {\n"
@@ -143,11 +145,13 @@ panda_gen(
         ${CMAKE_CURRENT_SOURCE_DIR}/declgen_ets2ts/declgen_ets2ts_error.yaml
         ${CMAKE_CURRENT_SOURCE_DIR}/declgen_ets2ts/declgen_ets2ts_warning.yaml
         ${DIAGNOSTIC_DIR}/arktsconfig_error.yaml
+        ${DIAGNOSTIC_DIR}/isolated_declgen.yaml
     TARGET_NAME es2panda_diagnostic_gen
     TEMPLATES diagnostic.h.erb
     SOURCE ${DIAGNOSTIC_DIR}
     DESTINATION ${GENERATED_DIR}
     API
+        ${DIAGNOSTIC_DIR}/diagnostic.rb
         ${DIAGNOSTIC_DIR}/diagnostic.rb
         ${DIAGNOSTIC_DIR}/diagnostic.rb
         ${DIAGNOSTIC_DIR}/diagnostic.rb
@@ -272,26 +276,33 @@ set(ES2PANDA_LIB_SRC
   compiler/lowering/ets/expressionLambdaLowering.cpp
   compiler/lowering/ets/extensionAccessorLowering.cpp
   compiler/lowering/ets/genericBridgesLowering.cpp
+  compiler/lowering/ets/arrayLiteralLowering.cpp
   compiler/lowering/ets/boxedTypeLowering.cpp
   compiler/lowering/ets/boxingForLocals.cpp
   compiler/lowering/ets/capturedVariables.cpp
   compiler/lowering/ets/cfgBuilderPhase.cpp
   compiler/lowering/ets/constantExpressionLowering.cpp
+  compiler/lowering/ets/convertPrimitiveCastMethodCall.cpp
   compiler/lowering/ets/declareOverloadLowering.cpp
   compiler/lowering/ets/defaultParametersInConstructorLowering.cpp
   compiler/lowering/ets/defaultParametersLowering.cpp
+  compiler/lowering/ets/dynamicImportLowering.cpp
+  compiler/lowering/ets/exportAnonymousConst.cpp
+  compiler/lowering/ets/lateInitialization.cpp
   compiler/lowering/ets/lambdaLowering.cpp
   compiler/lowering/ets/restTupleLowering.cpp
   compiler/lowering/ets/spreadLowering.cpp
   compiler/lowering/ets/objectIndexAccess.cpp
   compiler/lowering/ets/objectIterator.cpp
+  compiler/lowering/ets/insertOptionalParametersAnnotation.cpp
   compiler/lowering/ets/interfacePropertyDeclarations.cpp
   compiler/lowering/ets/opAssignment.cpp
   compiler/lowering/ets/ambientLowering.cpp
   compiler/lowering/ets/asyncMethodLowering.cpp
   compiler/lowering/ets/bigintLowering.cpp
-  compiler/lowering/ets/constStringToCharLowering.cpp
   compiler/lowering/ets/recordLowering.cpp
+  compiler/lowering/ets/resizableArrayLowering.cpp
+  compiler/lowering/ets/restArgsLowering.cpp
   compiler/lowering/ets/unionLowering.cpp
   compiler/lowering/ets/optionalArgumentsLowering.cpp
   compiler/lowering/ets/optionalLowering.cpp
@@ -304,6 +315,7 @@ set(ES2PANDA_LIB_SRC
   compiler/lowering/ets/stringComparison.cpp
   compiler/lowering/ets/stringConstantsLowering.cpp
   compiler/lowering/ets/stringConstructorLowering.cpp
+  compiler/lowering/ets/typeFromLowering.cpp
   compiler/lowering/ets/enumLowering.cpp
   compiler/lowering/ets/enumPostCheckLowering.cpp
   compiler/lowering/ets/setJumpTarget.cpp
@@ -412,13 +424,13 @@ set(ES2PANDA_LIB_SRC
   ir/ets/etsClassLiteral.cpp
   ir/ets/etsFunctionType.cpp
   ir/ets/etsKeyofType.cpp
-  ir/ets/etsLaunchExpression.cpp
   ir/ets/etsNewArrayInstanceExpression.cpp
   ir/ets/etsNewClassInstanceExpression.cpp
   ir/ets/etsNewMultiDimArrayInstanceExpression.cpp
   ir/ets/etsPackageDeclaration.cpp
   ir/ets/etsParameterExpression.cpp
   ir/ets/etsPrimitiveType.cpp
+  ir/ets/etsNonNullishTypeNode.cpp
   ir/ets/etsNullishTypes.cpp
   ir/ets/etsNeverType.cpp
   ir/ets/etsModule.cpp
@@ -501,6 +513,7 @@ set(ES2PANDA_LIB_SRC
   parser/ETSparserClasses.cpp
   parser/ETSparserEnums.cpp
   parser/ETSparserExpressions.cpp
+  parser/ETSparserJsDocInfo.cpp
   parser/ETSparserNamespaces.cpp
   parser/ETSparserStatements.cpp
   parser/ETSparserTypes.cpp
@@ -523,6 +536,7 @@ set(ES2PANDA_LIB_SRC
   checker/TSAnalyzer.cpp
   checker/TSAnalyzerUnreachable.cpp
   checker/JSchecker.cpp
+  checker/IsolatedDeclgenChecker.cpp
   checker/typeChecker/TypeChecker.cpp
   checker/ets/aliveAnalyzer.cpp
   checker/ets/etsWarningAnalyzer.cpp
@@ -566,6 +580,7 @@ set(ES2PANDA_LIB_SRC
   checker/types/ets/intType.cpp
   checker/types/ets/longType.cpp
   checker/types/ets/shortType.cpp
+  checker/types/ets/etsAnyType.cpp
   checker/types/ets/etsArrayType.cpp
   checker/types/ets/etsBooleanType.cpp
   checker/types/ets/etsDynamicType.cpp
@@ -575,6 +590,7 @@ set(ES2PANDA_LIB_SRC
   checker/types/ets/etsNonNullishType.cpp
   checker/types/ets/etsNeverType.cpp
   checker/types/ets/etsReadonlyType.cpp
+  checker/types/ets/etsResizableArrayType.cpp
   checker/types/ets/etsNullishTypes.cpp
   checker/types/ets/etsObjectType.cpp
   checker/types/ets/etsStringType.cpp

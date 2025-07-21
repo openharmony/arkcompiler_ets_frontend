@@ -494,55 +494,103 @@
             "optional": false,
             "computed": false,
             "typeAnnotation": {
-              "type": "TSArrayType",
-              "elementType": {
-                "type": "ETSTypeReference",
-                "part": {
-                  "type": "ETSTypeReferencePart",
-                  "name": {
-                    "type": "Identifier",
-                    "name": "T",
-                    "decorators": [],
-                    "loc": {
-                      "start": {
-                        "line": 21,
-                        "column": 19,
-                        "program": "generics_instantiation_3.ets"
-                      },
-                      "end": {
-                        "line": 21,
-                        "column": 20,
-                        "program": "generics_instantiation_3.ets"
-                      }
-                    }
-                  },
+              "type": "ETSTypeReference",
+              "part": {
+                "type": "ETSTypeReferencePart",
+                "name": {
+                  "type": "Identifier",
+                  "name": "Array",
+                  "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 21,
-                      "column": 19,
+                      "line": 1,
+                      "column": 1,
                       "program": "generics_instantiation_3.ets"
                     },
                     "end": {
-                      "line": 21,
-                      "column": 21,
+                      "line": 1,
+                      "column": 3,
+                      "program": "generics_instantiation_3.ets"
+                    }
+                  }
+                },
+                "typeParams": {
+                  "type": "TSTypeParameterInstantiation",
+                  "params": [
+                    {
+                      "type": "ETSTypeReference",
+                      "part": {
+                        "type": "ETSTypeReferencePart",
+                        "name": {
+                          "type": "Identifier",
+                          "name": "T",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "generics_instantiation_3.ets"
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "generics_instantiation_3.ets"
+                            }
+                          }
+                        },
+                        "loc": {
+                          "start": {
+                            "line": 1,
+                            "column": 3,
+                            "program": "generics_instantiation_3.ets"
+                          },
+                          "end": {
+                            "line": 1,
+                            "column": 3,
+                            "program": "generics_instantiation_3.ets"
+                          }
+                        }
+                      },
+                      "loc": {
+                        "start": {
+                          "line": 1,
+                          "column": 3,
+                          "program": "generics_instantiation_3.ets"
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 3,
+                          "program": "generics_instantiation_3.ets"
+                        }
+                      }
+                    }
+                  ],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 3,
+                      "program": "generics_instantiation_3.ets"
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 3,
                       "program": "generics_instantiation_3.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 21,
-                    "column": 19,
+                    "line": 1,
+                    "column": 1,
                     "program": "generics_instantiation_3.ets"
                   },
                   "end": {
-                    "line": 21,
-                    "column": 21,
+                    "line": 1,
+                    "column": 3,
                     "program": "generics_instantiation_3.ets"
                   }
                 }
               },
-              "annotations": [],
               "loc": {
                 "start": {
                   "line": 21,

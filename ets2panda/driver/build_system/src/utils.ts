@@ -13,9 +13,11 @@
  * limitations under the License.
  */
 
+import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+import { DECL_ETS_SUFFIX } from './pre_define';
 
 const WINDOWS: string = 'Windows_NT';
 const LINUX: string = 'Linux';
@@ -39,6 +41,13 @@ export function changeFileExtension(file: string, targetExt: string, originExt =
   return fileWithoutExt + targetExt;
 }
 
+export function changeDeclgenFileExtension(file: string, targetExt: string): string {
+  if (file.endsWith(DECL_ETS_SUFFIX)) {
+      return changeFileExtension(file, targetExt, DECL_ETS_SUFFIX);
+  }
+  return changeFileExtension(file, targetExt);
+}
+
 export function ensurePathExists(filePath: string): void {
   try {
     const dirPath: string = path.dirname(filePath);
@@ -52,6 +61,30 @@ export function ensurePathExists(filePath: string): void {
   }
 }
 
-export function isFileExistSync(filePath: string): boolean {
-  return fs.existsSync(filePath);
+export function getFileHash(filePath: string): string {
+  const content = fs.readFileSync(filePath, 'utf8');
+  return crypto.createHash('sha256').update(content).digest('hex');
+}
+
+export function toUnixPath(path: string): string {
+  return path.replace(/\\/g, '/');
+}
+
+export function readFirstLineSync(filePath: string): string | null {
+
+  const fd = fs.openSync(filePath, 'r');
+  const buffer = Buffer.alloc(256);
+  const bytesRead = fs.readSync(fd, buffer, 0, buffer.length, 0);
+  fs.closeSync(fd);
+
+  const content = buffer.toString('utf-8', 0, bytesRead);
+  const firstLine = content.split(/\r?\n/, 1)[0].trim();
+
+  return firstLine;
+}
+
+export function isSubPathOf(targetPath: string, parentDir: string): boolean {
+  const resolvedParent = toUnixPath(path.resolve(parentDir));
+  const resolvedTarget = toUnixPath(path.resolve(targetPath));
+  return resolvedTarget === resolvedParent || resolvedTarget.startsWith(resolvedParent + '/');
 }

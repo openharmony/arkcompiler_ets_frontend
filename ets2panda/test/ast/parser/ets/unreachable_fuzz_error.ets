@@ -24,7 +24,9 @@ classtext: string, reviver: ((key: string, value: NullishType) => NullishType) |
 /* @@? 16:13 Error TypeError: Unresolved reference z */
 /* @@? 22:12 Error SyntaxError: Label must be followed by a loop statement. */
 /* @@? 22:18 Error SyntaxError: Unexpected token ','. */
+/* @@? 22:20 Error SyntaxError: Unexpected token 'reviver'. */
 /* @@? 22:29 Error SyntaxError: Label must be followed by a loop statement. */
-/* @@? 22:91 Error SyntaxError: Unexpected token ','. */ 
+/* @@? 22:91 Error SyntaxError: Unexpected token ','. */
+/* @@? 22:93 Error SyntaxError: Unexpected token 'type'. */
 /* @@? 22:99 Error SyntaxError: Label must be followed by a loop statement. */
-/* @@? 30:60 Error SyntaxError: Expected '}', got 'eos'. */
+/* @@? 33:1 Error SyntaxError: Expected '}', got 'end of stream'. */

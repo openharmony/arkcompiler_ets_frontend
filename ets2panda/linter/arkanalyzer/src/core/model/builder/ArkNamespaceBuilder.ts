@@ -69,12 +69,12 @@ export function buildArkNamespace(node: ts.ModuleDeclaration, declaringInstance:
         // NamespaceDeclaration extends ModuleDeclaration
         //TODO: Check
         else if (ts.isModuleDeclaration(node.body)) {
-            logger.warn('This ModuleBody is an NamespaceDeclaration.');
+            logger.trace('This ModuleBody is an NamespaceDeclaration.');
             let childNs: ArkNamespace = new ArkNamespace();
             buildArkNamespace(node.body, ns, childNs, sourceFile);
             ns.addNamespace(childNs);
         } else if (ts.isIdentifier(node.body)) {
-            logger.warn('ModuleBody is Identifier.');
+            logger.warn('ModuleBody is Identifier');
         } else {
             logger.warn('JSDocNamespaceDeclaration found.');
         }
@@ -108,7 +108,7 @@ function buildNamespaceMembers(node: ts.ModuleBlock, namespace: ArkNamespace, so
         }
         // TODO: Check
         else if (ts.isMethodDeclaration(child)) {
-            logger.warn('This is a MethodDeclaration in ArkNamespace.');
+            logger.trace('This is a MethodDeclaration in ArkNamespace.');
             let mthd: ArkMethod = new ArkMethod();
 
             buildArkMethodFromArkClass(child, namespace.getDefaultClass(), mthd, sourceFile);
@@ -131,7 +131,7 @@ function buildNamespaceMembers(node: ts.ModuleBlock, namespace: ArkNamespace, so
         } else if (ts.isVariableStatement(child) && isExported(child.modifiers)) {
             buildExportVariableStatement(child, sourceFile, namespace.getDeclaringArkFile(), namespace).forEach(item => namespace.addExportInfo(item));
         } else {
-            logger.info('Child joined default method of arkFile: ', ts.SyntaxKind[child.kind]);
+            logger.trace('Child joined default method of arkFile: ', ts.SyntaxKind[child.kind]);
             // join default method
         }
     });

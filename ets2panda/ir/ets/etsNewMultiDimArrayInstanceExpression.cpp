@@ -15,6 +15,7 @@
 
 #include "etsNewMultiDimArrayInstanceExpression.h"
 
+#include "checker/ets/typeRelationContext.h"
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
@@ -82,6 +83,13 @@ checker::VerifiedType ETSNewMultiDimArrayInstanceExpression::Check(checker::ETSC
     return {this, checker->GetAnalyzer()->Check(this)};
 }
 
+void ETSNewMultiDimArrayInstanceExpression::ClearPreferredType()
+{
+    SetPreferredType(nullptr);
+    SetTsType(nullptr);
+    TypeReference()->SetBoxingUnboxingFlags(BoxingUnboxingFlags::NONE);
+}
+
 ETSNewMultiDimArrayInstanceExpression::ETSNewMultiDimArrayInstanceExpression(
     ETSNewMultiDimArrayInstanceExpression const &other, ArenaAllocator *const allocator)
     : Expression(static_cast<Expression const &>(other)),
@@ -99,10 +107,38 @@ ETSNewMultiDimArrayInstanceExpression *ETSNewMultiDimArrayInstanceExpression::Cl
                                                                                     AstNode *const parent)
 {
     auto *const clone = allocator->New<ETSNewMultiDimArrayInstanceExpression>(*this, allocator);
+    ES2PANDA_ASSERT(clone);
     if (parent != nullptr) {
         clone->SetParent(parent);
     }
     clone->SetRange(Range());
     return clone;
+}
+
+void ETSNewMultiDimArrayInstanceExpression::SetPreferredTypeBasedOnFuncParam(checker::ETSChecker *checker,
+                                                                             checker::Type *param,
+                                                                             checker::TypeRelationFlag flags)
+{
+    // NOTE (mmartin): This needs a complete solution
+    if (preferredType_ != nullptr) {
+        return;
+    }
+    if (!param->IsETSArrayType()) {
+        return;
+    }
+    checker::Type *elementType = param->AsETSArrayType();
+
+    for (size_t i = 0; i < dimensions_.size(); i++) {
+        if (!elementType->IsETSArrayType()) {
+            return;
+        }
+        elementType = elementType->AsETSArrayType()->ElementType();
+    }
+    auto assignCtx =
+        checker::AssignmentContext(checker->Relation(), typeReference_, typeReference_->GetType(checker), elementType,
+                                   typeReference_->Start(), std::nullopt, checker::TypeRelationFlag::NO_THROW | flags);
+    if (assignCtx.IsAssignable()) {
+        SetPreferredType(param);
+    }
 }
 }  // namespace ark::es2panda::ir

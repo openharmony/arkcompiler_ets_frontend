@@ -21,5 +21,5 @@ enum Direction {
 /* @@ label1 */}
 
 /* @@@ label Error SyntaxError: Unexpected token, expected ',' or '}'. */
-/* @@? 20:17 Error TypeError: Unresolved reference Right */
+/* @@@ label Error TypeError: Unresolved reference Right */
 /* @@@ label1 Error SyntaxError: Unexpected token '}'. */

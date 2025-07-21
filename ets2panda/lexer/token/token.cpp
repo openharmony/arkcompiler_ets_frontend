@@ -81,7 +81,7 @@ std::string_view Token::ToString() const noexcept
 
     auto const str = Ident().Utf8();
     if (!str.empty() && (str[0U] == '\n')) {
-        return "eos";
+        return "end of stream";
     }
 
     return str;

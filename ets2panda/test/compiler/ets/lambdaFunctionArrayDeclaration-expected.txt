@@ -206,119 +206,167 @@
                             "type": "Identifier",
                             "name": "src14",
                             "typeAnnotation": {
-                              "type": "TSArrayType",
-                              "elementType": {
-                                "type": "ETSFunctionType",
-                                "params": [
-                                  {
-                                    "type": "ETSParameterExpression",
-                                    "name": {
-                                      "type": "Identifier",
-                                      "name": "x",
-                                      "typeAnnotation": {
-                                        "type": "ETSTypeReference",
-                                        "part": {
-                                          "type": "ETSTypeReferencePart",
+                              "type": "ETSTypeReference",
+                              "part": {
+                                "type": "ETSTypeReferencePart",
+                                "name": {
+                                  "type": "Identifier",
+                                  "name": "Array",
+                                  "decorators": [],
+                                  "loc": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 1,
+                                      "program": "lambdaFunctionArrayDeclaration.ets"
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "lambdaFunctionArrayDeclaration.ets"
+                                    }
+                                  }
+                                },
+                                "typeParams": {
+                                  "type": "TSTypeParameterInstantiation",
+                                  "params": [
+                                    {
+                                      "type": "ETSFunctionType",
+                                      "params": [
+                                        {
+                                          "type": "ETSParameterExpression",
                                           "name": {
                                             "type": "Identifier",
-                                            "name": "Char",
+                                            "name": "x",
+                                            "typeAnnotation": {
+                                              "type": "ETSTypeReference",
+                                              "part": {
+                                                "type": "ETSTypeReferencePart",
+                                                "name": {
+                                                  "type": "Identifier",
+                                                  "name": "Char",
+                                                  "decorators": [],
+                                                  "loc": {
+                                                    "start": {
+                                                      "line": 1,
+                                                      "column": 3,
+                                                      "program": "lambdaFunctionArrayDeclaration.ets"
+                                                    },
+                                                    "end": {
+                                                      "line": 1,
+                                                      "column": 3,
+                                                      "program": "lambdaFunctionArrayDeclaration.ets"
+                                                    }
+                                                  }
+                                                },
+                                                "loc": {
+                                                  "start": {
+                                                    "line": 1,
+                                                    "column": 3,
+                                                    "program": "lambdaFunctionArrayDeclaration.ets"
+                                                  },
+                                                  "end": {
+                                                    "line": 1,
+                                                    "column": 3,
+                                                    "program": "lambdaFunctionArrayDeclaration.ets"
+                                                  }
+                                                }
+                                              },
+                                              "loc": {
+                                                "start": {
+                                                  "line": 1,
+                                                  "column": 3,
+                                                  "program": "lambdaFunctionArrayDeclaration.ets"
+                                                },
+                                                "end": {
+                                                  "line": 1,
+                                                  "column": 3,
+                                                  "program": "lambdaFunctionArrayDeclaration.ets"
+                                                }
+                                              }
+                                            },
                                             "decorators": [],
                                             "loc": {
                                               "start": {
-                                                "line": 17,
-                                                "column": 19,
+                                                "line": 1,
+                                                "column": 3,
                                                 "program": "lambdaFunctionArrayDeclaration.ets"
                                               },
                                               "end": {
-                                                "line": 17,
-                                                "column": 23,
+                                                "line": 1,
+                                                "column": 3,
                                                 "program": "lambdaFunctionArrayDeclaration.ets"
                                               }
                                             }
                                           },
                                           "loc": {
                                             "start": {
-                                              "line": 17,
-                                              "column": 19,
+                                              "line": 1,
+                                              "column": 3,
                                               "program": "lambdaFunctionArrayDeclaration.ets"
                                             },
                                             "end": {
-                                              "line": 17,
-                                              "column": 24,
+                                              "line": 1,
+                                              "column": 3,
                                               "program": "lambdaFunctionArrayDeclaration.ets"
                                             }
                                           }
-                                        },
+                                        }
+                                      ],
+                                      "returnType": {
+                                        "type": "ETSPrimitiveType",
                                         "loc": {
                                           "start": {
-                                            "line": 17,
-                                            "column": 19,
+                                            "line": 1,
+                                            "column": 3,
                                             "program": "lambdaFunctionArrayDeclaration.ets"
                                           },
                                           "end": {
-                                            "line": 17,
-                                            "column": 24,
+                                            "line": 1,
+                                            "column": 3,
                                             "program": "lambdaFunctionArrayDeclaration.ets"
                                           }
                                         }
                                       },
-                                      "decorators": [],
                                       "loc": {
                                         "start": {
-                                          "line": 17,
-                                          "column": 16,
+                                          "line": 1,
+                                          "column": 3,
                                           "program": "lambdaFunctionArrayDeclaration.ets"
                                         },
                                         "end": {
-                                          "line": 17,
-                                          "column": 24,
+                                          "line": 1,
+                                          "column": 3,
                                           "program": "lambdaFunctionArrayDeclaration.ets"
                                         }
                                       }
-                                    },
-                                    "loc": {
-                                      "start": {
-                                        "line": 17,
-                                        "column": 16,
-                                        "program": "lambdaFunctionArrayDeclaration.ets"
-                                      },
-                                      "end": {
-                                        "line": 17,
-                                        "column": 24,
-                                        "program": "lambdaFunctionArrayDeclaration.ets"
-                                      }
                                     }
-                                  }
-                                ],
-                                "returnType": {
-                                  "type": "ETSPrimitiveType",
+                                  ],
                                   "loc": {
                                     "start": {
-                                      "line": 17,
-                                      "column": 28,
+                                      "line": 1,
+                                      "column": 3,
                                       "program": "lambdaFunctionArrayDeclaration.ets"
                                     },
                                     "end": {
-                                      "line": 17,
-                                      "column": 32,
+                                      "line": 1,
+                                      "column": 3,
                                       "program": "lambdaFunctionArrayDeclaration.ets"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
-                                    "line": 17,
-                                    "column": 14,
+                                    "line": 1,
+                                    "column": 1,
                                     "program": "lambdaFunctionArrayDeclaration.ets"
                                   },
                                   "end": {
-                                    "line": 17,
-                                    "column": 32,
+                                    "line": 1,
+                                    "column": 3,
                                     "program": "lambdaFunctionArrayDeclaration.ets"
                                   }
                                 }
                               },
-                              "annotations": [],
                               "loc": {
                                 "start": {
                                   "line": 17,

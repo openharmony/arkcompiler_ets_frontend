@@ -28,13 +28,28 @@
 #include "line_column_offset.h"
 #include "public/es2panda_lib.h"
 #include "cancellation_token.h"
+#include "user_preferences.h"
+#include "class_hierarchies.h"
 #include "find_references.h"
 #include "find_rename_locations.h"
+#include "class_hierarchy_info.h"
 #include "completions.h"
+#include "refactors/refactor_types.h"
+#include "applicable_refactors.h"
+#include "todo_comments.h"
+#include "types.h"
+#include "formatting/formatting_settings.h"
+#include "user_preferences.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+typedef struct SafeDeleteLocation {
+    std::string uri;
+    size_t start;
+    size_t length;
+} SafeDeleteLocation;
 
 typedef struct DefinitionInfo {
     DefinitionInfo() = default;
@@ -55,20 +70,6 @@ typedef struct ReferenceInfo {
 typedef struct References {
     std::vector<ReferenceInfo> referenceInfos;
 } References;
-
-typedef struct TextSpan {
-    size_t start;
-    size_t length;
-    TextSpan(size_t s, size_t l) : start(s), length(l) {}
-    bool operator==(const TextSpan &other) const
-    {
-        return start == other.start && length == other.length;
-    }
-    bool operator!=(const TextSpan &other) const
-    {
-        return !(*this == other);
-    }
-} TextSpan;
 
 typedef struct Position {
     size_t line_;       // Line number
@@ -198,39 +199,38 @@ typedef struct DocumentHighlights {
     }
 } DocumentHighlights;
 
+struct FieldListProperty {
+    std::string kind;
+    std::optional<std::vector<std::string>> modifierKinds;
+    std::string displayName;
+    size_t start;
+    size_t end;
+
+    FieldListProperty(std::string k, std::optional<std::vector<std::string>> m, std::string d, size_t s, size_t e)
+        : kind(std::move(k)), modifierKinds(std::move(m)), displayName(std::move(d)), start(s), end(e)
+    {
+    }
+};
+
+struct FieldsInfo {
+    std::string name;
+    std::vector<FieldListProperty> properties;
+    bool operator<(const FieldsInfo &other) const
+    {
+        return name < other.name;
+    }
+    FieldsInfo() = default;
+    FieldsInfo(const FieldsInfo &fi) : name(fi.name), properties(fi.properties) {}
+};
+
+struct LspClassPropertyInfo {
+    FieldsInfo fieldsInfo;
+    LspClassPropertyInfo(FieldsInfo f) : fieldsInfo(std::move(f)) {}
+};
+
 typedef struct DocumentHighlightsReferences {
     std::vector<DocumentHighlights> documentHighlights_;
 } DocumentHighlightsReferences;
-
-struct SymbolDisplayPart {
-private:
-    std::string text_;
-    std::string kind_;
-
-public:
-    explicit SymbolDisplayPart(std::string text = "", std::string kind = "")
-        : text_ {std::move(text)}, kind_ {std::move(kind)}
-    {
-    }
-
-    std::string GetText() const
-    {
-        return text_;
-    }
-    std::string GetKind() const
-    {
-        return kind_;
-    }
-
-    bool operator==(const SymbolDisplayPart &other) const
-    {
-        return text_ == other.text_ && kind_ == other.kind_;
-    }
-    bool operator!=(const SymbolDisplayPart &other) const
-    {
-        return !(*this == other);
-    }
-};
 
 struct DocTagInfo {
 private:
@@ -326,6 +326,79 @@ public:
     }
 };
 
+struct CompletionEntryDetails {
+private:
+    std::string name_;
+    std::string kind_;
+    std::string kindModifiers_;
+    std::vector<SymbolDisplayPart> displayParts_;
+    std::vector<SymbolDisplayPart> document_;
+    std::vector<SymbolDisplayPart> source_;
+    std::vector<SymbolDisplayPart> sourceDisplay_;
+    std::string fileName_;
+
+public:
+    explicit CompletionEntryDetails(std::string name = "", std::string kind = "", std::string kindModifiers = "",
+                                    std::vector<SymbolDisplayPart> displayParts = {},
+                                    std::vector<SymbolDisplayPart> document = {},
+                                    std::vector<SymbolDisplayPart> source = {},
+                                    std::vector<SymbolDisplayPart> sourceDisplay = {}, std::string fileName = "")
+        : name_ {std::move(name)},
+          kind_ {std::move(kind)},
+          kindModifiers_ {std::move(kindModifiers)},
+          displayParts_ {std::move(displayParts)},
+          document_ {std::move(document)},
+          source_ {std::move(source)},
+          sourceDisplay_ {std::move(sourceDisplay)},
+          fileName_ {std::move(fileName)}
+    {
+    }
+
+    std::string GetName() const
+    {
+        return name_;
+    }
+    std::string GetKind() const
+    {
+        return kind_;
+    }
+    std::string GetKindModifiers() const
+    {
+        return kindModifiers_;
+    }
+    std::vector<SymbolDisplayPart> GetDisplayParts() const
+    {
+        return displayParts_;
+    }
+    std::vector<SymbolDisplayPart> GetDocument() const
+    {
+        return document_;
+    }
+    std::vector<SymbolDisplayPart> GetSource() const
+    {
+        return source_;
+    }
+    std::vector<SymbolDisplayPart> GetSourceDisplay() const
+    {
+        return sourceDisplay_;
+    }
+    std::string GetFileName() const
+    {
+        return fileName_;
+    }
+
+    bool operator==(const CompletionEntryDetails &other) const
+    {
+        return name_ == other.name_ && kind_ == other.kind_ && kindModifiers_ == other.kindModifiers_ &&
+               displayParts_ == other.displayParts_ && document_ == other.document_ && source_ == other.source_ &&
+               sourceDisplay_ == other.sourceDisplay_ && fileName_ == other.fileName_;
+    }
+    bool operator!=(const CompletionEntryDetails &other) const
+    {
+        return !(*this == other);
+    }
+};
+
 typedef struct FileDiagnostic {
     es2panda_AstNode *node;
     Diagnostic diagnostic;
@@ -343,43 +416,143 @@ typedef struct DeclInfo {
     std::string fileText;
 } DeclInfo;
 
+enum class HierarchyType { OTHERS, INTERFACE, CLASS };
+
+struct TypeHierarchies {
+    TypeHierarchies() = default;
+    TypeHierarchies(std::string f, std::string n, HierarchyType t, size_t p)
+        : fileName(std::move(f)), name(std::move(n)), type(t), pos(p)
+    {
+    }
+    bool operator==(const TypeHierarchies &other) const
+    {
+        return fileName == other.fileName && name == other.name && type == other.type && pos == other.pos;
+    }
+    bool operator!=(const TypeHierarchies &other) const
+    {
+        return !(*this == other);
+    }
+    bool operator<(const TypeHierarchies &other) const
+    {
+        return std::tie(fileName, name, type, pos) < std::tie(other.fileName, other.name, other.type, other.pos);
+    }
+    std::string fileName;
+    std::string name;
+    HierarchyType type = HierarchyType::OTHERS;
+    size_t pos = 0;
+    std::vector<TypeHierarchies> subOrSuper;
+};
+
+struct TypeHierarchiesInfo {
+    TypeHierarchiesInfo() = default;
+    TypeHierarchiesInfo(std::string f, std::string n, HierarchyType t, size_t p)
+        : fileName(std::move(f)), name(std::move(n)), type(t), pos(p)
+    {
+    }
+    std::string fileName;
+    std::string name;
+    HierarchyType type = HierarchyType::OTHERS;
+    size_t pos = 0;
+    TypeHierarchies superHierarchies;
+    TypeHierarchies subHierarchies;
+};
+
+struct InstallPackageActionInfo {
+    std::string type_;
+    std::optional<std::string> file;
+    std::optional<std::string> packageName;
+};
+
+struct CodeActionInfo {
+    std::string description_;
+    std::vector<FileTextChanges> changes_;
+    std::vector<InstallPackageActionInfo> commands_;
+};
+
+struct CombinedCodeActionsInfo {
+    std::vector<FileTextChanges> changes_;
+    std::vector<InstallPackageActionInfo> commands_;
+};
+
+struct CodeFixActionInfo : CodeActionInfo {
+    std::string fixName_;
+    std::string fixId_ = {};
+    std::string fixAllDescription_ = {};
+};
+
+struct CodeFixActionInfoList {
+    std::vector<CodeFixActionInfo> infos_;
+};
+
+struct CodeFixOptions {
+    ark::es2panda::lsp::CancellationToken token;
+    ark::es2panda::lsp::FormatCodeSettings options;
+    ark::es2panda::lsp::UserPreferences preferences;
+};
+
 typedef struct LSPAPI {
     DefinitionInfo (*getDefinitionAtPosition)(es2panda_Context *context, size_t position);
+    std::vector<ark::es2panda::lsp::ApplicableRefactorInfo> (*getApplicableRefactors)(es2panda_Context *context,
+                                                                                      const char *kind,
+                                                                                      size_t position);
     DefinitionInfo (*getImplementationAtPosition)(es2panda_Context *context, size_t position);
     bool (*isPackageModule)(es2panda_Context *context);
+    ark::es2panda::lsp::CompletionEntryKind (*getAliasScriptElementKind)(es2panda_Context *context, size_t position);
     References (*getFileReferences)(char const *fileName, es2panda_Context *context, bool isPackageModule);
     DeclInfo (*getDeclInfo)(es2panda_Context *context, size_t position);
+    std::vector<ark::es2panda::lsp::ClassHierarchyItemInfo> (*getClassHierarchiesImpl)(es2panda_Context *context,
+                                                                                       const char *fileName,
+                                                                                       size_t pos);
+    bool (*getSafeDeleteInfo)(es2panda_Context *context, size_t position);
     References (*getReferencesAtPosition)(es2panda_Context *context, DeclInfo *declInfo);
     es2panda_AstNode *(*getPrecedingToken)(es2panda_Context *context, const size_t pos);
     std::string (*getCurrentTokenValue)(es2panda_Context *context, size_t position);
+    std::vector<FileTextChanges> (*OrganizeImportsImpl)(es2panda_Context *context, char const *fileName);
     QuickInfo (*getQuickInfoAtPosition)(const char *fileName, es2panda_Context *context, size_t position);
-    TextSpan (*getSpanOfEnclosingComment)(char const *fileName, size_t pos, bool onlyMultiLine);
+    CompletionEntryDetails (*getCompletionEntryDetails)(const char *entryName, const char *fileName,
+                                                        es2panda_Context *context, size_t position);
+    TextSpan (*getSpanOfEnclosingComment)(es2panda_Context *context, size_t pos, bool onlyMultiLine);
     DiagnosticReferences (*getSemanticDiagnostics)(es2panda_Context *context);
     DiagnosticReferences (*getSyntacticDiagnostics)(es2panda_Context *context);
     DiagnosticReferences (*getCompilerOptionsDiagnostics)(char const *fileName,
                                                           ark::es2panda::lsp::CancellationToken cancellationToken);
+    TypeHierarchiesInfo (*getTypeHierarchies)(es2panda_Context *searchContext, es2panda_Context *context,
+                                              size_t position);
     DocumentHighlightsReferences (*getDocumentHighlights)(es2panda_Context *context, size_t position);
     std::vector<ark::es2panda::lsp::RenameLocation> (*findRenameLocations)(
         const std::vector<ark::es2panda::SourceFile> &files, const ark::es2panda::SourceFile &file, size_t position);
     std::vector<ark::es2panda::lsp::RenameLocation> (*findRenameLocationsWithCancellationToken)(
         ark::es2panda::lsp::CancellationToken *tkn, const std::vector<ark::es2panda::SourceFile> &files,
         const ark::es2panda::SourceFile &file, size_t position);
+    std::vector<SafeDeleteLocation> (*FindSafeDeleteLocation)(es2panda_Context *ctx,
+                                                              const std::tuple<std::string, std::string> *declInfo);
     std::vector<ark::es2panda::lsp::ReferencedNode> (*findReferences)(
         ark::es2panda::lsp::CancellationToken *tkn, const std::vector<ark::es2panda::SourceFile> &srcFiles,
         const ark::es2panda::SourceFile &srcFile, size_t position);
+    std::vector<FieldsInfo> (*getClassPropertyInfo)(es2panda_Context *context, size_t pos, bool shouldCollectInherited);
     DiagnosticReferences (*getSuggestionDiagnostics)(es2panda_Context *context);
     ark::es2panda::lsp::CompletionInfo (*getCompletionsAtPosition)(es2panda_Context *context, size_t position);
+    ark::es2panda::lsp::ClassHierarchy (*getClassHierarchyInfo)(es2panda_Context *context, size_t position);
     std::vector<TextSpan> (*getBraceMatchingAtPosition)(char const *fileName, size_t position);
+    ark::es2panda::lsp::RefactorEditInfo (*getClassConstructorInfo)(es2panda_Context *context, size_t position,
+                                                                    const std::vector<std::string> &properties);
     std::vector<Location> (*getImplementationLocationAtPosition)(es2panda_Context *context, int position);
     ark::es2panda::lsp::LineAndCharacter (*toLineColumnOffset)(es2panda_Context *context, size_t position);
+    std::vector<ark::es2panda::lsp::TodoComment> (*getTodoComments)(
+        char const *fileName, std::vector<ark::es2panda::lsp::TodoCommentDescriptor> &descriptors,
+        ark::es2panda::lsp::CancellationToken *cancellationToken);
+    InlayHintList (*provideInlayHints)(es2panda_Context *context, const TextSpan *span);
+    SignatureHelpItems (*getSignatureHelpItems)(es2panda_Context *context, size_t position);
+    std::vector<CodeFixActionInfo> (*getCodeFixesAtPosition)(es2panda_Context *context, size_t start_position,
+                                                             size_t end_position, std::vector<int> &errorCodes,
+                                                             CodeFixOptions &codeFixOptions);
+    CombinedCodeActionsInfo (*getCombinedCodeFix)(const char *fileName, const std::string &fixId,
+                                                  CodeFixOptions &codeFixOptions);
+    TextSpan *(*GetNameOrDottedNameSpan)(es2panda_Context *context, int startPos);
 } LSPAPI;
-
 CAPI_EXPORT LSPAPI const *GetImpl();
-
 // NOLINTEND
-
 #ifdef __cplusplus
 }
 #endif
-
 #endif

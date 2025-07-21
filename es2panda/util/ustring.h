@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -112,6 +112,12 @@ public:
     constexpr size_t Find(const char *str) const
     {
         return sv_.find(str);
+    }
+
+    bool StartsWith(const std::string_view str) const noexcept
+    {
+        auto const length = str.size();
+        return sv_.size() >= length && sv_.substr(0U, length) == str;
     }
 
     static bool IsHighSurrogate(char32_t cp)

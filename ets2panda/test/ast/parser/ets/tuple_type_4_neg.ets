@@ -19,13 +19,8 @@ let a: [a0: , a1: number] = [1, 2, 3];
 /* @@? 17:9 Error TypeError: Cannot find type 'a0'. */
 /* @@? 17:11 Error SyntaxError: Unexpected token, expected ',' or ']'. */
 /* @@? 17:11 Error SyntaxError: Unexpected token ':'. */
-/* @@? 17:11 Error SyntaxError: Unexpected token ':'. */
-/* @@? 17:11 Error SyntaxError: Unexpected token ':'. */
 /* @@? 17:13 Error SyntaxError: Unexpected token ','. */
-/* @@? 17:13 Error SyntaxError: Unexpected token ','. */
+/* @@? 17:15 Error SyntaxError: Unexpected token 'a1'. */
 /* @@? 17:19 Error SyntaxError: Label must be followed by a loop statement. */
 /* @@? 17:19 Error TypeError: Type name 'number' used in the wrong context */
 /* @@? 17:25 Error SyntaxError: Unexpected token ']'. */
-/* @@? 17:25 Error SyntaxError: Unexpected token ']'. */
-/* @@? 17:25 Error SyntaxError: Unexpected token ']'. */
-/* @@? 17:27 Error SyntaxError: Unexpected token '='. */

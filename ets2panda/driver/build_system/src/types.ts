@@ -18,6 +18,10 @@ export interface PluginsConfig {
   [pluginName: string]: string;
 }
 
+export interface PathsConfig {
+  [pathName: string]: string[];
+}
+
 export interface BuildBaseConfig {
   buildType: 'build' | 'preview' | 'hotreload' | 'coldreload';
   buildMode: 'Debug' | 'Release';
@@ -25,6 +29,7 @@ export interface BuildBaseConfig {
   arkts: ArkTS;
   arktsGlobal: ArkTSGlobal;
   maxWorkers?: number;
+  isBuildConfigModified?: boolean;
 }
 
 export interface ArkTSGlobal {
@@ -36,12 +41,14 @@ export interface ArkTSGlobal {
   };
   es2panda: {
     _DestroyContext: Function;
+    _SetUpSoPath: Function;
   }
 }
 
 export interface ArkTS {
   Config: {
     create: Function;
+    createContextGenerateAbcForExternalSourceFiles: Function;
   };
   Context: {
     createFromString: Function;
@@ -58,13 +65,12 @@ export interface ArkTS {
 export enum Es2pandaContextState {
     ES2PANDA_STATE_NEW = 0,
     ES2PANDA_STATE_PARSED = 1,
-    ES2PANDA_STATE_SCOPE_INITED = 2,
-    ES2PANDA_STATE_BOUND = 3,
-    ES2PANDA_STATE_CHECKED = 4,
-    ES2PANDA_STATE_LOWERED = 5,
-    ES2PANDA_STATE_ASM_GENERATED = 6,
-    ES2PANDA_STATE_BIN_GENERATED = 7,
-    ES2PANDA_STATE_ERROR = 8
+    ES2PANDA_STATE_BOUND = 2,
+    ES2PANDA_STATE_CHECKED = 3,
+    ES2PANDA_STATE_LOWERED = 4,
+    ES2PANDA_STATE_ASM_GENERATED = 5,
+    ES2PANDA_STATE_BIN_GENERATED = 6,
+    ES2PANDA_STATE_ERROR = 7
 }
 
 export interface ModuleConfig {
@@ -72,6 +78,7 @@ export interface ModuleConfig {
   moduleType: string;
   moduleRootPath: string;
   sourceRoots: string[];
+  byteCodeHar: boolean;
 }
 
 export interface PathConfig {
@@ -82,11 +89,35 @@ export interface PathConfig {
   pandaStdlibPath?: string; // path to panda sdk stdlib, for local test
   externalApiPaths: string[];
   abcLinkerPath?: string;
+  dependencyAnalyzerPath?: string;
+  projectRootPath: string;
+}
+
+/**
+ * Configuration for framework mode compilation using generate_static_abc gni.
+ * 
+ * In framework mode, the compiler generates static ABC files from framework SDK ETS files.
+ * This mode requires additional arktsconfig.json parameters for proper operation.
+ */
+export interface FrameworkConfig {
+  /**
+   * Enables or disables framework compilation mode.
+   * When enabled (true), activates special processing rules for framework-level
+   * compilation, including different output locations and packaging requirements.
+   */
+  frameworkMode?: boolean;
+  
+  /**
+   * Determines whether an empty package name should be used.
+   * Must be set to true when compiling framework components without a package name.
+   */
+  useEmptyPackage?: boolean;
 }
 
 export interface DeclgenConfig {
   enableDeclgenEts2Ts: boolean;
   declgenV1OutPath?: string;
+  declgenV2OutPath?: string;
   declgenBridgeCodePath?: string;
 }
 
@@ -105,11 +136,14 @@ export interface DependentModuleConfig {
   declFilesPath?: string;
   dependencies?: string[];
   declgenV1OutPath?: string;
+  declgenV2OutPath?: string;
   declgenBridgeCodePath?: string;
+  byteCodeHar: boolean;
 }
 
-export interface BuildConfig extends BuildBaseConfig, DeclgenConfig, LoggerConfig, ModuleConfig, PathConfig {
+export interface BuildConfig extends BuildBaseConfig, DeclgenConfig, LoggerConfig, ModuleConfig, PathConfig, FrameworkConfig {
   plugins: PluginsConfig;
+  paths: PathsConfig; // paths config passed from template to generate arktsconfig.json "paths" configs.
   compileFiles: string[];
   dependentModuleList: DependentModuleConfig[];
 }
@@ -133,12 +167,16 @@ export interface ModuleInfo {
   arktsConfigFile: string,
   compileFileInfos: CompileFileInfo[],
   declgenV1OutPath: string | undefined,
+  declgenV2OutPath: string | undefined,
   declgenBridgeCodePath: string | undefined,
   dependencies?: string[]
   staticDepModuleInfos: Map<string, ModuleInfo>;
   dynamicDepModuleInfos: Map<string, ModuleInfo>;
   language?: string;
   declFilesPath?: string;
+  frameworkMode?: boolean;
+  useEmptyPackage?: boolean;
+  byteCodeHar: boolean;
 }
 
 export type SetupClusterOptions = {
@@ -146,3 +184,12 @@ export type SetupClusterOptions = {
   execPath?: string;
   execArgs?: string[];
 };
+
+export interface DependencyFileConfig {
+  dependants: {
+    [filePath: string]: string[];
+  };
+  dependencies: {
+    [filePath: string]: string[];
+  }
+}

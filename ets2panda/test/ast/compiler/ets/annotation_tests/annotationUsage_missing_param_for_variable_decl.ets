@@ -29,6 +29,4 @@ function main() : void {
 
 /* @@? 22:2 Error TypeError: The required field 'testProperty2' must be specified. Fields without default values cannot be omitted. */
 /* @@? 22:2 Error TypeError: The required field 'testProperty1' must be specified. Fields without default values cannot be omitted. */
-/* @@? 22:2 Error TypeError: The required field 'testProperty2' must be specified. Fields without default values cannot be omitted. */
-/* @@? 22:2 Error TypeError: The required field 'testProperty1' must be specified. Fields without default values cannot be omitted. */
 /* @@? 26:6 Error TypeError: The required field 'testProperty1' must be specified. Fields without default values cannot be omitted. */

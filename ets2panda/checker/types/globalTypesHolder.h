@@ -57,9 +57,10 @@ enum class GlobalTypeId : std::size_t {
     ETS_OBJECT_BUILTIN,
     ETS_NULL,
     ETS_UNDEFINED,
-    ETS_NULLISH_TYPE,
+    ETS_UNION_UNDEFINED_NULL,
+    ETS_ANY,
     ETS_NEVER,
-    ETS_NULLISH_OBJECT,
+    ETS_UNION_UNDEFINED_NULL_OBJECT,
     ETS_WILDCARD,
     ETS_BOOLEAN_BUILTIN,
     ETS_BYTE_BUILTIN,
@@ -75,6 +76,7 @@ enum class GlobalTypeId : std::size_t {
     ETS_INTEGRAL_BUILTIN,
     ETS_LONG_BUILTIN,
     ETS_MAP_BUILTIN,
+    ETS_RECORD_BUILTIN,
     ETS_ERROR_BUILTIN,
     ETS_RUNTIME_BUILTIN,
     ETS_RUNTIME_LINKER_BUILTIN,
@@ -97,6 +99,7 @@ enum class GlobalTypeId : std::size_t {
     ETS_FUNCTION_BUILTIN,
     ETS_REGEXP_BUILTIN,
     ETS_ARRAY_BUILTIN,
+    ETS_ARRAY,
     ETS_INTEROP_JSRUNTIME_BUILTIN,
     ETS_INTEROP_JSVALUE_BUILTIN,
     ETS_BOX_BUILTIN,
@@ -265,9 +268,10 @@ public:
     Type *GlobalETSObjectType();
     Type *GlobalETSNullType();
     Type *GlobalETSUndefinedType();
+    Type *GlobalETSAnyType();
     Type *GlobalETSNeverType();
-    Type *GlobalETSNullishType();
-    Type *GlobalETSNullishObjectType();
+    Type *GlobalETSUnionUndefinedNull();
+    Type *GlobalETSUnionUndefinedNullObject();
     Type *GlobalWildcardType();
     Type *GlobalETSBooleanBuiltinType();
     Type *GlobalByteBuiltinType();
@@ -323,6 +327,7 @@ public:
     Type *GlobalNullPointerErrorBuiltinType();
     Type *GlobalUncaughtExceptionErrorBuiltinType();
     Type *GlobalMapBuiltinType();
+    Type *GlobalRecordBuiltinType();
     Type *GlobalRegExpBuiltinType();
     Type *GlobalSetBuiltinType();
 

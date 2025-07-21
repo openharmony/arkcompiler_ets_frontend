@@ -33,8 +33,7 @@ export class RapidTypeAnalysis extends AbstractAnalysis {
     private ignoredCalls: Map<ClassSignature, Set<{ caller: NodeID; callee: NodeID; callStmt: Stmt }>> = new Map();
 
     constructor(scene: Scene, cg: CallGraph) {
-        super(scene);
-        this.cg = cg;
+        super(scene, cg);
     }
 
     public resolveCall(callerMethod: NodeID, invokeStmt: Stmt): CallSite[] {

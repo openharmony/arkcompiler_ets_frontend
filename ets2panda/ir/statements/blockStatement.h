@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,6 +17,7 @@
 #define ES2PANDA_IR_STATEMENT_BLOCK_STATEMENT_H
 
 #include "ir/statement.h"
+#include "utils/arena_containers.h"
 
 namespace ark::es2panda::checker {
 class ETSAnalyzer;
@@ -74,6 +75,20 @@ public:
         }
     }
 
+    void AddStatement(Statement *stmt)
+    {
+        stmt->SetParent(this);
+        statements_.emplace_back(stmt);
+    }
+
+    void AddStatements(ArenaVector<Statement *> &stmts)
+    {
+        for (auto *stmt : stmts) {
+            stmt->SetParent(this);
+        }
+        statements_.insert(statements_.end(), stmts.begin(), stmts.end());
+    }
+
     void AddTrailingBlock(AstNode *stmt, BlockStatement *trailingBlock)
     {
         trailingBlocks_.emplace(stmt, trailingBlock);
@@ -96,7 +111,11 @@ public:
         v->Accept(this);
     }
 
+    BlockStatement *Construct(ArenaAllocator *allocator) override;
+    void CopyTo(AstNode *other) const override;
+
 private:
+    friend class SizeOfNodeTest;
     varbinder::Scope *scope_ {};
     ArenaVector<Statement *> statements_;
     ArenaUnorderedMap<AstNode *, BlockStatement *> trailingBlocks_;

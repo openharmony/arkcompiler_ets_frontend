@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -769,11 +769,12 @@ void Binder::ResolveReference(const ir::AstNode *parent, ir::AstNode *childNode)
             if (inSendableClass_ || inSendableFunction_) {
                 scriptFunc->SetInSendable();
             }
-            bool enableSendableClass = program_->TargetApiVersion() >=
-                util::Helpers::SENDABLE_CLASS_MIN_SUPPORTED_API_VERSION;
-            util::Helpers::ScanDirectives(const_cast<ir::ScriptFunction *>(scriptFunc), Program()->GetLineIndex(),
-                enableSendableClass,
-                !util::Helpers::IsDefaultApiVersion(program_->TargetApiVersion(), program_->GetTargetApiSubVersion()));
+            util::DirectiveScanConfig scanInfos {
+                Program()->GetLineIndex(),
+                program_->TargetApiVersion() >= util::Helpers::SENDABLE_CLASS_MIN_SUPPORTED_API_VERSION,
+                !util::Helpers::IsDefaultApiVersion(program_->TargetApiVersion(), program_->GetTargetApiSubVersion()),
+                program_->IsEnableEtsImplements()};
+            util::Helpers::ScanDirectives(const_cast<ir::ScriptFunction *>(scriptFunc), scanInfos);
 
             if (scriptFunc->IsConstructor() && util::Helpers::GetClassDefiniton(scriptFunc)->IsSendable()) {
                 scriptFunc->SetInSendable();

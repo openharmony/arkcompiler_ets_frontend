@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -105,4 +105,21 @@ checker::VerifiedType FunctionDeclaration::Check(checker::ETSChecker *checker)
 {
     return {this, checker->GetAnalyzer()->Check(this)};
 }
+
+FunctionDeclaration *FunctionDeclaration::Construct(ArenaAllocator *allocator)
+{
+    return allocator->New<FunctionDeclaration>(allocator, nullptr);
+}
+
+void FunctionDeclaration::CopyTo(AstNode *other) const
+{
+    auto otherImpl = other->AsFunctionDeclaration();
+
+    otherImpl->decorators_ = decorators_;
+    otherImpl->func_ = func_;
+    otherImpl->isAnonymous_ = isAnonymous_;
+
+    JsDocAllowed<AnnotationAllowed<Statement>>::CopyTo(other);
+}
+
 }  // namespace ark::es2panda::ir

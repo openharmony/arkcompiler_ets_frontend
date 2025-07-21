@@ -32,13 +32,13 @@ type Alias9Array<T> = [C<T>][];
 function main() 
 {
     let v1 : double[] = [1,2,3];                       // double[]
-    v1[0] = new Int(4);
+    v1[0] = new Double(4);
     assertEQ(v1[0], 4)
     assertEQ(v1[1], 2)
     assertEQ(v1[2], 3)
     
     let v2 : Alias1Array<double> =  [5, 6, 7];         // double[]
-    v2[0] = new Int(8);
+    v2[0] = new Double(8);
     assertEQ(v2[0], 8)
     assertEQ(v2[1], 6)
     assertEQ(v2[2], 7)

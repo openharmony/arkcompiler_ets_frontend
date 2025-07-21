@@ -1,68 +1,478 @@
 {
-  "copyright": [
-    "Copyright (c) 2025 Huawei Device Co., Ltd.",
-    "Licensed under the Apache License, Version 2.0 (the 'License');",
-    "you may not use this file except in compliance with the License.",
-    "You may obtain a copy of the License at",
-    "",
-    "http://www.apache.org/licenses/LICENSE-2.0",
-    "",
-    "Unless required by applicable law or agreed to in writing, software",
-    "distributed under the License is distributed on an 'AS IS' BASIS,",
-    "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
-    "See the License for the specific language governing permissions and",
-    "limitations under the License."
-  ],
-  "result": [
-    {
-      "line": 17,
-      "column": 36,
-      "endLine": 17,
-      "endColumn": 45,
-      "problem": "DynamicCtorCall",
-      "suggest": "",
-      "rule": "\"new\" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 20,
-      "column": 5,
-      "endLine": 20,
-      "endColumn": 52,
-      "problem": "AnyType",
-      "suggest": "",
-      "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 20,
-      "column": 17,
-      "endLine": 20,
-      "endColumn": 30,
-      "problem": "DynamicCtorCall",
-      "suggest": "",
-      "rule": "\"new\" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 21,
-      "column": 1,
-      "endLine": 21,
-      "endColumn": 28,
-      "problem": "SetCloneListDeprecated",
-      "suggest": "",
-      "rule": "The taskpool setCloneList interface is deleted from ArkTS1.2 (arkts-limited-stdlib-no-setCloneList)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 22,
-      "column": 1,
-      "endLine": 22,
-      "endColumn": 31,
-      "problem": "SetTransferListDeprecated",
-      "suggest": "",
-      "rule": "The taskpool setTransferList interface is deleted from ArkTS1.2 (arkts-limited-stdlib-no-setTransferList)",
-      "severity": "ERROR"
-    }
-  ]
+    "copyright": [
+        "Copyright (c) 2025 Huawei Device Co., Ltd.",
+        "Licensed under the Apache License, Version 2.0 (the 'License');",
+        "you may not use this file except in compliance with the License.",
+        "You may obtain a copy of the License at",
+        "",
+        "http://www.apache.org/licenses/LICENSE-2.0",
+        "",
+        "Unless required by applicable law or agreed to in writing, software",
+        "distributed under the License is distributed on an 'AS IS' BASIS,",
+        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+        "See the License for the specific language governing permissions and",
+        "limitations under the License."
+    ],
+    "result": [
+        {
+            "line": 16,
+            "column": 1,
+            "endLine": 16,
+            "endColumn": 60,
+            "problem": "ImportAfterStatement",
+            "suggest": "",
+            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 16,
+            "column": 22,
+            "endLine": 16,
+            "endColumn": 30,
+            "problem": "LimitedStdLibNoImportConcurrency",
+            "suggest": "",
+            "rule": "Import Concurrency is not required (arkts-limited-stdlib-no-import-concurrency)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 17,
+            "column": 1,
+            "endLine": 17,
+            "endColumn": 44,
+            "problem": "ImportAfterStatement",
+            "suggest": "",
+            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 17,
+            "column": 1,
+            "endLine": 17,
+            "endColumn": 44,
+            "problem": "LimitedStdLibNoImportConcurrency",
+            "suggest": "",
+            "rule": "Import Concurrency is not required (arkts-limited-stdlib-no-import-concurrency)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 18,
+            "column": 1,
+            "endLine": 18,
+            "endColumn": 37,
+            "problem": "ImportAfterStatement",
+            "suggest": "",
+            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 19,
+            "column": 1,
+            "endLine": 19,
+            "endColumn": 68,
+            "problem": "ImportAfterStatement",
+            "suggest": "",
+            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 21,
+            "column": 36,
+            "endLine": 21,
+            "endColumn": 45,
+            "problem": "DynamicCtorCall",
+            "suggest": "",
+            "rule": "\"new\" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 24,
+            "column": 5,
+            "endLine": 24,
+            "endColumn": 50,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 24,
+            "column": 16,
+            "endLine": 24,
+            "endColumn": 29,
+            "problem": "DynamicCtorCall",
+            "suggest": "",
+            "rule": "\"new\" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 24,
+            "column": 47,
+            "endLine": 24,
+            "endColumn": 49,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 25,
+            "column": 6,
+            "endLine": 25,
+            "endColumn": 18,
+            "problem": "SetCloneListDeprecated",
+            "suggest": "",
+            "rule": "The taskpool setCloneList interface is deleted from ArkTS1.2 (arkts-limited-stdlib-no-setCloneList)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 26,
+            "column": 6,
+            "endLine": 26,
+            "endColumn": 21,
+            "problem": "SetTransferListDeprecated",
+            "suggest": "",
+            "rule": "The taskpool setTransferList interface is deleted from ArkTS1.2 (arkts-limited-stdlib-no-setTransferList)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 31,
+            "column": 26,
+            "endLine": 31,
+            "endColumn": 27,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 33,
+            "column": 5,
+            "endLine": 33,
+            "endColumn": 52,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 33,
+            "column": 17,
+            "endLine": 33,
+            "endColumn": 30,
+            "problem": "DynamicCtorCall",
+            "suggest": "",
+            "rule": "\"new\" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 33,
+            "column": 49,
+            "endLine": 33,
+            "endColumn": 51,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 34,
+            "column": 7,
+            "endLine": 34,
+            "endColumn": 19,
+            "problem": "SetCloneListDeprecated",
+            "suggest": "",
+            "rule": "The taskpool setCloneList interface is deleted from ArkTS1.2 (arkts-limited-stdlib-no-setCloneList)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 35,
+            "column": 7,
+            "endLine": 35,
+            "endColumn": 22,
+            "problem": "SetTransferListDeprecated",
+            "suggest": "",
+            "rule": "The taskpool setTransferList interface is deleted from ArkTS1.2 (arkts-limited-stdlib-no-setTransferList)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 37,
+            "column": 5,
+            "endLine": 37,
+            "endColumn": 31,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 37,
+            "column": 17,
+            "endLine": 37,
+            "endColumn": 24,
+            "problem": "DynamicCtorCall",
+            "suggest": "",
+            "rule": "\"new\" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 38,
+            "column": 7,
+            "endLine": 38,
+            "endColumn": 19,
+            "problem": "SetCloneListDeprecated",
+            "suggest": "",
+            "rule": "The taskpool setCloneList interface is deleted from ArkTS1.2 (arkts-limited-stdlib-no-setCloneList)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 39,
+            "column": 7,
+            "endLine": 39,
+            "endColumn": 19,
+            "problem": "SetCloneListDeprecated",
+            "suggest": "",
+            "rule": "The taskpool setCloneList interface is deleted from ArkTS1.2 (arkts-limited-stdlib-no-setCloneList)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 41,
+            "column": 5,
+            "endLine": 41,
+            "endColumn": 31,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 41,
+            "column": 17,
+            "endLine": 41,
+            "endColumn": 24,
+            "problem": "DynamicCtorCall",
+            "suggest": "",
+            "rule": "\"new\" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 42,
+            "column": 7,
+            "endLine": 42,
+            "endColumn": 19,
+            "problem": "SetCloneListDeprecated",
+            "suggest": "",
+            "rule": "The taskpool setCloneList interface is deleted from ArkTS1.2 (arkts-limited-stdlib-no-setCloneList)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 43,
+            "column": 7,
+            "endLine": 43,
+            "endColumn": 19,
+            "problem": "SetCloneListDeprecated",
+            "suggest": "",
+            "rule": "The taskpool setCloneList interface is deleted from ArkTS1.2 (arkts-limited-stdlib-no-setCloneList)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 45,
+            "column": 5,
+            "endLine": 45,
+            "endColumn": 31,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 45,
+            "column": 17,
+            "endLine": 45,
+            "endColumn": 24,
+            "problem": "DynamicCtorCall",
+            "suggest": "",
+            "rule": "\"new\" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 46,
+            "column": 7,
+            "endLine": 46,
+            "endColumn": 22,
+            "problem": "SetTransferListDeprecated",
+            "suggest": "",
+            "rule": "The taskpool setTransferList interface is deleted from ArkTS1.2 (arkts-limited-stdlib-no-setTransferList)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 47,
+            "column": 7,
+            "endLine": 47,
+            "endColumn": 22,
+            "problem": "SetTransferListDeprecated",
+            "suggest": "",
+            "rule": "The taskpool setTransferList interface is deleted from ArkTS1.2 (arkts-limited-stdlib-no-setTransferList)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 48,
+            "column": 7,
+            "endLine": 48,
+            "endColumn": 22,
+            "problem": "SetTransferListDeprecated",
+            "suggest": "",
+            "rule": "The taskpool setTransferList interface is deleted from ArkTS1.2 (arkts-limited-stdlib-no-setTransferList)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 50,
+            "column": 5,
+            "endLine": 50,
+            "endColumn": 31,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 50,
+            "column": 17,
+            "endLine": 50,
+            "endColumn": 24,
+            "problem": "DynamicCtorCall",
+            "suggest": "",
+            "rule": "\"new\" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 51,
+            "column": 7,
+            "endLine": 51,
+            "endColumn": 22,
+            "problem": "SetTransferListDeprecated",
+            "suggest": "",
+            "rule": "The taskpool setTransferList interface is deleted from ArkTS1.2 (arkts-limited-stdlib-no-setTransferList)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 52,
+            "column": 7,
+            "endLine": 52,
+            "endColumn": 22,
+            "problem": "SetTransferListDeprecated",
+            "suggest": "",
+            "rule": "The taskpool setTransferList interface is deleted from ArkTS1.2 (arkts-limited-stdlib-no-setTransferList)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 53,
+            "column": 7,
+            "endLine": 53,
+            "endColumn": 22,
+            "problem": "SetTransferListDeprecated",
+            "suggest": "",
+            "rule": "The taskpool setTransferList interface is deleted from ArkTS1.2 (arkts-limited-stdlib-no-setTransferList)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 55,
+            "column": 5,
+            "endLine": 55,
+            "endColumn": 43,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 55,
+            "column": 17,
+            "endLine": 55,
+            "endColumn": 36,
+            "problem": "DynamicCtorCall",
+            "suggest": "",
+            "rule": "\"new\" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 56,
+            "column": 7,
+            "endLine": 56,
+            "endColumn": 19,
+            "problem": "SetCloneListDeprecated",
+            "suggest": "",
+            "rule": "The taskpool setCloneList interface is deleted from ArkTS1.2 (arkts-limited-stdlib-no-setCloneList)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 57,
+            "column": 7,
+            "endLine": 57,
+            "endColumn": 19,
+            "problem": "SetCloneListDeprecated",
+            "suggest": "",
+            "rule": "The taskpool setCloneList interface is deleted from ArkTS1.2 (arkts-limited-stdlib-no-setCloneList)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 59,
+            "column": 7,
+            "endLine": 59,
+            "endColumn": 19,
+            "problem": "SetCloneListDeprecated",
+            "suggest": "",
+            "rule": "The taskpool setCloneList interface is deleted from ArkTS1.2 (arkts-limited-stdlib-no-setCloneList)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 60,
+            "column": 7,
+            "endLine": 60,
+            "endColumn": 22,
+            "problem": "SetTransferListDeprecated",
+            "suggest": "",
+            "rule": "The taskpool setTransferList interface is deleted from ArkTS1.2 (arkts-limited-stdlib-no-setTransferList)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 61,
+            "column": 5,
+            "endLine": 61,
+            "endColumn": 26,
+            "problem": "DynamicCtorCall",
+            "suggest": "",
+            "rule": "\"new\" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 61,
+            "column": 11,
+            "endLine": 61,
+            "endColumn": 26,
+            "problem": "SetTransferListDeprecated",
+            "suggest": "",
+            "rule": "The taskpool setTransferList interface is deleted from ArkTS1.2 (arkts-limited-stdlib-no-setTransferList)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 62,
+            "column": 5,
+            "endLine": 62,
+            "endColumn": 23,
+            "problem": "DynamicCtorCall",
+            "suggest": "",
+            "rule": "\"new\" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 62,
+            "column": 11,
+            "endLine": 62,
+            "endColumn": 23,
+            "problem": "SetCloneListDeprecated",
+            "suggest": "",
+            "rule": "The taskpool setCloneList interface is deleted from ArkTS1.2 (arkts-limited-stdlib-no-setCloneList)",
+            "severity": "ERROR"
+        }
+    ]
 }

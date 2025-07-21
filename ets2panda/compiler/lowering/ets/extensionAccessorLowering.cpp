@@ -68,7 +68,7 @@ static void TryHandleExtensionAccessor(checker::ETSChecker *checker, ir::MemberE
     if (IsAssignExprExtensionSetter(oldParent) && expr == oldParent->AsAssignmentExpression()->Left()) {
         auto *assignExpr = oldParent->AsAssignmentExpression();
         auto *callExpr = checker->CreateExtensionAccessorCall(
-            checker, expr, ArenaVector<ir::Expression *>(checker->Allocator()->Adapter()));
+            checker, expr, ArenaVector<ir::Expression *>(checker->ProgramAllocator()->Adapter()));
 
         auto *rightExpr = assignExpr->AsAssignmentExpression()->Right();
         rightExpr->SetBoxingUnboxingFlags(ir::BoxingUnboxingFlags::NONE);
@@ -76,12 +76,12 @@ static void TryHandleExtensionAccessor(checker::ETSChecker *checker, ir::MemberE
             SwitchType(rightExpr->AsMemberExpression());
             checker::Type *tsType = rightExpr->AsMemberExpression()->TsType();
             checker::ETSFunctionType *eAccType = rightExpr->AsMemberExpression()->ExtensionAccessorType();
-            auto *copyedRight = rightExpr->Clone(checker->Allocator(), nullptr);
+            auto *copyedRight = rightExpr->Clone(checker->ProgramAllocator(), nullptr);
             copyedRight->AsMemberExpression()->SetTsType(tsType);
             copyedRight->AsMemberExpression()->SetExtensionAccessorType(eAccType);
-            rightExpr =
-                checker->CreateExtensionAccessorCall(checker, copyedRight->AsMemberExpression(),
-                                                     ArenaVector<ir::Expression *>(checker->Allocator()->Adapter()));
+            rightExpr = checker->CreateExtensionAccessorCall(
+                checker, copyedRight->AsMemberExpression(),
+                ArenaVector<ir::Expression *>(checker->ProgramAllocator()->Adapter()));
         }
         rightExpr->SetParent(callExpr);
         callExpr->AsCallExpression()->Arguments().emplace_back(rightExpr);
@@ -93,7 +93,7 @@ static void TryHandleExtensionAccessor(checker::ETSChecker *checker, ir::MemberE
     }
 
     auto *callExpr = checker->CreateExtensionAccessorCall(
-        checker, expr, ArenaVector<ir::Expression *>(checker->Allocator()->Adapter()));
+        checker, expr, ArenaVector<ir::Expression *>(checker->ProgramAllocator()->Adapter()));
     callExpr->SetParent(oldParent);
     CheckLoweredNode(checker->VarBinder()->AsETSBinder(), checker, callExpr);
     callExpr->AddBoxingUnboxingFlags(expr->GetBoxingUnboxingFlags());

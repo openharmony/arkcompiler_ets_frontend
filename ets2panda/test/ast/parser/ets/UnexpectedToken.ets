@@ -22,16 +22,12 @@ function main(): void {
 
 /* @@? 18:19 Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type. */
 /* @@? 18:25 Error SyntaxError: Unexpected token 'let'. */
-/* @@? 18:25 Error SyntaxError: Unexpected token, expected ')'. */
-/* @@? 18:29 Error SyntaxError: Expected ';', got 'identification literal'. */
-/* @@? 18:29 Error TypeError: Unresolved reference f */
+/* @@? 18:29 Error SyntaxError: Unexpected token, expected ')'. */
 /* @@? 18:38 Error TypeError: Cannot find type 'A'. */
 /* @@? 18:68 Error TypeError: Cannot find type 'A'. */
-/* @@? 18:70 Error SyntaxError: Expected ')', got ';'. */
-/* @@? 18:72 Error TypeError: This expression is not callable. */
+/* @@? 18:72 Error TypeError: Unresolved reference f */
 /* @@? 18:78 Error TypeError: Cannot find type 'A'. */
-/* @@? 19:1 Error SyntaxError: Unexpected token ')'. */
+/* @@? 18:82 Error SyntaxError: Expected ')', got ';'. */
 /* @@? 19:4 Error TypeError: Unresolved reference i */
 /* @@? 19:10 Error SyntaxError: Unexpected token ')'. */
-/* @@? 19:10 Error SyntaxError: Unexpected token ')'. */
-/* @@? 19:10 Error SyntaxError: Unexpected token ')'. */
+/* @@? 19:12 Error SyntaxError: Unexpected token '{'. */

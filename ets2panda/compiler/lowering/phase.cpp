@@ -14,26 +14,32 @@
  */
 
 #include "phase.h"
+
 #include "checker/checker.h"
 #include "compiler/lowering/checkerPhase.h"
 #include "compiler/lowering/ets/asyncMethodLowering.h"
+#include "compiler/lowering/ets/ambientLowering.h"
+#include "compiler/lowering/ets/arrayLiteralLowering.h"
 #include "compiler/lowering/ets/bigintLowering.h"
 #include "compiler/lowering/ets/boxedTypeLowering.h"
 #include "compiler/lowering/ets/boxingForLocals.h"
 #include "compiler/lowering/ets/capturedVariables.h"
-#include "compiler/lowering/ets/constStringToCharLowering.h"
 #include "compiler/lowering/ets/constantExpressionLowering.h"
+#include "compiler/lowering/ets/convertPrimitiveCastMethodCall.h"
 #include "compiler/lowering/ets/declareOverloadLowering.h"
 #include "compiler/lowering/ets/cfgBuilderPhase.h"
 #include "compiler/lowering/ets/defaultParametersInConstructorLowering.h"
 #include "compiler/lowering/ets/defaultParametersLowering.h"
+#include "compiler/lowering/ets/dynamicImportLowering.h"
 #include "compiler/lowering/ets/enumLowering.h"
 #include "compiler/lowering/ets/enumPostCheckLowering.h"
 #include "compiler/lowering/ets/restTupleLowering.h"
 #include "compiler/lowering/ets/expandBrackets.h"
+#include "compiler/lowering/ets/exportAnonymousConst.h"
 #include "compiler/lowering/ets/expressionLambdaLowering.h"
 #include "compiler/lowering/ets/extensionAccessorLowering.h"
 #include "compiler/lowering/ets/genericBridgesLowering.h"
+#include "compiler/lowering/ets/insertOptionalParametersAnnotation.h"
 #include "compiler/lowering/ets/interfaceObjectLiteralLowering.h"
 #include "compiler/lowering/ets/interfacePropertyDeclarations.h"
 #include "compiler/lowering/ets/lambdaLowering.h"
@@ -47,6 +53,9 @@
 #include "compiler/lowering/ets/partialExportClassGen.h"
 #include "compiler/lowering/ets/promiseVoid.h"
 #include "compiler/lowering/ets/recordLowering.h"
+#include "compiler/lowering/ets/resizableArrayLowering.h"
+#include "compiler/lowering/ets/lateInitialization.h"
+#include "compiler/lowering/ets/restArgsLowering.h"
 #include "compiler/lowering/ets/setJumpTarget.h"
 #include "compiler/lowering/ets/spreadLowering.h"
 #include "compiler/lowering/ets/stringComparison.h"
@@ -54,10 +63,10 @@
 #include "compiler/lowering/ets/stringConstructorLowering.h"
 #include "compiler/lowering/ets/topLevelStmts/topLevelStmts.h"
 #include "compiler/lowering/ets/unionLowering.h"
+#include "compiler/lowering/ets/typeFromLowering.h"
 #include "compiler/lowering/plugin_phase.h"
 #include "compiler/lowering/resolveIdentifiers.h"
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
-#include "ets/ambientLowering.h"
 #include "generated/diagnostic.h"
 #include "lexer/token/sourceLocation.h"
 #include "public/es2panda_lib.h"
@@ -70,10 +79,10 @@ static SetJumpTargetPhase g_setJumpTargetPhase;
 static CFGBuilderPhase g_cfgBuilderPhase;
 static ResolveIdentifiers g_resolveIdentifiers {};
 static AmbientLowering g_ambientLowering;
+static ArrayLiteralLowering g_arrayLiteralLowering {};
 static BigIntLowering g_bigintLowering;
 static StringConstructorLowering g_stringConstructorLowering;
 static ConstantExpressionLowering g_constantExpressionLowering;
-static ConstStringToCharLowering g_constStringToCharLowering;
 static InterfacePropertyDeclarationsPhase g_interfacePropDeclPhase;  // NOLINT(fuchsia-statically-constructed-objects)
 static EnumLoweringPhase g_enumLoweringPhase;
 static EnumPostCheckLoweringPhase g_enumPostCheckLoweringPhase;
@@ -92,6 +101,7 @@ static InterfaceObjectLiteralLowering g_interfaceObjectLiteralLowering;
 static UnionLowering g_unionLowering;
 static OptionalLowering g_optionalLowering;
 static ExpandBracketsPhase g_expandBracketsPhase;
+static ExportAnonymousConstPhase g_exportAnonymousConstPhase;
 static PromiseVoidInferencePhase g_promiseVoidInferencePhase;
 static RecordLowering g_recordLowering;
 static DeclareOverloadLowering g_declareOverloadLowering;
@@ -106,6 +116,12 @@ static PackageImplicitImport g_packageImplicitImport;
 static GenericBridgesPhase g_genericBridgesLowering;
 static BoxedTypeLowering g_boxedTypeLowering;
 static AsyncMethodLowering g_asyncMethodLowering;
+static TypeFromLowering g_typeFromLowering;
+static ResizableArrayConvert g_resizableArrayConvert;
+static RestArgsLowering g_restArgsLowering;
+static LateInitializationConvert g_lateInitializationConvert;
+static InsertOptionalParametersAnnotation g_insertOptionalParametersAnnotation;
+static ConvertPrimitiveCastMethodCall g_convertPrimitiveCastMethodCall;
 static PluginPhase g_pluginsAfterParse {"plugins-after-parse", ES2PANDA_STATE_PARSED, &util::Plugin::AfterParse};
 static PluginPhase g_pluginsAfterBind {"plugins-after-bind", ES2PANDA_STATE_BOUND, &util::Plugin::AfterBind};
 static PluginPhase g_pluginsAfterCheck {"plugins-after-check", ES2PANDA_STATE_CHECKED, &util::Plugin::AfterCheck};
@@ -117,6 +133,7 @@ static InitScopesPhaseAS g_initScopesPhaseAs;
 static InitScopesPhaseTs g_initScopesPhaseTs;
 static InitScopesPhaseJs g_initScopesPhaseJs;
 // NOLINTEND(fuchsia-statically-constructed-objects)
+static DynamicImportLowering g_dynamicImportLowering;
 
 // CC-OFFNXT(huge_method, G.FUN.01-CPP) long initialization list
 std::vector<Phase *> GetETSPhaseList()
@@ -127,8 +144,11 @@ std::vector<Phase *> GetETSPhaseList()
         &g_pluginsAfterParse,
         &g_stringConstantsLowering,
         &g_packageImplicitImport,
+        &g_exportAnonymousConstPhase,
         &g_topLevelStatements,
+        &g_resizableArrayConvert,
         &g_expressionLambdaConstructionPhase,
+        &g_insertOptionalParametersAnnotation,
         &g_defaultParametersInConstructorLowering,
         &g_defaultParametersLowering,
         &g_ambientLowering,
@@ -146,14 +166,18 @@ std::vector<Phase *> GetETSPhaseList()
         &g_cfgBuilderPhase,
         &g_checkerPhase,        // please DO NOT change order of these two phases: checkerPhase and pluginsAfterCheck
         &g_pluginsAfterCheck,   // pluginsAfterCheck has to go right after checkerPhase, nothing should be between them
+        &g_convertPrimitiveCastMethodCall,
+        &g_dynamicImportLowering,
         &g_asyncMethodLowering,
         &g_declareOverloadLowering,
         &g_enumPostCheckLoweringPhase,
         &g_spreadConstructionPhase,
+        &g_restArgsLowering,
+        &g_arrayLiteralLowering,
         &g_bigintLowering,
         &g_opAssignmentLowering,
+        &g_lateInitializationConvert,
         &g_extensionAccessorPhase,
-        &g_constStringToCharLowering,
         &g_boxingForLocals,
         &g_recordLowering,
         &g_boxedTypeLowering,
@@ -162,13 +186,14 @@ std::vector<Phase *> GetETSPhaseList()
         &g_lambdaConversionPhase,
         &g_unionLowering,
         &g_expandBracketsPhase,
-        &g_interfaceObjectLiteralLowering,
+        &g_partialExportClassGen,
+        &g_interfaceObjectLiteralLowering, // this lowering should be put after all classs generated.
         &g_objectLiteralLowering,
         &g_stringConstructorLowering,
         &g_stringComparisonLowering,
-        &g_partialExportClassGen,
         &g_optionalArgumentsLowering, // #22952 could be moved to earlier phase
         &g_genericBridgesLowering,
+        &g_typeFromLowering,
         &g_pluginsAfterLowerings,  // pluginsAfterLowerings has to come at the very end, nothing should go after it
     };
     // NOLINTEND
@@ -280,62 +305,81 @@ bool PhaseForDeclarations::Postcondition(public_lib::Context *ctx, const parser:
     return PostconditionForModule(ctx, program);
 }
 
+// CC-OFFNXT(huge_method, huge_depth) solid logic
 bool PhaseForBodies::Precondition(public_lib::Context *ctx, const parser::Program *program)
 {
-    auto checkExternalPrograms = [this, ctx](const ArenaVector<parser::Program *> &programs) {
-        for (auto *p : programs) {
-            if (!Precondition(ctx, p)) {
-                return false;
+    auto cMode = ctx->config->options->GetCompilationMode();
+
+    auto iterateExternal = [&cMode, this](public_lib::Context *context, const parser::Program *localProgram) {
+        for (auto &[_, extPrograms] : localProgram->ExternalSources()) {
+            (void)_;
+            for (auto *prog : extPrograms) {
+                if (!prog->IsGenAbcForExternal() && cMode == CompilationMode::GEN_ABC_FOR_EXTERNAL_SOURCE) {
+                    continue;
+                }
+
+                if (!Precondition(context, prog)) {
+                    return false;
+                }
             }
         }
         return true;
     };
-
-    if (ctx->config->options->GetCompilationMode() == CompilationMode::GEN_STD_LIB) {
-        for (auto &[_, extPrograms] : program->ExternalSources()) {
-            (void)_;
-            if (!checkExternalPrograms(extPrograms)) {
-                return false;
-            };
+    if (cMode == CompilationMode::GEN_STD_LIB || cMode == CompilationMode::GEN_ABC_FOR_EXTERNAL_SOURCE) {
+        if (!iterateExternal(ctx, program)) {
+            return false;
         }
     }
 
     return PreconditionForModule(ctx, program);
 }
 
+// CC-OFFNXT(huge_method, huge_depth) solid logic
 bool PhaseForBodies::Perform(public_lib::Context *ctx, parser::Program *program)
 {
     bool result = true;
-    if (ctx->config->options->GetCompilationMode() == CompilationMode::GEN_STD_LIB) {
-        for (auto &[_, extPrograms] : program->ExternalSources()) {
+    auto cMode = ctx->config->options->GetCompilationMode();
+    auto iterateExternal = [&result, &cMode, this](public_lib::Context *context, parser::Program *localProgram) {
+        for (auto &[_, extPrograms] : localProgram->ExternalSources()) {
             (void)_;
             for (auto *extProg : extPrograms) {
-                result &= Perform(ctx, extProg);
+                if (!extProg->IsGenAbcForExternal() && cMode == CompilationMode::GEN_ABC_FOR_EXTERNAL_SOURCE) {
+                    continue;
+                }
+                result &= Perform(context, extProg);
             }
         }
+    };
+    if (cMode == CompilationMode::GEN_STD_LIB || cMode == CompilationMode::GEN_ABC_FOR_EXTERNAL_SOURCE) {
+        iterateExternal(ctx, program);
     }
 
     result &= PerformForModule(ctx, program);
     return result;
 }
 
+// CC-OFFNXT(huge_method, huge_depth) solid logic
 bool PhaseForBodies::Postcondition(public_lib::Context *ctx, const parser::Program *program)
 {
-    auto checkExternalPrograms = [this, ctx](const ArenaVector<parser::Program *> &programs) {
-        for (auto *p : programs) {
-            if (!Postcondition(ctx, p)) {
-                return false;
+    auto cMode = ctx->config->options->GetCompilationMode();
+    auto iterateExternal = [&cMode, this](public_lib::Context *context, const parser::Program *localProgram) {
+        for (auto &[_, extPrograms] : localProgram->ExternalSources()) {
+            (void)_;
+            for (auto *prog : extPrograms) {
+                if (!prog->IsGenAbcForExternal() && cMode == CompilationMode::GEN_ABC_FOR_EXTERNAL_SOURCE) {
+                    continue;
+                }
+
+                if (!Postcondition(context, prog)) {
+                    return false;
+                }
             }
         }
         return true;
     };
-
-    if (ctx->config->options->GetCompilationMode() == CompilationMode::GEN_STD_LIB) {
-        for (auto &[_, extPrograms] : program->ExternalSources()) {
-            (void)_;
-            if (!checkExternalPrograms(extPrograms)) {
-                return false;
-            };
+    if (cMode == CompilationMode::GEN_STD_LIB || cMode == CompilationMode::GEN_ABC_FOR_EXTERNAL_SOURCE) {
+        if (!iterateExternal(ctx, program)) {
+            return false;
         }
     }
 

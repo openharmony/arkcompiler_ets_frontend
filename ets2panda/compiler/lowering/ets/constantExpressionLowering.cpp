@@ -21,8 +21,6 @@
 
 namespace ark::es2panda::compiler {
 
-using AstNodePtr = ir::AstNode *;
-
 void ConstantExpressionLowering::LogError(const diagnostic::DiagnosticKind &diagnostic,
                                           const util::DiagnosticMessageParams &diagnosticParams,
                                           const lexer::SourcePosition &pos) const
@@ -348,6 +346,7 @@ ir::AstNode *ConstantExpressionLowering::FoldBinaryBooleanConstant(ir::BinaryExp
     }
 
     auto resNode = util::NodeAllocator::Alloc<ir::BooleanLiteral>(context_->allocator, result);
+    ES2PANDA_ASSERT(resNode);
     resNode->SetParent(expr->Parent());
     resNode->SetRange(expr->Range());
     return resNode;
@@ -547,6 +546,7 @@ ir::AstNode *ConstantExpressionLowering::FoldBinaryStringConstant(ir::BinaryExpr
     auto const rhs = expr->Right()->AsLiteral();
     auto const resStr = util::UString(lhs->ToString() + rhs->ToString(), context_->allocator).View();
     auto resNode = util::NodeAllocator::Alloc<ir::StringLiteral>(context_->allocator, resStr);
+    ES2PANDA_ASSERT(resNode);
     resNode->SetParent(expr->Parent());
     resNode->SetRange(expr->Range());
     return resNode;
@@ -760,6 +760,7 @@ ir::AstNode *ConstantExpressionLowering::FoldTSAsExpression(ir::TSAsExpression *
 ir::AstNode *ConstantExpressionLowering::FoldMultilineString(ir::TemplateLiteral *expr)
 {
     auto *result = util::NodeAllocator::Alloc<ir::StringLiteral>(context_->allocator, expr->GetMultilineString());
+    ES2PANDA_ASSERT(result);
     result->SetParent(expr->Parent());
     result->SetRange(expr->Range());
     return result;
@@ -836,9 +837,11 @@ varbinder::Variable *ConstantExpressionLowering::FindIdentifier(ir::Identifier *
 {
     auto localCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(varbinder_, NearestScope(ident));
     auto option = varbinder::ResolveBindingOptions::ALL_VARIABLES;
-    auto *resolved = localCtx.GetScope()->FindInFunctionScope(ident->Name(), option).variable;
+    auto localScope = localCtx.GetScope();
+    ES2PANDA_ASSERT(localScope != nullptr);
+    auto *resolved = localScope->FindInFunctionScope(ident->Name(), option).variable;
     if (resolved == nullptr) {
-        resolved = localCtx.GetScope()->FindInGlobal(ident->Name(), option).variable;
+        resolved = localScope->FindInGlobal(ident->Name(), option).variable;
     }
     return resolved;
 }
@@ -892,6 +895,13 @@ ir::AstNode *ConstantExpressionLowering::UnfoldConstIdentifiers(ir::AstNode *con
     return constantNode;
 }
 
+static bool IsPotentialConstant(const ir::AstNodeType type)
+{
+    return type == ir::AstNodeType::TEMPLATE_LITERAL || type == ir::AstNodeType::TS_AS_EXPRESSION ||
+           type == ir::AstNodeType::UNARY_EXPRESSION || type == ir::AstNodeType::BINARY_EXPRESSION ||
+           type == ir::AstNodeType::CONDITIONAL_EXPRESSION || type == ir::AstNodeType::IDENTIFIER;
+}
+
 ir::AstNode *ConstantExpressionLowering::FoldConstant(ir::AstNode *constantNode)
 {
     ir::NodeTransformer handleFoldConstant = [this](ir::AstNode *const node) {
@@ -936,23 +946,97 @@ ir::AstNode *ConstantExpressionLowering::FoldConstant(ir::AstNode *constantNode)
     return constantNode;
 }
 
+// Note: memberExpression can be constant when it is enum property access, this check will be enabled after Issue23082.
+// for package, we need to check whether its every immediate-initializers is const expression.
+void ConstantExpressionLowering::IsInitByConstant(ir::AstNode *node)
+{
+    ir::AstNode *initTobeChecked = nullptr;
+    if (node->IsExpressionStatement() && node->AsExpressionStatement()->GetExpression()->IsAssignmentExpression()) {
+        auto assignExpr = node->AsExpressionStatement()->GetExpression()->AsAssignmentExpression();
+        initTobeChecked = assignExpr->Right();
+        if (initTobeChecked->IsExpression() && IsSupportedLiteral(initTobeChecked->AsExpression())) {
+            return;
+        }
+
+        if (!IsPotentialConstant(initTobeChecked->Type())) {
+            LogError(diagnostic::INVALID_INIT_IN_PACKAGE, {}, initTobeChecked->Start());
+            return;
+        }
+        assignExpr->SetRight(FoldConstant(UnfoldConstIdentifiers(initTobeChecked))->AsExpression());
+    }
+
+    if (node->IsClassProperty()) {
+        auto classProp = node->AsClassProperty();
+        initTobeChecked = classProp->Value();
+        if (initTobeChecked == nullptr) {
+            return;
+        }
+
+        if (initTobeChecked->IsExpression() && IsSupportedLiteral(initTobeChecked->AsExpression())) {
+            return;
+        }
+
+        if (!IsPotentialConstant(initTobeChecked->Type())) {
+            LogError(diagnostic::INVALID_INIT_IN_PACKAGE, {}, initTobeChecked->Start());
+            return;
+        }
+        classProp->SetValue(FoldConstant(UnfoldConstIdentifiers(initTobeChecked))->AsExpression());
+    }
+}
+
+void ConstantExpressionLowering::TryFoldInitializerOfPackage(ir::ClassDefinition *globalClass)
+{
+    for (auto element : globalClass->Body()) {
+        if (element->IsMethodDefinition()) {
+            auto const *classMethod = element->AsMethodDefinition();
+            if (!classMethod->Key()->IsIdentifier() ||
+                !classMethod->Key()->AsIdentifier()->Name().Is(compiler::Signatures::INIT_METHOD)) {
+                continue;
+            }
+
+            auto const *methodBody = classMethod->Value()->AsFunctionExpression()->Function()->Body();
+            if (methodBody == nullptr || !methodBody->IsBlockStatement()) {
+                continue;
+            }
+            auto const &initStatements = methodBody->AsBlockStatement()->Statements();
+            std::for_each(initStatements.begin(), initStatements.end(),
+                          [this](ir::AstNode *node) { IsInitByConstant(node); });
+        }
+
+        if (element->IsClassProperty() && element->AsClassProperty()->IsConst() &&
+            !element->AsClassProperty()->NeedInitInStaticBlock()) {
+            IsInitByConstant(element);
+        }
+    }
+}
+
 bool ConstantExpressionLowering::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
+    if (program->GetFlag(parser::ProgramFlags::AST_CONSTANT_EXPRESSION_LOWERED)) {
+        return true;
+    }
+
     context_ = ctx;
     program_ = program;
     varbinder_ = ctx->parserProgram->VarBinder()->AsETSBinder();
     program->Ast()->TransformChildrenRecursively(
-        [this](ir::AstNode *const node) -> AstNodePtr {
+        [this](checker::AstNodePtr const node) -> checker::AstNodePtr {
             if (node->IsAnnotationDeclaration() || node->IsAnnotationUsage()) {
                 return FoldConstant(UnfoldConstIdentifiers(node));
             }
             if (node->IsTSEnumDeclaration()) {
                 return FoldConstant(UnFoldEnumMemberExpression(UnfoldConstIdentifiers(node)));
             }
+
+            // Note: Package need to check whether its immediate initializer is const expression.
+            if (this->program_->IsPackage() && node->IsClassDefinition() && node->AsClassDefinition()->IsGlobal()) {
+                TryFoldInitializerOfPackage(node->AsClassDefinition());
+            }
             return node;
         },
         Name());
 
+    program->SetFlag(parser::ProgramFlags::AST_CONSTANT_EXPRESSION_LOWERED);
     return true;
 }
 

@@ -19,4 +19,3 @@
 let a = MyAnno.a
 
 /* @@? 19:9 Error TypeError: Annotation missing '@' symbol before annotation name. */
-/* @@? 19:9 Error TypeError: Annotation missing '@' symbol before annotation name. */

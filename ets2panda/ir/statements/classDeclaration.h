@@ -77,7 +77,12 @@ protected:
     {
     }
 
+    ClassDeclaration *Construct(ArenaAllocator *allocator) override;
+
+    void CopyTo(AstNode *other) const override;
+
 private:
+    friend class SizeOfNodeTest;
     ClassDefinition *def_;
     ArenaVector<Decorator *> decorators_;
 };

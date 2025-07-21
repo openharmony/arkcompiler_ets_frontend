@@ -16,6 +16,7 @@
 #include "tsInterfaceDeclaration.h"
 
 #include "util/es2pandaMacros.h"
+#include "utils/arena_containers.h"
 #include "varbinder/declaration.h"
 #include "varbinder/variable.h"
 #include "checker/TSchecker.h"
@@ -30,6 +31,7 @@
 #include "ir/ts/tsInterfaceHeritage.h"
 #include "ir/ts/tsTypeParameter.h"
 #include "ir/ts/tsTypeParameterDeclaration.h"
+#include "util/language.h"
 
 namespace ark::es2panda::ir {
 void TSInterfaceDeclaration::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
@@ -107,15 +109,43 @@ void TSInterfaceDeclaration::Dump(ir::AstDumper *dumper) const
                  {"typeParameters", AstDumper::Optional(typeParams_)}});
 }
 
+bool TSInterfaceDeclaration::RegisterUnexportedForDeclGen(ir::SrcDumper *dumper) const
+{
+    if (!dumper->IsDeclgen()) {
+        return false;
+    }
+
+    if (dumper->IsIndirectDepPhase()) {
+        return false;
+    }
+
+    if (id_->Parent()->IsDefaultExported() || id_->Parent()->IsExported()) {
+        return false;
+    }
+
+    auto name = id_->Name().Mutf8();
+    dumper->AddNode(name, this);
+    return true;
+}
+
 void TSInterfaceDeclaration::Dump(ir::SrcDumper *dumper) const
 {
     ES2PANDA_ASSERT(id_);
-
+    if (!id_->Parent()->IsDefaultExported() && !id_->Parent()->IsExported() && dumper->IsDeclgen() &&
+        !dumper->IsIndirectDepPhase()) {
+        auto name = id_->Name().Mutf8();
+        dumper->AddNode(name, this);
+        return;
+    }
     for (auto *anno : Annotations()) {
         anno->Dump(dumper);
     }
-
-    if (IsDeclare()) {
+    if (id_->Parent()->IsExported()) {
+        dumper->Add("export ");
+    } else if (id_->Parent()->IsDefaultExported()) {
+        dumper->Add("export default ");
+    }
+    if (IsDeclare() || dumper->IsDeclgen()) {
         dumper->Add("declare ");
     }
     dumper->Add("interface ");
@@ -167,4 +197,31 @@ checker::VerifiedType TSInterfaceDeclaration::Check(checker::ETSChecker *checker
 {
     return {this, checker->GetAnalyzer()->Check(this)};
 }
+
+TSInterfaceDeclaration *TSInterfaceDeclaration::Construct(ArenaAllocator *allocator)
+{
+    ArenaVector<TSInterfaceHeritage *> extends(allocator->Adapter());
+    return allocator->New<TSInterfaceDeclaration>(
+        allocator, std::move(extends), ConstructorData {nullptr, nullptr, nullptr, false, false, Language::Id::COUNT});
+}
+
+void TSInterfaceDeclaration::CopyTo(AstNode *other) const
+{
+    auto otherImpl = other->AsTSInterfaceDeclaration();
+
+    otherImpl->decorators_ = decorators_;
+    otherImpl->scope_ = scope_;
+    otherImpl->id_ = id_;
+    otherImpl->typeParams_ = typeParams_;
+    otherImpl->body_ = body_;
+    otherImpl->extends_ = extends_;
+    otherImpl->internalName_ = internalName_;
+    otherImpl->isStatic_ = isStatic_;
+    otherImpl->isExternal_ = isExternal_;
+    otherImpl->lang_ = lang_;
+    otherImpl->anonClass_ = anonClass_;
+
+    JsDocAllowed<AnnotationAllowed<TypedStatement>>::CopyTo(other);
+}
+
 }  // namespace ark::es2panda::ir

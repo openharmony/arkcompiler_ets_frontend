@@ -13,12 +13,9 @@
  * limitations under the License.
  */
 
-let a: readonly int [/* @@ E1 */""/* @@ E2 */];
+let a: readonly int [""];
 
-/* @@@ E1 Error SyntaxError: Unexpected token, expected ']'. */
-/* @@@ E1 Error SyntaxError: Invalid Type. */
-/* @@@ E1 Error SyntaxError: Unexpected token ']'. */
-/* @@@ E1 Error SyntaxError: Unexpected token ']'. */
-/* @@@ E1 Error SyntaxError: Unexpected token ']'. */
-/* @@@ E2 Error SyntaxError: Unexpected token ']'. */
-/* @@@ E2 Error SyntaxError: Unexpected token ']'. */
+/* @@? 16:22 Error SyntaxError: Unexpected token, expected ']'. */
+/* @@? 16:22 Error SyntaxError: 'readonly' type modifier is only permitted on resizable array and tuple types. */
+/* @@? 16:22 Error SyntaxError: Unexpected token ']'. */
+/* @@? 16:24 Error SyntaxError: Unexpected token ']'. */

@@ -34,17 +34,53 @@ ir::Expression *ObjectIndexLowering::ProcessIndexSetAccess(parser::ETSParser *pa
 {
     //  Note! We assume that parser and checker phase nave been already passed correctly, thus the class has
     //  required accessible index method[s] and all the types are properly resolved.
-    static std::string const CALL_EXPRESSION =
-        std::string {"@@E1."} + std::string {compiler::Signatures::SET_INDEX_METHOD} + "(@@E2, @@E3)";
 
-    // Parse ArkTS code string and create and process corresponding AST node(s)
+    auto indexSymbol = Gensym(checker->Allocator());
+    assignmentExpression->Right()->SetBoxingUnboxingFlags(ir::BoxingUnboxingFlags::NONE);
     auto *const memberExpression = assignmentExpression->Left()->AsMemberExpression();
-    auto *const loweringResult = parser->CreateFormattedExpression(
-        CALL_EXPRESSION, memberExpression->Object(), memberExpression->Property(), assignmentExpression->Right());
+    ir::Expression *loweringResult = nullptr;
+    ir::AstNode *setter = nullptr;
+    // Generate call to $_get to handle the chained assignment expression
+    if (assignmentExpression->Parent()->IsExpression() || assignmentExpression->Parent()->IsVariableDeclarator()) {
+        ArenaVector<ir::Statement *> blockStatements(checker->Allocator()->Adapter());
+        auto objectSymbol = Gensym(checker->Allocator());
+        blockStatements.push_back(
+            parser->CreateFormattedStatement("let @@I1 = @@E2", objectSymbol, memberExpression->Object()));
+        blockStatements.push_back(
+            parser->CreateFormattedStatement("let @@I1 = @@E2", indexSymbol, memberExpression->Property()));
+        static std::string const CALL_EXPRESSION =
+            std::string {"@@E1."} + std::string {compiler::Signatures::SET_INDEX_METHOD} + "(@@E2, @@E3)";
+        // Parse ArkTS code string and create and process corresponding AST node(s)
+        auto *const setStmt = parser->CreateFormattedStatement(
+            CALL_EXPRESSION, objectSymbol->Clone(checker->Allocator(), nullptr),
+            indexSymbol->Clone(checker->Allocator(), nullptr), assignmentExpression->Right());
+        setter = setStmt;
+        blockStatements.push_back(setStmt);
+        static std::string const GET_EXPRESSION =
+            std::string {"@@E1."} + std::string {compiler::Signatures::GET_INDEX_METHOD} + "(@@E2)";
+        blockStatements.push_back(parser->CreateFormattedStatement(GET_EXPRESSION,
+                                                                   objectSymbol->Clone(checker->Allocator(), nullptr),
+                                                                   indexSymbol->Clone(checker->Allocator(), nullptr)));
+        loweringResult =
+            util::NodeAllocator::ForceSetParent<ir::BlockExpression>(checker->Allocator(), std::move(blockStatements));
+    } else {
+        static std::string const CALL_EXPRESSION =
+            std::string {"@@E1."} + std::string {compiler::Signatures::SET_INDEX_METHOD} + "(@@E2, @@E3)";
+        // Parse ArkTS code string and create and process corresponding AST node(s)
+        loweringResult = parser->CreateFormattedExpression(CALL_EXPRESSION, memberExpression->Object(),
+                                                           memberExpression->Property(), assignmentExpression->Right());
+        setter = loweringResult;
+    }
+    ES2PANDA_ASSERT(loweringResult != nullptr);
     loweringResult->SetParent(assignmentExpression->Parent());
     loweringResult->SetRange(assignmentExpression->Range());
-
+    loweringResult->SetBoxingUnboxingFlags(assignmentExpression->GetBoxingUnboxingFlags());
+    setter->AddModifier(ir::ModifierFlags::ARRAY_SETTER);
+    auto scope = varbinder::LexicalScope<varbinder::Scope>::Enter(checker->VarBinder(),
+                                                                  NearestScope(assignmentExpression->Parent()));
     CheckLoweredNode(checker->VarBinder()->AsETSBinder(), checker, loweringResult);
+    loweringResult->SetParent(assignmentExpression->Parent());
+    loweringResult->AddModifier(ir::ModifierFlags::SETTER);
     return loweringResult;
 }
 
@@ -59,6 +95,7 @@ ir::Expression *ObjectIndexLowering::ProcessIndexGetAccess(parser::ETSParser *pa
     // Parse ArkTS code string and create and process corresponding AST node(s)
     auto *const loweringResult =
         parser->CreateFormattedExpression(CALL_EXPRESSION, memberExpression->Object(), memberExpression->Property());
+    loweringResult->AddModifier(ir::ModifierFlags::GETTER);
     loweringResult->SetParent(memberExpression->Parent());
     loweringResult->SetRange(memberExpression->Range());
 

@@ -19,6 +19,7 @@
 #include "checker/ETSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
+#include "utils/arena_containers.h"
 
 namespace ark::es2panda::ir {
 void VariableDeclaration::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
@@ -129,7 +130,8 @@ void VariableDeclaration::Dump(ir::SrcDumper *dumper) const
 
 VariableDeclaration::VariableDeclaration([[maybe_unused]] Tag const tag, VariableDeclaration const &other,
                                          ArenaAllocator *const allocator)
-    : AnnotationAllowed<Statement>(static_cast<AnnotationAllowed<Statement> const &>(other)),
+    : JsDocAllowed<AnnotationAllowed<Statement>>(static_cast<JsDocAllowed<AnnotationAllowed<Statement>> const &>(other),
+                                                 allocator),
       kind_(other.kind_),
       decorators_(allocator->Adapter()),
       declarators_(allocator->Adapter())
@@ -140,7 +142,9 @@ VariableDeclaration::VariableDeclaration([[maybe_unused]] Tag const tag, Variabl
     }
 
     for (auto const &d : other.declarators_) {
-        declarators_.emplace_back(d->Clone(allocator, nullptr)->AsVariableDeclarator());
+        auto *dClone = d->Clone(allocator, nullptr);
+        ES2PANDA_ASSERT(dClone != nullptr);
+        declarators_.emplace_back(dClone->AsVariableDeclarator());
         declarators_.back()->SetParent(this);
     }
 }
@@ -148,6 +152,7 @@ VariableDeclaration::VariableDeclaration([[maybe_unused]] Tag const tag, Variabl
 VariableDeclaration *VariableDeclaration::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     auto *const clone = allocator->New<VariableDeclaration>(Tag {}, *this, allocator);
+    ES2PANDA_ASSERT(clone != nullptr);
     if (parent != nullptr) {
         clone->SetParent(parent);
     }
@@ -174,4 +179,22 @@ checker::VerifiedType VariableDeclaration::Check([[maybe_unused]] checker::ETSCh
 {
     return {this, checker->GetAnalyzer()->Check(this)};
 }
+
+VariableDeclaration *VariableDeclaration::Construct(ArenaAllocator *allocator)
+{
+    ArenaVector<VariableDeclarator *> declarators(allocator->Adapter());
+    return allocator->New<VariableDeclaration>(VariableDeclarationKind::LET, allocator, std::move(declarators));
+}
+
+void VariableDeclaration::CopyTo(AstNode *other) const
+{
+    auto otherImpl = other->AsVariableDeclaration();
+
+    otherImpl->kind_ = kind_;
+    otherImpl->decorators_ = decorators_;
+    otherImpl->declarators_ = declarators_;
+
+    JsDocAllowed<AnnotationAllowed<Statement>>::CopyTo(other);
+}
+
 }  // namespace ark::es2panda::ir

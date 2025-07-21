@@ -67,12 +67,16 @@ export class FileUtils {
         let result: string[] = [];
         for (const filePath of fileList) {
             if (!ignoreGlob?.matchGlob(filePath) && fileGlob.matchGlob(filePath)) {
-                // 读取file文件内容首行，若为屏蔽行则跳过
-                const firstLineText = await this.readLinesFromFile(filePath, 1);
-                if (firstLineText.includes(DisableText.FILE_DISABLE_TEXT)) {
-                    continue;
+                try {
+                    // 读取file文件内容首行，若为屏蔽行则跳过
+                    const firstLineText = await this.readLinesFromFile(filePath, 1);
+                    if (firstLineText.includes(DisableText.FILE_DISABLE_TEXT)) {
+                        continue;
+                    }
+                    result.push(filePath);
+                } catch (e) {
+                    logger.error(e);
                 }
-                result.push(filePath);
             }
         }
         return result;
@@ -232,7 +236,7 @@ export class FileUtils {
     }
 
     private static shouldSkipFile(fileName: string): boolean {
-        return ['oh_modules', 'node_modules', 'hvigorfile.ts', 'ohosTest'].includes(fileName);
+        return ['oh_modules', 'node_modules', 'hvigorfile.ts', 'hvigorfile.js', 'hvigor-wrapper.js', 'ohosTest'].includes(fileName);
     }
 
     private static shouldAddFile(filePath: string, exts: string[]): boolean {

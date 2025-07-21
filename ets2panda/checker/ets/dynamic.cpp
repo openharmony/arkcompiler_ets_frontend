@@ -50,6 +50,7 @@ namespace ark::es2panda::checker {
 void ProcessCheckerNode(ETSChecker *checker, ir::AstNode *node)
 {
     auto scope = compiler::NearestScope(node);
+    ES2PANDA_ASSERT(scope != nullptr);
     if (scope->IsGlobalScope()) {
         // NOTE(aleksisch): All classes are contained in ETSGlobal class scope (not just Global scope),
         // however it's parent is ETSModule. It should be fixed
@@ -64,6 +65,7 @@ void ProcessCheckerNode(ETSChecker *checker, ir::AstNode *node)
         // however right now checker do it when called on ClassDefinition
         auto method = node->AsMethodDefinition();
         auto func = method->Value()->AsFunctionExpression()->Function();
+        ES2PANDA_ASSERT(method->Id() != nullptr);
         func->Id()->SetVariable(method->Id()->Variable());
     }
     ScopeContext checkerScope(checker, scope);
@@ -73,6 +75,7 @@ void ProcessCheckerNode(ETSChecker *checker, ir::AstNode *node)
 void ProcessScopesNode(ETSChecker *checker, ir::AstNode *node)
 {
     auto *scope = compiler::NearestScope(node);
+    ES2PANDA_ASSERT(scope != nullptr);
     if (scope->IsGlobalScope()) {
         // NOTE(aleksisch): All classes are contained in ETSGlobal scope,
         // however it's parent is ETSModule (not ETSGlobal). It should be fixed
@@ -85,25 +88,25 @@ void ProcessScopesNode(ETSChecker *checker, ir::AstNode *node)
 ir::ETSParameterExpression *ETSChecker::AddParam(util::StringView name, ir::TypeNode *type)
 {
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *paramIdent = AllocNode<ir::Identifier>(name, Allocator());
+    auto *paramIdent = ProgramAllocNode<ir::Identifier>(name, ProgramAllocator());
     if (type != nullptr) {
         paramIdent->SetTsTypeAnnotation(type);
         type->SetParent(paramIdent);
     }
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    return AllocNode<ir::ETSParameterExpression>(paramIdent, false, Allocator());
+    return ProgramAllocNode<ir::ETSParameterExpression>(paramIdent, false, ProgramAllocator());
 }
 
 template <typename T>
 ir::MethodDefinition *ETSChecker::CreateDynamicCallIntrinsic(ir::Expression *callee, const ArenaVector<T *> &arguments,
                                                              Language lang)
 {
-    ArenaVector<ir::Expression *> params(Allocator()->Adapter());
+    ArenaVector<ir::Expression *> params(ProgramAllocator()->Adapter());
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto dynamicTypeNode = AllocNode<ir::OpaqueTypeNode>(GlobalBuiltinDynamicType(lang), Allocator());
+    auto dynamicTypeNode = ProgramAllocNode<ir::OpaqueTypeNode>(GlobalBuiltinDynamicType(lang), ProgramAllocator());
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto intTypeNode = AllocNode<ir::ETSPrimitiveType>(ir::PrimitiveType::INT, Allocator());
+    auto intTypeNode = ProgramAllocNode<ir::ETSPrimitiveType>(ir::PrimitiveType::INT, ProgramAllocator());
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *objParam = AddParam("obj", dynamicTypeNode);
@@ -115,46 +118,47 @@ ir::MethodDefinition *ETSChecker::CreateDynamicCallIntrinsic(ir::Expression *cal
         param2 = AddParam("qname_start", intTypeNode);
         params.push_back(param2);
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        param2 = AddParam("qname_len", intTypeNode->Clone(Allocator(), nullptr));
+        param2 = AddParam("qname_len", intTypeNode->Clone(ProgramAllocator(), nullptr));
     } else {
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        param2 = AddParam("this", dynamicTypeNode->Clone(Allocator(), nullptr));
+        param2 = AddParam("this", dynamicTypeNode->Clone(ProgramAllocator(), nullptr));
     }
 
     params.push_back(param2);
 
     for (size_t i = 0; i < arguments.size(); i++) {
-        util::UString paramName("p" + std::to_string(i), Allocator());
+        util::UString paramName("p" + std::to_string(i), ProgramAllocator());
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         auto paramType = arguments[i]->TsType()->IsLambdaObject()
                              // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-                             ? dynamicTypeNode->Clone(Allocator(), nullptr)
+                             ? dynamicTypeNode->Clone(ProgramAllocator(), nullptr)
                              // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-                             : AllocNode<ir::OpaqueTypeNode>(arguments[i]->TsType(), Allocator());
+                             : ProgramAllocNode<ir::OpaqueTypeNode>(arguments[i]->TsType(), ProgramAllocator());
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         params.emplace_back(AddParam(paramName.View(), paramType));
     }
 
     auto funcSignature =
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        ir::FunctionSignature(nullptr, std::move(params), dynamicTypeNode->Clone(Allocator(), nullptr));
+        ir::FunctionSignature(nullptr, std::move(params), dynamicTypeNode->Clone(ProgramAllocator(), nullptr));
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *func = AllocNode<ir::ScriptFunction>(
-        Allocator(), ir::ScriptFunction::ScriptFunctionData {nullptr, std::move(funcSignature),
-                                                             ir::ScriptFunctionFlags::METHOD, ir::ModifierFlags::NONE});
+    auto *func = ProgramAllocNode<ir::ScriptFunction>(
+        ProgramAllocator(),
+        ir::ScriptFunction::ScriptFunctionData {nullptr, std::move(funcSignature), ir::ScriptFunctionFlags::METHOD,
+                                                ir::ModifierFlags::NONE});
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *name = AllocNode<ir::Identifier>(compiler::Signatures::STATIC_INVOKE_METHOD, Allocator());
+    auto *name = ProgramAllocNode<ir::Identifier>(compiler::Signatures::STATIC_INVOKE_METHOD, ProgramAllocator());
     func->SetIdent(name);
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *funcExpr = AllocNode<ir::FunctionExpression>(func);
+    auto *funcExpr = ProgramAllocNode<ir::FunctionExpression>(func);
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *method = AllocNode<ir::MethodDefinition>(
+    auto *method = ProgramAllocNode<ir::MethodDefinition>(
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        ir::MethodDefinitionKind::METHOD, func->Id()->Clone(Allocator(), nullptr), funcExpr,
-        ir::ModifierFlags::PUBLIC | ir::ModifierFlags::NATIVE | ir::ModifierFlags::STATIC, Allocator(), false);
+        ir::MethodDefinitionKind::METHOD, func->Id()->Clone(ProgramAllocator(), nullptr), funcExpr,
+        ir::ModifierFlags::PUBLIC | ir::ModifierFlags::NATIVE | ir::ModifierFlags::STATIC, ProgramAllocator(), false);
     return method;
 }
 
@@ -185,7 +189,7 @@ Signature *ETSChecker::ResolveDynamicCallExpression(ir::Expression *callee, cons
 
     auto mapIt = dynamicIntrinsics.find(lang);
     if (mapIt == dynamicIntrinsics.cend()) {
-        std::tie(mapIt, std::ignore) = dynamicIntrinsics.emplace(lang, Allocator()->Adapter());
+        std::tie(mapIt, std::ignore) = dynamicIntrinsics.emplace(lang, ProgramAllocator()->Adapter());
     }
 
     auto &map = mapIt->second;
@@ -208,7 +212,7 @@ Signature *ETSChecker::ResolveDynamicCallExpression(ir::Expression *callee, cons
         auto klass = GetDynamicClass(lang, isConstruct);
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         auto *method = CreateDynamicCallIntrinsic(callee, arguments, lang);
-        auto props = ArenaVector<ir::AstNode *>(Allocator()->Adapter());
+        auto props = ArenaVector<ir::AstNode *>(ProgramAllocator()->Adapter());
         props.emplace_back(method);
         klass->Definition()->AddProperties(std::move(props));
 
@@ -221,7 +225,7 @@ Signature *ETSChecker::ResolveDynamicCallExpression(ir::Expression *callee, cons
         }
         method->Function()->Signature()->SetReturnType(GlobalBuiltinDynamicType(lang));
 
-        map.emplace(util::UString(key, Allocator()).View(), method->Function());
+        map.emplace(util::UString(key, ProgramAllocator()).View(), method->Function());
         return method->Function()->Signature();
     }
 
@@ -237,28 +241,29 @@ template Signature *ETSChecker::ResolveDynamicCallExpression<varbinder::LocalVar
 std::pair<ir::ScriptFunction *, ir::Identifier *> ETSChecker::CreateStaticScriptFunction(
     ClassInitializerBuilder const &builder)
 {
-    ArenaVector<ir::Statement *> statements(Allocator()->Adapter());
-    ArenaVector<ir::Expression *> params(Allocator()->Adapter());
+    ArenaVector<ir::Statement *> statements(ProgramAllocator()->Adapter());
+    ArenaVector<ir::Expression *> params(ProgramAllocator()->Adapter());
 
     ir::ScriptFunction *func;
     ir::Identifier *id;
 
     builder(&statements, nullptr);
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *body = AllocNode<ir::BlockStatement>(Allocator(), std::move(statements));
+    auto *body = ProgramAllocNode<ir::BlockStatement>(ProgramAllocator(), std::move(statements));
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    id = AllocNode<ir::Identifier>(compiler::Signatures::CCTOR, Allocator());
+    id = ProgramAllocNode<ir::Identifier>(compiler::Signatures::CCTOR, ProgramAllocator());
     auto signature = ir::FunctionSignature(nullptr, std::move(params), nullptr);
     // clang-format off
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    func = AllocNode<ir::ScriptFunction>(
-        Allocator(), ir::ScriptFunction::ScriptFunctionData {
+    func = ProgramAllocNode<ir::ScriptFunction>(
+        ProgramAllocator(), ir::ScriptFunction::ScriptFunctionData {
                         body,
                         std::move(signature),
                         ir::ScriptFunctionFlags::STATIC_BLOCK | ir::ScriptFunctionFlags::EXPRESSION,
                         ir::ModifierFlags::STATIC,
                      });
     // clang-format on
+    ES2PANDA_ASSERT(func != nullptr);
     func->SetIdent(id);
 
     return std::make_pair(func, id);
@@ -267,24 +272,25 @@ std::pair<ir::ScriptFunction *, ir::Identifier *> ETSChecker::CreateStaticScript
 std::pair<ir::ScriptFunction *, ir::Identifier *> ETSChecker::CreateScriptFunction(
     ClassInitializerBuilder const &builder)
 {
-    ArenaVector<ir::Statement *> statements(Allocator()->Adapter());
-    ArenaVector<ir::Expression *> params(Allocator()->Adapter());
+    ArenaVector<ir::Statement *> statements(ProgramAllocator()->Adapter());
+    ArenaVector<ir::Expression *> params(ProgramAllocator()->Adapter());
 
     ir::ScriptFunction *func;
     ir::Identifier *id;
 
     builder(&statements, &params);
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *body = AllocNode<ir::BlockStatement>(Allocator(), std::move(statements));
+    auto *body = ProgramAllocNode<ir::BlockStatement>(ProgramAllocator(), std::move(statements));
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    id = AllocNode<ir::Identifier>(compiler::Signatures::CTOR, Allocator());
+    id = ProgramAllocNode<ir::Identifier>(compiler::Signatures::CTOR, ProgramAllocator());
     auto funcSignature = ir::FunctionSignature(nullptr, std::move(params), nullptr);
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    func = AllocNode<ir::ScriptFunction>(Allocator(),
-                                         ir::ScriptFunction::ScriptFunctionData {
-                                             body, std::move(funcSignature),
-                                             ir::ScriptFunctionFlags::CONSTRUCTOR | ir::ScriptFunctionFlags::EXPRESSION,
-                                             ir::ModifierFlags::PUBLIC});
+    func = ProgramAllocNode<ir::ScriptFunction>(
+        ProgramAllocator(), ir::ScriptFunction::ScriptFunctionData {body, std::move(funcSignature),
+                                                                    ir::ScriptFunctionFlags::CONSTRUCTOR |
+                                                                        ir::ScriptFunctionFlags::EXPRESSION,
+                                                                    ir::ModifierFlags::PUBLIC});
+    ES2PANDA_ASSERT(func != nullptr);
     func->SetIdent(id);
 
     return std::make_pair(func, id);
@@ -297,10 +303,11 @@ ir::ClassStaticBlock *ETSChecker::CreateClassStaticInitializer(const ClassInitia
     auto [func, id] = CreateStaticScriptFunction(builder);
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *funcExpr = AllocNode<ir::FunctionExpression>(func);
+    auto *funcExpr = ProgramAllocNode<ir::FunctionExpression>(func);
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *staticBlock = AllocNode<ir::ClassStaticBlock>(funcExpr, Allocator());
+    auto *staticBlock = ProgramAllocNode<ir::ClassStaticBlock>(funcExpr, ProgramAllocator());
+    ES2PANDA_ASSERT(staticBlock != nullptr);
     staticBlock->AddModifier(ir::ModifierFlags::STATIC);
 
     return staticBlock;
@@ -313,59 +320,67 @@ ir::MethodDefinition *ETSChecker::CreateClassInstanceInitializer(const ClassInit
     auto [func, id] = CreateScriptFunction(builder);
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *funcExpr = AllocNode<ir::FunctionExpression>(func);
+    auto *funcExpr = ProgramAllocNode<ir::FunctionExpression>(func);
 
     auto *ctor =
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::CONSTRUCTOR, id->Clone(Allocator(), nullptr),
-                                        funcExpr, ir::ModifierFlags::NONE, Allocator(), false);
+        ProgramAllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::CONSTRUCTOR,
+                                               // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+                                               id->Clone(ProgramAllocator(), nullptr), funcExpr,
+                                               ir::ModifierFlags::NONE, ProgramAllocator(), false);
     return ctor;
 }
 
 ir::ClassStaticBlock *ETSChecker::CreateDynamicCallClassInitializer(Language lang, bool isConstruct)
 {
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    return CreateClassStaticInitializer([this, lang,
-                                         isConstruct](ArenaVector<ir::Statement *> *statements,
-                                                      [[maybe_unused]] ArenaVector<ir::Expression *> *params) {
-        auto [builtin_class_name, builtin_method_name] =
-            util::Helpers::SplitSignature(isConstruct ? compiler::Signatures::Dynamic::InitNewClassBuiltin(lang)
-                                                      : compiler::Signatures::Dynamic::InitCallClassBuiltin(lang));
-        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        auto *classId = AllocNode<ir::Identifier>(builtin_class_name, Allocator());
-        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        auto *methodId = AllocNode<ir::Identifier>(builtin_method_name, Allocator());
-        auto *callee =
+    return CreateClassStaticInitializer(
+        [this, lang, isConstruct](ArenaVector<ir::Statement *> *statements,
+                                  [[maybe_unused]] ArenaVector<ir::Expression *> *params) {
+            auto [builtin_class_name, builtin_method_name] =
+                util::Helpers::SplitSignature(isConstruct ? compiler::Signatures::Dynamic::InitNewClassBuiltin(lang)
+                                                          : compiler::Signatures::Dynamic::InitCallClassBuiltin(lang));
             // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-            AllocNode<ir::MemberExpression>(classId, methodId, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
+            auto *classId = ProgramAllocNode<ir::Identifier>(builtin_class_name, ProgramAllocator());
+            // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+            auto *methodId = ProgramAllocNode<ir::Identifier>(builtin_method_name, ProgramAllocator());
+            auto *callee =
+                // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+                ProgramAllocNode<ir::MemberExpression>(classId, methodId, ir::MemberExpressionKind::PROPERTY_ACCESS,
+                                                       false, false);
 
-        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        auto *initCall = AllocNode<ir::CallExpression>(callee, ArenaVector<ir::Expression *>(Allocator()->Adapter()),
-                                                       nullptr, false);
+            // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+            auto *initCall = ProgramAllocNode<ir::CallExpression>(
+                callee, ArenaVector<ir::Expression *>(ProgramAllocator()->Adapter()), nullptr, false);
 
-        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        statements->push_back(AllocNode<ir::ExpressionStatement>(initCall));
-    });
+            // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+            statements->push_back(ProgramAllocNode<ir::ExpressionStatement>(initCall));
+        });
 }
 
 ir::ClassDeclaration *ETSChecker::BuildClass(util::StringView name, const ClassBuilder &builder)
 {
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *classId = AllocNode<ir::Identifier>(name, Allocator());
+    auto *classId = ProgramAllocNode<ir::Identifier>(name, ProgramAllocator());
+
+    auto *classDef =
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+        ProgramAllocNode<ir::ClassDefinition>(ProgramAllocator(), classId, ir::ClassDefinitionModifiers::CLASS_DECL,
+                                              ir::ModifierFlags::NONE, Language(Language::Id::ETS));
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *classDef = AllocNode<ir::ClassDefinition>(Allocator(), classId, ir::ClassDefinitionModifiers::CLASS_DECL,
-                                                    ir::ModifierFlags::NONE, Language(Language::Id::ETS));
-
-    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *classDecl = AllocNode<ir::ClassDeclaration>(classDef, Allocator());
+    auto *classDecl = ProgramAllocNode<ir::ClassDeclaration>(classDef, ProgramAllocator());
 
     VarBinder()->Program()->Ast()->Statements().push_back(classDecl);
     classDecl->SetParent(VarBinder()->Program()->Ast());
 
-    varbinder::BoundContext boundCtx(VarBinder()->AsETSBinder()->GetGlobalRecordTable(), classDef);
+    auto varBinder = VarBinder()->AsETSBinder();
+    bool isExternal = VarBinder()->Program() != varBinder->GetGlobalRecordTable()->Program();
+    auto recordTable = isExternal ? varBinder->GetExternalRecordTable().at(varBinder->Program())
+                                  : VarBinder()->AsETSBinder()->GetGlobalRecordTable();
+    varbinder::BoundContext boundCtx(recordTable, classDef);
 
-    ArenaVector<ir::AstNode *> classBody(Allocator()->Adapter());
+    ArenaVector<ir::AstNode *> classBody(ProgramAllocator()->Adapter());
 
     builder(&classBody);
 
@@ -379,14 +394,13 @@ ir::ClassDeclaration *ETSChecker::BuildClass(util::StringView name, const ClassB
 ir::ClassProperty *ETSChecker::CreateStaticReadonlyField(const char *name)
 {
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *fieldIdent = AllocNode<ir::Identifier>(name, Allocator());
+    auto *fieldIdent = ProgramAllocNode<ir::Identifier>(name, ProgramAllocator());
     auto flags = ir::ModifierFlags::STATIC | ir::ModifierFlags::PRIVATE | ir::ModifierFlags::READONLY;
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *field = AllocNode<ir::ClassProperty>(fieldIdent, nullptr,
-                                               // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-                                               AllocNode<ir::ETSPrimitiveType>(ir::PrimitiveType::INT, Allocator()),
-                                               flags, Allocator(), false);
-
+    auto *field = ProgramAllocNode<ir::ClassProperty>(
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+        fieldIdent, nullptr, ProgramAllocNode<ir::ETSPrimitiveType>(ir::PrimitiveType::INT, ProgramAllocator()), flags,
+        ProgramAllocator(), false);
     return field;
 }
 
@@ -414,39 +428,42 @@ void ETSChecker::ClassInitializerFromImport(ir::ETSImportDeclaration *import, Ar
     auto builtin = compiler::Signatures::Dynamic::LoadModuleBuiltin(import->Language());
     auto [builtin_class_name, builtin_method_name] = util::Helpers::SplitSignature(builtin);
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *classId = AllocNode<ir::Identifier>(builtin_class_name, Allocator());
+    auto *classId = ProgramAllocNode<ir::Identifier>(builtin_class_name, ProgramAllocator());
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *methodId = AllocNode<ir::Identifier>(builtin_method_name, Allocator());
+    auto *methodId = ProgramAllocNode<ir::Identifier>(builtin_method_name, ProgramAllocator());
     auto *callee =
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        AllocNode<ir::MemberExpression>(classId, methodId, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
+        ProgramAllocNode<ir::MemberExpression>(classId, methodId, ir::MemberExpressionKind::PROPERTY_ACCESS, false,
+                                               false);
 
     // NOTE: #23698. Make 'ohmUrl' mandatory in 'dynamicPaths'.
-    util::StringView ohmUrl = util::UString(import->OhmUrl(), Allocator()).View();
+    util::StringView ohmUrl = util::UString(import->OhmUrl(), ProgramAllocator()).View();
     if (ohmUrl.Empty()) {
         ohmUrl = import->ResolvedSource();
         if (ark::os::file::File::IsRegularFile(ohmUrl.Mutf8())) {
-            ohmUrl = util::UString(ark::os::RemoveExtension(ohmUrl.Mutf8()), Allocator()).View();
+            ohmUrl = util::UString(ark::os::RemoveExtension(ohmUrl.Mutf8()), ProgramAllocator()).View();
         }
     }
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    ArenaVector<ir::Expression *> callParams({AllocNode<ir::StringLiteral>(ohmUrl)}, Allocator()->Adapter());
+    ArenaVector<ir::Expression *> callParams({ProgramAllocNode<ir::StringLiteral>(ohmUrl)},
+                                             ProgramAllocator()->Adapter());
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *loadCall = AllocNode<ir::CallExpression>(callee, std::move(callParams), nullptr, false);
+    auto *loadCall = ProgramAllocNode<ir::CallExpression>(callee, std::move(callParams), nullptr, false);
+    auto *moduleClassId =
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+        ProgramAllocNode<ir::Identifier>(compiler::Signatures::DYNAMIC_MODULE_CLASS, ProgramAllocator());
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *moduleClassId = AllocNode<ir::Identifier>(compiler::Signatures::DYNAMIC_MODULE_CLASS, Allocator());
+    auto *fieldId = ProgramAllocNode<ir::Identifier>(import->AssemblerName(), ProgramAllocator());
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *fieldId = AllocNode<ir::Identifier>(import->AssemblerName(), Allocator());
-    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *property = AllocNode<ir::MemberExpression>(moduleClassId, fieldId, ir::MemberExpressionKind::PROPERTY_ACCESS,
-                                                     false, false);
+    auto *property = ProgramAllocNode<ir::MemberExpression>(moduleClassId, fieldId,
+                                                            ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
 
     auto *initializer =
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        AllocNode<ir::AssignmentExpression>(property, loadCall, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+        ProgramAllocNode<ir::AssignmentExpression>(property, loadCall, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    statements->push_back(AllocNode<ir::ExpressionStatement>(initializer));
+    statements->push_back(ProgramAllocNode<ir::ExpressionStatement>(initializer));
 }
 
 ir::ClassStaticBlock *ETSChecker::CreateDynamicModuleClassInitializer(
@@ -465,33 +482,36 @@ ir::ClassStaticBlock *ETSChecker::CreateDynamicModuleClassInitializer(
 ir::MethodDefinition *ETSChecker::CreateClassMethod(const std::string_view name, ir::ScriptFunctionFlags funcFlags,
                                                     ir::ModifierFlags modifierFlags, const MethodBuilder &builder)
 {
-    ArenaVector<ir::Expression *> params(Allocator()->Adapter());
+    ArenaVector<ir::Expression *> params(ProgramAllocator()->Adapter());
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *id = AllocNode<ir::Identifier>(name, Allocator());
+    auto *id = ProgramAllocNode<ir::Identifier>(name, ProgramAllocator());
 
-    ArenaVector<ir::Statement *> statements(Allocator()->Adapter());
+    ArenaVector<ir::Statement *> statements(ProgramAllocator()->Adapter());
     Type *returnType = nullptr;
 
     builder(&statements, &params, &returnType);
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *body = AllocNode<ir::BlockStatement>(Allocator(), std::move(statements));
-    auto funcSignature =
-        ir::FunctionSignature(nullptr, std::move(params),
-                              // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-                              returnType == nullptr ? nullptr : AllocNode<ir::OpaqueTypeNode>(returnType, Allocator()));
+    auto *body = ProgramAllocNode<ir::BlockStatement>(ProgramAllocator(), std::move(statements));
+    auto funcSignature = ir::FunctionSignature(
+        nullptr, std::move(params),
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+        returnType == nullptr ? nullptr : ProgramAllocNode<ir::OpaqueTypeNode>(returnType, ProgramAllocator()));
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *func = AllocNode<ir::ScriptFunction>(
-        Allocator(), ir::ScriptFunction::ScriptFunctionData {body, std::move(funcSignature), funcFlags, modifierFlags});
+    auto *func = ProgramAllocNode<ir::ScriptFunction>(
+        ProgramAllocator(),
+        ir::ScriptFunction::ScriptFunctionData {body, std::move(funcSignature), funcFlags, modifierFlags});
 
     func->SetIdent(id);
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *funcExpr = AllocNode<ir::FunctionExpression>(func);
+    auto *funcExpr = ProgramAllocNode<ir::FunctionExpression>(func);
     auto *method =
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::METHOD, func->Id()->Clone(Allocator(), nullptr),
-                                        funcExpr, modifierFlags, Allocator(), false);
+        ProgramAllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::METHOD,
+                                               // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+                                               func->Id()->Clone(ProgramAllocator(), nullptr), funcExpr, modifierFlags,
+                                               ProgramAllocator(), false);
 
     return method;
 }
@@ -514,37 +534,41 @@ ir::MethodDefinition *ETSChecker::CreateLambdaObjectClassInvokeMethod(Signature 
         compiler::Signatures::LAMBDA_OBJECT_INVOKE, ir::ScriptFunctionFlags::METHOD, ir::ModifierFlags::PUBLIC,
         [this, invokeSignature, retTypeAnnotation](ArenaVector<ir::Statement *> *statements,
                                                    ArenaVector<ir::Expression *> *params, Type **returnType) {
-            util::UString thisParamName(std::string("this"), Allocator());
+            util::UString thisParamName(std::string("this"), ProgramAllocator());
             // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
             ir::ETSParameterExpression *thisParam = AddParam(thisParamName.View(), nullptr);
             params->push_back(thisParam);
 
-            ArenaVector<ir::Expression *> callParams(Allocator()->Adapter());
+            ArenaVector<ir::Expression *> callParams(ProgramAllocator()->Adapter());
             for (auto *invokeParam : invokeSignature->Params()) {
-                // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
                 auto paramName =
-                    util::UString(std::string("p") + std::to_string(callParams.size()), Allocator()).View();
+                    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+                    util::UString(std::string("p") + std::to_string(callParams.size()), ProgramAllocator()).View();
                 // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-                auto *param = AddParam(paramName, AllocNode<ir::OpaqueTypeNode>(invokeParam->TsType(), Allocator()));
+                auto *param = AddParam(paramName,
+                                       // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+                                       ProgramAllocNode<ir::OpaqueTypeNode>(invokeParam->TsType(), ProgramAllocator()));
                 params->push_back(param);
                 // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-                callParams.push_back(param->Clone(Allocator(), nullptr));
+                callParams.push_back(param->Clone(ProgramAllocator(), nullptr));
             }
 
             // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-            auto *properyId = AllocNode<ir::Identifier>("jsvalue_lambda", Allocator());
+            auto *properyId = ProgramAllocNode<ir::Identifier>("jsvalue_lambda", ProgramAllocator());
+            auto *callee =
+                // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+                ProgramAllocNode<ir::MemberExpression>(thisParam->Clone(ProgramAllocator(), nullptr), properyId,
+                                                       ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
             // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-            auto *callee = AllocNode<ir::MemberExpression>(thisParam->Clone(Allocator(), nullptr), properyId,
-                                                           ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
-            // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-            auto *callLambda = AllocNode<ir::CallExpression>(callee, std::move(callParams), nullptr, false);
+            auto *callLambda = ProgramAllocNode<ir::CallExpression>(callee, std::move(callParams), nullptr, false);
 
             auto *castToRetTypeExpr =
                 // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-                AllocNode<ir::TSAsExpression>(callLambda, retTypeAnnotation->Clone(Allocator(), nullptr), false);
+                ProgramAllocNode<ir::TSAsExpression>(callLambda, retTypeAnnotation->Clone(ProgramAllocator(), nullptr),
+                                                     false);
             castToRetTypeExpr->SetTsType(invokeSignature->ReturnType());
             // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-            auto *retStatement = AllocNode<ir::ReturnStatement>(castToRetTypeExpr);
+            auto *retStatement = ProgramAllocNode<ir::ReturnStatement>(castToRetTypeExpr);
             statements->push_back(retStatement);
 
             *returnType = invokeSignature->ReturnType();
@@ -563,19 +587,21 @@ void ETSChecker::EmitDynamicModuleClassInitCall()
     auto *cctorBody = staticBlock->Function()->Body()->AsBlockStatement();
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *classId = AllocNode<ir::Identifier>(compiler::Signatures::DYNAMIC_MODULE_CLASS, Allocator());
-    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *methodId = AllocNode<ir::Identifier>(compiler::Signatures::DYNAMIC_MODULE_CLASS_INIT, Allocator());
+    auto *classId = ProgramAllocNode<ir::Identifier>(compiler::Signatures::DYNAMIC_MODULE_CLASS, ProgramAllocator());
+    auto *methodId =
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+        ProgramAllocNode<ir::Identifier>(compiler::Signatures::DYNAMIC_MODULE_CLASS_INIT, ProgramAllocator());
     auto *callee =
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        AllocNode<ir::MemberExpression>(classId, methodId, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
+        ProgramAllocNode<ir::MemberExpression>(classId, methodId, ir::MemberExpressionKind::PROPERTY_ACCESS, false,
+                                               false);
 
-    ArenaVector<ir::Expression *> callParams(Allocator()->Adapter());
+    ArenaVector<ir::Expression *> callParams(ProgramAllocator()->Adapter());
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *initCall = AllocNode<ir::CallExpression>(callee, std::move(callParams), nullptr, false);
+    auto *initCall = ProgramAllocNode<ir::CallExpression>(callee, std::move(callParams), nullptr, false);
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *const node = AllocNode<ir::ExpressionStatement>(initCall);
+    auto *const node = ProgramAllocNode<ir::ExpressionStatement>(initCall);
     node->SetParent(cctorBody);
     cctorBody->Statements().push_back(node);
 
@@ -600,19 +626,19 @@ void ETSChecker::BuildClassBodyFromDynamicImports(const ArenaVector<ir::ETSImpor
             assemblyName.begin(), assemblyName.end(), [](char c) { return std::isalnum(c) == 0; }, '_');
         assemblyName.append(std::to_string(fields.size()));
 
-        import->AssemblerName() = util::UString(assemblyName, Allocator()).View();
+        import->AssemblerName() = util::UString(assemblyName, ProgramAllocator()).View();
         fields.insert(import->AssemblerName());
         imports.push_back(import);
 
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        auto *fieldIdent = AllocNode<ir::Identifier>(import->AssemblerName(), Allocator());
+        auto *fieldIdent = ProgramAllocNode<ir::Identifier>(import->AssemblerName(), ProgramAllocator());
         auto flags = ir::ModifierFlags::STATIC | ir::ModifierFlags::PUBLIC | ir::ModifierFlags::READONLY;
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        auto *field = AllocNode<ir::ClassProperty>(
+        auto *field = ProgramAllocNode<ir::ClassProperty>(
             fieldIdent, nullptr,
             // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-            AllocNode<ir::OpaqueTypeNode>(GlobalBuiltinDynamicType(import->Language()), Allocator()), flags,
-            Allocator(), false);
+            ProgramAllocNode<ir::OpaqueTypeNode>(GlobalBuiltinDynamicType(import->Language()), ProgramAllocator()),
+            flags, ProgramAllocator(), false);
 
         classBody->push_back(field);
     }
@@ -650,24 +676,27 @@ ir::MethodDefinition *ETSChecker::CreateLambdaObjectClassInitializer(ETSObjectTy
             ir::ETSParameterExpression *thisParam = AddParam(varbinder::VarBinder::MANDATORY_PARAM_THIS, nullptr);
             params->push_back(thisParam);
 
-            util::UString jsvalueParamName(std::string("jsvalue_param"), Allocator());
-            // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-            ir::ETSParameterExpression *jsvalueParam = AddParam(
+            util::UString jsvalueParamName(std::string("jsvalue_param"), ProgramAllocator());
+            ir::ETSParameterExpression *jsvalueParam =
                 // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-                jsvalueParamName.View(), AllocNode<ir::OpaqueTypeNode>(GlobalBuiltinJSValueType(), Allocator()));
+                AddParam(jsvalueParamName.View(),
+                         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+                         ProgramAllocNode<ir::OpaqueTypeNode>(GlobalBuiltinJSValueType(), ProgramAllocator()));
             params->push_back(jsvalueParam);
+            auto *moduleClassId =
+                // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+                ProgramAllocNode<ir::Identifier>(varbinder::VarBinder::MANDATORY_PARAM_THIS, ProgramAllocator());
             // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-            auto *moduleClassId = AllocNode<ir::Identifier>(varbinder::VarBinder::MANDATORY_PARAM_THIS, Allocator());
+            auto *fieldId = ProgramAllocNode<ir::Identifier>("jsvalue_lambda", ProgramAllocator());
             // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-            auto *fieldId = AllocNode<ir::Identifier>("jsvalue_lambda", Allocator());
+            auto *property = ProgramAllocNode<ir::MemberExpression>(
+                moduleClassId, fieldId, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
             // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-            auto *property = AllocNode<ir::MemberExpression>(moduleClassId, fieldId,
-                                                             ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
+            auto *initializer = ProgramAllocNode<ir::AssignmentExpression>(
+                // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+                property, jsvalueParam->Clone(ProgramAllocator(), nullptr), lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
             // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-            auto *initializer = AllocNode<ir::AssignmentExpression>(property, jsvalueParam->Clone(Allocator(), nullptr),
-                                                                    lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
-            // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-            statements->push_back(AllocNode<ir::ExpressionStatement>(initializer));
+            statements->push_back(ProgramAllocNode<ir::ExpressionStatement>(initializer));
         },
         functionalInterface);
 }
@@ -677,7 +706,7 @@ void ETSChecker::BuildLambdaObjectClass(ETSObjectType *functionalInterface, ir::
     auto *invokeMethod = functionalInterface->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>(
         compiler::Signatures::STATIC_INVOKE_METHOD);
     auto *invokeSignature = invokeMethod->TsType()->AsETSFunctionType()->CallSignatures()[0];
-
+    ES2PANDA_ASSERT(invokeSignature != nullptr);
     std::stringstream ss;
     ss << compiler::Signatures::LAMBDA_OBJECT;
     ToString(this, invokeSignature->Params(), ss);
@@ -691,12 +720,12 @@ void ETSChecker::BuildLambdaObjectClass(ETSObjectType *functionalInterface, ir::
                       functionalInterface](ArenaVector<ir::AstNode *> *classBody) {
         auto assemblyName = "jsvalue_lambda";
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        auto *fieldIdent = AllocNode<ir::Identifier>(assemblyName, Allocator());
+        auto *fieldIdent = ProgramAllocNode<ir::Identifier>(assemblyName, ProgramAllocator());
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        auto *field = AllocNode<ir::ClassProperty>(
+        auto *field = ProgramAllocNode<ir::ClassProperty>(
             // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-            fieldIdent, nullptr, AllocNode<ir::OpaqueTypeNode>(GlobalBuiltinJSValueType(), Allocator()),
-            ir::ModifierFlags::PRIVATE, Allocator(), false);
+            fieldIdent, nullptr, ProgramAllocNode<ir::OpaqueTypeNode>(GlobalBuiltinJSValueType(), ProgramAllocator()),
+            ir::ModifierFlags::PRIVATE, ProgramAllocator(), false);
         classBody->push_back(field);
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         classBody->push_back(CreateLambdaObjectClassInitializer(functionalInterface));

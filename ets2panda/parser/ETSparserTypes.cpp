@@ -16,7 +16,6 @@
 #include "ETSparser.h"
 #include "ETSNolintParser.h"
 #include <utility>
-
 #include "util/es2pandaMacros.h"
 #include "parser/parserFlags.h"
 #include "parser/parserStatusContext.h"
@@ -100,6 +99,7 @@ ir::TypeNode *ETSParser::ParsePrimitiveType(TypeAnnotationParsingOptions *option
     }
 
     auto *const typeAnnotation = AllocNode<ir::ETSPrimitiveType>(type, Allocator());
+    ES2PANDA_ASSERT(typeAnnotation != nullptr);
     typeAnnotation->SetRange(Lexer()->GetToken().Loc());
     Lexer()->NextToken();
     return typeAnnotation;
@@ -122,6 +122,7 @@ ir::TypeNode *ETSParser::ParseUnionType(ir::TypeNode *const firstType)
 
     auto const endLoc = types.back()->End();
     auto *const unionType = AllocNode<ir::ETSUnionType>(std::move(types), Allocator());
+    ES2PANDA_ASSERT(unionType != nullptr);
     unionType->SetRange({firstType->Start(), endLoc});
     return unionType;
 }
@@ -177,10 +178,12 @@ ir::TypeNode *ETSParser::ParseWildcardType(TypeAnnotationParsingOptions *options
     ir::ETSTypeReference *typeReference = nullptr;
     if (!isUnboundOut) {
         auto reference = ParseTypeReference(options);
+        ES2PANDA_ASSERT(reference != nullptr);
         typeReference = reference->AsETSTypeReference();
     }
 
     auto *wildcardType = AllocNode<ir::ETSWildcardType>(typeReference, varianceModifier, Allocator());
+    ES2PANDA_ASSERT(wildcardType != nullptr);
     wildcardType->SetRange({varianceStartLoc, typeReference == nullptr ? varianceEndLoc : typeReference->End()});
 
     return wildcardType;
@@ -262,6 +265,7 @@ ir::TypeNode *ETSParser::ParseETSTupleType(TypeAnnotationParsingOptions *const o
     lexer::SourcePosition endLoc;
     ParseList(lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET, lexer::NextTokenFlags::NONE, parseElem, &endLoc, true);
 
+    ES2PANDA_ASSERT(tupleType != nullptr);
     tupleType->SetTypeAnnotationsList(std::move(tupleTypeList));
     tupleType->SetRange({startLoc, endLoc});
 
@@ -307,6 +311,7 @@ ir::TypeNode *ETSParser::ParsePotentialFunctionalType(TypeAnnotationParsingOptio
     return nullptr;
 }
 
+// CC-OFFNXT(huge_method[C++], G.FUN.01-CPP) solid logic
 // Just to reduce the size of ParseTypeAnnotation(...) method
 std::pair<ir::TypeNode *, bool> ETSParser::GetTypeAnnotationFromToken(TypeAnnotationParsingOptions *options)
 {
@@ -323,18 +328,21 @@ std::pair<ir::TypeNode *, bool> ETSParser::GetTypeAnnotationFromToken(TypeAnnota
     switch (tokenType) {
         case lexer::TokenType::LITERAL_NULL: {
             auto typeAnnotation = AllocNode<ir::ETSNullType>(Allocator());
+            ES2PANDA_ASSERT(typeAnnotation != nullptr);
             typeAnnotation->SetRange(Lexer()->GetToken().Loc());
             Lexer()->NextToken();
             return std::make_pair(typeAnnotation, true);
         }
         case lexer::TokenType::KEYW_UNDEFINED: {
             auto typeAnnotation = AllocNode<ir::ETSUndefinedType>(Allocator());
+            ES2PANDA_ASSERT(typeAnnotation != nullptr);
             typeAnnotation->SetRange(Lexer()->GetToken().Loc());
             Lexer()->NextToken();
             return std::make_pair(typeAnnotation, true);
         }
         case lexer::TokenType::LITERAL_STRING: {
             auto typeAnnotation = AllocNode<ir::ETSStringLiteralType>(Lexer()->GetToken().String(), Allocator());
+            ES2PANDA_ASSERT(typeAnnotation != nullptr);
             typeAnnotation->SetRange(Lexer()->GetToken().Loc());
             Lexer()->NextToken();
             return std::make_pair(typeAnnotation, true);
@@ -429,6 +437,7 @@ ir::TypeNode *ETSParser::ParseThisType(TypeAnnotationParsingOptions *options)
     }
 
     auto *const thisType = AllocNode<ir::TSThisType>(Allocator());
+    ES2PANDA_ASSERT(thisType != nullptr);
     thisType->SetRange(tokenLoc);
 
     return thisType;
@@ -448,6 +457,7 @@ ir::TypeNode *ETSParser::ParseTsArrayType(ir::TypeNode *typeNode, TypeAnnotation
         if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET) {
             if ((*options & TypeAnnotationParsingOptions::REPORT_ERROR) != 0) {
                 LogExpectedToken(lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET);
+                return AllocBrokenType({Lexer()->GetToken().Start(), Lexer()->GetToken().End()});
             }
             return nullptr;
         }
@@ -472,10 +482,14 @@ ir::TypeNode *ETSParser::ParseTypeAnnotationNoPreferParam(TypeAnnotationParsingO
     if (typeAnnotation == nullptr) {
         if (reportError) {
             LogError(diagnostic::INVALID_TYPE);
-            auto typeNode = AllocBrokenType({Lexer()->GetToken().Start(), Lexer()->GetToken().End()});
-            return typeNode;
+            return AllocBrokenType({Lexer()->GetToken().Start(), Lexer()->GetToken().End()});
         }
         return nullptr;
+    }
+
+    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK) {
+        typeAnnotation = AllocNode<ir::ETSNonNullishTypeNode>(typeAnnotation, Allocator());
+        Lexer()->NextToken();
     }
 
     if (!needFurtherProcessing) {
@@ -549,6 +563,7 @@ ir::TypeNode *ETSParser::ParseMultilineString()
     Lexer()->ScanTemplateStringEnd();
 
     auto typeAnnotation = AllocNode<ir::ETSStringLiteralType>(multilineStr, Allocator());
+    ES2PANDA_ASSERT(typeAnnotation != nullptr);
     typeAnnotation->SetRange({startPos, Lexer()->GetToken().End()});
     Lexer()->NextToken();
 

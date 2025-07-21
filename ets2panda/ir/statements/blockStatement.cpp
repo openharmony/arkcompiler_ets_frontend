@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,6 +22,7 @@
 #include "checker/ETSchecker.h"
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
+#include "utils/arena_containers.h"
 
 namespace ark::es2panda::ir {
 void BlockStatement::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
@@ -45,6 +46,7 @@ AstNode *BlockStatement::Clone(ArenaAllocator *const allocator, AstNode *const p
     }
 
     auto retVal = util::NodeAllocator::ForceSetParent<ir::BlockStatement>(allocator, allocator, std::move(statements));
+    ES2PANDA_ASSERT(retVal != nullptr);
     retVal->SetParent(parent);
 
     return retVal;
@@ -108,4 +110,22 @@ checker::VerifiedType BlockStatement::Check([[maybe_unused]] checker::ETSChecker
 {
     return {this, checker->GetAnalyzer()->Check(this)};
 }
+
+BlockStatement *BlockStatement::Construct(ArenaAllocator *allocator)
+{
+    ArenaVector<Statement *> statementList(allocator->Adapter());
+    return allocator->New<BlockStatement>(allocator, std::move(statementList));
+}
+
+void BlockStatement::CopyTo(AstNode *other) const
+{
+    auto otherImpl = other->AsBlockStatement();
+
+    otherImpl->scope_ = scope_;
+    otherImpl->statements_ = statements_;
+    otherImpl->trailingBlocks_ = trailingBlocks_;
+
+    Statement::CopyTo(other);
+}
+
 }  // namespace ark::es2panda::ir

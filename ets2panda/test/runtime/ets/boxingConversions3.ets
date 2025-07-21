@@ -14,8 +14,8 @@
  */
 
 function main() {
-    let b: byte = 1.0
-    let s: Short = b 
+    let b: byte = 1
+    let s: Short = b
     let i: Int = b
     let l: Long = b
     let f: Float = b

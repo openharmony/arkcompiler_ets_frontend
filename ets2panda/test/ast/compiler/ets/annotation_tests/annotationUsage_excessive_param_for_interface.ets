@@ -29,5 +29,3 @@ interface itf {
 /* @@? 21:2 Error TypeError: The number of arguments provided for the annotation exceeds the number of fields defined.  */
 /* @@? 23:6 Error TypeError: The number of arguments provided for the annotation exceeds the number of fields defined.  */
 /* @@? 25:6 Error TypeError: The number of arguments provided for the annotation exceeds the number of fields defined.  */
-/* @@? 25:6 Error TypeError: The number of arguments provided for the annotation exceeds the number of fields defined.  */
-/* @@? 25:6 Error TypeError: The number of arguments provided for the annotation exceeds the number of fields defined.  */

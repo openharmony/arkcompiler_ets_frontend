@@ -62,6 +62,7 @@ void Identifier::SetName(const util::StringView &newName) noexcept
 Identifier *Identifier::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     auto *const clone = allocator->New<Identifier>(Tag {}, *this, allocator);
+    ES2PANDA_ASSERT(clone != nullptr);
 
     clone->SetTsType(TsType());
     if (parent != nullptr) {
@@ -75,6 +76,7 @@ Identifier *Identifier::Clone(ArenaAllocator *const allocator, AstNode *const pa
 Identifier *Identifier::CloneReference(ArenaAllocator *const allocator, AstNode *const parent)
 {
     auto *const clone = Clone(allocator, parent);
+    ES2PANDA_ASSERT(clone != nullptr);
     if (clone->IsReference(ScriptExtension::ETS)) {
         clone->SetTsTypeAnnotation(nullptr);
     }
@@ -152,6 +154,8 @@ void Identifier::Dump(ir::SrcDumper *dumper) const
     if (IsOptional()) {
         dumper->Add("?");
     }
+
+    dumper->PushTask([dumper, name = std::string(name_)] { dumper->DumpNode(name); });
 }
 
 void Identifier::Compile(compiler::PandaGen *pg) const
@@ -176,11 +180,6 @@ checker::VerifiedType Identifier::Check(checker::ETSChecker *checker)
 
 bool Identifier::IsDeclaration(ScriptExtension ext) const
 {
-    // GLOBAL class is not a reference
-    if (Name() == compiler::Signatures::ETS_GLOBAL) {
-        return true;
-    }
-
     // We can determine reference status from parent node
     if (Parent() == nullptr) {
         return false;
@@ -385,6 +384,10 @@ bool Identifier::CheckDeclarationsPart1(const ir::AstNode *parent, [[maybe_unuse
 
     if (parent->IsExportDefaultDeclaration()) {
         return true;
+    }
+
+    if (Parent()->IsClassDefinition()) {
+        return Parent()->AsClassDefinition()->IsGlobal();
     }
 
     return false;

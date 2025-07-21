@@ -33,6 +33,7 @@ size_t CFG::BasicBlock::AddNode(ir::AstNode *node)
 std::pair<size_t, size_t> CFG::BasicBlock::AddSuccessor(BasicBlock *successor)
 {
     succs_.push_back(successor);
+    ES2PANDA_ASSERT(successor != nullptr);
     successor->preds_.push_back(this);
     return std::make_pair(succs_.size() - 1, successor->preds_.size() - 1);
 }
@@ -208,6 +209,7 @@ CFG::BasicBlock *CFG::Build(ir::ScriptFunction *scriptFunctionNode)
     }
     ES2PANDA_ASSERT(scriptFunctionNode->Body()->IsBlockStatement());
     auto exitBB = Build(scriptFunctionNode->Body()->AsBlockStatement(), entryBB);
+    ES2PANDA_ASSERT(exitBB != nullptr);
     exitBB->SetFlag(BasicBlockFlags::EXIT);
     return entryBB;
 }
@@ -231,6 +233,7 @@ CFG::BasicBlock *CFG::CreateNewBB(const std::vector<BasicBlock *> &&preds,
                                   const std::vector<const ir::AstNode *> &&labels)
 {
     auto bb = allocator_->New<BasicBlock>(allocator_, basicBlockIdx_++);
+    ES2PANDA_ASSERT(bb != nullptr);
     if (inLoop_ > 0) {
         bb->SetFlag(BasicBlockFlags::LOOP);
     }
@@ -840,6 +843,7 @@ size_t CFG::AddNodeToBB(ir::AstNode *node, BasicBlock *bb)
     if (bb == nullptr) {
         bb = CreateNewBB({});
     }
+    ES2PANDA_ASSERT(bb != nullptr);
     size_t index = bb->AddNode(node);
     nodeBBMap_[node] = std::make_pair(bb, index);
     return index;

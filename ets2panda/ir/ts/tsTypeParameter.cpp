@@ -22,6 +22,7 @@
 #include "ir/srcDump.h"
 #include "ir/typeNode.h"
 #include "ir/expressions/identifier.h"
+#include "utils/arena_containers.h"
 
 namespace ark::es2panda::ir {
 void TSTypeParameter::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
@@ -121,4 +122,21 @@ checker::VerifiedType TSTypeParameter::Check([[maybe_unused]] checker::ETSChecke
 {
     return {this, checker->GetAnalyzer()->Check(this)};
 }
+
+TSTypeParameter *TSTypeParameter::Construct(ArenaAllocator *allocator)
+{
+    return allocator->New<TSTypeParameter>(nullptr, nullptr, nullptr, allocator);
+}
+
+void TSTypeParameter::CopyTo(AstNode *other) const
+{
+    auto otherImpl = other->AsTSTypeParameter();
+
+    otherImpl->name_ = name_;
+    otherImpl->constraint_ = constraint_;
+    otherImpl->defaultType_ = defaultType_;
+
+    AnnotationAllowed<Expression>::CopyTo(other);
+}
+
 }  // namespace ark::es2panda::ir

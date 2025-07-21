@@ -35,7 +35,7 @@ void ThisExpression::Dump(ir::AstDumper *dumper) const
 
 void ThisExpression::Dump(ir::SrcDumper *dumper) const
 {
-    dumper->Add("(this)");
+    dumper->Add("this");
 }
 
 void ThisExpression::Compile(compiler::PandaGen *pg) const
@@ -61,6 +61,7 @@ checker::VerifiedType ThisExpression::Check(checker::ETSChecker *checker)
 ThisExpression *ThisExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     auto *const clone = allocator->New<ThisExpression>();
+    ES2PANDA_ASSERT(clone != nullptr);
     if (parent != nullptr) {
         clone->SetParent(parent);
     }

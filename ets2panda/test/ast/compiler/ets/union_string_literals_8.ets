@@ -24,5 +24,3 @@ let y = foo(x)
 
 /* @@? 23:13 Error TypeError: Type 'String' is not compatible with type '"aa"|"bb"' at index 1  */
 /* @@? 23:9 Error TypeError: No matching call signature for foo(String)  */
-/* @@? 23:13 Error TypeError: Type 'String' is not compatible with type '"aa"|"bb"' at index 1  */
-/* @@? 23:9 Error TypeError: No matching call signature for foo(String)  */

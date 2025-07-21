@@ -59,7 +59,7 @@ function part1() {
 
 function part2() {
     let l: long = 0;
-    let f: float = 0.0;
+    let f: float = Double.toFloat(0.0);
     let d: double = 0.0;
     let o = new C(0);
     let lam: () => void = () => {
@@ -68,12 +68,12 @@ function part2() {
         assertEQ(d, 11.0)
         assertEQ(o.v, 12)
         l = 13;
-        f = 14.0;
+        f = Double.toFloat(14.0);
         d = 15.0;
         o = new C(16);
     }
     l = 9;
-    f = 10.0;
+    f = Double.toFloat(10.0);
     d = 11.0;
     o = new C(12);
     lam();

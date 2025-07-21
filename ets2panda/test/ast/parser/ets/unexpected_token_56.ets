@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-for await (/* @@ label1 */;/* @@ label2 */;/* @@ label3 */i < /* @@ label4 */count/* @@ label5 */; ++i/* @@ label6 */) {
+for await (/* @@ label1 */;/* @@ label2 */;/* @@ label3 */i < /* @@ label4 */count/* @@ label5 */; ++i/* @@ label6 */) /* @@ label7 */{
     /* @@ label8 */result = result + /* @@ label9 */p[i]!.awaitResolution() * /* @@ label10 */a[i];
 }
 for (let i?: Number = 1;;)  { break; }
@@ -22,11 +22,9 @@ for (let i?: Number = 1;;)  { break; }
 /* @@@ label2 Error SyntaxError: Unexpected token ';'. */
 /* @@@ label3 Error TypeError: Unresolved reference i */
 /* @@@ label3 Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type. */
-/* @@@ label4 Error TypeError: Function name 'count' used in the wrong context */
 /* @@@ label5 Error SyntaxError: Expected ')', got ';'. */
 /* @@@ label6 Error SyntaxError: Unexpected token ')'. */
-/* @@@ label6 Error SyntaxError: Unexpected token ')'. */
-/* @@@ label6 Error SyntaxError: Unexpected token ')'. */
+/* @@@ label7 Error SyntaxError: Unexpected token '{'. */
 /* @@@ label8 Error TypeError: Unresolved reference result */
 /* @@@ label9 Error TypeError: Unresolved reference p */
 /* @@@ label9 Error TypeError: Indexed access is not supported for such expression type. */

@@ -31,44 +31,12 @@ if [ "$1" == "--restore" ]; then
     RESTORE_MODE=1
 fi
 
-OLD_PATH="path/to/bindings/test"
-
-TESTCASES_DIR="${SCRIPT_DIR}/testcases"
-
-if [ $RESTORE_MODE -eq 1 ]; then
-    echo "Restoring path '${SCRIPT_DIR}' back to '${OLD_PATH}' in files..."
-else
-    echo "Replacing path '${OLD_PATH}' with '${SCRIPT_DIR}' in files..."
-fi
-
-process_directory() {
-    local dir=$1
-    
-    if [ ! -d "$dir" ]; then
-        echo "Directory $dir does not exist. Skipping."
-        return
-    fi
-    
-    echo "Processing directory: $dir"
-    
-    find "$dir" -type f -name "*.json" | while read -r file; do
-        echo "Processing file: $file"
-        if [ $RESTORE_MODE -eq 1 ]; then
-            sed -i "s|${SCRIPT_DIR}|${OLD_PATH}|g" "$file"
-        else
-            sed -i "s|${OLD_PATH}|${SCRIPT_DIR}|g" "$file"
-        fi
-    done
-}
-
-process_directory "$TESTCASES_DIR"
-
 if [ $RESTORE_MODE -eq 1 ]; then
     rm "${SCRIPT_DIR}/../ets2panda"
-    echo "Path restoration completed."
+    echo 'Remove the symbolic link to ets2panda'
 else
     ln -s "${SCRIPT_DIR}/ets/ets1.2/build-tools/ets2panda" "${SCRIPT_DIR}/../ets2panda"
-    echo "Path replacement completed."
+    echo 'Create a symbolic link to ets2panda'
 fi
 
 exit 0

@@ -16,4 +16,7 @@
 let a = [1, 2, 3]
 a[0] = /* @@ label */"1"
 
-/* @@@ label Error TypeError: Type '"1"' cannot be assigned to type 'double'  */
+/* @@? 17:1 Error TypeError: No matching indexing signature for $_set(int, "1") */
+/* @@? 17:3 Error TypeError: Type 'int' is not compatible with type 'double' at index 1 */
+/* @@? 17:3 Error TypeError: Cannot find index access method with the required signature. */
+/* @@? 17:22 Error TypeError: Type '"1"' is not compatible with type 'Double' at index 2 */

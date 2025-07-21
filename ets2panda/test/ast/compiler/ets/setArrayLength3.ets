@@ -17,5 +17,3 @@ function main(): void {
     let test_array: int[] = [1, 2, 3]
     /* @@ label */test_array.length += 1
 }
-
-/* @@@ label Error TypeError: Setting the length of an array is not permitted  */

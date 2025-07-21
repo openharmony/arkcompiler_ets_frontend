@@ -189,7 +189,7 @@ void AliveAnalyzer::AnalyzeStat(const ir::AstNode *node)
     }
 
     if (status_ == LivenessStatus::DEAD) {
-        checker_->LogError(diagnostic::UNREACHABLE_STMT, node->Start());
+        checker_->LogDiagnostic(diagnostic::UNREACHABLE_STMT, node->Start());
         return;
     }
 
@@ -234,6 +234,7 @@ void AliveAnalyzer::AnalyzeMethodDef(const ir::MethodDefinition *methodDef)
 
     auto *func = methodDef->Function();
 
+    ES2PANDA_ASSERT(func != nullptr);
     if (func->Body() == nullptr || func->IsProxy()) {
         return;
     }
@@ -241,20 +242,28 @@ void AliveAnalyzer::AnalyzeMethodDef(const ir::MethodDefinition *methodDef)
     status_ = LivenessStatus::ALIVE;
     AnalyzeStat(func->Body());
     ES2PANDA_ASSERT(methodDef->TsType() && methodDef->TsType()->IsETSFunctionType());
-    const auto *returnType = methodDef->TsType()->AsETSFunctionType()->FindSignature(func)->ReturnType();
+    const auto *signature = methodDef->TsType()->AsETSFunctionType()->FindSignature(func);
+    ES2PANDA_ASSERT(signature != nullptr);
+    const auto *returnType = signature->ReturnType();
     const auto isVoid = returnType->IsETSVoidType() || returnType == checker_->GlobalVoidType();
 
     auto isPromiseVoid = false;
 
-    if (returnType->IsETSAsyncFuncReturnType()) {
-        const auto *asAsync = returnType->AsETSAsyncFuncReturnType();
-        isPromiseVoid = asAsync->GetPromiseTypeArg() == checker_->GlobalETSUndefinedType();
+    if (returnType->IsETSObjectType() &&
+        returnType->AsETSObjectType()->AssemblerName() == compiler::Signatures::BUILTIN_PROMISE) {
+        const auto *asAsync = returnType->AsETSObjectType();
+        isPromiseVoid = asAsync->TypeArguments().front() == checker_->GlobalETSUndefinedType() ||
+                        asAsync->TypeArguments().front() == checker_->GlobalVoidType();
     }
 
-    if (status_ == LivenessStatus::ALIVE && !isVoid && !isPromiseVoid && !util::Helpers::IsAsyncMethod(methodDef)) {
-        if (!methodDef->Function()->HasReturnStatement()) {
-            checker_->LogError(diagnostic::MISSING_RETURN_STMT, {}, func->Start());
-            ClearPendingExits();
+    if (status_ == LivenessStatus::ALIVE && !isVoid && !isPromiseVoid) {
+        auto *fuction = methodDef->Function();
+        ES2PANDA_ASSERT(fuction != nullptr);
+        if (!fuction->HasReturnStatement()) {
+            if (!util::Helpers::IsAsyncMethod(methodDef)) {
+                checker_->LogError(diagnostic::MISSING_RETURN_STMT, {}, func->Start());
+                ClearPendingExits();
+            }
             return;
         }
 
@@ -281,7 +290,7 @@ void AliveAnalyzer::AnalyzeDoLoop(const ir::DoWhileStatement *doWhile)
     AnalyzeStat(doWhile->Body());
     status_ = Or(status_, ResolveContinues(doWhile));
     AnalyzeNode(doWhile->Test());
-    ES2PANDA_ASSERT(doWhile->Test()->TsType() && doWhile->Test()->TsType()->IsConditionalExprType());
+    ES2PANDA_ASSERT(doWhile->Test()->TsType());
     const auto exprRes = doWhile->Test()->TsType()->ResolveConditionExpr();
     status_ = And(status_, static_cast<LivenessStatus>(!std::get<0>(exprRes) || !std::get<1>(exprRes)));
     status_ = Or(status_, ResolveBreaks(doWhile));
@@ -291,7 +300,7 @@ void AliveAnalyzer::AnalyzeWhileLoop(const ir::WhileStatement *whileStmt)
 {
     SetOldPendingExits(PendingExits());
     AnalyzeNode(whileStmt->Test());
-    ES2PANDA_ASSERT(whileStmt->Test()->TsType() && whileStmt->Test()->TsType()->IsConditionalExprType());
+    ES2PANDA_ASSERT(whileStmt->Test()->TsType());
     const auto exprRes = whileStmt->Test()->TsType()->ResolveConditionExpr();
     status_ = And(status_, static_cast<LivenessStatus>(!std::get<0>(exprRes) || std::get<1>(exprRes)));
     AnalyzeStat(whileStmt->Body());
@@ -309,7 +318,7 @@ void AliveAnalyzer::AnalyzeForLoop(const ir::ForUpdateStatement *forStmt)
 
     if (forStmt->Test() != nullptr) {
         AnalyzeNode(forStmt->Test());
-        ES2PANDA_ASSERT(forStmt->Test()->TsType() && forStmt->Test()->TsType()->IsConditionalExprType());
+        ES2PANDA_ASSERT(forStmt->Test()->TsType());
         condType = forStmt->Test()->TsType();
         std::tie(resolveType, res) = forStmt->Test()->TsType()->ResolveConditionExpr();
         status_ = From(!resolveType || res);
@@ -406,7 +415,7 @@ void AliveAnalyzer::AnalyzeSwitch(const ir::SwitchStatement *switchStmt)
 
         if (status_ == LivenessStatus::ALIVE && !caseClause->Consequent().empty() && i < size - 1) {
             // NOTE(user) Add lint categories and option to enable/disable compiler warnings
-            checker_->Warning("Possible fall-through into case", caseClause->Start());
+            checker_->LogDiagnostic(diagnostic::MAYBE_FALLTHROUGH, caseClause->Start());
         }
     }
 
@@ -458,7 +467,7 @@ void AliveAnalyzer::AnalyzeTry(const ir::TryStatement *tryStmt)
         if (status_ == LivenessStatus::DEAD) {
             isAlive = false;
             // NOTE(user) Add lint categories and option to enable/disable compiler warnings
-            checker_->Warning("Finally clause cannot complete normally", tryStmt->FinallyBlock()->Start());
+            checker_->LogDiagnostic(diagnostic::FINALLY_CANT_COMPLETE, tryStmt->FinallyBlock()->Start());
         }
     }
 

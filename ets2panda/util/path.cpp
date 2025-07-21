@@ -75,7 +75,7 @@ void Path::InitializeFileName()
         }
     }
 
-    int extensionPosition = fileNameWithExtension_.Mutf8().find_last_of('.');
+    size_t extensionPosition = fileNameWithExtension_.Mutf8().find_last_of('.');
     fileName_ = fileNameWithExtension_.Substr(0, extensionPosition);
 }
 
@@ -85,7 +85,7 @@ void Path::InitializeFileNameWithExtension()
         return;
     }
 
-    int position = path_.Mutf8().find_last_of(PATH_DELIMITER);
+    size_t position = path_.Mutf8().find_last_of(PATH_DELIMITER);
     fileNameWithExtension_ = path_.Substr(position + 1, path_.Length());
 }
 
@@ -114,11 +114,9 @@ void Path::InitializeAbsoluteParentFolder()
         return;
     }
 
-    int position = absolutePath_.Mutf8().find_last_of(PATH_DELIMITER);
+    size_t position = absolutePath_.Mutf8().find_last_of(PATH_DELIMITER);
 
-    if (!absolutePath_.Empty()) {
-        absoluteParentFolder_ = absolutePath_.Substr(0, position);
-    }
+    absoluteParentFolder_ = absolutePath_.Substr(0, position);
 }
 
 void Path::InitializeParentFolder()
@@ -127,7 +125,7 @@ void Path::InitializeParentFolder()
         return;
     }
 
-    int position = path_.Mutf8().find_last_of(PATH_DELIMITER);
+    size_t position = path_.Mutf8().find_last_of(PATH_DELIMITER);
 
     parentFolder_ = path_.Substr(0, position);
 }

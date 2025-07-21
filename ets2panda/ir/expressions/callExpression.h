@@ -134,17 +134,27 @@ public:
 
     [[nodiscard]] ir::BlockStatement *TrailingBlock() const noexcept
     {
-        return trailingBlock_;
+        return trailingLambdaInfo_.block;
     }
 
     void SetIsTrailingBlockInNewLine(bool const isNewLine) noexcept
     {
-        isTrailingBlockInNewLine_ = isNewLine;
+        trailingLambdaInfo_.isBlockInNewLine = isNewLine;
     }
 
     [[nodiscard]] bool IsTrailingBlockInNewLine() const noexcept
     {
-        return isTrailingBlockInNewLine_;
+        return trailingLambdaInfo_.isBlockInNewLine;
+    }
+
+    void SetIsTrailingCall(bool const isTrailingCall) noexcept
+    {
+        trailingLambdaInfo_.isTrailingCall = isTrailingCall;
+    }
+
+    [[nodiscard]] bool IsTrailingCall() const noexcept
+    {
+        return trailingLambdaInfo_.isTrailingCall;
     }
 
     bool IsETSConstructorCall() const noexcept
@@ -176,6 +186,13 @@ public:
         uncheckedType_ = nullptr;
     }
 
+private:
+    struct TrailingLambdaInfo {
+        ir::BlockStatement *block {nullptr};
+        bool isTrailingCall {false};
+        bool isBlockInNewLine {false};
+    };
+
 protected:
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
     Expression *callee_;
@@ -184,8 +201,7 @@ protected:
     checker::Signature *signature_ {};
     bool trailingComma_;
     // for trailing lambda feature in ets
-    ir::BlockStatement *trailingBlock_ {};
-    bool isTrailingBlockInNewLine_ {false};
+    TrailingLambdaInfo trailingLambdaInfo_ {};
     checker::Type *uncheckedType_ {};
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };

@@ -232,7 +232,8 @@ static constexpr auto DECL_PATH = "declPath";  // CC-OFF(G.NAM.03-CPP) project c
 static constexpr auto OHM_URL = "ohmUrl";      // CC-OFF(G.NAM.03-CPP) project code style
 
 bool ArkTsConfig::ParseDynamicPaths(const JsonObject::JsonObjPointer *options,
-                                    std::map<std::string, DynamicImportData, CompareByLength> &dynamicPathsMap)
+                                    std::map<std::string, DynamicImportData, CompareByLength> &dynamicPathsMap,
+                                    const std::string &baseUrl)
 {
     if (options == nullptr) {
         return true;
@@ -244,44 +245,52 @@ bool ArkTsConfig::ParseDynamicPaths(const JsonObject::JsonObjPointer *options,
     for (size_t keyIdx = 0; keyIdx < dynamicPaths->get()->GetSize(); ++keyIdx) {
         auto &key = dynamicPaths->get()->GetKeyByIndex(keyIdx);
         auto data = dynamicPaths->get()->GetValue<JsonObject::JsonObjPointer>(key);
-        if (IsAbsolute(key)) {
-            diagnosticEngine_.LogWarning("Don't use absolute path '" + key + "' as key in 'dynamicPaths'");
-        }
-        if (!Check(data != nullptr, diagnostic::INVALID_VALUE, {"dynamic path", key})) {
-            return false;
-        }
-        auto langValue = data->get()->GetValue<JsonObject::StringT>(LANGUAGE);
-        if (!Check(langValue != nullptr, diagnostic::INVALID_LANGUAGE, {LANGUAGE, key, ValidDynamicLanguages()})) {
-            return false;
-        }
-        auto lang = Language::FromString(*langValue);
-        if (!Check(lang && lang->IsDynamic(), diagnostic::INVALID_LANGUAGE, {LANGUAGE, key, ValidDynamicLanguages()})) {
-            return false;
-        }
-        auto isSupportLang = compiler::Signatures::Dynamic::IsSupported(*lang);
-        if (!Check(isSupportLang, diagnostic::UNSUPPORTED_LANGUAGE_FOR_INTEROP, {lang->ToString()})) {
-            return false;
-        }
-        auto ohmUrl = data->get()->GetValue<JsonObject::StringT>(OHM_URL);
-        if (ohmUrl == nullptr) {
-            diagnosticEngine_.LogWarning("\"ohmUrl\" for module '" + key + "' wasn't specified");
-        }
-        std::string ohmUrlValue = (ohmUrl == nullptr) ? "" : *ohmUrl;
-        auto declPathValue = data->get()->GetValue<JsonObject::StringT>(DECL_PATH);
-        std::string normalizedDeclPath {};
-        if (declPathValue != nullptr) {
-            normalizedDeclPath = ark::os::GetAbsolutePath(*declPathValue);
-            if (!Check(ark::os::IsFileExists(normalizedDeclPath), diagnostic::INVALID_DYNAMIC_PATH, {key})) {
-                return false;
-            }
-        }
-        auto res = dynamicPathsMap.insert(
-            {ark::os::NormalizePath(key), ArkTsConfig::DynamicImportData(*lang, normalizedDeclPath, ohmUrlValue)});
-        if (!Check(res.second, diagnostic::DUPLICATED_DYNAMIC_PATH, {normalizedDeclPath, key})) {
+        if (!ParseSingleDynamicPath(key, data, dynamicPathsMap, baseUrl)) {
             return false;
         }
     }
     return true;
+}
+
+bool ArkTsConfig::ParseSingleDynamicPath(const std::string &key, const JsonObject::JsonObjPointer *data,
+                                         std::map<std::string, DynamicImportData, CompareByLength> &dynamicPathsMap,
+                                         const std::string &baseUrl)
+{
+    if (IsAbsolute(key)) {
+        diagnosticEngine_.LogDiagnostic(diagnostic::DYNAMIC_PATHS_ABSOLUTE, util::DiagnosticMessageParams {key});
+    }
+    if (!Check(data != nullptr, diagnostic::INVALID_VALUE, {"dynamic path", key})) {
+        return false;
+    }
+    auto langValue = data->get()->GetValue<JsonObject::StringT>(LANGUAGE);
+    if (!Check(langValue != nullptr, diagnostic::INVALID_LANGUAGE, {LANGUAGE, key, ValidDynamicLanguages()})) {
+        return false;
+    }
+    auto lang = Language::FromString(*langValue);
+    if (!Check(lang && lang->IsDynamic(), diagnostic::INVALID_LANGUAGE, {LANGUAGE, key, ValidDynamicLanguages()})) {
+        return false;
+    }
+    auto isSupportLang = compiler::Signatures::Dynamic::IsSupported(*lang);
+    if (!Check(isSupportLang, diagnostic::UNSUPPORTED_LANGUAGE_FOR_INTEROP, {lang->ToString()})) {
+        return false;
+    }
+    auto ohmUrl = data->get()->GetValue<JsonObject::StringT>(OHM_URL);
+    if (ohmUrl == nullptr) {
+        diagnosticEngine_.LogDiagnostic(diagnostic::NO_OHMURL, util::DiagnosticMessageParams {key});
+    }
+    std::string ohmUrlValue = (ohmUrl == nullptr) ? "" : *ohmUrl;
+    auto declPathValue = data->get()->GetValue<JsonObject::StringT>(DECL_PATH);
+    std::string normalizedDeclPath {};
+    if (declPathValue != nullptr) {
+        normalizedDeclPath = IsAbsolute(*declPathValue) ? ark::os::GetAbsolutePath(*declPathValue)
+                                                        : MakeAbsolute(*declPathValue, baseUrl);
+        if (!Check(ark::os::IsFileExists(normalizedDeclPath), diagnostic::INVALID_DYNAMIC_PATH, {key})) {
+            return false;
+        }
+    }
+    auto res = dynamicPathsMap.insert(
+        {ark::os::NormalizePath(key), ArkTsConfig::DynamicImportData(*lang, normalizedDeclPath, ohmUrlValue)});
+    return Check(res.second, diagnostic::DUPLICATED_DYNAMIC_PATH, {normalizedDeclPath, key});
 }
 
 template <class Collection, class Function>
@@ -332,6 +341,7 @@ std::optional<std::string> ArkTsConfig::ReadConfig(const std::string &path)
 
 static std::string ValueOrEmptyString(const JsonObject::JsonObjPointer *json, const std::string &key)
 {
+    ES2PANDA_ASSERT(json != nullptr);
     auto res = json->get()->GetValue<JsonObject::StringT>(key);
     return (res != nullptr) ? *res : "";
 }
@@ -375,7 +385,9 @@ bool ArkTsConfig::ParseCompilerOptions(std::string &arktsConfigDir, std::unorder
 
     // Parse "useUrl"
     if (compilerOptions->get()->HasKey(USE_EMPTY_PACKAGE)) {
-        useUrl_ = *(compilerOptions->get()->GetValue<JsonObject::BoolT>(USE_EMPTY_PACKAGE));
+        auto *useUrl = compilerOptions->get()->GetValue<JsonObject::BoolT>(USE_EMPTY_PACKAGE);
+        ES2PANDA_ASSERT(useUrl != nullptr);
+        useUrl_ = *useUrl;
     }
 
     // Parse "dependencies"
@@ -392,7 +404,7 @@ bool ArkTsConfig::ParseCompilerOptions(std::string &arktsConfigDir, std::unorder
         return false;
     }
     // Parse "dynamicPaths"
-    if (!ParseDynamicPaths(compilerOptions, dynamicPaths_)) {
+    if (!ParseDynamicPaths(compilerOptions, dynamicPaths_, baseUrl_)) {
         return false;
     }
     return true;
@@ -488,31 +500,49 @@ static std::string TrimPath(const std::string &path)
     return trimmedPath;
 }
 
-std::optional<std::string> ArkTsConfig::ResolvePath(std::string_view path) const
+std::optional<std::string> ArkTsConfig::ResolvePath(std::string_view path, bool isDynamic) const
 {
-    for (const auto &[alias, paths] : paths_) {
-        auto trimmedAlias = TrimPath(alias);
-        size_t pos = path.rfind(trimmedAlias, 0);
-        if (pos == 0) {
-            auto resolved = std::string(path);
-            // NOTE(ivagin): arktsconfig contains array of paths for each prefix, for now just get first one
-            std::string newPrefix = TrimPath(paths[0]);
-            resolved.replace(pos, trimmedAlias.length(), newPrefix);
-            return resolved;
+    auto tryResolveWithPaths = [this, &path]() -> std::optional<std::string> {
+        for (const auto &[alias, paths] : paths_) {
+            auto trimmedAlias = TrimPath(alias);
+            size_t pos = path.rfind(trimmedAlias, 0);
+            if (pos == 0) {
+                auto resolved = std::string(path);
+                // NOTE(ivagin): arktsconfig contains array of paths for each prefix, for now just get first one
+                std::string newPrefix = TrimPath(paths[0]);
+                resolved.replace(pos, trimmedAlias.length(), newPrefix);
+                return resolved;
+            }
         }
-    }
+        return std::nullopt;
+    };
 
-    auto normalizedPath = ark::os::NormalizePath(std::string(path));
-    for (const auto &[dynPath, _] : dynamicPaths_) {
-        // NOTE(dkofanov): #23877. Fail, if there is no direct match of normalized dynamic module path.
-        // It may be worth to take an attempt to resolve 'path' as relative to some defined dynamicPath in order to keep
-        // 'arktsconfig.json's smaller.
-        if (normalizedPath == dynPath) {
-            return dynPath;
+    auto tryResolveWithDynamicPaths = [this, &path]() -> std::optional<std::string> {
+        auto normalizedPath = ark::os::NormalizePath(std::string(path));
+        for (const auto &[dynPath, _] : dynamicPaths_) {
+            // NOTE(dkofanov): #23877. Fail, if there is no direct match of normalized dynamic module path.
+            // It may be worth to take an attempt to resolve 'path' as relative to some defined dynamicPath in order to
+            // keep 'arktsconfig.json's smaller.
+            if (normalizedPath == dynPath) {
+                return dynPath;
+            }
         }
-    }
+        return std::nullopt;
+    };
 
-    return std::nullopt;
+    if (isDynamic) {
+        auto result = tryResolveWithDynamicPaths();
+        if (result != std::nullopt) {
+            return result;
+        }
+        // NOTE: #26150. we fall to tryResolveWithPaths in this case 1.2->1.0->1.2
+        return tryResolveWithPaths();
+    }
+    auto result = tryResolveWithPaths();
+    if (result != std::nullopt) {
+        return result;
+    }
+    return tryResolveWithDynamicPaths();
 }
 
 #ifdef ARKTSCONFIG_USE_FILESYSTEM
@@ -538,7 +568,7 @@ std::vector<fs::path> GetSourceList(const std::shared_ptr<ArkTsConfig> &arktsCon
         includes = {ArkTsConfig::Pattern("**/*", configDir.string())};
     }
     // If outDir in not default add it into exclude
-    if (!fs::equivalent(arktsConfig->OutDir(), configDir)) {
+    if (fs::exists(arktsConfig->OutDir()) && !fs::equivalent(arktsConfig->OutDir(), configDir)) {
         excludes.emplace_back("**/*", arktsConfig->OutDir());
     }
 

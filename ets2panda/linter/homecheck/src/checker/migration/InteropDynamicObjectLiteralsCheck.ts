@@ -110,12 +110,11 @@ export class InteropObjectLiteralCheck implements BaseChecker {
                 this.visited.add(target);
             }
 
-            let result: Stmt[] = [];
             let checkAll = { value: true };
             let visited: Set<Stmt> = new Set();
-            this.checkFromStmt(stmt, scene, result, checkAll, visited);
+
             // 对于待检查的instanceof语句，其检查对象存在用字面量赋值的情况，需要判断对象声明时的类型注解的来源，满足interop场景时需在此处告警
-            if (result.length > 0) {
+            if (this.checkFromStmt(stmt, scene, checkAll, visited)) {
                 const opType = rightOp.getOp().getType();
                 if (!(opType instanceof ClassType)) {
                     continue;
@@ -124,27 +123,17 @@ export class InteropObjectLiteralCheck implements BaseChecker {
                 if (opTypeClass === null || opTypeClass.getCategory() === ClassCategory.OBJECT) {
                     continue;
                 }
-                if (
-                    opTypeClass.getLanguage() === Language.TYPESCRIPT ||
-                    opTypeClass.getLanguage() === Language.ARKTS1_1
-                ) {
-                    this.addIssueReport(stmt, rightOp, result, opTypeClass.getLanguage());
+                if (opTypeClass.getLanguage() === Language.TYPESCRIPT || opTypeClass.getLanguage() === Language.ARKTS1_1) {
+                    this.addIssueReport(stmt, rightOp, opTypeClass.getLanguage(), checkAll.value);
                 }
             }
         }
     }
 
-    private checkFromStmt(
-        stmt: Stmt,
-        scene: Scene,
-        res: Stmt[],
-        checkAll: { value: boolean },
-        visited: Set<Stmt>,
-        depth: number = 0
-    ): void {
+    private checkFromStmt(stmt: Stmt, scene: Scene, checkAll: { value: boolean }, visited: Set<Stmt>, depth: number = 0): boolean {
         if (depth > CALL_DEPTH_LIMIT) {
             checkAll.value = false;
-            return;
+            return true;
         }
         const node = this.dvfg.getOrNewDVFGNode(stmt);
         let worklist: DVFGNode[] = [node];
@@ -156,36 +145,42 @@ export class InteropObjectLiteralCheck implements BaseChecker {
             }
             visited.add(currentStmt);
             if (this.isObjectLiteral(currentStmt, scene)) {
-                res.push(currentStmt);
-                continue;
+                return true;
             }
             const callsite = this.cg.getCallSiteByStmt(currentStmt);
-            callsite.forEach(cs => {
+            for (const cs of callsite) {
                 const declaringMtd = this.cg.getArkMethodByFuncID(cs.calleeFuncID);
                 if (!declaringMtd || !declaringMtd.getCfg()) {
-                    return;
+                    return false;
                 }
                 if (!this.visited.has(declaringMtd)) {
                     this.dvfgBuilder.buildForSingleMethod(declaringMtd);
                     this.visited.add(declaringMtd);
                 }
-                declaringMtd
-                    .getReturnStmt()
-                    .forEach(r => this.checkFromStmt(r, scene, res, checkAll, visited, depth + 1));
-            });
+                const returnStmts = declaringMtd.getReturnStmt();
+                for (const stmt of returnStmts) {
+                    const res = this.checkFromStmt(stmt, scene, checkAll, visited, depth + 1);
+                    if (res) {
+                        return true;
+                    }
+                }
+            }
             const paramRef = this.isFromParameter(currentStmt);
             if (paramRef) {
                 const paramIdx = paramRef.getIndex();
-                const callsites = this.cg.getInvokeStmtByMethod(
-                    currentStmt.getCfg().getDeclaringMethod().getSignature()
-                );
+                const callsites = this.cg.getInvokeStmtByMethod(currentStmt.getCfg().getDeclaringMethod().getSignature());
                 this.processCallsites(callsites);
-                this.collectArgDefs(paramIdx, callsites).forEach(d =>
-                    this.checkFromStmt(d, scene, res, checkAll, visited, depth + 1)
-                );
+                const argDefs = this.collectArgDefs(paramIdx, callsites);
+                for (const def of argDefs) {
+                    const res = this.checkFromStmt(def, scene, checkAll, visited, depth + 1);
+                    if (res) {
+                        return true;
+                    }
+                }
             }
             current.getIncomingEdge().forEach(e => worklist.push(e.getSrcNode() as DVFGNode));
         }
+        return false;
     }
 
     private processCallsites(callsites: Stmt[]): void {
@@ -235,7 +230,7 @@ export class InteropObjectLiteralCheck implements BaseChecker {
         });
     }
 
-    private addIssueReport(stmt: Stmt, operand: Value, result: Stmt[], targetLanguage: Language): void {
+    private addIssueReport(stmt: Stmt, operand: Value, targetLanguage: Language, checkAll: boolean = true): void {
         const interopRuleId = this.getInteropRule(targetLanguage);
         if (interopRuleId === null) {
             return;
@@ -244,10 +239,11 @@ export class InteropObjectLiteralCheck implements BaseChecker {
         const warnInfo = getLineAndColumn(stmt, operand);
         let targetLan = getLanguageStr(targetLanguage);
 
-        const resPos: number[] = [];
-        result.forEach(stmt => resPos.push(stmt.getOriginPositionInfo().getLineNo()));
         const problem = 'Interop';
-        const desc = `instanceof including object literal with class type from ${targetLan} (${interopRuleId})`;
+        let desc = `instanceof including object literal with class type from ${targetLan} (${interopRuleId})`;
+        if (!checkAll) {
+            desc = `Can not check when function call chain depth exceeds ${CALL_DEPTH_LIMIT}, please check it manually (${interopRuleId})`;
+        }
         let defects = new Defects(
             warnInfo.line,
             warnInfo.startCol,

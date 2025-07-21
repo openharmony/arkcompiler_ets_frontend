@@ -32,10 +32,10 @@ Signature *Signature::Substitute(TypeRelation *relation, const Substitution *sub
         return this;
     }
     auto *checker = relation->GetChecker()->AsETSChecker();
-    auto *allocator = checker->Allocator();
+    auto *allocator = checker->ProgramAllocator();
     bool anyChange = false;
     SignatureInfo *newSigInfo = allocator->New<SignatureInfo>(allocator);
-
+    ES2PANDA_ASSERT(newSigInfo != nullptr);
     if (!signatureInfo_->typeParams.empty()) {
         for (auto *tparam : signatureInfo_->typeParams) {
             auto *newTparam = tparam->Substitute(relation, substitution);
@@ -51,6 +51,10 @@ Signature *Signature::Substitute(TypeRelation *relation, const Substitution *sub
         if (newParamType != param->TsType()) {
             anyChange = true;
             newParam = param->Copy(allocator, param->Declaration());
+            if (newParamType->IsETSVoidType()) {
+                // since `void` is not allowed to be used as param type
+                newParamType = checker->GlobalETSUndefinedType();
+            }
             newParam->SetTsType(newParamType);
         }
         newSigInfo->params.push_back(newParam);
@@ -82,6 +86,7 @@ Signature *Signature::Substitute(TypeRelation *relation, const Substitution *sub
 Signature *Signature::CreateSignatureForSubstitute(ArenaAllocator *allocator, SignatureInfo *sigInfo, Type *returnType)
 {
     auto *result = allocator->New<Signature>(sigInfo, returnType, func_);
+    ES2PANDA_ASSERT(result != nullptr);
     result->flags_ = flags_;
     result->internalName_ = internalName_;
     result->ownerObj_ = ownerObj_;
@@ -110,7 +115,7 @@ void Signature::ToAssemblerType(std::stringstream &ss) const
 Signature *Signature::Copy(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes)
 {
     SignatureInfo *copiedInfo = allocator->New<SignatureInfo>(signatureInfo_, allocator);
-
+    ES2PANDA_ASSERT(copiedInfo != nullptr);
     for (size_t idx = 0U; idx < signatureInfo_->params.size(); ++idx) {
         auto *const paramType = signatureInfo_->params[idx]->TsType();
         if (paramType->HasTypeFlag(TypeFlag::GENERIC) && paramType->IsETSObjectType()) {
@@ -124,6 +129,7 @@ Signature *Signature::Copy(ArenaAllocator *allocator, TypeRelation *relation, Gl
     }
 
     auto *const copiedSignature = allocator->New<Signature>(copiedInfo, returnType_, func_);
+    ES2PANDA_ASSERT(copiedSignature != nullptr);
     copiedSignature->flags_ = flags_;
     copiedSignature->internalName_ = internalName_;
     copiedSignature->ownerObj_ = ownerObj_;
@@ -287,14 +293,16 @@ void Signature::AssignmentTarget([[maybe_unused]] TypeRelation *relation, [[mayb
 
 Signature *Signature::ToArrowSignature(ETSChecker *checker)
 {
-    auto *allocator = checker->Allocator();
+    auto *allocator = checker->ProgramAllocator();
     auto *sigInfo = allocator->New<SignatureInfo>(signatureInfo_, allocator);
+    ES2PANDA_ASSERT(sigInfo != nullptr);
     for (auto param : sigInfo->params) {
         param->SetTsType(checker->MaybeBoxType(param->TsType()));
     }
     auto *retType = checker->MaybeBoxType(returnType_);
 
     auto *resultSig = allocator->New<Signature>(sigInfo, retType);
+    ES2PANDA_ASSERT(resultSig != nullptr);
     resultSig->flags_ = flags_;
     resultSig->SetOwner(Owner());
     resultSig->SetOwnerVar(OwnerVar());

@@ -13,6 +13,14 @@
  * limitations under the License.
  */
 
+import {
+  Observed,
+  Track,
+  CommonAttribute,
+} from '@kit.ArkUI';
+
+import { AttributeUpdater } from '@kit.ArkUI';
+
 const irreparableArr = new Array();
 let repairableArr: Array<number> = new Array<number>();
 repairableArr = new Array<number>();
@@ -72,3 +80,28 @@ class MyClassB {
     return new Set();
   }
 }
+
+const testMap: Map<string, number> = new Map<string, number>([
+  ['123', 1.0], // my comment 1
+  ['sfe', 2.0] // my comment 2
+]);
+let a : Array<string> = new Array<string>();
+function foo(arr:Array<string>) { }
+foo(new Array<string>()); 
+@Observed
+export class AppIconCloneBadgeVm {
+  @Track public cloneBadgeModifier: AttributeUpdater<CommonAttribute> = new AttributeUpdater<CommonAttribute>();
+}
+class B {}
+class C {}
+class A <T,U = B>{
+  t:T;
+  constructor(t:T) {
+    this.t = t;
+  }
+}
+new A<C>(new C())
+let a: Array<string> | undefined = new Array<string>();
+let aa: Array<string> | Set<string> | undefined = new Array<string>();
+let b: Array<string> | Array<number> | undefined = new Array();
+let test: string[] = new Array<string>();

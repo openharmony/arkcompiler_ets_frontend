@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -235,6 +235,16 @@ public:
         return enableAnnotations_;
     }
 
+    void SetEnableEtsImplements(bool enableEtsImplements)
+    {
+        enableEtsImplements_ = enableEtsImplements;
+    }
+
+    bool IsEnableEtsImplements() const
+    {
+        return enableEtsImplements_;
+    }
+
     void SetSourceLang(const std::string &sourceLang)
     {
         if (sourceLang == "ets") {
@@ -277,6 +287,7 @@ private:
     bool useDefineSemantic_ {true};
     bool isShared_ {false};
     bool enableAnnotations_ {false};
+    bool enableEtsImplements_ {false};
     std::string targetApiSubVersion_ { util::Helpers::DEFAULT_SUB_API_VERSION };
     std::string moduleRecordFieldName_;
     panda::pandasm::extensions::Language sourceLang_ {panda::pandasm::extensions::DEFAULT_LANGUAGE};

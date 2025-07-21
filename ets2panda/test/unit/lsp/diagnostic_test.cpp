@@ -22,6 +22,8 @@
 #include "public/es2panda_lib.h"
 #include "public/public.h"
 
+namespace {
+
 using ark::es2panda::lsp::Initializer;
 
 TEST_F(LSPAPITests, DiagnosticConstructorAndField)
@@ -183,3 +185,5 @@ TEST_F(LSPAPITests, CreateDiagnosticForNode3)
     ASSERT_EQ(result.diagnostic.range_.end.character_, endChar);
     initializer.DestroyContext(ctx);
 }
+
+}  // namespace

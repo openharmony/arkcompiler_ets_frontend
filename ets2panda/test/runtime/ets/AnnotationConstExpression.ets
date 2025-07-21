@@ -20,8 +20,8 @@
 }
 
 @interface Anno {
-    a: boolean[] = [true & false, false ^ true, true | false]
-    b: int[] = [1 + 1 + 1 ^ 11, 48 ? 10 : 20]
+    a: FixedArray<boolean> = [true & false, false ^ true, true | false]
+    b: FixedArray<int> = [1 + 1 + 1 ^ 11, 48 ? 10 : 20]
     c: string = "a" + "b"
 }
 

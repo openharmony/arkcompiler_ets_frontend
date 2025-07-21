@@ -44,25 +44,27 @@ static std::string GetAccessClassName(const checker::ETSUnionType *unionType)
     return res;
 }
 
-static ir::ClassDefinition *GetUnionAccessClass(checker::ETSChecker *checker, varbinder::VarBinder *varbinder,
+static ir::ClassDefinition *GetUnionAccessClass(public_lib::Context *ctx, varbinder::VarBinder *varbinder,
                                                 std::string const &name)
 {
+    auto *checker = ctx->checker->AsETSChecker();
+    auto *allocator = ctx->Allocator();
     // Create the name for the synthetic class node
     if (auto foundVar = checker->Scope()->FindLocal(util::StringView(name), varbinder::ResolveBindingOptions::BINDINGS);
         foundVar != nullptr) {
         return foundVar->Declaration()->Node()->AsClassDefinition();
     }
-    util::UString unionFieldClassName(util::StringView(name), checker->Allocator());
-    auto *ident = checker->AllocNode<ir::Identifier>(unionFieldClassName.View(), checker->Allocator());
+    util::UString unionFieldClassName(util::StringView(name), allocator);
+    auto *ident = ctx->AllocNode<ir::Identifier>(unionFieldClassName.View(), allocator);
     auto [decl, var] = varbinder->NewVarDecl<varbinder::ClassDecl>(ident->Start(), ident->Name());
     ident->SetVariable(var);
 
     auto classCtx = varbinder::LexicalScope<varbinder::ClassScope>(varbinder);
-    auto *classDef =
-        checker->AllocNode<ir::ClassDefinition>(checker->Allocator(), ident, ir::ClassDefinitionModifiers::GLOBAL,
-                                                ir::ModifierFlags::ABSTRACT, Language(Language::Id::ETS));
+    auto *classDef = ctx->AllocNode<ir::ClassDefinition>(ctx->Allocator(), ident, ir::ClassDefinitionModifiers::GLOBAL,
+                                                         ir::ModifierFlags::ABSTRACT, Language(Language::Id::ETS));
+    ES2PANDA_ASSERT(classDef != nullptr);
     classDef->SetScope(classCtx.GetScope());
-    auto *classDecl = checker->AllocNode<ir::ClassDeclaration>(classDef, checker->Allocator());
+    auto *classDecl = ctx->AllocNode<ir::ClassDeclaration>(classDef, allocator);
     classDef->Scope()->BindNode(classDecl->Definition());
     decl->BindNode(classDef);
     var->SetScope(classDef->Scope());
@@ -77,38 +79,41 @@ static ir::ClassDefinition *GetUnionAccessClass(checker::ETSChecker *checker, va
 }
 
 static std::tuple<varbinder::LocalVariable *, checker::Signature *> CreateNamedAccessMethod(
-    checker::ETSChecker *checker, varbinder::VarBinder *varbinder, ir::MemberExpression *expr,
+    public_lib::Context *ctx, varbinder::VarBinder *varbinder, ir::MemberExpression *expr,
     checker::Signature *signature)
 {
-    auto allocator = checker->Allocator();
+    auto *allocator = ctx->Allocator();
+    auto *checker = ctx->checker->AsETSChecker();
+
     auto unionType = checker->GetApparentType(checker->GetNonNullishType(expr->Object()->TsType()))->AsETSUnionType();
-    auto *const accessClass = GetUnionAccessClass(checker, varbinder, GetAccessClassName(unionType));
+    auto *const accessClass = GetUnionAccessClass(ctx, varbinder, GetAccessClassName(unionType));
     auto methodName = expr->TsType()->AsETSFunctionType()->Name();
 
     // Create method name for synthetic class
-    auto *methodIdent = checker->AllocNode<ir::Identifier>(methodName, allocator);
+    auto *methodIdent = ctx->AllocNode<ir::Identifier>(methodName, allocator);
 
     ArenaVector<ir::Expression *> params {allocator->Adapter()};
     for (auto param : signature->Function()->Params()) {
         params.emplace_back(param->Clone(allocator, nullptr)->AsETSParameterExpression());
     }
-    auto returnTypeAnno = checker->AllocNode<ir::OpaqueTypeNode>(signature->ReturnType(), allocator);
+    auto returnTypeAnno = ctx->AllocNode<ir::OpaqueTypeNode>(signature->ReturnType(), allocator);
 
-    auto *func = checker->AllocNode<ir::ScriptFunction>(
+    auto *func = ctx->AllocNode<ir::ScriptFunction>(
         allocator, ir::ScriptFunction::ScriptFunctionData {
                        // CC-OFFNXT(G.FMT.02-CPP) project code style
                        nullptr, ir::FunctionSignature(nullptr, std::move(params), returnTypeAnno),
                        // CC-OFFNXT(G.FMT.02-CPP) project code style
                        ir::ScriptFunctionFlags::METHOD, ir::ModifierFlags::PUBLIC});
+    ES2PANDA_ASSERT(func != nullptr);
     func->SetIdent(methodIdent->Clone(allocator, nullptr));
 
     // Create the synthetic function node
-    auto *funcExpr = checker->AllocNode<ir::FunctionExpression>(func);
+    auto *funcExpr = ctx->AllocNode<ir::FunctionExpression>(func);
 
     // Create the synthetic method definition node
-    auto *method = checker->AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::METHOD, methodIdent, funcExpr,
-                                                            ir::ModifierFlags::PUBLIC | ir::ModifierFlags::ABSTRACT,
-                                                            allocator, false);
+    auto *method =
+        ctx->AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::METHOD, methodIdent, funcExpr,
+                                             ir::ModifierFlags::PUBLIC | ir::ModifierFlags::ABSTRACT, allocator, false);
     ArenaVector<ir::AstNode *> methodDecl {allocator->Adapter()};
     methodDecl.push_back(method);
     accessClass->AddProperties(std::move(methodDecl));
@@ -124,24 +129,26 @@ static std::tuple<varbinder::LocalVariable *, checker::Signature *> CreateNamedA
             method->TsType()->AsETSFunctionType()->CallSignatures().front()};
 }
 
-static varbinder::LocalVariable *CreateNamedAccessProperty(checker::ETSChecker *checker,
-                                                           varbinder::VarBinder *varbinder, ir::MemberExpression *expr)
+static varbinder::LocalVariable *CreateNamedAccessProperty(public_lib::Context *ctx, varbinder::VarBinder *varbinder,
+                                                           ir::MemberExpression *expr)
 {
-    auto *const allocator = checker->Allocator();
+    auto *const allocator = ctx->Allocator();
+    auto *checker = ctx->checker->AsETSChecker();
+
     auto unionType = checker->GetApparentType(checker->GetNonNullishType(expr->Object()->TsType()))->AsETSUnionType();
-    auto *const accessClass = GetUnionAccessClass(checker, varbinder, GetAccessClassName(unionType));
+    auto *const accessClass = GetUnionAccessClass(ctx, varbinder, GetAccessClassName(unionType));
     auto propName = expr->Property()->AsIdentifier()->Name();
     auto fieldType = expr->TsType();
     auto uncheckedType = expr->UncheckedType();
     auto *typeToSet = uncheckedType == nullptr ? fieldType : uncheckedType;
 
     // Create field name for synthetic class
-    auto *fieldIdent = checker->AllocNode<ir::Identifier>(propName, allocator);
+    auto *fieldIdent = ctx->AllocNode<ir::Identifier>(propName, allocator);
 
     // Create the synthetic class property node
     auto *field =
-        checker->AllocNode<ir::ClassProperty>(fieldIdent, nullptr, nullptr, ir::ModifierFlags::NONE, allocator, false);
-
+        ctx->AllocNode<ir::ClassProperty>(fieldIdent, nullptr, nullptr, ir::ModifierFlags::NONE, allocator, false);
+    ES2PANDA_ASSERT(field != nullptr);
     // Add the declaration to the scope
     auto [decl, var] = varbinder->NewVarDecl<varbinder::LetDecl>(fieldIdent->Start(), fieldIdent->Name());
     var->AddFlag(varbinder::VariableFlags::PROPERTY);
@@ -156,14 +163,15 @@ static varbinder::LocalVariable *CreateNamedAccessProperty(checker::ETSChecker *
     return var->AsLocalVariable();
 }
 
-static varbinder::LocalVariable *CreateNamedAccess(checker::ETSChecker *checker, varbinder::VarBinder *varbinder,
+static varbinder::LocalVariable *CreateNamedAccess(public_lib::Context *ctx, varbinder::VarBinder *varbinder,
                                                    ir::MemberExpression *expr)
 {
     auto type = expr->TsType();
     auto name = expr->Property()->AsIdentifier()->Name();
-
+    auto *checker = ctx->checker->AsETSChecker();
+    ES2PANDA_ASSERT(checker->GetApparentType(checker->GetNonNullishType(expr->Object()->TsType())) != nullptr);
     auto unionType = checker->GetApparentType(checker->GetNonNullishType(expr->Object()->TsType()))->AsETSUnionType();
-    auto *const accessClass = GetUnionAccessClass(checker, varbinder, GetAccessClassName(unionType));
+    auto *const accessClass = GetUnionAccessClass(ctx, varbinder, GetAccessClassName(unionType));
     auto *classScope = accessClass->Scope()->AsClassScope();
 
     if (auto *var = classScope->FindLocal(name, varbinder::ResolveBindingOptions::ALL_NON_STATIC); var != nullptr) {
@@ -175,35 +183,35 @@ static varbinder::LocalVariable *CreateNamedAccess(checker::ETSChecker *checker,
         auto parent = expr->Parent()->AsCallExpression();
         ES2PANDA_ASSERT(parent->Callee() == expr && parent->Signature()->HasFunction());
 
-        auto [var, sig] = CreateNamedAccessMethod(checker, varbinder, expr, parent->Signature());
+        auto [var, sig] = CreateNamedAccessMethod(ctx, varbinder, expr, parent->Signature());
         parent->AsCallExpression()->SetSignature(sig);
         return var;
     }
 
     // Enter the union filed class instance field scope
     auto fieldCtx = varbinder::LexicalScope<varbinder::LocalScope>::Enter(varbinder, classScope->InstanceFieldScope());
-    return CreateNamedAccessProperty(checker, varbinder, expr);
+    return CreateNamedAccessProperty(ctx, varbinder, expr);
 }
 
-static void HandleUnionPropertyAccess(checker::ETSChecker *checker, varbinder::VarBinder *vbind,
-                                      ir::MemberExpression *expr)
+static void HandleUnionPropertyAccess(public_lib::Context *ctx, varbinder::VarBinder *vbind, ir::MemberExpression *expr)
 {
     if (expr->PropVar() != nullptr) {
         return;
     }
 
     [[maybe_unused]] auto const *const parent = expr->Parent();
-    expr->SetPropVar(CreateNamedAccess(checker, vbind, expr));
+    expr->SetPropVar(CreateNamedAccess(ctx, vbind, expr));
     ES2PANDA_ASSERT(expr->PropVar() != nullptr);
 }
 
-static ir::TSAsExpression *GenAsExpression(checker::ETSChecker *checker, checker::Type *const opaqueType,
+static ir::TSAsExpression *GenAsExpression(public_lib::Context *ctx, checker::Type *const opaqueType,
                                            ir::Expression *const node, ir::AstNode *const parent)
 {
-    auto *const typeNode = checker->AllocNode<ir::OpaqueTypeNode>(opaqueType, checker->Allocator());
-    auto *const asExpression = checker->AllocNode<ir::TSAsExpression>(node, typeNode, false);
+    auto *const typeNode = ctx->AllocNode<ir::OpaqueTypeNode>(opaqueType, ctx->Allocator());
+    auto *const asExpression = ctx->AllocNode<ir::TSAsExpression>(node, typeNode, false);
+    ES2PANDA_ASSERT(asExpression != nullptr);
     asExpression->SetParent(parent);
-    asExpression->Check(checker);
+    asExpression->Check(ctx->checker->AsETSChecker());
     return asExpression;
 }
 
@@ -213,15 +221,16 @@ static ir::TSAsExpression *GenAsExpression(checker::ETSChecker *checker, checker
  *      where (ref) is some unboxable type from union constituent types.
  *  Finally, `(union) as (prim)` expression replaces union_node that came above.
  */
-static ir::TSAsExpression *UnionCastToPrimitive(checker::ETSChecker *checker, checker::ETSObjectType *unboxableRef,
+static ir::TSAsExpression *UnionCastToPrimitive(public_lib::Context *ctx, checker::ETSObjectType *unboxableRef,
                                                 checker::Type *unboxedPrim, ir::Expression *unionNode)
 {
-    auto *const unionAsRefExpression = GenAsExpression(checker, unboxableRef, unionNode, nullptr);
-    return GenAsExpression(checker, unboxedPrim, unionAsRefExpression, unionNode->Parent());
+    auto *const unionAsRefExpression = GenAsExpression(ctx, unboxableRef, unionNode, nullptr);
+    return GenAsExpression(ctx, unboxedPrim, unionAsRefExpression, unionNode->Parent());
 }
 
-static ir::TSAsExpression *HandleUnionCastToPrimitive(checker::ETSChecker *checker, ir::TSAsExpression *expr)
+static ir::TSAsExpression *HandleUnionCastToPrimitive(public_lib::Context *ctx, ir::TSAsExpression *expr)
 {
+    checker::ETSChecker *checker = ctx->checker->AsETSChecker();
     auto *const unionType = expr->Expr()->TsType()->AsETSUnionType();
     auto *sourceType = unionType->FindExactOrBoxedType(checker, expr->TsType());
     if (sourceType == nullptr) {
@@ -233,7 +242,8 @@ static ir::TSAsExpression *HandleUnionCastToPrimitive(checker::ETSChecker *check
         auto *maybeUnboxingType = checker->MaybeUnboxInRelation(sourceType);
         // when sourceType get `object`, it could cast to any primitive type but can't be unboxed;
         if (maybeUnboxingType != nullptr && expr->TsType()->IsETSPrimitiveType()) {
-            auto *const asExpr = GenAsExpression(checker, sourceType, expr->Expr(), expr);
+            auto *const asExpr = GenAsExpression(ctx, sourceType, expr->Expr(), expr);
+            ES2PANDA_ASSERT(asExpr != nullptr);
             asExpr->SetBoxingUnboxingFlags(checker->GetUnboxingFlag(maybeUnboxingType));
             expr->Expr()->SetBoxingUnboxingFlags(ir::BoxingUnboxingFlags::NONE);
             expr->SetExpr(asExpr);
@@ -248,8 +258,7 @@ static ir::TSAsExpression *HandleUnionCastToPrimitive(checker::ETSChecker *check
         return expr;
     }
 
-    auto *const node =
-        UnionCastToPrimitive(checker, unboxableUnionType->AsETSObjectType(), unboxedUnionType, expr->Expr());
+    auto *const node = UnionCastToPrimitive(ctx, unboxableUnionType->AsETSObjectType(), unboxedUnionType, expr->Expr());
     node->SetParent(expr->Parent());
 
     return node;
@@ -260,13 +269,12 @@ bool UnionLowering::PerformForModule(public_lib::Context *ctx, parser::Program *
     checker::ETSChecker *checker = ctx->checker->AsETSChecker();
 
     program->Ast()->TransformChildrenRecursively(
-        // CC-OFFNXT(G.FMT.14-CPP) project code style
-        [checker](ir::AstNode *ast) -> ir::AstNode * {
+        [ctx, checker](checker::AstNodePtr ast) -> checker::AstNodePtr {
             if (ast->IsMemberExpression() && ast->AsMemberExpression()->Object()->TsType() != nullptr) {
                 auto *objType =
                     checker->GetApparentType(checker->GetNonNullishType(ast->AsMemberExpression()->Object()->TsType()));
                 if (objType->IsETSUnionType()) {
-                    HandleUnionPropertyAccess(checker, checker->VarBinder(), ast->AsMemberExpression());
+                    HandleUnionPropertyAccess(ctx, checker->VarBinder(), ast->AsMemberExpression());
                     return ast;
                 }
             }
@@ -274,7 +282,7 @@ bool UnionLowering::PerformForModule(public_lib::Context *ctx, parser::Program *
                 ast->AsTSAsExpression()->Expr()->TsType()->IsETSUnionType() &&
                 ast->AsTSAsExpression()->TsType() != nullptr &&
                 ast->AsTSAsExpression()->TsType()->IsETSPrimitiveType()) {
-                return HandleUnionCastToPrimitive(checker, ast->AsTSAsExpression());
+                return HandleUnionCastToPrimitive(ctx, ast->AsTSAsExpression());
             }
 
             return ast;
@@ -286,7 +294,8 @@ bool UnionLowering::PerformForModule(public_lib::Context *ctx, parser::Program *
 
 bool UnionLowering::PostconditionForModule(public_lib::Context *ctx, const parser::Program *program)
 {
-    bool current = !program->Ast()->IsAnyChild([checker = ctx->checker->AsETSChecker()](ir::AstNode *ast) {
+    auto *checker = ctx->checker->AsETSChecker();
+    bool current = !program->Ast()->IsAnyChild([checker](ir::AstNode *ast) {
         if (!ast->IsMemberExpression() || ast->AsMemberExpression()->Object()->TsType() == nullptr) {
             return false;
         }

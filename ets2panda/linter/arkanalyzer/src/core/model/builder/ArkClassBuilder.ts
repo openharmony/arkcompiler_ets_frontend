@@ -370,7 +370,17 @@ function buildArkClassMembers(clsNode: ClassLikeNode, cls: ArkClass, sourceFile:
     const instanceInitStmts: Stmt[] = [];
     let staticBlockId = 0;
     clsNode.members.forEach(member => {
-        if (ts.isPropertyDeclaration(member) || ts.isPropertySignature(member)) {
+        if (
+            ts.isMethodDeclaration(member) ||
+            ts.isConstructorDeclaration(member) ||
+            ts.isMethodSignature(member) ||
+            ts.isConstructSignatureDeclaration(member) ||
+            ts.isAccessor(member) ||
+            ts.isCallSignatureDeclaration(member)
+        ) {
+            // these node types have been handled at the beginning of this function by calling buildMethodsForClass
+            return;
+        } else if (ts.isPropertyDeclaration(member) || ts.isPropertySignature(member)) {
             const arkField = buildProperty2ArkField(member, sourceFile, cls);
             if (ts.isClassDeclaration(clsNode) || ts.isClassExpression(clsNode) || ts.isStructDeclaration(clsNode)) {
                 if (arkField.isStatic()) {
@@ -395,9 +405,9 @@ function buildArkClassMembers(clsNode: ClassLikeNode, cls: ArkClass, sourceFile:
             const staticBlockInvokeExpr = new ArkStaticInvokeExpr(currStaticBlockMethodSig, []);
             staticInitStmts.push(new ArkInvokeStmt(staticBlockInvokeExpr));
         } else if (ts.isSemicolonClassElement(member)) {
-            logger.debug('Skip these members.');
+            logger.trace('Skip these members.');
         } else {
-            logger.warn('Please contact developers to support new member type!');
+            logger.warn(`Please contact developers to support new member in class: ${cls.getSignature().toString()}, member: ${member.getText()}!`);
         }
     });
     if (ts.isClassDeclaration(clsNode) || ts.isClassExpression(clsNode) || ts.isStructDeclaration(clsNode)) {
@@ -456,6 +466,9 @@ function buildParameterProperty2ArkField(params: ts.NodeArray<ParameterDeclarati
         const fieldSignature = new FieldSignature(fieldName, cls.getSignature(), fieldType, false);
         field.setSignature(fieldSignature);
         field.setModifiers(buildModifiers(parameter));
+        if (parameter.questionToken) {
+            field.setQuestionToken(true);
+        }
         cls.addField(field);
     });
 }

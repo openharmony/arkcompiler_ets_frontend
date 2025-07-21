@@ -27,16 +27,11 @@ export class MathSpectralNorm {
 
 /* @@? 19:10 Error TypeError: Unresolved reference i */
 /* @@? 19:17 Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type. */
-/* @@? 19:22 Error SyntaxError: Unexpected token ':'. */
-/* @@? 19:22 Error SyntaxError: Unexpected token ':'. */
-/* @@? 19:22 Error SyntaxError: Unexpected token ':'. */
-/* @@? 19:22 Error SyntaxError: Unexpected token ':'. */
-/* @@? 19:22 Error SyntaxError: Unexpected token ':'. */
-/* @@? 19:22 Error SyntaxError: Expected ')', got ':'. */
 /* @@? 19:22 Error SyntaxError: Expected ';', got ':'. */
+/* @@? 19:22 Error SyntaxError: Unexpected token ':'. */
+/* @@? 19:24 Error SyntaxError: Expected ')', got 'identification literal'. */
 /* @@? 19:27 Error SyntaxError: Unexpected token ')'. */
-/* @@? 19:27 Error SyntaxError: Unexpected token ')'. */
-/* @@? 19:27 Error SyntaxError: Unexpected token ')'. */
+/* @@? 19:29 Error SyntaxError: Unexpected token '{'. */
 /* @@? 20:7 Error TypeError: Unresolved reference vbv */
 /* @@? 20:14 Error TypeError: Unresolved reference u */
 /* @@? 20:14 Error TypeError: Indexed access is not supported for such expression type. */

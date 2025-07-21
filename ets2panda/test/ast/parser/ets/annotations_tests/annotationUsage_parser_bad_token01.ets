@@ -22,5 +22,5 @@ class A{}
 /* @@@ label Error SyntaxError: Expected ')', got ','. */
 /* @@@ label Error SyntaxError: Unexpected token ','. */
 /* @@@ label Error SyntaxError: Annotations are not allowed on this type of declaration. */
-/* @@@ label Error SyntaxError: Unexpected token ','. */
+/* @@? 19:30 Error SyntaxError: Unexpected token '1'. */
 /* @@@ label1 Error SyntaxError: Unexpected token ')'. */

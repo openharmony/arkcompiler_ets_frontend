@@ -80,12 +80,6 @@ ast/compiler/ets/readonlyType_5.ets
 # Issue: #23068
 ast/parser/ets/InferTypeParamFromParam2.ets
 
-# Issue: #23079
-ast/parser/ets/cast_expressions10.ets
-ast/parser/ets/cast_expressions7.ets
-ast/parser/ets/cast_expressions8.ets
-ast/parser/ets/cast_expressions9.ets
-
 # Issue: #23080
 ast/parser/ets/default_parameter3.ets
 ast/parser/ets/default_parameters_multi_error.ets

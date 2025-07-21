@@ -32,6 +32,11 @@ keywords:
     keyword_like: [ts]
     flags: [reserved_type_name]
 
+  - name: 'Any'
+    token: KEYW_BUILTIN_ANY
+    keyword_like: [ets]
+    flags:  [predefined_type]
+
   - name: 'anyref'
     token: KEYW_ANYREF
     keyword_like: [as]
@@ -336,10 +341,6 @@ keywords:
   - name: 'let'
     token: KEYW_LET
     keyword: [as, js, ets, ts]
-
-  - name: 'launch'
-    token: KEYW_LAUNCH
-    keyword: [ets]
 
   - name: 'long'
     token: KEYW_LONG

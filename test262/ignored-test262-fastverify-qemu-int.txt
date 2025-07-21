@@ -184,6 +184,8 @@ test262/data/test_es2021/intl402/default-locale-is-supported.js
 test262/data/test_es2021/intl402/supportedLocalesOf-duplicate-elements-removed.js
 test262/data/test_es2021/intl402/DisplayNames/options-style-toString-abrupt-throws.js
 
+#25907
+test262/data/test_es2021/built-ins/Object/create/15.2.3.5-4-194.js
 #26628
 test262/data/test_es2021/built-ins/Atomics/compareExchange/name.js
 

@@ -44,6 +44,7 @@ struct ProccedToStatePluginTestData {
     std::map<es2panda_ContextState, std::vector<std::function<bool(es2panda_Context *)>>> testFunctions;
     bool fromSource;
     std::string source;
+    es2panda_ContextState exitAfterState = ES2PANDA_STATE_ERROR;
 };
 
 void CheckForErrors(const std::string &stateName, es2panda_Context *context);

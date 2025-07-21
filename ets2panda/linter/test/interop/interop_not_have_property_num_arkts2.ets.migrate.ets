@@ -12,17 +12,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use static'
 
-let GeneratedImportVar_1 = ESObject.load('./interop_property_num_js');
-let foo = GeneratedImportVar_1.getPropertyByName('foo');
+let GeneratedImportVar_1 = ESValue.load('./interop_property_num_js');
+let foo = GeneratedImportVar_1.getProperty('foo');
 
 
-+foo.getPropertyByName("num").toNumber();
--foo.getPropertyByName("num").toNumber();
-!foo.getPropertyByName("num").toNumber();
-~foo.getPropertyByName("num").toNumber();
-+(foo.getPropertyByName("num").toNumber());
--(foo.getPropertyByName("num").toNumber());
-!(foo.getPropertyByName("num").toNumber());
-~(foo.getPropertyByName("num").toNumber());
++foo.getProperty("num").toNumber();
+-foo.getProperty("num").toNumber();
+!foo.getProperty("num").toNumber();
+~foo.getProperty("num").toNumber();
++(foo.getProperty("num").toNumber());
+-(foo.getProperty("num").toNumber());
+!(foo.getProperty("num").toNumber());
+~(foo.getProperty("num").toNumber());

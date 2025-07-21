@@ -39,8 +39,7 @@ function main(): void {
 /* @@? 17:19 Error SyntaxError: Unexpected token, expected ',' or ')'. */
 /* @@? 17:19 Error SyntaxError: Unexpected token '.'. */
 /* @@? 17:19 Error SyntaxError: The function parameter 'this' must explicitly specify the typeAnnotation. */
-/* @@? 17:29 Error SyntaxError: Field type annotation expected. */
-/* @@? 17:29 Error SyntaxError: Unexpected token '!'. */
+/* @@? 17:30 Error SyntaxError: Field type annotation expected. */
 /* @@? 17:30 Error SyntaxError: Unexpected token ','. */
 /* @@? 17:32 Error SyntaxError: Unexpected token 'this'. */
 /* @@? 17:36 Error SyntaxError: Unexpected token '.'. */
@@ -54,4 +53,3 @@ function main(): void {
 /* @@? 20:1 Error SyntaxError: Unexpected token '}'. */
 /* @@? 23:23 Error TypeError: Method methodOne(p: Derived): Base in Derived not overriding any method */
 /* @@? 32:21 Error TypeError: Property 'methodOne' does not exist on type 'Base' */
-

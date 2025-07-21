@@ -67,6 +67,7 @@ checker::VerifiedType CharLiteral::Check([[maybe_unused]] checker::ETSChecker *c
 CharLiteral *CharLiteral::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     auto *const clone = allocator->New<CharLiteral>(char_);
+    ES2PANDA_ASSERT(clone != nullptr);
     if (parent != nullptr) {
         clone->SetParent(parent);
     }

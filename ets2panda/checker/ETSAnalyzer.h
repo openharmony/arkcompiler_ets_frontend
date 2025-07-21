@@ -39,8 +39,9 @@ public:
     checker::Type *PreferredType(ir::ObjectExpression *expr) const;
     checker::Type *CheckDynamic(ir::ObjectExpression *expr) const;
     checker::Type *GetPreferredType(ir::ArrayExpression *expr) const;
-    void GetUnionPreferredType(ir::ArrayExpression *expr) const;
-    void CheckObjectExprProps(const ir::ObjectExpression *expr, checker::PropertySearchFlags searchFlags) const;
+    void GetUnionPreferredType(ir::Expression *expr, Type *originalType) const;
+    void CheckObjectExprProps(const ir::ObjectExpression *expr, checker::ETSObjectType *objectTypeForProperties,
+                              checker::PropertySearchFlags searchFlags) const;
     std::tuple<Type *, ir::Expression *> CheckAssignmentExprOperatorType(ir::AssignmentExpression *expr,
                                                                          Type *leftType) const;
     [[nodiscard]] checker::Type *ReturnTypeForStatement([[maybe_unused]] const ir::Statement *const st) const;
@@ -78,12 +79,12 @@ private:
                 return;
             }
         }
-        bool acceptVoid =
-            parent->IsExpressionStatement() || parent->IsReturnStatement() || parent->IsETSLaunchExpression();
+        bool acceptVoid = parent->IsExpressionStatement() || parent->IsReturnStatement();
         if (!acceptVoid) {
             checker->LogError(diagnostic::VOID_VALUE, {}, expr->Start());
         }
     }
+    mutable std::vector<const varbinder::Variable *> catchParamStack_ {};
 };
 
 }  // namespace ark::es2panda::checker

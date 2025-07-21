@@ -15,7 +15,6 @@
 
 export type {B/* @@ label */]
 
-/* @@? 16:14 Error SyntaxError: Can only type export class or interface. */
-/* @@? 16:29 Error SyntaxError: Unexpected token, expected ',' or '}'. */
-/* @@? 16:29 Error SyntaxError: Unexpected token ']'. */
-/* @@? 16:29 Error SyntaxError: Unexpected token ']'. */
+/* @@? 16:14 Error SyntaxError: Cannot find name 'B' to export. */
+/* @@@ label Error SyntaxError: Unexpected token, expected ',' or '}'. */
+/* @@@ label Error SyntaxError: Unexpected token ']'. */

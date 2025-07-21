@@ -13,24 +13,23 @@
  * limitations under the License.
  */
 
-'use static'
-let GeneratedImportVar_1 = ESObject.load('./instantiated_js_obj_js');
-let Foo = GeneratedImportVar_1.getPropertyByName('Foo');
-let Foo1 = GeneratedImportVar_1.getPropertyByName('Foo1');
+let GeneratedImportVar_1 = ESValue.load('./instantiated_js_obj_js');
+let Foo = GeneratedImportVar_1.getProperty('Foo');
+let Foo1 = GeneratedImportVar_1.getProperty('Foo1');
 
 class A {
-    num: number = 1;
+    num: number = 1.0;
     constructor() {
     }
 }
-Foo.instantiate(ESObject.wrap(123))
-Foo.instantiate(ESObject.wrap('hello'))
-Foo.instantiate(ESObject.wrap(new A()))
+Foo.instantiate(ESValue.wrap(123.0))
+Foo.instantiate(ESValue.wrap('hello'))
+Foo.instantiate(ESValue.wrap(new A()))
 let a: A = new A();
-Foo.instantiate(ESObject.wrap(a.num))
-Foo.instantiate(ESObject.wrap(a))
+Foo.instantiate(ESValue.wrap(a.num))
+Foo.instantiate(ESValue.wrap(a))
 function test(): number {
-  return 1;
+  return 1.0;
 }
-Foo.instantiate(ESObject.wrap(test()))
-Foo1.instantiate(ESObject.wrap(123), ESObject.wrap('hello'))
+Foo.instantiate(ESValue.wrap(test()))
+Foo1.instantiate(ESValue.wrap(123.0), ESValue.wrap('hello'))

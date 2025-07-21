@@ -78,7 +78,7 @@
             "line": 128,
             "column": 31,
             "endLine": 128,
-            "endColumn": 32,
+            "endColumn": 34,
             "problem": "LimitedLiteralType",
             "suggest": "",
             "rule": "Literal types are restricted(arkts-limited-literal-types)",
@@ -86,9 +86,9 @@
         },
         {
             "line": 128,
-            "column": 33,
+            "column": 35,
             "endLine": 128,
-            "endColumn": 37,
+            "endColumn": 39,
             "problem": "LimitedLiteralType",
             "suggest": "",
             "rule": "Literal types are restricted(arkts-limited-literal-types)",
@@ -96,9 +96,9 @@
         },
         {
             "line": 128,
-            "column": 39,
+            "column": 41,
             "endLine": 128,
-            "endColumn": 44,
+            "endColumn": 46,
             "problem": "LimitedLiteralType",
             "suggest": "",
             "rule": "Literal types are restricted(arkts-limited-literal-types)",
@@ -142,6 +142,16 @@
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 175,
+            "column": 1,
+            "endLine": 175,
+            "endColumn": 8,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
             "severity": "ERROR"
         }
     ]

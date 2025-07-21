@@ -67,11 +67,27 @@ FunctionExpression *FunctionExpression::Clone(ArenaAllocator *const allocator, A
 {
     auto *const func = func_->Clone(allocator, nullptr)->AsScriptFunction();
     auto *const clone = allocator->New<FunctionExpression>(func);
+    ES2PANDA_ASSERT(clone != nullptr);
     func->SetParent(clone);
     if (parent != nullptr) {
         clone->SetParent(parent);
     }
     clone->SetRange(Range());
     return clone;
+}
+
+AstNode *FunctionExpression::Construct(ArenaAllocator *allocator)
+{
+    return allocator->New<FunctionExpression>(nullptr);
+}
+
+void FunctionExpression::CopyTo(AstNode *other) const
+{
+    auto otherImpl = other->AsFunctionExpression();
+
+    otherImpl->func_ = func_;
+    otherImpl->exprName_ = exprName_;
+
+    Expression::CopyTo(other);
 }
 }  // namespace ark::es2panda::ir

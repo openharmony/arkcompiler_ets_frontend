@@ -63,23 +63,17 @@ const n5 = 02n
 
 /* @@? 16:16 Error SyntaxError: Newline is not allowed in strings  */
 /* @@? 16:16 Error SyntaxError: Unexpected token 'identification literal'.  */
-/* @@? 16:16 Error SyntaxError: Newline is not allowed in strings  */
-/* @@? 16:16 Error SyntaxError: Newline is not allowed in strings  */
-/* @@? 16:16 Error SyntaxError: Newline is not allowed in strings  */
 /* @@? 16:16 Error SyntaxError: Unexpected token 'string literal'.  */
 /* @@? 17:3 Error SyntaxError: Invalid unicode escape sequence  */
 /* @@? 19:19 Error SyntaxError: Invalid digit  */
 /* @@? 19:19 Error SyntaxError: Invalid numeric literal  */
 /* @@? 19:19 Error SyntaxError: Unexpected token 'identification literal'.  */
 /* @@? 21:26 Error SyntaxError: Invalid numeric separator  */
-/* @@? 21:26 Error SyntaxError: Invalid numeric separator  */
-/* @@? 21:26 Error SyntaxError: Invalid numeric separator  */
 /* @@? 23:13 Error SyntaxError: Numeric separators are not allowed at the end of numeric literals  */
 /* @@? 23:13 Error SyntaxError: Invalid numeric literal  */
 /* @@? 23:13 Error SyntaxError: Unexpected token 'identification literal'.  */
 /* @@? 25:10 Error SyntaxError: Expected an identifier  */
 /* @@? 27:14 Error SyntaxError: Invalid unicode escape sequence  */
-/* @@? 27:14 Error SyntaxError: Invalid identifier part  */
 /* @@? 27:14 Error SyntaxError: Invalid identifier part  */
 /* @@? 29:18 Error SyntaxError: Invalid character literal  */
 /* @@? 30:1 Error SyntaxError: Unterminated character literal  */
@@ -89,12 +83,8 @@ const n5 = 02n
 /* @@? 34:1 Error SyntaxError: Invalid numeric literal  */
 /* @@? 34:1 Error SyntaxError: Unexpected token 'identification literal'.  */
 /* @@? 36:1 Error SyntaxError: Invalid unicode escape sequence  */
-/* @@? 36:1 Error SyntaxError: Invalid unicode escape sequence  */
-/* @@? 36:1 Error SyntaxError: Invalid unicode escape sequence  */
 /* @@? 38:1 Error SyntaxError: Invalid numeric literal  */
 /* @@? 38:1 Error SyntaxError: Unexpected token 'identification literal'.  */
-/* @@? 40:1 Error SyntaxError: Invalid numeric separator  */
-/* @@? 40:1 Error SyntaxError: Invalid numeric separator  */
 /* @@? 40:1 Error SyntaxError: Invalid numeric separator  */
 /* @@? 42:1 Error SyntaxError: Invalid BigInt number  */
 /* @@? 44:1 Error SyntaxError: Invalid numeric literal  */

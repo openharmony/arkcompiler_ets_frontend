@@ -15,19 +15,9 @@
   ],
   "result": [
     {
-      "line": 17,
+      "line": 16,
       "column": 1,
-      "endLine": 17,
-      "endColumn": 51,
-      "problem": "ImportAfterStatement",
-      "suggest": "",
-      "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 17,
-      "column": 1,
-      "endLine": 17,
+      "endLine": 16,
       "endColumn": 51,
       "problem": "InterOpImportJs",
       "suggest": "",
@@ -35,9 +25,9 @@
       "severity": "ERROR"
     },
     {
-      "line": 19,
+      "line": 18,
       "column": 1,
-      "endLine": 19,
+      "endLine": 18,
       "endColumn": 13,
       "problem": "InteropJsObjectExport",
       "suggest": "",
@@ -45,9 +35,9 @@
       "severity": "ERROR"
     },
     {
-      "line": 21,
+      "line": 20,
       "column": 1,
-      "endLine": 21,
+      "endLine": 20,
       "endColumn": 51,
       "problem": "InteropJsObjectExport",
       "suggest": "",
@@ -55,13 +45,13 @@
       "severity": "ERROR"
     },
     {
-      "line": 23,
+      "line": 24,
       "column": 1,
-      "endLine": 23,
-      "endColumn": 57,
-      "problem": "InteropArkTs1ObjectExport",
+      "endLine": 24,
+      "endColumn": 59,
+      "problem": "InteropJsObjectExport",
       "suggest": "",
-      "rule": "Direct export of interop ArkTS1.0 objects is not supported (arkts-interop-d2s-export-entity)",
+      "rule": "Direct export of interop JS objects is not supported (arkts-interop-js2s-export-js)",
       "severity": "ERROR"
     }
   ]

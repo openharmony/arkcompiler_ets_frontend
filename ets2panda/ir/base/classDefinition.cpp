@@ -219,6 +219,54 @@ void ClassDefinition::DumpBody(ir::SrcDumper *dumper) const
     dumper->Add("}");
 }
 
+void ClassDefinition::DumpPrefix(ir::SrcDumper *dumper) const
+{
+    if (IsExported()) {
+        dumper->Add("export ");
+    } else if (IsDefaultExported()) {
+        dumper->Add("export default ");
+    }
+
+    if (IsDeclare() || dumper->IsDeclgen()) {
+        dumper->Add("declare ");
+    }
+
+    if (IsFinal()) {
+        dumper->Add("final ");
+    }
+
+    if (IsAbstract() && !IsNamespaceTransformed()) {
+        dumper->Add("abstract ");
+    }
+
+    if (parent_->IsETSStructDeclaration() || IsFromStruct()) {
+        dumper->Add("struct ");
+    } else if (IsNamespaceTransformed()) {
+        dumper->Add("namespace ");
+    } else {
+        dumper->Add("class ");
+    }
+}
+
+bool ClassDefinition::RegisterUnexportedForDeclGen(ir::SrcDumper *dumper) const
+{
+    if (!dumper->IsDeclgen()) {
+        return false;
+    }
+
+    if (dumper->IsIndirectDepPhase()) {
+        return false;
+    }
+
+    if (IsExported() || IsDefaultExported()) {
+        return false;
+    }
+
+    const auto className = ident_->Name().Mutf8();
+    dumper->AddNode(className, this);
+    return true;
+}
+
 void ClassDefinition::Dump(ir::SrcDumper *dumper) const
 {
     // NOTE: plugin API fails
@@ -231,32 +279,17 @@ void ClassDefinition::Dump(ir::SrcDumper *dumper) const
         return;
     }
 
+    ES2PANDA_ASSERT(ident_ != nullptr);
+
+    if (RegisterUnexportedForDeclGen(dumper)) {
+        return;
+    }
+
     for (auto *anno : Annotations()) {
         anno->Dump(dumper);
     }
-    ES2PANDA_ASSERT(ident_ != nullptr);
 
-    if (IsExtern()) {
-        dumper->Add("extern ");
-    }
-
-    if (IsExported()) {
-        dumper->Add("export ");
-    }
-
-    if (IsDeclare()) {
-        dumper->Add("declare ");
-    }
-
-    if (IsFinal()) {
-        dumper->Add("final ");
-    }
-
-    if (IsAbstract()) {
-        dumper->Add("abstract ");
-    }
-
-    dumper->Add(parent_->IsETSStructDeclaration() ? "struct " : "class ");
+    DumpPrefix(dumper);
     ident_->Dump(dumper);
 
     if (typeParams_ != nullptr) {
@@ -271,7 +304,6 @@ void ClassDefinition::Dump(ir::SrcDumper *dumper) const
     }
 
     DumpItems(dumper, " implements ", implements_);
-
     if (!IsDeclare() || !body_.empty()) {
         DumpBody(dumper);
     }
@@ -299,6 +331,40 @@ checker::Type *ClassDefinition::Check(checker::TSChecker *checker)
 checker::VerifiedType ClassDefinition::Check(checker::ETSChecker *checker)
 {
     return {this, checker->GetAnalyzer()->Check(this)};
+}
+
+ClassDefinition *ClassDefinition::Construct(ArenaAllocator *allocator)
+{
+    ArenaVector<AstNode *> body {allocator->Adapter()};
+    return allocator->New<ClassDefinition>(allocator, nullptr, std::move(body), ClassDefinitionModifiers::NONE,
+                                           ModifierFlags::NONE, Language::Id::COUNT);
+}
+
+void ClassDefinition::CopyTo(AstNode *other) const
+{
+    auto otherImpl = other->AsClassDefinition();
+
+    otherImpl->scope_ = scope_;
+    otherImpl->internalName_ = internalName_;
+    otherImpl->ident_ = ident_;
+    otherImpl->typeParams_ = typeParams_;
+    otherImpl->superTypeParams_ = superTypeParams_;
+    otherImpl->implements_ = implements_;
+    otherImpl->ctor_ = ctor_;
+    otherImpl->superClass_ = superClass_;
+    otherImpl->body_ = body_;
+    otherImpl->modifiers_ = modifiers_;
+    otherImpl->lang_ = lang_;
+    otherImpl->capturedVars_ = capturedVars_;
+    otherImpl->localVariableIsNeeded_ = localVariableIsNeeded_;
+    otherImpl->origEnumDecl_ = origEnumDecl_;
+    otherImpl->anonClass_ = anonClass_;
+    otherImpl->localIndex_ = localIndex_;
+    otherImpl->localPrefix_ = localPrefix_;
+    otherImpl->functionalReferenceReferencedMethod_ = functionalReferenceReferencedMethod_;
+    otherImpl->exportedClasses_ = exportedClasses_;
+
+    JsDocAllowed<AnnotationAllowed<TypedAstNode>>::CopyTo(other);
 }
 
 int ClassDefinition::classCounter_ = 0;

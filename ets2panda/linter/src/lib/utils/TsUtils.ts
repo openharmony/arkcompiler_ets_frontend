@@ -19,7 +19,7 @@ import * as fs from 'fs';
 import type { IsEtsFileCallback } from '../IsEtsFileCallback';
 import { FaultID } from '../Problems';
 import { ARKTS_IGNORE_DIRS, ARKTS_IGNORE_DIRS_OH_MODULES, ARKTS_IGNORE_FILES } from './consts/ArktsIgnorePaths';
-import { ES_OBJECT } from './consts/ESObject';
+import { ES_VALUE } from './consts/ESObject';
 import { EXTENDED_BASE_TYPES } from './consts/ExtendedBaseTypes';
 import { SENDABLE_DECORATOR } from './consts/SendableAPI';
 import { USE_SHARED } from './consts/SharedModuleAPI';
@@ -44,11 +44,11 @@ import { isIntrinsicObjectType } from './functions/isIntrinsicObjectType';
 import type { LinterOptions } from '../LinterOptions';
 import { ETS } from './consts/TsSuffix';
 import { STRINGLITERAL_NUMBER, STRINGLITERAL_NUMBER_ARRAY } from './consts/StringLiteral';
-import { InteropType, USE_STATIC } from './consts/InteropAPI';
 import { ETS_MODULE, PATH_SEPARATOR, VALID_OHM_COMPONENTS_MODULE_PATH } from './consts/OhmUrl';
-import { EXTNAME_D_TS, EXTNAME_ETS, EXTNAME_JS, EXTNAME_TS } from './consts/ExtensionName';
+import { EXTNAME_ETS, EXTNAME_JS, EXTNAME_D_ETS } from './consts/ExtensionName';
 import { STRING_ERROR_LITERAL } from './consts/Literals';
 
+export const PROMISE_METHODS = new Set(['all', 'race', 'any', 'resolve', 'allSettled']);
 export const SYMBOL = 'Symbol';
 export const SYMBOL_CONSTRUCTOR = 'SymbolConstructor';
 const ITERATOR = 'iterator';
@@ -248,7 +248,11 @@ export class TsUtils {
     }
 
     const declaration = this.getDeclarationNode(ident);
-    if (!declaration) {
+    if (!declaration || ident.text.includes(STRING_ERROR_LITERAL)) {
+      return false;
+    }
+
+    if (!declaration || !ident.text.includes(STRING_ERROR_LITERAL)) {
       return true;
     }
 
@@ -821,18 +825,22 @@ export class TsUtils {
     isStrict: boolean = false
   ): boolean {
     if (
-      TsUtils.reduceReference(lhsType) === TsUtils.reduceReference(rhsType) &&
-      TsUtils.isTypeReference(lhsType) &&
-      TsUtils.isTypeReference(rhsType)
+      TsUtils.reduceReference(lhsType) !== TsUtils.reduceReference(rhsType) ||
+      !TsUtils.isTypeReference(lhsType) ||
+      !TsUtils.isTypeReference(rhsType)
     ) {
-      const lhsArgs = lhsType.typeArguments;
-      const rhsArgs = rhsType.typeArguments;
-      if (lhsArgs && lhsArgs.length > 0) {
-        if (rhsArgs && rhsArgs.length > 0) {
-          return this.needToDeduceStructuralIdentity(lhsArgs[0], rhsArgs[0], rhsExpr, isStrict);
+      return false;
+    }
+    const lhsArgs = lhsType.typeArguments;
+    const rhsArgs = rhsType.typeArguments;
+    if (lhsArgs && lhsArgs.length > 0) {
+      if (rhsArgs && rhsArgs.length > 0) {
+        if (rhsArgs[0] === lhsArgs[0]) {
+          return false;
         }
-        return this.needToDeduceStructuralIdentity(lhsArgs[0], rhsType, rhsExpr, isStrict);
+        return this.needToDeduceStructuralIdentity(lhsArgs[0], rhsArgs[0], rhsExpr, isStrict);
       }
+      return this.needToDeduceStructuralIdentity(lhsArgs[0], rhsType, rhsExpr, isStrict);
     }
     return false;
   }
@@ -1856,12 +1864,12 @@ export class TsUtils {
     return false;
   }
 
-  static isEsObjectType(typeNode: ts.TypeNode | undefined): boolean {
+  static isEsValueType(typeNode: ts.TypeNode | undefined): boolean {
     return (
       !!typeNode &&
       ts.isTypeReferenceNode(typeNode) &&
       ts.isIdentifier(typeNode.typeName) &&
-      typeNode.typeName.text === ES_OBJECT
+      typeNode.typeName.text === ES_VALUE
     );
   }
 
@@ -1876,11 +1884,11 @@ export class TsUtils {
     return false;
   }
 
-  static isEsObjectPossiblyAllowed(typeRef: ts.TypeReferenceNode): boolean {
+  static isEsValuePossiblyAllowed(typeRef: ts.TypeReferenceNode): boolean {
     return ts.isVariableDeclaration(typeRef.parent);
   }
 
-  isValueAssignableToESObject(node: ts.Node): boolean {
+  isValueAssignableToESValue(node: ts.Node): boolean {
     if (ts.isArrayLiteralExpression(node) || ts.isObjectLiteralExpression(node)) {
       return false;
     }
@@ -1922,12 +1930,12 @@ export class TsUtils {
 
   hasEsObjectType(node: ts.Node): boolean {
     const typeNode = this.getVariableDeclarationTypeNode(node);
-    return typeNode !== undefined && TsUtils.isEsObjectType(typeNode);
+    return typeNode !== undefined && TsUtils.isEsValueType(typeNode);
   }
 
   static symbolHasEsObjectType(sym: ts.Symbol): boolean {
     const typeNode = TsUtils.getVariableSymbolDeclarationTypeNode(sym);
-    return typeNode !== undefined && TsUtils.isEsObjectType(typeNode);
+    return typeNode !== undefined && TsUtils.isEsValueType(typeNode);
   }
 
   static isEsObjectSymbol(sym: ts.Symbol): boolean {
@@ -1935,7 +1943,7 @@ export class TsUtils {
     return (
       !!decl &&
       ts.isTypeAliasDeclaration(decl) &&
-      decl.name.escapedText === ES_OBJECT &&
+      decl.name.escapedText === ES_VALUE &&
       decl.type.kind === ts.SyntaxKind.AnyKeyword
     );
   }
@@ -2136,6 +2144,14 @@ export class TsUtils {
     return callSigns && callSigns.length > 0;
   }
 
+  static getFunctionReturnType(type: ts.Type): ts.Type | null {
+    const signatures = type.getCallSignatures();
+    if (signatures.length === 0) {
+      return null;
+    }
+    return signatures[0].getReturnType();
+  }
+
   isStdFunctionType(type: ts.Type): boolean {
     const sym = type.getSymbol();
     return !!sym && sym.getName() === 'Function' && this.isGlobalSymbol(sym);
@@ -2171,7 +2187,7 @@ export class TsUtils {
         return true;
       }
     }
-    // We allow computed property names if expression is string literal or string Enum member
+    // In ArkTS 1.0, the computed property names are allowed if expression is string literal or string Enum member.
     return (
       !this.options.arkts2 && (ts.isStringLiteralLike(expr) || this.isEnumStringLiteral(computedProperty.expression))
     );
@@ -3646,6 +3662,13 @@ export class TsUtils {
     let current: ts.Node | undefined = node;
     while (current) {
       if (ts.isIfStatement(current)) {
+        if (
+          ts.isBinaryExpression(node.parent) &&
+          node.parent.operatorToken.kind === ts.SyntaxKind.EqualsEqualsEqualsToken
+        ) {
+          return false;
+        }
+
         return true;
       }
       current = current.parent;
@@ -3683,51 +3706,14 @@ export class TsUtils {
     return undefined;
   }
 
-  /**
-   * Checks whether an exported identifier is imported from an ArkTS1 file.
-   * @param exportIdentifier The exported identifier to check.
-   * @param node The node where the export occurs (used to get the current source file).
-   * @returns true if imported from ArkTS1, false if not, undefined if undetermined.
-   */
-  isExportImportedFromArkTs1(exportIdentifier: ts.Identifier, node: ts.Node): boolean | undefined {
-    // Get the symbol associated with the identifier.
-    const symbol = this.tsTypeChecker.getSymbolAtLocation(exportIdentifier);
-    if (!symbol) {
-      return undefined;
-    }
-
-    // If the symbol is an alias (imported), resolve the real symbol.
-    const realSymbol =
-      (symbol.flags & ts.SymbolFlags.Alias) !== 0 ? this.tsTypeChecker.getAliasedSymbol(symbol) : undefined;
-
-    const declarations = realSymbol?.getDeclarations();
-    if (!declarations || declarations.length === 0) {
-      return undefined;
-    }
-
-    // Get the source file where the declaration is located.
-    const importSourceFile = declarations[0].getSourceFile();
-
-    // Ensure import is from ArkTS1 file and usage is in ArkTS1.2 file
-    const currentSourceFile = node.getSourceFile();
-    return (
-      importSourceFile.fileName.endsWith(EXTNAME_ETS) &&
-      currentSourceFile.fileName.endsWith(EXTNAME_ETS) &&
-      !TsUtils.isArkts12File(importSourceFile) &&
-      TsUtils.isArkts12File(currentSourceFile)
-    );
-  }
-
-  static isArkts12File(sourceFile: ts.SourceFile): boolean {
-    if (!sourceFile?.statements.length) {
+  isArkts12File(sourceFile: ts.SourceFile): boolean {
+    if (!sourceFile?.fileName) {
       return false;
     }
-    const statements = sourceFile.statements;
-    return (
-      ts.isExpressionStatement(statements[0]) &&
-      ts.isStringLiteral(statements[0].expression) &&
-      statements[0].expression.getText() === USE_STATIC
-    );
+    if (sourceFile.fileName.endsWith(EXTNAME_D_ETS)) {
+      return true;
+    }
+    return !!this.options.inputFiles?.includes(path.normalize(sourceFile.fileName));
   }
 
   static removeOrReplaceQuotes(str: string, isReplace: boolean): string {
@@ -3742,62 +3728,6 @@ export class TsUtils {
       return str.slice(1, -1);
     }
     return str;
-  }
-
-  static getCurrentModule(currentFileName: string): string {
-    const parts = currentFileName.split(PATH_SEPARATOR);
-    parts.pop();
-    const currentModule = parts.join(PATH_SEPARATOR);
-    return currentModule;
-  }
-
-  static resolveModuleAndCheckInterop(wholeProjectPath: string, callExpr: ts.CallExpression): InteropType | undefined {
-    const moduleName = callExpr.arguments[0];
-    if (!ts.isStringLiteral(moduleName)) {
-      return undefined;
-    }
-
-    const importedModule = path.resolve(wholeProjectPath, moduleName.text);
-
-    const importedFile = TsUtils.resolveImportModule(importedModule);
-    if (!importedFile) {
-      return undefined;
-    }
-
-    const importSource = ts.sys.readFile(importedFile);
-    if (!importSource) {
-      return undefined;
-    }
-
-    return TsUtils.checkFileForInterop(importedFile, importSource);
-  }
-
-  static resolveImportModule(importedModule: string): string | undefined {
-    const extensions = ['.ts', '.js', '.ets'];
-    for (const ext of extensions) {
-      const tryPath = path.resolve(importedModule + ext);
-      if (fs.existsSync(tryPath)) {
-        return tryPath;
-      }
-    }
-
-    return undefined;
-  }
-
-  static checkFileForInterop(fileName: string, importSource: string): InteropType {
-    if (fileName.endsWith(EXTNAME_JS)) {
-      return InteropType.JS;
-    }
-
-    if (fileName.endsWith(EXTNAME_TS) && !fileName.endsWith(EXTNAME_D_TS)) {
-      return InteropType.TS;
-    }
-
-    if (fileName.endsWith(EXTNAME_ETS) && !importSource.includes('\'use static\'')) {
-      return InteropType.LEGACY;
-    }
-
-    return InteropType.NONE;
   }
 
   isJsImport(node: ts.Node): boolean {
@@ -3854,5 +3784,14 @@ export class TsUtils {
 
     forEachNodeInSubtree(targetNode, callback, stopCondition);
     return found;
+  }
+
+  static typeContainsVoid(typeNode: ts.TypeNode): boolean {
+    if (ts.isUnionTypeNode(typeNode)) {
+      return typeNode.types.some((t) => {
+        return t.kind === ts.SyntaxKind.VoidKeyword;
+      });
+    }
+    return typeNode.kind === ts.SyntaxKind.VoidKeyword;
   }
 }

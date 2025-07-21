@@ -131,7 +131,7 @@ Type *ETSChecker::PerformArithmeticOperationOnTypes(Type *left, Type *right, lex
             }
 
             if (isIntegralDivideResOverflow()) {
-                return Allocator()->New<TargetType>(std::numeric_limits<UType>::min());
+                return ProgramAllocator()->New<TargetType>(std::numeric_limits<UType>::min());
             }
 
             result = leftValue / rightValue;
@@ -155,7 +155,7 @@ Type *ETSChecker::PerformArithmeticOperationOnTypes(Type *left, Type *right, lex
         }
     }
 
-    return Allocator()->New<TargetType>(result);
+    return ProgramAllocator()->New<TargetType>(result);
 }
 
 template <>
@@ -250,7 +250,7 @@ Type *ETSChecker::HandleBitWiseArithmetic(Type *left, Type *right, lexer::TokenT
         }
     }
 
-    return Allocator()->New<IntegerType>(result);
+    return ProgramAllocator()->New<IntegerType>(result);
 }
 }  // namespace ark::es2panda::checker
 

@@ -22,11 +22,18 @@
 #include "generated/options.h"
 #include "util/language.h"
 
+namespace ark::es2panda::ir {
+class AstNode;
+class Identifier;
+class BlockStatement;
+}  // namespace ark::es2panda::ir
+
 namespace ark::pandasm {
 struct Program;
 }  // namespace ark::pandasm
 
 namespace ark::es2panda {
+
 using ETSWarnings = util::gen::ets_warnings::Enum;
 using EvalMode = util::gen::eval_mode::Enum;
 using ScriptExtension = util::gen::extension::Enum;
@@ -54,6 +61,7 @@ enum class CompilationMode {
     GEN_STD_LIB,
     PROJECT,
     SINGLE_FILE,
+    GEN_ABC_FOR_EXTERNAL_SOURCE,
 };
 // CC-OFFNXT(G.FUD.06) switch-case, ODR
 inline Language ToLanguage(ScriptExtension ext)
@@ -75,6 +83,7 @@ inline Language ToLanguage(ScriptExtension ext)
 struct SourceFile {
     SourceFile(std::string_view fn, std::string_view s);
     SourceFile(std::string_view fn, std::string_view s, bool m);
+    SourceFile(std::string_view fn, std::string_view s, bool m, std::string_view d);
     SourceFile(std::string_view fn, std::string_view s, std::string_view rp, bool m, bool d);
 
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
@@ -85,13 +94,14 @@ struct SourceFile {
     bool isModule {};
     // NOTE(dkofanov): Should be aligned with 'Program::moduleInfo_'.
     bool isDeclForDynamicStaticInterop {};
+    std::string_view dest {};
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
 
 // NOLINTBEGIN(modernize-avoid-c-arrays)
-inline static constexpr char const ERROR_LITERAL[] = "*ERROR_LITERAL*";
-inline static constexpr char const ERROR_TYPE[] = "*ERROR_TYPE*";
-inline static constexpr char const INVALID_EXPRESSION[] = "...";
+inline constexpr char const ERROR_LITERAL[] = "*ERROR_LITERAL*";
+inline constexpr char const ERROR_TYPE[] = "*ERROR_TYPE*";
+inline constexpr char const INVALID_EXPRESSION[] = "...";
 // NOLINTEND(modernize-avoid-c-arrays)
 
 class Compiler {
@@ -105,6 +115,8 @@ public:
 
     pandasm::Program *Compile(const SourceFile &input, const util::Options &options,
                               util::DiagnosticEngine &diagnosticEngine, uint32_t parseStatus = 0);
+    unsigned int CompileM(std::vector<SourceFile> &inputs, util::Options &options,
+                          util::DiagnosticEngine &diagnosticEngine, std::vector<pandasm::Program *> &result);
 
     static void DumpAsm(const pandasm::Program *prog);
 

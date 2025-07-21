@@ -13,7 +13,6 @@
  * limitations under the License.
  */
  
-'use static'
 import { Cjs } from '../main/js_lib';
 import { fjs } from '../main/js_lib';
 import { CPreview,bar,foo } from "./jsfiles/preview_import_js";

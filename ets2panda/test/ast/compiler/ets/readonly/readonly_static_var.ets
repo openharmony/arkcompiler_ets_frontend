@@ -13,10 +13,9 @@
  * limitations under the License.
  */
 
-/* @@ readonly */readonly /* @@ static */static /* @@ S */S = c' ';
+readonly static S = c' ';
 
-/* @@? 16:18 Error TypeError: Unresolved reference readonly */
-/* @@? 16:42 Error SyntaxError: Unexpected token 'static'. */
-/* @@? 16:42 Error SyntaxError: Unexpected token 'static'. */
-/* @@? 16:59 Error SyntaxError: Unexpected token 'S'. */
-/* @@? 16:59 Error TypeError: Unresolved reference S */
+/* @@? 16:1 Error TypeError: Unresolved reference readonly */
+/* @@? 16:10 Error SyntaxError: Unexpected token 'static'. */
+/* @@? 16:17 Error SyntaxError: Unexpected token 'S'. */
+/* @@? 16:17 Error TypeError: Unresolved reference S */

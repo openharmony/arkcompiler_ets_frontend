@@ -52,6 +52,47 @@ public:
         impl_->DestroyContext(context);
     }
 
+    const es2panda_DiagnosticKind *CreateDiagnosticKind(es2panda_Context *context, const char *dmessage,
+                                                        es2panda_PluginDiagnosticType etype)
+    {
+        return impl_->CreateDiagnosticKind(context, dmessage, etype);
+    }
+
+    es2panda_SuggestionInfo *CreateSuggestionInfo(es2panda_Context *context, const es2panda_DiagnosticKind *kind,
+                                                  const char **args, size_t argc, const char *substitutionCode)
+    {
+        return impl_->CreateSuggestionInfo(context, kind, args, argc, substitutionCode);
+    }
+
+    es2panda_DiagnosticInfo *CreateDiagnosticInfo(es2panda_Context *context, const es2panda_DiagnosticKind *kind,
+                                                  const char **args, size_t argc)
+    {
+        return impl_->CreateDiagnosticInfo(context, kind, args, argc);
+    }
+
+    es2panda_SourcePosition *CreateSourcePosition(es2panda_Context *context, size_t index, size_t line)
+    {
+        return impl_->CreateSourcePosition(context, index, line);
+    }
+
+    es2panda_SourceRange *CreateSourceRange(es2panda_Context *context, es2panda_SourcePosition *start,
+                                            es2panda_SourcePosition *end)
+    {
+        return impl_->CreateSourceRange(context, start, end);
+    }
+
+    void LogDiagnosticWithSuggestion(es2panda_Context *context, const es2panda_DiagnosticInfo *diagnosticInfo,
+                                     const es2panda_SuggestionInfo *suggestionInfo, es2panda_SourceRange *range)
+    {
+        return impl_->LogDiagnosticWithSuggestion(context, diagnosticInfo, suggestionInfo, range);
+    }
+
+    void LogDiagnostic(es2panda_Context *context, const es2panda_DiagnosticKind *ekind, const char **args, size_t argc,
+                       es2panda_SourcePosition *pos)
+    {
+        return impl_->LogDiagnostic(context, ekind, args, argc, pos);
+    }
+
     NO_COPY_SEMANTIC(Initializer);
     NO_MOVE_SEMANTIC(Initializer);
 
@@ -65,6 +106,7 @@ ir::AstNode *GetTouchingToken(es2panda_Context *context, size_t pos, bool flagFi
 References GetFileReferencesImpl(es2panda_Context *referenceFileContext, char const *searchFileName,
                                  bool isPackageModule);
 ir::AstNode *FindPrecedingToken(const size_t pos, const ir::AstNode *startNode, ArenaAllocator *allocator);
+ir::AstNode *GetIdentifierFromSuper(ir::AstNode *super);
 ir::AstNode *GetOriginalNode(ir::AstNode *astNode);
 checker::VerifiedType GetTypeOfSymbolAtLocation(checker::ETSChecker *checker, ir::AstNode *astNode);
 FileDiagnostic CreateDiagnosticForNode(es2panda_AstNode *node, Diagnostic diagnostic,
@@ -82,11 +124,18 @@ DocumentHighlights GetDocumentHighlightsImpl(es2panda_Context *context, size_t p
 void GetReferenceLocationAtPositionImpl(FileNodeInfo fileNodeInfo, es2panda_Context *referenceFileContext,
                                         ReferenceLocationList *list);
 void RemoveFromFiles(std::vector<std::string> &files, const std::vector<std::string> &autoGenerateFolders);
+ir::AstNode *FindRightToken(const size_t pos, const ArenaVector<ir::AstNode *> &nodes);
 std::string GetOwnerId(ir::AstNode *node);
 std::string GetIdentifierName(ir::AstNode *node);
 bool NodeHasTokens(const ir::AstNode *node);
 void FindAllChild(const ir::AstNode *ast, const ir::NodePredicate &cb, ArenaVector<ir::AstNode *> &results);
-
+ir::AstNode *FindAncestor(ir::AstNode *node, const ir::NodePredicate &cb);
+std::vector<CodeFixActionInfo> GetCodeFixesAtPositionImpl(es2panda_Context *context, size_t startPosition,
+                                                          size_t endPosition, std::vector<int> &errorCodes,
+                                                          CodeFixOptions &codeFixOptions);
+CombinedCodeActionsInfo GetCombinedCodeFixImpl(es2panda_Context *context, const std::string &fixId,
+                                               CodeFixOptions &codeFixOptions);
+ir::Identifier *GetIdentFromNewClassExprPart(const ir::Expression *value);
 }  // namespace ark::es2panda::lsp
 
 #endif

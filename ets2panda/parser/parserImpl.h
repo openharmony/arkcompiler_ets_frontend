@@ -38,6 +38,10 @@ class Options;
 class SourcePositionHelper;
 }  // namespace ark::es2panda::util
 
+namespace ark::es2panda::public_lib {
+struct Context;
+}  // namespace ark::es2panda::public_lib
+
 namespace ark::es2panda::parser {
 using ENUMBITOPS_OPERATORS;
 
@@ -101,6 +105,16 @@ public:
     }
 
     lexer::SourcePosition GetPositionForDiagnostic() const;
+
+    void SetContext(public_lib::Context *ctx)
+    {
+        ctx_ = ctx;
+    }
+
+    public_lib::Context *Context()
+    {
+        return ctx_;
+    }
 
 protected:
     virtual void ParseProgram(ScriptKind kind);
@@ -577,6 +591,7 @@ private:
     lexer::Lexer *lexer_ {};
     const util::Options *options_;
     util::DiagnosticEngine &diagnosticEngine_;
+    public_lib::Context *ctx_ {nullptr};
     RecursiveContext recursiveCtx_;
 };
 }  // namespace ark::es2panda::parser

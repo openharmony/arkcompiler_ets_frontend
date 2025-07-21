@@ -42,6 +42,7 @@ TYPE_MAPPING(DECLARE_TYPENAMES)
 #undef DECLARE_TYPENAMES
 class ETSStringType;
 class ETSBigIntType;
+class ETSResizableArrayType;
 
 using Substitution = ArenaMap<ETSTypeParameter *, Type *>;
 
@@ -87,6 +88,7 @@ public:
     TYPE_MAPPING(TYPE_AS_CASTS)
 #undef TYPE_AS_CASTS
 
+    bool IsETSResizableArrayType() const;
     bool IsETSStringType() const;
     bool IsETSCharType() const;
     bool IsETSBigIntType() const;
@@ -97,7 +99,6 @@ public:
     bool IsETSAsyncFuncReturnType() const;
     bool IsETSUnboxableObject() const;
     bool IsETSPrimitiveOrEnumType() const;
-    bool IsETSResizableArrayType() const;
 
     bool PossiblyETSNull() const;
     bool PossiblyETSUndefined() const;
@@ -125,6 +126,18 @@ public:
     {
         ES2PANDA_ASSERT(IsETSObjectType());
         return reinterpret_cast<const ETSBigIntType *>(this);
+    }
+
+    ETSResizableArrayType *AsETSResizableArrayType()
+    {
+        ES2PANDA_ASSERT(IsETSResizableArrayType());
+        return reinterpret_cast<ETSResizableArrayType *>(this);
+    }
+
+    const ETSResizableArrayType *AsETSResizableArrayType() const
+    {
+        ES2PANDA_ASSERT(IsETSResizableArrayType());
+        return reinterpret_cast<const ETSResizableArrayType *>(this);
     }
 
     bool IsETSDynamicType() const
@@ -171,11 +184,6 @@ public:
     {
         ES2PANDA_ASSERT(IsETSDynamicFunctionType());
         return reinterpret_cast<const ETSDynamicFunctionType *>(this);
-    }
-
-    bool IsConditionalExprType() const
-    {
-        return HasTypeFlag(TypeFlag::CONDITION_EXPRESSION_TYPE);
     }
 
     bool IsConstantType() const

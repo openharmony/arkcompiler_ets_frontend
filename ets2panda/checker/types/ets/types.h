@@ -40,6 +40,7 @@
 #include "etsNullishTypes.h"
 #include "checker/types/signature.h"
 #include "etsReadonlyType.h"
+#include "etsAnyType.h"
 #include "etsNeverType.h"
 
 #endif /* TYPES_H */

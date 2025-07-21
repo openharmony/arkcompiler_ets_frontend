@@ -185,28 +185,13 @@
                       "type": "Identifier",
                       "name": "i",
                       "typeAnnotation": {
-                        "type": "TSArrayType",
-                        "elementType": {
-                          "type": "ETSTypeReference",
-                          "part": {
-                            "type": "ETSTypeReferencePart",
-                            "name": {
-                              "type": "Identifier",
-                              "name": "string",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 16,
-                                  "column": 19,
-                                  "program": "main_entry_point_6.ets"
-                                },
-                                "end": {
-                                  "line": 16,
-                                  "column": 25,
-                                  "program": "main_entry_point_6.ets"
-                                }
-                              }
-                            },
+                        "type": "ETSTypeReference",
+                        "part": {
+                          "type": "ETSTypeReferencePart",
+                          "name": {
+                            "type": "Identifier",
+                            "name": "FixedArray",
+                            "decorators": [],
                             "loc": {
                               "start": {
                                 "line": 16,
@@ -215,7 +200,71 @@
                               },
                               "end": {
                                 "line": 16,
-                                "column": 26,
+                                "column": 29,
+                                "program": "main_entry_point_6.ets"
+                              }
+                            }
+                          },
+                          "typeParams": {
+                            "type": "TSTypeParameterInstantiation",
+                            "params": [
+                              {
+                                "type": "ETSTypeReference",
+                                "part": {
+                                  "type": "ETSTypeReferencePart",
+                                  "name": {
+                                    "type": "Identifier",
+                                    "name": "string",
+                                    "decorators": [],
+                                    "loc": {
+                                      "start": {
+                                        "line": 16,
+                                        "column": 30,
+                                        "program": "main_entry_point_6.ets"
+                                      },
+                                      "end": {
+                                        "line": 16,
+                                        "column": 36,
+                                        "program": "main_entry_point_6.ets"
+                                      }
+                                    }
+                                  },
+                                  "loc": {
+                                    "start": {
+                                      "line": 16,
+                                      "column": 30,
+                                      "program": "main_entry_point_6.ets"
+                                    },
+                                    "end": {
+                                      "line": 16,
+                                      "column": 37,
+                                      "program": "main_entry_point_6.ets"
+                                    }
+                                  }
+                                },
+                                "loc": {
+                                  "start": {
+                                    "line": 16,
+                                    "column": 30,
+                                    "program": "main_entry_point_6.ets"
+                                  },
+                                  "end": {
+                                    "line": 16,
+                                    "column": 37,
+                                    "program": "main_entry_point_6.ets"
+                                  }
+                                }
+                              }
+                            ],
+                            "loc": {
+                              "start": {
+                                "line": 16,
+                                "column": 29,
+                                "program": "main_entry_point_6.ets"
+                              },
+                              "end": {
+                                "line": 16,
+                                "column": 37,
                                 "program": "main_entry_point_6.ets"
                               }
                             }
@@ -228,21 +277,20 @@
                             },
                             "end": {
                               "line": 16,
-                              "column": 26,
+                              "column": 38,
                               "program": "main_entry_point_6.ets"
                             }
                           }
                         },
-                        "annotations": [],
                         "loc": {
                           "start": {
                             "line": 16,
-                            "column": 25,
+                            "column": 19,
                             "program": "main_entry_point_6.ets"
                           },
                           "end": {
                             "line": 16,
-                            "column": 27,
+                            "column": 38,
                             "program": "main_entry_point_6.ets"
                           }
                         }
@@ -256,7 +304,7 @@
                         },
                         "end": {
                           "line": 16,
-                          "column": 27,
+                          "column": 38,
                           "program": "main_entry_point_6.ets"
                         }
                       }
@@ -269,7 +317,7 @@
                       },
                       "end": {
                         "line": 16,
-                        "column": 27,
+                        "column": 38,
                         "program": "main_entry_point_6.ets"
                       }
                     }
@@ -280,12 +328,12 @@
                   "loc": {
                     "start": {
                       "line": 16,
-                      "column": 30,
+                      "column": 40,
                       "program": "main_entry_point_6.ets"
                     },
                     "end": {
                       "line": 16,
-                      "column": 34,
+                      "column": 44,
                       "program": "main_entry_point_6.ets"
                     }
                   }
@@ -313,7 +361,7 @@
                   "loc": {
                     "start": {
                       "line": 16,
-                      "column": 35,
+                      "column": 45,
                       "program": "main_entry_point_6.ets"
                     },
                     "end": {

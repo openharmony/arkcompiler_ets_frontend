@@ -26,39 +26,12 @@ function f2(a: "aa"): "bb" {
 }
 
 function main() {
-    let caught_counter = 0
-
-    try {
-        let s = id<"a" | "b" | "c">("d")
-    } catch (error: ClassCastError) {
-        caught_counter++;
-    }
-
+    let s1 = id<"a" | "b" | "c">("d")
     let s = id<"a" | "b" | "c">("a")
+    assertEQ(s1 + s, "da")
 
-    try {
-        let y = s as "b"
-    } catch (error: ClassCastError) {
-        caught_counter++;
-    }
-
-    try {
-        assertEQ(s as "c", "c")
-    } catch (error: ClassCastError) {
-        caught_counter++;
-    }
-
-    try {
-        f1("aa");
-    } catch (error: ClassCastError) {
-        caught_counter++;
-    }
-
-    try {
-        f2("aa");
-    } catch (error: ClassCastError) {
-        caught_counter++;
-    }
-
-    assertEQ(caught_counter, 5)
+    s as "b"
+    assertEQ((s as "c") == "c", false)
+    f1("aa");
+    f2("aa");
 }
