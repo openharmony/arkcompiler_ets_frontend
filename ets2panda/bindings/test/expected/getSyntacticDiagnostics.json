@@ -6,7 +6,6 @@
     "diagnostics": [
       {
         "message": "Unexpected token 'add'.",
-        "source": "add",
         "range": {
           "start": {
             "line": 16,
@@ -28,7 +27,6 @@
       },
       {
         "message": "Unexpected token, expected ',' or ')'.",
-        "source": "*ERROR_LITERAL*",
         "range": {
           "start": {
             "line": 16,
@@ -50,7 +48,6 @@
       },
       {
         "message": "Unexpected token ':'.",
-        "source": "*ERROR_LITERAL*",
         "range": {
           "start": {
             "line": 16,
@@ -72,7 +69,6 @@
       },
       {
         "message": "Unexpected token ':'.",
-        "source": "*ERROR_LITERAL*",
         "range": {
           "start": {
             "line": 16,
@@ -94,7 +90,6 @@
       },
       {
         "message": "Unexpected token 'number'.",
-        "source": "number",
         "range": {
           "start": {
             "line": 16,
@@ -116,7 +111,6 @@
       },
       {
         "message": "Unexpected token ','.",
-        "source": "*ERROR_LITERAL*",
         "range": {
           "start": {
             "line": 16,
@@ -138,7 +132,6 @@
       },
       {
         "message": "Unexpected token ','.",
-        "source": "*ERROR_LITERAL*",
         "range": {
           "start": {
             "line": 16,
@@ -160,7 +153,6 @@
       },
       {
         "message": "Unexpected token 'b'.",
-        "source": "functon;\nadd(a);\n*ERROR_LITERAL*;\nnumber;\n*ERROR_LITERAL*;\n\nnumber;\n*ERROR_LITERAL*;\n{\n  return ((a) + (b));\n}\nn = 333;\nres = add(n, n);",
         "range": {
           "start": {
             "line": 16,
@@ -182,7 +174,6 @@
       },
       {
         "message": "Label must be followed by a loop statement.",
-        "source": "",
         "range": {
           "start": {
             "line": 16,
@@ -204,7 +195,6 @@
       },
       {
         "message": "Unexpected token ')'.",
-        "source": "*ERROR_LITERAL*",
         "range": {
           "start": {
             "line": 16,
@@ -226,7 +216,6 @@
       },
       {
         "message": "Unexpected token ')'.",
-        "source": "*ERROR_LITERAL*",
         "range": {
           "start": {
             "line": 16,
@@ -248,7 +237,6 @@
       },
       {
         "message": "Unexpected token '{'.",
-        "source": "{\n  return ((a) + (b));\n}",
         "range": {
           "start": {
             "line": 16,
@@ -270,7 +258,6 @@
       },
       {
         "message": "return keyword should be used in function body.",
-        "source": "return ((a) + (b));",
         "range": {
           "start": {
             "line": 17,
@@ -284,6 +271,31 @@
         "tags": [],
         "relatedInfo": [],
         "code": 1163,
+        "data": 0,
+        "severity": 1,
+        "codeDescription": {
+          "href": "test code description"
+        }
+      }
+    ]
+  },
+  "3": {
+    "diagnostics": [
+      {
+        "message": "Unexpected token, expected 'from'.",
+        "range": {
+          "start": {
+            "line": 16,
+            "character": 1
+          },
+          "end": {
+            "line": 16,
+            "character": 52
+          }
+        },
+        "tags": [],
+        "relatedInfo": [],
+        "code": 1228,
         "data": 0,
         "severity": 1,
         "codeDescription": {

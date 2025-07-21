@@ -93,6 +93,9 @@ bool IsDefinedInLibraryFile(const ir::AstNode *node, const std::string &pandaLib
         return false;
     }
     auto filePath = node->Range().start.Program()->SourceFile().GetAbsolutePath().Utf8();
+    if (filePath.find(pandaLibPath) != std::string::npos) {
+        return true;
+    }
     std::string etsPath = pandaLibPath;
     size_t pos = 0;
     const int threeLevelsUp = 3;
@@ -102,13 +105,16 @@ bool IsDefinedInLibraryFile(const ir::AstNode *node, const std::string &pandaLib
             etsPath = etsPath.substr(0, pos);
         }
     }
-    const std::array<std::string, 5> libraryPaths = {
-        pandaLibPath + util::PATH_DELIMITER + "stdlib" + util::PATH_DELIMITER + "std",
-        pandaLibPath + util::PATH_DELIMITER + "stdlib" + util::PATH_DELIMITER + "escompat",
-        etsPath + util::PATH_DELIMITER + "api", etsPath + util::PATH_DELIMITER + "arkts",
-        etsPath + util::PATH_DELIMITER + "kits"};
-    for (const auto &libraryPath : libraryPaths) {
-        if (filePath.find(libraryPath) != std::string::npos) {
+    // check etsPath in openharmony sdk
+    if (filePath.find(etsPath) != std::string::npos) {
+        return true;
+    }
+    std::string oh = "openharmony";
+    pos = etsPath.rfind(oh);
+    if (pos != std::string::npos) {
+        etsPath.replace(pos, oh.size(), "hms");
+        // check etsPath in hms sdk
+        if (filePath.find(etsPath) != std::string::npos) {
             return true;
         }
     }

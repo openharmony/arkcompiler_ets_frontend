@@ -707,6 +707,7 @@ HighlightSpanKind GetHightlightSpanKind(ir::AstNode *identifierDeclaration, ir::
 DocumentHighlights GetSemanticDocumentHighlights(es2panda_Context *context, size_t position)
 {
     auto ctx = reinterpret_cast<public_lib::Context *>(context);
+    auto ast = ctx->parserProgram->Ast();
     std::string fileName(ctx->sourceFile->filePath);
     auto touchingToken = GetTouchingToken(context, position, false);
     if (!touchingToken->IsIdentifier()) {
@@ -716,13 +717,24 @@ DocumentHighlights GetSemanticDocumentHighlights(es2panda_Context *context, size
     if (decl == nullptr) {
         return DocumentHighlights(fileName, {});
     }
-    auto references = FindReferencesByName(ctx->parserProgram->Ast(), decl, touchingToken, ctx->allocator);
+    auto checkFunc = [&touchingToken](ir::AstNode *child) {
+        return child->IsIdentifier() && child->AsIdentifier()->Name() == touchingToken->AsIdentifier()->Name();
+    };
+    // Find the identifier's declaration. We consider the first found to be the identifier's declaration.
+    auto identifierDeclaration = decl->FindChild(checkFunc);
+    if (identifierDeclaration == nullptr) {
+        // If the identifier is not found in the declaration, we try to find it in the AST.
+        // This is needed for cases like `import {Foo as foo} from './a';` where
+        // `foo` is a alias for the imported `Foo` identifier.
+        identifierDeclaration = ast->FindChild(checkFunc);
+    }
+    if (identifierDeclaration == nullptr) {
+        return DocumentHighlights(fileName, {});
+    }
+
+    auto references = FindReferencesByName(ast, decl, touchingToken, ctx->allocator);
 
     auto highlightSpans = std::vector<HighlightSpan>();
-    // Find the identifier's declaration. We consider the first found to be the identifier's declaration.
-    ir::AstNode *identifierDeclaration = decl->FindChild([&touchingToken](ir::AstNode *child) {
-        return child->IsIdentifier() && child->AsIdentifier()->Name() == touchingToken->AsIdentifier()->Name();
-    });
     for (const auto &reference : references) {
         auto start = reference->Start().index;
         auto length = reference->AsIdentifier()->Name().Length();

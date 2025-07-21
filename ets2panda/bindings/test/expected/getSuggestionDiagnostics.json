@@ -3,7 +3,6 @@
     "diagnostics": [
       {
         "message": "This_may_be_converted_to_an_async_function",
-        "source": "",
         "range": {
           "start": {
             "line": 16,
@@ -25,7 +24,6 @@
       },
       {
         "message": "This_may_be_converted_to_an_async_function",
-        "source": "",
         "range": {
           "start": {
             "line": 16,
@@ -47,7 +45,6 @@
       },
       {
         "message": "This_may_be_converted_to_an_async_function",
-        "source": "",
         "range": {
           "start": {
             "line": 19,
@@ -69,7 +66,6 @@
       },
       {
         "message": "This_may_be_converted_to_an_async_function",
-        "source": "",
         "range": {
           "start": {
             "line": 19,
