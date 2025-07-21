@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Compile ArkTS 2.0 source code into bytecode, encompassing UI transformations.",
   "private": true,
+  "engines": {
+    "node": ">=14.0.0"
+  },
   "main": "dist/index.js",
   "scripts": {
     "clean": "rimraf dist",
