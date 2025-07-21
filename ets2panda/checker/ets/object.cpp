@@ -84,9 +84,14 @@ static bool CheckGetterSetterDecl(varbinder::LocalVariable const *child, varbind
 
 static bool CheckOverloadDecl(varbinder::LocalVariable *child, varbinder::LocalVariable *parent)
 {
-    if (!child->Declaration()->Node()->IsOverloadDeclaration() ||
+    if (!child->Declaration()->Node()->IsOverloadDeclaration() &&
         !parent->Declaration()->Node()->IsOverloadDeclaration()) {
         return false;
+    }
+
+    if (!child->Declaration()->Node()->IsOverloadDeclaration() ||
+        !parent->Declaration()->Node()->IsOverloadDeclaration()) {
+        return true;
     }
 
     auto *childOverload = child->Declaration()->Node()->AsOverloadDeclaration();
@@ -1876,7 +1881,7 @@ void ETSChecker::ValidateNamespaceProperty(varbinder::Variable *property, const 
 {
     ir::AstNode *parent = nullptr;
     if (property->TsType() != nullptr && !property->TsType()->IsTypeError()) {
-        if (property->TsType()->IsETSMethodType()) {
+        if (property->TsType()->IsETSMethodType() && !property->HasFlag(varbinder::VariableFlags::OVERLOAD)) {
             auto funcType = property->TsType()->AsETSFunctionType();
             property = funcType->CallSignatures()[0]->OwnerVar();
             ES2PANDA_ASSERT(property != nullptr);

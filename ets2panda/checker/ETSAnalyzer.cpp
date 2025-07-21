@@ -327,6 +327,32 @@ static void CheckDuplicationInOverloadDeclaration(ETSChecker *const checker, ir:
     }
 }
 
+static void CheckOverloadSameNameMethod(ETSChecker *const checker, ir::OverloadDeclaration *const overloadDecl)
+{
+    Type *objectType = overloadDecl->Parent()->IsClassDefinition()
+                           ? overloadDecl->Parent()->AsClassDefinition()->Check(checker)
+                           : overloadDecl->Parent()->Parent()->AsTSInterfaceDeclaration()->Check(checker);
+    ES2PANDA_ASSERT(objectType->IsETSObjectType());
+
+    PropertySearchFlags searchFlags = PropertySearchFlags::DISALLOW_SYNTHETIC_METHOD_CREATION |
+                                      (overloadDecl->IsStatic() ? PropertySearchFlags::SEARCH_STATIC_METHOD
+                                                                : PropertySearchFlags::SEARCH_INSTANCE_METHOD);
+    auto *sameNameMethod = objectType->AsETSObjectType()->GetProperty(overloadDecl->Id()->Name(), searchFlags);
+    if (sameNameMethod == nullptr) {
+        return;
+    }
+
+    auto serachName = overloadDecl->Id()->Name().Mutf8();
+    auto hasSameNameMethod =
+        std::find_if(overloadDecl->OverloadedList().begin(), overloadDecl->OverloadedList().end(),
+                     [serachName](ir::Expression *overloadId) {
+                         return overloadId->IsIdentifier() && overloadId->AsIdentifier()->Name().Is(serachName);
+                     });
+    if (hasSameNameMethod == overloadDecl->OverloadedList().end()) {
+        checker->LogError(diagnostic::OVERLOAD_SAME_NAME_METHOD, {serachName}, overloadDecl->Start());
+    }
+}
+
 checker::Type *ETSAnalyzer::Check(ir::OverloadDeclaration *node) const
 {
     ETSChecker *checker = GetETSChecker();
@@ -334,34 +360,25 @@ checker::Type *ETSAnalyzer::Check(ir::OverloadDeclaration *node) const
     ES2PANDA_ASSERT(node->Key());
 
     CheckDuplicationInOverloadDeclaration(checker, node);
+    CheckOverloadSameNameMethod(checker, node);
 
     if (node->IsConstructorOverloadDeclaration()) {
         ES2PANDA_ASSERT(node->Parent()->IsClassDefinition());
         checker->CheckConstructorOverloadDeclaration(checker, node);
-        return nullptr;
-    }
-
-    if (node->IsFunctionOverloadDeclaration()) {
+    } else if (node->IsFunctionOverloadDeclaration()) {
         ES2PANDA_ASSERT(
             node->Parent()->IsClassDefinition() &&
             (compiler::HasGlobalClassParent(node) || node->Parent()->AsClassDefinition()->IsNamespaceTransformed()));
         checker->CheckFunctionOverloadDeclaration(checker, node);
-        return nullptr;
-    }
-
-    if (node->IsClassMethodOverloadDeclaration()) {
+    } else if (node->IsClassMethodOverloadDeclaration()) {
         ES2PANDA_ASSERT(node->Parent()->IsClassDefinition());
         checker->CheckClassMethodOverloadDeclaration(checker, node);
-        return nullptr;
-    }
-
-    if (node->IsInterfaceMethodOverloadDeclaration()) {
+    } else if (node->IsInterfaceMethodOverloadDeclaration()) {
         ES2PANDA_ASSERT(node->Parent()->Parent()->IsTSInterfaceDeclaration());
         checker->CheckInterfaceMethodOverloadDeclaration(checker, node);
-        return nullptr;
     }
 
-    return nullptr;
+    return checker->CreateSyntheticTypeFromOverload(node->Id()->Variable());
 }
 
 checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::Property *expr) const
@@ -1624,6 +1641,25 @@ checker::Type *ETSAnalyzer::GetCallExpressionReturnType(ir::CallExpression *expr
     // NOTE(vpukhov): #14902 substituted signature is not updated
 }
 
+static void CheckOverloadCall(ETSChecker *checker, ir::CallExpression *expr)
+{
+    if (!expr->Callee()->IsMemberExpression() || !OverloadDeclaration(expr->Callee())) {
+        return;
+    }
+
+    auto *sig = expr->Signature();
+    auto *functionNode = sig->OwnerVar()->Declaration()->Node();
+    ir::AstNode *parent = functionNode->Parent();
+
+    bool isExported = functionNode->IsExported() || functionNode->IsDefaultExported();
+    if (parent != nullptr && parent->IsClassDefinition() && parent->AsClassDefinition()->IsNamespaceTransformed() &&
+        !parent->AsClassDefinition()->IsDeclare() && !isExported) {
+        checker->LogError(diagnostic::NOT_EXPORTED,
+                          {sig->OwnerVar()->Declaration()->Name(), parent->AsClassDefinition()->Ident()->Name()},
+                          expr->Start());
+    }
+}
+
 checker::Type *ETSAnalyzer::Check(ir::CallExpression *expr) const
 {
     ETSChecker *checker = GetETSChecker();
@@ -1674,6 +1710,7 @@ checker::Type *ETSAnalyzer::Check(ir::CallExpression *expr) const
         return expr->TsType();
     }
 
+    CheckOverloadCall(checker, expr);
     CheckVoidTypeExpression(checker, expr);
     CheckAbstractCall(checker, expr);
     return expr->TsType();

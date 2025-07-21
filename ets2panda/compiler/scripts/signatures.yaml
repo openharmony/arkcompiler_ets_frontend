@@ -255,8 +255,6 @@ defines:
     ref: CLASS_INITIALIZE_METHOD
   - name: 'constructor'
     ref: CONSTRUCTOR_NAME
-  - name: 'gensym%%_constructor_overload_declaration'
-    ref: CONSTRUCTOR_OVERLOAD_DEFINITION_NAME
 
 packages:
   - name: 'std.core'

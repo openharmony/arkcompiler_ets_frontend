@@ -35,6 +35,3 @@ function main() {
 
 /* @@? 27:34 Error TypeError: overloaded name must refer to an accessible method. */
 /* @@? 27:40 Error TypeError: overloaded name must refer to an accessible method. */
-/* @@? 32:5 Error TypeError: No matching call signature for foo111(A, A) */
-/* @@? 33:5 Error TypeError: No matching call signature for foo111(A, A, A) */
-

@@ -348,14 +348,12 @@ public:
     varbinder::LocalVariable *CreateSyntheticVarFromEverySignature(const util::StringView &name,
                                                                    PropertySearchFlags flags) const;
     varbinder::LocalVariable *CollectSignaturesForSyntheticType(std::vector<Signature *> &signatures,
-                                                                const util::StringView &name, PropertySearchFlags flags,
-                                                                bool &overloadDeclarationCall) const;
-    void AddSignature(std::vector<Signature *> &signatures, PropertySearchFlags flags, ETSChecker *checker,
-                      varbinder::LocalVariable *found, bool &overloadDeclarationCall) const;
+                                                                const util::StringView &name,
+                                                                PropertySearchFlags flags) const;
     void AddSignatureFromFunction(std::vector<Signature *> &signatures, PropertySearchFlags flags, ETSChecker *checker,
                                   varbinder::LocalVariable *found) const;
     void AddSignatureFromOverload(std::vector<Signature *> &signatures, PropertySearchFlags flags,
-                                  varbinder::LocalVariable *found, bool &overloadDeclarationCall) const;
+                                  varbinder::LocalVariable *found) const;
     void AddSignatureFromConstructor(std::vector<Signature *> &signatures, varbinder::LocalVariable *found) const;
     bool ReplaceArgumentInSignature(std::vector<Signature *> &signatures, Signature *sigToInsert,
                                     TypeRelation *relation) const;

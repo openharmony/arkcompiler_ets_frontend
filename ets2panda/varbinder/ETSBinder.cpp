@@ -743,6 +743,11 @@ Variable *ETSBinder::FindImportSpecifiersVariable(const util::StringView &import
         if (foundVar != staticMethodBindings.end()) {
             return foundVar->second;
         }
+        const auto &staticDeclBindings = records[0]->GlobalClassScope()->StaticDeclScope()->Bindings();
+        foundVar = staticDeclBindings.find(imported);
+        if (foundVar != staticDeclBindings.end()) {
+            return foundVar->second;
+        }
         bool found = false;
         for (auto res : records) {
             const auto &staticFieldBindings = res->GlobalClassScope()->StaticFieldScope()->Bindings();

@@ -32,12 +32,12 @@ function main(){
 /* @@? 21:20 Error TypeError: overloaded name must refer to an accessible method. */
 /* @@? 21:21 Error SyntaxError: Unexpected token, expected ',' or '}'. */
 /* @@? 21:21 Error TypeError: Variable 'foo1' has already been declared. */
-/* @@? 21:25 Error SyntaxError: Field type annotation expected. */
 /* @@? 21:25 Error SyntaxError: Unexpected token ','. */
+/* @@? 21:25 Error SyntaxError: Field type annotation expected. */
 /* @@? 21:30 Error SyntaxError: Field type annotation expected. */
 /* @@? 21:30 Error SyntaxError: Unexpected token ','. */
-/* @@? 21:35 Error SyntaxError: Field type annotation expected. */
 /* @@? 21:35 Error SyntaxError: Unexpected token ')'. */
+/* @@? 21:35 Error SyntaxError: Field type annotation expected. */
 /* @@? 21:36 Error SyntaxError: Unexpected token '{'. */
 /* @@? 22:20 Error SyntaxError: Unexpected token, expected '{'. */
 /* @@? 22:20 Error SyntaxError: Unexpected token, expected an identifier. */
@@ -49,4 +49,3 @@ function main(){
 /* @@? 22:26 Error TypeError: Unresolved reference foo2 */
 /* @@? 22:30 Error SyntaxError: Unexpected token ')'. */
 /* @@? 23:1 Error SyntaxError: Unexpected token '}'. */
-/* @@? 27:7 Error TypeError: Property 'foo111' does not exist on type 'Test' */

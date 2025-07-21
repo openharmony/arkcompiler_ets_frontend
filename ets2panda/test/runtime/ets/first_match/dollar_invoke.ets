@@ -13,6 +13,17 @@
  * limitations under the License.
  */
 
-export function foo1() {}
-function foo2() {}
-export overload foo {foo1, foo2}
+class A {
+    static overload $_invoke{ $_invoke1, $_invoke2 }
+    static $_invoke1(a: number) {
+        return "invoke1"
+    }
+    static $_invoke2(a: string) {
+        return "invoke2"
+    }
+}
+
+function main(): void {
+    arktest.assertEQ(A(123), "invoke1")
+    arktest.assertEQ(A("abc"), "invoke2")
+}

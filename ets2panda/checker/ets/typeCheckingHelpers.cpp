@@ -492,10 +492,11 @@ Type *ETSChecker::CreateSyntheticTypeFromOverload(varbinder::Variable *const var
 
     for (auto *overloadFunction : overloadDeclaration->OverloadedList()) {
         Type *functionType = overloadFunction->Check(this);
-        if (!functionType->IsETSFunctionType()) {
-            var->SetTsType(GlobalTypeError());
-            return GlobalTypeError();
+        if (functionType->IsTypeError()) {
+            overloadDeclaration->SetTsType(GetGlobalTypesHolder()->GlobalTypeError());
+            return GetGlobalTypesHolder()->GlobalTypeError();
         }
+        ES2PANDA_ASSERT(functionType->IsETSFunctionType());
         auto *signature = functionType->AsETSFunctionType()->CallSignatures().front();
         if (std::find(signatures.begin(), signatures.end(), signature) != signatures.end()) {
             continue;
@@ -507,6 +508,9 @@ Type *ETSChecker::CreateSyntheticTypeFromOverload(varbinder::Variable *const var
         syntheticFunctionType->AddCallSignature(s);
     }
 
+    syntheticFunctionType->SetVariable(var);
+    var->SetTsType(syntheticFunctionType);
+    overloadDeclaration->SetTsType(syntheticFunctionType);
     return syntheticFunctionType;
 }
 
@@ -689,6 +693,7 @@ Type *ETSChecker::GuaranteedTypeForUncheckedPropertyAccess(varbinder::Variable *
         case ir::AstNodeType::METHOD_DEFINITION:
         case ir::AstNodeType::CLASS_DEFINITION:
             return GetTypeOfVariable(prop);
+        case ir::AstNodeType::OVERLOAD_DECLARATION:
         case ir::AstNodeType::TS_ENUM_DECLARATION:
             return nullptr;
         default:
@@ -1671,11 +1676,6 @@ static bool CheckAccessModifierForOverloadDeclaration(ETSChecker *const checker,
                                                       const ir::ModifierFlags &overloadedMethodFlags,
                                                       const lexer::SourcePosition &pos)
 {
-    if ((overloadedMethodFlags & (ir::ModifierFlags::ABSTRACT)) != 0) {
-        checker->LogError(diagnostic::OVERLOAD_MODIFIERS_ABSTRACT, {}, pos);
-        return false;
-    }
-
     if (((overLoadAliasFlags ^ overloadedMethodFlags) & (ir::ModifierFlags::STATIC | ir::ModifierFlags::ASYNC)) != 0) {
         checker->LogError(diagnostic::OVERLOAD_SAME_ACCESS_MODIFIERS_STATIC_ASYNC, {}, pos);
         return false;
@@ -1686,11 +1686,6 @@ static bool CheckAccessModifierForOverloadDeclaration(ETSChecker *const checker,
         return false;
     }
 
-    if ((overLoadAliasFlags & ir::ModifierFlags::EXPORT) != 0 &&
-        (overloadedMethodFlags & ir::ModifierFlags::EXPORT) == 0) {
-        checker->LogError(diagnostic::OVERLOADED_NAME_MUST_ALSO_EXPORTED, {}, pos);
-        return false;
-    }
     return true;
 }
 
@@ -1759,6 +1754,11 @@ void ETSChecker::CheckFunctionOverloadDeclaration(ETSChecker *checker, ir::Overl
 
 void ETSChecker::CheckClassMethodOverloadDeclaration(ETSChecker *checker, ir::OverloadDeclaration *node) const
 {
+    PropertySearchFlags searchFlags =
+        PropertySearchFlags::SEARCH_IN_BASE | PropertySearchFlags::SEARCH_IN_INTERFACES |
+        PropertySearchFlags::IS_GETTER | PropertySearchFlags::IGNORE_OVERLOAD |
+        (node->IsStatic() ? PropertySearchFlags::SEARCH_STATIC_METHOD : PropertySearchFlags::SEARCH_INSTANCE_METHOD);
+
     for (auto *overloadedName : node->OverloadedList()) {
         if (!overloadedName->IsIdentifier()) {
             overloadedName->SetTsType(checker->GlobalTypeError());
@@ -1769,10 +1769,15 @@ void ETSChecker::CheckClassMethodOverloadDeclaration(ETSChecker *checker, ir::Ov
         Type *classType = node->Parent()->AsClassDefinition()->TsType();
         ES2PANDA_ASSERT(classType->IsETSObjectType());
 
-        PropertySearchFlags searchFlags = PropertySearchFlags::SEARCH_METHOD | PropertySearchFlags::SEARCH_IN_BASE |
-                                          PropertySearchFlags::SEARCH_IN_INTERFACES | PropertySearchFlags::IS_GETTER;
         auto *variable =
             checker->ResolveOverloadReference(ident->AsIdentifier(), classType->AsETSObjectType(), searchFlags);
+
+        if (variable == nullptr &&
+            checker->ResolveOverloadReference(ident->AsIdentifier(), classType->AsETSObjectType(),
+                                              searchFlags | PropertySearchFlags::SEARCH_METHOD) != nullptr) {
+            checker->LogError(diagnostic::OVERLOAD_SAME_ACCESS_MODIFIERS_STATIC_ASYNC, {}, ident->Start());
+            continue;
+        }
         if (variable == nullptr) {
             checker->LogError(diagnostic::OVERLOADED_NAME_MUST_FUNCTION, {}, ident->Start());
             ident->SetTsType(checker->GlobalTypeError());
@@ -1790,6 +1795,10 @@ void ETSChecker::CheckClassMethodOverloadDeclaration(ETSChecker *checker, ir::Ov
 
 void ETSChecker::CheckInterfaceMethodOverloadDeclaration(ETSChecker *checker, ir::OverloadDeclaration *node) const
 {
+    PropertySearchFlags searchFlags =
+        PropertySearchFlags::SEARCH_IN_BASE | PropertySearchFlags::SEARCH_IN_INTERFACES |
+        PropertySearchFlags::IS_GETTER | PropertySearchFlags::IGNORE_OVERLOAD |
+        (node->IsStatic() ? PropertySearchFlags::SEARCH_STATIC_METHOD : PropertySearchFlags::SEARCH_INSTANCE_METHOD);
     for (auto *overloadedName : node->OverloadedList()) {
         if (!overloadedName->IsIdentifier()) {
             overloadedName->SetTsType(checker->GlobalTypeError());
@@ -1797,9 +1806,26 @@ void ETSChecker::CheckInterfaceMethodOverloadDeclaration(ETSChecker *checker, ir
         }
         ir::Identifier *ident = overloadedName->AsIdentifier();
 
-        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        Type *identType = checker->ResolveIdentifier(ident);
-        ident->SetTsType(identType);
+        Type *interfaceType = node->Parent()->Parent()->AsTSInterfaceDeclaration()->TsType();
+        ES2PANDA_ASSERT(interfaceType->IsETSObjectType());
+        auto *variable =
+            checker->ResolveOverloadReference(ident->AsIdentifier(), interfaceType->AsETSObjectType(), searchFlags);
+
+        if (variable == nullptr &&
+            checker->ResolveOverloadReference(ident->AsIdentifier(), interfaceType->AsETSObjectType(),
+                                              searchFlags | PropertySearchFlags::SEARCH_METHOD) != nullptr) {
+            checker->LogError(diagnostic::OVERLOAD_SAME_ACCESS_MODIFIERS_STATIC_ASYNC, {}, ident->Start());
+            continue;
+        }
+        if (variable == nullptr) {
+            checker->LogError(diagnostic::OVERLOADED_NAME_MUST_FUNCTION, {}, ident->Start());
+            ident->SetTsType(checker->GlobalTypeError());
+            continue;
+        }
+
+        ident->SetTsType(variable->TsType());
+        ident->SetVariable(variable);
+
         if (!CheckOverloadedName(checker, node, overloadedName)) {
             continue;
         }

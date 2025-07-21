@@ -13,6 +13,20 @@
  * limitations under the License.
  */
 
-export function foo1() {}
-function foo2() {}
-export overload foo {foo1, foo2}
+class C{
+    foo(n:number){}
+    fooString(n:string){}
+    fooBoolean(n:boolean){}
+
+    overload foo{foo,fooString,fooBoolean}
+}
+
+class D{
+    foo(n:number){}
+    fooString(n:string){}
+    fooBoolean(n:boolean){}
+
+    overload foo{fooString,fooBoolean}
+}
+
+/* @@? 29:5 Error TypeError: Method with the same name as overload declaration 'foo', overloadlist must list this medhod. */

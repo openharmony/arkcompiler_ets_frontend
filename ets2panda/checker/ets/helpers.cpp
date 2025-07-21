@@ -325,10 +325,6 @@ Type *ETSChecker::ResolveIdentifier(ir::Identifier *ident)
     ValidatePropertyAccess(resolved, Context().ContainingClass(), ident->Start());
     SaveCapturedVariable(resolved, ident);
 
-    if (IsVariableOverloadDeclaration(resolved)) {
-        return CreateSyntheticTypeFromOverload(resolved);
-    }
-
     return GetTypeOfVariable(resolved);
 }
 

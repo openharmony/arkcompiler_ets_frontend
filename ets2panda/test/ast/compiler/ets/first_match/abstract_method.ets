@@ -16,8 +16,5 @@
 abstract class Base {
     abstract fooNumber(a: number): string;
     abstract fooString(a: string): string;
-    overload foo {/* @@ label1 */fooNumber,/* @@ label2 */fooString }
+    overload foo {fooNumber,fooString }
 }
-
-/* @@@ label1 Error TypeError: overload declaration cannot contain abstract methods. */
-/* @@@ label2 Error TypeError: overload declaration cannot contain abstract methods. */

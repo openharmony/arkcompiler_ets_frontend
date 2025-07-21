@@ -13,6 +13,28 @@
  * limitations under the License.
  */
 
-export function foo1() {}
-function foo2() {}
-export overload foo {foo1, foo2}
+let s = "abc"
+class A {
+    $_set1(idx: int, val: number) {
+        s = "$_set1 " + idx.toString() + " " + val.toString();
+    }
+
+    $_set2(idx: int, val: string) {
+        s = "$_set2 " + idx.toString() + " " + val;
+    }
+
+    overload $_set { $_set1, $_set2 }
+}
+
+function main() {
+    let a = new A();
+
+
+    a[1] = 1234
+    const result1 = "$_set1 1 1234"
+    arktest.assertEQ(s, result1)
+
+    a[2] = "aaa"
+    const result2 = "$_set2 2 aaa"
+    arktest.assertEQ(s, result2)
+}

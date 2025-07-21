@@ -13,15 +13,9 @@
  * limitations under the License.
  */
 
-
-
 function foo1() {}
 function foo2() {}
 overload foo{foo1, foo2}
 let OL = /* @@ label */foo;
 
-/* @@@ label Error TypeError: Identifier 'foo' is used in wrong context. */
 /* @@@ label Error TypeError: Overloaded method is used as value */
-/* @@@ label Error TypeError: Identifier 'foo' is used in wrong context. */
-/* @@@ label Error TypeError: Overloaded method is used as value */
-

@@ -542,8 +542,7 @@ ir::OverloadDeclaration *ETSParser::ParseClassOverloadDeclaration(ir::ModifierFl
     // To avoid duplicate names with anonymous constructors, overload constructor name is
     // "constructorOverloadDeclaration", instead of "constructor"
     if (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_CONSTRUCTOR) {
-        overloadName =
-            AllocNode<ir::Identifier>(compiler::Signatures::CONSTRUCTOR_OVERLOAD_DEFINITION_NAME, Allocator());
+        overloadName = AllocNode<ir::Identifier>(compiler::Signatures::CONSTRUCTOR_NAME, Allocator());
         modifiers |= ir::ModifierFlags::CONSTRUCTOR;
         Lexer()->NextToken();
     } else {

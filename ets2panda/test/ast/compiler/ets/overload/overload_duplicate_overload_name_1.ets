@@ -16,11 +16,10 @@
 class Base {
     foo/* @@ label1 */(a: number) : string
     foo(a: string) : string
-    overload /* @@ label2 */foo {/* @@ label3 */foo, /* @@ label4 */foo}
+    overload foo {/* @@ label2 */foo, /* @@ label3 */foo}
 }
 
 /* @@@ label1 Error TypeError: Only abstract or native methods can't have body. */
-/* @@@ label2 Error TypeError: Variable 'foo' has already been declared. */
-/* @@@ label3 Error TypeError: overloaded name must refer to an accessible method. */
-/* @@@ label4 Error TypeError: Duplicate overloaded method. */
-/* @@@ label4 Error TypeError: overloaded name must refer to an accessible method. */
+/* @@@ label2 Error TypeError: The overloaded name 'foo' can't refer to a function with overload signatures. */
+/* @@@ label3 Error TypeError: Duplicate overloaded method. */
+/* @@@ label3 Error TypeError: The overloaded name 'foo' can't refer to a function with overload signatures. */

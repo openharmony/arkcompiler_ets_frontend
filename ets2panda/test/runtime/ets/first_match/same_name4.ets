@@ -13,6 +13,34 @@
  * limitations under the License.
  */
 
-export function foo1() {}
-function foo2() {}
-export overload foo {foo1, foo2}
+interface I {
+    foo(a: number){
+    return "invoke1"
+}
+}
+
+interface J extends I {
+    fooString(a: string): string
+    overload foo{ foo, fooString }
+}
+
+class C implements I {
+    foo(a: number) {
+        return "invoke2"
+    }
+    fooString(a: string) {
+        return "invoke3"
+    }
+    overload foo{ foo, fooString }
+}
+
+function foo(param: J) {
+    param.foo(1);
+    param.foo("abc")
+}
+
+function main() {
+    let c = new C();
+    arktest.assertEQ(c.foo(1), "invoke2");
+    arktest.assertEQ(c.foo("abc"), "invoke3");
+}
