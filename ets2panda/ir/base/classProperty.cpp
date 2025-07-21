@@ -216,6 +216,10 @@ bool ClassProperty::RegisterUnexportedForDeclGen(ir::SrcDumper *dumper) const
         return true;
     }
 
+    if (IsPrivate()) {
+        return true;
+    }
+
     if (!compiler::HasGlobalClassParent(this)) {
         return false;
     }

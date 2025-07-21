@@ -40,3 +40,14 @@ export declare class Derived extends Base implements I0, I1 {
   public constructor(a: double, b: double);
   
 }
+
+export declare class Core {
+  public beforeItSpecified: (itDescs: String|Array<String>, func: (done: () => void) => void|(done: () => void) => Promise<void>) => void;
+  
+  public Event(): Promise<void>;
+  
+  
+  
+  public constructor();
+  
+}
