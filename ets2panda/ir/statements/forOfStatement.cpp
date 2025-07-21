@@ -230,6 +230,10 @@ bool ForOfStatement::CheckReturnTypeOfIteratorMethod(checker::ETSChecker *checke
 
 bool ForOfStatement::CheckIteratorInterfaceForObject(checker::ETSChecker *checker, checker::ETSObjectType *obj)
 {
+    if (obj->Name().Is(ITERATOR_INTERFACE_NAME)) {
+        return true;
+    }
+
     for (auto *const it : obj->Interfaces()) {
         if (it->Name().Is(ITERATOR_INTERFACE_NAME)) {
             return true;
