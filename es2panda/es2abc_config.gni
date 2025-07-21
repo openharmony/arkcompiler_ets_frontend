@@ -136,7 +136,7 @@ template("es2abc_gen_newest_abc") {
 
     deps = extra_dependencies
     if (host_toolchain == toolchain_mac) {
-      external_deps = ["ets_frontend:es2panda($toolchain_mac)"]
+      deps += es2abc_build_deps
     } else if (host_toolchain == toolchain_win) {
       external_deps = ["ets_frontend:es2panda(${host_toolchain})"]
     } else if (ark_standalone_build) {
