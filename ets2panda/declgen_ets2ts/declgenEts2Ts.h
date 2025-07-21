@@ -27,6 +27,8 @@
 
 namespace ark::es2panda::declgen_ets2ts {
 
+constexpr const char *NON_INTEROP_FLAG = "@noninterop";
+
 struct DeclgenOptions {
     bool exportAll = false;
     bool isolated = false;
@@ -219,6 +221,9 @@ private:
     void ProcessClassDependencies(const ir::ClassDeclaration *classDecl);
     void ProcessClassPropDependencies(const ir::ClassDefinition *classDef);
     void ProcessClassMethodDependencies(const ir::MethodDefinition *methodDef);
+    void ProcessInterfaceDependencies(const ir::TSInterfaceDeclaration *interfaceDecl);
+    void ProcessInterfacePropDependencies(const ir::TSInterfaceDeclaration *interfaceDecl);
+    void ProcessInterfaceMethodDependencies(const ir::MethodDefinition *methodDef);
     void ProcessETSTypeReferenceDependencies(const ir::ETSTypeReference *typeReference);
     void AddSuperType(const ir::Expression *super);
     void AddSuperType(const checker::Type *tsType);
