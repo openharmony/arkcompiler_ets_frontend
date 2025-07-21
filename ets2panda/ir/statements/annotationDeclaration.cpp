@@ -153,14 +153,7 @@ Identifier *AnnotationDeclaration::GetBaseName() const
     if (Expr()->IsIdentifier()) {
         return GetHistoryNodeAs<AnnotationDeclaration>()->expr_->AsIdentifier();
     }
-    auto *part = Expr()->AsETSTypeReference()->Part();
-    if (part->Name()->IsIdentifier()) {
-        return part->Name()->AsIdentifier();
-    }
-    if (part->Name()->IsTSQualifiedName()) {
-        return part->Name()->AsTSQualifiedName()->Right();
-    }
-    return nullptr;
+    return expr_->AsETSTypeReference()->Part()->GetIdent();
 }
 AnnotationDeclaration *AnnotationDeclaration::Construct(ArenaAllocator *allocator)
 {

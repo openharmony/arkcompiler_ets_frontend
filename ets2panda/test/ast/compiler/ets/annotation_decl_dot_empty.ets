@@ -13,10 +13,9 @@
  * limitations under the License.
  */
 
-/* @@ label1 */@@/@
+@interface Message.
+{
+}
 
-/* @@@ label1 Error SyntaxError: Unexpected token '@@'. */
-/* @@? 23:1 Error SyntaxError: Identifier expected, got 'end of stream'. */
-/* @@? 23:1 Error SyntaxError: Invalid annotation name. */
-/* @@? 23:1 Error SyntaxError: Unexpected token 'end of stream'. */
-/* @@? 23:1 Error SyntaxError: Annotations are not allowed on this type of declaration. */
+/* @@? 16:12 Error SyntaxError: Invalid annotation name. */
+/* @@? 17:1 Error SyntaxError: Identifier expected. */

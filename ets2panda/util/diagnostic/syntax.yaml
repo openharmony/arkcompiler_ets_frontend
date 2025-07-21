@@ -505,6 +505,10 @@ syntax:
   id: 159
   message: "Invalid accessor."
 
+- name: INVALID_ANNOTATION_NAME
+  id: 329
+  message: "Invalid annotation name."
+
 - name: INVALID_ARGUMENT_ETSNOLINT
   id: 278
   message: "Invalid argument for ETSNOLINT!"

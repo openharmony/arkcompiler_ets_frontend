@@ -13,10 +13,11 @@
  * limitations under the License.
  */
 
-/* @@ label1 */@@/@
+class MyTest {
+    @Consume.
+    private property1;
+}
 
-/* @@@ label1 Error SyntaxError: Unexpected token '@@'. */
-/* @@? 23:1 Error SyntaxError: Identifier expected, got 'end of stream'. */
-/* @@? 23:1 Error SyntaxError: Invalid annotation name. */
-/* @@? 23:1 Error SyntaxError: Unexpected token 'end of stream'. */
-/* @@? 23:1 Error SyntaxError: Annotations are not allowed on this type of declaration. */
+/* @@? 17:6 Error SyntaxError: Invalid annotation name.  */
+/* @@? 18:5 Error SyntaxError: Identifier expected.  */
+/* @@? 18:22 Error SyntaxError: Field type annotation expected.  */

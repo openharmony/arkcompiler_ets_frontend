@@ -17,6 +17,7 @@
 this.context;
 
 /* @@? 17:1 Error SyntaxError: Identifier expected. */
+/* @@? 17:1 Error SyntaxError: Invalid annotation name. */
 /* @@? 17:1 Error SyntaxError: Expected '{', got 'this'. */
 /* @@? 17:5 Error SyntaxError: Identifier expected, got '.'. */
 /* @@? 17:13 Error SyntaxError: Missing type annotation for property 'context'. */
