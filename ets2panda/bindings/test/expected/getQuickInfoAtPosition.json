@@ -1,6 +1,6 @@
 {
   "1": {
-    "kind": "",
+    "kind": "enum member",
     "kindModifier": "static public readonly",
     "textSpan": {
       "start": 626,
@@ -70,7 +70,7 @@
     ]
   },
   "3": {
-    "kind": "property",
+    "kind": "get",
     "kindModifier": "public abstract",
     "textSpan": {
       "start": 661,
@@ -105,7 +105,7 @@
     ]
   },
   "4": {
-    "kind": "function",
+    "kind": "method",
     "kindModifier": "public declare",
     "textSpan": {
       "start": 695,

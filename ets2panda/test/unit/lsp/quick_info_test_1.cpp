@@ -289,6 +289,7 @@ TEST_F(LspQuickInfoTests, CreateDisplayForMethodDefinition)
                                                       "function func(a: number): string { return 'function1'; }");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
     auto context = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx);
+    auto checker = reinterpret_cast<ark::es2panda::checker::ETSChecker *>(context->GetChecker());
     auto ast = reinterpret_cast<ark::es2panda::ir::AstNode *>(context->parserProgram->Ast());
     auto checkFunc = [](ark::es2panda::ir::AstNode *node) {
         return node->Type() == ark::es2panda::ir::AstNodeType::METHOD_DEFINITION &&
@@ -296,7 +297,7 @@ TEST_F(LspQuickInfoTests, CreateDisplayForMethodDefinition)
                node->AsMethodDefinition()->Id()->Name() != "_$init$_";
     };
     auto found = ast->FindChild(checkFunc);
-    std::vector<SymbolDisplayPart> display = ark::es2panda::lsp::CreateDisplayForMethodDefinition(found, "");
+    std::vector<SymbolDisplayPart> display = ark::es2panda::lsp::CreateDisplayForMethodDefinition(found, "", checker);
     std::vector<SymbolDisplayPart> expected;
 
     // Expected parts for the method definition

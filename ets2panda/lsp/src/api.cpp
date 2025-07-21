@@ -53,6 +53,9 @@ DefinitionInfo GetDefinitionAtPosition(es2panda_Context *context, size_t positio
     SetPhaseManager(ctx->phaseManager);
     auto declInfo = GetDefinitionAtPositionImpl(context, position);
     DefinitionInfo result {};
+    if (declInfo.first == nullptr) {
+        return result;
+    }
     auto node = declInfo.first;
     auto targetNode = declInfo.first->FindChild([&declInfo](ir::AstNode *childNode) {
         return childNode->IsIdentifier() && childNode->AsIdentifier()->Name() == declInfo.second;
