@@ -8119,7 +8119,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
           this.handleNoDeprecatedApi(expr);
         }
       });
-
+      this.handleInterfaceFieldImplementation(node);
       this.handleMissingSuperCallInExtendedClass(node);
       this.handleFieldTypesMatchingBetweenDerivedAndBaseClass(node);
       this.checkReadonlyOverridesFromBase(node);
@@ -8175,6 +8175,98 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         this.incrementCounters(member, FaultID.NoClassSuperPropReadonly);
       }
     }
+  }
+
+  /**
+   * Ensures classes fully implement all properties from their interfaces.
+   */
+  private handleInterfaceFieldImplementation(clause: ts.HeritageClause): void {
+    // Only process implements clauses
+    if (clause.token !== ts.SyntaxKind.ImplementsKeyword) {
+      return;
+    }
+    const classDecl = clause.parent as ts.ClassDeclaration;
+    if (!ts.isClassDeclaration(classDecl) || !classDecl.name) {
+      return;
+    }
+
+    for (const interfaceType of clause.types) {
+      const expr = interfaceType.expression;
+      if (!ts.isIdentifier(expr)) {
+        continue;
+      }
+      const sym = this.tsUtils.trueSymbolAtLocation(expr);
+      const interfaceDecl = sym?.declarations?.find(ts.isInterfaceDeclaration);
+      if (!interfaceDecl) {
+        continue;
+      }
+      // Gather all inherited interfaces
+      const allInterfaces = this.getAllInheritedInterfaces(interfaceDecl);
+      // If the class fails to implement any member, report once and exit
+      if (!this.classImplementsAllMembers(classDecl, allInterfaces)) {
+        this.incrementCounters(classDecl.name, FaultID.InterfaceFieldNotImplemented);
+        return;
+      }
+    }
+  }
+
+  /**
+   * Recursively collects an interface and all its ancestor interfaces.
+   */
+  private getAllInheritedInterfaces(root: ts.InterfaceDeclaration): ts.InterfaceDeclaration[] {
+    const collected: ts.InterfaceDeclaration[] = [];
+    const stack: ts.InterfaceDeclaration[] = [root];
+    while (stack.length) {
+      const current = stack.pop()!;
+      collected.push(current);
+      if (!current.heritageClauses) {
+        continue;
+      }
+      for (const clause of current.heritageClauses) {
+        if (clause.token !== ts.SyntaxKind.ExtendsKeyword) {
+          continue;
+        }
+        for (const typeNode of clause.types) {
+          const expr = typeNode.expression;
+          if (!ts.isIdentifier(expr)) {
+            continue;
+          }
+          const sym = this.tsUtils.trueSymbolAtLocation(expr);
+          const decl = sym?.declarations?.find(ts.isInterfaceDeclaration);
+          if (decl) {
+            stack.push(decl);
+          }
+        }
+      }
+    }
+    return collected;
+  }
+
+  /**
+   * Returns true if the class declaration declares every property or method
+   * signature from the provided list of interface declarations.
+   */
+  private classImplementsAllMembers(classDecl: ts.ClassDeclaration, interfaces: ts.InterfaceDeclaration[]): boolean {
+    void this;
+
+    for (const intf of interfaces) {
+      for (const member of intf.members) {
+        if ((ts.isPropertySignature(member) || ts.isMethodSignature(member)) && ts.isIdentifier(member.name)) {
+          const name = member.name.text;
+          const found = classDecl.members.some((m) => {
+            return (
+              (ts.isPropertyDeclaration(m) || ts.isMethodDeclaration(m)) &&
+              ts.isIdentifier(m.name) &&
+              m.name.text === name
+            );
+          });
+          if (!found) {
+            return false;
+          }
+        }
+      }
+    }
+    return true;
   }
 
   private isVariableReference(identifier: ts.Identifier): boolean {

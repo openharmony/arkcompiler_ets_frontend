@@ -53,6 +53,7 @@
     "arkts-limited-stdlib-no-setCloneList",
     "arkts-limited-stdlib-no-setTransferList",
     "arkts-builtin-object-getOwnPropertyNames",
+    "arkts-no-class-omit-interface-optional-prop",
     "arkts-no-sparse-array",
     "arkts-no-enum-prop-as-type",
     "arkts-no-ts-like-smart-type",

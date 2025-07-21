@@ -254,6 +254,7 @@ export enum FaultID {
   NondecimalBigint,
   UnsupportOperator,
   CustomLayoutNeedAddDecorator,
+  InterfaceFieldNotImplemented,
   PropDecoratorNotSupported,
   StoragePropDecoratorNotSupported,
   LocalStoragePropDecoratorNotSupported,
