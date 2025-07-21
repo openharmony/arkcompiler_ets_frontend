@@ -21,7 +21,10 @@ import type { Autofix } from './autofixes/Autofixer';
 import { Autofixer } from './autofixes/Autofixer';
 import { PROMISE_METHODS, SYMBOL, SYMBOL_CONSTRUCTOR, TsUtils } from './utils/TsUtils';
 import { FUNCTION_HAS_NO_RETURN_ERROR_CODE } from './utils/consts/FunctionHasNoReturnErrorCode';
-import { LIMITED_STANDARD_UTILITY_TYPES } from './utils/consts/LimitedStandardUtilityTypes';
+import {
+  LIMITED_STANDARD_UTILITY_TYPES,
+  LIMITED_STANDARD_UTILITY_TYPES2
+} from './utils/consts/LimitedStandardUtilityTypes';
 import { LIKE_FUNCTION, LIKE_FUNCTION_CONSTRUCTOR } from './utils/consts/LikeFunction';
 import { METHOD_DECLARATION } from './utils/consts/MethodDeclaration';
 import { METHOD_SIGNATURE } from './utils/consts/MethodSignature';
@@ -1321,10 +1324,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     const exprSym = this.tsUtils.trueSymbolAtLocation(propertyAccessNode);
     const baseExprSym = this.tsUtils.trueSymbolAtLocation(propertyAccessNode.expression);
     const baseExprType = this.tsTypeChecker.getTypeAtLocation(propertyAccessNode.expression);
-    this.handleTsInterop(propertyAccessNode, () => {
-      const type = this.tsTypeChecker.getTypeAtLocation(propertyAccessNode.expression);
-      this.checkUsageOfTsTypes(type, propertyAccessNode.expression);
-    });
     this.propertyAccessExpressionForInterop(propertyAccessNode);
     if (this.isPrototypePropertyAccess(propertyAccessNode, exprSym, baseExprSym, baseExprType)) {
       this.incrementCounters(propertyAccessNode.name, FaultID.Prototype);
@@ -1491,10 +1490,193 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       TsUtils.isAnyType(baseType) ||
       TsUtils.isUnknownType(baseType) ||
       this.tsUtils.isStdFunctionType(baseType) ||
-      typeString === 'symbol'
+      typeString === 'symbol' ||
+      this.isMixedEnum(baseType) ||
+      this.isSpecialType(baseType, node) ||
+      this.isStdUtilityTools(node)
     ) {
       this.incrementCounters(node, FaultID.InteropDirectAccessToTSTypes);
     }
+  }
+
+  private isSpecialType(baseType: ts.Type, node: ts.Node): boolean {
+    const baseTypeStr = this.tsTypeChecker.typeToString(baseType);
+    if (TypeScriptLinter.extractKeyofFromString(baseTypeStr)) {
+      return true;
+    }
+    let symbol = baseType.getSymbol();
+    if (!symbol) {
+      symbol = this.tsUtils.trueSymbolAtLocation(node);
+    }
+    const decl = TsUtils.getDeclaration(symbol);
+    if (!decl) {
+      return false;
+    }
+    if (
+      ts.isTypeAliasDeclaration(decl) && this.checkSpecialTypeNode(decl.type, true) ||
+      this.checkSpecialTypeNode(decl, true)
+    ) {
+      return true;
+    }
+
+    if (this.isObjectLiteralExpression(decl)) {
+      return true;
+    }
+
+    if (ts.isFunctionLike(decl)) {
+      if (decl.type && this.checkIsTypeLiteral(decl.type)) {
+        return true;
+      }
+      const isObjectLiteralExpression = decl.parameters.some((param) => {
+        return param.type && this.checkIsTypeLiteral(param.type);
+      });
+      if (isObjectLiteralExpression) {
+        return true;
+      }
+      if (TypeScriptLinter.hasObjectLiteralReturn(decl as ts.FunctionLikeDeclaration)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private isMixedEnum(type: ts.Type): boolean {
+    const symbol = type.getSymbol();
+    if (!symbol) {
+      return false;
+    }
+
+    const declarations = symbol.getDeclarations();
+    if (!declarations) {
+      return false;
+    }
+
+    for (const decl of declarations) {
+      if (ts.isEnumDeclaration(decl)) {
+        const initializerTypes = new Set<string>();
+
+        for (const member of decl.members) {
+          if (member.initializer) {
+            const memberType = this.tsTypeChecker.getTypeAtLocation(member.initializer);
+            const baseTypeStr = this.tsTypeChecker.typeToString(
+              this.tsTypeChecker.getBaseTypeOfLiteralType(memberType)
+            );
+            initializerTypes.add(baseTypeStr);
+          }
+        }
+
+        if (initializerTypes.size > 1) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  private isStdUtilityTools(node: ts.Node): boolean {
+    const symbol = this.tsUtils.trueSymbolAtLocation(node);
+    const decl = TsUtils.getDeclaration(symbol);
+    if (!decl) {
+      return false;
+    }
+    let isStdUtilityType = false;
+    const utils = this.tsUtils;
+    function traverse(node: ts.Node): void {
+      if (isStdUtilityType) {
+        return;
+      }
+      if (ts.isTypeReferenceNode(node) || ts.isExpressionWithTypeArguments(node)) {
+        let typeName = '';
+        if (ts.isTypeReferenceNode(node)) {
+          typeName = utils.entityNameToString(node.typeName);
+        } else {
+          typeName = node.expression.getText();
+        }
+        isStdUtilityType = !!(
+          LIMITED_STANDARD_UTILITY_TYPES2.includes(typeName) &&
+          node.typeArguments &&
+          node.typeArguments.length > 0
+        );
+      }
+      node.forEachChild(traverse);
+    }
+    traverse(decl);
+    return isStdUtilityType;
+  }
+
+  private checkIsTypeLiteral(node: ts.Node): boolean {
+    if (ts.isUnionTypeNode(node) || ts.isIntersectionTypeNode(node)) {
+      return node.types.some((typeNode) => {
+        return this.checkIsTypeLiteralWithTypeNodes(typeNode);
+      });
+    }
+
+    return this.checkIsTypeLiteralWithTypeNodes(node);
+  }
+
+  private checkIsTypeLiteralWithTypeNodes(node: ts.Node): boolean {
+    if (ts.isTypeLiteralNode(node) && node.members.length > 0) {
+      return true;
+    }
+
+    if (ts.isTypeReferenceNode(node) && node.typeName) {
+      const typeDecl = this.tsUtils.getDeclarationNode(node.typeName);
+      return (
+        typeDecl !== undefined && ts.isTypeAliasDeclaration(typeDecl) && this.checkSpecialTypeNode(typeDecl.type, false)
+      );
+    }
+
+    return false;
+  }
+
+  private checkSpecialTypeNode(typeNode: ts.Node, isNeedCheckIsTypeLiteral: boolean): boolean {
+    let specialType =
+      ts.isIndexedAccessTypeNode(typeNode) ||
+      ts.isConditionalTypeNode(typeNode) ||
+      ts.isFunctionTypeNode(typeNode) ||
+      ts.isMappedTypeNode(typeNode) ||
+      ts.isTemplateLiteralTypeNode(typeNode);
+    if (isNeedCheckIsTypeLiteral) {
+      specialType ||= this.checkIsTypeLiteral(typeNode);
+    }
+    return specialType;
+  }
+
+  private isObjectLiteralExpression(decl: ts.Node): boolean {
+    const isVariableWithInitializer =
+      ts.isVariableDeclaration(decl) && decl.initializer && ts.isObjectLiteralExpression(decl.initializer);
+
+    const isVariableWithTypeLiteral = ts.isVariableDeclaration(decl) && decl.type && this.checkIsTypeLiteral(decl.type);
+    const isObjectLiteralExpression =
+      ts.isObjectLiteralExpression(decl) ||
+      this.checkIsTypeLiteral(decl) ||
+      isVariableWithInitializer ||
+      isVariableWithTypeLiteral;
+    return !!isObjectLiteralExpression;
+  }
+
+  private static hasObjectLiteralReturn(funcNode: ts.FunctionLikeDeclaration): boolean {
+    let found = false;
+    function visit(node: ts.Node): void {
+      if (found) {
+        return;
+      }
+
+      if (ts.isReturnStatement(node) && node.expression && ts.isObjectLiteralExpression(node.expression)) {
+        found = true;
+        return;
+      }
+
+      ts.forEachChild(node, visit);
+    }
+    visit(funcNode);
+    return found;
+  }
+
+  private static extractKeyofFromString(typeString: string): boolean {
+    return (/\bkeyof\b/).test(typeString);
   }
 
   checkUnionTypes(propertyAccessNode: ts.PropertyAccessExpression): void {
@@ -4198,10 +4380,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     const tsIdentifier = node;
     this.handleTsInterop(tsIdentifier, () => {
       const parent = tsIdentifier.parent;
-      if (ts.isPropertyAccessExpression(parent) || ts.isImportSpecifier(parent)) {
+      if (ts.isImportSpecifier(parent)) {
         return;
       }
-
       const type = this.tsTypeChecker.getTypeAtLocation(tsIdentifier);
       this.checkUsageOfTsTypes(type, tsIdentifier);
     });
