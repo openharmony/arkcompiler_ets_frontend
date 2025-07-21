@@ -46,6 +46,7 @@
 /ets2panda/scripts/*-build.sh @titovatatiana ^igelhaus ^Prof1983
 /ets2panda/scripts/arkui* @titovatatiana ^igelhaus ^Prof1983
 /ets2panda/test/ast @mbolshov ^igelhaus ^Prof1983
+/ets2panda/test/benchmarks @pishin
 /ets2panda/test/depanalyzer @trubachevilya @dreamdoomwalker ^igelhaus ^Prof1983
 /ets2panda/test/srcdump @mbolshov ^igelhaus ^Prof1983
 /ets2panda/test/test-lists @igelhaus ^Prof1983
