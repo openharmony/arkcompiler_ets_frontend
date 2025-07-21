@@ -14,3 +14,4 @@
  */
 
 export const STRING_ERROR_LITERAL = 'Error';
+export const CONCAT_ARRAY = 'ConcatArray';

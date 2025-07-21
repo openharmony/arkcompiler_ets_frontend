@@ -11726,12 +11726,26 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     return ts.isCallExpression(node) || ts.isArrowFunction(node) || ts.isFunctionExpression(node);
   }
 
+  private isConcatArray(accessedNode: ts.Node): boolean {
+    if (!ts.isIdentifier(accessedNode)) {
+      return false;
+    }
+    const decl = this.tsUtils.getDeclarationNode(accessedNode);
+    if (!decl) {
+      return false;
+    }
+
+    const type = this.tsTypeChecker.getTypeAtLocation(decl);
+    return TsUtils.isConcatArrayType(type);
+  }
+
   private getArrayAccessInfo(expr: ts.ElementAccessExpression): false | ArrayAccess {
     if (!ts.isIdentifier(expr.expression)) {
       return false;
     }
     const baseType = this.tsTypeChecker.getTypeAtLocation(expr.expression);
-    if (!this.tsUtils.isArray(baseType)) {
+
+    if (!this.tsUtils.isArray(baseType) && !this.isConcatArray(expr.expression)) {
       return false;
     }
     const accessArgument = expr.argumentExpression;
