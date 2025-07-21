@@ -159,6 +159,14 @@ static bool IsLeftHandSideExpression(lexer::TokenType &operatorType, lexer::Next
 // NOLINTNEXTLINE(google-default-arguments)
 ir::Expression *ETSParser::ParseUnaryOrPrefixUpdateExpression(ExpressionParseFlags flags)
 {
+    TrackRecursive trackRecursive(RecursiveCtx());
+    if (!trackRecursive) {
+        LogError(diagnostic::DEEP_NESTING);
+        while (Lexer()->GetToken().Type() != lexer::TokenType::EOS) {
+            Lexer()->NextToken();
+        }
+        return AllocBrokenExpression(Lexer()->GetToken().Loc());
+    }
     auto tokenFlags = lexer::NextTokenFlags::NONE;
     lexer::TokenType operatorType = Lexer()->GetToken().Type();
     if (IsLeftHandSideExpression(operatorType, tokenFlags, Lexer()->GetToken().KeywordType())) {
