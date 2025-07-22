@@ -74,7 +74,7 @@ public:
 
     bool IsPureDynamic() const
     {
-        return IsValid() && DeclPath().empty() && Language().IsDynamic();
+        return IsValid() && !DeclPath().empty() && Language().IsDynamic();
     }
 
     void SetAssemblerName(util::StringView assemblerName)
