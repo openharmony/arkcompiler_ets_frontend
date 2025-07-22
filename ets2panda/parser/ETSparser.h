@@ -66,6 +66,9 @@ public:
     }
 
     [[nodiscard]] bool IsETSParser() const noexcept override;
+
+    [[nodiscard]] bool IsValidIdentifierName(const lexer::Token &token) const noexcept override;
+
     void AddDirectImportsToDirectExternalSources(const ArenaVector<util::StringView> &directImportsFromMainSource,
                                                  parser::Program *newProg) const;
     bool CheckDupAndReplace(Program *&oldProg, Program *newProg) const;
