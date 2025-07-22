@@ -227,7 +227,12 @@ checker::Type *MemberExpression::TraverseUnionMember(checker::ETSChecker *checke
         ES2PANDA_ASSERT(apparent != nullptr);
         if (apparent->IsETSObjectType()) {
             SetObjectType(apparent->AsETSObjectType());
-            addPropType(ResolveObjectMember(checker).first);
+            auto *memberType = ResolveObjectMember(checker).first;
+            if (memberType != nullptr && memberType->IsTypeError()) {
+                return checker->GlobalTypeError();
+            }
+
+            addPropType(memberType);
         } else {
             checker->LogError(diagnostic::UNION_MEMBER_ILLEGAL_TYPE, {unionType}, Start());
         }
