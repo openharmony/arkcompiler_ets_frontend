@@ -114,7 +114,7 @@ ETSTypeReference *ETSTypeReference::Clone(ArenaAllocator *const allocator, AstNo
 {
     ETSTypeReferencePart *partClone = nullptr;
     if (part_ != nullptr) {
-        auto *const clone = part_->Clone(allocator, nullptr)->AsETSTypeReferencePart();
+        auto *const clone = part_->Clone(allocator, nullptr);
         ES2PANDA_ASSERT(clone != nullptr);
         partClone = clone->AsETSTypeReferencePart();
     }
