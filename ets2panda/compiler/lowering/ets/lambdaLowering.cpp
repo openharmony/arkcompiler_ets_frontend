@@ -1402,7 +1402,7 @@ static ir::AstNode *InsertInvokeCall(public_lib::Context *ctx, ir::CallExpressio
         if (arg->IsSpreadElement()) {
             continue;
         }
-        Recheck(ctx->phaseManager, varBinder, checker, arg);
+        CheckLoweredNode(varBinder, checker, arg);
     }
 
     return call;
