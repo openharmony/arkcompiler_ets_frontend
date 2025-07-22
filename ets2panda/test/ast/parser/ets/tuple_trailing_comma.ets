@@ -28,4 +28,3 @@ let b: [number, /* @@ label */,number, number,] = [1, 2, 3,];
 /* @@? 17:34 Error SyntaxError: Unexpected token ','. */
 /* @@? 17:35 Error SyntaxError: Unexpected token ']'. */
 /* @@@ label Error SyntaxError: Invalid Type. */
-/* @@? 18:51 Error TypeError: Initializer has 3 elements, but tuple requires 4 */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,14 +13,14 @@
  * limitations under the License.
  */
 
-
-function main(): void {
-    let a: [number, string, ...Int[]] = [2, "a", 3];
-    let b: [number, string, Int] = /* @@ label */a;
+class TH<A, B, C> {
+    static restMethod(...v: [number, B, C]) {
+    }
 }
 
-/* @@? 18:29 Error SyntaxError: Invalid Type. */
-/* @@? 18:29 Error SyntaxError: Unexpected token, expected ',' or ']'. */
-/* @@? 18:29 Error SyntaxError: Unexpected token '...'. */
-/* @@? 18:32 Error SyntaxError: Unexpected token 'Int'. */
-/* @@? 18:37 Error SyntaxError: Unexpected token ']'. */
+function main() {
+    let mc = new TH<number, string, boolean>
+}
+
+/* @@? 17:38 Error TypeError: Cannot make a static reference to the non-static type B */
+/* @@? 17:41 Error TypeError: Cannot make a static reference to the non-static type C */
