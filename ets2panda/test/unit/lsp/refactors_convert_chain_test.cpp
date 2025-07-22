@@ -57,14 +57,12 @@ TEST_F(LspChainRefTests, ConvertChainRefactor1)
 TEST_F(LspChainRefTests, ConvertChainRefactor2)
 {
     std::vector<std::string> files = {"ConvertChainRefactor2.ets"};
-    std::vector<std::string> texts = {R"(interface Foo{
-bar?:{
-baz?:string | null;
-}
+    std::vector<std::string> texts = {R"(interface A { baz?:string | null; }
+interface Foo{
+bar?: A
 }
 declare let foo: Foo;
-let ccc = /*1*/foo.bar ?
-foo.bar.baz : "whenFalse";/*2*/
+let ccc = /*1*/foo.bar ? foo.bar.baz : "whenFalse";/*2*/
  )"};
 
     auto filePaths = CreateTempFile(files, texts);
@@ -87,14 +85,12 @@ foo.bar.baz : "whenFalse";/*2*/
 TEST_F(LspChainRefTests, ConvertChainRefactor3)
 {
     std::vector<std::string> files = {"ConvertChainRefactor3.ets"};
-    std::vector<std::string> texts = {R"(interface Foo{
-bar?:{
-baz: string;
-}
+    std::vector<std::string> texts = {R"(interface A { baz: string }
+interface Foo{
+bar?: A
 }
 declare let foo: Foo;
-let ccc = /*1*/foo.bar?
-foo.bar.baz: "whenFalse";/*2*/
+let ccc = /*1*/foo.bar ? foo.bar.baz: "whenFalse";/*2*/
  )"};
 
     auto filePaths = CreateTempFile(files, texts);

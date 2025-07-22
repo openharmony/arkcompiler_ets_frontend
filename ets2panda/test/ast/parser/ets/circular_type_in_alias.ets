@@ -18,21 +18,19 @@ type Loop<T, U extends Loop<T, U>> = {
 };
 
 /* @@? 16:24 Error TypeError: Circular type alias reference */
-/* @@? 16:38 Error SyntaxError: Invalid Type. */
-/* @@? 17:6 Error TypeError: Unresolved reference P */
-/* @@? 17:8 Error SyntaxError: Unexpected token, expected ',' or ']'. */
-/* @@? 17:8 Error SyntaxError: Unexpected token 'in'. */
-/* @@? 17:8 Error TypeError: Unresolved reference in */
-/* @@? 17:11 Error SyntaxError: Unexpected token 'keyof'. */
-/* @@? 17:11 Error TypeError: Unresolved reference keyof */
-/* @@? 17:17 Error SyntaxError: Unexpected token 'T'. */
-/* @@? 17:17 Error TypeError: Unresolved reference T */
+/* @@? 16:38 Error SyntaxError: Using object literals to declare types in place is not supported. Please declare types and interfaces explicitly! */
+/* @@? 17:6 Error TypeError: Indexed signatures are not allowed. Use arrays instead! */
+/* @@? 17:10 Error SyntaxError: Field type annotation expected. */
+/* @@? 17:16 Error SyntaxError: Field type annotation expected. */
 /* @@? 17:18 Error SyntaxError: Unexpected token ']'. */
+/* @@? 17:18 Error SyntaxError: Field type annotation expected. */
 /* @@? 17:19 Error SyntaxError: Unexpected token ':'. */
-/* @@? 17:21 Error SyntaxError: Unexpected token 'U'. */
-/* @@? 17:21 Error TypeError: Unresolved reference U */
-/* @@? 17:21 Error TypeError: Indexed access is not supported for such expression type. */
+/* @@? 17:22 Error SyntaxError: Field type annotation expected. */
+/* @@? 17:23 Error TypeError: Indexed signatures are not allowed. Use arrays instead! */
+/* @@? 17:24 Error SyntaxError: Unexpected token ']'. */
 /* @@? 17:26 Error SyntaxError: Unexpected token 'extends'. */
 /* @@? 17:34 Error SyntaxError: Unexpected token 'boolean'. */
-/* @@? 17:44 Error TypeError: Type name 'number' used in the wrong context */
-/* @@? 17:53 Error TypeError: Type name 'string' used in the wrong context */
+/* @@? 17:42 Error SyntaxError: Unexpected token '?'. */
+/* @@? 17:44 Error SyntaxError: number is a predefined type, cannot be used as an identifier */
+/* @@? 17:51 Error SyntaxError: Unexpected token ':'. */
+/* @@? 17:59 Error SyntaxError: Field type annotation expected. */

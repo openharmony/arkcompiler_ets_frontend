@@ -13,11 +13,7 @@
  * limitations under the License.
  */
 
-const _innerFunc = (arg: { x: number } | undefined): number => {
-    if (arg === undefined) {
-        return 12;
-    }
-    return arg.x;
-};
+type S = Set</* @@ label */{x: number/* @@ label2 */, y: number}>
 
-/* @@? 16:26 Error SyntaxError: Using object literals to declare types in place is not supported. Please declare types and interfaces explicitly! */
+/* @@@ label Error SyntaxError: Using object literals to declare types in place is not supported. Please declare types and interfaces explicitly! */
+/* @@@ label2 Error SyntaxError: Unexpected token ','. */

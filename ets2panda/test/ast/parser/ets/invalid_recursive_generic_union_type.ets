@@ -23,21 +23,8 @@ type Container<T> = T | { [i: string]: Container<T> };
 declare namespace Test1 {
 }
 
-/* @@? 21:25 Error SyntaxError: Invalid Type. */
-/* @@? 21:28 Error TypeError: Unresolved reference i */
-/* @@? 21:29 Error SyntaxError: Unexpected token, expected ',' or ']'. */
-/* @@? 21:29 Error SyntaxError: Unexpected token ':'. */
-/* @@? 21:31 Error SyntaxError: Unexpected token 'string'. */
-/* @@? 21:31 Error TypeError: Type name 'string' used in the wrong context */
-/* @@? 21:37 Error SyntaxError: Unexpected token ']'. */
-/* @@? 21:38 Error SyntaxError: Unexpected token ':'. */
-/* @@? 21:40 Error SyntaxError: Unexpected token 'Container'. */
-/* @@? 21:40 Error TypeError: This expression is not callable. */
-/* @@? 21:50 Error TypeError: Cannot find type 'T'. */
-/* @@? 21:53 Error SyntaxError: Unexpected token, expected '('. */
-/* @@? 21:54 Error SyntaxError: Unexpected token ';'. */
-/* @@? 23:1 Error SyntaxError: Unexpected token, expected ',' or ')'. */
-/* @@? 23:1 Error TypeError: Unresolved reference declare */
-/* @@? 23:9 Error SyntaxError: Namespace is allowed only at the top level or inside a namespace. */
-/* @@? 23:9 Error SyntaxError: Unexpected token 'namespace'. */
-/* @@? 44:1 Error SyntaxError: Expected '}', got 'end of stream'. */
+/* @@? 21:25 Error SyntaxError: Using object literals to declare types in place is not supported. Please declare types and interfaces explicitly! */
+/* @@? 21:28 Error TypeError: Indexed signatures are not allowed. Use arrays instead! */
+/* @@? 21:49 Error SyntaxError: Unexpected token '<'. */
+/* @@? 21:51 Error SyntaxError: Field type annotation expected. */
+/* @@? 21:51 Error SyntaxError: Unexpected token '>'. */

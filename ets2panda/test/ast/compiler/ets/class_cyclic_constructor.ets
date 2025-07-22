@@ -34,16 +34,14 @@ class A {
 /* @@? 24:9 Error SyntaxError: Unexpected token, expected ',' or ')'. */
 /* @@? 24:9 Error SyntaxError: Unexpected token 'let'. */
 /* @@? 24:9 Error SyntaxError: Unexpected token, expected an identifier. */
-/* @@? 24:20 Error SyntaxError: Invalid Type. */
-/* @@? 24:20 Error SyntaxError: Unexpected token '{'. */
+/* @@? 24:20 Error SyntaxError: Using object literals to declare types in place is not supported. Please declare types and interfaces explicitly! */
 /* @@? 24:21 Error SyntaxError: Unexpected token '{'. */
 /* @@? 24:23 Error SyntaxError: Field type annotation expected. */
 /* @@? 24:23 Error SyntaxError: Unexpected token '.'. */
 /* @@? 24:31 Error SyntaxError: Field type annotation expected. */
-/* @@? 24:32 Error SyntaxError: Unexpected token '}'. */
-/* @@? 24:37 Error SyntaxError: Unexpected token. */
-/* @@? 24:38 Error SyntaxError: Unexpected token. */
-/* @@? 24:51 Error SyntaxError: Unexpected token '}'. */
+/* @@? 24:34 Error SyntaxError: Unexpected token '='. */
+/* @@? 24:36 Error SyntaxError: Unexpected token '{'. */
+/* @@? 24:38 Error TypeError: Unresolved reference caches */
 /* @@? 25:21 Error TypeError: Expected 0 arguments, got 1. */
 /* @@? 25:21 Error TypeError: No matching construct signature for class_cyclic_constructor.A(...tuple) */
 /* @@? 25:27 Error TypeError: Spread argument cannot be passed for ordinary parameter. */
