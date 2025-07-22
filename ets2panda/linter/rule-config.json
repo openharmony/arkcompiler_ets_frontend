@@ -137,7 +137,9 @@
     "sdk-constructor-funcs",
     "sdk-no-literal-as-property-name",
     "sdk-no-decl-with-duplicate-name",
-    "sdk-type-query"
+    "sdk-type-query",
+    "sdk-ability-asynchronous-lifecycle",
+    "sdk-ability-lifecycle-monitor"
   ],
   "concurrent": [
     "arkts-no-need-stdlib-ason",
