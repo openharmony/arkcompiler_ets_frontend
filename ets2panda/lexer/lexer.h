@@ -16,6 +16,8 @@
 #ifndef ES2PANDA_PARSER_CORE_LEXER_H
 #define ES2PANDA_PARSER_CORE_LEXER_H
 
+#include <limits>
+#include <type_traits>
 #include "lexer/regexp/regexp.h"
 #include "lexer/token/letters.h"
 #include "lexer/token/token.h"
@@ -239,13 +241,19 @@ public:
 
         bool outOfRange = false;
         if constexpr (!std::is_same_v<Ret, Tret>) {
-            outOfRange = tmp < static_cast<Tret>(std::numeric_limits<Ret>::min()) ||
+            outOfRange = tmp < static_cast<Tret>(std::numeric_limits<Ret>::denorm_min()) ||
                          tmp > static_cast<Tret>(std::numeric_limits<Ret>::max());
+        }
+
+        if constexpr (std::is_floating_point_v<Tret>) {
+            outOfRange |= (tmp == std::numeric_limits<Tret>::infinity());
+        } else {
+            outOfRange |= (errno == ERANGE);
         }
 
         if (endPtr == str) {
             result = ConversionResult::INVALID_ARGUMENT;
-        } else if (errno == ERANGE || outOfRange) {
+        } else if (outOfRange) {
             result = ConversionResult::OUT_OF_RANGE;
         } else {
             result = ConversionResult::SUCCESS;
