@@ -170,7 +170,7 @@ static void HandleNativeAndAsyncMethods(ETSChecker *checker, ir::MethodDefinitio
     ES2PANDA_ASSERT(scriptFunc != nullptr);
 
     if (util::Helpers::IsAsyncMethod(node)) {
-        if (scriptFunc->ReturnTypeAnnotation() != nullptr) {
+        if (scriptFunc->ReturnTypeAnnotation() != nullptr && scriptFunc->Signature() != nullptr) {
             auto *asyncFuncReturnType = scriptFunc->Signature()->ReturnType();
 
             if (!asyncFuncReturnType->IsETSObjectType() ||
