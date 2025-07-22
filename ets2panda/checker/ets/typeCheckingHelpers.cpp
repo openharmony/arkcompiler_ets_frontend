@@ -157,6 +157,10 @@ Type *ETSChecker::RemoveUndefinedType(Type *const type)
         return type;
     }
 
+    if (type->IsETSPartialTypeParameter()) {
+        return type;
+    }
+
     if (type->IsETSUndefinedType()) {
         return GetGlobalTypesHolder()->GlobalETSNeverType();
     }
