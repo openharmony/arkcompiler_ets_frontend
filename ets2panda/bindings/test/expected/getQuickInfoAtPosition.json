@@ -103,5 +103,64 @@
         "kind": "returnType"
       }
     ]
+  },
+  "4": {
+    "kind": "function",
+    "kindModifier": "public declare",
+    "textSpan": {
+      "start": 695,
+      "length": 4
+    },
+    "fileName": "getQuickInfoAtPosition4.ets",
+    "displayParts": [
+      {
+        "text": "Stack",
+        "kind": "className"
+      },
+      {
+        "text": ".",
+        "kind": "punctuation"
+      },
+      {
+        "text": "push",
+        "kind": "functionName"
+      },
+      {
+        "text": "(",
+        "kind": "punctuation"
+      },
+      {
+        "text": "item",
+        "kind": "functionParameter"
+      },
+      {
+        "text": ":",
+        "kind": "punctuation"
+      },
+      {
+        "text": " ",
+        "kind": "space"
+      },
+      {
+        "text": "T",
+        "kind": "typeParameter"
+      },
+      {
+        "text": ")",
+        "kind": "punctuation"
+      },
+      {
+        "text": ":",
+        "kind": "punctuation"
+      },
+      {
+        "text": " ",
+        "kind": "space"
+      },
+      {
+        "text": "T",
+        "kind": "returnType"
+      }
+    ]
   }
 }

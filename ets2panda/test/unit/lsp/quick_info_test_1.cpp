@@ -22,6 +22,86 @@ using ark::es2panda::lsp::Initializer;
 
 class LspQuickInfoTests : public LSPAPITests {};
 
+TEST_F(LspQuickInfoTests, StdLibMapGet)
+{
+    std::vector<std::string> files = {"quick_info_map_get.ets"};
+    std::vector<std::string> texts = {R"(let map = new Map<string, number>();
+map.set("a", 1);
+let a = map.get("a");
+)"};
+    auto filePaths = CreateTempFile(files, texts);
+    size_t const expectedFileCount = 1;
+    ASSERT_EQ(filePaths.size(), expectedFileCount);
+
+    LSPAPI const *lspApi = GetImpl();
+    size_t const offset = 68;
+    Initializer initializer = Initializer();
+    es2panda_Context *ctx = initializer.CreateContext(filePaths[0].c_str(), ES2PANDA_STATE_CHECKED);
+    ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
+    auto res = lspApi->getQuickInfoAtPosition(filePaths[0].c_str(), ctx, offset);
+    auto displayParts = res.GetDisplayParts();
+    auto expectedDisplayParts = std::vector<SymbolDisplayPart> {
+        SymbolDisplayPart {"Map", "className"},
+        SymbolDisplayPart {".", "punctuation"},
+        SymbolDisplayPart {"get", "functionName"},
+        SymbolDisplayPart {"(", "punctuation"},
+        SymbolDisplayPart {"key", "functionParameter"},
+        SymbolDisplayPart {":", "punctuation"},
+        SymbolDisplayPart {" ", "space"},
+        SymbolDisplayPart {"K", "typeParameter"},
+        SymbolDisplayPart {")", "punctuation"},
+        SymbolDisplayPart {":", "punctuation"},
+        SymbolDisplayPart {" ", "space"},
+        SymbolDisplayPart {"V", "returnType"},
+        SymbolDisplayPart {"|", "punctuation"},
+        SymbolDisplayPart {" ", "space"},
+        SymbolDisplayPart {"undefined", "returnType"},
+    };
+    ASSERT_EQ(displayParts, expectedDisplayParts);
+    initializer.DestroyContext(ctx);
+}
+
+TEST_F(LspQuickInfoTests, StdLibMapSet)
+{
+    std::vector<std::string> files = {"quick_info_map_set.ets"};
+    std::vector<std::string> texts = {R"(let map = new Map<string, number>();
+map.set("a", 1);
+)"};
+    auto filePaths = CreateTempFile(files, texts);
+    size_t const expectedFileCount = 1;
+    ASSERT_EQ(filePaths.size(), expectedFileCount);
+
+    LSPAPI const *lspApi = GetImpl();
+    size_t const offset = 43;
+    Initializer initializer = Initializer();
+    es2panda_Context *ctx = initializer.CreateContext(filePaths[0].c_str(), ES2PANDA_STATE_CHECKED);
+    ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
+    auto res = lspApi->getQuickInfoAtPosition(filePaths[0].c_str(), ctx, offset);
+    auto displayParts = res.GetDisplayParts();
+    auto expectedDisplayParts = std::vector<SymbolDisplayPart> {
+        SymbolDisplayPart {"Map", "className"},
+        SymbolDisplayPart {".", "punctuation"},
+        SymbolDisplayPart {"set", "functionName"},
+        SymbolDisplayPart {"(", "punctuation"},
+        SymbolDisplayPart {"key", "functionParameter"},
+        SymbolDisplayPart {":", "punctuation"},
+        SymbolDisplayPart {" ", "space"},
+        SymbolDisplayPart {"K", "typeParameter"},
+        SymbolDisplayPart {",", "punctuation"},
+        SymbolDisplayPart {" ", "space"},
+        SymbolDisplayPart {"val", "functionParameter"},
+        SymbolDisplayPart {":", "punctuation"},
+        SymbolDisplayPart {" ", "space"},
+        SymbolDisplayPart {"V", "typeParameter"},
+        SymbolDisplayPart {")", "punctuation"},
+        SymbolDisplayPart {":", "punctuation"},
+        SymbolDisplayPart {" ", "space"},
+        SymbolDisplayPart {"this", "returnType"},
+    };
+    ASSERT_EQ(displayParts, expectedDisplayParts);
+    initializer.DestroyContext(ctx);
+}
+
 TEST_F(LspQuickInfoTests, CreateDisplayForEnum)
 {
     Initializer initializer = Initializer();

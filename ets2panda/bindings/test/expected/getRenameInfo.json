@@ -10,5 +10,13 @@
       "start": 613,
       "length": 3
     }
+  },
+  "2": {
+    "canRenameFailure": false,
+    "localizedErrorMessage": "You cannot rename this element"
+  },
+  "3": {
+    "canRenameFailure": false,
+    "localizedErrorMessage": "You cannot rename this element"
   }
 }

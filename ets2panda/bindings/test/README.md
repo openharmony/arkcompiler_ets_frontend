@@ -1,26 +1,19 @@
 ### How to run bindings test?
 
-```Bash
-cd /path/to/bindings
+first, you need download a SDK package, then unzip ets component into `bindings/test/` directory.
+Download SDK package from [here](http://ci.openharmony.cn/workbench/cicd/dailybuild/dailylist).
 
-### check environment
-# if you are using Linux shell
-bash test/prepare.sh
-# or if you are using Windows shell
-powershell -f test/prepare.ps1
+```Bash
+unzip /path/to/ets-xxx.zip -d /path/to/bindings/test/
+cd /path/to/bindings
 
 ### run test
 npm install
 npm run test
-
-### restore the path to the original state
-bash test/prepare.sh --restore
-# or
-powershell -f test/prepare.ps1 --restore
 ```
 
 #### tips
-1. If you want to update a lot of expected results, you can use `node dist-test/test/run_tests.js ./test --update`
+1. If you want to update a lot of expected results, you can use `npm run test:update` to update all expected results.
 
 ### testcase directory structure
 .

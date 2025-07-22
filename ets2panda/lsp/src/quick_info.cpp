@@ -203,7 +203,7 @@ ir::AstNode *GetNodeAtLocation(ir::AstNode *node)
             return parent;
         }
         if (parent->Type() == ir::AstNodeType::MEMBER_EXPRESSION) {
-            auto declNode = compiler::DeclarationFromIdentifier(parent->AsMemberExpression()->Object()->AsIdentifier());
+            auto declNode = compiler::DeclarationFromIdentifier(node->AsIdentifier());
             if (compiler::ClassDefinitionIsEnumTransformed(declNode)) {
                 declNode = declNode->AsClassDefinition()->OrigEnumDecl()->AsTSEnumDeclaration();
             }
@@ -774,6 +774,21 @@ std::vector<SymbolDisplayPart> CreateDisplayOfReturnType(ark::es2panda::ir::Type
         auto typeName = part->Name()->AsIdentifier()->Name();
         displayParts.emplace_back(CreateReturnType(std::string(typeName)));
     }
+    if (returnType->Type() == ir::AstNodeType::ETS_UNION_TYPE) {
+        auto unionType = returnType->AsETSUnionType();
+        auto types = unionType->Types();
+        for (size_t i = 0; i < types.size(); ++i) {
+            auto typeName = GetNameForTypeNode(types[i]);
+            displayParts.emplace_back(CreateReturnType(typeName));
+            if (i != types.size() - 1) {
+                displayParts.emplace_back(CreatePunctuation("|"));
+                displayParts.emplace_back(CreateSpace());
+            }
+        }
+    }
+    if (returnType->Type() == ir::AstNodeType::TS_THIS_TYPE) {
+        displayParts.emplace_back(CreateReturnType("this"));
+    }
     return displayParts;
 }
 
@@ -1176,7 +1191,6 @@ QuickInfo GetQuickInfo(ir::AstNode *node, ir::AstNode *containerNode, ir::AstNod
     }
     auto kindModifiers = GetKindModifiers(node);
     TextSpan span(nodeForQuickInfo->Start().index, nodeForQuickInfo->End().index - nodeForQuickInfo->Start().index);
-    auto nodeKind = GetNodeKind(node);
     std::vector<SymbolDisplayPart> displayParts;
 
     std::string kind;
