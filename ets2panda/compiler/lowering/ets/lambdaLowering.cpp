@@ -119,7 +119,89 @@ static void ProcessTypeParameterProperties(checker::ETSTypeParameter *oldTypePar
     }
 }
 
-static std::pair<ir::TSTypeParameterDeclaration *, checker::Substitution> CloneTypeParams(
+// NOTE (smartin): The two methods 'CreateNewTypeParamVectors' and 'SetConstraintTypeAndDefaultTypeForTypeParams'
+// contain very similar logic that can be found in 'CloneTypeParamsForClass'. Merge these later if possible
+static void FillNewTypeParamVectors(ThreadSafeArenaAllocator *allocator,
+                                    ArenaVector<checker::ETSTypeParameter *> &newTypeParams,
+                                    ArenaVector<ir::TSTypeParameter *> &newTypeParamNodes,
+                                    const checker::Signature *const lambdaSig,
+                                    checker::Substitution *const substitution)
+{
+    for (auto *ix : lambdaSig->TypeParams()) {
+        auto *oldTypeParam = ix->AsETSTypeParameter();
+        auto *newTypeParamId = allocator->New<ir::Identifier>(oldTypeParam->Name(), allocator);
+        auto *newTypeParamNode = util::NodeAllocator::ForceSetParent<ir::TSTypeParameter>(allocator, newTypeParamId,
+                                                                                          nullptr, nullptr, allocator);
+        auto *newTypeParam = allocator->New<checker::ETSTypeParameter>();
+        newTypeParam->SetDeclNode(newTypeParamNode);
+
+        auto *newTypeParamDecl = allocator->New<varbinder::TypeParameterDecl>(newTypeParamId->Name());
+        newTypeParamDecl->BindNode(newTypeParamNode);
+        auto *newTypeParamVar =
+            allocator->New<varbinder::LocalVariable>(newTypeParamDecl, varbinder::VariableFlags::TYPE_PARAMETER);
+
+        newTypeParamVar->SetTsType(newTypeParam);
+        newTypeParamId->SetVariable(newTypeParamVar);
+
+        newTypeParams.push_back(newTypeParam);
+        newTypeParamNodes.push_back(newTypeParamNode);
+        substitution->emplace(oldTypeParam, newTypeParam);
+    }
+}
+
+static void SetConstraintTypeAndDefaultTypeForTypeParams(public_lib::Context *ctx,
+                                                         const ArenaVector<checker::ETSTypeParameter *> &newTypeParams,
+                                                         const ArenaVector<ir::TSTypeParameter *> &newTypeParamNodes,
+                                                         const checker::Signature *const lambdaSig,
+                                                         const checker::Substitution *const substitution)
+{
+    auto *allocator = ctx->allocator;
+    auto *checker = ctx->GetChecker()->AsETSChecker();
+
+    for (size_t ix = 0; ix < lambdaSig->TypeParams().size(); ix++) {
+        auto *oldTypeParam = lambdaSig->TypeParams()[ix]->AsETSTypeParameter();
+
+        if (auto *oldConstraint = oldTypeParam->GetConstraintType(); oldConstraint != nullptr) {
+            auto *newConstraint = oldConstraint->Substitute(checker->Relation(), substitution);
+            newTypeParams[ix]->SetConstraintType(newConstraint);
+            newTypeParamNodes[ix]->SetConstraint(allocator->New<ir::OpaqueTypeNode>(newConstraint, allocator));
+            newTypeParamNodes[ix]->Constraint()->SetParent(newTypeParamNodes[ix]);
+        }
+        if (auto *oldDefault = oldTypeParam->GetDefaultType(); oldDefault != nullptr) {
+            auto *newDefault = oldDefault->Substitute(checker->Relation(), substitution);
+            newTypeParams[ix]->SetDefaultType(newDefault);
+            newTypeParamNodes[ix]->SetDefaultType(allocator->New<ir::OpaqueTypeNode>(newDefault, allocator));
+            newTypeParamNodes[ix]->DefaultType()->SetParent(newTypeParamNodes[ix]);
+        }
+    }
+}
+
+static ir::TSTypeParameterDeclaration *CloneTypeParamsForSignature(public_lib::Context *ctx,
+                                                                   LambdaClassInvokeInfo *lciInfo)
+{
+    ir::TSTypeParameterDeclaration *oldIrTypeParams = lciInfo->callee->Function()->TypeParams();
+    checker::Signature *lambdaSig = lciInfo->lambdaSignature;
+    // NOTE (smartin): the first condition can be deleted, once the generic lambdas generate correct invoke function
+    // into the global scope (currently we don't generate type params for them)
+    if (oldIrTypeParams == nullptr || lambdaSig->TypeParams().empty()) {
+        return nullptr;
+    }
+
+    auto *allocator = ctx->allocator;
+    auto newTypeParams = ArenaVector<checker::ETSTypeParameter *>(allocator->Adapter());
+    auto newTypeParamNodes = ArenaVector<ir::TSTypeParameter *>(allocator->Adapter());
+
+    FillNewTypeParamVectors(allocator, newTypeParams, newTypeParamNodes, lambdaSig, lciInfo->substitution);
+    SetConstraintTypeAndDefaultTypeForTypeParams(ctx, newTypeParams, newTypeParamNodes, lambdaSig,
+                                                 lciInfo->substitution);
+
+    auto *newIrTypeParams = util::NodeAllocator::ForceSetParent<ir::TSTypeParameterDeclaration>(
+        allocator, std::move(newTypeParamNodes), oldIrTypeParams->RequiredParams());
+
+    return newIrTypeParams;
+}
+
+static std::pair<ir::TSTypeParameterDeclaration *, checker::Substitution> CloneTypeParamsForClass(
     public_lib::Context *ctx, ir::TSTypeParameterDeclaration *oldIrTypeParams, ir::ScriptFunction *enclosingFunction,
     varbinder::Scope *enclosingScope)
 {
@@ -355,7 +437,7 @@ static ir::MethodDefinition *CreateCalleeMethod(public_lib::Context *ctx, ir::Ar
     auto enclosingScope =
         info->callReceiver != nullptr ? classScope->InstanceMethodScope() : classScope->StaticMethodScope();
 
-    auto [newTypeParams, subst0] = CloneTypeParams(ctx, oldTypeParams, info->enclosingFunction, enclosingScope);
+    auto [newTypeParams, subst0] = CloneTypeParamsForClass(ctx, oldTypeParams, info->enclosingFunction, enclosingScope);
     auto &substitution = subst0;  // NOTE(gogabr): needed to capture in a lambda later.
     auto *scopeForMethod = newTypeParams != nullptr ? newTypeParams->Scope() : enclosingScope;
 
@@ -745,8 +827,25 @@ static ir::CallExpression *CreateCallForLambdaClassInvoke(public_lib::Context *c
     auto *calleeMemberExpr = util::NodeAllocator::ForceSetParent<ir::MemberExpression>(
         allocator, calleeReceiver, lciInfo->callee->Key()->Clone(allocator, nullptr)->AsExpression(),
         ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
-    auto *call = parser->CreateFormattedExpression("@@E1(@@[E2)", calleeMemberExpr, std::move(callArguments))
-                     ->AsCallExpression();
+
+    auto *call = util::NodeAllocator::ForceSetParent<ir::CallExpression>(allocator, calleeMemberExpr,
+                                                                         std::move(callArguments), nullptr, false);
+
+    // NOTE (smartin): the condition would be better to check the size of the signature's type parameters. But currently
+    // generic lambdas don't allocate type parameters for they global invoke function, so fix this when the generation
+    // will be corrected
+    if (lciInfo->callee->Function()->TypeParams() != nullptr) {
+        auto origCallTypeParams = lciInfo->lambdaSignature->TypeParams();
+        auto typeArgs = ArenaVector<ir::TypeNode *>(allocator->Adapter());
+        for (auto *tp : origCallTypeParams) {
+            typeArgs.push_back(allocator->New<ir::OpaqueTypeNode>(
+                tp->Substitute(ctx->GetChecker()->Relation(), lciInfo->substitution), allocator));
+        }
+        auto *typeArg =
+            util::NodeAllocator::ForceSetParent<ir::TSTypeParameterInstantiation>(allocator, std::move(typeArgs));
+        call->SetTypeParams(typeArg);
+        typeArg->SetParent(call);
+    }
 
     if (lciInfo->classDefinition->TypeParams() != nullptr) {
         auto typeArgs = ArenaVector<ir::TypeNode *>(allocator->Adapter());
@@ -799,9 +898,11 @@ static void CreateLambdaClassInvokeMethod(public_lib::Context *ctx, LambdaInfo c
     auto *checker = ctx->GetChecker()->AsETSChecker();
     auto *anyType = checker->GlobalETSAnyType();
 
+    auto *invokeSigTypeParams = CloneTypeParamsForSignature(ctx, lciInfo);
+
     auto params = ArenaVector<ir::Expression *>(allocator->Adapter());
     for (size_t idx = 0; idx < lciInfo->arity; ++idx) {
-        auto lparam = lciInfo->lambdaSignature->Params().at(idx);
+        auto *lparam = lciInfo->lambdaSignature->Params().at(idx);
         auto *type = wrapToObject ? anyType : lparam->TsType()->Substitute(checker->Relation(), lciInfo->substitution);
         auto *id = util::NodeAllocator::ForceSetParent<ir::Identifier>(
             allocator, lparam->Name(), allocator->New<ir::OpaqueTypeNode>(type, allocator), allocator);
@@ -824,7 +925,7 @@ static void CreateLambdaClassInvokeMethod(public_lib::Context *ctx, LambdaInfo c
         allocator, allocator,
         ir::ScriptFunction::ScriptFunctionData {
             CreateLambdaClassInvokeBody(ctx, info, lciInfo, wrapToObject),
-            ir::FunctionSignature(nullptr, std::move(params), returnType2, hasReceiver), functionFlag});
+            ir::FunctionSignature(invokeSigTypeParams, std::move(params), returnType2, hasReceiver), functionFlag});
 
     auto *invokeId = allocator->New<ir::Identifier>(methodName, allocator);
     func->SetIdent(invokeId);
@@ -1032,7 +1133,7 @@ static ir::ClassDeclaration *CreateLambdaClass(public_lib::Context *ctx, checker
 
     auto *oldTypeParams = (info->enclosingFunction != nullptr) ? info->enclosingFunction->TypeParams() : nullptr;
     auto [newTypeParams, subst0] =
-        CloneTypeParams(ctx, oldTypeParams, info->enclosingFunction, ctx->parserProgram->GlobalClassScope());
+        CloneTypeParamsForClass(ctx, oldTypeParams, info->enclosingFunction, ctx->parserProgram->GlobalClassScope());
     auto &substitution = subst0;  // NOTE(gogabr): needed to capture in a lambda later.
 
     auto fnInterface = fntype->Substitute(checker->Relation(), &substitution)->ArrowToFunctionalInterface(checker);

@@ -198,11 +198,17 @@ static Signature *EnhanceSignatureSubstitution(TypeRelation *relation, Signature
             return nullptr;
         }
     }
+
+    if (!enhance(sub->ReturnType(), super->ReturnType())) {
+        return nullptr;
+    }
+
     if (super->RestVar() != nullptr) {
         if (!enhance(sub->RestVar()->TsType(), super->RestVar()->TsType())) {
             return nullptr;
         }
     }
+
     return sub->Substitute(relation, &substitution);
 }
 
