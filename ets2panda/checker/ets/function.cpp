@@ -13,15 +13,17 @@
  * limitations under the License.
  */
 
+#include <cstddef>
+
 #include "checker/types/ets/etsResizableArrayType.h"
 #include "checker/types/ets/etsTupleType.h"
 #include "generated/signatures.h"
 #include "checker/ets/wideningConverter.h"
+#include "ir/astNodeFlags.h"
 #include "varbinder/ETSBinder.h"
 #include "checker/ETSchecker.h"
 #include "checker/ets/function_helpers.h"
 #include "checker/ets/typeRelationContext.h"
-#include "checker/types/ets/etsAsyncFuncReturnType.h"
 #include "checker/types/ets/etsObjectType.h"
 #include "checker/types/ets/etsPartialTypeParameter.h"
 #include "checker/types/gradualType.h"
@@ -34,8 +36,6 @@
 #include "ir/base/spreadElement.h"
 #include "ir/ets/etsFunctionType.h"
 #include "ir/ets/etsParameterExpression.h"
-#include "ir/ets/etsTypeReference.h"
-#include "ir/ets/etsTypeReferencePart.h"
 #include "ir/expressions/arrowFunctionExpression.h"
 #include "ir/expressions/assignmentExpression.h"
 #include "ir/expressions/callExpression.h"
@@ -58,8 +58,6 @@
 #include "parser/program/program.h"
 #include "util/helpers.h"
 #include "util/nameMangler.h"
-
-#include <compiler/lowering/util.h>
 
 namespace ark::es2panda::checker {
 
@@ -475,6 +473,10 @@ bool ValidateRestParameter(ETSChecker *checker, Signature *signature, const Aren
         }
         return false;
     }
+    if (hasRestParameter &&
+        (((flags & TypeRelationFlag::NO_CHECK_TRAILING_LAMBDA) != 0) || HasTransferredTrailingLambda(arguments))) {
+        return false;
+    }
     return !(argCount > signature->ArgCount() && hasRestParameter &&
              (flags & TypeRelationFlag::IGNORE_REST_PARAM) != 0);
 }
@@ -697,7 +699,7 @@ Signature *ETSChecker::ValidateSignature(
     }
 
     size_t const argCount = arguments.size();
-    auto const hasRestParameter = signature->RestVar() != nullptr;
+    auto const hasRestParameter = signature->HasRestParameter();
     auto const reportError = (flags & TypeRelationFlag::NO_THROW) == 0;
 
     if (!ValidateRestParameter(this, signature, arguments, pos, flags)) {
@@ -1271,7 +1273,7 @@ Signature *ETSChecker::ChooseMostSpecificSignature(ArenaVector<Signature *> &sig
     return mostSpecificSignature;
 }
 
-static bool IsLastParameterLambdaWithReceiver(Signature *sig)
+static bool IsLastParameterLambdaWithReceiver(Signature const *sig)
 {
     auto const &params = sig->Function()->Params();
 
@@ -1699,7 +1701,7 @@ SignatureInfo *ETSChecker::ComposeSignatureInfo(ir::TSTypeParameterDeclaration *
             ES2PANDA_ASSERT(restParamType != nullptr);
             if (!restParamType->IsAnyETSArrayOrTupleType()) {
                 LogError(diagnostic::ONLY_ARRAY_OR_TUPLE_FOR_REST, {}, param->Start());
-                return nullptr;
+                restParamType = GlobalTypeError();
             }
             signatureInfo->restVar = SetupSignatureParameter(param, restParamType);
             ES2PANDA_ASSERT(signatureInfo->restVar != nullptr);

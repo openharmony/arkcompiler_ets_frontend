@@ -29,7 +29,7 @@
 /* @@? 16:1 Error SyntaxError: Unexpected token '*'. */
 /* @@? 16:2 Error SyntaxError: Unexpected token '22'. */
 /* @@? 16:4 Error SyntaxError: Unexpected token 'Array'. */
+/* @@? 16:4 Error TypeError: No matching call signature with trailing lambda */
 /* @@? 20:74 Error SyntaxError: Expected '}', got 'identification literal'. */
 /* @@? 27:22 Error SyntaxError: Unexpected token. */
 /* @@? 36:1 Error SyntaxError: Expected '}', got 'end of stream'. */
-
