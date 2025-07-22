@@ -282,3 +282,6 @@ faultDesc[FaultID.BuilderNodeGenericNoTuple] = 'Generic of "BuilderNode" does no
 faultDesc[FaultID.BuilderNodeUpdateNoLiteral] = '"update" interface of "BuilderNode" cannot pass an object literal';
 faultDesc[FaultID.BuilderNodeNoNestingBuilderSupported] = '"nestingBuilderSupported" is not supported';
 faultDesc[FaultID.NoESObjectSupport] = 'ESObject type cannot be used';
+faultDesc[FaultID.SdkCommonApiDeprecated] = 'ArkUI sdk common deprecated api check';
+faultDesc[FaultID.SdkCommonApiWhiteList] = 'ArkUI sdk common whiteList api check';
+faultDesc[FaultID.SdkCommonApiBehaviorChange] = 'ArkUI sdk common behavior change api check';

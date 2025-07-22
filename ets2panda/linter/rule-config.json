@@ -138,7 +138,10 @@
     "arkui-no-deprecated-api",
     "arkui-buildernode-generic-no-tuple",
     "arkui-buildernode-update-no-literal",
-    "arkui-buildernode-no-nestingbuildersupported"
+    "arkui-buildernode-no-nestingbuildersupported",
+    "arkui-sdk-common-deprecated-api",
+    "arkui-sdk-common-whitelist-api",
+    "arkui-sdk-common-behaviorchange-api"
   ],
   "builtin": [
     "arkts-builtin-thisArgs",

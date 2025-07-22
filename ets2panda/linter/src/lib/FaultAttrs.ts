@@ -291,3 +291,6 @@ faultsAttrs[FaultID.UnsupportOperator] = new FaultAttributes(378);
 faultsAttrs[FaultID.StateStylesBlockNeedArrowFunc] = new FaultAttributes(381);
 faultsAttrs[FaultID.PromiseVoidNeedResolveArg] = new FaultAttributes(382);
 faultsAttrs[FaultID.NoDeprecatedApi] = new FaultAttributes(399);
+faultsAttrs[FaultID.SdkCommonApiDeprecated] = new FaultAttributes(400);
+faultsAttrs[FaultID.SdkCommonApiWhiteList] = new FaultAttributes(401);
+faultsAttrs[FaultID.SdkCommonApiBehaviorChange] = new FaultAttributes(402);
