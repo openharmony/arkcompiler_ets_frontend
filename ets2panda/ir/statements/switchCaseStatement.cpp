@@ -146,7 +146,10 @@ void SwitchCaseStatement::CheckAndTestCase(checker::ETSChecker *checker, checker
 
 SwitchCaseStatement *SwitchCaseStatement::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const test = test_->Clone(allocator, nullptr)->AsExpression();
+    Expression *test = nullptr;
+    if (test_ != nullptr) {
+        test = test_->Clone(allocator, nullptr)->AsExpression();
+    }
     ArenaVector<Statement *> consequent(allocator->Adapter());
 
     for (auto *statement : consequent_) {
