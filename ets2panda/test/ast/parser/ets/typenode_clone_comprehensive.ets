@@ -94,7 +94,7 @@ declare const test3: ComplexType<'b'>;
 /* @@? 41:43 Error SyntaxError: Unexpected token ']'. */
 /* @@? 41:43 Error SyntaxError: Field type annotation expected. */
 /* @@? 41:44 Error SyntaxError: Unexpected token ':'. */
-/* @@? 41:52 Error SyntaxError: Field type annotation expected. */
+/* @@? 41:46 Error SyntaxError: string is a predefined type, cannot be used as an identifier  */
 /* @@? 44:41 Error TypeError: The `keyof` keyword can only be used for class or interface type. */
 /* @@? 44:60 Error SyntaxError: Unexpected token, expected ']'. */
 /* @@? 54:34 Error TypeError: Cannot find type 'InvalidMap'. */
