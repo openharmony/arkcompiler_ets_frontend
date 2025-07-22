@@ -27,6 +27,10 @@ static bool HasDefaultParameters(const ir::ScriptFunction *function, util::Diagn
     bool hasRestParameter = false;
 
     for (auto *const it : function->Params()) {
+        if (it->IsBrokenExpression()) {
+            continue;
+        }
+
         auto const *const param = it->AsETSParameterExpression();
 
         if (param->IsRestParameter()) {
@@ -323,6 +327,9 @@ bool DefaultParametersInConstructorLowering::PostconditionForModule([[maybe_unus
             return false;
         }
         for (auto *const it : node->AsMethodDefinition()->Function()->Params()) {
+            if (it->IsBrokenExpression()) {
+                continue;
+            }
             auto const *const param = it->AsETSParameterExpression();
             if (param->IsOptional()) {
                 return true;
