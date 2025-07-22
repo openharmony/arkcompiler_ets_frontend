@@ -141,7 +141,13 @@ Type *ETSTypeParameter::Substitute([[maybe_unused]] TypeRelation *relation, cons
     if (substitution == nullptr || substitution->empty()) {
         return this;
     }
-    if (auto repl = substitution->find(GetOriginal()); repl != substitution->end()) {
+
+    auto *type = GetDeclNode()->Name()->Variable()->TsType();
+    if (type->IsTypeError()) {
+        return this;
+    }
+
+    if (auto repl = substitution->find(type->AsETSTypeParameter()); repl != substitution->end()) {
         // 22955: The result is sometimes primitve. Can be reproduced for type aliases
         return repl->second;
     }

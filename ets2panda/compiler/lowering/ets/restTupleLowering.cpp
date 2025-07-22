@@ -270,7 +270,7 @@ ir::ScriptFunction *CreateNewScriptFunction(public_lib::Context *ctx, ir::Script
     for (auto *annotationUsage : scriptFunc->Annotations()) {
         annotationUsages.push_back(annotationUsage->Clone(allocator, newScriptFunc)->AsAnnotationUsage());
     }
-    std::cerr << "CreateNewScriptFunction SetAnnotations for newScriptFunc " << newScriptFunc << std::endl;
+
     newScriptFunc->SetAnnotations(std::move(annotationUsages));
 
     ir::Identifier *newScriptFuncId = scriptFunc->Id()->Clone(allocator, newScriptFunc);
