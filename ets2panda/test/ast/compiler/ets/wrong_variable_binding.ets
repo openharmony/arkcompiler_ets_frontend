@@ -13,21 +13,19 @@
  * limitations under the License.
  */
 
-interface I {
-    set text(s: string)
-}
 
-class B implements I {
-    text: string = ""
-    s : string
-    this.text = s;
-}
+class C {
+  
+    public C;
+    
+    public C: "+v)";
+    
+    public constructor() {}
+    
+  }
+  
+  class D extends C{}
 
-function main() {
-    let ins: I = new B();
-    ins.text = "He";
-}
-
-/* @@? 23:5 Error SyntaxError: Unexpected token 'this'. */
-/* @@? 23:9 Error SyntaxError: Unexpected token '.'. */
-/* @@? 23:10 Error TypeError: Variable 'text' has already been declared. */
+/* @@? 19:13 Error SyntaxError: Field type annotation expected. */
+/* @@? 21:12 Error TypeError: Variable 'C' has already been declared. */
+/* @@? 27:19 Error TypeError: The super type of 'D' class is not extensible. */

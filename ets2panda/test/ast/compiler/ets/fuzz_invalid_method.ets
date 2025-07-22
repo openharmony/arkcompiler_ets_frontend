@@ -47,13 +47,11 @@ class A<T> {
 /* @@? 32:7 Error SyntaxError: Unexpected token '{'. */
 /* @@? 33:9 Error SyntaxError: Unexpected token 'return'. */
 /* @@? 33:19 Error TypeError: Only abstract or native methods can't have body. */
-/* @@? 33:19 Error TypeError: Only abstract or native methods can't have body. */
 /* @@? 33:24 Error SyntaxError: The function parameter 'this' must explicitly specify the typeAnnotation. */
+/* @@? 33:30 Error SyntaxError: The function parameter 'this' must explicitly specify the typeAnnotation. */
 /* @@? 33:30 Error SyntaxError: Unexpected token, expected ',' or ')'. */
 /* @@? 33:30 Error SyntaxError: Unexpected token '.'. */
-/* @@? 33:30 Error SyntaxError: The function parameter 'this' must explicitly specify the typeAnnotation. */
 /* @@? 33:31 Error TypeError: Variable 'data' has already been declared. */
-/* @@? 33:31 Error TypeError: Property 'data' must be accessed through 'this' */
 /* @@? 33:35 Error SyntaxError: Field type annotation expected. */
 /* @@? 33:35 Error SyntaxError: Unexpected token ')'. */
 /* @@? 36:1 Error SyntaxError: Unexpected token '}'. */

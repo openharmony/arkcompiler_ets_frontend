@@ -457,9 +457,8 @@ ir::TypeNode *ETSParser::ParseTsArrayType(ir::TypeNode *typeNode, TypeAnnotation
         if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET) {
             if ((*options & TypeAnnotationParsingOptions::REPORT_ERROR) != 0) {
                 LogExpectedToken(lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET);
-                return AllocBrokenType({Lexer()->GetToken().Start(), Lexer()->GetToken().End()});
             }
-            return nullptr;
+            return AllocBrokenType({Lexer()->GetToken().Start(), Lexer()->GetToken().End()});
         }
 
         typeNode = AllocNode<ir::TSArrayType>(typeNode, Allocator());
