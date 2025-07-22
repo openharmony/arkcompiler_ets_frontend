@@ -199,6 +199,7 @@ ir::TypeNode *ETSParser::ParseFunctionType(TypeAnnotationParsingOptions *options
     if (!Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_ARROW)) {
         if (((*options) & TypeAnnotationParsingOptions::REPORT_ERROR) != 0) {
             LogExpectedToken(lexer::TokenType::PUNCTUATOR_ARROW);
+            return AllocBrokenType(Lexer()->GetToken().Loc());
         }
         return nullptr;
     }
@@ -436,6 +437,7 @@ std::pair<ir::TypeNode *, bool> ETSParser::GetTypeAnnotationFromParentheses(
     if (!Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS)) {
         if (((*options) & TypeAnnotationParsingOptions::REPORT_ERROR) != 0) {
             LogExpectedToken(lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
+            return {AllocBrokenType(Lexer()->GetToken().Loc()), false};
         }
         return {nullptr, false};
     }

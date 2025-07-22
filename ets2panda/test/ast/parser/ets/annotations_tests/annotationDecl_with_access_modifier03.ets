@@ -19,4 +19,3 @@
 
 /* @@@ label Error SyntaxError: Unexpected token 'static'.  */
 /* @@@ label1 Error SyntaxError: Unexpected token '@'. */
-/* @@? 15:38 Error SyntaxError: Annotations can only be declared at the top level. */

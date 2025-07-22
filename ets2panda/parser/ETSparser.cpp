@@ -758,7 +758,7 @@ ir::Statement *ETSParser::ParseTypeDeclarationAbstractFinal(bool allowStatic, ir
     }
 
     LogUnexpectedToken(Lexer()->GetToken());
-    return nullptr;
+    return AllocBrokenStatement(Lexer()->GetToken().Loc());
 }
 
 ir::Statement *ETSParser::ParseTypeDeclaration(bool allowStatic)
@@ -1695,7 +1695,7 @@ ir::Expression *ETSParser::ParseFunctionParameterAnnotations()
     auto annotations = ParseAnnotations(false);
     auto savePos = Lexer()->GetToken().Start();
     ir::Expression *result = ParseFunctionParameter();
-    if (result != nullptr) {
+    if (result != nullptr && !result->IsBrokenExpression()) {
         ApplyAnnotationsToNode(result, std::move(annotations), savePos);
     }
     return result;

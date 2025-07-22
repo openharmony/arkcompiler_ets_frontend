@@ -134,7 +134,7 @@ ir::Identifier *ETSParser::ParseIdentifierFormatPlaceholder(std::optional<Parser
     if (!nodeFormat.has_value()) {
         if (insertingNodes_.empty()) {
             LogError(diagnostic::INSERT_NODE_ABSENT, {}, Lexer()->GetToken().Start());
-            return nullptr;
+            return AllocBrokenExpression(Lexer()->GetToken().Loc());
         }
 
         nodeFormat = GetFormatPlaceholderType();
@@ -482,7 +482,7 @@ ir::Statement *ETSParser::CreateClassDeclaration(std::string_view sourceCode, bo
         }
         default: {
             LogUnexpectedToken(Lexer()->GetToken());
-            return nullptr;
+            return AllocBrokenStatement(lexer->GetToken().Start());
         }
     }
 }

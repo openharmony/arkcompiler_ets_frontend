@@ -19,7 +19,5 @@ class Arr<T> {
 /* @@? 16:11 Error TypeError: Only abstract or native methods can't have body. */
 /* @@? 16:24 Error TypeError: FixedArray<T> must have only one type parameter. */
 /* @@? 16:37 Error SyntaxError: Unexpected token, expected '=>'. */
-/* @@? 16:37 Error SyntaxError: Unexpected token, expected '('. */
-/* @@? 16:37 Error SyntaxError: Invalid Type. */
 /* @@? 16:37 Error SyntaxError: Unexpected token, expected '>'. */
 /* @@? 16:37 Error SyntaxError: Unexpected token '>'. */
