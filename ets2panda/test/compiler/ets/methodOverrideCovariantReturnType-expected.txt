@@ -365,7 +365,7 @@
                 "loc": {
                   "start": {
                     "line": 21,
-                    "column": 8,
+                    "column": 5,
                     "program": "methodOverrideCovariantReturnType.ets"
                   },
                   "end": {
@@ -378,7 +378,7 @@
               "loc": {
                 "start": {
                   "line": 21,
-                  "column": 8,
+                  "column": 5,
                   "program": "methodOverrideCovariantReturnType.ets"
                 },
                 "end": {

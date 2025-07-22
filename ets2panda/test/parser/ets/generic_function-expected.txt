@@ -185,7 +185,7 @@
                 "loc": {
                   "start": {
                     "line": 17,
-                    "column": 16,
+                    "column": 3,
                     "program": "generic_function.ets"
                   },
                   "end": {
@@ -198,7 +198,7 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 16,
+                  "column": 3,
                   "program": "generic_function.ets"
                 },
                 "end": {

@@ -1,7 +1,3 @@
-LOAD SUCCESS
-PROCEED TO PARSE SUCCESS
-PROCEED TO BOUND SUCCESS
-PROCEED TO CHECKED SUCCESS
 /*
  * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -87,6 +83,16 @@ PROCEED TO CHECKED SUCCESS
     * @param2 preStr { p }
     */
 /**
+    * ==== interface getter ====
+    * @param1 {} behindStr
+    * @param2 preStr { p }
+    */
+/**
+    * ==== interface setter ====
+    * @param1 {} behindStr
+    * @param2 preStr { p }
+    */
+/**
     * ==== interfaceFoo1 ====
     * @param1 {} behindStr
     * @param2 preStr { p }
@@ -131,6 +137,16 @@ PROCEED TO CHECKED SUCCESS
 * @param1 {} behindStr
 * @param2 preStr { p }
 */
+/**
+    * ==== test class getter ====
+    * @param1 {} behindStr
+    * @param2 preStr { p }
+    */
+/**
+    * ==== test class setter ====
+    * @param1 {} behindStr
+    * @param2 preStr { p }
+    */
 /**
     * ==== ambient indexer jsdoc ====
     * @param1 {} behindStr
@@ -206,6 +222,23 @@ PROCEED TO CHECKED SUCCESS
  * @param1 {} behindStr
  * @param2 preStr { p }
 */
-PROCEED TO LOWERED SUCCESS
-PROCEED TO ASM SUCCESS
-PROCEED TO BIN SUCCESS
+/**
+ * ==== export specifier jsdoc1 ====
+ * @param1 {} behindStr
+ * @param2 preStr { p }
+*/
+/**
+ * ==== export specifier jsdoc2 ====
+ * @param1 {} behindStr
+ * @param2 preStr { p }
+*/
+/**
+ * ==== export specifier jsdoc3 ====
+ * @param1 {} behindStr
+ * @param2 preStr { p }
+*/
+/**
+ * ==== import specifier jsdoc ====
+ * @param1 {} behindStr
+ * @param2 preStr { p }
+*/

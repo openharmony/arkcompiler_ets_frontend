@@ -166,7 +166,7 @@
                             "loc": {
                               "start": {
                                 "line": 17,
-                                "column": 6,
+                                "column": 3,
                                 "program": "interfaceMethodWithOptional.ets"
                               },
                               "end": {
@@ -183,7 +183,7 @@
                             "loc": {
                               "start": {
                                 "line": 17,
-                                "column": 6,
+                                "column": 3,
                                 "program": "interfaceMethodWithOptional.ets"
                               },
                               "end": {
@@ -196,7 +196,7 @@
                           "loc": {
                             "start": {
                               "line": 17,
-                              "column": 6,
+                              "column": 3,
                               "program": "interfaceMethodWithOptional.ets"
                             },
                             "end": {
@@ -209,7 +209,7 @@
                         "loc": {
                           "start": {
                             "line": 17,
-                            "column": 6,
+                            "column": 3,
                             "program": "interfaceMethodWithOptional.ets"
                           },
                           "end": {
@@ -222,7 +222,7 @@
                       "loc": {
                         "start": {
                           "line": 17,
-                          "column": 6,
+                          "column": 3,
                           "program": "interfaceMethodWithOptional.ets"
                         },
                         "end": {
@@ -242,7 +242,7 @@
                           "loc": {
                             "start": {
                               "line": 17,
-                              "column": 6,
+                              "column": 3,
                               "program": "interfaceMethodWithOptional.ets"
                             },
                             "end": {
@@ -258,7 +258,7 @@
                           "loc": {
                             "start": {
                               "line": 17,
-                              "column": 6,
+                              "column": 3,
                               "program": "interfaceMethodWithOptional.ets"
                             },
                             "end": {
@@ -278,7 +278,7 @@
                         "loc": {
                           "start": {
                             "line": 17,
-                            "column": 6,
+                            "column": 3,
                             "program": "interfaceMethodWithOptional.ets"
                           },
                           "end": {
@@ -292,7 +292,7 @@
                     "loc": {
                       "start": {
                         "line": 17,
-                        "column": 6,
+                        "column": 3,
                         "program": "interfaceMethodWithOptional.ets"
                       },
                       "end": {
@@ -306,7 +306,7 @@
                 "loc": {
                   "start": {
                     "line": 17,
-                    "column": 6,
+                    "column": 3,
                     "program": "interfaceMethodWithOptional.ets"
                   },
                   "end": {
@@ -319,7 +319,7 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 6,
+                  "column": 3,
                   "program": "interfaceMethodWithOptional.ets"
                 },
                 "end": {

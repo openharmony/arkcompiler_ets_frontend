@@ -153,7 +153,7 @@
                 "loc": {
                   "start": {
                     "line": 20,
-                    "column": 14,
+                    "column": 5,
                     "program": "generic_arrayaslist.ets"
                   },
                   "end": {
@@ -166,7 +166,7 @@
               "loc": {
                 "start": {
                   "line": 20,
-                  "column": 14,
+                  "column": 5,
                   "program": "generic_arrayaslist.ets"
                 },
                 "end": {
@@ -290,7 +290,7 @@
                 "loc": {
                   "start": {
                     "line": 21,
-                    "column": 13,
+                    "column": 5,
                     "program": "generic_arrayaslist.ets"
                   },
                   "end": {
@@ -303,7 +303,7 @@
               "loc": {
                 "start": {
                   "line": 21,
-                  "column": 13,
+                  "column": 5,
                   "program": "generic_arrayaslist.ets"
                 },
                 "end": {
@@ -475,7 +475,7 @@
                 "loc": {
                   "start": {
                     "line": 22,
-                    "column": 13,
+                    "column": 5,
                     "program": "generic_arrayaslist.ets"
                   },
                   "end": {
@@ -488,7 +488,7 @@
               "loc": {
                 "start": {
                   "line": 22,
-                  "column": 13,
+                  "column": 5,
                   "program": "generic_arrayaslist.ets"
                 },
                 "end": {
@@ -612,7 +612,7 @@
                 "loc": {
                   "start": {
                     "line": 23,
-                    "column": 12,
+                    "column": 5,
                     "program": "generic_arrayaslist.ets"
                   },
                   "end": {
@@ -625,7 +625,7 @@
               "loc": {
                 "start": {
                   "line": 23,
-                  "column": 12,
+                  "column": 5,
                   "program": "generic_arrayaslist.ets"
                 },
                 "end": {
@@ -717,7 +717,7 @@
                 "loc": {
                   "start": {
                     "line": 25,
-                    "column": 9,
+                    "column": 5,
                     "program": "generic_arrayaslist.ets"
                   },
                   "end": {
@@ -730,7 +730,7 @@
               "loc": {
                 "start": {
                   "line": 25,
-                  "column": 9,
+                  "column": 5,
                   "program": "generic_arrayaslist.ets"
                 },
                 "end": {
@@ -902,7 +902,7 @@
                 "loc": {
                   "start": {
                     "line": 26,
-                    "column": 7,
+                    "column": 5,
                     "program": "generic_arrayaslist.ets"
                   },
                   "end": {
@@ -915,7 +915,7 @@
               "loc": {
                 "start": {
                   "line": 26,
-                  "column": 7,
+                  "column": 5,
                   "program": "generic_arrayaslist.ets"
                 },
                 "end": {
@@ -1087,7 +1087,7 @@
                 "loc": {
                   "start": {
                     "line": 27,
-                    "column": 8,
+                    "column": 5,
                     "program": "generic_arrayaslist.ets"
                   },
                   "end": {
@@ -1100,7 +1100,7 @@
               "loc": {
                 "start": {
                   "line": 27,
-                  "column": 8,
+                  "column": 5,
                   "program": "generic_arrayaslist.ets"
                 },
                 "end": {
@@ -1496,7 +1496,7 @@
                 "loc": {
                   "start": {
                     "line": 29,
-                    "column": 12,
+                    "column": 5,
                     "program": "generic_arrayaslist.ets"
                   },
                   "end": {
@@ -1509,7 +1509,7 @@
               "loc": {
                 "start": {
                   "line": 29,
-                  "column": 12,
+                  "column": 5,
                   "program": "generic_arrayaslist.ets"
                 },
                 "end": {
@@ -1922,7 +1922,7 @@
                 "loc": {
                   "start": {
                     "line": 30,
-                    "column": 8,
+                    "column": 5,
                     "program": "generic_arrayaslist.ets"
                   },
                   "end": {
@@ -1935,7 +1935,7 @@
               "loc": {
                 "start": {
                   "line": 30,
-                  "column": 8,
+                  "column": 5,
                   "program": "generic_arrayaslist.ets"
                 },
                 "end": {
@@ -2346,7 +2346,7 @@
                 "loc": {
                   "start": {
                     "line": 31,
-                    "column": 9,
+                    "column": 5,
                     "program": "generic_arrayaslist.ets"
                   },
                   "end": {
@@ -2359,7 +2359,7 @@
               "loc": {
                 "start": {
                   "line": 31,
-                  "column": 9,
+                  "column": 5,
                   "program": "generic_arrayaslist.ets"
                 },
                 "end": {
@@ -2866,7 +2866,7 @@
                 "loc": {
                   "start": {
                     "line": 32,
-                    "column": 13,
+                    "column": 5,
                     "program": "generic_arrayaslist.ets"
                   },
                   "end": {
@@ -2879,7 +2879,7 @@
               "loc": {
                 "start": {
                   "line": 32,
-                  "column": 13,
+                  "column": 5,
                   "program": "generic_arrayaslist.ets"
                 },
                 "end": {
@@ -3243,7 +3243,7 @@
                 "loc": {
                   "start": {
                     "line": 33,
-                    "column": 11,
+                    "column": 5,
                     "program": "generic_arrayaslist.ets"
                   },
                   "end": {
@@ -3256,7 +3256,7 @@
               "loc": {
                 "start": {
                   "line": 33,
-                  "column": 11,
+                  "column": 5,
                   "program": "generic_arrayaslist.ets"
                 },
                 "end": {
@@ -3699,7 +3699,7 @@
                 "loc": {
                   "start": {
                     "line": 34,
-                    "column": 9,
+                    "column": 5,
                     "program": "generic_arrayaslist.ets"
                   },
                   "end": {
@@ -3712,7 +3712,7 @@
               "loc": {
                 "start": {
                   "line": 34,
-                  "column": 9,
+                  "column": 5,
                   "program": "generic_arrayaslist.ets"
                 },
                 "end": {

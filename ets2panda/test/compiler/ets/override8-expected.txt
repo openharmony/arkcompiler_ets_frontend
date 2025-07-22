@@ -105,7 +105,7 @@
                 "loc": {
                   "start": {
                     "line": 17,
-                    "column": 7,
+                    "column": 3,
                     "program": "override8.ets"
                   },
                   "end": {
@@ -118,7 +118,7 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 7,
+                  "column": 3,
                   "program": "override8.ets"
                 },
                 "end": {

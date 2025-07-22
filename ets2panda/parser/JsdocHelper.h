@@ -81,7 +81,7 @@ public:
 
     char32_t PeekBackWard() const
     {
-        return iter_.Index() != 0 ? iter_.Peek() : util::StringView::Iterator::INVALID_CP;
+        return iter_.Peek();
     }
 
 private:
@@ -130,11 +130,6 @@ private:
             auto cp = Iterator().Peek();
             switch (cp) {
                 case lexer::LEX_CHAR_CR:
-                    Iterator().Backward(1);
-                    if (Iterator().Peek() != lexer::LEX_CHAR_LF) {
-                        Iterator().Backward(1);
-                    }
-                    [[fallthrough]];
                 case lexer::LEX_CHAR_LF:
                 case lexer::LEX_CHAR_VT:
                 case lexer::LEX_CHAR_FF:
@@ -177,7 +172,7 @@ private:
         }
     }
 
-    void BackWardUntilJsdocStart();
+    bool BackWardUntilJsdocStart();
 
     const ir::AstNode *root_ {};
     const parser::Program *program_ {};

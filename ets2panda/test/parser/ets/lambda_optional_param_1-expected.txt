@@ -328,7 +328,7 @@
                 "loc": {
                   "start": {
                     "line": 17,
-                    "column": 10,
+                    "column": 2,
                     "program": "lambda_optional_param_1.ets"
                   },
                   "end": {
@@ -341,7 +341,7 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 10,
+                  "column": 2,
                   "program": "lambda_optional_param_1.ets"
                 },
                 "end": {

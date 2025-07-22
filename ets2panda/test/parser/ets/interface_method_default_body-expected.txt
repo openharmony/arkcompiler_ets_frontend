@@ -73,7 +73,7 @@
                 "loc": {
                   "start": {
                     "line": 17,
-                    "column": 6,
+                    "column": 3,
                     "program": "interface_method_default_body.ets"
                   },
                   "end": {
@@ -86,7 +86,7 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 6,
+                  "column": 3,
                   "program": "interface_method_default_body.ets"
                 },
                 "end": {
@@ -244,7 +244,7 @@
                 "loc": {
                   "start": {
                     "line": 21,
-                    "column": 6,
+                    "column": 3,
                     "program": "interface_method_default_body.ets"
                   },
                   "end": {
@@ -257,7 +257,7 @@
               "loc": {
                 "start": {
                   "line": 21,
-                  "column": 6,
+                  "column": 3,
                   "program": "interface_method_default_body.ets"
                 },
                 "end": {
@@ -349,7 +349,7 @@
                 "loc": {
                   "start": {
                     "line": 22,
-                    "column": 6,
+                    "column": 3,
                     "program": "interface_method_default_body.ets"
                   },
                   "end": {
@@ -362,7 +362,7 @@
               "loc": {
                 "start": {
                   "line": 22,
-                  "column": 6,
+                  "column": 3,
                   "program": "interface_method_default_body.ets"
                 },
                 "end": {

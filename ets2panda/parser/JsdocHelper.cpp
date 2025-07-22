@@ -30,9 +30,9 @@ static constexpr size_t START_POS = 0;
 static constexpr size_t COLLECT_CURRENT_POS = 1;
 
 // NOLINTBEGIN(modernize-avoid-c-arrays)
-static constexpr std::string_view POTENTIAL_PREFIX[] = {"@",        "let",     "const",  "async",  "readonly",
-                                                        "abstract", "native",  "static", "public", "private",
-                                                        "declare",  "default", "export"};
+static constexpr std::string_view POTENTIAL_PREFIX[] = {"@",      "get",      "set",      "let",     "const",
+                                                        "async",  "readonly", "abstract", "native",  "static",
+                                                        "public", "private",  "declare",  "default", "export"};
 // NOLINTEND(modernize-avoid-c-arrays)
 
 // Note: Potential annotation allowed node need to collect jsdoc.
@@ -112,10 +112,10 @@ static void HandlePotentialPrefixOrAnnotationUsage(parser::JsdocHelper *jsdocHel
     }
 }
 
-void JsdocHelper::BackWardUntilJsdocStart()
+bool JsdocHelper::BackWardUntilJsdocStart()
 {
     while (true) {
-        const char32_t cp = PeekBackWard();
+        const char32_t cp = Iterator().Index() == START_POS ? util::StringView::Iterator::INVALID_CP : PeekBackWard();
         switch (cp) {
             case util::StringView::Iterator::INVALID_CP: {
                 break;
@@ -126,18 +126,22 @@ void JsdocHelper::BackWardUntilJsdocStart()
                     continue;
                 }
 
-                Backward(1);
-                if (PeekBackWard() == lexer::LEX_CHAR_SLASH) {
+                if (Iterator().Index() == START_POS) {
                     break;
                 }
-                [[fallthrough]];
+
+                Backward(1);
+                if (PeekBackWard() == lexer::LEX_CHAR_SLASH) {
+                    return true;
+                }
+                continue;
             }
             default: {
                 SkipCpBackward();
                 continue;
             }
         }
-        break;
+        return false;
     }
 }
 
@@ -149,11 +153,10 @@ util::StringView JsdocHelper::GetJsdocBackward()
     auto currentSourceView = SourceView(START_POS, jsdocEndPos);
     while (currentSourceView.EndsWith(JSDOC_END)) {
         BackwardAndSkipSpace(JSDOC_END.length());
-        BackWardUntilJsdocStart();
-        backwardPos = Iterator().Index();
-        if (Iterator().Index() == START_POS) {
+        if (!BackWardUntilJsdocStart()) {
             break;
         }
+        backwardPos = Iterator().Index();
         BackwardAndSkipSpace(1);
         currentSourceView = SourceView(START_POS, Iterator().Index() + COLLECT_CURRENT_POS);
     }
