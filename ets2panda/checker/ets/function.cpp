@@ -443,6 +443,10 @@ bool ETSChecker::ValidateSignatureRequiredParams(Signature *substitutedSig,
 {
     auto commonArity = std::min(arguments.size(), substitutedSig->ArgCount());
     if ((flags & TypeRelationFlag::NO_CHECK_TRAILING_LAMBDA) != 0 || HasTransferredTrailingLambda(arguments)) {
+        if (commonArity == 0) {
+            ES2PANDA_ASSERT(substitutedSig->GetSignatureInfo()->params.empty());
+            return true;
+        }
         commonArity = commonArity - 1;
     }
     for (size_t index = 0; index < commonArity; ++index) {
