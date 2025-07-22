@@ -16,22 +16,44 @@
 #ifndef FORGOTTEN_THIS_PROPERTY_ACCESS_H
 #define FORGOTTEN_THIS_PROPERTY_ACCESS_H
 
+#include <string>
 #include <vector>
-#include <cstddef>
 #include "lsp/include/code_fixes/code_fix_types.h"
+#include "public/es2panda_lib.h"
 #include "lsp/include/services/text_change/change_tracker.h"
-#include "lsp/include/types.h"
 
 namespace ark::es2panda::lsp {
 
-class ForgettenThisPropertyAccess : public CodeFixRegistration {
+class ForgottenThisPropertyAccess : public CodeFixRegistration {
 public:
-    ForgettenThisPropertyAccess();
+    ForgottenThisPropertyAccess();
 
     std::vector<CodeFixAction> GetCodeActions(const CodeFixContext &context) override;
 
     CombinedCodeActions GetAllCodeActions(const CodeFixAllContext &codeFixAll) override;
 };
 
+struct Info {
+private:
+    ark::es2panda::ir::AstNode *node_;
+    std::string className_;
+
+public:
+    Info(ark::es2panda::ir::AstNode *node, std::string className) : node_(node), className_(std::move(className)) {}
+
+    ark::es2panda::ir::AstNode *GetNode() const
+    {
+        return node_;
+    }
+    const std::string &GetClassName() const
+    {
+        return className_;
+    }
+};
+
+Info GetInfoThisProp(es2panda_Context *context, size_t offset);
+void DoChanges(es2panda_Context *context, ChangeTracker tracker);
+
 }  // namespace ark::es2panda::lsp
-#endif
+
+#endif  // FORGOTTEN_THIS_PROPERTY_ACCESS_H
