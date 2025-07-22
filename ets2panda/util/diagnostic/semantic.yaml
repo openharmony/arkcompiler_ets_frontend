@@ -201,6 +201,7 @@ semantic:
 - name: ASYNC_FUNCTION_RETURN_TYPE
   id: 1
   message: Return type of async function must be 'Promise'.
+  code_fix_ids: [FixReturnTypeInAsyncFunction]
 
 - name: AWAITED_NOT_PROMISE
   id: 303
