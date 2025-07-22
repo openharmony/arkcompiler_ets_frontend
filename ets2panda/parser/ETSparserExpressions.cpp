@@ -249,6 +249,7 @@ ir::Expression *ETSParser::ParsePropertyKey([[maybe_unused]] ExpressionParseFlag
         case lexer::TokenType::LITERAL_IDENT: {
             const util::StringView &ident = Lexer()->GetToken().Ident();
             key = AllocNode<ir::Identifier>(ident, Allocator());
+            ES2PANDA_ASSERT(key != nullptr);
             key->SetRange(Lexer()->GetToken().Loc());
             Lexer()->NextToken();
             return key;
@@ -256,6 +257,7 @@ ir::Expression *ETSParser::ParsePropertyKey([[maybe_unused]] ExpressionParseFlag
         case lexer::TokenType::LITERAL_STRING: {
             const util::StringView &string = Lexer()->GetToken().String();
             key = AllocNode<ir::StringLiteral>(string);
+            ES2PANDA_ASSERT(key != nullptr);
             key->SetRange(Lexer()->GetToken().Loc());
             Lexer()->NextToken();
             return key;
@@ -266,6 +268,7 @@ ir::Expression *ETSParser::ParsePropertyKey([[maybe_unused]] ExpressionParseFlag
             } else {
                 key = AllocNode<ir::NumberLiteral>(Lexer()->GetToken().GetNumber());
             }
+            ES2PANDA_ASSERT(key != nullptr);
             key->SetRange(Lexer()->GetToken().Loc());
             Lexer()->NextToken();
             return key;
