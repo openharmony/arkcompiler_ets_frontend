@@ -98,11 +98,13 @@ CatchClause::CatchClause(CatchClause const &other, ArenaAllocator *allocator) : 
 {
     param_ = nullptr;
     body_ = nullptr;
-    if (other.param_ != nullptr && other.param_->Clone(allocator, this) != nullptr) {
-        param_ = other.param_->Clone(allocator, this)->AsExpression();
+    auto *const cloneParam = other.param_ != nullptr ? other.param_->Clone(allocator, this) : nullptr;
+    auto *const cloneBody = other.body_ != nullptr ? other.body_->Clone(allocator, this) : nullptr;
+    if (cloneParam != nullptr) {
+        param_ = cloneParam->AsExpression();
     }
-    if (other.body_ != nullptr && other.body_->Clone(allocator, this) != nullptr) {
-        body_ = other.body_->Clone(allocator, this)->AsBlockStatement();
+    if (cloneBody != nullptr) {
+        body_ = cloneBody->AsBlockStatement();
     }
 }
 
