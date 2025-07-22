@@ -960,53 +960,115 @@ signatures:
     return_type: PRIMITIVE_VOID
     ref: BUILTIN_STRING_BUILDER_CTOR
 
+  #26986
   - callee: BUILTIN_STRING_BUILDER
     method_name: append
     params: [PRIMITIVE_BOOLEAN]
     return_type: BUILTIN_STRING_BUILDER
     ref: BUILTIN_STRING_BUILDER_APPEND_BOOLEAN
 
+  #26986
   - callee: BUILTIN_STRING_BUILDER
     method_name: append
     params: [PRIMITIVE_CHAR]
     return_type: BUILTIN_STRING_BUILDER
     ref: BUILTIN_STRING_BUILDER_APPEND_CHAR
 
+  #26986
   - callee: BUILTIN_STRING_BUILDER
     method_name: append
     params: [PRIMITIVE_INT]
     return_type: BUILTIN_STRING_BUILDER
     ref: BUILTIN_STRING_BUILDER_APPEND_INT
 
+  #26986
   - callee: BUILTIN_STRING_BUILDER
     method_name: append
     params: [PRIMITIVE_LONG]
     return_type: BUILTIN_STRING_BUILDER
     ref: BUILTIN_STRING_BUILDER_APPEND_LONG
 
+  #26986
   - callee: BUILTIN_STRING_BUILDER
     method_name: append
     params: [PRIMITIVE_FLOAT]
     return_type: BUILTIN_STRING_BUILDER
     ref: BUILTIN_STRING_BUILDER_APPEND_FLOAT
 
+  #26986
   - callee: BUILTIN_STRING_BUILDER
     method_name: append
     params: [PRIMITIVE_DOUBLE]
     return_type: BUILTIN_STRING_BUILDER
     ref: BUILTIN_STRING_BUILDER_APPEND_DOUBLE
 
+  #26986
   - callee: BUILTIN_STRING_BUILDER
     method_name: append
     params: [BUILTIN_STRING]
     return_type: BUILTIN_STRING_BUILDER
     ref: BUILTIN_STRING_BUILDER_APPEND_BUILTIN_STRING
 
+  #26986
   - callee: BUILTIN_STRING_BUILDER
     method_name: toString
     params: []
     return_type: BUILTIN_STRING
     ref: BUILTIN_STRING_BUILDER_TO_STRING
+
+  - callee: BUILTIN_STRING_BUILDER
+    method_name: toString
+    params: [PRIMITIVE_BOOLEAN]
+    return_type: BUILTIN_STRING
+    ref: BUILTIN_STRING_BUILDER_TO_STRING_BOOLEAN
+
+  - callee: BUILTIN_STRING_BUILDER
+    method_name: toString
+    params: [PRIMITIVE_CHAR]
+    return_type: BUILTIN_STRING
+    ref: BUILTIN_STRING_BUILDER_TO_STRING_CHAR
+
+  - callee: BUILTIN_STRING_BUILDER
+    method_name: toString
+    params: [PRIMITIVE_SHORT]
+    return_type: BUILTIN_STRING
+    ref: BUILTIN_STRING_BUILDER_TO_STRING_SHORT
+
+  - callee: BUILTIN_STRING_BUILDER
+    method_name: toString
+    params: [PRIMITIVE_BYTE]
+    return_type: BUILTIN_STRING
+    ref: BUILTIN_STRING_BUILDER_TO_STRING_BYTE
+
+  - callee: BUILTIN_STRING_BUILDER
+    method_name: toString
+    params: [PRIMITIVE_INT]
+    return_type: BUILTIN_STRING
+    ref: BUILTIN_STRING_BUILDER_TO_STRING_INT
+
+  - callee: BUILTIN_STRING_BUILDER
+    method_name: toString
+    params: [PRIMITIVE_LONG]
+    return_type: BUILTIN_STRING
+    ref: BUILTIN_STRING_BUILDER_TO_STRING_LONG
+
+  - callee: BUILTIN_STRING_BUILDER
+    method_name: toString
+    params: [PRIMITIVE_FLOAT]
+    return_type: BUILTIN_STRING
+    ref: BUILTIN_STRING_BUILDER_TO_STRING_FLOAT
+
+  - callee: BUILTIN_STRING_BUILDER
+    method_name: toString
+    params: [PRIMITIVE_DOUBLE]
+    return_type: BUILTIN_STRING
+    ref: BUILTIN_STRING_BUILDER_TO_STRING_DOUBLE
+
+  - callee: BUILTIN_STRING_BUILDER
+    method_name: concatStrings
+    params: [BUILTIN_STRING, BUILTIN_STRING]
+    return_type: BUILTIN_STRING
+    ref: BUILTIN_STRING_BUILDER_CONCAT_STRING
 
   - callee: BUILTIN_BOOLEAN
     method_name: valueOf
