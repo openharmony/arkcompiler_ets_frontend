@@ -117,7 +117,7 @@ set(ES2PANDA_LSP_SRC
   ./src/register_code_fix/convert_const_to_let.cpp
   ./src/register_code_fix/fix_missing_call_parantheses.cpp
   ./src/register_code_fix/fix_nan_equality.cpp
-  ./src/register_code_fix/forgetten_this_property_access.cpp
+  ./src/register_code_fix/forgotten_this_property_access.cpp
   ./src/register_code_fix/import_fixes.cpp
   ./src/register_code_fix/remove_accidental_call_parentheses.cpp
   ./src/register_code_fix/ui_plugin_suggest.cpp

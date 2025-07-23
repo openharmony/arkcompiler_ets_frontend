@@ -1207,6 +1207,8 @@ semantic:
 - name: PROP_ACCESS_WITHOUT_THIS
   id: 145
   message: "Property '{}' must be accessed through 'this'"
+  code_fix_ids: [ForgottenThisPropertyAccess]
+
 
 - name: PROP_ASSIGN_TO_NUMERIC_INDEX
   id: 324
