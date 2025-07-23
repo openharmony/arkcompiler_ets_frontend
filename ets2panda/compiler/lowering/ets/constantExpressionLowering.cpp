@@ -1264,6 +1264,11 @@ static bool IsInTSEnumMemberInit(const ir::AstNode *n)
 
 ir::AstNode *ConstantExpressionLowering::UnfoldResolvedReference(ir::AstNode *resolved, ir::AstNode *node)
 {
+    if (unfoldingSet_.count(resolved) > 0) {
+        return node;
+    }
+    unfoldingSet_.insert(resolved);
+
     ir::AstNode *resNode = nullptr;
     if (resolved->IsClassProperty()) {
         auto propVal = resolved->AsClassElement()->Value();
@@ -1286,7 +1291,9 @@ ir::AstNode *ConstantExpressionLowering::UnfoldResolvedReference(ir::AstNode *re
     }
 
     if (resNode != nullptr) {
-        return MaybeUnfold(resNode);
+        auto res = MaybeUnfold(resNode);
+        unfoldingSet_.erase(resolved);
+        return res;
     }
 
     // failed to unfold

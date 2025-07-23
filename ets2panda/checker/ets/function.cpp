@@ -378,7 +378,7 @@ bool ETSChecker::CheckOptionalLambdaFunction(ir::Expression *argument, Signature
         auto *const arrowFuncExpr = argument->AsArrowFunctionExpression();
 
         if (ir::ScriptFunction *const lambda = arrowFuncExpr->Function();
-            CheckLambdaAssignable(substitutedSig->Function()->Params()[index], lambda)) {
+            CheckLambdaAssignable(substitutedSig->Params()[index]->Declaration()->Node()->AsExpression(), lambda)) {
             return true;
         }
     }
@@ -2867,14 +2867,12 @@ void ETSChecker::ThrowOverloadMismatch(util::StringView callName, const ArenaVec
             msg += argument->ToString();
         }
 
-        if (index == arguments.size() - 1U) {
-            msg += ")";
-            LogError(diagnostic::NO_MATCHING_SIG, {signatureKind, msg.c_str()}, pos);
-            return;
+        if (index != arguments.size() - 1U) {
+            msg += ", ";
         }
-
-        msg += ", ";
     }
+    msg += ")";
+    LogError(diagnostic::NO_MATCHING_SIG, {signatureKind, msg.c_str()}, pos);
 }
 
 }  // namespace ark::es2panda::checker
