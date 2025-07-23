@@ -139,5 +139,5 @@ void Compiler::DumpAsm(const pandasm::Program *prog)
 }
 
 // When compiling multi thread, this is need by each thread indenpengdentlt
-thread_local util::DiagnosticEngine *g_diagnosticEngine = nullptr;
+util::DiagnosticEngine *g_diagnosticEngine = nullptr;
 }  // namespace ark::es2panda
