@@ -13,13 +13,26 @@
  * limitations under the License.
  */
 
-export const EXTNAME_JS: string = '.js';
-export const EXTNAME_TS: string = '.ts';
-export const EXTNAME_ETS: string = '.ets';
-export const EXTNAME_JS_MAP: string = '.js.map';
-export const EXTNAME_TS_MAP: string = '.ts.map';
-export const EXTNAME_MJS: string = '.mjs';
-export const EXTNAME_CJS: string = '.cjs';
-export const EXTNAME_D_TS: string = '.d.ts';
-export const EXTNAME_D_ETS: string = '.d.ets';
-export const EXTNAME_JSON: string = '.json';
+// Valid import (non-json)
+import { config } from './config'; 
+
+// Invalid import - should trigger arkts-no-import-json-file
+import data from './data.json'; // error
+
+// Another invalid case
+import something from "../assets/data/data.json"; // error
+
+// Still invalid even if aliased
+import * as jsonData from "./mock.json"; // error
+
+// Valid ArkTS-style config object (as alternative)
+export const jsonLikeConfig = {
+  port: 3000,
+  secure: true,
+  options: {
+    retry: false
+  }
+};
+
+// Usage of config object
+const portNumber: number = jsonLikeConfig.port;

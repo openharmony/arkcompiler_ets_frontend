@@ -169,6 +169,7 @@ export enum FaultID {
   TaggedTemplates,
   IncompationbleFunctionType,
   InvalidIdentifier,
+  NoImportJsonFile,
   ExtendsExpression,
   NumericSemantics,
   AnimatableExtendDecoratorTransform,

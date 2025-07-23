@@ -119,7 +119,7 @@ import {
   REFLECT_LITERAL,
   REFLECT_PROPERTIES
 } from './utils/consts/InteropAPI';
-import { EXTNAME_TS, EXTNAME_D_TS, EXTNAME_JS } from './utils/consts/ExtensionName';
+import { EXTNAME_TS, EXTNAME_D_TS, EXTNAME_JS, EXTNAME_JSON } from './utils/consts/ExtensionName';
 import { ARKTS_IGNORE_DIRS_OH_MODULES } from './utils/consts/ArktsIgnorePaths';
 import type { ApiInfo, ApiListItem } from './utils/consts/SdkWhitelist';
 import { ApiList, SdkProblem, SdkNameInfo } from './utils/consts/SdkWhitelist';
@@ -1220,6 +1220,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.checkStdLibConcurrencyImport(importDeclNode);
     this.handleInterOpImportJs(importDeclNode);
     this.checkForDeprecatedModules(node);
+    this.checkImportJsonFile(importDeclNode);
   }
 
   private checkForDeprecatedModules(node: ts.Node): void {
@@ -12355,6 +12356,24 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
   private isTargetInterface(node: ts.Node, targetName: string): boolean {
     return ts.isIdentifier(node) && node.getText() === targetName && !this.isDeclarationInSameFile(node);
+  }
+
+  private checkImportJsonFile(node: ts.ImportDeclaration): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    const moduleSpecifier = node.moduleSpecifier;
+
+    if (!ts.isStringLiteral(moduleSpecifier)) {
+      return;
+    }
+
+    const importPath = moduleSpecifier.text;
+
+    if (importPath.endsWith(EXTNAME_JSON)) {
+      this.incrementCounters(moduleSpecifier, FaultID.NoImportJsonFile);
+    }
   }
 
   private handleNoDeprecatedApi(
