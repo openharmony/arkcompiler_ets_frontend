@@ -119,9 +119,18 @@ checker::Type *ETSTuple::GetType(checker::ETSChecker *const checker)
 
     ArenaVector<checker::Type *> typeList(checker->ProgramAllocator()->Adapter());
 
+    bool isTypeError = false;
     for (auto *const typeAnnotation : GetTupleTypeAnnotationsList()) {
         auto *const checkedType = typeAnnotation->GetType(checker);
+        if (!isTypeError && checkedType->IsTypeError()) {
+            isTypeError = true;
+        }
         typeList.emplace_back(checkedType);
+    }
+
+    if (isTypeError) {
+        SetTsType(checker->GlobalTypeError());
+        return checker->GlobalTypeError();
     }
 
     auto *tupleType = checker->ProgramAllocator()->New<checker::ETSTupleType>(checker, typeList);
