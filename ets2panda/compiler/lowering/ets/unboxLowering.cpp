@@ -268,6 +268,11 @@ static void NormalizeAllTypes(UnboxContext *uctx, ir::AstNode *ast)
 
 static void HandleScriptFunctionHeader(UnboxContext *uctx, ir::ScriptFunction *func)
 {
+    // dynamic function does not need to unbox
+    if (func->Language() == Language::Id::JS) {
+        return;
+    }
+
     auto *sig = func->Signature();
     if (sig == nullptr) {
         return;
