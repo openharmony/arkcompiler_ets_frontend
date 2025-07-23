@@ -18,4 +18,3 @@ enum duplicateKeysStringCase {
     /* @@ label */Gray = "#ff808080"
 }
 /* @@@ label Error TypeError: Variable 'Gray' has already been declared.  */
-/* @@@ label Error TypeError: Static property 'Gray' must be accessed through it's class 'duplicateKeysStringCase'  */

@@ -33,6 +33,5 @@ function main() {
 /* @@? 19:9 Error SyntaxError: Unexpected token 'this'. */
 /* @@? 19:13 Error SyntaxError: Unexpected token '.'. */
 /* @@? 19:14 Error TypeError: Variable 'fld' has already been declared. */
-/* @@? 19:14 Error TypeError: Property 'fld' must be accessed through 'this' */
 /* @@? 19:20 Error TypeError: Unresolved reference p */
 /* @@? 21:1 Error SyntaxError: Unexpected token '}'. */

@@ -28,4 +28,3 @@ class C {
 }
 
 /* @@@ label Error TypeError: Variable 'f' has already been declared.  */
-/* @@@ label Error TypeError: Static property 'f' must be accessed through it's class 'C' */
