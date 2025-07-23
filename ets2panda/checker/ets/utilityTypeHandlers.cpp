@@ -22,6 +22,7 @@
 #include "ir/expressions/literals/undefinedLiteral.h"
 #include "varbinder/ETSBinder.h"
 #include "checker/types/ets/etsPartialTypeParameter.h"
+#include "util/nameMangler.h"
 
 #include <checker/types/gradualType.h>
 
@@ -90,7 +91,9 @@ static std::pair<util::StringView, util::StringView> GetPartialClassName(ETSChec
 {
     // Partial class name for class 'T' will be 'T$partial'
     auto const addSuffix = [checker](util::StringView name) {
-        return util::UString(name.Mutf8() + PARTIAL_CLASS_SUFFIX, checker->ProgramAllocator()).View();
+        std::string newName =
+            util::NameMangler::GetInstance()->CreateMangledNameByTypeAndName(util::NameMangler::PARTIAL, name);
+        return util::UString(newName, checker->ProgramAllocator()).View();
     };
 
     auto declIdent = typeNode->IsClassDefinition() ? typeNode->AsClassDefinition()->Ident()

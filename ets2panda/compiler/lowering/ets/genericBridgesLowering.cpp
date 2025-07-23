@@ -208,7 +208,7 @@ static ir::MethodDefinition *FindBridgeCandidate(ir::ClassDefinition const *cons
 
     // Skip `static`, `final` and special methods...
     if (baseMethod->Kind() != ir::MethodDefinitionKind::METHOD || baseMethod->IsStatic() || baseMethod->IsFinal() ||
-        baseMethod->Id()->Name().Utf8().find("lambda$invoke$") != std::string_view::npos) {
+        baseMethod->Id()->Name().Utf8().find("lambda_invoke-") != std::string_view::npos) {
         return nullptr;
     }
 

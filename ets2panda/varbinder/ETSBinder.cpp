@@ -19,6 +19,7 @@
 #include "public/public.h"
 #include "compiler/lowering/util.h"
 #include "util/helpers.h"
+#include "util/nameMangler.h"
 
 namespace ark::es2panda::varbinder {
 
@@ -1290,12 +1291,18 @@ void ETSBinder::BuildFunctionName(const ir::ScriptFunction *func) const
     } else if (func->IsConstructor() && funcName.Is(compiler::Signatures::CONSTRUCTOR_NAME)) {
         ss << compiler::Signatures::CTOR;
     } else {
+        std::string newName;
         if (func->IsGetter()) {
-            ss << compiler::Signatures::GETTER_BEGIN;
+            newName = util::NameMangler::GetInstance()->CreateMangledNameByTypeAndName(
+                util::NameMangler::GET, util::Helpers::FunctionName(Allocator(), func));
+            ss << newName;
         } else if (func->IsSetter()) {
-            ss << compiler::Signatures::SETTER_BEGIN;
+            newName = util::NameMangler::GetInstance()->CreateMangledNameByTypeAndName(
+                util::NameMangler::SET, util::Helpers::FunctionName(Allocator(), func));
+            ss << newName;
+        } else {
+            ss << funcName;
         }
-        ss << funcName;
     }
 
     signature->ToAssemblerType(ss);

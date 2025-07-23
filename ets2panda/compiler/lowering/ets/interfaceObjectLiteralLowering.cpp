@@ -20,6 +20,7 @@
 #include "generated/signatures.h"
 #include "ir/expressions/assignmentExpression.h"
 #include "util/helpers.h"
+#include "util/nameMangler.h"
 
 namespace ark::es2panda::compiler {
 
@@ -152,9 +153,8 @@ static void FillClassBody(public_lib::Context *ctx, ArenaVector<ir::AstNode *> *
         copyIfaceMethod->Function()->SetSignature(ifaceMethod->Function()->Signature());
 
         if (currentType != nullptr) {
-            auto instanProp =
-                currentType->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>(ifaceMethod->Id()->Name());
-            auto funcType = (instanProp != nullptr) ? instanProp->TsType() : nullptr;
+            auto prop = currentType->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>(ifaceMethod->Id()->Name());
+            auto funcType = (prop != nullptr) ? prop->TsType() : nullptr;
             if (funcType != nullptr) {
                 ES2PANDA_ASSERT(funcType->IsETSFunctionType() &&
                                 funcType->AsETSFunctionType()->FindGetter() != nullptr);
@@ -163,8 +163,9 @@ static void FillClassBody(public_lib::Context *ctx, ArenaVector<ir::AstNode *> *
         }
 
         // Field identifier
-        util::UString anonClassFieldName(
-            std::string(compiler::Signatures::PROPERTY) + ifaceMethod->Id()->Name().Mutf8(), ctx->allocator);
+        std::string newName = util::NameMangler::GetInstance()->CreateMangledNameByTypeAndName(
+            util::NameMangler::PROPERTY, ifaceMethod->Id()->Name());
+        util::UString anonClassFieldName(newName, ctx->allocator);
         auto *field = CreateAnonClassField(ctx, copyIfaceMethod, anonClassFieldName);
         if (field->IsReadonly()) {
             readonlyFields.push_back(

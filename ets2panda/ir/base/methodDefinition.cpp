@@ -301,7 +301,7 @@ bool MethodDefinition::FilterForDeclGen(ir::SrcDumper *dumper) const
 
     ES2PANDA_ASSERT(Id() != nullptr);
     auto name = Id()->Name().Mutf8();
-    if (name.find("$asyncimpl") != std::string::npos || name == compiler::Signatures::INITIALIZER_BLOCK_INIT ||
+    if (name.find("%%async") != std::string::npos || name == compiler::Signatures::INITIALIZER_BLOCK_INIT ||
         name == compiler::Signatures::INIT_METHOD) {
         return true;
     }

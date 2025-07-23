@@ -20,6 +20,7 @@
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "compiler/lowering/util.h"
 #include "util/options.h"
+#include "util/nameMangler.h"
 
 namespace ark::es2panda::compiler {
 
@@ -89,9 +90,10 @@ static void ResetCalleeCount()
 
 static util::StringView CreateCalleeName(ArenaAllocator *allocator)
 {
-    auto name = util::UString(util::StringView("lambda$invoke$"), allocator);
     std::lock_guard lock(g_calleeCountMutex);
-    name.Append(std::to_string(g_calleeCount++));
+    auto name = util::UString(
+        util::StringView(util::NameMangler::GetInstance()->CreateMangledNameForLambdaInvoke(g_calleeCount++)),
+        allocator);
     return name.View();
 }
 
@@ -1077,12 +1079,9 @@ static ir::ClassDeclaration *CreateEmptyLambdaClassDeclaration(public_lib::Conte
     auto *checker = ctx->GetChecker()->AsETSChecker();
     auto *varBinder = ctx->GetChecker()->VarBinder()->AsETSBinder();
 
-    auto lambdaClassName = util::UString {std::string_view {"LambdaObject-"}, allocator};
+    auto lambdaClassName = util::UString {
+        std::string_view {util::NameMangler::GetInstance()->CreateMangledNameForLambdaObject(info->name)}, allocator};
 
-    util::StringView &objectName = info->calleeClass != nullptr ? info->calleeClass->Definition()->Ident()->Name()
-                                                                : info->calleeInterface->Id()->Name();
-
-    lambdaClassName.Append(objectName).Append("$").Append(info->name);
     ES2PANDA_ASSERT(lambdaProviderClass);
     auto *providerTypeReference = checker->AllocNode<ir::ETSTypeReference>(
         checker->AllocNode<ir::ETSTypeReferencePart>(

@@ -56,6 +56,7 @@
 #include "ir/ts/tsTypeParameterInstantiation.h"
 #include "parser/program/program.h"
 #include "util/helpers.h"
+#include "util/nameMangler.h"
 
 #include <compiler/lowering/util.h>
 
@@ -2211,9 +2212,9 @@ bool ETSChecker::IsReturnTypeSubstitutable(Signature *const s1, Signature *const
 
 std::string ETSChecker::GetAsyncImplName(const util::StringView &name)
 {
-    std::string implName(name);
-    implName += "$asyncimpl";
-    return implName;
+    std::string newName =
+        util::NameMangler::GetInstance()->CreateMangledNameByTypeAndName(util::NameMangler::ASYNC, name);
+    return newName;
 }
 
 std::string ETSChecker::GetAsyncImplName(ir::MethodDefinition *asyncMethod)
@@ -2223,16 +2224,6 @@ std::string ETSChecker::GetAsyncImplName(ir::MethodDefinition *asyncMethod)
     ir::Identifier *asyncName = scriptFunc->Id();
     ES2PANDA_ASSERT_POS(asyncName != nullptr, asyncMethod->Start());
     return GetAsyncImplName(asyncName->Name());
-}
-
-bool ETSChecker::IsAsyncImplMethod(ir::MethodDefinition const *method)
-{
-    auto methodName = method->Key()->AsIdentifier()->Name().Utf8();
-    std::string_view asyncSuffix = "$asyncimpl";
-    if (methodName.size() < asyncSuffix.size()) {
-        return false;
-    }
-    return methodName.substr(methodName.size() - asyncSuffix.size()) == asyncSuffix;
 }
 
 ir::MethodDefinition *ETSChecker::CreateMethod(const util::StringView &name, ir::ModifierFlags modifiers,

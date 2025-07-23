@@ -19,10 +19,9 @@
 #include "compiler/lowering/util.h"
 #include "varbinder/ETSBinder.h"
 #include "checker/ETSchecker.h"
+#include "util/nameMangler.h"
 
 namespace ark::es2panda::compiler {
-
-static constexpr std::string_view PREFIX = "$NamedAccessMeta-";
 
 static void ReplaceAll(std::string &str, std::string_view substr, std::string_view replacement)
 {
@@ -35,13 +34,10 @@ static void ReplaceAll(std::string &str, std::string_view substr, std::string_vi
 std::string GetAccessClassName(const checker::ETSUnionType *unionType)
 {
     std::stringstream ss;
-    ss << PREFIX;
     unionType->ToString(ss, false);
-    std::string res(ss.str());
-    std::replace(res.begin(), res.end(), '.', '-');
-    std::replace(res.begin(), res.end(), '|', '_');
-    ReplaceAll(res, "[]", "[$]$");
-    return res;
+    std::string newName = util::NameMangler::GetInstance()->CreateMangledNameForUnionProperty(ss.str());
+    ReplaceAll(newName, "[]", "[$]$");
+    return newName;
 }
 
 static ir::ClassDefinition *GetUnionAccessClass(public_lib::Context *ctx, varbinder::VarBinder *varbinder,

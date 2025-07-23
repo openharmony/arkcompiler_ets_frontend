@@ -590,7 +590,6 @@ public:
     std::string FunctionalInterfaceInvokeName(size_t arity, bool hasRest);
     static std::string GetAsyncImplName(const util::StringView &name);
     static std::string GetAsyncImplName(ir::MethodDefinition *asyncMethod);
-    static bool IsAsyncImplMethod(ir::MethodDefinition const *method);
     std::vector<util::StringView> GetNameForSynteticObjectType(const util::StringView &source);
     template <checker::PropertyType TYPE>
     void BindingsModuleObjectAddProperty(checker::ETSObjectType *moduleObjType, ir::ETSImportDeclaration *importDecl,
