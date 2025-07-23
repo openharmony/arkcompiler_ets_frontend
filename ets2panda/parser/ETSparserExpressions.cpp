@@ -129,13 +129,10 @@ ir::Expression *ETSParser::CreateUnaryExpressionFromArgument(ir::Expression *arg
     return returnExpr;
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
-ir::Expression *ETSParser::ParseUnaryOrPrefixUpdateExpression(ExpressionParseFlags flags)
+static bool IsLeftHandSideExpression(lexer::TokenType &operatorType, lexer::NextTokenFlags &tokenFlags,
+                                     lexer::TokenType keywordType)
 {
-    auto tokenFlags = lexer::NextTokenFlags::NONE;
-    lexer::TokenType operatorType = Lexer()->GetToken().Type();
-    if (operatorType == lexer::TokenType::LITERAL_IDENT &&
-        Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_TYPEOF) {
+    if (operatorType == lexer::TokenType::LITERAL_IDENT && keywordType == lexer::TokenType::KEYW_TYPEOF) {
         operatorType = lexer::TokenType::KEYW_TYPEOF;
     }
 
@@ -149,12 +146,28 @@ ir::Expression *ETSParser::ParseUnaryOrPrefixUpdateExpression(ExpressionParseFla
         case lexer::TokenType::PUNCTUATOR_TILDE:
         case lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK:
         case lexer::TokenType::KEYW_TYPEOF:
-        case lexer::TokenType::KEYW_AWAIT: {
-            break;
+        case lexer::TokenType::KEYW_AWAIT:
+            return false;
+        default:
+            return true;
+    }
+}
+
+// NOLINTNEXTLINE(google-default-arguments)
+ir::Expression *ETSParser::ParseUnaryOrPrefixUpdateExpression(ExpressionParseFlags flags)
+{
+    TrackRecursive trackRecursive(RecursiveCtx());
+    if (!trackRecursive) {
+        LogError(diagnostic::DEEP_NESTING);
+        while (Lexer()->GetToken().Type() != lexer::TokenType::EOS) {
+            Lexer()->NextToken();
         }
-        default: {
-            return ParseLeftHandSideExpression(flags);
-        }
+        return AllocBrokenExpression(Lexer()->GetToken().Loc());
+    }
+    auto tokenFlags = lexer::NextTokenFlags::NONE;
+    lexer::TokenType operatorType = Lexer()->GetToken().Type();
+    if (IsLeftHandSideExpression(operatorType, tokenFlags, Lexer()->GetToken().KeywordType())) {
+        return ParseLeftHandSideExpression(flags);
     }
 
     char32_t beginningChar = Lexer()->Lookahead();
@@ -359,14 +372,6 @@ ir::Expression *ETSParser::ParsePrimaryExpressionWithLiterals(ExpressionParseFla
 // NOLINTNEXTLINE(google-default-arguments)
 ir::Expression *ETSParser::ParsePrimaryExpression(ExpressionParseFlags flags)
 {
-    TrackRecursive trackRecursive(RecursiveCtx());
-    if (!trackRecursive) {
-        LogError(diagnostic::DEEP_NESTING);
-        while (Lexer()->GetToken().Type() != lexer::TokenType::EOS) {
-            Lexer()->NextToken();
-        }
-        return AllocBrokenExpression(Lexer()->GetToken().Loc());
-    }
     switch (Lexer()->GetToken().Type()) {
         case lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS: {
             return ParseCoverParenthesizedExpressionAndArrowParameterList(flags);
