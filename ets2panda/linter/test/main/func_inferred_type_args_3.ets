@@ -17,6 +17,7 @@ import B from './func_inferred_type_args_ts'
 import A2 from './func_inferred_type_args_ts2'
 import {A3} from './func_inferred_type_args_ts2'
 import { HashMap } from '@kit.ArkTS';
+import { IMonitorValue, IMonitor, LocalStorage, AbstractProperty, SubscribedAbstractProperty, AppStorage} from './oh_modules/common_ts_ets_api';
 
 function test() {
   const a = new A();
@@ -41,3 +42,24 @@ function test4() {
   const a = new A4();
   a.map = new HashMap(); //error
 }
+
+@ComponentV2
+struct Child {
+  @Param info: Info = new Info();
+  @Monitor("info.message")
+  onMessageChange(monitor: IMonitor) {
+    let beforeValue: IMonitorValue<string> = monitor.value();
+    let beforeValue: IMonitorValue<string> = monitor.value("info.message");
+    console.info(`Child message change from ${monitor.value()?.before} to ${monitor.value('info.message')?.now}`);
+  }
+}
+
+let para: Record<string,number> = { 'PropA': 47 };
+let storage: LocalStorage = new LocalStorage(para);
+let propA: number | undefined = storage.get('PropA');
+let link1: SubscribedAbstractProperty<number> = storage.link('PropA');
+let refToPropA1: AbstractProperty<number> | undefined = storage.ref('PropA');
+
+let propA: number | undefined = AppStorage.get('PropA');
+let link1: SubscribedAbstractProperty<number> = AppStorage.link('PropA');
+let refToPropA1: AbstractProperty<number> | undefined = AppStorage.ref('PropA');

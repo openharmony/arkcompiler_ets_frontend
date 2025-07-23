@@ -4905,7 +4905,9 @@ export class Autofixer {
     );
   }
 
-  private fixGenericCallNoTypeArgsWithContextualType(node: ts.NewExpression): Autofix[] | undefined {
+  private fixGenericCallNoTypeArgsWithContextualType(
+    node: ts.NewExpression | ts.CallExpression
+  ): Autofix[] | undefined {
     const contextualType = this.typeChecker.getContextualType(node);
     if (!contextualType) {
       return undefined;
@@ -4921,18 +4923,26 @@ export class Autofixer {
     return this.generateGenericTypeArgumentsAutofix(node, reference);
   }
 
-  fixGenericCallNoTypeArgs(node: ts.NewExpression): Autofix[] | undefined {
+  fixGenericCallNoTypeArgs(node: ts.NewExpression | ts.CallExpression): Autofix[] | undefined {
     const typeNode = this.getTypeNodeForNewExpression(node);
     if (!typeNode) {
       return this.fixGenericCallNoTypeArgsWithContextualType(node);
     }
+    let nodeExpressionText = node.expression.getText();
+    if (ts.isCallExpression(node)) {
+      const returnTypeText = this.getReturnTypeFromMethodDeclaration(node);
+      if (!returnTypeText) {
+        return undefined;
+      }
+      nodeExpressionText = returnTypeText;
+    }
     if (ts.isUnionTypeNode(typeNode)) {
-      return this.fixGenericCallNoTypeArgsForUnionType(node, typeNode);
+      return this.fixGenericCallNoTypeArgsForUnionType(node, typeNode, nodeExpressionText);
     }
     if (ts.isArrayTypeNode(typeNode)) {
       return this.fixGenericCallNoTypeArgsForArrayType(node, typeNode);
     }
-    if (!ts.isTypeReferenceNode(typeNode) || typeNode.typeName.getText() !== node.expression.getText()) {
+    if (!ts.isTypeReferenceNode(typeNode) || typeNode.typeName.getText() !== nodeExpressionText) {
       return undefined;
     }
 
@@ -4945,8 +4955,141 @@ export class Autofixer {
     return [{ start: insertPos, end: insertPos, replacementText: typeArgsText }];
   }
 
+  fixGenericCallNoTypeArgsForUnknown(node: ts.CallExpression): Autofix[] | undefined {
+    if (ts.isPropertyAccessExpression(node.parent)) {
+      const insertPos = node.expression.getEnd();
+      return [{ start: insertPos, end: insertPos, replacementText: '<Any>' }];
+    }
+
+    const typeNode = this.getTypeNodeForNewExpression(node);
+    if (!typeNode) {
+      return undefined;
+    }
+
+    const nodeExpressionText = ts.isVariableDeclaration(node.parent) ?
+      this.getReturnTypeFromMethodDeclaration(node) ?? node.expression.getText() :
+      node.expression.getText();
+
+    if (ts.isUnionTypeNode(typeNode)) {
+      const targetTypeRef = typeNode.types.find((t): t is ts.TypeReferenceNode => {
+        return ts.isTypeReferenceNode(t) && t.typeName.getText() === nodeExpressionText;
+      });
+      if (!targetTypeRef) {
+        return undefined;
+      }
+      return this.createFixWithTypeArgs(node, targetTypeRef.typeArguments);
+    }
+
+    if (ts.isTypeReferenceNode(typeNode) && typeNode.typeName.getText() === nodeExpressionText) {
+      return this.createFixWithTypeArgs(node, typeNode.typeArguments);
+    }
+
+    return undefined;
+  }
+
+  private createFixWithTypeArgs(
+    node: ts.CallExpression,
+    typeArguments: ts.NodeArray<ts.TypeNode> | undefined
+  ): Autofix[] | undefined {
+    const typeArgsText = this.printGenericCallTypeArgs(node.getSourceFile(), typeArguments);
+    return typeArgsText ?
+      [
+        {
+          start: node.expression.getEnd(),
+          end: node.expression.getEnd(),
+          replacementText: typeArgsText
+        }
+      ] :
+      undefined;
+  }
+
+  getReturnTypeFromMethodDeclaration(node: ts.CallExpression): string | undefined {
+    if (ts.isPropertyAccessExpression(node.expression)) {
+      const propertyAccess = node.expression;
+      const methodName = propertyAccess.name.text;
+      const receiver = propertyAccess.expression;
+      const receiverType = this.typeChecker.getTypeAtLocation(receiver);
+      const methodSymbol = this.typeChecker.getPropertyOfType(receiverType, methodName);
+
+      if (!methodSymbol) {
+        return undefined;
+      }
+      const methodDecl = methodSymbol.declarations?.[0] as ts.MethodSignature;
+      if (!methodDecl.type || !ts.isTypeReferenceNode(methodDecl.type) && !ts.isUnionTypeNode(methodDecl.type)) {
+        return undefined;
+      }
+      if (ts.isTypeReferenceNode(methodDecl.type)) {
+        return methodDecl.type.typeName.getText();
+      }
+      if (ts.isUnionTypeNode(methodDecl.type)) {
+        const typeNode = this.getTypeNodeForNewExpression(node);
+        if (!typeNode) {
+          return undefined;
+        }
+        const targetTypeName = this.getTargetTypeName(typeNode, methodDecl.type);
+
+        if (ts.isUnionTypeNode(typeNode)) {
+          return targetTypeName;
+        }
+        const targetTypeNode = methodDecl.type.types.find((type) => {
+          return ts.isTypeReferenceNode(type) && type.typeName.getText() === targetTypeName;
+        }) as ts.TypeReferenceNode;
+        if (!targetTypeNode) {
+          return undefined;
+        }
+        return targetTypeNode.typeName.getText();
+      }
+    }
+    return undefined;
+  }
+
+  private getTargetTypeName(typeNode: ts.TypeNode, methodDeclType: ts.UnionTypeNode): string | undefined {
+    if (ts.isTypeReferenceNode(typeNode)) {
+      return typeNode.typeName.getText();
+    }
+
+    if (!ts.isUnionTypeNode(typeNode)) {
+      return undefined;
+    }
+
+    const hasGenericType = methodDeclType.types.some((type) => {
+      return this.isGenericTypeParameter(type);
+    });
+    const typeNames = new Set(typeNode.types.map(Autofixer.getTypeName).filter(Boolean));
+
+    const candidateNames = hasGenericType ?
+      typeNode.types.map(Autofixer.getTypeName) :
+      methodDeclType.types.map(Autofixer.getTypeName);
+    const targetTypeName = candidateNames.find((name) => {
+      return name && name !== 'undefined' && (hasGenericType || typeNames.has(name));
+    });
+    return targetTypeName;
+  }
+
+  private isGenericTypeParameter(type: ts.TypeNode): boolean {
+    const getType = this.typeChecker.getTypeFromTypeNode(type);
+    return getType.isTypeParameter();
+  }
+
+  private static getTypeName(type: ts.TypeNode): string {
+    if (ts.isTypeReferenceNode(type)) {
+      return type.typeName.getText();
+    }
+    if (ts.isLiteralTypeNode(type)) {
+      return type.literal.getText();
+    }
+    const typeNameMap = {
+      [ts.SyntaxKind.StringKeyword]: 'string',
+      [ts.SyntaxKind.NumberKeyword]: 'number',
+      [ts.SyntaxKind.BooleanKeyword]: 'boolean',
+      [ts.SyntaxKind.UndefinedKeyword]: 'undefined',
+      [ts.SyntaxKind.NullKeyword]: 'null'
+    };
+    return typeNameMap[type.kind] || '';
+  }
+
   private fixGenericCallNoTypeArgsForArrayType(
-    node: ts.NewExpression,
+    node: ts.NewExpression | ts.CallExpression,
     arrayTypeNode: ts.ArrayTypeNode
   ): Autofix[] | undefined {
     const elementTypeNode = arrayTypeNode.elementType;
@@ -4960,23 +5103,29 @@ export class Autofixer {
   }
 
   private fixGenericCallNoTypeArgsForUnionType(
-    node: ts.NewExpression,
-    unionType: ts.UnionTypeNode
+    node: ts.NewExpression | ts.CallExpression,
+    unionType: ts.UnionTypeNode,
+    nodeExpressionText: string
   ): Autofix[] | undefined {
     const matchingTypes = unionType.types.filter((type) => {
-      return ts.isTypeReferenceNode(type) && type.typeName.getText() === node.expression.getText();
-    }) as ts.TypeReferenceNode[];
+      return Autofixer.getTypeName(type) === nodeExpressionText;
+    });
 
     if (matchingTypes.length === 1) {
       const matchingType = matchingTypes[0];
-      if (matchingType.typeArguments) {
-        const srcFile = node.getSourceFile();
-        const typeArgsText = this.printGenericCallTypeArgs(srcFile, matchingType.typeArguments);
-        if (!typeArgsText) {
-          return undefined;
+      if (ts.isTypeReferenceNode(matchingType)) {
+        if (matchingType.typeArguments) {
+          const srcFile = node.getSourceFile();
+          const typeArgsText = this.printGenericCallTypeArgs(srcFile, matchingType.typeArguments);
+          if (!typeArgsText) {
+            return undefined;
+          }
+          const insertPos = node.expression.getEnd();
+          return [{ start: insertPos, end: insertPos, replacementText: typeArgsText }];
         }
+      } else {
         const insertPos = node.expression.getEnd();
-        return [{ start: insertPos, end: insertPos, replacementText: typeArgsText }];
+        return [{ start: insertPos, end: insertPos, replacementText: `<${nodeExpressionText}>` }];
       }
     }
     return undefined;
@@ -5044,7 +5193,7 @@ export class Autofixer {
   }
 
   private generateGenericTypeArgumentsAutofix(
-    node: ts.NewExpression,
+    node: ts.NewExpression | ts.CallExpression,
     typeArgs: ts.TypeReferenceNode[]
   ): Autofix[] | undefined {
     const srcFile = node.getSourceFile();
@@ -5076,7 +5225,7 @@ export class Autofixer {
     return [];
   }
 
-  private getTypeNodeForNewExpression(node: ts.NewExpression): ts.TypeNode | undefined {
+  private getTypeNodeForNewExpression(node: ts.NewExpression | ts.CallExpression): ts.TypeNode | undefined {
     if (ts.isVariableDeclaration(node.parent) || ts.isPropertyDeclaration(node.parent)) {
       return node.parent.type;
     } else if (ts.isBinaryExpression(node.parent)) {

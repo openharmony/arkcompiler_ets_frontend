@@ -12,11 +12,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import {
+  ComponentV2,
+  Param,
+  Monitor,
+} from '@kit.ArkUI';
+
 import {A} from './func_inferred_type_args_ts';
 import B from './func_inferred_type_args_ts'
 import A2 from './func_inferred_type_args_ts2'
 import {A3} from './func_inferred_type_args_ts2'
 import { HashMap } from '@kit.ArkTS';
+import { IMonitorValue, IMonitor, LocalStorage, AbstractProperty, SubscribedAbstractProperty, AppStorage} from './oh_modules/common_ts_ets_api';
 
 function test() {
   const a = new A();
@@ -41,3 +49,24 @@ function test4() {
   const a = new A4();
   a.map = new HashMap<string, Demo>(); //error
 }
+
+@ComponentV2
+struct Child {
+  @Param info: Info = new Info();
+  @Monitor("info.message")
+  onMessageChange(monitor: IMonitor) {
+    let beforeValue: IMonitorValue<string> = monitor.value<string>();
+    let beforeValue: IMonitorValue<string> = monitor.value<string>("info.message");
+    console.info(`Child message change from ${monitor.value<Any>()?.before} to ${monitor.value<Any>('info.message')?.now}`);
+  }
+}
+
+let para: Record<string,number> = { 'PropA': 47.0 };
+let storage: LocalStorage = new LocalStorage(para);
+let propA: number | undefined = storage.get<number>('PropA');
+let link1: SubscribedAbstractProperty<number> = storage.link<number>('PropA');
+let refToPropA1: AbstractProperty<number> | undefined = storage.ref<number>('PropA');
+
+let propA: number | undefined = AppStorage.get<number>('PropA');
+let link1: SubscribedAbstractProperty<number> = AppStorage.link<number>('PropA');
+let refToPropA1: AbstractProperty<number> | undefined = AppStorage.ref<number>('PropA');

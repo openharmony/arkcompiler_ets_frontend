@@ -5470,7 +5470,11 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     const providedTypeArgs = callLikeExpr.typeArguments;
     const startTypeArg = providedTypeArgs?.length ?? 0;
     let shouldReportError = startTypeArg !== resolvedTypeArgs.length;
-    if (this.options.arkts2 && callLikeExpr.kind === ts.SyntaxKind.NewExpression) {
+    const shouldCheck = this.shouldCheckGenericCallExpression(callLikeExpr as ts.CallExpression);
+    if (
+      this.options.arkts2 &&
+      (ts.isNewExpression(callLikeExpr) || ts.isCallExpression(callLikeExpr) && shouldCheck)
+    ) {
       shouldReportError = this.shouldReportGenericTypeArgsError(
         callLikeExpr,
         resolvedTypeArgs,
@@ -5485,6 +5489,69 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     } else {
       this.checkForUnknownTypeInNonArkTS2(callLikeExpr, resolvedTypeArgs, startTypeArg);
     }
+  }
+
+  private shouldCheckGenericCallExpression(callExpr: ts.CallExpression): boolean {
+    const signature = this.tsTypeChecker.getResolvedSignature(callExpr);
+    if (!signature?.declaration) {
+      return false;
+    }
+    const typeParamsSafeToInfer = this.areTypeParametersReturnTypeOnly(signature.declaration);
+    if (!typeParamsSafeToInfer) {
+      return false;
+    }
+    return TypeScriptLinter.isInStrictTypeContext(callExpr);
+  }
+
+  private areTypeParametersReturnTypeOnly(decl: ts.SignatureDeclaration | ts.JSDocSignature): boolean {
+    if (!decl.typeParameters?.length) {
+      return false;
+    }
+
+    const typeParamNames = new Set(
+      decl.typeParameters.map((tp) => {
+        return tp.name.getText();
+      })
+    );
+    let affectsParams = false;
+
+    decl.parameters.forEach((param) => {
+      if (param.type && this.containsTypeParameters(param.type, typeParamNames)) {
+        affectsParams = true;
+      }
+    });
+
+    return !affectsParams;
+  }
+
+  private containsTypeParameters(node: ts.Node, typeParamNames: Set<string>): boolean {
+    let found = false;
+    ts.forEachChild(node, (child) => {
+      if (ts.isIdentifier(child) && typeParamNames.has(child.text)) {
+        found = true;
+      }
+      if (!found) {
+        found = this.containsTypeParameters(child, typeParamNames);
+      }
+    });
+    return found;
+  }
+
+  private static isInStrictTypeContext(callExpr: ts.CallExpression): boolean {
+    const parent = callExpr.parent;
+
+    if ((ts.isVariableDeclaration(parent) || ts.isPropertyDeclaration(parent)) && parent.type) {
+      return true;
+    }
+
+    if (ts.isAsExpression(parent) || ts.isTypeAssertionExpression(parent)) {
+      return true;
+    }
+
+    if (ts.isCallExpression(parent.parent) && parent.parent.typeArguments) {
+      return true;
+    }
+    return false;
   }
 
   private checkForUnknownTypeInNonArkTS2(
@@ -5503,7 +5570,10 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
        * in ArkTS and already have separate check for it.
        */
       if (typeNode.kind === ts.SyntaxKind.UnknownKeyword) {
-        this.incrementCounters(callLikeExpr, FaultID.GenericCallNoTypeArgs);
+        const autofix = ts.isCallExpression(callLikeExpr) ?
+          this.autofixer?.fixGenericCallNoTypeArgsForUnknown(callLikeExpr) :
+          undefined;
+        this.incrementCounters(callLikeExpr, FaultID.GenericCallNoTypeArgs, autofix);
         break;
       }
     }
