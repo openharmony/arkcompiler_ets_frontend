@@ -463,6 +463,10 @@ semantic:
   id: 343
   message: "Indexed signatures are not allowed. Use arrays instead!"
 
+- name: ERROR_ARKTS_NO_UNTYPED_OBJ_LITERALS
+  id: 115343
+  message: "'Object', 'object', 'any' types cannot be initialized with object literals."
+
 - name: ERROR_ARKTS_SPREAD_ONLY_WITH_REST
   id: 44192
   message: "The function or method being called needs a rest parameter to accept arguments passed via the spread operator."
@@ -1604,7 +1608,6 @@ semantic:
 - name: WRONG_OPERAND_TYPE_FOR_UNARY_EXPRESSION
   id: 347
   message: "Wrong operand type for unary expression"
-
 
 graveyard:
 - 8
