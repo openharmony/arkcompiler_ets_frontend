@@ -15,6 +15,7 @@ compiler/ets/generic_arrayaslist.ets
 compiler/ets/returnTypeGenericArray.ets
 parser/ets/ambient_indexer_1.ets
 parser/ets/ambient_indexer_6.ets
+ast/parser/ets/ambient_indexer_11.ets
 parser/ets/array_creation_expression.ets
 parser/ets/labeledDoWhileStatement.ets
 parser/ets/labeledForStatement.ets

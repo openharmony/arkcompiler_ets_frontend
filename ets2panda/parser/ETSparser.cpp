@@ -2080,26 +2080,24 @@ ir::AstNode *ETSParser::ParseAmbientSignature(const lexer::SourcePosition &start
     if (Lexer()->NextToken(); Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COLON) {
         // ambient_indexer_4.ets
         LogError(diagnostic::INDEX_MISSING_TYPE);
-
-        Lexer()->GetToken().SetTokenType(lexer::TokenType::PUNCTUATOR_COLON);
     }
 
-    // eat ":"
-    if (Lexer()->NextToken(); Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
-        // ambient_indexer_5.ets
+    if (!Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_COLON)) {
+        LogError(diagnostic::EXPECTED_PARAM_GOT_PARAM, {":", TokenToString(Lexer()->GetToken().Type())});
+    }
+
+    TypeAnnotationParsingOptions options =
+        TypeAnnotationParsingOptions::RETURN_TYPE | TypeAnnotationParsingOptions::REPORT_ERROR;
+    auto *returnType = ParseTypeAnnotation(&options);
+    if (returnType->IsBrokenTypeNode()) {
         LogError(diagnostic::INDEX_MISSING_IDENTIFIER);
-
-        Lexer()->GetToken().SetTokenType(lexer::TokenType::LITERAL_IDENT);
-        Lexer()->GetToken().SetTokenStr(ERROR_LITERAL);
+        return AllocBrokenStatement({startPos, Lexer()->GetToken().End()});
     }
-    auto const returnType = AllocNode<ir::ETSTypeReferencePart>(
-        AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator()), Allocator());
 
     auto dummyNode = AllocNode<ir::DummyNode>(compiler::Signatures::AMBIENT_INDEXER, indexName, returnType,
                                               ir::DummyNodeFlag::INDEXER);
     ES2PANDA_ASSERT(dummyNode != nullptr);
     dummyNode->SetRange({startPos, Lexer()->GetToken().End()});
-    Lexer()->NextToken();  // eat return type
     return dummyNode;
 }
 

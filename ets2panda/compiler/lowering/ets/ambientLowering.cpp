@@ -58,8 +58,7 @@ ir::MethodDefinition *CreateMethodFunctionDefinition(ir::DummyNode *node, public
     auto parser = ctx->parser->AsETSParser();
 
     auto indexName = node->GetIndexName();
-    auto const returnType = node->GetReturnTypeLiteral()->AsETSTypeReferencePart()->GetIdent();
-    if (returnType->IsErrorPlaceHolder()) {
+    if (node->IsBrokenStatement()) {
         return nullptr;
     }
     if (indexName == ERROR_LITERAL) {
@@ -67,10 +66,11 @@ ir::MethodDefinition *CreateMethodFunctionDefinition(ir::DummyNode *node, public
     }
     std::string sourceCode;
     if (funcKind == ir::MethodDefinitionKind::GET) {
-        sourceCode = "$_get(" + std::string(indexName) + " : number) : " + std::string(returnType->Name());
+        sourceCode = "$_get(" + std::string(indexName) +
+                     " : number) : " + std::string(node->GetReturnTypeLiteral()->DumpEtsSrc());
     } else if (funcKind == ir::MethodDefinitionKind::SET) {
-        sourceCode = "$_set(" + std::string(indexName) + " : number, " + "value : " + std::string(returnType->Name()) +
-                     " ) : void";
+        sourceCode = "$_set(" + std::string(indexName) + " : number, " +
+                     "value : " + std::string(node->GetReturnTypeLiteral()->DumpEtsSrc()) + " ) : void";
     } else {
         ES2PANDA_UNREACHABLE();
     }
