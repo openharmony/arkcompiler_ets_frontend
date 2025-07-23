@@ -209,6 +209,10 @@ syntax:
   id: 308
   message: "Ambient module declaration is not supported!"
 
+- name: ERROR_ARKTS_NO_COMMA_OUTSIDE_LOOPS
+  id: 133681
+  message: "Comma operator is supported only in 'for' loops."
+
 - name: ERROR_ARKTS_NO_DEBUGGER_STATEMENT
   id: 299
   message: "Debugger statement is not supported!"
