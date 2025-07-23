@@ -27,10 +27,4 @@ function main() {
     let y = new Y();
 
     arktest.assertEQ(typeof y, "object")
-
-    let typeof: int = 0;
-    let x = typeof + 1
-    ++typeof;
-
-    arktest.assertEQ(typeof typeof, "number");
 }

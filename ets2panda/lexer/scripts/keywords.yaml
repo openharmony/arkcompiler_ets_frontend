@@ -536,8 +536,8 @@ keywords:
 
   - name: 'typeof'
     token: KEYW_TYPEOF
-    keyword: [js, ts]
-    keyword_like: [ets]
+    keyword: [js, ts, ets]
+    keyword_like: []
     flags: [unary]
 
   - name: 'u8'

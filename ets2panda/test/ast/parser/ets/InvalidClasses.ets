@@ -104,6 +104,7 @@ interface I1 {
 /* @@? 47:21 Error TypeError: Return type of async function must be 'Promise'. */
 /* @@? 54:21 Error TypeError: Initializers are not allowed in ambient contexts: x */
 /* @@? 54:23 Error SyntaxError: Initializers are not allowed in ambient contexts. */
+/* @@? 58:1 Error TypeError: Unresolved reference declare */
 /* @@? 58:9 Error SyntaxError: Unexpected token 'native'. */
 /* @@? 58:16 Error SyntaxError: 'native' flags must be used for functions only at top-level. */
 /* @@? 58:22 Error TypeError: Native and Declare methods should have explicit return type. */

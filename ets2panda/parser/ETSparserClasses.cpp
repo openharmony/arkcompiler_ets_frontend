@@ -1367,6 +1367,45 @@ void ETSParser::CreateImplicitConstructor([[maybe_unused]] ir::MethodDefinition 
     properties.push_back(methodDef);
 }
 
+static bool DeclareIsModifier(lexer::Lexer *lexer)
+{
+    bool result = false;
+    auto currentPos = lexer->Save();
+    if (lexer->GetToken().KeywordType() == lexer::TokenType::KEYW_DECLARE) {
+        lexer->NextToken();  // eat 'declare'
+        switch (lexer->GetToken().KeywordType()) {
+            case lexer::TokenType::KEYW_LET:
+            case lexer::TokenType::KEYW_CONST:
+            case lexer::TokenType::KEYW_FUNCTION:
+            case lexer::TokenType::KEYW_CLASS:
+            case lexer::TokenType::KEYW_NAMESPACE:
+            case lexer::TokenType::KEYW_ENUM:
+            case lexer::TokenType::KEYW_ABSTRACT:
+            case lexer::TokenType::KEYW_FINAL:
+            case lexer::TokenType::KEYW_INTERFACE:
+            case lexer::TokenType::KEYW_TYPE:
+            case lexer::TokenType::KEYW_ASYNC:
+            case lexer::TokenType::KEYW_STRUCT: {
+                result = true;
+                break;
+            }
+            default: {
+                if (lexer->GetToken().Type() == lexer::TokenType::PUNCTUATOR_AT) {
+                    result = true;
+                    break;
+                }
+                if (lexer->GetToken().Type() == lexer::TokenType::LITERAL_IDENT &&
+                    lexer->GetToken().Ident().Is("module")) {
+                    result = true;
+                    break;
+                }
+            }
+        }
+    }
+    lexer->Rewind(currentPos);
+    return result;
+}
+
 std::pair<ir::ModifierFlags, lexer::SourcePosition> ETSParser::ParseMemberModifiers()
 {
     auto memberModifiers = ir::ModifierFlags::STATIC | ir::ModifierFlags::PUBLIC;
@@ -1390,7 +1429,7 @@ std::pair<ir::ModifierFlags, lexer::SourcePosition> ETSParser::ParseMemberModifi
 
     lexer::SourcePosition startLoc = Lexer()->GetToken().Start();
 
-    if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_DECLARE) {
+    if (DeclareIsModifier(Lexer())) {
         CheckDeclare();
         memberModifiers |= ir::ModifierFlags::DECLARE;
     }
