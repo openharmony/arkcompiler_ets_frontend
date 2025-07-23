@@ -16,6 +16,7 @@
 #include "ETSAnalyzer.h"
 
 #include "checker/ETSchecker.h"
+#include "compiler/lowering/util.h"
 #include "generated/diagnostic.h"
 #include "checker/types/globalTypesHolder.h"
 #include "checker/types/ets/etsTupleType.h"
@@ -100,7 +101,14 @@ checker::Type *ETSAnalyzer::Check(ir::ClassProperty *st) const
     ETSChecker *checker = GetETSChecker();
 
     if (st->Id()->Variable() == nullptr) {
-        st->Id()->Check(checker);
+        auto ident = st->Id();
+        auto [decl, var] = checker->VarBinder()->NewVarDecl<varbinder::LetDecl>(
+            ident->Start(),
+            !ident->IsErrorPlaceHolder() ? ident->Name() : compiler::GenName(checker->ProgramAllocator()).View());
+        var->SetScope(checker->VarBinder()->GetScope());
+        ident->SetVariable(var);
+        decl->BindNode(ident);
+        return ident->SetTsType(var->SetTsType(checker->GlobalTypeError()));
     }
 
     ES2PANDA_ASSERT(st->Id()->Variable() != nullptr);

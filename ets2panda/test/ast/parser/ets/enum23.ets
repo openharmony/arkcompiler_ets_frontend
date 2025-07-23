@@ -18,4 +18,3 @@ enum duplicateKeysNumCase {
     /* @@ label */Red = 1
 }
 /* @@@ label Error TypeError: Variable 'Red' has already been declared.  */
-/* @@@ label Error TypeError: Static property 'Red' must be accessed through it's class 'duplicateKeysNumCase'  */
