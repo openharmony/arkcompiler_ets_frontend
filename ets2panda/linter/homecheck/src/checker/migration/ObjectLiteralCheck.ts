@@ -115,7 +115,7 @@ export class ObjectLiteralCheck implements BaseChecker {
         }
     }
 
-    private collectImportedVar(importVarMap: Map<string, Stmt[]>, file: ArkFile, scene: Scene) {
+    private collectImportedVar(importVarMap: Map<string, Stmt[]>, file: ArkFile, scene: Scene): void {
         file.getImportInfos().forEach(importInfo => {
             const exportInfo = importInfo.getLazyExportInfo();
             if (exportInfo === null) {
@@ -134,7 +134,7 @@ export class ObjectLiteralCheck implements BaseChecker {
         });
     }
 
-    private collectTopLevelVar(topLevelVarMap: Map<string, Stmt[]>, defaultClass: ArkClass, scene: Scene) {
+    private collectTopLevelVar(topLevelVarMap: Map<string, Stmt[]>, defaultClass: ArkClass, scene: Scene): void {
         const defaultMethod = defaultClass.getDefaultArkMethod();
         if (!defaultMethod) {
             return;

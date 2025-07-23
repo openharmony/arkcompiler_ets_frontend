@@ -638,6 +638,12 @@ export class IRInference {
                 baseType.getClassSignature().getClassName() === DEFAULT_ARK_CLASS_NAME ||
                 ((property instanceof ArkField || property instanceof ArkMethod) && property.isStatic());
             signature = property instanceof ArkMethod ? property.getSignature().getDeclaringClassSignature() : baseType.getClassSignature();
+        } else if (baseType instanceof ArrayType) {
+            const property = propertyAndType?.[0];
+            if (property instanceof ArkField) {
+                return property.getSignature();
+            }
+            return null;
         } else if (baseType instanceof AnnotationNamespaceType) {
             staticFlag = true;
             signature = baseType.getNamespaceSignature();

@@ -191,6 +191,9 @@ export class CustomBuilderCheck implements BaseChecker {
         const arkFile = stmt.getCfg().getDeclaringMethod().getDeclaringArkFile();
         const sourceFile = AstTreeUtils.getASTNode(arkFile.getName(), arkFile.getCode());
         const range = FixUtils.getRangeWithAst(sourceFile, fixPosition);
+        if (range === null) {
+            return null;
+        }
         ruleFix.range = range;
         const originalText = FixUtils.getSourceWithRange(sourceFile, range);
         if (originalText !== null) {
