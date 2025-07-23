@@ -229,9 +229,11 @@ export class ArkTSConfigGenerator {
 
   private getPathSection(moduleInfo: ModuleInfo, arktsconfig: ArkTSConfig): void {
     arktsconfig.addPathMappings(this.systemPathSection);
-  
-    this.getAllFilesToPathSection(moduleInfo, arktsconfig);
-  
+
+    if (moduleInfo.language === LANGUAGE_VERSION.ARKTS_HYBRID) {
+      this.getAllFilesToPathSection(moduleInfo, arktsconfig);
+    }
+
     if (!hasEntry(moduleInfo)) {
       return;
     }
