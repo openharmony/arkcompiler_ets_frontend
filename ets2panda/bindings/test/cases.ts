@@ -169,6 +169,10 @@ export const basicCases: TestCases = {
     '2': [resolveTestPath('test/testcases/getRenameInfo/getRenameInfo2.ets'), 626],
     '3': [resolveTestPath('test/testcases/getRenameInfo/getRenameInfo3.ets'), 697]
   },
+  getOffsetByColAndLine: {
+    expectedFilePath: resolveTestPath('test/expected/getOffsetByColAndLine.json'),
+    '1': [resolveTestPath('test/testcases/getOffsetByColAndLine/getOffsetByColAndLine1.ets'), 51, 14]
+  },
   entry: {
     expectedFilePath: '',
     '1': [resolveTestPath('test/testcases/entry/Index.ets'), 615]

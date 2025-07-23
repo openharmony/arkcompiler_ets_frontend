@@ -247,6 +247,11 @@ ets2panda_add_gtest(lsp_api_test_todo_comments CPP_SOURCES
 ets2panda_add_gtest(lsp_api_test_navigate_to CPP_SOURCES
     navigate_to_test.cpp
 )
+
+ets2panda_add_gtest(lsp_api_test_offset CPP_SOURCES
+    get_offset_by_col_and_line.cpp
+)
+
 ets2panda_add_gtest(lsp_api_test_code_fix_registration CPP_SOURCES
     code_fix_registration_test.cpp
 )

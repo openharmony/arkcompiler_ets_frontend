@@ -940,6 +940,10 @@ export class Es2pandaNativeModule {
     throw new Error('Not implemented');
   }
 
+  _getOffsetByColAndLine(context: KPtr, line: KInt, column: KInt): KInt {
+    throw new Error('Not implemented');
+  }
+
   _MemInitialize(pandaLibPath: KStringPtr): void {
     throw new Error('Not implemented');
   }
