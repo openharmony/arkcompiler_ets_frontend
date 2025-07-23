@@ -1565,47 +1565,6 @@ void ETSChecker::SetArrayPreferredTypeForNestedMemberExpressions(ir::MemberExpre
     }
 }
 
-// 22955: type alias should be instantiated with Substitute
-static void CollectAliasParametersForBoxing(Type *expandedAliasType, std::set<Type *> &parametersNeedToBeBoxed,
-                                            bool needToBeBoxed)
-{
-    if (expandedAliasType->IsETSTypeParameter() && needToBeBoxed) {
-        parametersNeedToBeBoxed.insert(expandedAliasType);
-    } else if (expandedAliasType->IsETSObjectType()) {
-        auto objectType = expandedAliasType->AsETSObjectType();
-        needToBeBoxed = objectType->GetDeclNode() != nullptr && (objectType->GetDeclNode()->IsClassDefinition() ||
-                                                                 objectType->GetDeclNode()->IsTSInterfaceDeclaration());
-        for (const auto typeArgument : objectType->TypeArguments()) {
-            CollectAliasParametersForBoxing(typeArgument, parametersNeedToBeBoxed, needToBeBoxed);
-        }
-    } else if (expandedAliasType->IsETSTupleType()) {
-        auto tupleType = expandedAliasType->AsETSTupleType();
-        needToBeBoxed = false;
-        for (auto type : tupleType->GetTupleTypesList()) {
-            CollectAliasParametersForBoxing(type, parametersNeedToBeBoxed, needToBeBoxed);
-        }
-    } else if (expandedAliasType->IsETSArrayType()) {
-        auto arrayType = expandedAliasType->AsETSArrayType();
-        needToBeBoxed = false;
-        auto elementType = arrayType->ElementType();
-        CollectAliasParametersForBoxing(elementType, parametersNeedToBeBoxed, needToBeBoxed);
-    } else if (expandedAliasType->IsETSUnionType()) {
-        auto unionType = expandedAliasType->AsETSUnionType();
-        needToBeBoxed = false;
-        for (auto type : unionType->ConstituentTypes()) {
-            CollectAliasParametersForBoxing(type, parametersNeedToBeBoxed, needToBeBoxed);
-        }
-    } else if (expandedAliasType->IsETSFunctionType()) {
-        auto functionType = expandedAliasType->AsETSFunctionType();
-        needToBeBoxed = true;
-        for (auto param : functionType->ArrowSignature()->Params()) {
-            CollectAliasParametersForBoxing(param->TsType(), parametersNeedToBeBoxed, needToBeBoxed);
-        }
-        CollectAliasParametersForBoxing(functionType->ArrowSignature()->ReturnType(), parametersNeedToBeBoxed,
-                                        needToBeBoxed);
-    }
-}
-
 bool ETSChecker::CheckMinimumTypeArgsPresent(const ir::TSTypeAliasDeclaration *typeAliasNode,
                                              const ir::TSTypeParameterInstantiation *typeParams)
 {
@@ -1636,11 +1595,10 @@ Type *ETSChecker::HandleTypeAlias(ir::Expression *const name, const ir::TSTypePa
                                   ir::TSTypeAliasDeclaration *const typeAliasNode)
 {
     if (typeParams == nullptr && typeAliasNode->TypeParams() != nullptr) {
-        auto declTypeParams = typeAliasNode->TypeParams()->Params();
-        auto isAllTypeParamsHasDefaultType =
-            std::find_if(declTypeParams.begin(), declTypeParams.end(), [](ir::TSTypeParameter *param) {
-                return param->DefaultType() == nullptr;
-            }) == declTypeParams.end();
+        auto const &params = typeAliasNode->TypeParams()->Params();
+        auto isAllTypeParamsHasDefaultType = std::find_if(params.begin(), params.end(), [](ir::TSTypeParameter *param) {
+                                                 return param->DefaultType() == nullptr;
+                                             }) == params.end();
         if (!isAllTypeParamsHasDefaultType) {
             LogError(diagnostic::GENERIC_ALIAS_WITHOUT_PARAMS, {}, name->Start());
             return GlobalTypeError();
@@ -1669,27 +1627,28 @@ Type *ETSChecker::HandleTypeAlias(ir::Expression *const name, const ir::TSTypePa
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     Type *const aliasType = GetReferencedTypeBase(name);
     auto substitution = Substitution {};
+    auto relation = Relation();
 
-    std::set<Type *> parametersNeedToBeBoxed;
-    auto expandedAliasType = aliasType->Substitute(Relation(), &substitution);
-    CollectAliasParametersForBoxing(expandedAliasType, parametersNeedToBeBoxed, false);
-
-    for (std::size_t idx = 0; idx < typeAliasNode->TypeParams()->Params().size(); ++idx) {
+    for (std::size_t idx = 0U; idx < typeAliasNode->TypeParams()->Params().size(); ++idx) {
         auto *typeAliasTypeName = typeAliasNode->TypeParams()->Params().at(idx)->Name();
         auto *typeAliasType = typeAliasTypeName->Variable()->TsType()->MaybeBaseTypeOfGradualType();
-        if (!typeAliasType->IsETSTypeParameter()) {
-            continue;
-        }
+        if (typeAliasType->IsETSTypeParameter()) {
+            ir::TypeNode *typeNode = ResolveTypeNodeForTypeArg(typeAliasNode, typeParams, idx);
+            auto paramType = typeNode->GetType(this);
 
-        ir::TypeNode *typeNode = ResolveTypeNodeForTypeArg(typeAliasNode, typeParams, idx);
-        auto paramType = typeNode->GetType(this);
+            EmplaceSubstituted(&substitution, typeAliasType->AsETSTypeParameter(), paramType);
 
-        if (parametersNeedToBeBoxed.find(typeAliasType) != parametersNeedToBeBoxed.end()) {
-            if (const auto boxedType = MaybeBoxInRelation(typeNode->GetType(this)); boxedType != nullptr) {
-                paramType = boxedType;
+            auto *const maybeIrrelevantTypeArg = paramType->IsETSVoidType() ? GlobalETSUndefinedType() : paramType;
+            auto *constraintType = typeAliasType->AsETSTypeParameter()->GetConstraintType();
+            if (maybeIrrelevantTypeArg->IsTypeError() || constraintType->IsTypeError()) {
+                continue;  // Don't issue extra error notification!
+            }
+
+            constraintType = constraintType->Substitute(relation, &substitution);
+            if (!relation->IsSupertypeOf(constraintType, maybeIrrelevantTypeArg)) {
+                LogError(diagnostic::TYPEARG_TYPEPARAM_SUBTYPING, {paramType, constraintType}, typeNode->Start());
             }
         }
-        substitution.insert({typeAliasType->AsETSTypeParameter(), paramType});  // #21835: type argument is not boxed
     }
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
