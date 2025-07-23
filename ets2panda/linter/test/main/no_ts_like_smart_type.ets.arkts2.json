@@ -355,6 +355,26 @@
             "severity": "ERROR"
         },
         {
+            "line": 180,
+            "column": 13,
+            "endLine": 180,
+            "endColumn": 34,
+            "problem": "NoTsLikeSmartType",
+            "suggest": "",
+            "rule": "Smart type differences (arkts-no-ts-like-smart-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 193,
+            "column": 13,
+            "endLine": 193,
+            "endColumn": 26,
+            "problem": "NoTsLikeSmartType",
+            "suggest": "",
+            "rule": "Smart type differences (arkts-no-ts-like-smart-type)",
+            "severity": "ERROR"
+        },
+        {
             "line": 137,
             "column": 5,
             "endLine": 137,
@@ -382,6 +402,16 @@
             "problem": "StrictDiagnostic",
             "suggest": "'b.a' is possibly 'undefined'.",
             "rule": "'b.a' is possibly 'undefined'.",
+            "severity": "ERROR"
+        },
+        {
+            "line": 191,
+            "column": 18,
+            "endLine": 191,
+            "endColumn": 25,
+            "problem": "StrictDiagnostic",
+            "suggest": "Function lacks ending return statement and return type does not include 'undefined'.",
+            "rule": "Function lacks ending return statement and return type does not include 'undefined'.",
             "severity": "ERROR"
         }
     ]

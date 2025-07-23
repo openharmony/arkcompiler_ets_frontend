@@ -11021,23 +11021,33 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     staticProps: Map<string, ts.Type>,
     instanceProps: Map<string, ts.Type>
   ): void {
-    body.forEachChild((node) => {
+    forEachNodeInSubtree(body, (node) => {
       if (!ts.isReturnStatement(node) || !node.expression) {
         return;
       }
+      const getPropertyAccess = (expr: ts.Expression): ts.PropertyAccessExpression | undefined => {
+        if (ts.isPropertyAccessExpression(expr)) {
+          return expr;
+        }
 
-      const isStaticPropertyAccess = (node: ts.Expression, className: string): boolean => {
-        return (
-          ts.isPropertyAccessExpression(node) && ts.isIdentifier(node.expression) && node.expression.text === className
-        );
+        if (ts.isCallExpression(expr) && ts.isPropertyAccessExpression(expr.expression)) {
+          return expr.expression;
+        }
+
+        return undefined;
       };
+
+      const isStaticPropertyAccess = (expr: ts.PropertyAccessExpression, className: string): boolean => {
+        return ts.isIdentifier(expr.expression) && expr.expression.text === className;
+      };
+
       const isInstancePropertyAccess = (node: ts.Expression): boolean => {
         return ts.isPropertyAccessExpression(node) && node.expression.kind === ts.SyntaxKind.ThisKeyword;
       };
 
-      if (className && isStaticPropertyAccess(node.expression, className)) {
-        this.checkPropertyAccess(node, node.expression as ts.PropertyAccessExpression, staticProps, methodReturnType);
-        return;
+      const propExp = getPropertyAccess(node.expression);
+      if (className && propExp && isStaticPropertyAccess(propExp, className)) {
+        this.checkPropertyAccess(node, propExp, staticProps, methodReturnType);
       }
 
       if (isInstancePropertyAccess(node.expression)) {

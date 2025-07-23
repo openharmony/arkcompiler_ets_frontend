@@ -169,3 +169,28 @@ function sleep<T = void>(ms: number): PromiseLike {
     (resolve: (value: T | PromiseLike) => void): number => setTimeout(resolve, ms)
   );
 }
+
+type TypeA = (key: string) => string | undefined
+
+class ClassA {
+    static sA?: TypeA = undefined
+
+    static funA(key: string): string | undefined {
+        if (ClassA.sA) {
+            return ClassA.sA(key) //error
+        }
+        else {
+            return undefined;
+        }
+    }
+}
+
+class A {
+    b?: boolean
+
+    isRelease(): boolean {
+        if (this.b != undefined) {
+            return this.b //error
+        }
+    }
+}
