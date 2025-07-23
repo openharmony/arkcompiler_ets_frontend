@@ -85,7 +85,7 @@ public:
     }
 
     [[nodiscard]] checker::Type *GetAssignableType(ETSChecker *checker, checker::Type *sourceType,
-                                                   std::optional<double> value) const noexcept;
+                                                   std::optional<double> value) const;
     [[nodiscard]] std::pair<checker::Type *, checker::Type *> GetComplimentaryType(ETSChecker *checker,
                                                                                    checker::Type *sourceType);
 
@@ -102,7 +102,7 @@ private:
 
     [[nodiscard]] checker::Type *GetAssignableBuiltinType(
         checker::ETSChecker *checker, checker::ETSObjectType *sourceType,
-        std::map<std::uint32_t, checker::ETSObjectType *> &numericTypes) const noexcept;
+        std::map<std::uint32_t, checker::ETSObjectType *> &numericTypes) const;
 
     void CanonicalizedAssemblerType(ETSChecker *checker);
     void InitAssemblerTypeCache(ETSChecker *checker);

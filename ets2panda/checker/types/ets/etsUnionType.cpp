@@ -351,7 +351,7 @@ void ETSUnionType::CheckVarianceRecursively(TypeRelation *relation, VarianceFlag
 //  ATTENTION! When calling this method we assume that 'AssignmentTarget(...)' check was passes successfully,
 //  thus the required assignable type (or corresponding supertype) always exists.
 checker::Type *ETSUnionType::GetAssignableType(checker::ETSChecker *checker, checker::Type *sourceType,
-                                               [[maybe_unused]] std::optional<double> value) const noexcept
+                                               [[maybe_unused]] std::optional<double> value) const
 {
     for (auto *ctype : ConstituentTypes()) {
         if (checker->Relation()->IsSupertypeOf(ctype, sourceType)) {
@@ -380,7 +380,7 @@ checker::Type *ETSUnionType::GetAssignableType(checker::ETSChecker *checker, che
 
 checker::Type *ETSUnionType::GetAssignableBuiltinType(
     checker::ETSChecker *checker, checker::ETSObjectType *sourceType,
-    std::map<std::uint32_t, checker::ETSObjectType *> &numericTypes) const noexcept
+    std::map<std::uint32_t, checker::ETSObjectType *> &numericTypes) const
 {
     for (auto *constituentType : constituentTypes_) {
         if (!constituentType->IsETSObjectType() && !constituentType->IsETSTupleType()) {

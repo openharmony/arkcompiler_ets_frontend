@@ -16,6 +16,7 @@
 #include "arithmetic.h"
 
 #include "checker/types/globalTypesHolder.h"
+#include "checker/types/typeError.h"
 #include "lexer/token/token.h"
 
 namespace ark::es2panda::checker {
@@ -322,9 +323,7 @@ checker::Type *ETSChecker::CheckBinaryOperatorMulDivMod(
     // Try to handle errors on a lower level
     RepairTypeErrorsInOperands(&leftType, &rightType);
     RepairTypeErrorsInOperands(&unboxedL, &unboxedR);
-    if (leftType->IsTypeError()) {  // both are errors
-        return GlobalTypeError();
-    }
+    ERROR_TYPE_CHECK(this, leftType, return GlobalTypeError());
 
     auto const promotedType = BinaryGetPromotedType(this, leftType, rightType, !isEqualOp);
     if (!CheckBinaryPlusMultDivOperandsForUnionType(leftType, rightType, left, right)) {
@@ -390,9 +389,7 @@ checker::Type *ETSChecker::CheckBinaryOperatorPlus(
     // Try to handle errors on a lower level
     RepairTypeErrorsInOperands(&leftType, &rightType);
     RepairTypeErrorsInOperands(&unboxedL, &unboxedR);
-    if (leftType->IsTypeError()) {  // both are errors
-        return GlobalTypeError();
-    }
+    ERROR_TYPE_CHECK(this, leftType, return GlobalTypeError());
 
     if (leftType->IsETSStringType() || rightType->IsETSStringType()) {
         if (operationType == lexer::TokenType::PUNCTUATOR_MINUS ||
@@ -502,9 +499,7 @@ checker::Type *ETSChecker::CheckBinaryOperatorBitwise(
 
     RepairTypeErrorsInOperands(&leftType, &rightType);
     RepairTypeErrorsInOperands(&unboxedL, &unboxedR);
-    if (leftType->IsTypeError()) {  // both are errors
-        return GlobalTypeError();
-    }
+    ERROR_TYPE_CHECK(this, leftType, return GlobalTypeError());
 
     if (leftType->IsETSUnionType() || rightType->IsETSUnionType()) {
         LogError(diagnostic::BINOP_UNION, {}, pos);
@@ -548,9 +543,8 @@ checker::Type *ETSChecker::CheckBinaryOperatorLogical(ir::Expression *left, ir::
 {
     RepairTypeErrorsInOperands(&leftType, &rightType);
     RepairTypeErrorsInOperands(&unboxedL, &unboxedR);
-    if (leftType->IsTypeError()) {  // both are errors
-        return GlobalTypeError();
-    }
+    ERROR_TYPE_CHECK(this, leftType, return GlobalTypeError());
+
     // Don't do any boxing for primitive type when another operand is Enum. Enum will become primitive type later.
     if (leftType->IsETSEnumType() || rightType->IsETSEnumType()) {
         left->RemoveAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF);
@@ -658,12 +652,9 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorStrictEqual(ir::Expres
                                                                       checker::Type *leftType, checker::Type *rightType)
 {
     RepairTypeErrorsInOperands(&leftType, &rightType);
-    if (leftType->IsTypeError()) {  // both are errors
-        // We still know that operation result should be boolean, so recover.
-        return {GlobalETSBooleanType(), GlobalETSObjectType()};
-    }
+    // We still know that operation result should be boolean, so recover.
+    ERROR_TYPE_CHECK(this, leftType, return std::make_tuple(GlobalETSBooleanBuiltinType(), GlobalETSObjectType()));
 
-    checker::Type *tsType {};
     if (!IsReferenceType(leftType) || !IsReferenceType(rightType)) {
         LogError(diagnostic::BINOP_NOT_REFERENCE, {}, pos);
         return {GlobalETSBooleanType(), GlobalETSObjectType()};
@@ -672,17 +663,11 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorStrictEqual(ir::Expres
     Relation()->SetNode(left);
     if (!CheckValidEqualReferenceType(leftType, rightType)) {
         LogOperatorCannotBeApplied(this, operationType, leftType, rightType, pos);
-        return {GlobalETSBooleanType(), GlobalETSObjectType()};
-    }
-
-    if (!Relation()->IsCastableTo(leftType, rightType) && !Relation()->IsCastableTo(rightType, leftType)) {
+    } else if (!Relation()->IsCastableTo(leftType, rightType) && !Relation()->IsCastableTo(rightType, leftType)) {
         LogOperatorCannotBeApplied(this, operationType, leftType, rightType, pos);
-        return {GlobalETSBooleanType(), GlobalETSObjectType()};
     }
 
-    tsType = GlobalETSBooleanType();
-
-    return {tsType, GlobalETSObjectType()};
+    return {GlobalETSBooleanType(), GlobalETSObjectType()};
 }
 
 static Type *HandelReferenceBinaryEquality(ETSChecker *checker, BinaryArithmOperands const &ops)
@@ -718,9 +703,7 @@ static Type *CheckBinaryOperatorEqual(ETSChecker *checker, BinaryArithmOperands 
 {
     [[maybe_unused]] auto const [expr, typeL, typeR, reducedL, reducedR] = ops;
 
-    if (typeL->IsTypeError()) {  // both are errors
-        return checker->GlobalTypeError();
-    }
+    ERROR_TYPE_CHECK(checker, typeL, return checker->GlobalTypeError());
 
     if (reducedL->IsETSBooleanType() && reducedR->IsETSBooleanType()) {
         if (reducedL->IsConstantType() && reducedR->IsConstantType()) {
@@ -766,9 +749,7 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorLessGreater(ir::Expres
 {
     RepairTypeErrorsInOperands(&leftType, &rightType);
     RepairTypeErrorsInOperands(&unboxedL, &unboxedR);
-    if (leftType->IsTypeError()) {  // both are errors
-        return {GlobalETSBooleanBuiltinType(), GlobalTypeError()};
-    }
+    ERROR_TYPE_CHECK(this, leftType, return std::make_tuple(GlobalETSBooleanBuiltinType(), GlobalTypeError()));
 
     if ((leftType->IsETSUnionType() || rightType->IsETSUnionType()) &&
         operationType != lexer::TokenType::PUNCTUATOR_EQUAL &&
@@ -806,9 +787,7 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorInstanceOf(lexer::Sour
                                                                      checker::Type *rightType)
 {
     RepairTypeErrorsInOperands(&leftType, &rightType);
-    if (leftType->IsTypeError()) {  // both are errors
-        return {GlobalETSBooleanBuiltinType(), GlobalTypeError()};
-    }
+    ERROR_TYPE_CHECK(this, leftType, return std::make_tuple(GlobalETSBooleanBuiltinType(), GlobalTypeError()));
 
     if (leftType->IsETSPrimitiveType() || rightType->IsETSPrimitiveType()) {
         LogError(diagnostic::BINOP_NOT_SAME, {}, pos);
@@ -920,14 +899,12 @@ Type *ETSChecker::CheckBinaryOperatorNullishCoalescing(ir::Expression *left, ir:
                                                        lexer::SourcePosition pos)
 {
     auto *leftType = left->TsType();
+    leftType = GetNonNullishType(leftType);
+
+    ERROR_TYPE_CHECK(this, leftType, return GlobalTypeError());
+
     if (leftType->IsETSPrimitiveType()) {
         LogError(diagnostic::COALESCE_NOT_REF, {}, pos);
-    }
-    leftType = GetNonNullishType(leftType);
-    ES2PANDA_ASSERT(leftType != nullptr);
-    if (leftType->IsTypeError()) {
-        ES2PANDA_ASSERT(IsAnyError());
-        return GlobalTypeError();
     }
 
     auto *rightType = MaybeBoxType(right->TsType());

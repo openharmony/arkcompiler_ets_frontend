@@ -79,12 +79,20 @@ public:
     /* CC-OFFNXT(G.PRE.02) name part*/                                                      \
     typeName *As##typeName()                                                                \
     {                                                                                       \
+        if (IsTypeError()) {                                                                \
+            LOG(INFO, ES2PANDA) << "Erroneous cast to '" << #typeName << "' type.";         \
+            throw std::exception();                                                         \
+        }                                                                                   \
         ES2PANDA_ASSERT(Is##typeName());                                                    \
         /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. Return is needed*/ \
         return reinterpret_cast<typeName *>(this); /* CC-OFF(G.PRE.02) name part*/          \
     }                                                                                       \
     const typeName *As##typeName() const                                                    \
     {                                                                                       \
+        if (IsTypeError()) {                                                                \
+            LOG(INFO, ES2PANDA) << "Erroneous cast to '" << #typeName << "' type.";         \
+            throw std::exception();                                                         \
+        }                                                                                   \
         ES2PANDA_ASSERT(Is##typeName());                                                    \
         /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. Return is needed*/ \
         return reinterpret_cast<const typeName *>(this);                                    \

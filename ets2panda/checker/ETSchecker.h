@@ -731,7 +731,7 @@ public:
     bool IsExtensionAccessorFunctionType(const checker::Type *type);
     bool IsArrayExprSizeValidForTuple(const ir::ArrayExpression *arrayExpr, const ETSTupleType *tuple);
     void ModifyPreferredType(ir::ArrayExpression *arrayExpr, Type *newPreferredType);
-    Type *SelectGlobalIntegerTypeForNumeric(Type *type) const noexcept;
+    Type *SelectGlobalIntegerTypeForNumeric(Type *type) const;
 
     ir::ClassProperty *ClassPropToImplementationProp(ir::ClassProperty *classProp, varbinder::ClassScope *scope);
     ir::Expression *GenerateImplicitInstantiateArg(const std::string &className);

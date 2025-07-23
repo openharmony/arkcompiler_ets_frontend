@@ -29,6 +29,8 @@ if(PANDA_TARGET_ARM32 OR PANDA_ARM64_TESTS_WITH_SANITIZER)
     return()
 endif()
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions")
+
 add_custom_target(es2panda_tests COMMENT "Running es2panda test suites")
 add_custom_target(es2panda_gtests COMMENT "Running es2panda gtest suites")
 set(DEFAULT_TEST_GROUP ets_tests)

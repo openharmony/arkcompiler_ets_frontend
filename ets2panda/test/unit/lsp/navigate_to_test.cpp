@@ -51,7 +51,7 @@ protected:
             contexts_.push_back(ctx);
         }
     };
-    // NOLINTBEGIN(fuchsia-statically-constructed-objects)
+    // NOLINTBEGIN(fuchsia-statically-constructed-objects, cert-err58-cpp)
     static inline std::vector<es2panda_Context *> contexts_ = {};
     static inline Initializer *initializer_ = nullptr;
     static inline std::vector<SourceFile> files_ = {{"ExactPrefixAndSubstringMatch1.sts", R"(
@@ -81,7 +81,7 @@ protected:
                 }
             }
             )"}};
-    // NOLINTEND(fuchsia-statically-constructed-objects)
+    // NOLINTEND(fuchsia-statically-constructed-objects, cert-err58-cpp)
 };
 
 TEST_F(NavigateToTest, ExactMatchFromSingleFile)

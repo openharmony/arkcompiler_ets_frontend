@@ -158,7 +158,7 @@ void ETSTypeParameter::ToDebugInfoType(std::stringstream &ss) const
     GetConstraintType()->ToDebugInfoType(ss);
 }
 
-ETSTypeParameter *ETSTypeParameter::GetOriginal() const noexcept
+ETSTypeParameter *ETSTypeParameter::GetOriginal() const
 {
     return GetDeclNode()->Name()->Variable()->TsType()->AsETSTypeParameter();
 }
