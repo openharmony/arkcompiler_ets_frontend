@@ -1975,6 +1975,8 @@ void TSDeclGen::GenPartName(std::string &partName)
         partName = "Error";
     } else if (partName == "Any") {
         partName = "ESObject";
+    } else if (partName == "Floating" || partName == "Integral") {
+        partName = "number";
     }
 }
 
@@ -2429,10 +2431,14 @@ void TSDeclGen::GenPropAccessor(const ir::ClassProperty *classProp, const std::s
 
     const auto propName = GetKeyIdent(classProp->Key())->Name().Mutf8();
     OutDts(accessorKind, propName, accessorKind == "set " ? "(value: " : "(): ");
-    if (classProp->TypeAnnotation() != nullptr) {
-        ProcessTypeAnnotationType(classProp->TypeAnnotation(), classProp->TsType());
+    auto typeAnnotation = classProp->TypeAnnotation();
+    auto tsType = classProp->TsType();
+    if (tsType != nullptr && tsType->IsETSTypeParameter()) {
+        OutDts("ESObject");
+    } else if (typeAnnotation != nullptr) {
+        ProcessTypeAnnotationType(typeAnnotation, tsType);
     } else {
-        GenType(classProp->TsType());
+        GenType(tsType);
     }
     OutDts(accessorKind == "set " ? ");" : ";");
     OutEndlDts();
@@ -2445,7 +2451,11 @@ void TSDeclGen::GenGlobalVarDeclaration(const ir::ClassProperty *globalVar)
     }
 
     const auto symbol = GetKeyIdent(globalVar->Key());
-    const auto varName = symbol->Name().Mutf8();
+    auto varName = symbol->Name().Mutf8();
+    const std::string prefix = "gensym%%_";
+    if (varName.rfind(prefix, 0) == 0) {
+        varName = varName.substr(prefix.size());
+    }
     const bool isConst = globalVar->IsConst();
     const bool isDefaultExported = globalVar->IsDefaultExported();
     DebugPrint("GenGlobalVarDeclaration: " + varName);
