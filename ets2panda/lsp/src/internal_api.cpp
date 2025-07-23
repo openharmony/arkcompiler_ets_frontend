@@ -632,6 +632,20 @@ std::pair<ir::AstNode *, util::StringView> GetDefinitionAtPositionImpl(es2panda_
     return res;
 }
 
+std::string GetImportFilePath(es2panda_Context *context, size_t pos)
+{
+    std::string res;
+    auto node = GetTouchingToken(context, pos, false);
+    if (node == nullptr) {
+        return res;
+    }
+    auto parent = node->Parent();
+    if (parent != nullptr && parent->IsETSImportDeclaration() && parent->AsETSImportDeclaration()->Source() == node) {
+        res = std::string(parent->AsETSImportDeclaration()->ImportMetadata().resolvedSource);
+    }
+    return res;
+}
+
 ArenaVector<ir::AstNode *> RemoveRefDuplicates(const ArenaVector<ir::AstNode *> &nodes, ArenaAllocator *allocator)
 {
     auto hashFunc = [](const ir::AstNode *node) {

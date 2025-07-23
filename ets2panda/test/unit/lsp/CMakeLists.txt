@@ -214,7 +214,7 @@ ets2panda_add_gtest(lsp_api_test_find_rename_locations CPP_SOURCES
 
 ets2panda_add_gtest(lsp_api_test_fix_expected_comma CPP_SOURCES
     fix_expected_comma_test.cpp
- )
+)
 
 ets2panda_add_gtest(lsp_api_test_change_tracker CPP_SOURCES
     change_tracker_test.cpp
@@ -280,10 +280,14 @@ ets2panda_add_gtest(lsp_api_test_forgotten_this_property_access CPP_SOURCES
     forgotten_this_property_access_test.cpp
 )
 
- ets2panda_add_gtest(lsp_api_test_remove_accidental_call_parentheses CPP_SOURCES
+ets2panda_add_gtest(lsp_api_test_remove_accidental_call_parentheses CPP_SOURCES
     remove_accidental_call_parentheses_test.cpp
- )
+)
 
 ets2panda_add_gtest(lsp_api_add_missing_new_operator CPP_SOURCES
     add_missing_new_operator_test.cpp
+)
+
+ets2panda_add_gtest(lsp_get_import_file_path_test CPP_SOURCES
+    get_import_file_path_test.cpp
 )
