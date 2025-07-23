@@ -82,6 +82,10 @@ bool OptionalArgumentsLowering::PerformForModule(public_lib::Context *ctx, parse
                     : TransformArguments(ctx, callExpr, callExpr->Signature(), callExpr->Arguments());
             } else if (node->IsETSNewClassInstanceExpression()) {
                 auto newExpr = node->AsETSNewClassInstanceExpression();
+                if (newExpr->GetSignature() == nullptr) {
+                    ctx->parser->LogError(diagnostic::IMPROPER_NESTING_INTERFACE, {}, node->Start());
+                    return node;
+                }
                 TransformArguments(ctx, newExpr, newExpr->GetSignature(), newExpr->GetArguments());
             }
             return node;
