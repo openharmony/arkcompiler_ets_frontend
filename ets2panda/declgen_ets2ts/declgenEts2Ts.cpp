@@ -276,19 +276,20 @@ void TSDeclGen::AddSuperType(const ir::Expression *super)
     if (super->TsType() == nullptr) {
         return;
     }
-    const auto superType = checker::ETSChecker::ETSType(super->TsType());
-    if (superType == checker::TypeFlag::ETS_OBJECT || superType == checker::TypeFlag::ETS_DYNAMIC_TYPE) {
-        auto objectType = super->TsType()->AsETSObjectType();
-        AddObjectDependencies(objectType->Name());
-    }
+    AddSuperType(super->TsType());
 }
 
 void TSDeclGen::AddSuperType(const checker::Type *tsType)
 {
     const auto superType = checker::ETSChecker::ETSType(tsType);
-    if (superType == checker::TypeFlag::ETS_OBJECT || superType == checker::TypeFlag::ETS_DYNAMIC_TYPE) {
+    if (superType == checker::TypeFlag::ETS_OBJECT) {
         auto objectType = tsType->AsETSObjectType();
         AddObjectDependencies(objectType->Name());
+    } else if (superType == checker::TypeFlag::ETS_UNION) {
+        auto unionType = tsType->AsETSUnionType();
+        std::vector<checker::Type *> filteredTypes = FilterUnionTypes(unionType->ConstituentTypes());
+        GenSeparated(
+            filteredTypes, [this](checker::Type *type) { AddSuperType(type); }, "");
     }
 }
 
@@ -322,10 +323,7 @@ void TSDeclGen::GenDeclarations()
     for (auto *globalStatement : program_->Ast()->Statements()) {
         ResetState();
         ResetClassNode();
-        const auto jsdoc = compiler::JsdocStringFromDeclaration(globalStatement);
-        if (jsdoc.Utf8().find(NON_INTEROP_FLAG) != std::string_view::npos) {
-            continue;
-        } else if (globalStatement->IsClassDeclaration()) {
+        if (globalStatement->IsClassDeclaration()) {
             GenClassDeclaration(globalStatement->AsClassDeclaration());
         } else if (globalStatement->IsTSInterfaceDeclaration()) {
             GenInterfaceDeclaration(globalStatement->AsTSInterfaceDeclaration());
@@ -334,20 +332,6 @@ void TSDeclGen::GenDeclarations()
         } else if (globalStatement->IsETSReExportDeclaration()) {
             GenReExportDeclaration(globalStatement->AsETSReExportDeclaration());
         }
-    }
-}
-
-void TSDeclGen::GenOtherDeclarations()
-{
-    const std::string recordKey = "Record";
-    const std::string recordStr = R"(
-// generated for static Record
-type Record<K extends keyof any, T> = {
-    [P in K]: T;
-};
-)";
-    if (indirectDependencyObjects_.find(recordKey) != indirectDependencyObjects_.end()) {
-        OutDts(recordStr);
     }
 }
 
@@ -362,7 +346,10 @@ void TSDeclGen::GenImportDeclarations()
 
 void TSDeclGen::GenImportRecordDeclarations(const std::string &source)
 {
-    OutDts("import type { Record } from \"", source, "\";\n");
+    const std::string recordKey = "Record";
+    if (indirectDependencyObjects_.find(recordKey) != indirectDependencyObjects_.end()) {
+        OutDts("import type { Record } from \"", source, "\";\n");
+    }
 }
 
 template <class T, class CB>
@@ -522,6 +509,8 @@ bool TSDeclGen::HandleObjectType(const checker::Type *checkerType)
         OutDts("number");
     } else if (typeStr == "BigInt") {
         OutDts("bigint");
+    } else if (typeStr == "ESValue") {
+        OutDts("ESObject");
     } else {
         GenObjectType(checkerType->AsETSObjectType());
     }
@@ -1837,7 +1826,7 @@ void TSDeclGen::GenPartName(std::string &partName)
         partName = "string";
     } else if (numberTypes_.count(partName) != 0U) {
         partName = "number";
-    } else if (partName == "ESObject") {
+    } else if (partName == "ESValue") {
         partName = "ESObject";
     } else if (partName == "BigInt") {
         partName = "bigint";
@@ -1845,6 +1834,8 @@ void TSDeclGen::GenPartName(std::string &partName)
         partName = "Error";
     } else if (partName == "Any") {
         partName = "ESObject";
+    } else if (partName == "Floating" || partName == "Integral") {
+        partName = "number";
     }
 }
 
@@ -1947,10 +1938,7 @@ void TSDeclGen::ProcessClassBody(const ir::ClassDefinition *classDef)
     state_.inClass = true;
     std::unordered_set<std::string> processedMethods;
     for (const auto *prop : classDef->Body()) {
-        const auto jsdoc = compiler::JsdocStringFromDeclaration(prop);
-        if (jsdoc.Utf8().find(NON_INTEROP_FLAG) != std::string_view::npos) {
-            continue;
-        } else if (classDef->IsEnumTransformed()) {
+        if (classDef->IsEnumTransformed()) {
             if (prop->IsClassProperty()) {
                 state_.inEnum = true;
                 GenPropDeclaration(prop->AsClassProperty());
@@ -2308,7 +2296,11 @@ void TSDeclGen::GenGlobalVarDeclaration(const ir::ClassProperty *globalVar)
     }
 
     const auto symbol = GetKeyIdent(globalVar->Key());
-    const auto varName = symbol->Name().Mutf8();
+    auto varName = symbol->Name().Mutf8();
+    const std::string prefix = "gensym%%_";
+    if (varName.rfind(prefix, 0) == 0) {
+        varName = varName.substr(prefix.size());
+    }
     const bool isConst = globalVar->IsConst();
     const bool isDefaultExported = globalVar->IsDefaultExported();
     DebugPrint("GenGlobalVarDeclaration: " + varName);
@@ -2382,6 +2374,7 @@ bool GenerateTsDeclarations(checker::ETSChecker *checker, const ark::es2panda::p
         declBuilder.ResetDtsOutput();
         declBuilder.GenImportRecordDeclarations(declBuilder.GetDeclgenOptions().recordFile);
         std::string recordImportOutputDEts = declBuilder.GetDtsOutput();
+        combinedDEts = recordImportOutputDEts + combinedDEts;
     }
 
     return WriteOutputFiles(declBuilder.GetDeclgenOptions(), combineEts, combinedDEts, checker);
@@ -2411,12 +2404,11 @@ bool WriteOutputFiles(const DeclgenOptions &options, const std::string &combined
         }
     }
 
-    if (!declBuilder.GetDeclgenOptions().outputEts.empty()) {
-        auto outTsPath = declBuilder.GetDeclgenOptions().outputEts;
-        if (!WriteToFile(outTsPath, combineEts, checker)) {
+    if (!options.outputEts.empty()) {
+        if (!WriteToFile(options.outputEts, combinedEts, checker)) {
             return false;
+        }
     }
-
     return true;
 }
 }  // namespace ark::es2panda::declgen_ets2ts

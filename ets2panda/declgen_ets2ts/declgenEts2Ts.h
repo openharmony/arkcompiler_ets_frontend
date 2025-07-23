@@ -25,8 +25,6 @@
 
 namespace ark::es2panda::declgen_ets2ts {
 
-constexpr const char *NON_INTEROP_FLAG = "@noninterop";
-
 struct DeclgenOptions {
     bool exportAll = false;
     bool isIsolatedDeclgen = false;
@@ -38,6 +36,9 @@ struct DeclgenOptions {
 // Consume program after checker stage and generate out_path typescript file with declarations
 bool GenerateTsDeclarations(checker::ETSChecker *checker, const ark::es2panda::parser::Program *program,
                             const DeclgenOptions &declgenOptions);
+bool ValidateDeclgenOptions(const DeclgenOptions &options, checker::ETSChecker *checker);
+bool WriteOutputFiles(const DeclgenOptions &options, const std::string &combinedEts, const std::string &combinedDEts,
+                      checker::ETSChecker *checker);
 
 class TSDeclGen {
 public:

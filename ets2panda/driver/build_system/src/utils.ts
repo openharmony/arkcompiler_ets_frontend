@@ -17,7 +17,8 @@ import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { DECL_ETS_SUFFIX } from './pre_define';
+import { DECL_ETS_SUFFIX, LANGUAGE_VERSION } from './pre_define';
+import { BuildConfig } from './types';
 
 const WINDOWS: string = 'Windows_NT';
 const LINUX: string = 'Linux';
@@ -106,4 +107,11 @@ export function createFileIfNotExists(filePath: string, content: string): boolea
   } catch (error) {
     return false;
   }
+}
+
+export function isHybrid(buildConfig: BuildConfig): boolean {
+  return buildConfig.dependentModuleList.some(
+    module => module.language === LANGUAGE_VERSION.ARKTS_1_1 || 
+              module.language === LANGUAGE_VERSION.ARKTS_HYBRID
+  );
 }

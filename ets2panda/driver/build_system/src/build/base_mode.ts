@@ -33,7 +33,6 @@ import {
   LANGUAGE_VERSION,
   LINKER_INPUT_FILE,
   MERGED_ABC_FILE,
-  MERGED_INTERMEDIATE_FILE,
   STATIC_RECORD_FILE,
   STATIC_RECORD_FILE_CONTENT,
   TS_SUFFIX
@@ -44,6 +43,7 @@ import {
   createFileIfNotExists,
   ensurePathExists,
   getFileHash,
+  isHybrid,
   isMac
 } from '../utils';
 import {
@@ -100,6 +100,7 @@ export abstract class BaseMode {
   public dependencyFileMap: DependencyFileConfig | null;
   public isBuildConfigModified: boolean | undefined;
   public byteCodeHar: boolean;
+  public isHybrid: boolean;
 
   constructor(buildConfig: BuildConfig) {
     this.buildConfig = buildConfig;
@@ -133,6 +134,7 @@ export abstract class BaseMode {
     this.dependencyFileMap = null;
     this.isBuildConfigModified = buildConfig.isBuildConfigModified as boolean | undefined;
     this.byteCodeHar = buildConfig.byteCodeHar as boolean;
+    this.isHybrid = isHybrid(buildConfig);
   }
 
   public declgen(fileInfo: CompileFileInfo): void {
@@ -160,7 +162,7 @@ export abstract class BaseMode {
       const declEtsOutputDir = path.dirname(declEtsOutputPath);
       const staticRecordRelativePath = changeFileExtension(
         path.relative(declEtsOutputDir, staticRecordPath).replaceAll(/\\/g, '\/'),
-        "",
+        '',
         DECL_TS_SUFFIX
       );
       createFileIfNotExists(staticRecordPath, STATIC_RECORD_FILE_CONTENT);
@@ -660,6 +662,10 @@ export abstract class BaseMode {
   }
 
   protected collectCompileFiles(): void {
+    if (!this.isBuildConfigModified && this.isCacheFileExists && !this.enableDeclgenEts2Ts && !this.isHybrid) {
+      this.collectDependentCompileFiles();
+      return;
+    }
     this.entryFiles.forEach((file: string) => {
       for (const [_, moduleInfo] of this.moduleInfos) {
         const relativePath = path.relative(moduleInfo.moduleRootPath, file);
@@ -748,7 +754,7 @@ export abstract class BaseMode {
   };
 
   public generatedependencyFileMap(): void {
-    if (this.isBuildConfigModified || !this.isCacheFileExists || this.enableDeclgenEts2Ts) {
+    if (this.isBuildConfigModified || !this.isCacheFileExists || this.enableDeclgenEts2Ts || this.isHybrid) {
       return;
     }
     const dependencyInputFile: string = path.join(this.cacheDir, DEPENDENCY_INPUT_FILE);
