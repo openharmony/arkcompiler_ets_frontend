@@ -13,8 +13,13 @@
  * limitations under the License.
  */
 
-class A{
-    /* @@ label */(a:number) :number
+class SomeObject {}
+class SomeConstructor {
+  new (s: string): SomeObject
+}
+function fn(ctor: SomeConstructor) {
+  return new ctor("hello")
 }
 
-/* @@@ label Error SyntaxError: Call signatures in object types are not supported. Use '$_invoke' method instead. */
+/* @@? 18:7 Error SyntaxError: Constructor signatures in object types are not supported. Use '$_invoke' method instead. */
+/* @@? 21:14 Error TypeError: Cannot find type 'ctor'. */

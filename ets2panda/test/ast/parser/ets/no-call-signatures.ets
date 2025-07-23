@@ -13,8 +13,16 @@
  * limitations under the License.
  */
 
-class A{
-    /* @@ label */(a:number) :number
+class DescribableFunction {
+    description: string
+    /* @@ label */(someArg: number): string {
+        return someArg.toString()
+    }
+}
+function doSomething(fn: DescribableFunction) {
+    fn(6)
 }
 
 /* @@@ label Error SyntaxError: Call signatures in object types are not supported. Use '$_invoke' method instead. */
+/* @@? 23:5 Error TypeError: No static $_invoke method and static $_instantiate method in fn. fn() is not allowed. */
+/* @@? 23:5 Error TypeError: Type 'DescribableFunction' has no call signatures. */
