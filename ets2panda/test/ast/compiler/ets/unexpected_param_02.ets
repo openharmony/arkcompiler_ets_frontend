@@ -13,11 +13,6 @@
  * limitations under the License.
  */
 
-interface inter <T>{
-    get value(): Double;
-    set value(A = Int.MAX_VALUE + 1);
-}
+function foo(a?){}
 
-function foo(i: Partial<inter<String>>): void {}
-
-/* @@? 18:17 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
+/* @@? 16:16 Error SyntaxError: Parameter declaration should have an explicit type annotation. */

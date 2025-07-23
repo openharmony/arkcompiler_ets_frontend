@@ -38,10 +38,8 @@ class Derived2 extends Base2{
 }
 
 /* @@? 17:17 Error SyntaxError: Rest parameter should be either array or tuple type. */
-/* @@? 17:17 Error TypeError: The type of parameter 'args' cannot be inferred */
 /* @@? 17:24 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
 /* @@? 24:3 Error TypeError: No matching call signature */
 /* @@? 29:13 Error SyntaxError: Rest parameter should be either array or tuple type. */
-/* @@? 29:13 Error TypeError: The type of parameter 'args' cannot be inferred */
 /* @@? 29:20 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
 /* @@? 36:3 Error TypeError: Unresolved reference my_func */

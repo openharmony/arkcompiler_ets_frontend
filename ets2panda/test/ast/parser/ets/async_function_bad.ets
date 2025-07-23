@@ -19,7 +19,6 @@ async native function foo(): Promise;
 /* @@? 16:14 Error SyntaxError: Unexpected token, expected an identifier. */
 /* @@? 16:14 Error SyntaxError: Unexpected token, expected '('. */
 /* @@? 16:14 Error TypeError: Only abstract or native methods can't have body. */
-/* @@? 16:23 Error TypeError: The type of parameter 'foo' cannot be inferred */
 /* @@? 16:26 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
 /* @@? 16:26 Error SyntaxError: Unexpected token, expected ',' or ')'. */
 /* @@? 16:27 Error SyntaxError: Unexpected token ')'. */

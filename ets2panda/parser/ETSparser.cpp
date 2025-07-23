@@ -1771,8 +1771,11 @@ ir::Expression *ETSParser::ParseFunctionParameter()
         typeAnnotation->SetParent(paramIdent);
         paramIdent->SetTsTypeAnnotation(typeAnnotation);
         paramIdent->SetEnd(typeAnnotation->End());
-    } else if (!isArrow && !isOptional) {
+    }
+
+    if ((!isArrow || isOptional) && paramIdent->TypeAnnotation() == nullptr) {
         LogError(diagnostic::EXPLICIT_PARAM_TYPE);
+        paramIdent->SetTsTypeAnnotation(AllocBrokenType(Lexer()->GetToken().Loc()));
     }
 
     return ParseFunctionParameterExpression(paramIdent, isOptional);
