@@ -2252,6 +2252,7 @@ bool ETSParser::ParseOverloadListElement(ArenaVector<ir::Expression *> &overload
     while (Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_PERIOD)) {
         if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
             LogExpectedToken(lexer::TokenType::LITERAL_IDENT);
+            return false;
         }
         auto *identNode = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
         identNode->SetRange(Lexer()->GetToken().Loc());
