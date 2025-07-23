@@ -19,7 +19,6 @@ let pFuncCall = ESValue.load('./no_await_js_promise_export').getProperty('pFuncC
 let arrowFunc = ESValue.load('./no_await_js_promise_export').getProperty('arrowFunc');
 let pArrowCall = ESValue.load('./no_await_js_promise_export').getProperty('pArrowCall');
 
-
 async function awaitPromise() {
   return await p.toPromise();
 }

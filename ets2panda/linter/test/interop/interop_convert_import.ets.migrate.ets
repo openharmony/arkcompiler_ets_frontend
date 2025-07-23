@@ -22,7 +22,6 @@ let array_val = ESValue.load('./interop_convert_import_js.js').getProperty('arra
 let null_val = ESValue.load('./interop_convert_import_js.js').getProperty('null_val');
 let undefined_val = ESValue.load('./interop_convert_import_js.js').getProperty('undefined_val');
 
-
  let a: number = foo.getProperty("num").toNumber()
  let a1: boolean = foo2.getProperty("bool").toBoolean()
  let a2: string = foo3.getProperty("str").toString()

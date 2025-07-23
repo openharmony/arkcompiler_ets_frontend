@@ -63,6 +63,7 @@ import {
 } from '../utils/consts/InteropAPI';
 import path from 'node:path';
 import { isStdLibrarySymbol } from '../utils/functions/IsStdLibrary';
+import { propertyAccessReplacements, identifierReplacements } from '../utils/consts/DeprecatedApi';
 
 const UNDEFINED_NAME = 'undefined';
 
@@ -3462,7 +3463,11 @@ export class Autofixer {
       return undefined;
     }
 
-    const replacementText = this.nonCommentPrinter.printNode(ts.EmitHint.Unspecified, replacement, expression.getSourceFile());
+    const replacementText = this.nonCommentPrinter.printNode(
+      ts.EmitHint.Unspecified,
+      replacement,
+      expression.getSourceFile()
+    );
     return [{ start: expression.getStart(), end: expression.getEnd(), replacementText }];
   }
 
@@ -4333,6 +4338,10 @@ export class Autofixer {
     moduleSpecifier: string,
     defaultSymbol?: ts.Symbol
   ): Autofix[] | undefined {
+    if (!Autofixer.shouldTransformImport(moduleSpecifier)) {
+      return undefined;
+    }
+
     let statements: string[] = [];
     if (importClause.name) {
       const symbolName = importClause.name.text;
@@ -4354,22 +4363,38 @@ export class Autofixer {
         statements
       );
     }
-    if (statements.length <= 0) {
-      return undefined;
-    }
-    let lastImportEnd = this.lastImportEndMap.get(this.sourceFile.fileName);
-    if (!lastImportEnd) {
-      lastImportEnd = this.getLastImportEnd();
-      this.lastImportEndMap.set(this.sourceFile.fileName, lastImportEnd);
-    }
-    return [
-      { start: importDecl.getStart(), end: importDecl.getEnd(), replacementText: '' },
-      {
-        start: lastImportEnd,
-        end: lastImportEnd,
-        replacementText: statements.join(this.getNewLine()) + this.getNewLine()
-      }
-    ];
+
+    return [Autofixer.createImportDeclarationFix(importDecl), this.createInsertStatementsFix(importDecl, statements)];
+  }
+
+  private static createImportDeclarationFix(importDecl: ts.ImportDeclaration): Autofix {
+    return {
+      start: importDecl.getStart(),
+      end: importDecl.getEnd(),
+      replacementText: ''
+    };
+  }
+
+  private createInsertStatementsFix(importDecl: ts.ImportDeclaration, statements: string[]): Autofix {
+    const joinedStatements = statements.join(this.getNewLine());
+    const replacementText = this.detectNeedsLeadingNewline(importDecl) ?
+      this.getNewLine() + joinedStatements :
+      joinedStatements;
+
+    return {
+      start: importDecl.getEnd(),
+      end: importDecl.getEnd(),
+      replacementText
+    };
+  }
+
+  private static shouldTransformImport(moduleSpecifier: string): boolean {
+    return moduleSpecifier.endsWith('.js') || moduleSpecifier.startsWith('./') || moduleSpecifier.startsWith('../');
+  }
+
+  private detectNeedsLeadingNewline(importDecl: ts.ImportDeclaration): boolean {
+    const prevToken = ts.getLeadingCommentRanges(this.sourceFile.text, importDecl.getFullStart())?.[0];
+    return !!prevToken && !(/^\s*$/).test(this.sourceFile.text.slice(prevToken.end, importDecl.getStart()));
   }
 
   private getStatementForInterOpImportJsOnNamedBindings(
@@ -5327,5 +5352,92 @@ export class Autofixer {
       '.' +
       this.printer.printNode(ts.EmitHint.Unspecified, newExpr, stmt.getSourceFile());
     return [{ start: stmt.getEnd(), end: stmt.getEnd(), replacementText: text }];
+  }
+
+  fixDeprecatedApiForCallExpression(callExpr: ts.CallExpression): Autofix[] | undefined {
+    const createUIContextAccess = (methodName: string): ts.Node => {
+      return ts.factory.createPropertyAccessExpression(
+        ts.factory.createCallExpression(ts.factory.createIdentifier('getUIContext'), undefined, []),
+        ts.factory.createIdentifier(methodName)
+      );
+    };
+
+    if (ts.isPropertyAccessExpression(callExpr.expression)) {
+      const fullName = `${callExpr.expression.expression.getText()}.${callExpr.expression.name.getText()}`;
+      const methodName = propertyAccessReplacements.get(fullName);
+      if (methodName) {
+        const newExpression = createUIContextAccess(methodName);
+        const newText = this.printer.printNode(ts.EmitHint.Unspecified, newExpression, callExpr.getSourceFile());
+        return [
+          {
+            start: callExpr.expression.getStart(),
+            end: callExpr.expression.getEnd(),
+            replacementText: newText
+          }
+        ];
+      }
+    }
+
+    if (ts.isIdentifier(callExpr.expression)) {
+      const identifierText = callExpr.expression.getText();
+      const methodName = identifierReplacements.get(identifierText);
+
+      if (methodName) {
+        const newExpression = createUIContextAccess(methodName);
+        const newText = this.printer.printNode(ts.EmitHint.Unspecified, newExpression, callExpr.getSourceFile());
+        return [
+          {
+            start: callExpr.expression.getStart(),
+            end: callExpr.expression.getEnd(),
+            replacementText: newText
+          }
+        ];
+      }
+    }
+
+    return undefined;
+  }
+
+  fixSpecialDeprecatedApiForCallExpression(callExpr: ts.CallExpression, name: ts.Identifier): Autofix[] | undefined {
+    if (name.getText() !== 'clip' || !ts.isNewExpression(callExpr.arguments[0])) {
+      return undefined;
+    }
+
+    const shapeMap = {
+      Circle: 'CircleShape',
+      Path: 'PathShape',
+      Ellipse: 'EllipseShape',
+      Rect: 'RectShape'
+    } as const;
+
+    const argsExpr = callExpr.arguments[0].arguments;
+    const constructorName = callExpr.arguments[0].expression.getText();
+
+    if (
+      ts.isPropertyAccessExpression(callExpr.expression) &&
+      callExpr.expression.name.text === 'clip' &&
+      constructorName in shapeMap
+    ) {
+      const shapeType = shapeMap[constructorName as keyof typeof shapeMap];
+      const newExpression = ts.factory.createCallExpression(
+        ts.factory.createPropertyAccessExpression(
+          callExpr.expression.expression,
+          ts.factory.createIdentifier('clipShape')
+        ),
+        undefined,
+        [ts.factory.createNewExpression(ts.factory.createIdentifier(shapeType), undefined, argsExpr)]
+      );
+
+      const newText = this.printer.printNode(ts.EmitHint.Unspecified, newExpression, callExpr.getSourceFile());
+      return [
+        {
+          start: callExpr.getStart(),
+          end: callExpr.getEnd(),
+          replacementText: newText
+        }
+      ];
+    }
+
+    return undefined;
   }
 }

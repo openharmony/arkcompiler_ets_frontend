@@ -33,7 +33,7 @@
                 {
                     "start": 656,
                     "end": 656,
-                    "replacementText": "let foo = ESValue.load('./binary_operation_js_obj_js').getProperty('foo');\nlet m = ESValue.load('./binary_operation_js_obj_js').getProperty('m');\nlet n = ESValue.load('./binary_operation_js_obj_js').getProperty('n');\n",
+                    "replacementText": "let foo = ESValue.load('./binary_operation_js_obj_js').getProperty('foo');\nlet m = ESValue.load('./binary_operation_js_obj_js').getProperty('m');\nlet n = ESValue.load('./binary_operation_js_obj_js').getProperty('n');",
                     "line": 15,
                     "column": 1,
                     "endLine": 15,

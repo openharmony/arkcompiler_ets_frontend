@@ -33,7 +33,7 @@
                 {
                     "start": 655,
                     "end": 655,
-                    "replacementText": "let Foo = ESValue.load('./instantiated_js_obj_js').getProperty('Foo');\nlet Foo1 = ESValue.load('./instantiated_js_obj_js').getProperty('Foo1');\n",
+                    "replacementText": "let Foo = ESValue.load('./instantiated_js_obj_js').getProperty('Foo');\nlet Foo1 = ESValue.load('./instantiated_js_obj_js').getProperty('Foo1');",
                     "line": 16,
                     "column": 1,
                     "endLine": 16,

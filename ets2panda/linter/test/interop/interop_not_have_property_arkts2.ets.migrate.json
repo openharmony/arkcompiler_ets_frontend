@@ -85,9 +85,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 33,
+            "line": 32,
             "column": 5,
-            "endLine": 33,
+            "endLine": 32,
             "endColumn": 26,
             "problem": "AnyType",
             "suggest": "",
@@ -95,9 +95,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 36,
+            "line": 35,
             "column": 5,
-            "endLine": 36,
+            "endLine": 35,
             "endColumn": 85,
             "problem": "AnyType",
             "suggest": "",
@@ -105,9 +105,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 38,
+            "line": 37,
             "column": 9,
-            "endLine": 38,
+            "endLine": 37,
             "endColumn": 32,
             "problem": "AnyType",
             "suggest": "",
@@ -115,9 +115,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 38,
+            "line": 37,
             "column": 23,
-            "endLine": 38,
+            "endLine": 37,
             "endColumn": 30,
             "problem": "DynamicCtorCall",
             "suggest": "",
@@ -125,9 +125,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 43,
+            "line": 42,
             "column": 9,
-            "endLine": 43,
+            "endLine": 42,
             "endColumn": 31,
             "problem": "AnyType",
             "suggest": "",
@@ -135,9 +135,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 43,
+            "line": 42,
             "column": 20,
-            "endLine": 43,
+            "endLine": 42,
             "endColumn": 24,
             "problem": "DynamicCtorCall",
             "suggest": "",
@@ -145,9 +145,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 48,
+            "line": 47,
             "column": 5,
-            "endLine": 48,
+            "endLine": 47,
             "endColumn": 26,
             "problem": "AnyType",
             "suggest": "",
@@ -155,9 +155,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 48,
+            "line": 47,
             "column": 16,
-            "endLine": 48,
+            "endLine": 47,
             "endColumn": 20,
             "problem": "DynamicCtorCall",
             "suggest": "",
@@ -165,9 +165,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 53,
+            "line": 52,
             "column": 9,
-            "endLine": 53,
+            "endLine": 52,
             "endColumn": 30,
             "problem": "AnyType",
             "suggest": "",
@@ -175,9 +175,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 53,
+            "line": 52,
             "column": 20,
-            "endLine": 53,
+            "endLine": 52,
             "endColumn": 24,
             "problem": "DynamicCtorCall",
             "suggest": "",
@@ -185,9 +185,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 58,
+            "line": 57,
             "column": 9,
-            "endLine": 58,
+            "endLine": 57,
             "endColumn": 30,
             "problem": "AnyType",
             "suggest": "",
@@ -195,9 +195,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 58,
+            "line": 57,
             "column": 20,
-            "endLine": 58,
+            "endLine": 57,
             "endColumn": 24,
             "problem": "DynamicCtorCall",
             "suggest": "",
@@ -205,9 +205,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 63,
+            "line": 62,
             "column": 9,
-            "endLine": 63,
+            "endLine": 62,
             "endColumn": 43,
             "problem": "AnyType",
             "suggest": "",
@@ -215,9 +215,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 63,
+            "line": 62,
             "column": 23,
-            "endLine": 63,
+            "endLine": 62,
             "endColumn": 29,
             "problem": "DynamicCtorCall",
             "suggest": "",
@@ -225,9 +225,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 68,
+            "line": 67,
             "column": 9,
-            "endLine": 68,
+            "endLine": 67,
             "endColumn": 34,
             "problem": "AnyType",
             "suggest": "",
@@ -235,9 +235,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 68,
+            "line": 67,
             "column": 24,
-            "endLine": 68,
+            "endLine": 67,
             "endColumn": 32,
             "problem": "DynamicCtorCall",
             "suggest": "",

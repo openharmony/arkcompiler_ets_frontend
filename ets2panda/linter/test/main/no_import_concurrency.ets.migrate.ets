@@ -38,6 +38,6 @@ function concurrency () {
 process.isIsolatedProcess();
 taskpool.cancel();
 ArkTSUtils.locks.AsyncLock
-collections.Set()
-collections.Set()
+Set()
+Set()
 fooAs.getFoo();

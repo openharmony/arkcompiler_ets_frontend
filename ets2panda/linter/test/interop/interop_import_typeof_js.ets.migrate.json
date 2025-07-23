@@ -15,10 +15,30 @@
     ],
     "result": [
         {
+            "line": 16,
+            "column": 5,
+            "endLine": 16,
+            "endColumn": 70,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 17,
+            "column": 5,
+            "endLine": 17,
+            "endColumn": 74,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
             "line": 18,
             "column": 5,
             "endLine": 18,
-            "endColumn": 70,
+            "endColumn": 68,
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
@@ -28,7 +48,7 @@
             "line": 19,
             "column": 5,
             "endLine": 19,
-            "endColumn": 69,
+            "endColumn": 74,
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
@@ -48,7 +68,7 @@
             "line": 21,
             "column": 5,
             "endLine": 21,
-            "endColumn": 74,
+            "endColumn": 69,
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
@@ -58,26 +78,6 @@
             "line": 22,
             "column": 5,
             "endLine": 22,
-            "endColumn": 68,
-            "problem": "AnyType",
-            "suggest": "",
-            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 23,
-            "column": 5,
-            "endLine": 23,
-            "endColumn": 74,
-            "problem": "AnyType",
-            "suggest": "",
-            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 24,
-            "column": 5,
-            "endLine": 24,
             "endColumn": 70,
             "problem": "AnyType",
             "suggest": "",
@@ -85,9 +85,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 28,
+            "line": 25,
             "column": 5,
-            "endLine": 28,
+            "endLine": 25,
             "endColumn": 25,
             "problem": "AnyType",
             "suggest": "",
@@ -95,9 +95,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 36,
+            "line": 33,
             "column": 5,
-            "endLine": 36,
+            "endLine": 33,
             "endColumn": 35,
             "problem": "AnyType",
             "suggest": "",
@@ -105,9 +105,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 42,
+            "line": 39,
             "column": 5,
-            "endLine": 42,
+            "endLine": 39,
             "endColumn": 37,
             "problem": "AnyType",
             "suggest": "",
@@ -115,9 +115,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 43,
+            "line": 40,
             "column": 5,
-            "endLine": 43,
+            "endLine": 40,
             "endColumn": 42,
             "problem": "AnyType",
             "suggest": "",
@@ -125,9 +125,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 56,
+            "line": 53,
             "column": 7,
-            "endLine": 56,
+            "endLine": 53,
             "endColumn": 13,
             "problem": "InvalidIdentifier",
             "suggest": "",

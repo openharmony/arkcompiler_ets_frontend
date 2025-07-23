@@ -14,28 +14,58 @@
  */
 
 import { UIAbility } from '@kit.AbilityKit';
+import { UIExtensionAbility } from '@kit.AbilityKit';
+import { AutoFillExtensionAbility } from '@kit.AbilityKit';
+import { ServiceExtensionAbility } from '@kit.AbilityKit';
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve, reject) => {
     setTimeout(resolve, ms)
   })
 }
-export default class MyUIAbility extends UIAbility {
-  async onDestroy(): Promise<void> { // ❌ Error
+
+function sleep1(ms: number): void {
+  return void
+}
+
+export default class MyUIAbility1 extends UIAbility {
+  async onDestroy(): Promise<void> { // use UIAbility onDestroy, should report error
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onDestroy');
     return sleep(1000);
   }
 }
 
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve, reject) => {
-    setTimeout(resolve, ms)
-  })
-}
-export default class MyUIAbility extends UIAbility {
-  onDestroy() { // ❌ Error
+export default class MyUIAbility2 extends UIExtensionAbility {
+  async onDestroy(): Promise<void> { // use UIExtensionAbility onDestroy, should report error
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onDestroy');
     return sleep(1000);
+  }
+}
+
+export default class MyUIAbility3 extends AutoFillExtensionAbility {
+  async onDestroy(): Promise<void> { // use AutoFillExtensionAbility onDestroy, should report error
+    hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onDestroy');
+    return sleep(1000);
+  }
+}
+
+export default class MyUIAbility4 extends ServiceExtensionAbility {
+  async onDisconnect(): Promise<void> { // use UIAbility onDestroy, should report error
+    hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onDestroy');
+    return sleep(1000);
+  }
+}
+
+export default class MyUIAbility5 extends UIAbility {
+  onDestroy() { // use UIAbility onDestroy with Promise<void> return, should report error
+    hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onDestroy');
+    return sleep(1000);
+  }
+}
+
+export default class MyUIAbility6 extends UIAbility {
+  onDestroy() { // use UIAbility onDestroy with void return, should not report error
+    hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onDestroy');
+    return sleep1(1000);
   }
 }

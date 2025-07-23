@@ -22,7 +22,6 @@ let User = ESValue.load('./interop_not_have_property_js').getProperty('User');
 let Person = ESValue.load('./interop_not_have_property_js').getProperty('Person');
 let Employee = ESValue.load('./interop_not_have_property_js').getProperty('Employee');
 
-
 foo.getProperty("name")
 foo.setProperty("name", ESValue.wrap("456"))
 person.setProperty("age", ESValue.wrap(23.0))

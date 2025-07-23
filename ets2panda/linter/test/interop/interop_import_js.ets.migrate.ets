@@ -13,21 +13,15 @@
  * limitations under the License.
  */
  
-
-
-
-
-
-
-let Wiki = ESValue.load('./interop_import_js_js').getProperty('Wiki');
-let Doge = ESValue.load('./interop_import_js_js').getProperty('Dog');
-let tjs = ESValue.load('./interop_import_js_js').getProperty('tjs');
-let myAaa = ESValue.load('./interop_import_js_js').getProperty('aaa');
-let ClassA = ESValue.load('./interop_import_js_js').getProperty('ClassA');
-let Dog = ESValue.load('./interop_import_js_js').getProperty('Dog');
-let myAaa = ESValue.load('./interop_import_js_js').getProperty('aaa');
+let Cjs = ESValue.load('../main/js_lib').getProperty('Cjs');
+let fjs = ESValue.load('../main/js_lib').getProperty('fjs');
 let CPreview = ESValue.load('./jsfiles/preview_import_js').getProperty('CPreview');
 let bar = ESValue.load('./jsfiles/preview_import_js').getProperty('bar');
 let foo = ESValue.load('./jsfiles/preview_import_js').getProperty('foo');
-let fjs = ESValue.load('../main/js_lib').getProperty('fjs');
-let Cjs = ESValue.load('../main/js_lib').getProperty('Cjs');
+let myAaa = ESValue.load('./interop_import_js_js').getProperty('aaa');
+let myAaa = ESValue.load('./interop_import_js_js').getProperty('aaa');
+let ClassA = ESValue.load('./interop_import_js_js').getProperty('ClassA');
+let Dog = ESValue.load('./interop_import_js_js').getProperty('Dog');
+let tjs = ESValue.load('./interop_import_js_js').getProperty('tjs');
+let Wiki = ESValue.load('./interop_import_js_js').getProperty('Wiki');
+let Doge = ESValue.load('./interop_import_js_js').getProperty('Dog');

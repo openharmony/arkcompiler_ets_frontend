@@ -15,6 +15,16 @@
     ],
     "result": [
         {
+            "line": 15,
+            "column": 5,
+            "endLine": 15,
+            "endColumn": 74,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
             "line": 16,
             "column": 5,
             "endLine": 16,
@@ -28,16 +38,6 @@
             "line": 17,
             "column": 5,
             "endLine": 17,
-            "endColumn": 74,
-            "problem": "AnyType",
-            "suggest": "",
-            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 19,
-            "column": 5,
-            "endLine": 19,
             "endColumn": 33,
             "problem": "AnyType",
             "suggest": "",
@@ -45,9 +45,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 23,
+            "line": 21,
             "column": 5,
-            "endLine": 23,
+            "endLine": 21,
             "endColumn": 34,
             "problem": "AnyType",
             "suggest": "",
@@ -55,9 +55,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 27,
+            "line": 25,
             "column": 9,
-            "endLine": 27,
+            "endLine": 25,
             "endColumn": 43,
             "problem": "AnyType",
             "suggest": "",

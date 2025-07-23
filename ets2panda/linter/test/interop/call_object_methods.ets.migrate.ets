@@ -14,6 +14,5 @@
  */
 let foo = ESValue.load('./call_object_methods_js').getProperty('foo');
 
-
 foo.invokeMethod("bar", ESValue.wrap(123.0))
 

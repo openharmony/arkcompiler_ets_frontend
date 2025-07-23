@@ -15,7 +15,6 @@
 
 let foo = ESValue.load('./interop_property_num_js').getProperty('foo');
 
-
 +foo.getProperty("num").toNumber();
 -foo.getProperty("num").toNumber();
 !foo.getProperty("num").toNumber();

@@ -15,19 +15,9 @@
     ],
     "result": [
         {
-            "line": 18,
-            "column": 1,
-            "endLine": 22,
-            "endColumn": 2,
-            "problem": "TsOverload",
-            "suggest": "",
-            "rule": "Class TS overloading is not supported(arkts-no-ts-overload)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 19,
+            "line": 22,
             "column": 10,
-            "endLine": 21,
+            "endLine": 24,
             "endColumn": 5,
             "problem": "GenericCallNoTypeArgs",
             "suggest": "",
@@ -35,9 +25,19 @@
             "severity": "ERROR"
         },
         {
-            "line": 24,
+            "line": 28,
+            "column": 10,
+            "endLine": 28,
+            "endColumn": 14,
+            "problem": "VoidOperator",
+            "suggest": "",
+            "rule": "\"void\" operator is not supported (arkts-no-void-operator)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 32,
             "column": 3,
-            "endLine": 27,
+            "endLine": 35,
             "endColumn": 4,
             "problem": "LimitedVoidTypeFromSdk",
             "suggest": "",
@@ -45,9 +45,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 24,
+            "line": 32,
             "column": 9,
-            "endLine": 24,
+            "endLine": 32,
             "endColumn": 18,
             "problem": "SdkAbilityAsynchronousLifecycle",
             "suggest": "",
@@ -55,9 +55,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 26,
+            "line": 34,
             "column": 18,
-            "endLine": 26,
+            "endLine": 34,
             "endColumn": 22,
             "problem": "NumericSemantics",
             "suggest": "",
@@ -65,29 +65,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 31,
-            "column": 1,
-            "endLine": 35,
-            "endColumn": 2,
-            "problem": "TsOverload",
-            "suggest": "",
-            "rule": "Class TS overloading is not supported(arkts-no-ts-overload)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 32,
-            "column": 10,
-            "endLine": 34,
-            "endColumn": 5,
-            "problem": "GenericCallNoTypeArgs",
-            "suggest": "",
-            "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 37,
+            "line": 39,
             "column": 3,
-            "endLine": 40,
+            "endLine": 42,
             "endColumn": 4,
             "problem": "LimitedVoidTypeFromSdk",
             "suggest": "",
@@ -95,9 +75,79 @@
             "severity": "ERROR"
         },
         {
-            "line": 37,
+            "line": 39,
+            "column": 9,
+            "endLine": 39,
+            "endColumn": 18,
+            "problem": "SdkAbilityAsynchronousLifecycle",
+            "suggest": "",
+            "rule": "1.2 Void cannot be combined. OnDestroy/onDisconnect (The return type of the method is now void | Promise) needs to be split into two interfaces. (sdk-ability-asynchronous-lifecycle)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 41,
+            "column": 18,
+            "endLine": 41,
+            "endColumn": 22,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 46,
+            "column": 9,
+            "endLine": 46,
+            "endColumn": 18,
+            "problem": "SdkAbilityAsynchronousLifecycle",
+            "suggest": "",
+            "rule": "1.2 Void cannot be combined. OnDestroy/onDisconnect (The return type of the method is now void | Promise) needs to be split into two interfaces. (sdk-ability-asynchronous-lifecycle)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 48,
+            "column": 18,
+            "endLine": 48,
+            "endColumn": 22,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 53,
+            "column": 9,
+            "endLine": 53,
+            "endColumn": 21,
+            "problem": "SdkAbilityAsynchronousLifecycle",
+            "suggest": "",
+            "rule": "1.2 Void cannot be combined. OnDestroy/onDisconnect (The return type of the method is now void | Promise) needs to be split into two interfaces. (sdk-ability-asynchronous-lifecycle)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 55,
+            "column": 18,
+            "endLine": 55,
+            "endColumn": 22,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 60,
             "column": 3,
-            "endLine": 37,
+            "endLine": 63,
+            "endColumn": 4,
+            "problem": "LimitedVoidTypeFromSdk",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(sdk-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 60,
+            "column": 3,
+            "endLine": 60,
             "endColumn": 12,
             "problem": "SdkAbilityAsynchronousLifecycle",
             "suggest": "",
@@ -105,10 +155,30 @@
             "severity": "ERROR"
         },
         {
-            "line": 39,
+            "line": 62,
             "column": 18,
-            "endLine": 39,
+            "endLine": 62,
             "endColumn": 22,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 67,
+            "column": 3,
+            "endLine": 70,
+            "endColumn": 4,
+            "problem": "LimitedVoidTypeFromSdk",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(sdk-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 69,
+            "column": 19,
+            "endLine": 69,
+            "endColumn": 23,
             "problem": "NumericSemantics",
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",

@@ -26,29 +26,9 @@
         },
         {
             "line": 18,
-            "column": 10,
-            "endLine": 18,
-            "endColumn": 21,
-            "problem": "NoNeedStdLibSendableContainer",
-            "suggest": "",
-            "rule": "Sendable containers are not supported (arkts-no-need-stdlib-sendable-containers)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 18,
             "column": 25,
             "endLine": 18,
             "endColumn": 41,
-            "problem": "NoNeedStdLibSendableContainer",
-            "suggest": "",
-            "rule": "Sendable containers are not supported (arkts-no-need-stdlib-sendable-containers)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 20,
-            "column": 10,
-            "endLine": 20,
-            "endColumn": 21,
             "problem": "NoNeedStdLibSendableContainer",
             "suggest": "",
             "rule": "Sendable containers are not supported (arkts-no-need-stdlib-sendable-containers)",
@@ -132,6 +112,46 @@
             "problem": "NoNeedStdLibSendableContainer",
             "suggest": "",
             "rule": "Sendable containers are not supported (arkts-no-need-stdlib-sendable-containers)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 40,
+            "column": 22,
+            "endLine": 40,
+            "endColumn": 33,
+            "problem": "NoNeedStdLibSendableContainer",
+            "suggest": "",
+            "rule": "Sendable containers are not supported (arkts-no-need-stdlib-sendable-containers)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 41,
+            "column": 11,
+            "endLine": 41,
+            "endColumn": 50,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 41,
+            "column": 17,
+            "endLine": 41,
+            "endColumn": 28,
+            "problem": "NoNeedStdLibSendableContainer",
+            "suggest": "",
+            "rule": "Sendable containers are not supported (arkts-no-need-stdlib-sendable-containers)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 41,
+            "column": 29,
+            "endLine": 41,
+            "endColumn": 32,
+            "problem": "ClassAsObjectError",
+            "suggest": "",
+            "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
             "severity": "ERROR"
         }
     ]

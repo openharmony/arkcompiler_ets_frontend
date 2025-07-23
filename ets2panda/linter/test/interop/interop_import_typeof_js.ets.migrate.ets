@@ -13,16 +13,13 @@
  * limitations under the License.
  */
  
-
-
-let wiki = ESValue.load('./interop_import_js_js').getProperty('Wiki');
-let Doge = ESValue.load('./interop_import_js_js').getProperty('Dog');
 let myAaa = ESValue.load('./interop_import_js_js').getProperty('aaa');
 let ClassA = ESValue.load('./interop_import_js_js').getProperty('ClassA');
 let Dog = ESValue.load('./interop_import_js_js').getProperty('Dog');
 let Person = ESValue.load('./interop_import_js_js').getProperty('Person');
 let Wiki = ESValue.load('./interop_import_js_js').getProperty('Wiki');
-
+let Doge = ESValue.load('./interop_import_js_js').getProperty('Dog');
+let wiki = ESValue.load('./interop_import_js_js').getProperty('Wiki');
 
 myAaa.invoke().typeOf(); //error
 let fun = myAaa.invoke();

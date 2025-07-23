@@ -33,7 +33,7 @@
                 {
                     "start": 655,
                     "end": 655,
-                    "replacementText": "let foo = ESValue.load('./increases_decreases_js_obj_js').getProperty('foo');\n",
+                    "replacementText": "let foo = ESValue.load('./increases_decreases_js_obj_js').getProperty('foo');",
                     "line": 15,
                     "column": 1,
                     "endLine": 15,

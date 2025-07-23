@@ -1361,13 +1361,18 @@ export class TsUtils {
 
   parentSymbolCache = new Map<ts.Symbol, string | undefined>();
 
-  getParentSymbolName(symbol: ts.Symbol): string | undefined {
+  getParentSymbolName(symbol: ts.Symbol | undefined): string | undefined {
+    if (!symbol) {
+      return undefined;
+    }
     const cached = this.parentSymbolCache.get(symbol);
     if (cached) {
       return cached;
     }
 
-    const name = this.tsTypeChecker.getFullyQualifiedName(symbol);
+    const fullName = this.tsTypeChecker.getFullyQualifiedName(symbol);
+    const match = fullName.match(/['"](.*)['"]\.(.*)/);
+    const name = match ? match[2] : fullName;
     const dotPosition = name.lastIndexOf('.');
     const result = dotPosition === -1 ? undefined : name.substring(0, dotPosition);
     this.parentSymbolCache.set(symbol, result);

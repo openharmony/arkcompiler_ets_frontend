@@ -33,7 +33,7 @@
                 {
                     "start": 693,
                     "end": 693,
-                    "replacementText": "let p = ESValue.load('./no_await_js_promise_export').getProperty('p');\nlet foo = ESValue.load('./no_await_js_promise_export').getProperty('foo');\nlet pFuncCall = ESValue.load('./no_await_js_promise_export').getProperty('pFuncCall');\nlet arrowFunc = ESValue.load('./no_await_js_promise_export').getProperty('arrowFunc');\nlet pArrowCall = ESValue.load('./no_await_js_promise_export').getProperty('pArrowCall');\n",
+                    "replacementText": "let p = ESValue.load('./no_await_js_promise_export').getProperty('p');\nlet foo = ESValue.load('./no_await_js_promise_export').getProperty('foo');\nlet pFuncCall = ESValue.load('./no_await_js_promise_export').getProperty('pFuncCall');\nlet arrowFunc = ESValue.load('./no_await_js_promise_export').getProperty('arrowFunc');\nlet pArrowCall = ESValue.load('./no_await_js_promise_export').getProperty('pArrowCall');",
                     "line": 16,
                     "column": 1,
                     "endLine": 16,

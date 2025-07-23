@@ -31,9 +31,9 @@
                     "endColumn": 38
                 },
                 {
-                    "start": 952,
-                    "end": 952,
-                    "replacementText": "let Cjs = ESValue.load('../main/js_lib').getProperty('Cjs');\n",
+                    "start": 643,
+                    "end": 643,
+                    "replacementText": "let Cjs = ESValue.load('../main/js_lib').getProperty('Cjs');",
                     "line": 16,
                     "column": 1,
                     "endLine": 16,
@@ -61,9 +61,9 @@
                     "endColumn": 38
                 },
                 {
-                    "start": 952,
-                    "end": 952,
-                    "replacementText": "let fjs = ESValue.load('../main/js_lib').getProperty('fjs');\n",
+                    "start": 681,
+                    "end": 681,
+                    "replacementText": "let fjs = ESValue.load('../main/js_lib').getProperty('fjs');",
                     "line": 17,
                     "column": 1,
                     "endLine": 17,
@@ -91,9 +91,9 @@
                     "endColumn": 64
                 },
                 {
-                    "start": 952,
-                    "end": 952,
-                    "replacementText": "let CPreview = ESValue.load('./jsfiles/preview_import_js').getProperty('CPreview');\nlet bar = ESValue.load('./jsfiles/preview_import_js').getProperty('bar');\nlet foo = ESValue.load('./jsfiles/preview_import_js').getProperty('foo');\n",
+                    "start": 745,
+                    "end": 745,
+                    "replacementText": "let CPreview = ESValue.load('./jsfiles/preview_import_js').getProperty('CPreview');\nlet bar = ESValue.load('./jsfiles/preview_import_js').getProperty('bar');\nlet foo = ESValue.load('./jsfiles/preview_import_js').getProperty('foo');",
                     "line": 18,
                     "column": 1,
                     "endLine": 18,
@@ -121,9 +121,9 @@
                     "endColumn": 44
                 },
                 {
-                    "start": 952,
-                    "end": 952,
-                    "replacementText": "let myAaa = ESValue.load('./interop_import_js_js').getProperty('aaa');\n",
+                    "start": 789,
+                    "end": 789,
+                    "replacementText": "let myAaa = ESValue.load('./interop_import_js_js').getProperty('aaa');",
                     "line": 19,
                     "column": 1,
                     "endLine": 19,
@@ -151,9 +151,9 @@
                     "endColumn": 57
                 },
                 {
-                    "start": 952,
-                    "end": 952,
-                    "replacementText": "let myAaa = ESValue.load('./interop_import_js_js').getProperty('aaa');\nlet ClassA = ESValue.load('./interop_import_js_js').getProperty('ClassA');\nlet Dog = ESValue.load('./interop_import_js_js').getProperty('Dog');\n",
+                    "start": 846,
+                    "end": 846,
+                    "replacementText": "let myAaa = ESValue.load('./interop_import_js_js').getProperty('aaa');\nlet ClassA = ESValue.load('./interop_import_js_js').getProperty('ClassA');\nlet Dog = ESValue.load('./interop_import_js_js').getProperty('Dog');",
                     "line": 20,
                     "column": 1,
                     "endLine": 20,
@@ -181,9 +181,9 @@
                     "endColumn": 47
                 },
                 {
-                    "start": 952,
-                    "end": 952,
-                    "replacementText": "let tjs = ESValue.load('./interop_import_js_js').getProperty('tjs');\n",
+                    "start": 893,
+                    "end": 893,
+                    "replacementText": "let tjs = ESValue.load('./interop_import_js_js').getProperty('tjs');",
                     "line": 21,
                     "column": 1,
                     "endLine": 21,
@@ -213,7 +213,7 @@
                 {
                     "start": 952,
                     "end": 952,
-                    "replacementText": "let Wiki = ESValue.load('./interop_import_js_js').getProperty('Wiki');\nlet Doge = ESValue.load('./interop_import_js_js').getProperty('Dog');\n",
+                    "replacementText": "let Wiki = ESValue.load('./interop_import_js_js').getProperty('Wiki');\nlet Doge = ESValue.load('./interop_import_js_js').getProperty('Dog');",
                     "line": 22,
                     "column": 1,
                     "endLine": 22,
