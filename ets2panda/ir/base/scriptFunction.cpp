@@ -283,6 +283,10 @@ void ScriptFunction::DumpCheckerTypeForDeclGen(ir::SrcDumper *dumper) const
         return;
     }
 
+    if (IsSetter()) {
+        return;
+    }
+
     if (Signature() == nullptr) {
         return;
     }

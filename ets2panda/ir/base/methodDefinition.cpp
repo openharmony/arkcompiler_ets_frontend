@@ -203,7 +203,7 @@ void MethodDefinition::DumpModifierPrefix(ir::SrcDumper *dumper) const
     if (IsNative()) {
         dumper->Add("native ");
     }
-    if (IsAsync()) {
+    if (IsAsync() && !dumper->IsDeclgen()) {
         dumper->Add("async ");
     }
     if (IsOverride()) {
@@ -315,6 +315,10 @@ bool MethodDefinition::FilterForDeclGen(ir::SrcDumper *dumper) const
     }
 
     if (name == compiler::Signatures::GET_INDEX_METHOD || name == compiler::Signatures::SET_INDEX_METHOD) {
+        return true;
+    }
+
+    if (IsPrivate()) {
         return true;
     }
 
