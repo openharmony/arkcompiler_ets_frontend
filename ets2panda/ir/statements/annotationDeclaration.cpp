@@ -111,7 +111,14 @@ Identifier *AnnotationDeclaration::GetBaseName() const
     if (expr_->IsIdentifier()) {
         return expr_->AsIdentifier();
     }
-    return expr_->AsETSTypeReference()->Part()->GetIdent();
+    auto *part = Expr()->AsETSTypeReference()->Part();
+    if (part->Name()->IsIdentifier()) {
+        return part->Name()->AsIdentifier();
+    }
+    if (part->Name()->IsTSQualifiedName()) {
+        return part->Name()->AsTSQualifiedName()->Right();
+    }
+    return nullptr;
 }
 
 AstNode *AnnotationDeclaration::Construct(ArenaAllocator *allocator)
