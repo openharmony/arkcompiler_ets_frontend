@@ -2105,7 +2105,7 @@ change_types:
       namespace: "parser::"
     cast:
       expression: >-
-        auto |es2panda_arg.type.ptr_depth||arg_name|E2p = 
+        auto |es2panda_arg.type.ptr_depth||arg_name|E2p =
         reinterpret_cast<parser::Program *>(|arg_name|);
       var_name: '|arg_name|E2p'
       reverse_cast:
@@ -2135,7 +2135,7 @@ change_types:
       expression: auto &|arg_name|E2p = *reinterpret_cast<parser::Program *>(|arg_name|);
       var_name: '|arg_name|E2p'
       reverse_cast:
-          start: >- 
+          start: >-
             reinterpret_cast<?const? es2panda_Program *>(
             reinterpret_cast<Context *>(context)->allocator->New<parser::Program>(
           end: '))'
@@ -2199,12 +2199,26 @@ change_types:
       type:
         name: 'Language'
       min_ptr_depth: 1
+      optional: true
     new_args:
+    - type:
+        name: 'Es2pandaLanguage'
+        ptr_depth: 0
+      name: '|arg_name|'
+      namespace: ''
     cast:
         expression: >-
           auto |es2panda_arg.type.ptr_depth||arg_name|E2p =
           reinterpret_cast<Context *>(context)->allocator->
+          New<Language |es2panda_arg.type.ptr_depth|>(static_cast<Language::Id>(|arg_name|));
+        default_expression: >-
+          auto |es2panda_arg.type.ptr_depth||arg_name|E2p =
+          reinterpret_cast<Context *>(context)->allocator->
           New<Language |es2panda_arg.type.ptr_depth|>(Language::Id::ETS);
+        reverse_cast:
+          start: >-
+            static_cast<Es2pandaLanguage>(
+          end: '->GetId())'
         var_name: '|arg_name|E2p'
 
   - es2panda_arg:
@@ -2212,10 +2226,21 @@ change_types:
       type:
         name: 'Language'
       max_ptr_depth: 0
+      optional: true
     new_args:
+    - type:
+        name: 'Es2pandaLanguage'
+        ptr_depth: 0
+      name: '|arg_name|'
+      namespace: ''
     cast:
         expression: >-
-          ark::es2panda::Language |arg_name|E2p {Language::Id::ETS};
+          ark::es2panda::Language |arg_name|E2p {static_cast<Language::Id>(|arg_name|)};
+        default_expression: ark::es2panda::Language |arg_name|E2p {Language::Id::ETS};
+        reverse_cast:
+          start: >-
+            static_cast<Es2pandaLanguage>(
+          end: '.GetId())'
         var_name: '|arg_name|E2p'
 
   - es2panda_arg:
@@ -3644,6 +3669,26 @@ change_types:
         current_class: TSInterfaceDeclaration
       max_ptr_depth: 0
       min_ptr_depth: 0
+      optional: true
+    default_new_args:
+      - name: 'id'
+        type:
+          name: es2panda_AstNode
+          ptr_depth: 1
+      - name: 'typeParams'
+        type:
+          name: es2panda_AstNode
+          ptr_depth: 1
+      - name: 'body'
+        type:
+          name: es2panda_AstNode
+          ptr_depth: 1
+      - name: isStatic
+        type:
+          name: bool
+      - name: isExternal
+        type:
+          name: bool
     new_args:
       - name: 'id'
         type:
@@ -3663,8 +3708,18 @@ change_types:
       - name: isExternal
         type:
           name: bool
+      - type:
+          name: 'Es2pandaLanguage'
+          ptr_depth: 0
+        name: 'language'
     cast:
       expression: "\
+        auto es2pandaId = reinterpret_cast<ir::Identifier *>(id);\n
+        auto es2pandaTypeParams = reinterpret_cast<ir::TSTypeParameterDeclaration *>(typeParams);\n
+        auto es2pandaBody = reinterpret_cast<ir::TSInterfaceBody *>(body);\n
+        ark::es2panda::Language es2pandaLang {static_cast<Language::Id>(language)};\n
+        "
+      default_expression: "\
         auto es2pandaId = reinterpret_cast<ir::Identifier *>(id);\n
         auto es2pandaTypeParams = reinterpret_cast<ir::TSTypeParameterDeclaration *>(typeParams);\n
         auto es2pandaBody = reinterpret_cast<ir::TSInterfaceBody *>(body);\n
@@ -3679,7 +3734,28 @@ change_types:
         current_class: ScriptFunction
       max_ptr_depth: 0
       min_ptr_depth: 0
+      optional: true
     new_args:
+      - name: '|arg_name|body'
+        type:
+          name: es2panda_AstNode
+          ptr_depth: 1
+      - name: '|arg_name|signature'
+        type:
+          name: es2panda_FunctionSignature
+          ptr_depth: 1
+      - name: '|arg_name|funcFlags'
+        type:
+          name: int
+          ptr_depth: 0
+      - name: '|arg_name|flags'
+        type:
+          name: int
+      - type:
+          name: 'Es2pandaLanguage'
+          ptr_depth: 0
+        name: '|arg_name|lang'
+    default_new_args:
       - name: '|arg_name|body'
         type:
           name: es2panda_AstNode
@@ -3701,10 +3777,17 @@ change_types:
         auto |arg_name|signatureE2p = std::move(*reinterpret_cast<ir::FunctionSignature *>(|arg_name|signature));\n
         auto |arg_name|funcFlagsE2p = E2pToIrScriptFunctionFlags((Es2pandaScriptFunctionFlags)|arg_name|funcFlags);\n
         auto |arg_name|flagsE2p = E2pToIrModifierFlags((Es2pandaModifierFlags)|arg_name|flags);\n
-        ark::es2panda::Language |arg_name|lang {Language::Id::ETS};\n
+        ark::es2panda::Language |arg_name|langE2p {static_cast<Language::Id>(|arg_name|lang)};\n
+        "
+      default_expression: "
+        auto *|arg_name|bodyE2p = reinterpret_cast<ir::AstNode *>(|arg_name|body);\n
+        auto |arg_name|signatureE2p = std::move(*reinterpret_cast<ir::FunctionSignature *>(|arg_name|signature));\n
+        auto |arg_name|funcFlagsE2p = E2pToIrScriptFunctionFlags((Es2pandaScriptFunctionFlags)|arg_name|funcFlags);\n
+        auto |arg_name|flagsE2p = E2pToIrModifierFlags((Es2pandaModifierFlags)|arg_name|flags);\n
+        ark::es2panda::Language |arg_name|langE2p {Language::Id::ETS};\n
         "
       var_name: "ir::ScriptFunction::ScriptFunctionData {|arg_name|bodyE2p, std::move(|arg_name|signatureE2p),
-        |arg_name|funcFlagsE2p, |arg_name|flagsE2p, |arg_name|lang}"
+        |arg_name|funcFlagsE2p, |arg_name|flagsE2p, |arg_name|langE2p}"
 
   - es2panda_arg:
       name: '|arg_name|'
