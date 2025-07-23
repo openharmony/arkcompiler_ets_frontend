@@ -20,6 +20,7 @@ import { NameGenerator } from '../utils/functions/NameGenerator';
 import { isAssignmentOperator } from '../utils/functions/isAssignmentOperator';
 import { SymbolCache } from './SymbolCache';
 import { SENDABLE_DECORATOR } from '../utils/consts/SendableAPI';
+import { ARKTSUTILS_LOCKS_MEMBER } from '../utils/consts/LimitedStdAPI';
 import { DEFAULT_MODULE_NAME, PATH_SEPARATOR, SRC_AND_MAIN } from '../utils/consts/OhmUrl';
 import {
   DOUBLE_DOLLAR_IDENTIFIER,
@@ -4081,17 +4082,82 @@ export class Autofixer {
       return undefined;
     }
 
-    // 2) Find the enclosing `new` expression
+    const className = asyncLockProp.name.getText();
+
+    // 2a) Handle static method calls on AsyncLock (e.g. AsyncLock.request, AsyncLock.acquire, etc.)
+    const methodProp = asyncLockProp.parent;
+    if (ts.isPropertyAccessExpression(methodProp)) {
+      const methodName = methodProp.name.getText();
+      const callExpr = methodProp.parent;
+      if (!ts.isCallExpression(callExpr)) {
+        return undefined;
+      }
+
+      const fixes: Autofix[] = [];
+      // Type fix for variable declaration, if necessary
+      const varDecl = Autofixer.findParentVariableDeclaration(callExpr);
+      const typeFix = varDecl ? this.buildConcurrencyLockTypeFix(varDecl, className) : undefined;
+      if (typeFix) {
+        fixes.push(typeFix);
+      }
+
+      // build AsyncLock.<methodName>(...)
+      const fixCall = ts.factory.createCallExpression(
+        ts.factory.createPropertyAccessExpression(
+          ts.factory.createIdentifier(className),
+          ts.factory.createIdentifier(methodName)
+        ),
+        undefined,
+        callExpr.arguments
+      );
+      const replacementText = this.printer.printNode(ts.EmitHint.Unspecified, fixCall, callExpr.getSourceFile());
+      fixes.push({ start: callExpr.getStart(), end: callExpr.getEnd(), replacementText });
+      return fixes;
+    }
+
+    // 2b) Handle `new ArkTSUtils.locks.AsyncLock()`
     const newExpr = asyncLockProp.parent;
     if (!ts.isNewExpression(newExpr)) {
       return undefined;
     }
-
-    const className = asyncLockProp.name.getText();
+    // build `new AsyncLock()`
     const replacement = ts.factory.createNewExpression(ts.factory.createIdentifier(className), undefined, []);
     const replacementText = this.printer.printNode(ts.EmitHint.Unspecified, replacement, newExpr.getSourceFile());
-
     return [{ start: newExpr.getStart(), end: newExpr.getEnd(), replacementText }];
+  }
+
+  /**
+   * If the variable declaration has a qualified type `*.locks.ClassName`, build a fix to simplify it to `ClassName`.
+   */
+  private buildConcurrencyLockTypeFix(varDecl: ts.VariableDeclaration, className: string): Autofix | undefined {
+    const typeNode = varDecl.type;
+
+    if (!typeNode || !ts.isTypeReferenceNode(typeNode) || !ts.isQualifiedName(typeNode.typeName)) {
+      return undefined;
+    }
+
+    const qn = typeNode.typeName;
+    const left = qn.left;
+    const right = qn.right;
+
+    // ensure it's of form *.locks.ClassName
+    if (ts.isQualifiedName(left) && left.right.text === ARKTSUTILS_LOCKS_MEMBER && right.text === className) {
+      const simple = ts.factory.createTypeReferenceNode(ts.factory.createIdentifier(className), undefined);
+      const text = this.printer.printNode(ts.EmitHint.Unspecified, simple, varDecl.getSourceFile());
+      return { start: typeNode.getStart(), end: typeNode.getEnd(), replacementText: text };
+    }
+
+    return undefined;
+  }
+
+    private static findParentVariableDeclaration(node: ts.Node): ts.VariableDeclaration | undefined {
+    while (node) {
+      if (ts.isVariableDeclaration(node)) {
+        return node;
+      }
+      node = node.parent;
+    }
+    return undefined;
   }
 
   fixAppStorageCallExpression(varDecl: ts.VariableDeclaration): Autofix[] | undefined {

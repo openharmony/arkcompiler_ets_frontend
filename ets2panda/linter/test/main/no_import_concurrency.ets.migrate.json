@@ -15,9 +15,9 @@
     ],
     "result": [
         {
-            "line": 41,
+            "line": 39,
             "column": 1,
-            "endLine": 41,
+            "endLine": 39,
             "endColumn": 6,
             "problem": "GenericCallNoTypeArgs",
             "suggest": "",
@@ -25,9 +25,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 42,
+            "line": 40,
             "column": 1,
-            "endLine": 42,
+            "endLine": 40,
             "endColumn": 6,
             "problem": "GenericCallNoTypeArgs",
             "suggest": "",

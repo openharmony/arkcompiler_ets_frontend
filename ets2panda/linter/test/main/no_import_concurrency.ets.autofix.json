@@ -136,8 +136,8 @@
                     "endColumn": 31
                 },
                 {
-                    "start": 1397,
-                    "end": 1400,
+                    "start": 1367,
+                    "end": 1370,
                     "replacementText": "taskpool",
                     "line": 23,
                     "column": 16,
@@ -208,8 +208,8 @@
                     "endColumn": 23
                 },
                 {
-                    "start": 1373,
-                    "end": 1375,
+                    "start": 1343,
+                    "end": 1345,
                     "replacementText": "process",
                     "line": 25,
                     "column": 10,
@@ -238,8 +238,8 @@
                     "endColumn": 43
                 },
                 {
-                    "start": 1441,
-                    "end": 1444,
+                    "start": 1392,
+                    "end": 1395,
                     "replacementText": "collections",
                     "line": 25,
                     "column": 25,
@@ -289,8 +289,8 @@
                     "endColumn": 11
                 },
                 {
-                    "start": 1278,
-                    "end": 1281,
+                    "start": 1248,
+                    "end": 1251,
                     "replacementText": "taskpool",
                     "line": 27,
                     "column": 8,
@@ -306,55 +306,25 @@
             "line": 28,
             "column": 8,
             "endLine": 28,
-            "endColumn": 10,
-            "problem": "LimitedStdLibNoImportConcurrency",
-            "autofix": [
-                {
-                    "start": 1208,
-                    "end": 1237,
-                    "replacementText": "",
-                    "line": 28,
-                    "column": 8,
-                    "endLine": 28,
-                    "endColumn": 10
-                },
-                {
-                    "start": 1411,
-                    "end": 1413,
-                    "replacementText": "ArkTSUtils",
-                    "line": 28,
-                    "column": 8,
-                    "endLine": 28,
-                    "endColumn": 10
-                }
-            ],
-            "suggest": "",
-            "rule": "Import Concurrency is not required (arkts-limited-stdlib-no-import-concurrency)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 29,
-            "column": 8,
-            "endLine": 29,
             "endColumn": 12,
             "problem": "LimitedStdLibNoImportConcurrency",
             "autofix": [
                 {
-                    "start": 1238,
-                    "end": 1276,
+                    "start": 1208,
+                    "end": 1246,
                     "replacementText": "",
-                    "line": 29,
+                    "line": 28,
                     "column": 8,
-                    "endLine": 29,
+                    "endLine": 28,
                     "endColumn": 12
                 },
                 {
-                    "start": 1430,
-                    "end": 1434,
+                    "start": 1381,
+                    "end": 1385,
                     "replacementText": "collections",
-                    "line": 29,
+                    "line": 28,
                     "column": 8,
-                    "endLine": 29,
+                    "endLine": 28,
                     "endColumn": 12
                 }
             ],
@@ -363,19 +333,19 @@
             "severity": "ERROR"
         },
         {
-            "line": 34,
+            "line": 33,
             "column": 11,
-            "endLine": 34,
+            "endLine": 33,
             "endColumn": 20,
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1340,
-                    "end": 1340,
+                    "start": 1310,
+                    "end": 1310,
                     "replacementText": ": number",
-                    "line": 34,
+                    "line": 33,
                     "column": 11,
-                    "endLine": 34,
+                    "endLine": 33,
                     "endColumn": 20
                 }
             ],
@@ -384,19 +354,19 @@
             "severity": "ERROR"
         },
         {
-            "line": 34,
+            "line": 33,
             "column": 17,
-            "endLine": 34,
+            "endLine": 33,
             "endColumn": 20,
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1343,
-                    "end": 1346,
+                    "start": 1313,
+                    "end": 1316,
                     "replacementText": "123.0",
-                    "line": 34,
+                    "line": 33,
                     "column": 17,
-                    "endLine": 34,
+                    "endLine": 33,
                     "endColumn": 20
                 }
             ],
