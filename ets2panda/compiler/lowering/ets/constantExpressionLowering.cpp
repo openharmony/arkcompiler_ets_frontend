@@ -927,7 +927,7 @@ static ir::AstNode *HandleBitwiseLogicalExpression(const ir::BinaryExpression *e
         return HandleNumericBitwiseLogicalExpression(expr, context);
     }
 
-    if (!left->IsBooleanLiteral() && !right->IsBooleanLiteral()) {
+    if (!left->IsBooleanLiteral() || !right->IsBooleanLiteral()) {
         LogError(context, diagnostic::WRONG_OPERAND_TYPE_FOR_BINARY_EXPRESSION, {}, expr->Start());
         return CreateErrorIdentifier(expr, context->allocator);
     }
