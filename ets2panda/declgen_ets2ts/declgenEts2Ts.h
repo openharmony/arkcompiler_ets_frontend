@@ -16,10 +16,11 @@
 #ifndef ES2PANDA_DECLGEN_ETS2TS_H
 #define ES2PANDA_DECLGEN_ETS2TS_H
 
-#include "parser/program/program.h"
 #include "checker/ETSchecker.h"
+#include "compiler/lowering/phase.h"
 #include "libpandabase/os/file.h"
 #include "libpandabase/utils/arena_containers.h"
+#include "parser/program/program.h"
 #include "util/options.h"
 #include "util/diagnosticEngine.h"
 #include "isolatedDeclgenChecker.h"
@@ -36,6 +37,9 @@ struct DeclgenOptions {
 // Consume program after checker stage and generate out_path typescript file with declarations
 bool GenerateTsDeclarations(checker::ETSChecker *checker, const ark::es2panda::parser::Program *program,
                             const DeclgenOptions &declgenOptions);
+bool ValidateDeclgenOptions(const DeclgenOptions &options, checker::ETSChecker *checker);
+bool WriteOutputFiles(const DeclgenOptions &options, const std::string &combinedEts, const std::string &combinedDEts,
+                      checker::ETSChecker *checker);
 
 class TSDeclGen {
 public:
@@ -48,6 +52,8 @@ public:
           allocator_(SpaceType::SPACE_TYPE_COMPILER, nullptr, true),
           indirectDependencyObjects_(allocator_.Adapter()),
           importSet_(allocator_.Adapter()),
+          exportSet_(allocator_.Adapter()),
+          glueCodeImportSet_(allocator_.Adapter()),
           typeAliasMap_(allocator_.Adapter()),
           paramDefaultMap_(allocator_.Adapter())
     {
@@ -65,6 +71,7 @@ public:
 
     bool Generate();
     void GenImportDeclarations();
+    void GenExportNamedDeclarations();
 
     std::string GetDtsOutput() const
     {
@@ -121,6 +128,7 @@ private:
     std::vector<UnionType *> FilterUnionTypes(const ArenaVector<UnionType *> &originTypes);
 
     void GenImportDeclaration(const ir::ETSImportDeclaration *importDeclaration);
+    void GenExportNamedDeclaration(const ir::ExportNamedDeclaration *exportDeclaration);
     void GenNamespaceImport(const ir::AstNode *specifier, const std::string &source);
     void GenDefaultImport(const ir::AstNode *specifier, const std::string &source, bool isTypeKind = false);
     void GenNamedImports(const ir::ETSImportDeclaration *importDeclaration,
@@ -129,8 +137,11 @@ private:
                                const ir::ETSImportDeclaration *importDeclaration, bool isTypeKind = false);
     void GenTsImportStatement(std::vector<ir::AstNode *> &specifiers, const ir::ETSImportDeclaration *importDeclaration,
                               bool isInterface = false);
+    void GenNamedExports(const ir::ExportNamedDeclaration *exportDeclaration,
+                         const ArenaVector<ir::ExportSpecifier *> &specifiers);
     void GenSingleNamedImport(ir::AstNode *specifier, const ir::ETSImportDeclaration *importDeclaration,
                               bool isGlueCode = false);
+    void GenSingleNamedExport(ir::AstNode *specifier, bool isGlueCode = false);
     void GenReExportDeclaration(const ir::ETSReExportDeclaration *reExportDeclaration);
     bool GenNamespaceReExportDeclaration(const ir::AstNode *specifier,
                                          const ir::ETSImportDeclaration *importDeclaration);
@@ -189,6 +200,8 @@ private:
     void ProcessFuncParameters(const checker::Signature *sig);
     void ProcessClassPropertyType(const ir::ClassProperty *classProp);
     std::vector<ir::AstNode *> FilterValidImportSpecifiers(const ArenaVector<ir::AstNode *> &specifiers);
+    std::vector<ir::AstNode *> FilterValidExportSpecifiers(const ArenaVector<ir::ExportSpecifier *> &specifiers);
+    std::vector<ir::AstNode *> FilterGlueCodeExportSpecifiers(const std::vector<ir::AstNode *> &specifiers);
     std::string ReplaceETSGLOBAL(const std::string &typeName);
     std::string GetIndent() const;
     std::string RemoveModuleExtensionName(const std::string &filepath);
@@ -196,6 +209,9 @@ private:
     void ProcessIndent();
 
     bool GenGlobalDescriptor();
+    void CollectGlueCodeImportSet();
+    void CollectDefaultImport(const ir::AstNode *specifier);
+    void CollectNamedImports(const ArenaVector<ir::AstNode *> &specifiers);
     void CollectIndirectExportDependencies();
     void ProcessTypeAliasDependencies(const ir::TSTypeAliasDeclaration *typeAliasDecl);
     void ProcessTypeAnnotationDependencies(const ir::TypeNode *typeAnnotation);
@@ -230,7 +246,6 @@ private:
     void ProcessInterfaceMethodDefinition(const ir::MethodDefinition *methodDef);
     void ProcessMethodDefinition(const ir::MethodDefinition *methodDef,
                                  std::unordered_set<std::string> &processedMethods);
-
     void ProcessMethodsFromInterfaces(std::unordered_set<std::string> &processedMethods,
                                       const ArenaVector<checker::ETSObjectType *> &interfaces);
 
@@ -319,6 +334,8 @@ private:
     ArenaAllocator allocator_;
     ArenaSet<std::string> indirectDependencyObjects_;
     ArenaSet<std::string> importSet_;
+    ArenaSet<std::string> exportSet_;
+    ArenaSet<std::string> glueCodeImportSet_;
     DeclgenOptions declgenOptions_ {};
     std::string globalDesc_;
     ArenaMap<std::string, std::string> typeAliasMap_;

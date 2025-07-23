@@ -145,6 +145,16 @@ public:
         curr_.minor = phaseId;
     }
 
+    void SetCurrentPhaseIdWithoutReCheck(int32_t phaseId)
+    {
+        if (phaseId == curr_.minor) {
+            return;
+        }
+        curr_.major = 0;
+        prev_ = {0, INVALID_PHASE_ID};
+        curr_.minor = phaseId;
+    }
+
     ArenaAllocator *Allocator() const
     {
         return allocator_;
