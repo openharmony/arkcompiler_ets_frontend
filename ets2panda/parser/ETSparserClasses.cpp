@@ -223,6 +223,9 @@ std::tuple<ir::ModifierFlags, bool, bool> ETSParser::ParseClassMemberAccessModif
             accessFlag = ir::ModifierFlags::INTERNAL_PROTECTED;
             break;
         }
+        case lexer::TokenType::EOS: {  // process invalid tokenType
+            return {ir::ModifierFlags::NONE, false, false};
+        }
         default: {
             ES2PANDA_UNREACHABLE();
         }
