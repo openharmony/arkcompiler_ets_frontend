@@ -103,12 +103,11 @@ checker::Type *ETSAnalyzer::Check(ir::ClassProperty *st) const
     if (st->Id()->Variable() == nullptr) {
         auto ident = st->Id();
         auto [decl, var] = checker->VarBinder()->NewVarDecl<varbinder::LetDecl>(
-            ident->Start(),
-            !ident->IsErrorPlaceHolder() ? ident->Name() : compiler::GenName(checker->ProgramAllocator()).View());
+            ident->Start(), compiler::GenName(checker->ProgramAllocator()).View());
         var->SetScope(checker->VarBinder()->GetScope());
         ident->SetVariable(var);
         decl->BindNode(ident);
-        return ident->SetTsType(var->SetTsType(checker->GlobalTypeError()));
+        ident->SetTsType(var->SetTsType(checker->GlobalTypeError()));
     }
 
     ES2PANDA_ASSERT(st->Id()->Variable() != nullptr);

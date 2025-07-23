@@ -28,4 +28,3 @@ class C {
 
 /* @@? 19:13 Error SyntaxError: Field type annotation expected. */
 /* @@? 21:12 Error TypeError: Variable 'C' has already been declared. */
-/* @@? 27:19 Error TypeError: The super type of 'D' class is not extensible. */

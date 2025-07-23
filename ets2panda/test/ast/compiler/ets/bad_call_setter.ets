@@ -31,3 +31,4 @@ function main() {
 /* @@? 23:5 Error SyntaxError: Unexpected token 'this'. */
 /* @@? 23:9 Error SyntaxError: Unexpected token '.'. */
 /* @@? 23:10 Error TypeError: Variable 'text' has already been declared. */
+/* @@? 23:17 Error TypeError: Property 's' must be accessed through 'this' */
