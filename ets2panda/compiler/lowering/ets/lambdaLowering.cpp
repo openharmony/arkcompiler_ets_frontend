@@ -108,6 +108,7 @@ static void ProcessTypeParameterProperties(checker::ETSTypeParameter *oldTypePar
         auto *newConstraint = oldConstraint->Substitute(checker->Relation(), substitution);
         newTypeParam->SetConstraintType(newConstraint);
         auto *newConstraintNode = allocator->New<ir::OpaqueTypeNode>(newConstraint, allocator);
+        ES2PANDA_ASSERT(newConstraintNode != nullptr);
         newTypeParamNode->SetConstraint(newConstraintNode);
         newConstraintNode->SetParent(newTypeParamNode);
     }
@@ -116,6 +117,7 @@ static void ProcessTypeParameterProperties(checker::ETSTypeParameter *oldTypePar
         auto *newDefault = oldDefault->Substitute(checker->Relation(), substitution);
         newTypeParam->SetDefaultType(newDefault);
         auto *newDefaultNode = allocator->New<ir::OpaqueTypeNode>(newDefault, allocator);
+        ES2PANDA_ASSERT(newDefaultNode != nullptr);
         newTypeParamNode->SetDefaultType(newDefaultNode);
         newDefaultNode->SetParent(newTypeParamNode);
     }

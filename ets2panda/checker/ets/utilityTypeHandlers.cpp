@@ -550,6 +550,7 @@ static void SetupFunctionParams(ir::ScriptFunction *function, varbinder::Functio
                          checker->ProgramAllocNode<ir::ETSUndefinedType>(checker->ProgramAllocator())},
                         checker->ProgramAllocator()->Adapter()),
                     checker->ProgramAllocator());
+            ES2PANDA_ASSERT(unionType != nullptr);
             paramExpr->Ident()->SetTsTypeAnnotation(unionType);
             unionType->SetParent(paramExpr->Ident());
         }
