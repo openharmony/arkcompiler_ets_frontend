@@ -1252,6 +1252,7 @@ void InitScopesPhaseETS::VisitTSTypeParameter(ir::TSTypeParameter *typeParam)
     var->AddFlag(varbinder::VariableFlags::TYPE_PARAMETER);
     decl->BindNode(typeParam);
     CallNode(typeParam->Annotations());
+    CallNode(typeParam->DefaultType());
 }
 
 void InitScopesPhaseETS::VisitTSInterfaceDeclaration(ir::TSInterfaceDeclaration *interfaceDecl)
