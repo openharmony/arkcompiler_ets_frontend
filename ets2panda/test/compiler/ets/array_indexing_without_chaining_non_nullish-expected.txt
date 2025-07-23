@@ -393,7 +393,7 @@
                                     },
                                     "end": {
                                       "line": 18,
-                                      "column": 34,
+                                      "column": 33,
                                       "program": "array_indexing_without_chaining_non_nullish.ets"
                                     }
                                   }
@@ -406,7 +406,7 @@
                                   },
                                   "end": {
                                     "line": 18,
-                                    "column": 34,
+                                    "column": 33,
                                     "program": "array_indexing_without_chaining_non_nullish.ets"
                                   }
                                 }
@@ -456,7 +456,7 @@
                                     },
                                     "end": {
                                       "line": 18,
-                                      "column": 43,
+                                      "column": 42,
                                       "program": "array_indexing_without_chaining_non_nullish.ets"
                                     }
                                   }
@@ -469,7 +469,7 @@
                                   },
                                   "end": {
                                     "line": 18,
-                                    "column": 43,
+                                    "column": 42,
                                     "program": "array_indexing_without_chaining_non_nullish.ets"
                                   }
                                 }
@@ -886,7 +886,7 @@
                   },
                   "end": {
                     "line": 19,
-                    "column": 20,
+                    "column": 18,
                     "program": "array_indexing_without_chaining_non_nullish.ets"
                   }
                 }
@@ -899,7 +899,7 @@
                 },
                 "end": {
                   "line": 19,
-                  "column": 20,
+                  "column": 18,
                   "program": "array_indexing_without_chaining_non_nullish.ets"
                 }
               }

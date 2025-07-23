@@ -469,7 +469,7 @@
                       },
                       "end": {
                         "line": 17,
-                        "column": 31,
+                        "column": 29,
                         "program": "lambda_import_alias_1-3.ets"
                       }
                     }
@@ -482,7 +482,7 @@
                     },
                     "end": {
                       "line": 17,
-                      "column": 31,
+                      "column": 29,
                       "program": "lambda_import_alias_1-3.ets"
                     }
                   }
@@ -523,7 +523,7 @@
                               },
                               "end": {
                                 "line": 17,
-                                "column": 45,
+                                "column": 44,
                                 "program": "lambda_import_alias_1-3.ets"
                               }
                             }
@@ -536,7 +536,7 @@
                             },
                             "end": {
                               "line": 17,
-                              "column": 45,
+                              "column": 44,
                               "program": "lambda_import_alias_1-3.ets"
                             }
                           }

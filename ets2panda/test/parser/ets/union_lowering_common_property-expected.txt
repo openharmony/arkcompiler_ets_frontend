@@ -94,7 +94,7 @@
                   },
                   "end": {
                     "line": 17,
-                    "column": 21,
+                    "column": 19,
                     "program": "union_lowering_common_property.ets"
                   }
                 }
@@ -107,7 +107,7 @@
                 },
                 "end": {
                   "line": 17,
-                  "column": 21,
+                  "column": 19,
                   "program": "union_lowering_common_property.ets"
                 }
               }
@@ -352,7 +352,7 @@
                   },
                   "end": {
                     "line": 21,
-                    "column": 21,
+                    "column": 19,
                     "program": "union_lowering_common_property.ets"
                   }
                 }
@@ -365,7 +365,7 @@
                 },
                 "end": {
                   "line": 21,
-                  "column": 21,
+                  "column": 19,
                   "program": "union_lowering_common_property.ets"
                 }
               }
@@ -568,7 +568,7 @@
                 },
                 "end": {
                   "line": 24,
-                  "column": 17,
+                  "column": 15,
                   "program": "union_lowering_common_property.ets"
                 }
               }
@@ -581,7 +581,7 @@
               },
               "end": {
                 "line": 24,
-                "column": 17,
+                "column": 15,
                 "program": "union_lowering_common_property.ets"
               }
             }
@@ -615,7 +615,7 @@
                 },
                 "end": {
                   "line": 24,
-                  "column": 20,
+                  "column": 19,
                   "program": "union_lowering_common_property.ets"
                 }
               }
@@ -628,7 +628,7 @@
               },
               "end": {
                 "line": 24,
-                "column": 20,
+                "column": 19,
                 "program": "union_lowering_common_property.ets"
               }
             }
@@ -642,7 +642,7 @@
           },
           "end": {
             "line": 24,
-            "column": 20,
+            "column": 19,
             "program": "union_lowering_common_property.ets"
           }
         }
@@ -1027,7 +1027,7 @@
                                           },
                                           "end": {
                                             "line": 27,
-                                            "column": 29,
+                                            "column": 28,
                                             "program": "union_lowering_common_property.ets"
                                           }
                                         }
@@ -1040,7 +1040,7 @@
                                         },
                                         "end": {
                                           "line": 27,
-                                          "column": 29,
+                                          "column": 28,
                                           "program": "union_lowering_common_property.ets"
                                         }
                                       }
@@ -1054,7 +1054,7 @@
                                       },
                                       "end": {
                                         "line": 27,
-                                        "column": 29,
+                                        "column": 28,
                                         "program": "union_lowering_common_property.ets"
                                       }
                                     }
@@ -1067,7 +1067,7 @@
                                     },
                                     "end": {
                                       "line": 27,
-                                      "column": 29,
+                                      "column": 28,
                                       "program": "union_lowering_common_property.ets"
                                     }
                                   }
@@ -1102,7 +1102,7 @@
                                     },
                                     "end": {
                                       "line": 27,
-                                      "column": 41,
+                                      "column": 38,
                                       "program": "union_lowering_common_property.ets"
                                     }
                                   }
@@ -1115,7 +1115,7 @@
                                   },
                                   "end": {
                                     "line": 27,
-                                    "column": 41,
+                                    "column": 38,
                                     "program": "union_lowering_common_property.ets"
                                   }
                                 }

@@ -237,7 +237,7 @@
                                     },
                                     "end": {
                                       "line": 16,
-                                      "column": 37,
+                                      "column": 36,
                                       "program": "main_entry_point_6.ets"
                                     }
                                   }
@@ -250,7 +250,7 @@
                                   },
                                   "end": {
                                     "line": 16,
-                                    "column": 37,
+                                    "column": 36,
                                     "program": "main_entry_point_6.ets"
                                   }
                                 }
@@ -277,7 +277,7 @@
                             },
                             "end": {
                               "line": 16,
-                              "column": 38,
+                              "column": 37,
                               "program": "main_entry_point_6.ets"
                             }
                           }
@@ -290,7 +290,7 @@
                           },
                           "end": {
                             "line": 16,
-                            "column": 38,
+                            "column": 37,
                             "program": "main_entry_point_6.ets"
                           }
                         }
@@ -304,7 +304,7 @@
                         },
                         "end": {
                           "line": 16,
-                          "column": 38,
+                          "column": 37,
                           "program": "main_entry_point_6.ets"
                         }
                       }
@@ -317,7 +317,7 @@
                       },
                       "end": {
                         "line": 16,
-                        "column": 38,
+                        "column": 37,
                         "program": "main_entry_point_6.ets"
                       }
                     }

@@ -240,8 +240,8 @@
                           "program": "local-interface.ets"
                         },
                         "end": {
-                          "line": 19,
-                          "column": 11,
+                          "line": 18,
+                          "column": 33,
                           "program": "local-interface.ets"
                         }
                       }

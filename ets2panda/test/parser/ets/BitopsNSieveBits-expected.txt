@@ -4088,7 +4088,7 @@
                                   },
                                   "end": {
                                     "line": 58,
-                                    "column": 32,
+                                    "column": 31,
                                     "program": "BitopsNSieveBits.ets"
                                   }
                                 }
@@ -4101,7 +4101,7 @@
                                 },
                                 "end": {
                                   "line": 58,
-                                  "column": 32,
+                                  "column": 31,
                                   "program": "BitopsNSieveBits.ets"
                                 }
                               }

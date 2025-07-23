@@ -127,7 +127,7 @@
                   },
                   "end": {
                     "line": 17,
-                    "column": 21,
+                    "column": 20,
                     "program": "generics_primitive_type_param_1.ets"
                   }
                 }
@@ -140,7 +140,7 @@
                 },
                 "end": {
                   "line": 17,
-                  "column": 21,
+                  "column": 20,
                   "program": "generics_primitive_type_param_1.ets"
                 }
               }
@@ -155,7 +155,7 @@
               },
               "end": {
                 "line": 17,
-                "column": 21,
+                "column": 20,
                 "program": "generics_primitive_type_param_1.ets"
               }
             }
@@ -903,7 +903,7 @@
                                   },
                                   "end": {
                                     "line": 24,
-                                    "column": 24,
+                                    "column": 22,
                                     "program": "generics_primitive_type_param_1.ets"
                                   }
                                 }
@@ -916,7 +916,7 @@
                                 },
                                 "end": {
                                   "line": 24,
-                                  "column": 24,
+                                  "column": 22,
                                   "program": "generics_primitive_type_param_1.ets"
                                 }
                               }
@@ -998,7 +998,7 @@
                                   },
                                   "end": {
                                     "line": 24,
-                                    "column": 36,
+                                    "column": 35,
                                     "program": "generics_primitive_type_param_1.ets"
                                   }
                                 }
@@ -1011,7 +1011,7 @@
                                 },
                                 "end": {
                                   "line": 24,
-                                  "column": 36,
+                                  "column": 35,
                                   "program": "generics_primitive_type_param_1.ets"
                                 }
                               }
@@ -1790,7 +1790,7 @@
                                   },
                                   "end": {
                                     "line": 32,
-                                    "column": 30,
+                                    "column": 28,
                                     "program": "generics_primitive_type_param_1.ets"
                                   }
                                 }
@@ -1803,7 +1803,7 @@
                                 },
                                 "end": {
                                   "line": 32,
-                                  "column": 30,
+                                  "column": 28,
                                   "program": "generics_primitive_type_param_1.ets"
                                 }
                               }
@@ -1885,7 +1885,7 @@
                                   },
                                   "end": {
                                     "line": 32,
-                                    "column": 45,
+                                    "column": 44,
                                     "program": "generics_primitive_type_param_1.ets"
                                   }
                                 }
@@ -1898,7 +1898,7 @@
                                 },
                                 "end": {
                                   "line": 32,
-                                  "column": 45,
+                                  "column": 44,
                                   "program": "generics_primitive_type_param_1.ets"
                                 }
                               }
@@ -2245,7 +2245,7 @@
                                   },
                                   "end": {
                                     "line": 36,
-                                    "column": 32,
+                                    "column": 30,
                                     "program": "generics_primitive_type_param_1.ets"
                                   }
                                 }
@@ -2258,7 +2258,7 @@
                                 },
                                 "end": {
                                   "line": 36,
-                                  "column": 32,
+                                  "column": 30,
                                   "program": "generics_primitive_type_param_1.ets"
                                 }
                               }
@@ -2340,7 +2340,7 @@
                                   },
                                   "end": {
                                     "line": 36,
-                                    "column": 48,
+                                    "column": 47,
                                     "program": "generics_primitive_type_param_1.ets"
                                   }
                                 }
@@ -2353,7 +2353,7 @@
                                 },
                                 "end": {
                                   "line": 36,
-                                  "column": 48,
+                                  "column": 47,
                                   "program": "generics_primitive_type_param_1.ets"
                                 }
                               }

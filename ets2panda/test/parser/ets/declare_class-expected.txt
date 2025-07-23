@@ -77,8 +77,8 @@
                     "program": "declare_class.ets"
                   },
                   "end": {
-                    "line": 18,
-                    "column": 11,
+                    "line": 17,
+                    "column": 15,
                     "program": "declare_class.ets"
                   }
                 }
@@ -90,8 +90,8 @@
                   "program": "declare_class.ets"
                 },
                 "end": {
-                  "line": 18,
-                  "column": 11,
+                  "line": 17,
+                  "column": 15,
                   "program": "declare_class.ets"
                 }
               }
@@ -105,8 +105,8 @@
                 "program": "declare_class.ets"
               },
               "end": {
-                "line": 18,
-                "column": 11,
+                "line": 17,
+                "column": 15,
                 "program": "declare_class.ets"
               }
             }
@@ -249,7 +249,7 @@
                             },
                             "end": {
                               "line": 19,
-                              "column": 19,
+                              "column": 18,
                               "program": "declare_class.ets"
                             }
                           }
@@ -262,7 +262,7 @@
                           },
                           "end": {
                             "line": 19,
-                            "column": 19,
+                            "column": 18,
                             "program": "declare_class.ets"
                           }
                         }
@@ -276,7 +276,7 @@
                         },
                         "end": {
                           "line": 19,
-                          "column": 19,
+                          "column": 18,
                           "program": "declare_class.ets"
                         }
                       }
@@ -289,7 +289,7 @@
                       },
                       "end": {
                         "line": 19,
-                        "column": 19,
+                        "column": 18,
                         "program": "declare_class.ets"
                       }
                     }

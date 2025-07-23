@@ -1802,7 +1802,7 @@
                       },
                       "end": {
                         "line": 33,
-                        "column": 24,
+                        "column": 22,
                         "program": "regression-target-type-context.ets"
                       }
                     }
@@ -1815,7 +1815,7 @@
                     },
                     "end": {
                       "line": 33,
-                      "column": 24,
+                      "column": 22,
                       "program": "regression-target-type-context.ets"
                     }
                   }
@@ -1856,7 +1856,7 @@
                               },
                               "end": {
                                 "line": 34,
-                                "column": 18,
+                                "column": 17,
                                 "program": "regression-target-type-context.ets"
                               }
                             }
@@ -1869,7 +1869,7 @@
                             },
                             "end": {
                               "line": 34,
-                              "column": 18,
+                              "column": 17,
                               "program": "regression-target-type-context.ets"
                             }
                           }
@@ -2254,7 +2254,7 @@
                                   },
                                   "end": {
                                     "line": 39,
-                                    "column": 26,
+                                    "column": 24,
                                     "program": "regression-target-type-context.ets"
                                   }
                                 }
@@ -2267,7 +2267,7 @@
                                 },
                                 "end": {
                                   "line": 39,
-                                  "column": 26,
+                                  "column": 24,
                                   "program": "regression-target-type-context.ets"
                                 }
                               }
@@ -2317,7 +2317,7 @@
                                   },
                                   "end": {
                                     "line": 39,
-                                    "column": 35,
+                                    "column": 34,
                                     "program": "regression-target-type-context.ets"
                                   }
                                 }
@@ -2330,7 +2330,7 @@
                                 },
                                 "end": {
                                   "line": 39,
-                                  "column": 35,
+                                  "column": 34,
                                   "program": "regression-target-type-context.ets"
                                 }
                               }

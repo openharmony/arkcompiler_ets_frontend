@@ -208,7 +208,7 @@
                   },
                   "end": {
                     "line": 28,
-                    "column": 19,
+                    "column": 17,
                     "program": "package_module_2.ets"
                   }
                 }
@@ -221,7 +221,7 @@
                 },
                 "end": {
                   "line": 28,
-                  "column": 19,
+                  "column": 17,
                   "program": "package_module_2.ets"
                 }
               }
@@ -751,7 +751,7 @@
                   },
                   "end": {
                     "line": 19,
-                    "column": 20,
+                    "column": 19,
                     "program": "package_module_2.ets"
                   }
                 }
@@ -764,7 +764,7 @@
                 },
                 "end": {
                   "line": 19,
-                  "column": 20,
+                  "column": 19,
                   "program": "package_module_2.ets"
                 }
               }
@@ -862,7 +862,7 @@
                       },
                       "end": {
                         "line": 22,
-                        "column": 25,
+                        "column": 23,
                         "program": "package_module_2.ets"
                       }
                     }
@@ -875,7 +875,7 @@
                     },
                     "end": {
                       "line": 22,
-                      "column": 25,
+                      "column": 23,
                       "program": "package_module_2.ets"
                     }
                   }
@@ -920,7 +920,7 @@
                                   },
                                   "end": {
                                     "line": 23,
-                                    "column": 28,
+                                    "column": 26,
                                     "program": "package_module_2.ets"
                                   }
                                 }
@@ -933,7 +933,7 @@
                                 },
                                 "end": {
                                   "line": 23,
-                                  "column": 28,
+                                  "column": 26,
                                   "program": "package_module_2.ets"
                                 }
                               }
@@ -1410,7 +1410,7 @@
                                   },
                                   "end": {
                                     "line": 23,
-                                    "column": 7,
+                                    "column": 6,
                                     "program": "package_module_1.ets"
                                   }
                                 }
@@ -1423,7 +1423,7 @@
                                 },
                                 "end": {
                                   "line": 23,
-                                  "column": 7,
+                                  "column": 6,
                                   "program": "package_module_1.ets"
                                 }
                               }

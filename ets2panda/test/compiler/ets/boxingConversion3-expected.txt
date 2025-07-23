@@ -425,7 +425,7 @@
                       },
                       "end": {
                         "line": 20,
-                        "column": 40,
+                        "column": 38,
                         "program": "boxingConversion3.ets"
                       }
                     }
@@ -438,7 +438,7 @@
                     },
                     "end": {
                       "line": 20,
-                      "column": 40,
+                      "column": 38,
                       "program": "boxingConversion3.ets"
                     }
                   }
@@ -479,7 +479,7 @@
                               },
                               "end": {
                                 "line": 21,
-                                "column": 22,
+                                "column": 21,
                                 "program": "boxingConversion3.ets"
                               }
                             }
@@ -492,7 +492,7 @@
                             },
                             "end": {
                               "line": 21,
-                              "column": 22,
+                              "column": 21,
                               "program": "boxingConversion3.ets"
                             }
                           }
@@ -701,7 +701,7 @@
                                   },
                                   "end": {
                                     "line": 25,
-                                    "column": 18,
+                                    "column": 16,
                                     "program": "boxingConversion3.ets"
                                   }
                                 }
@@ -714,7 +714,7 @@
                                 },
                                 "end": {
                                   "line": 25,
-                                  "column": 18,
+                                  "column": 16,
                                   "program": "boxingConversion3.ets"
                                 }
                               }
@@ -814,7 +814,7 @@
                                   },
                                   "end": {
                                     "line": 26,
-                                    "column": 19,
+                                    "column": 17,
                                     "program": "boxingConversion3.ets"
                                   }
                                 }
@@ -827,7 +827,7 @@
                                 },
                                 "end": {
                                   "line": 26,
-                                  "column": 19,
+                                  "column": 17,
                                   "program": "boxingConversion3.ets"
                                 }
                               }
@@ -927,7 +927,7 @@
                                   },
                                   "end": {
                                     "line": 27,
-                                    "column": 18,
+                                    "column": 16,
                                     "program": "boxingConversion3.ets"
                                   }
                                 }
@@ -940,7 +940,7 @@
                                 },
                                 "end": {
                                   "line": 27,
-                                  "column": 18,
+                                  "column": 16,
                                   "program": "boxingConversion3.ets"
                                 }
                               }

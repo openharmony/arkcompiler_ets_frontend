@@ -234,7 +234,7 @@
                                   },
                                   "end": {
                                     "line": 17,
-                                    "column": 19,
+                                    "column": 17,
                                     "program": "Boolean_bitwise.ets"
                                   }
                                 }
@@ -247,7 +247,7 @@
                                 },
                                 "end": {
                                   "line": 17,
-                                  "column": 19,
+                                  "column": 17,
                                   "program": "Boolean_bitwise.ets"
                                 }
                               }
@@ -347,7 +347,7 @@
                                   },
                                   "end": {
                                     "line": 18,
-                                    "column": 19,
+                                    "column": 17,
                                     "program": "Boolean_bitwise.ets"
                                   }
                                 }
@@ -360,7 +360,7 @@
                                 },
                                 "end": {
                                   "line": 18,
-                                  "column": 19,
+                                  "column": 17,
                                   "program": "Boolean_bitwise.ets"
                                 }
                               }
@@ -460,7 +460,7 @@
                                   },
                                   "end": {
                                     "line": 19,
-                                    "column": 22,
+                                    "column": 20,
                                     "program": "Boolean_bitwise.ets"
                                   }
                                 }
@@ -473,7 +473,7 @@
                                 },
                                 "end": {
                                   "line": 19,
-                                  "column": 22,
+                                  "column": 20,
                                   "program": "Boolean_bitwise.ets"
                                 }
                               }

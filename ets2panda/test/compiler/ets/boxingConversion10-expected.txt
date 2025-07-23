@@ -475,7 +475,7 @@
                   },
                   "end": {
                     "line": 17,
-                    "column": 16,
+                    "column": 14,
                     "program": "boxingConversion10.ets"
                   }
                 }
@@ -488,7 +488,7 @@
                 },
                 "end": {
                   "line": 17,
-                  "column": 16,
+                  "column": 14,
                   "program": "boxingConversion10.ets"
                 }
               }

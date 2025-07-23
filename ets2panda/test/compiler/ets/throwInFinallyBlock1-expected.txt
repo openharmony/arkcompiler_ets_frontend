@@ -235,7 +235,7 @@
                                     },
                                     "end": {
                                       "line": 18,
-                                      "column": 25,
+                                      "column": 24,
                                       "program": "throwInFinallyBlock1.ets"
                                     }
                                   }
@@ -248,7 +248,7 @@
                                   },
                                   "end": {
                                     "line": 18,
-                                    "column": 25,
+                                    "column": 24,
                                     "program": "throwInFinallyBlock1.ets"
                                   }
                                 }
@@ -409,7 +409,7 @@
                                                     },
                                                     "end": {
                                                       "line": 24,
-                                                      "column": 29,
+                                                      "column": 28,
                                                       "program": "throwInFinallyBlock1.ets"
                                                     }
                                                   }
@@ -422,7 +422,7 @@
                                                   },
                                                   "end": {
                                                     "line": 24,
-                                                    "column": 29,
+                                                    "column": 28,
                                                     "program": "throwInFinallyBlock1.ets"
                                                   }
                                                 }
@@ -645,7 +645,7 @@
                                           },
                                           "end": {
                                             "line": 30,
-                                            "column": 27,
+                                            "column": 26,
                                             "program": "throwInFinallyBlock1.ets"
                                           }
                                         }
@@ -658,7 +658,7 @@
                                         },
                                         "end": {
                                           "line": 30,
-                                          "column": 27,
+                                          "column": 26,
                                           "program": "throwInFinallyBlock1.ets"
                                         }
                                       }

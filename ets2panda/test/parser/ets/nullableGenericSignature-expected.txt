@@ -164,7 +164,7 @@
                                     },
                                     "end": {
                                       "line": 17,
-                                      "column": 19,
+                                      "column": 18,
                                       "program": "nullableGenericSignature.ets"
                                     }
                                   }
@@ -177,7 +177,7 @@
                                   },
                                   "end": {
                                     "line": 17,
-                                    "column": 19,
+                                    "column": 18,
                                     "program": "nullableGenericSignature.ets"
                                   }
                                 }
@@ -191,7 +191,7 @@
                                 },
                                 "end": {
                                   "line": 17,
-                                  "column": 19,
+                                  "column": 18,
                                   "program": "nullableGenericSignature.ets"
                                 }
                               }
@@ -204,7 +204,7 @@
                               },
                               "end": {
                                 "line": 17,
-                                "column": 19,
+                                "column": 18,
                                 "program": "nullableGenericSignature.ets"
                               }
                             }
@@ -475,7 +475,7 @@
                                   },
                                   "end": {
                                     "line": 21,
-                                    "column": 23,
+                                    "column": 21,
                                     "program": "nullableGenericSignature.ets"
                                   }
                                 }
@@ -488,7 +488,7 @@
                                 },
                                 "end": {
                                   "line": 21,
-                                  "column": 23,
+                                  "column": 21,
                                   "program": "nullableGenericSignature.ets"
                                 }
                               }
@@ -544,7 +544,7 @@
                       },
                       "end": {
                         "line": 21,
-                        "column": 31,
+                        "column": 29,
                         "program": "nullableGenericSignature.ets"
                       }
                     }
@@ -557,7 +557,7 @@
                     },
                     "end": {
                       "line": 21,
-                      "column": 31,
+                      "column": 29,
                       "program": "nullableGenericSignature.ets"
                     }
                   }
@@ -598,7 +598,7 @@
                               },
                               "end": {
                                 "line": 22,
-                                "column": 21,
+                                "column": 20,
                                 "program": "nullableGenericSignature.ets"
                               }
                             }
@@ -611,7 +611,7 @@
                             },
                             "end": {
                               "line": 22,
-                              "column": 21,
+                              "column": 20,
                               "program": "nullableGenericSignature.ets"
                             }
                           }
@@ -1172,7 +1172,7 @@
                                     },
                                     "end": {
                                       "line": 26,
-                                      "column": 29,
+                                      "column": 28,
                                       "program": "nullableGenericSignature.ets"
                                     }
                                   }
@@ -1185,7 +1185,7 @@
                                   },
                                   "end": {
                                     "line": 26,
-                                    "column": 29,
+                                    "column": 28,
                                     "program": "nullableGenericSignature.ets"
                                   }
                                 }
@@ -1212,7 +1212,7 @@
                             },
                             "end": {
                               "line": 26,
-                              "column": 30,
+                              "column": 29,
                               "program": "nullableGenericSignature.ets"
                             }
                           }
@@ -1225,7 +1225,7 @@
                           },
                           "end": {
                             "line": 26,
-                            "column": 30,
+                            "column": 29,
                             "program": "nullableGenericSignature.ets"
                           }
                         }
@@ -1239,7 +1239,7 @@
                         },
                         "end": {
                           "line": 26,
-                          "column": 30,
+                          "column": 29,
                           "program": "nullableGenericSignature.ets"
                         }
                       }
@@ -1252,7 +1252,7 @@
                       },
                       "end": {
                         "line": 26,
-                        "column": 30,
+                        "column": 29,
                         "program": "nullableGenericSignature.ets"
                       }
                     }
@@ -1375,7 +1375,7 @@
                                           },
                                           "end": {
                                             "line": 27,
-                                            "column": 32,
+                                            "column": 31,
                                             "program": "nullableGenericSignature.ets"
                                           }
                                         }
@@ -1388,7 +1388,7 @@
                                         },
                                         "end": {
                                           "line": 27,
-                                          "column": 32,
+                                          "column": 31,
                                           "program": "nullableGenericSignature.ets"
                                         }
                                       }
@@ -1402,7 +1402,7 @@
                                       },
                                       "end": {
                                         "line": 27,
-                                        "column": 32,
+                                        "column": 31,
                                         "program": "nullableGenericSignature.ets"
                                       }
                                     }
@@ -1415,7 +1415,7 @@
                                     },
                                     "end": {
                                       "line": 27,
-                                      "column": 32,
+                                      "column": 31,
                                       "program": "nullableGenericSignature.ets"
                                     }
                                   }

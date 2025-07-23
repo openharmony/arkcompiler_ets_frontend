@@ -94,7 +94,7 @@
                   },
                   "end": {
                     "line": 17,
-                    "column": 17,
+                    "column": 15,
                     "program": "user_defined_22.ets"
                   }
                 }
@@ -107,7 +107,7 @@
                 },
                 "end": {
                   "line": 17,
-                  "column": 17,
+                  "column": 15,
                   "program": "user_defined_22.ets"
                 }
               }
@@ -306,8 +306,8 @@
               "program": "user_defined_22.ets"
             },
             "end": {
-              "line": 20,
-              "column": 4,
+              "line": 19,
+              "column": 16,
               "program": "user_defined_22.ets"
             }
           }
@@ -319,8 +319,8 @@
             "program": "user_defined_22.ets"
           },
           "end": {
-            "line": 20,
-            "column": 4,
+            "line": 19,
+            "column": 16,
             "program": "user_defined_22.ets"
           }
         }
@@ -571,8 +571,8 @@
                                   "program": "user_defined_22.ets"
                                 },
                                 "end": {
-                                  "line": 21,
-                                  "column": 2,
+                                  "line": 20,
+                                  "column": 14,
                                   "program": "user_defined_22.ets"
                                 }
                               }
@@ -584,8 +584,8 @@
                                 "program": "user_defined_22.ets"
                               },
                               "end": {
-                                "line": 21,
-                                "column": 2,
+                                "line": 20,
+                                "column": 14,
                                 "program": "user_defined_22.ets"
                               }
                             }
@@ -864,8 +864,8 @@
                       "program": "user_defined_22.ets"
                     },
                     "end": {
-                      "line": 21,
-                      "column": 2,
+                      "line": 20,
+                      "column": 14,
                       "program": "user_defined_22.ets"
                     }
                   }
@@ -877,8 +877,8 @@
                     "program": "user_defined_22.ets"
                   },
                   "end": {
-                    "line": 21,
-                    "column": 2,
+                    "line": 20,
+                    "column": 14,
                     "program": "user_defined_22.ets"
                   }
                 }
@@ -972,7 +972,7 @@
                   },
                   "end": {
                     "line": 22,
-                    "column": 11,
+                    "column": 9,
                     "program": "user_defined_22.ets"
                   }
                 }
@@ -985,7 +985,7 @@
                 },
                 "end": {
                   "line": 22,
-                  "column": 11,
+                  "column": 9,
                   "program": "user_defined_22.ets"
                 }
               }

@@ -72,7 +72,7 @@
                     },
                     "end": {
                       "line": 16,
-                      "column": 26,
+                      "column": 25,
                       "program": "union_types_5.ets"
                     }
                   }
@@ -85,7 +85,7 @@
                   },
                   "end": {
                     "line": 16,
-                    "column": 26,
+                    "column": 25,
                     "program": "union_types_5.ets"
                   }
                 }
@@ -174,7 +174,7 @@
                   },
                   "end": {
                     "line": 17,
-                    "column": 15,
+                    "column": 14,
                     "program": "union_types_5.ets"
                   }
                 }
@@ -187,7 +187,7 @@
                 },
                 "end": {
                   "line": 17,
-                  "column": 15,
+                  "column": 14,
                   "program": "union_types_5.ets"
                 }
               }
@@ -202,7 +202,7 @@
               },
               "end": {
                 "line": 17,
-                "column": 15,
+                "column": 14,
                 "program": "union_types_5.ets"
               }
             }
@@ -290,7 +290,7 @@
                             },
                             "end": {
                               "line": 18,
-                              "column": 27,
+                              "column": 26,
                               "program": "union_types_5.ets"
                             }
                           }
@@ -303,7 +303,7 @@
                           },
                           "end": {
                             "line": 18,
-                            "column": 27,
+                            "column": 26,
                             "program": "union_types_5.ets"
                           }
                         }
@@ -317,7 +317,7 @@
                         },
                         "end": {
                           "line": 18,
-                          "column": 27,
+                          "column": 26,
                           "program": "union_types_5.ets"
                         }
                       }
@@ -330,7 +330,7 @@
                       },
                       "end": {
                         "line": 18,
-                        "column": 27,
+                        "column": 26,
                         "program": "union_types_5.ets"
                       }
                     }
@@ -1185,7 +1185,7 @@
                                 },
                                 "end": {
                                   "line": 29,
-                                  "column": 19,
+                                  "column": 18,
                                   "program": "union_types_5.ets"
                                 }
                               }
@@ -1198,7 +1198,7 @@
                               },
                               "end": {
                                 "line": 29,
-                                "column": 19,
+                                "column": 18,
                                 "program": "union_types_5.ets"
                               }
                             }
@@ -1232,7 +1232,7 @@
                                 },
                                 "end": {
                                   "line": 29,
-                                  "column": 21,
+                                  "column": 20,
                                   "program": "union_types_5.ets"
                                 }
                               }
@@ -1245,7 +1245,7 @@
                               },
                               "end": {
                                 "line": 29,
-                                "column": 21,
+                                "column": 20,
                                 "program": "union_types_5.ets"
                               }
                             }
@@ -1259,7 +1259,7 @@
                           },
                           "end": {
                             "line": 29,
-                            "column": 21,
+                            "column": 20,
                             "program": "union_types_5.ets"
                           }
                         }
@@ -1273,7 +1273,7 @@
                         },
                         "end": {
                           "line": 29,
-                          "column": 21,
+                          "column": 20,
                           "program": "union_types_5.ets"
                         }
                       }
@@ -1286,7 +1286,7 @@
                       },
                       "end": {
                         "line": 29,
-                        "column": 21,
+                        "column": 20,
                         "program": "union_types_5.ets"
                       }
                     }
@@ -1346,7 +1346,7 @@
                               },
                               "end": {
                                 "line": 30,
-                                "column": 24,
+                                "column": 23,
                                 "program": "union_types_5.ets"
                               }
                             }
@@ -1359,7 +1359,7 @@
                             },
                             "end": {
                               "line": 30,
-                              "column": 24,
+                              "column": 23,
                               "program": "union_types_5.ets"
                             }
                           }
@@ -1372,7 +1372,7 @@
                           },
                           "end": {
                             "line": 30,
-                            "column": 24,
+                            "column": 23,
                             "program": "union_types_5.ets"
                           }
                         }
@@ -1612,7 +1612,7 @@
                                 },
                                 "end": {
                                   "line": 32,
-                                  "column": 31,
+                                  "column": 30,
                                   "program": "union_types_5.ets"
                                 }
                               }
@@ -1625,7 +1625,7 @@
                               },
                               "end": {
                                 "line": 32,
-                                "column": 31,
+                                "column": 30,
                                 "program": "union_types_5.ets"
                               }
                             }
@@ -1638,7 +1638,7 @@
                             },
                             "end": {
                               "line": 32,
-                              "column": 31,
+                              "column": 30,
                               "program": "union_types_5.ets"
                             }
                           }
@@ -2151,7 +2151,7 @@
                                         },
                                         "end": {
                                           "line": 39,
-                                          "column": 21,
+                                          "column": 20,
                                           "program": "union_types_5.ets"
                                         }
                                       }
@@ -2164,7 +2164,7 @@
                                       },
                                       "end": {
                                         "line": 39,
-                                        "column": 21,
+                                        "column": 20,
                                         "program": "union_types_5.ets"
                                       }
                                     }
@@ -2198,7 +2198,7 @@
                                         },
                                         "end": {
                                           "line": 39,
-                                          "column": 23,
+                                          "column": 22,
                                           "program": "union_types_5.ets"
                                         }
                                       }
@@ -2211,7 +2211,7 @@
                                       },
                                       "end": {
                                         "line": 39,
-                                        "column": 23,
+                                        "column": 22,
                                         "program": "union_types_5.ets"
                                       }
                                     }
@@ -2225,7 +2225,7 @@
                                   },
                                   "end": {
                                     "line": 39,
-                                    "column": 23,
+                                    "column": 22,
                                     "program": "union_types_5.ets"
                                   }
                                 }
@@ -2252,7 +2252,7 @@
                             },
                             "end": {
                               "line": 39,
-                              "column": 24,
+                              "column": 23,
                               "program": "union_types_5.ets"
                             }
                           }
@@ -2265,7 +2265,7 @@
                           },
                           "end": {
                             "line": 39,
-                            "column": 24,
+                            "column": 23,
                             "program": "union_types_5.ets"
                           }
                         }
@@ -2279,7 +2279,7 @@
                         },
                         "end": {
                           "line": 39,
-                          "column": 24,
+                          "column": 23,
                           "program": "union_types_5.ets"
                         }
                       }
@@ -2292,7 +2292,7 @@
                       },
                       "end": {
                         "line": 39,
-                        "column": 24,
+                        "column": 23,
                         "program": "union_types_5.ets"
                       }
                     }
@@ -2386,7 +2386,7 @@
                               },
                               "end": {
                                 "line": 40,
-                                "column": 31,
+                                "column": 30,
                                 "program": "union_types_5.ets"
                               }
                             }
@@ -2399,7 +2399,7 @@
                             },
                             "end": {
                               "line": 40,
-                              "column": 31,
+                              "column": 30,
                               "program": "union_types_5.ets"
                             }
                           }
@@ -2412,7 +2412,7 @@
                           },
                           "end": {
                             "line": 40,
-                            "column": 31,
+                            "column": 30,
                             "program": "union_types_5.ets"
                           }
                         }
@@ -2720,7 +2720,7 @@
                                 },
                                 "end": {
                                   "line": 42,
-                                  "column": 38,
+                                  "column": 37,
                                   "program": "union_types_5.ets"
                                 }
                               }
@@ -2733,7 +2733,7 @@
                               },
                               "end": {
                                 "line": 42,
-                                "column": 38,
+                                "column": 37,
                                 "program": "union_types_5.ets"
                               }
                             }
@@ -2746,7 +2746,7 @@
                             },
                             "end": {
                               "line": 42,
-                              "column": 38,
+                              "column": 37,
                               "program": "union_types_5.ets"
                             }
                           }
@@ -3314,7 +3314,7 @@
                                               },
                                               "end": {
                                                 "line": 50,
-                                                "column": 16,
+                                                "column": 15,
                                                 "program": "union_types_5.ets"
                                               }
                                             }
@@ -3327,7 +3327,7 @@
                                             },
                                             "end": {
                                               "line": 50,
-                                              "column": 16,
+                                              "column": 15,
                                               "program": "union_types_5.ets"
                                             }
                                           }
@@ -3361,7 +3361,7 @@
                                               },
                                               "end": {
                                                 "line": 50,
-                                                "column": 18,
+                                                "column": 17,
                                                 "program": "union_types_5.ets"
                                               }
                                             }
@@ -3374,7 +3374,7 @@
                                             },
                                             "end": {
                                               "line": 50,
-                                              "column": 18,
+                                              "column": 17,
                                               "program": "union_types_5.ets"
                                             }
                                           }
@@ -3388,7 +3388,7 @@
                                         },
                                         "end": {
                                           "line": 50,
-                                          "column": 18,
+                                          "column": 17,
                                           "program": "union_types_5.ets"
                                         }
                                       }
@@ -3415,7 +3415,7 @@
                                   },
                                   "end": {
                                     "line": 50,
-                                    "column": 20,
+                                    "column": 18,
                                     "program": "union_types_5.ets"
                                   }
                                 }
@@ -3428,7 +3428,7 @@
                                 },
                                 "end": {
                                   "line": 50,
-                                  "column": 20,
+                                  "column": 18,
                                   "program": "union_types_5.ets"
                                 }
                               }
@@ -3505,7 +3505,7 @@
                                               },
                                               "end": {
                                                 "line": 50,
-                                                "column": 29,
+                                                "column": 28,
                                                 "program": "union_types_5.ets"
                                               }
                                             }
@@ -3518,7 +3518,7 @@
                                             },
                                             "end": {
                                               "line": 50,
-                                              "column": 29,
+                                              "column": 28,
                                               "program": "union_types_5.ets"
                                             }
                                           }
@@ -3552,7 +3552,7 @@
                                               },
                                               "end": {
                                                 "line": 50,
-                                                "column": 31,
+                                                "column": 30,
                                                 "program": "union_types_5.ets"
                                               }
                                             }
@@ -3565,7 +3565,7 @@
                                             },
                                             "end": {
                                               "line": 50,
-                                              "column": 31,
+                                              "column": 30,
                                               "program": "union_types_5.ets"
                                             }
                                           }
@@ -3579,7 +3579,7 @@
                                         },
                                         "end": {
                                           "line": 50,
-                                          "column": 31,
+                                          "column": 30,
                                           "program": "union_types_5.ets"
                                         }
                                       }
@@ -3606,7 +3606,7 @@
                                   },
                                   "end": {
                                     "line": 50,
-                                    "column": 32,
+                                    "column": 31,
                                     "program": "union_types_5.ets"
                                   }
                                 }
@@ -3619,7 +3619,7 @@
                                 },
                                 "end": {
                                   "line": 50,
-                                  "column": 32,
+                                  "column": 31,
                                   "program": "union_types_5.ets"
                                 }
                               }
@@ -3656,7 +3656,7 @@
                                       },
                                       "end": {
                                         "line": 50,
-                                        "column": 38,
+                                        "column": 37,
                                         "program": "union_types_5.ets"
                                       }
                                     }
@@ -3669,7 +3669,7 @@
                                     },
                                     "end": {
                                       "line": 50,
-                                      "column": 38,
+                                      "column": 37,
                                       "program": "union_types_5.ets"
                                     }
                                   }
@@ -3985,7 +3985,7 @@
                                 },
                                 "end": {
                                   "line": 53,
-                                  "column": 22,
+                                  "column": 21,
                                   "program": "union_types_5.ets"
                                 }
                               }
@@ -3998,7 +3998,7 @@
                               },
                               "end": {
                                 "line": 53,
-                                "column": 22,
+                                "column": 21,
                                 "program": "union_types_5.ets"
                               }
                             }

@@ -820,7 +820,7 @@
                                       },
                                       "end": {
                                         "line": 24,
-                                        "column": 23,
+                                        "column": 22,
                                         "program": "tupleAsTypeParam2.ets"
                                       }
                                     }
@@ -833,7 +833,7 @@
                                     },
                                     "end": {
                                       "line": 24,
-                                      "column": 23,
+                                      "column": 22,
                                       "program": "tupleAsTypeParam2.ets"
                                     }
                                   }
@@ -867,7 +867,7 @@
                                       },
                                       "end": {
                                         "line": 24,
-                                        "column": 31,
+                                        "column": 30,
                                         "program": "tupleAsTypeParam2.ets"
                                       }
                                     }
@@ -880,7 +880,7 @@
                                     },
                                     "end": {
                                       "line": 24,
-                                      "column": 31,
+                                      "column": 30,
                                       "program": "tupleAsTypeParam2.ets"
                                     }
                                   }
@@ -1030,7 +1030,7 @@
                                       },
                                       "end": {
                                         "line": 25,
-                                        "column": 24,
+                                        "column": 23,
                                         "program": "tupleAsTypeParam2.ets"
                                       }
                                     }
@@ -1043,7 +1043,7 @@
                                     },
                                     "end": {
                                       "line": 25,
-                                      "column": 24,
+                                      "column": 23,
                                       "program": "tupleAsTypeParam2.ets"
                                     }
                                   }
@@ -1077,7 +1077,7 @@
                                       },
                                       "end": {
                                         "line": 25,
-                                        "column": 32,
+                                        "column": 31,
                                         "program": "tupleAsTypeParam2.ets"
                                       }
                                     }
@@ -1090,7 +1090,7 @@
                                     },
                                     "end": {
                                       "line": 25,
-                                      "column": 32,
+                                      "column": 31,
                                       "program": "tupleAsTypeParam2.ets"
                                     }
                                   }
@@ -1280,7 +1280,7 @@
                                               },
                                               "end": {
                                                 "line": 26,
-                                                "column": 27,
+                                                "column": 26,
                                                 "program": "tupleAsTypeParam2.ets"
                                               }
                                             }
@@ -1293,7 +1293,7 @@
                                             },
                                             "end": {
                                               "line": 26,
-                                              "column": 27,
+                                              "column": 26,
                                               "program": "tupleAsTypeParam2.ets"
                                             }
                                           }
@@ -1327,7 +1327,7 @@
                                               },
                                               "end": {
                                                 "line": 26,
-                                                "column": 35,
+                                                "column": 34,
                                                 "program": "tupleAsTypeParam2.ets"
                                               }
                                             }
@@ -1340,7 +1340,7 @@
                                             },
                                             "end": {
                                               "line": 26,
-                                              "column": 35,
+                                              "column": 34,
                                               "program": "tupleAsTypeParam2.ets"
                                             }
                                           }
@@ -1381,7 +1381,7 @@
                                   },
                                   "end": {
                                     "line": 26,
-                                    "column": 37,
+                                    "column": 36,
                                     "program": "tupleAsTypeParam2.ets"
                                   }
                                 }
@@ -1394,7 +1394,7 @@
                                 },
                                 "end": {
                                   "line": 26,
-                                  "column": 37,
+                                  "column": 36,
                                   "program": "tupleAsTypeParam2.ets"
                                 }
                               }
