@@ -370,6 +370,12 @@ bool ETSChecker::CheckDefaultTypeParameter(const ir::TSTypeParameter *param, Typ
     };
 
     if (param->DefaultType() != nullptr) {
+        TypeStackElement tse(this, param->DefaultType(), {{diagnostic::TYPE_PARAM_CIRCULAR_DEFAULT_TYPE}},
+                             param->DefaultType()->Start());
+        if (tse.HasTypeError()) {
+            return false;
+        }
+
         param->DefaultType()->Iterate(checkDefault);
     }
 
