@@ -12,9 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-let foo = ESValue.load('./binary_operation_js_obj_js').getProperty('foo');
-let m = ESValue.load('./binary_operation_js_obj_js').getProperty('m');
-let n = ESValue.load('./binary_operation_js_obj_js').getProperty('n');
+import {foo,m,n} from "./binary_operation_js_obj_js"
 let a = foo.getProperty("a")
 let b = foo.getProperty("b")
 a + b

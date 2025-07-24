@@ -20,26 +20,6 @@
             "endLine": 15,
             "endColumn": 51,
             "problem": "InterOpImportJs",
-            "autofix": [
-                {
-                    "start": 604,
-                    "end": 654,
-                    "replacementText": "",
-                    "line": 15,
-                    "column": 1,
-                    "endLine": 15,
-                    "endColumn": 51
-                },
-                {
-                    "start": 654,
-                    "end": 654,
-                    "replacementText": "let ff3 = ESValue.load('./interop_import_js_rules_js').getProperty('ff3');",
-                    "line": 15,
-                    "column": 1,
-                    "endLine": 15,
-                    "endColumn": 51
-                }
-            ],
             "suggest": "",
             "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
             "severity": "ERROR"
@@ -50,26 +30,6 @@
             "endLine": 16,
             "endColumn": 49,
             "problem": "InterOpImportJs",
-            "autofix": [
-                {
-                    "start": 655,
-                    "end": 703,
-                    "replacementText": "",
-                    "line": 16,
-                    "column": 1,
-                    "endLine": 16,
-                    "endColumn": 49
-                },
-                {
-                    "start": 703,
-                    "end": 703,
-                    "replacementText": "let foo = ESValue.load('./interop_import_js_index_js').getProperty('foo');",
-                    "line": 16,
-                    "column": 1,
-                    "endLine": 16,
-                    "endColumn": 49
-                }
-            ],
             "suggest": "",
             "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
             "severity": "ERROR"

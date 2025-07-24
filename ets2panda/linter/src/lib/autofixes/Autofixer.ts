@@ -47,7 +47,6 @@ import {
 import { ES_VALUE } from '../utils/consts/ESObject';
 import type { IncrementDecrementNodeInfo } from '../utils/consts/InteropAPI';
 import {
-  LOAD,
   GET_PROPERTY,
   SET_PROPERTY,
   ARE_EQUAL,
@@ -4167,68 +4166,6 @@ export class Autofixer {
     return [{ start: pos, end: pos, replacementText: text }];
   }
 
-  private static createVariableForInteropImport(
-    interopProperty: string,
-    symbolName: string,
-    propertyName: string
-  ): ts.VariableStatement {
-    const newVarDecl = ts.factory.createVariableStatement(
-      undefined,
-      ts.factory.createVariableDeclarationList(
-        [
-          ts.factory.createVariableDeclaration(
-            ts.factory.createIdentifier(symbolName),
-            undefined,
-            undefined,
-            this.createVariableInitialForInteropImport(propertyName, interopProperty)
-          )
-        ],
-        ts.NodeFlags.Let
-      )
-    );
-    return newVarDecl;
-  }
-
-  private static createVariableInitialForInteropImport(propertyName: string, interopProperty: string): ts.Expression {
-    const initializer = ts.factory.createCallExpression(
-      ts.factory.createPropertyAccessExpression(
-        ts.factory.createCallExpression(
-          ts.factory.createPropertyAccessExpression(
-            ts.factory.createIdentifier(ES_VALUE),
-            ts.factory.createIdentifier(LOAD)
-          ),
-          undefined,
-          [ts.factory.createStringLiteral(interopProperty)]
-        ),
-        ts.factory.createIdentifier(GET_PROPERTY)
-      ),
-      undefined,
-      [ts.factory.createStringLiteral(propertyName)]
-    );
-    return initializer;
-  }
-
-  private static getOriginalNameAtSymbol(symbolName: string, symbol?: ts.Symbol): string {
-    if (symbol) {
-      const originalDeclaration = symbol.declarations?.[0];
-      let originalName = '';
-      if (originalDeclaration) {
-        const isReturnNameOnSomeCase =
-          ts.isFunctionDeclaration(originalDeclaration) ||
-          ts.isClassDeclaration(originalDeclaration) ||
-          ts.isInterfaceDeclaration(originalDeclaration) ||
-          ts.isEnumDeclaration(originalDeclaration);
-        if (isReturnNameOnSomeCase) {
-          originalName = originalDeclaration.name?.text || symbolName;
-        } else if (ts.isVariableDeclaration(originalDeclaration)) {
-          originalName = originalDeclaration.name.getText();
-        }
-      }
-      return originalName;
-    }
-    return '';
-  }
-
   private fixInterOpImportJsProcessNode(node: ts.Node): string | undefined {
     if (ts.isIdentifier(node)) {
       return node.text;
@@ -4275,128 +4212,6 @@ export class Autofixer {
       return this.printer.printNode(ts.EmitHint.Unspecified, newCallExpr, node.getSourceFile());
     }
     return undefined;
-  }
-
-  fixInterOpImportJs(
-    importDecl: ts.ImportDeclaration,
-    importClause: ts.ImportClause,
-    moduleSpecifier: string,
-    defaultSymbol?: ts.Symbol
-  ): Autofix[] | undefined {
-    if (!Autofixer.shouldTransformImport(moduleSpecifier)) {
-      return undefined;
-    }
-
-    let statements: string[] = [];
-    if (importClause.name) {
-      const symbolName = importClause.name.text;
-      const originalName = Autofixer.getOriginalNameAtSymbol(symbolName, defaultSymbol);
-      statements = this.constructAndSaveimportDecl2Arrays(
-        importDecl,
-        moduleSpecifier,
-        symbolName,
-        originalName,
-        statements
-      );
-    }
-    const namedBindings = importClause.namedBindings;
-    if (namedBindings) {
-      statements = this.getStatementForInterOpImportJsOnNamedBindings(
-        namedBindings,
-        importDecl,
-        moduleSpecifier,
-        statements
-      );
-    }
-
-    return [Autofixer.createImportDeclarationFix(importDecl), this.createInsertStatementsFix(importDecl, statements)];
-  }
-
-  private static createImportDeclarationFix(importDecl: ts.ImportDeclaration): Autofix {
-    return {
-      start: importDecl.getStart(),
-      end: importDecl.getEnd(),
-      replacementText: ''
-    };
-  }
-
-  private createInsertStatementsFix(importDecl: ts.ImportDeclaration, statements: string[]): Autofix {
-    const joinedStatements = statements.join(this.getNewLine());
-    const replacementText = this.detectNeedsLeadingNewline(importDecl) ?
-      this.getNewLine() + joinedStatements :
-      joinedStatements;
-
-    return {
-      start: importDecl.getEnd(),
-      end: importDecl.getEnd(),
-      replacementText
-    };
-  }
-
-  private static shouldTransformImport(moduleSpecifier: string): boolean {
-    return moduleSpecifier.endsWith('.js') || moduleSpecifier.startsWith('./') || moduleSpecifier.startsWith('../');
-  }
-
-  private detectNeedsLeadingNewline(importDecl: ts.ImportDeclaration): boolean {
-    const prevToken = ts.getLeadingCommentRanges(this.sourceFile.text, importDecl.getFullStart())?.[0];
-    return !!prevToken && !(/^\s*$/).test(this.sourceFile.text.slice(prevToken.end, importDecl.getStart()));
-  }
-
-  private getStatementForInterOpImportJsOnNamedBindings(
-    namedBindings: ts.NamedImportBindings,
-    importDecl: ts.ImportDeclaration,
-    moduleSpecifier: string,
-    statements: string[]
-  ): string[] {
-    if (ts.isNamespaceImport(namedBindings)) {
-      const symbolName = namedBindings.name.text;
-      statements = this.constructAndSaveimportDecl2Arrays(
-        importDecl,
-        moduleSpecifier,
-        symbolName,
-        symbolName,
-        statements
-      );
-    }
-    if (ts.isNamedImports(namedBindings)) {
-      namedBindings.elements.map((element) => {
-        const symbolName = element.name.text;
-        const originalName = element.propertyName ? element.propertyName.text : symbolName;
-        statements = this.constructAndSaveimportDecl2Arrays(
-          importDecl,
-          moduleSpecifier,
-          symbolName,
-          originalName,
-          statements
-        );
-        return statements;
-      });
-    }
-    return statements;
-  }
-
-  private constructAndSaveimportDecl2Arrays(
-    importDecl: ts.ImportDeclaration,
-    moduleSpecifier: string,
-    symbolName: string,
-    originalName: string | undefined,
-    statements: string[]
-  ): string[] {
-    const propertyName = originalName || symbolName;
-    const newVarDecl = Autofixer.createVariableForInteropImport(moduleSpecifier, symbolName, propertyName);
-    const text = this.printer.printNode(ts.EmitHint.Unspecified, newVarDecl, importDecl.getSourceFile());
-    statements.push(TsUtils.removeOrReplaceQuotes(text, true));
-    return statements;
-  }
-
-  private getLastImportEnd(): number {
-    let lastImportEnd = 0;
-    this.sourceFile.statements.forEach((statement) => {
-      if (ts.isImportDeclaration(statement)) {
-        lastImportEnd = statement.getEnd();
-      }
-    });
-    return lastImportEnd;
   }
 
   fixInteropPropertyAccessExpression(express: ts.PropertyAccessExpression): Autofix[] | undefined {

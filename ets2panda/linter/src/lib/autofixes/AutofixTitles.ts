@@ -56,7 +56,6 @@ export const cookBookRefToFixTitle: Map<number, string> = new Map([
   [282, '"@StorageProp" transform to "@StoragePropRef"'],
   [283, '"@LocalStorageProp" transform to "@LocalStoragePropRef"'],
   [300, 'Replace calling method of the TS-like `Function` type'],
-  [330, 'Convert import named objects from JS to ESValue'],
   [332, 'Using the ESValue interface to access properties'],
   [334, 'Call typeOf function'],
   [335, 'Call toNumber function to convert'],

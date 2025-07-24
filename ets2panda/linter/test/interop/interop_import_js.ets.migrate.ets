@@ -13,15 +13,10 @@
  * limitations under the License.
  */
  
-let Cjs = ESValue.load('../main/js_lib').getProperty('Cjs');
-let fjs = ESValue.load('../main/js_lib').getProperty('fjs');
-let CPreview = ESValue.load('./jsfiles/preview_import_js').getProperty('CPreview');
-let bar = ESValue.load('./jsfiles/preview_import_js').getProperty('bar');
-let foo = ESValue.load('./jsfiles/preview_import_js').getProperty('foo');
-let myAaa = ESValue.load('./interop_import_js_js').getProperty('aaa');
-let myAaa = ESValue.load('./interop_import_js_js').getProperty('aaa');
-let ClassA = ESValue.load('./interop_import_js_js').getProperty('ClassA');
-let Dog = ESValue.load('./interop_import_js_js').getProperty('Dog');
-let tjs = ESValue.load('./interop_import_js_js').getProperty('tjs');
-let Wiki = ESValue.load('./interop_import_js_js').getProperty('Wiki');
-let Doge = ESValue.load('./interop_import_js_js').getProperty('Dog');
+import { Cjs } from '../main/js_lib';
+import { fjs } from '../main/js_lib';
+import { CPreview,bar,foo } from "./jsfiles/preview_import_js";
+import myAaa from "./interop_import_js_js";
+import myAaa,{ClassA,Dog} from "./interop_import_js_js";
+import * as tjs from "./interop_import_js_js";
+import { Wiki, Dog as Doge } from './interop_import_js_js'

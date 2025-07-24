@@ -7335,7 +7335,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   private validateSwitchExpression(switchStatement: ts.SwitchStatement): void {
     const expr = switchStatement.expression;
     const nodeType = this.tsTypeChecker.getTypeAtLocation(expr);
-    const { isLiteralInitialized, isFloatLiteral, hasExplicitTypeAnnotation } = this.getDeclarationInfo(expr);
+    const { isLiteralInitialized, hasExplicitTypeAnnotation } = this.getDeclarationInfo(expr);
 
     const isUnionType = (nodeType.flags & ts.TypeFlags.Union) !== 0;
 
@@ -7344,8 +7344,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return Boolean(
         t.flags & ts.TypeFlags.StringLike ||
           typeText === 'String' ||
+          typeText === 'number' ||
           t.flags & ts.TypeFlags.NumberLike && (/^\d+$/).test(typeText) ||
-          isLiteralInitialized && !hasExplicitTypeAnnotation && !isFloatLiteral ||
+          isLiteralInitialized && !hasExplicitTypeAnnotation ||
           t.flags & ts.TypeFlags.EnumLike
       );
     };
@@ -7364,14 +7365,13 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
   private getDeclarationInfo(expression: ts.Expression): {
     isLiteralInitialized: boolean;
-    isFloatLiteral: boolean;
     hasExplicitTypeAnnotation: boolean;
   } {
     const symbol = this.tsTypeChecker.getSymbolAtLocation(expression);
     const declaration = symbol?.valueDeclaration;
 
     if (!declaration || !ts.isVariableDeclaration(declaration)) {
-      return { isLiteralInitialized: false, isFloatLiteral: false, hasExplicitTypeAnnotation: false };
+      return { isLiteralInitialized: false, hasExplicitTypeAnnotation: false };
     }
 
     const hasExplicitTypeAnnotation = !!declaration.type;
@@ -7379,30 +7379,20 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
     return {
       isLiteralInitialized: initializerInfo.isLiteralInitialized,
-      isFloatLiteral: initializerInfo.isFloatLiteral,
       hasExplicitTypeAnnotation
     };
   }
 
   private static getInitializerInfo(initializer?: ts.Expression): {
     isLiteralInitialized: boolean;
-    isFloatLiteral: boolean;
   } {
     if (!initializer) {
-      return { isLiteralInitialized: false, isFloatLiteral: false };
+      return { isLiteralInitialized: false };
     }
 
     const isLiteralInitialized = ts.isNumericLiteral(initializer) || ts.isStringLiteral(initializer);
 
-    let isFloatLiteral = false;
-    if (ts.isNumericLiteral(initializer)) {
-      const literalText = initializer.getText();
-      if (!(/^0[xX]/).test(literalText)) {
-        isFloatLiteral = (/\.|e[-+]|\dE[-+]/i).test(literalText);
-      }
-    }
-
-    return { isLiteralInitialized, isFloatLiteral };
+    return { isLiteralInitialized };
   }
 
   private findDuplicateCases(switchStatement: ts.SwitchStatement): ts.CaseClause[] {
@@ -10287,27 +10277,16 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
     const symbolToUse = defaultSymbol || symbol;
     if (symbolToUse) {
-      this.tryAutoFixInterOpImportJs(importDecl, importClause, symbolToUse, defaultSymbol);
+      this.tryAutoFixInterOpImportJs(importDecl, symbolToUse);
     }
   }
 
-  private tryAutoFixInterOpImportJs(
-    importDecl: ts.ImportDeclaration,
-    importClause: ts.ImportClause,
-    symbolToUse: ts.Symbol,
-    defaultSymbol?: ts.Symbol
-  ): void {
+  private tryAutoFixInterOpImportJs(importDecl: ts.ImportDeclaration, symbolToUse: ts.Symbol): void {
     const declaration = symbolToUse.declarations?.[0];
     if (declaration) {
       const sourceFile = declaration.getSourceFile();
       if (sourceFile.fileName.endsWith(EXTNAME_JS)) {
-        const autofix = this.autofixer?.fixInterOpImportJs(
-          importDecl,
-          importClause,
-          TsUtils.removeOrReplaceQuotes(importDecl.moduleSpecifier.getText(this.sourceFile), false),
-          defaultSymbol
-        );
-        this.incrementCounters(importDecl, FaultID.InterOpImportJs, autofix);
+        this.incrementCounters(importDecl, FaultID.InterOpImportJs);
       }
     }
   }

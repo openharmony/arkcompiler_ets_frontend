@@ -250,8 +250,7 @@ cookBookTag[206] = '"debugger" is not supported (arkts-no-debugger)';
 cookBookTag[207] = 'Special arguments object inside functions are not supported (arkts-no-arguments-obj)';
 cookBookTag[208] = 'Tagged templates are not supported (arkts-no-tagged-templates)';
 cookBookTag[209] = 'The index expression must be of a numeric type (arkts-array-index-expr-type)';
-cookBookTag[210] =
-  'The switch expression type must be of type char, byte, short, int, long, string or enum (arkts-switch-expr)';
+cookBookTag[210] = 'The switch expression type must be of type number, string or enum (arkts-switch-expr)';
 cookBookTag[211] = 'No two case constant expressions have identical values.(arkts-case-expr)';
 cookBookTag[212] = 'The index expression must be zero or positive value.(arkts-array-index-negative)';
 cookBookTag[213] = 'Class cannot have static codeblocks. (arkts-class-lazy-import)';

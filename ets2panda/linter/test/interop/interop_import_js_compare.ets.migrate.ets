@@ -14,9 +14,7 @@
  */
  
 
-let foo = ESValue.load('./interop_import_js_compare_js').getProperty('foo');
-let m = ESValue.load('./interop_import_js_compare_js').getProperty('m');
-let n = ESValue.load('./interop_import_js_compare_js').getProperty('n');
+import {foo, m, n} from "./interop_import_js_compare_js"
 let a = foo.getProperty("a")
 let b = foo.getProperty("b")
 a > b

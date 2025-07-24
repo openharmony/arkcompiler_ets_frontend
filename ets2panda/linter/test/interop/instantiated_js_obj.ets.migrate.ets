@@ -13,8 +13,7 @@
  * limitations under the License.
  */
 
-let Foo = ESValue.load('./instantiated_js_obj_js').getProperty('Foo');
-let Foo1 = ESValue.load('./instantiated_js_obj_js').getProperty('Foo1');
+import {Foo, Foo1} from "./instantiated_js_obj_js"
 class A {
     num: number = 1.0;
     constructor() {
