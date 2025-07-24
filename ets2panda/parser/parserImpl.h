@@ -65,7 +65,8 @@ enum class TypeAnnotationParsingOptions : uint32_t {
     DISALLOW_UNION = 1U << 15U,
     POTENTIAL_NEW_ARRAY = 1U << 16U,
     ANNOTATION_NOT_ALLOW = 1U << 17U,
-    INSTANCEOF = 1U << 18U
+    INSTANCEOF = 1U << 18U,
+    TYPE_ALIAS_CONTEXT = 1U << 19U
 };
 
 class ParserImpl {

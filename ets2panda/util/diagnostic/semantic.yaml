@@ -440,6 +440,11 @@ semantic:
   id: 35
   message: "Invalid enumeration value type."
 
+- name: ERROR_ARKTS_NO_CONDITIONAL_TYPES
+  id: 136365
+  message: "Conditional type aliases are not supported. Introduce a new type with constraints explicitly, or rewrite logic
+    using Object!"
+
 - name: ERROR_ARKTS_NO_DECLARATION_MERGING
   id: 341
   message: "Merging declarations is not supported, please keep all definitions of classes, interfaces and enums compact in

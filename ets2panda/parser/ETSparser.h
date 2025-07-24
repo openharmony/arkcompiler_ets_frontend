@@ -279,6 +279,7 @@ private:
     ir::TypeNode *ParsePotentialFunctionalType(TypeAnnotationParsingOptions *options,
                                                ir::TSTypeParameterDeclaration *typeParamDecl = nullptr);
     std::pair<ir::TypeNode *, bool> ParseNonNullableType(TypeAnnotationParsingOptions *options);
+    void CheckForConditionalTypeError(TypeAnnotationParsingOptions options, lexer::TokenType tokenType);
     std::pair<ir::TypeNode *, bool> GetTypeAnnotationFromToken(TypeAnnotationParsingOptions *options);
     std::pair<ir::TypeNode *, bool> GetTypeAnnotationFromArrowFunction(TypeAnnotationParsingOptions *options);
     std::pair<ir::TypeNode *, bool> GetTypeAnnotationFromParentheses(
