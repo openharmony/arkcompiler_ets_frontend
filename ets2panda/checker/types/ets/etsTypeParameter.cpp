@@ -141,7 +141,13 @@ Type *ETSTypeParameter::Substitute([[maybe_unused]] TypeRelation *relation, cons
     if (substitution == nullptr || substitution->empty()) {
         return this;
     }
-    if (auto repl = substitution->find(GetOriginal()); repl != substitution->end()) {
+
+    auto *type = GetDeclNode()->Name()->Variable()->TsType();
+    if (type->IsTypeError()) {
+        return this;
+    }
+
+    if (auto repl = substitution->find(type->AsETSTypeParameter()); repl != substitution->end()) {
         ES2PANDA_ASSERT(repl->second->IsETSReferenceType());
         return repl->second;
     }
