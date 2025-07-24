@@ -27,4 +27,5 @@ export function foo<T eStends keyof A,P extends keyof B[T]>
 /* @@? 16:55 Error SyntaxError: Unexpected token 'B'. */
 /* @@? 16:55 Error TypeError: Unresolved reference B */
 /* @@? 16:55 Error TypeError: Indexed access is not supported for such expression type. */
-/* @@? 30:69 Error SyntaxError: Unexpected token 'end of stream'. */
+/* @@? 16:57 Error SyntaxError: Unexpected token, expected ']'. */
+/* @@? 31:69 Error SyntaxError: Unexpected token 'end of stream'. */
