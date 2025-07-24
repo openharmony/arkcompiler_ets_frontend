@@ -156,7 +156,9 @@ ir::MethodDefinition *InterfacePropertyDeclarationsPhase::GenerateGetterOrSetter
     if (!field->Annotations().empty()) {
         ArenaVector<ir::AnnotationUsage *> functionAnnotations(ctx->Allocator()->Adapter());
         for (auto *annotationUsage : field->Annotations()) {
-            functionAnnotations.push_back(annotationUsage->Clone(ctx->Allocator(), method)->AsAnnotationUsage());
+            auto annoClone = annotationUsage->Clone(ctx->Allocator(), method)->AsAnnotationUsage();
+            InitScopesPhaseETS::RunExternalNode(annoClone, varbinder);
+            functionAnnotations.push_back(annoClone);
         }
         method->Function()->SetAnnotations(std::move(functionAnnotations));
     }
