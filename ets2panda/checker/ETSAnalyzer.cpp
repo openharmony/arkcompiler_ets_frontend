@@ -3082,7 +3082,7 @@ checker::Type *ETSAnalyzer::Check(ir::AnnotationDeclaration *st) const
     }
 
     auto baseName = st->GetBaseName();
-    if (!baseName->IsErrorPlaceHolder()) {
+    if (!baseName->IsErrorPlaceHolder() && baseName->Variable()->Declaration()->Node()->IsAnnotationDeclaration()) {
         auto *annoDecl = baseName->Variable()->Declaration()->Node()->AsAnnotationDeclaration();
         if (annoDecl != st && annoDecl->IsDeclare()) {
             checker->CheckAmbientAnnotation(st, annoDecl);
