@@ -1042,6 +1042,7 @@ semantic:
 - name: NO_CALL_SIGNATURE
   id: 2
   message: Type '{}' has no call signatures.
+  code_fix_ids: [FixAddMissingNewOperator]
 
 - name: NO_INDEX_ACCESS_METHOD
   id: 250

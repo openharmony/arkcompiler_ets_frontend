@@ -795,7 +795,7 @@ std::vector<FileTextChanges> ChangeTracker::GetTextChangesFromChanges(std::vecto
         } else if (const auto *remove = std::get_if<RemoveNode>(&change)) {
             addChange(remove->sourceFile, remove->range, "");
         } else if (const auto *replace = std::get_if<ReplaceWithSingleNode>(&change)) {
-            addChange(replace->sourceFile, replace->range, "");
+            addChange(replace->sourceFile, replace->range, replace->node->DumpEtsSrc());
         }
     }
 
