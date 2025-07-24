@@ -216,11 +216,13 @@ static void ExpandOptionalParameterAnnotationsToUnions(public_lib::Context *ctx,
     for (auto p : function->Params()) {
         auto param = p->AsETSParameterExpression();
         if (param->IsOptional() && param->Initializer() == nullptr) {
-            param->SetTypeAnnotation(util::NodeAllocator::ForceSetParent<ir::ETSUnionType>(
-                allocator,
-                ArenaVector<ir::TypeNode *>({param->TypeAnnotation(), allocator->New<ir::ETSUndefinedType>(allocator)},
-                                            allocator->Adapter()),
-                allocator));
+            ArenaVector<ir::TypeNode *> typeNodes(allocator->Adapter());
+            if (param->TypeAnnotation() != nullptr) {
+                typeNodes.emplace_back(param->TypeAnnotation());
+            }
+            typeNodes.emplace_back(allocator->New<ir::ETSUndefinedType>(allocator));
+            param->SetTypeAnnotation(
+                util::NodeAllocator::ForceSetParent<ir::ETSUnionType>(allocator, std::move(typeNodes), allocator));
             param->TypeAnnotation()->SetParent(param->Ident());
         }
     }

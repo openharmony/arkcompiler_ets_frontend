@@ -64,6 +64,7 @@ ir::Identifier *ETSTypeReference::BaseName() const
     if (baseName->IsIdentifier()) {
         return baseName->AsIdentifier();
     }
+
     if (baseName->IsTSQualifiedName()) {
         ir::TSQualifiedName *iter = baseName->AsTSQualifiedName();
 
@@ -72,12 +73,23 @@ ir::Identifier *ETSTypeReference::BaseName() const
         }
         return iter->Left()->AsIdentifier();
     }
-    ir::MemberExpression *iter = baseName->AsMemberExpression();
 
-    while (iter->Property()->IsMemberExpression()) {
-        iter = iter->Property()->AsMemberExpression();
+    if (baseName->IsMemberExpression()) {
+        ir::MemberExpression *iter = baseName->AsMemberExpression();
+
+        while (iter->Property()->IsMemberExpression()) {
+            iter = iter->Property()->AsMemberExpression();
+        }
+        return iter->Property()->AsIdentifier();
     }
-    return iter->Property()->AsIdentifier();
+
+    if (baseName->IsLiteral()) {
+        ES2PANDA_ASSERT(baseName->OriginalNode() != nullptr && baseName->OriginalNode()->IsIdentifier());
+        return baseName->OriginalNode()->AsIdentifier();
+    }
+
+    ES2PANDA_UNREACHABLE();
+    return nullptr;
 }
 
 void ETSTypeReference::Dump(ir::AstDumper *dumper) const
