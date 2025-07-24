@@ -91,6 +91,10 @@ ets2panda_add_gtest(lsp_quick_info_api_test_1 CPP_SOURCES
     quick_info_test_1.cpp
 )
 
+ets2panda_add_gtest(lsp_quick_info_api_test_api CPP_SOURCES
+    quick_info_api_test.cpp
+)
+
 ets2panda_add_gtest(lsp_api_completions_entry_details_test CPP_SOURCES
     get_completions_entry_details.cpp
 )

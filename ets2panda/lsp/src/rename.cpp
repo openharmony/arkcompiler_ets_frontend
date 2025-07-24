@@ -324,16 +324,60 @@ std::optional<RenameInfoSuccess> GetRenameInfoForModule(ir::AstNode *node, parse
                              "", triggerSpan);
 }
 
+std::string GetKindOfMethod(ir::AstNode *node)
+{
+    if (!node->IsMethodDefinition()) {
+        return "";
+    }
+    switch (node->AsMethodDefinition()->Kind()) {
+        case ir::MethodDefinitionKind::METHOD:
+            return "method";
+        case ir::MethodDefinitionKind::GET:
+            return "get";
+        case ir::MethodDefinitionKind::SET:
+            return "set";
+        case ir::MethodDefinitionKind::CONSTRUCTOR:
+            return "constructor";
+        default:
+            return "";
+    }
+}
+
+std::string GetKindOfClassDefinition(ir::AstNode *node)
+{
+    if (!node->IsClassDefinition()) {
+        return "";
+    }
+    if (node->AsClassDefinition()->OrigEnumDecl() != nullptr) {
+        return "enum";
+    }
+    if (node->AsClassDefinition()->IsNamespaceTransformed()) {
+        return "namespace";
+    }
+    if (node->Parent()->IsETSStructDeclaration()) {
+        return "struct";
+    }
+    return "class";
+}
+
 std::optional<std::string> GetKindOfPropertyMethodFunctionOrVar(ir::AstNode *node)
 {
     switch (node->Type()) {
         case ir::AstNodeType::CLASS_PROPERTY:
+            if (compiler::ClassDefinitionIsEnumTransformed(node->Parent())) {
+                return "enum member";
+            }
             return "property";
         case ir::AstNodeType::FUNCTION_DECLARATION:
-        case ir::AstNodeType::METHOD_DEFINITION:
             return "function";
+        case ir::AstNodeType::METHOD_DEFINITION:
+            return GetKindOfMethod(node);
         case ir::AstNodeType::VARIABLE_DECLARATION:
             return "variable";
+        case ir::AstNodeType::IMPORT_DECLARATION:
+            return "import";
+        case ir::AstNodeType::CLASS_DEFINITION:
+            return GetKindOfClassDefinition(node);
         default:
             return std::nullopt;
     }
@@ -349,7 +393,7 @@ std::string GetNodeKindForRenameInfo(ir::AstNode *node)
         case ir::AstNodeType::TS_ENUM_DECLARATION:
             return "enum";
         case ir::AstNodeType::TS_TYPE_ALIAS_DECLARATION:
-            return "type";
+            return "type alias";
         case ir::AstNodeType::TS_INTERFACE_DECLARATION:
             return "interface";
         case ir::AstNodeType::TS_TYPE_PARAMETER:
@@ -358,6 +402,8 @@ std::string GetNodeKindForRenameInfo(ir::AstNode *node)
             return "enum member";
         case ir::AstNodeType::TS_MODULE_DECLARATION:
             return "module";
+        case ir::AstNodeType::ETS_PARAMETER_EXPRESSION:
+            return "parameter";
         default:
             return "";
     }

@@ -42,14 +42,14 @@ TEST_F(LSPCompletionsEntryDetailsTests, GetCompletionEntryDetails0)
     std::vector<SymbolDisplayPart> source {};
     std::vector<SymbolDisplayPart> sourceDisplay {};
     std::vector<SymbolDisplayPart> document {};
-    const std::string kind = "class";
+    const std::string kind = "enum";
     const std::string kindModifiers = "final";
     const std::string expectedFileName = "completion_entry_details.ets";
 
     std::vector<SymbolDisplayPart> expected;
     expected.emplace_back("enum", "keyword");
     expected.emplace_back(" ", "space");
-    expected.emplace_back("MyStrings", "className");
+    expected.emplace_back("MyStrings", "enumName");
 
     auto expectedCompletionEntryDetails = CompletionEntryDetails(entryName, kind, kindModifiers, expected, document,
                                                                  source, sourceDisplay, expectedFileName);
@@ -143,7 +143,7 @@ class CC {
     std::vector<SymbolDisplayPart> source {};
     std::vector<SymbolDisplayPart> sourceDisplay {};
     std::vector<SymbolDisplayPart> document {};
-    const std::string kind = "function";
+    const std::string kind = "method";
     const std::string kindModifiers = "public";
     const std::string expectedFileName = "completion_entry_details9.ets";
 
@@ -226,7 +226,7 @@ TEST_F(LSPCompletionsEntryDetailsTests, GetCompletionEntryDetails5)
     std::vector<SymbolDisplayPart> source {};
     std::vector<SymbolDisplayPart> sourceDisplay {};
     std::vector<SymbolDisplayPart> document {};
-    const std::string kind = "function";
+    const std::string kind = "method";
     const std::string kindModifiers = "static public";
     const std::string expectedFileName = "completion_entry_details11.ets";
 
