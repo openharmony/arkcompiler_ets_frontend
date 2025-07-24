@@ -59,7 +59,7 @@ static void AssertCompletionsContainAndNotContainEntries(const std::vector<Compl
 namespace {
 TEST_F(LSPCompletionsTests, MemberCompletionsForClassTest9)
 {
-    std::vector<std::string> files = {"getCompletionsAtPosition12.ets"};
+    std::vector<std::string> files = {"getCompletionsAtPositionMember9.ets"};
     std::vector<std::string> texts = {R"delimiter(
 namespace space {
   export class classInSpace {
