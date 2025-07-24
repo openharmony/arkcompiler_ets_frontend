@@ -312,8 +312,7 @@ keywords:
 
   - name: 'instanceof'
     token: KEYW_INSTANCEOF
-    keyword: [as, js, ts]
-    keyword_like: [ets]
+    keyword: [as, js, ets, ts]
     flags: [binary]
 
   - name: 'int'
