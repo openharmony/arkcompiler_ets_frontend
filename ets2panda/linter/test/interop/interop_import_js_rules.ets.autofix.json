@@ -601,9 +601,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1392,
-                    "end": 1397,
-                    "replacementText": "i: number = 0",
+                    "start": 1393,
+                    "end": 1393,
+                    "replacementText": ": number",
                     "line": 52,
                     "column": 10,
                     "endLine": 52,
@@ -830,9 +830,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1582,
-                    "end": 1588,
-                    "replacementText": "a: number = 1;",
+                    "start": 1583,
+                    "end": 1583,
+                    "replacementText": ": number",
                     "line": 67,
                     "column": 9,
                     "endLine": 67,
@@ -872,9 +872,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1589,
-                    "end": 1594,
-                    "replacementText": "b: number = 2;",
+                    "start": 1590,
+                    "end": 1590,
+                    "replacementText": ": number",
                     "line": 67,
                     "column": 16,
                     "endLine": 67,
@@ -914,9 +914,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1595,
-                    "end": 1599,
-                    "replacementText": "c: number = 3;",
+                    "start": 1596,
+                    "end": 1596,
+                    "replacementText": ": number",
                     "line": 67,
                     "column": 22,
                     "endLine": 67,

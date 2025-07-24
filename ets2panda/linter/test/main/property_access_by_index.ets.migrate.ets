@@ -50,8 +50,8 @@ function fobject2(o: Object) {
   o['k']
 }
 
-let array1: number[] = [0.0, 1.0]
-let array2: number[] = [1.0, 2.0, 3.0, 4.0, 5.0]
+let array1: number[] = [0.0,1.0]
+let array2: number[] = [1.0,2.0,3.0,4.0,5.0]
 let array3: number[] = [1.0,2.0,3.0,4.0,5.0]
 let array4: Array<number> = [1.0,2.0,3.0,4.0,5.0]
 let array5 = new Array(10.0)

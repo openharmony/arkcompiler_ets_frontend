@@ -115,12 +115,23 @@ export class TsUtils {
     return false;
   }
 
-  static isEnumType(tsType: ts.Type): boolean {
+  static isEnumType(tsType: ts.Type, checkUnion?: boolean): boolean {
     // when type equals `typeof <Enum>`, only symbol contains information about it's type.
     const isEnumSymbol = tsType.symbol && this.isEnum(tsType.symbol);
     // otherwise, we should analyze flags of the type itself
     const isEnumType = !!(tsType.flags & ts.TypeFlags.Enum) || !!(tsType.flags & ts.TypeFlags.EnumLiteral);
-    return isEnumSymbol || isEnumType;
+
+    if (isEnumSymbol || isEnumType) {
+      return true;
+    }
+
+    if (checkUnion && tsType.isUnion()) {
+      return tsType.types.some((t) => {
+        return TsUtils.isEnumType(t);
+      });
+    }
+
+    return false;
   }
 
   static isEnum(tsSymbol: ts.Symbol): boolean {
@@ -3453,15 +3464,37 @@ export class TsUtils {
     }
   }
 
-  static isNumberLike(type: ts.Type, typeText: string, isEnum: boolean): boolean {
+  isNumberLike(type: ts.Type): boolean {
     const typeFlags = type.flags;
+    const typeText = this.tsTypeChecker.typeToString(type);
 
     const isNumberLike =
       typeText === STRINGLITERAL_NUMBER ||
       typeText === STRINGLITERAL_NUMBER_ARRAY ||
       (typeFlags & ts.TypeFlags.NumberLiteral) !== 0 ||
-      isEnum;
+      this.isNumericEnumType(type);
     return isNumberLike;
+  }
+
+  isNumericEnumType(type: ts.Type): boolean {
+    if (!TsUtils.isEnumType(type, true)) {
+      return false;
+    }
+    const declarations = type.symbol?.getDeclarations() || [];
+    const enumMemberDecl = declarations.find(ts.isEnumMember);
+    if (enumMemberDecl) {
+      const value = this.tsTypeChecker.getConstantValue(enumMemberDecl);
+      return typeof value === STRINGLITERAL_NUMBER;
+    }
+
+    const enumDecl = declarations.find(ts.isEnumDeclaration);
+    if (enumDecl) {
+      return enumDecl.members.every((member) => {
+        const memberType = this.tsTypeChecker.getTypeAtLocation(member.name);
+        return (memberType.flags & ts.TypeFlags.NumberLike) !== 0;
+      });
+    }
+    return false;
   }
 
   static getModuleName(node: ts.Node): string | undefined {

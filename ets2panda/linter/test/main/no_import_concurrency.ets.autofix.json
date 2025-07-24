@@ -370,9 +370,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1337,
-                    "end": 1346,
-                    "replacementText": "aaa: number = 123",
+                    "start": 1340,
+                    "end": 1340,
+                    "replacementText": ": number",
                     "line": 34,
                     "column": 11,
                     "endLine": 34,

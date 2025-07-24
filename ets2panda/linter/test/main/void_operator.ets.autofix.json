@@ -744,9 +744,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1090,
-                    "end": 1095,
-                    "replacementText": "a: number = 1",
+                    "start": 1091,
+                    "end": 1091,
+                    "replacementText": ": number",
                     "line": 55,
                     "column": 7,
                     "endLine": 55,
@@ -807,9 +807,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1116,
-                    "end": 1129,
-                    "replacementText": "b: number[] = [1, 2, 3]",
+                    "start": 1117,
+                    "end": 1117,
+                    "replacementText": ": number[]",
                     "line": 58,
                     "column": 7,
                     "endLine": 58,

@@ -22,9 +22,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 639,
-                    "end": 657,
-                    "replacementText": "an_array: number[] = [1, 2, 3]",
+                    "start": 647,
+                    "end": 647,
+                    "replacementText": ": number[]",
                     "line": 17,
                     "column": 7,
                     "endLine": 17,
@@ -106,9 +106,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 664,
-                    "end": 683,
-                    "replacementText": "a: number = an_array[index]",
+                    "start": 665,
+                    "end": 665,
+                    "replacementText": ": number",
                     "line": 18,
                     "column": 7,
                     "endLine": 18,
@@ -158,9 +158,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 690,
-                    "end": 714,
-                    "replacementText": "a1: number = an_array[index + 1]",
+                    "start": 692,
+                    "end": 692,
+                    "replacementText": ": number",
                     "line": 19,
                     "column": 7,
                     "endLine": 19,
@@ -210,9 +210,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 721,
-                    "end": 747,
-                    "replacementText": "a2: number = an_array[index + 1.1]",
+                    "start": 723,
+                    "end": 723,
+                    "replacementText": ": number",
                     "line": 20,
                     "column": 7,
                     "endLine": 20,
@@ -262,9 +262,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 754,
-                    "end": 772,
-                    "replacementText": "b: number = an_array[1.23]",
+                    "start": 755,
+                    "end": 755,
+                    "replacementText": ": number",
                     "line": 21,
                     "column": 7,
                     "endLine": 21,
@@ -394,9 +394,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 887,
-                    "end": 901,
-                    "replacementText": "g: number = an_array[]",
+                    "start": 888,
+                    "end": 888,
+                    "replacementText": ": number",
                     "line": 26,
                     "column": 7,
                     "endLine": 26,
@@ -425,9 +425,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 908,
-                    "end": 925,
-                    "replacementText": "h: number = an_array[12.]",
+                    "start": 909,
+                    "end": 909,
+                    "replacementText": ": number",
                     "line": 27,
                     "column": 7,
                     "endLine": 27,
@@ -477,9 +477,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 932,
-                    "end": 950,
-                    "replacementText": "i: number = an_array[12.0]",
+                    "start": 933,
+                    "end": 933,
+                    "replacementText": ": number",
                     "line": 28,
                     "column": 7,
                     "endLine": 28,
@@ -529,9 +529,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 957,
-                    "end": 972,
-                    "replacementText": "j: number = an_array[0]",
+                    "start": 958,
+                    "end": 958,
+                    "replacementText": ": number",
                     "line": 29,
                     "column": 7,
                     "endLine": 29,
@@ -560,9 +560,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 979,
-                    "end": 1009,
-                    "replacementText": "k: number = an_array[Number.MAX_VALUE]",
+                    "start": 980,
+                    "end": 980,
+                    "replacementText": ": number",
                     "line": 30,
                     "column": 7,
                     "endLine": 30,
@@ -612,9 +612,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1016,
-                    "end": 1046,
-                    "replacementText": "l: number = an_array[Number.MIN_VALUE]",
+                    "start": 1017,
+                    "end": 1017,
+                    "replacementText": ": number",
                     "line": 31,
                     "column": 7,
                     "endLine": 31,
@@ -664,9 +664,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1053,
-                    "end": 1090,
-                    "replacementText": "m: number = an_array[Number.MAX_SAFE_INTEGER]",
+                    "start": 1054,
+                    "end": 1054,
+                    "replacementText": ": number",
                     "line": 32,
                     "column": 7,
                     "endLine": 32,
@@ -716,9 +716,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1098,
-                    "end": 1113,
-                    "replacementText": "array: number[] = [1, 2, 3]",
+                    "start": 1103,
+                    "end": 1103,
+                    "replacementText": ": number[]",
                     "line": 35,
                     "column": 5,
                     "endLine": 35,
@@ -945,9 +945,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1391,
-                    "end": 1409,
-                    "replacementText": "array1: number[] = [1, 2, 3]",
+                    "start": 1397,
+                    "end": 1397,
+                    "replacementText": ": number[]",
                     "line": 50,
                     "column": 5,
                     "endLine": 50,
@@ -1060,9 +1060,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1436,
-                    "end": 1454,
-                    "replacementText": "array2: number[] = [1, 2, 3]",
+                    "start": 1442,
+                    "end": 1442,
+                    "replacementText": ": number[]",
                     "line": 53,
                     "column": 5,
                     "endLine": 53,
@@ -1663,9 +1663,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1924,
-                    "end": 1932,
-                    "replacementText": "test: number = 1",
+                    "start": 1928,
+                    "end": 1928,
+                    "replacementText": ": number",
                     "line": 87,
                     "column": 5,
                     "endLine": 87,
@@ -1798,9 +1798,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 2154,
-                    "end": 2169,
-                    "replacementText": "array: number[] = [1, 2, 3]",
+                    "start": 2159,
+                    "end": 2159,
+                    "replacementText": ": number[]",
                     "line": 98,
                     "column": 13,
                     "endLine": 98,

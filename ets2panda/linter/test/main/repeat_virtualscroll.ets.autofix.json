@@ -22,9 +22,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 739,
-                    "end": 744,
-                    "replacementText": "i: number = 0",
+                    "start": 740,
+                    "end": 740,
+                    "replacementText": ": number",
                     "line": 22,
                     "column": 14,
                     "endLine": 22,

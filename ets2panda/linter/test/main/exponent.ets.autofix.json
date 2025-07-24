@@ -22,9 +22,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 609,
-                    "end": 628,
-                    "replacementText": "kk: number = Math.pow(6, 3)",
+                    "start": 611,
+                    "end": 611,
+                    "replacementText": ": number",
                     "line": 16,
                     "column": 5,
                     "endLine": 16,
@@ -95,9 +95,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 652,
-                    "end": 662,
-                    "replacementText": "k: number = 5 ** 2",
+                    "start": 653,
+                    "end": 653,
+                    "replacementText": ": number",
                     "line": 19,
                     "column": 5,
                     "endLine": 19,

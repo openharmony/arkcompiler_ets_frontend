@@ -228,9 +228,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 801,
-                    "end": 806,
-                    "replacementText": "i: number = 0",
+                    "start": 802,
+                    "end": 802,
+                    "replacementText": ": number",
                     "line": 23,
                     "column": 10,
                     "endLine": 23,

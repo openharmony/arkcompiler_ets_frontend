@@ -112,11 +112,11 @@ function identity<T>(value: T): T {
 }
 identity(42.0);
 
-let an_array: number[] = [1.0, 2.0, 3.0]
+let an_array: number[] = [1.0,2.0,3.0]
 
-let g: number = an_array[]
+let g2: number = an_array[]
 
-const a: number = 1.0
+const a2: number = 1.0
 
 enum Test {
   A = 1,  // 显式赋值为 1
@@ -133,7 +133,7 @@ struct Index2 {
   readonly c5: number = 0x123; // 16进制
   readonly c6: number = 0o123; //8进制
   readonly c7: number = 0b101; //2进制
-  readonly c8: number[] = [1.0, 2.0, 3.0];
+  readonly c8: number[] = [1.0,2.0,3.0]
 
 build() {
     RelativeContainer() {
@@ -152,17 +152,15 @@ export class G{
 
 const fingerprintPositionY: number = AppStorage.get<number>(FingerprintConstants.COORDINATE_Y_OF_FINGERPRINT_UD_SCREEN_IN_PX) ?? 0.0;
 
-private doCloseFolderBackgroundAnimation(): (() => {
-    ({
-        openFolderLayout: openFolderLayout, : .getGridSwiperLayout().bgHeight = openFolderLayout.getBackgroundLayout().closedHeight,
-        openFolderLayout: openFolderLayout, : .getGridSwiperLayout().bgWidth = openFolderLayout.getBackgroundLayout().closedWidth,
-        let: let, pos: pos,
-        pos: pos,
-        let: let, editModeTranslateY: editModeTranslateY,
-        if(pos) { }, : .length > 1.0
-    });
-    return undefined;
-})() {
+class Layout {
+  private doCloseFolderBackgroundAnimation(): void {
+    openFolderLayout.getGridSwiperLayout().bgHeight = openFolderLayout.getBackgroundLayout().closedHeight;
+    openFolderLayout.getGridSwiperLayout().bgWidth = openFolderLayout.getBackgroundLayout().closedWidth;
+
+    let pos: number[] = [-1.0, -1.0];
+    pos = folderLayoutUtil.getFolderComponentCenterPosition(FolderData.getInstance().getOpenedFolder());
+    let editModeTranslateY = this.getEditModeTranslateY(pos);
+    if (pos.length > 1.0) {
       let translateXForScreenSplit: number = AppStorage.get<number>('translateXForScreenSplit') ?? 0.0 as number;
       let screenWidth: number = AppStorage.get<number>('screenWidth') as number;
       let screenHeight: number = AppStorage.get<number>('screenHeight') as number;
@@ -174,9 +172,10 @@ private doCloseFolderBackgroundAnimation(): (() => {
       openFolderLayout.getGridSwiperLayout().bgTranslateY = pos[1] + editModeTranslateY -
         openFolderLayout.getBackgroundLayout().closedHeight * 0.5 - openFolderLayout.getBackgroundLayout().openedMargin;
     }
+  }
 }
 
-let f: number = 0.0;
+let f2: number = 0.0;
 let b5: number = 0.0;
 f = b5; // OK
 
@@ -192,12 +191,12 @@ e >>= g1; // OK
 e &= g1; // OK
 e = e & 3.0; // OK
 e = e | 3.0; // OK
-let arr1: number[] = [1.0, 2.0, 3.0]
+let arr1: number[] = [1.0,2.0,3.0]
 e += arr1[0]; // OK
 
-let a: number = 0.0;
-a = fun1();
-a = fun2()!;
+let a3: number = 0.0;
+a3 = fun1();
+a3 = fun2()!;
 
 function fun1():number{
   return 1.0;
@@ -209,17 +208,17 @@ function fun2():number|undefined{
 
 import { ArrayList } from "@kit.ArkTS";
 
-let arr = new ArrayList<number>()
+let arr2 = new ArrayList<number>()
 for (let i:number = 0.0; i < 100.0; i++) {
-  arr.add(i)
+  arr2.add(i)
 }
-let cancelIds:ArrayList<number> = arr.subArrayList(6.0, 86.0)
-let a: Array<number> = Array.from(cancelIds)
-let arr1: Array<number> = Array.from(new ArrayList<number>())
+let cancelIds:ArrayList<number> = arr2.subArrayList(6.0, 86.0)
+let arr3: Array<number> = Array.from(cancelIds)
+let arr4: Array<number> = Array.from(new ArrayList<number>())
 
-let a:number = 0.000;
+let a4: number = 0.000;
 
-const b:number = 0.000;
+const b4: number = 0.000;
 
 export enum WalletStageValue {
   DEFAULT = 0,
@@ -240,5 +239,12 @@ export enum AnimationStage {
 }
 
 class C {
-  public static readonly SIX_MONTH: number = 180.0 * 24.0 * 60.0 * 60.0 * 1000.0;
+  public static readonly SIX_MONTH: number = 180.0 * 24.0 * 60.0 * 60.0 * 1000.0
+}
+
+function testIndentation(): void {
+  let a: number = (() => {
+    console.log('hello');
+    return 0.0;
+  })();
 }

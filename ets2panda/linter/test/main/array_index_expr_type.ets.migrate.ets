@@ -19,7 +19,7 @@ import {
 } from '@kit.ArkUI';
 
 function foo(index:number){
-  let an_array: number[] = [1.0, 2.0, 3.0]
+  let an_array: number[] = [1.0,2.0,3.0]
   let a: number = an_array[index as int]
   let a1: number = an_array[(index + 1) as int]
   let a2: number = an_array[(index + 1.1) as int]
@@ -37,7 +37,7 @@ function foo(index:number){
   let m: number = an_array[Number.MAX_SAFE_INTEGER as int]
 }
 
-let array: number[] = [1.0, 2.0, 3.0]
+let array: number[] = [1.0,2.0,3.0]
 const index_1: number = 1.3;
 let index_2: number = 1.3;
 let index_3: number = 1.0;
@@ -100,7 +100,7 @@ struct Test {
   async cateMode(testIndex: number) {
     emitter.on(innerEvent, (eventData) => {
       if (this.testIndex == 0.0) {
-        let array: number[] = [1.0, 2.0, 3.0];
+        let array: number[] = [1.0,2.0,3.0];
         array[this.testIndex as int];
       }
     })
