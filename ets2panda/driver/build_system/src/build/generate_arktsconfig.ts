@@ -395,14 +395,13 @@ export class ArkTSConfigGenerator {
     baseName: string,
     relativePath: string,
     isExcludedDir: boolean,
-    prefix: string = '',
     separator: string = '.'
   ): string {
-    return prefix + (isExcludedDir
+    return isExcludedDir
       ? baseName
-      : (relativePath ? `${relativePath}${separator}${baseName}` : baseName)
-    );
+      : (relativePath ? `${relativePath}${separator}${baseName}` : baseName);
   }
+  
 
   private processDynamicFile(ctx: DynamicFileContext): void {
     const {
@@ -420,12 +419,13 @@ export class ArkTSConfigGenerator {
 
     const baseName = path.basename(fileName, '.d.ets');
     const normalizedRelativePath = relativePath.replace(/\//g, separator);
-    const key = this.buildDynamicKey(baseName, normalizedRelativePath, isExcludedDir, prefix, separator);
+    const key = this.buildDynamicKey(baseName, normalizedRelativePath, isExcludedDir, separator);
 
-    dependencySection[key] = {
+    dependencySection[prefix + key] = {
       language: 'js',
       path: filePath,
-      ohmUrl: getOhmurlByApi(baseName)
+      ohmUrl: getOhmurlByApi(baseName),
+      alias: [key]
     };
   }
 
