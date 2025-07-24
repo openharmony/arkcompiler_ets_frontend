@@ -65,7 +65,7 @@ TS_INTEROP_3(getClassPropertyInfo, KNativePointer, KNativePointer, KInt, KBoolea
 KNativePointer impl_getRenameLocationFileName(KNativePointer renameLocationPtr)
 {
     auto *renameLocationRef = reinterpret_cast<ark::es2panda::lsp::RenameLocation *>(renameLocationPtr);
-    return &renameLocationRef->fileName;
+    return new std::string(renameLocationRef->fileName);
 }
 TS_INTEROP_1(getRenameLocationFileName, KNativePointer, KNativePointer)
 
@@ -445,7 +445,7 @@ TS_INTEROP_1(getDiagRelatedInfo, KNativePointer, KNativePointer)
 KNativePointer impl_getRelatedInfoMsg(KNativePointer relatedInfoPtr)
 {
     auto *relatedInfoRef = reinterpret_cast<DiagnosticRelatedInformation *>(relatedInfoPtr);
-    return &relatedInfoRef->message_;
+    return new std::string(relatedInfoRef->message_);
 }
 TS_INTEROP_1(getRelatedInfoMsg, KNativePointer, KNativePointer)
 
@@ -459,7 +459,7 @@ TS_INTEROP_1(getRelatedInfoLoc, KNativePointer, KNativePointer)
 KNativePointer impl_getLocUri(KNativePointer locPtr)
 {
     auto *locRef = reinterpret_cast<Location *>(locPtr);
-    return &locRef->uri_;
+    return new std::string(locRef->uri_);
 }
 TS_INTEROP_1(getLocUri, KNativePointer, KNativePointer)
 
@@ -1617,7 +1617,7 @@ TS_INTEROP_3(getSpanOfEnclosingComment, KNativePointer, KNativePointer, KInt, KB
 KNativePointer impl_getInlayHintText(KNativePointer hintPtr)
 {
     auto *hint = reinterpret_cast<InlayHint *>(hintPtr);
-    return &hint->text;
+    return new std::string(hint->text);
 }
 TS_INTEROP_1(getInlayHintText, KNativePointer, KNativePointer)
 
@@ -1672,7 +1672,7 @@ TS_INTEROP_2(getInlayHintList, KNativePointer, KNativePointer, KNativePointer)
 KNativePointer impl_getSignatureHelpParameterName(KNativePointer parameterPtr)
 {
     auto *parameterRef = reinterpret_cast<SignatureHelpParameter *>(parameterPtr);
-    return &parameterRef->GetName();
+    return new std::string(parameterRef->GetName());
 }
 TS_INTEROP_1(getSignatureHelpParameterName, KNativePointer, KNativePointer)
 
