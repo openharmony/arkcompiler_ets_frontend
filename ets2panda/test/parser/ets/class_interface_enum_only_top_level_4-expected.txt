@@ -317,7 +317,7 @@
                                 "loc": {
                                   "start": {
                                     "line": 19,
-                                    "column": 8,
+                                    "column": 5,
                                     "program": "class_interface_enum_only_top_level_4.ets"
                                   },
                                   "end": {
@@ -330,7 +330,7 @@
                               "loc": {
                                 "start": {
                                   "line": 19,
-                                  "column": 8,
+                                  "column": 5,
                                   "program": "class_interface_enum_only_top_level_4.ets"
                                 },
                                 "end": {

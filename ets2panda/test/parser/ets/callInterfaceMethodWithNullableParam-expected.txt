@@ -153,7 +153,7 @@
                 "loc": {
                   "start": {
                     "line": 17,
-                    "column": 8,
+                    "column": 5,
                     "program": "callInterfaceMethodWithNullableParam.ets"
                   },
                   "end": {
@@ -166,7 +166,7 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 8,
+                  "column": 5,
                   "program": "callInterfaceMethodWithNullableParam.ets"
                 },
                 "end": {

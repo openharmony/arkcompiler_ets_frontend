@@ -186,7 +186,7 @@
                 "loc": {
                   "start": {
                     "line": 19,
-                    "column": 9,
+                    "column": 5,
                     "program": "from-soft-keyword-2.ets"
                   },
                   "end": {
@@ -199,7 +199,7 @@
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 9,
+                  "column": 5,
                   "program": "from-soft-keyword-2.ets"
                 },
                 "end": {

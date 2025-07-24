@@ -687,7 +687,7 @@
                 "loc": {
                   "start": {
                     "line": 25,
-                    "column": 9,
+                    "column": 5,
                     "program": "overrideStaticFunc.ets"
                   },
                   "end": {
@@ -700,7 +700,7 @@
               "loc": {
                 "start": {
                   "line": 25,
-                  "column": 9,
+                  "column": 5,
                   "program": "overrideStaticFunc.ets"
                 },
                 "end": {

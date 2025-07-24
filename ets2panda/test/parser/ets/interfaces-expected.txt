@@ -711,7 +711,7 @@
                 "loc": {
                   "start": {
                     "line": 22,
-                    "column": 14,
+                    "column": 11,
                     "program": "interfaces.ets"
                   },
                   "end": {
@@ -724,7 +724,7 @@
               "loc": {
                 "start": {
                   "line": 22,
-                  "column": 14,
+                  "column": 11,
                   "program": "interfaces.ets"
                 },
                 "end": {
@@ -832,7 +832,7 @@
                 "loc": {
                   "start": {
                     "line": 23,
-                    "column": 9,
+                    "column": 3,
                     "program": "interfaces.ets"
                   },
                   "end": {
@@ -845,7 +845,7 @@
               "loc": {
                 "start": {
                   "line": 23,
-                  "column": 9,
+                  "column": 3,
                   "program": "interfaces.ets"
                 },
                 "end": {
@@ -953,7 +953,7 @@
                 "loc": {
                   "start": {
                     "line": 24,
-                    "column": 12,
+                    "column": 3,
                     "program": "interfaces.ets"
                   },
                   "end": {
@@ -966,7 +966,7 @@
               "loc": {
                 "start": {
                   "line": 24,
-                  "column": 12,
+                  "column": 3,
                   "program": "interfaces.ets"
                 },
                 "end": {

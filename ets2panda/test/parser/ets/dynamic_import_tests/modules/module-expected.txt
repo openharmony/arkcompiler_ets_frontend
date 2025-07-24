@@ -1594,7 +1594,7 @@
                 "loc": {
                   "start": {
                     "line": 31,
-                    "column": 7,
+                    "column": 5,
                     "program": "module.ets"
                   },
                   "end": {
@@ -1607,7 +1607,7 @@
               "loc": {
                 "start": {
                   "line": 31,
-                  "column": 7,
+                  "column": 5,
                   "program": "module.ets"
                 },
                 "end": {
@@ -1780,7 +1780,7 @@
                 "loc": {
                   "start": {
                     "line": 32,
-                    "column": 7,
+                    "column": 5,
                     "program": "module.ets"
                   },
                   "end": {
@@ -1793,7 +1793,7 @@
               "loc": {
                 "start": {
                   "line": 32,
-                  "column": 7,
+                  "column": 5,
                   "program": "module.ets"
                 },
                 "end": {

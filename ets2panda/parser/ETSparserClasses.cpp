@@ -1173,7 +1173,7 @@ ir::MethodDefinition *ETSParser::ParseInterfaceMethod(ir::ModifierFlags flags, i
         func->AddModifier(ir::ModifierFlags::ABSTRACT);
     }
     ValidateGetterSetter(methodKind, func->Params().size());
-    func->SetRange({startLoc, GetEndLoc(body, func, Lexer())});
+    func->SetRange({name->Start(), GetEndLoc(body, func, Lexer())});
 
     auto *funcExpr = AllocNode<ir::FunctionExpression>(func);
     ES2PANDA_ASSERT(funcExpr != nullptr);

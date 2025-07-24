@@ -185,7 +185,7 @@
                 "loc": {
                   "start": {
                     "line": 17,
-                    "column": 8,
+                    "column": 5,
                     "program": "funcParamWithOptionalParam.ets"
                   },
                   "end": {
@@ -198,7 +198,7 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 8,
+                  "column": 5,
                   "program": "funcParamWithOptionalParam.ets"
                 },
                 "end": {

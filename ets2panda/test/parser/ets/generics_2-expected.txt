@@ -169,7 +169,7 @@
                 "loc": {
                   "start": {
                     "line": 17,
-                    "column": 8,
+                    "column": 5,
                     "program": "generics_2.ets"
                   },
                   "end": {
@@ -182,7 +182,7 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 8,
+                  "column": 5,
                   "program": "generics_2.ets"
                 },
                 "end": {
@@ -370,7 +370,7 @@
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 8,
+                    "column": 5,
                     "program": "generics_2.ets"
                   },
                   "end": {
@@ -383,7 +383,7 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 8,
+                  "column": 5,
                   "program": "generics_2.ets"
                 },
                 "end": {

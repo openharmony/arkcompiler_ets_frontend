@@ -153,7 +153,7 @@
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 11,
+                    "column": 5,
                     "program": "generics_type_param_constraint_5.ets"
                   },
                   "end": {
@@ -166,7 +166,7 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 11,
+                  "column": 5,
                   "program": "generics_type_param_constraint_5.ets"
                 },
                 "end": {
@@ -338,7 +338,7 @@
                 "loc": {
                   "start": {
                     "line": 19,
-                    "column": 11,
+                    "column": 5,
                     "program": "generics_type_param_constraint_5.ets"
                   },
                   "end": {
@@ -351,7 +351,7 @@
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 11,
+                  "column": 5,
                   "program": "generics_type_param_constraint_5.ets"
                 },
                 "end": {

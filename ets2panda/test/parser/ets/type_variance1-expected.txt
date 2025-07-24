@@ -559,7 +559,7 @@
                 "loc": {
                   "start": {
                     "line": 23,
-                    "column": 8,
+                    "column": 5,
                     "program": "type_variance1.ets"
                   },
                   "end": {
@@ -572,7 +572,7 @@
               "loc": {
                 "start": {
                   "line": 23,
-                  "column": 8,
+                  "column": 5,
                   "program": "type_variance1.ets"
                 },
                 "end": {
@@ -696,7 +696,7 @@
                 "loc": {
                   "start": {
                     "line": 24,
-                    "column": 8,
+                    "column": 5,
                     "program": "type_variance1.ets"
                   },
                   "end": {
@@ -709,7 +709,7 @@
               "loc": {
                 "start": {
                   "line": 24,
-                  "column": 8,
+                  "column": 5,
                   "program": "type_variance1.ets"
                 },
                 "end": {

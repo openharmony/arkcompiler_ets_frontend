@@ -26,7 +26,6 @@
 // NOLINTBEGIN
 
 static es2panda_Impl *impl = nullptr;
-static bool testResult = true;
 
 // Note: namespace declaration and enum declaration will be lowered to class definition before checker.
 static std::map<std::string, es2panda_AstNode *> classMap = {{"A", nullptr},
@@ -45,7 +44,8 @@ static std::map<std::string, es2panda_AstNode *> interfaceMap = {{"JsdocInterfac
 static std::map<std::string, es2panda_AstNode *> methodMap = {
     {"interfaceFoo1", nullptr},  {"interfaceFoo2", nullptr},  {"interfaceFoo3", nullptr},  {"interfaceFoo4", nullptr},
     {"classFoo1", nullptr},      {"classFoo2", nullptr},      {"classFoo3", nullptr},      {"interfaceProp1", nullptr},
-    {"interfaceProp2", nullptr}, {"interfaceProp3", nullptr}, {"interfaceProp4", nullptr}, {"jsDocFunc", nullptr}};
+    {"interfaceProp2", nullptr}, {"interfaceProp3", nullptr}, {"interfaceProp4", nullptr}, {"jsDocFunc", nullptr},
+    {"intefaceGet", nullptr},    {"intefaceSet", nullptr},    {"testGet", nullptr},        {"testSet", nullptr}};
 
 // Note: the variableDecl witll be transferred to property of ETSGLOBAL after lowerings.
 static std::map<std::string, es2panda_AstNode *> propertyMap = {
@@ -56,10 +56,13 @@ static std::map<std::string, es2panda_AstNode *> annotationMap = {
     {"myAnno", nullptr}, {"myAnnoWithAnno", nullptr}, {"exportAnno", nullptr}};
 
 static std::map<std::string, es2panda_AstNode *> etsParamsMap = {{"fooP1", nullptr}, {"fooP2", nullptr}};
-
 static es2panda_AstNode *typeAlias = nullptr;
 static es2panda_AstNode *indexerClass = nullptr;
 static std::map<std::string, es2panda_AstNode *> indexerTransferredAccessor = {{"$_get", nullptr}, {"$_set", nullptr}};
+static es2panda_AstNode *exportNamedDecl = nullptr;
+static es2panda_AstNode *exportSingleNamedDecl = nullptr;
+static es2panda_AstNode *reExportedDecl = nullptr;
+static es2panda_AstNode *importDecl = nullptr;
 
 static std::string g_source = R"(/*
  * Copyright (c) 2025 Huawei Device Co., Ltd.
@@ -75,6 +78,13 @@ static std::string g_source = R"(/*
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/**
+ * ==== import specifier jsdoc ====
+ * @param1 {} behindStr
+ * @param2 preStr { p }
+*/
+import { PI, E } from "std/math"
 
 @interface myMultiAnno {}
 
@@ -205,6 +215,20 @@ namespace JsdocNS {
     * @param2 preStr { p }
     */
     private classProp1:number = 0;
+
+    /**
+    * ==== test class getter ====
+    * @param1 {} behindStr
+    * @param2 preStr { p }
+    */
+    get testGet():number {return 1.0}
+
+    /**
+    * ==== test class setter ====
+    * @param1 {} behindStr
+    * @param2 preStr { p }
+    */
+    set testSet(n: number) {}
   }
 
   /**
@@ -248,6 +272,20 @@ export declare interface JsdocInterfaceOutside {
     * @param2 preStr { p }
     */
     interfaceProp4:number
+
+    /**
+    * ==== interface getter ====
+    * @param1 {} behindStr
+    * @param2 preStr { p }
+    */
+    get intefaceGet(): number
+
+    /**
+    * ==== interface setter ====
+    * @param1 {} behindStr
+    * @param2 preStr { p }
+    */
+    set intefaceSet(n: number)
 }
 
 /**
@@ -342,7 +380,50 @@ let jsdocVal1:string = "ssss"
  */
 @myAnnoWithAnno
 let jsdocVal2:string = "ssss"
+
+/**
+ * ==== export specifier jsdoc1 ====
+ * @param1 {} behindStr
+ * @param2 preStr { p }
+*/
+export { JsDocClassOutside, jsdocVal1, jsDocFunc }
+
+/**
+ * ==== export specifier jsdoc2 ====
+ * @param1 {} behindStr
+ * @param2 preStr { p }
+*/
+export { PI, E } from "std/math"
+
+/**
+ * ==== export specifier jsdoc3 ====
+ * @param1 {} behindStr
+ * @param2 preStr { p }
+*/
+export jsdocVal2
 )";
+
+static void FindImportExportSpecifier(es2panda_AstNode *ast, void *context)
+{
+    auto ctx = reinterpret_cast<es2panda_Context *>(context);
+    if (impl->IsExportNamedDeclaration(ast)) {
+        size_t len = 0;
+        impl->ExportNamedDeclarationSpecifiersConst(ctx, ast, &len);
+        if (len == 1) {
+            exportSingleNamedDecl = ast;
+        } else {
+            exportNamedDecl = ast;
+        }
+    }
+
+    if (impl->IsETSReExportDeclaration(ast)) {
+        reExportedDecl = ast;
+    }
+
+    if (impl->IsETSImportDeclaration(ast)) {
+        importDecl = ast;
+    }
+}
 
 static void FindAnnotationDecl(es2panda_AstNode *ast, void *context)
 {
@@ -488,7 +569,7 @@ static void FindIndexerTransferredGetterSetter(es2panda_AstNode *ast, void *cont
     }
 }
 
-static void FindTargetAst(es2panda_Context *context, es2panda_AstNode *ast)
+static void FindTargetAstAfterChecker(es2panda_Context *context, es2panda_AstNode *ast)
 {
     impl->AstNodeForEach(ast, FindClass, context);
     impl->AstNodeForEach(ast, FindInterface, context);
@@ -500,15 +581,13 @@ static void FindTargetAst(es2panda_Context *context, es2panda_AstNode *ast)
     impl->AstNodeForEach(indexerClass, FindIndexerTransferredGetterSetter, context);
 }
 
-static bool TestJSDoc(es2panda_Context *context)
+static void FindTargetAstAfterParser(es2panda_Context *context, es2panda_AstNode *ast)
 {
-    auto *program = impl->ContextProgram(context);
-    auto *entryAst = impl->ProgramAst(context, program);
-    if (entryAst == nullptr) {
-        return false;
-    }
-    FindTargetAst(context, entryAst);
+    impl->AstNodeForEach(ast, FindImportExportSpecifier, context);
+}
 
+static void TestJSDoc(es2panda_Context *context, es2panda_AstNode *entryAst)
+{
     std::cout << impl->GetLicenseFromRootNode(context, entryAst) << std::endl;
 
     for (const auto &[name, targetAst] : classMap) {
@@ -541,15 +620,34 @@ static bool TestJSDoc(es2panda_Context *context)
         std::cout << impl->JsdocStringFromDeclaration(context, targetAst) << std::endl;
     }
 
-    return testResult;
+    std::cout << impl->JsdocStringFromDeclaration(context, exportNamedDecl) << std::endl;
+    std::cout << impl->JsdocStringFromDeclaration(context, reExportedDecl) << std::endl;
+    std::cout << impl->JsdocStringFromDeclaration(context, exportSingleNamedDecl) << std::endl;
+    std::cout << impl->JsdocStringFromDeclaration(context, importDecl) << std::endl;
 }
 
 int main(int argc, char **argv)
 {
-    std::map<es2panda_ContextState, std::vector<std::function<bool(es2panda_Context *)>>> testFunctions;
-    testFunctions[ES2PANDA_STATE_CHECKED] = {TestJSDoc};
-    ProccedToStatePluginTestData data = {argc, argv, &impl, testFunctions, true, g_source};
-    return RunAllStagesWithTestFunction(data);
+    if (argc < MIN_ARGC) {
+        return INVALID_ARGC_ERROR_CODE;
+    }
+
+    impl = GetImpl();
+    if (impl == nullptr) {
+        return NULLPTR_IMPL_ERROR_CODE;
+    }
+
+    const char **args = const_cast<const char **>(&(argv[1]));
+    auto config = impl->CreateConfig(argc - 1, args);
+    auto context = impl->CreateContextFromString(config, g_source.data(), argv[argc - 1]);
+    impl->ProceedToState(context, ES2PANDA_STATE_PARSED);
+    auto *program = impl->ContextProgram(context);
+    auto *entryAst = impl->ProgramAst(context, program);
+    FindTargetAstAfterParser(context, entryAst);
+    impl->ProceedToState(context, ES2PANDA_STATE_CHECKED);
+    FindTargetAstAfterChecker(context, entryAst);
+    TestJSDoc(context, entryAst);
+    return 0;
 }
 
 // NOLINTEND

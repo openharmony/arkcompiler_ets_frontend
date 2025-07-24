@@ -1121,6 +1121,7 @@ ir::Statement *ETSParser::CreateReExportDeclarationNode(ir::ETSImportDeclaration
                                                           GetProgram()->AbsoluteName(), Allocator());
     ES2PANDA_ASSERT(reExport != nullptr);
     reExport->AddModifier(modifiers);
+    reExport->SetRange(reExportDeclaration->Range());
     return reExport;
 }
 
@@ -1169,8 +1170,10 @@ ir::Statement *ETSParser::ParseExport(lexer::SourcePosition startLoc, ir::Modifi
             specifiers = util::Helpers::ConvertVector<ir::AstNode>(specs.result);
         } else {
             ArenaVector<ir::ExportSpecifier *> exports(Allocator()->Adapter());
+            auto endLoc = startLoc;
             for (auto spec : specs.result) {
                 exports.emplace_back(AllocNode<ir::ExportSpecifier>(spec->Local(), spec->Imported()));
+                endLoc = endLoc.index < spec->End().index ? spec->End() : endLoc;
             }
 
             if (specs.resultExportDefault.size() > exportDefaultMaxSize) {
@@ -1178,12 +1181,14 @@ ir::Statement *ETSParser::ParseExport(lexer::SourcePosition startLoc, ir::Modifi
             }
             for (auto spec : specs.resultExportDefault) {
                 exports.emplace_back(spec);
+                endLoc = endLoc.index < spec->End().index ? spec->End() : endLoc;
             }
 
             auto result = AllocNode<ir::ExportNamedDeclaration>(Allocator(), static_cast<ir::StringLiteral *>(nullptr),
                                                                 std::move(exports));
             ES2PANDA_ASSERT(result != nullptr);
             result->AddModifier(modifiers);
+            result->SetRange({startLoc, endLoc});
             return result;
         }
     } else {
@@ -1387,8 +1392,10 @@ ir::ExportNamedDeclaration *ETSParser::ParseSingleExport(ir::ModifierFlags modif
     ArenaVector<ir::ExportSpecifier *> exports(Allocator()->Adapter());
 
     exports.emplace_back(AllocNode<ir::ExportSpecifier>(exported, ParseNamedExport(&token)));
+    exports.back()->SetRange(exported->Range());
     auto result = AllocNode<ir::ExportNamedDeclaration>(Allocator(), static_cast<ir::StringLiteral *>(nullptr),
                                                         std::move(exports));
+    result->SetRange(exported->Range());
     ES2PANDA_ASSERT(result != nullptr);
     result->AddModifier(modifiers);
     ConsumeSemicolon(result);

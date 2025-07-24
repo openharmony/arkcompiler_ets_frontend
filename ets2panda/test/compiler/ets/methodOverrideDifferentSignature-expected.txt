@@ -73,7 +73,7 @@
                 "loc": {
                   "start": {
                     "line": 17,
-                    "column": 8,
+                    "column": 5,
                     "program": "methodOverrideDifferentSignature.ets"
                   },
                   "end": {
@@ -86,7 +86,7 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 8,
+                  "column": 5,
                   "program": "methodOverrideDifferentSignature.ets"
                 },
                 "end": {
