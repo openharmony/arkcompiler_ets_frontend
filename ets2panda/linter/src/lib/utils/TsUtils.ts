@@ -46,7 +46,7 @@ import { ETS } from './consts/TsSuffix';
 import { STRINGLITERAL_NUMBER, STRINGLITERAL_NUMBER_ARRAY } from './consts/StringLiteral';
 import { ETS_MODULE, PATH_SEPARATOR, VALID_OHM_COMPONENTS_MODULE_PATH } from './consts/OhmUrl';
 import { EXTNAME_ETS, EXTNAME_JS, EXTNAME_D_ETS } from './consts/ExtensionName';
-import { STRING_ERROR_LITERAL } from './consts/Literals';
+import { CONCAT_ARRAY, STRING_ERROR_LITERAL } from './consts/Literals';
 
 export const PROMISE_METHODS = new Set(['all', 'race', 'any', 'resolve', 'allSettled']);
 export const SYMBOL = 'Symbol';
@@ -334,7 +334,7 @@ export class TsUtils {
       TsUtils.isTypeReference(tsType) &&
       tsType.typeArguments?.length === 1 &&
       tsType.target.typeParameters?.length === 1 &&
-      tsType.getSymbol()?.getName() === 'ConcatArray'
+      tsType.getSymbol()?.getName() === CONCAT_ARRAY
     );
   }
 

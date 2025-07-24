@@ -186,6 +186,7 @@ export enum FaultID {
   EntryAnnotation,
   SdkAbilityLifecycleMonitor,
   ProvideAnnotation,
+  FieldTypeMismatch,
   UseSharedDeprecated,
   UseConcurrentDeprecated,
   MethodInheritRule,

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,5 +13,14 @@
  * limitations under the License.
  */
 
-export const STRING_ERROR_LITERAL = 'Error';
-export const CONCAT_ARRAY = 'ConcatArray';
+initModule("./logger");
+console.log("Main program running...");
+initModule("./utils/init");
+
+import { cookBookTag } from './CookBookMsg';
+import Logger from './logger';
+import * as Utils from './utils';
+
+import { initApp } from './utils/init';
+
+

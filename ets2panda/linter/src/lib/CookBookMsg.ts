@@ -282,6 +282,8 @@ cookBookTag[261] =
 cookBookTag[262] = 'The makeObserved function is not supported (arkui-no-makeobserved-function)';
 cookBookTag[263] =
   'The "@Provide" annotation does not support dynamic parameters (arkui-provide-annotation-parameters)';
+cookBookTag[264] =
+  'The field types of the subclass and parent class must be the same (arkts-class-same-type-prop-with-super)';
 cookBookTag[265] = 'Direct inheritance of interop JS classes is not supported (arkts-interop-js2s-inherit-js-class)';
 cookBookTag[266] = 'Direct usage of interop JS objects is not supported (arkts-interop-js2s-traverse-js-instance)';
 cookBookTag[267] = 'Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-call-static-function)';

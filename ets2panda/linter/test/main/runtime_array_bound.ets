@@ -295,3 +295,16 @@ let values: string[] = Object.values(arr);
 for (let i = 0; i < keys.length; i++) {
   values[i];
 }
+
+let concatArray: ConcatArray<number> = new Array<number>(1.0, 2.0, 3.0);
+
+let tempNum: number = concatArray[5];
+
+
+for (let i = 0; i < concatArray.length; i++) {
+    concatArray[i]
+};
+
+if (concatArray.length > 10) {
+    concatArray[10]
+};
