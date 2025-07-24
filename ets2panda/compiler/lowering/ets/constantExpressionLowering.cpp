@@ -1312,6 +1312,14 @@ ir::AstNode *ConstantExpressionLowering::MaybeUnfoldIdentifier(ir::Identifier *n
     if (resolved == nullptr || !(resolved->Declaration()->IsConstDecl() || resolved->Declaration()->IsReadonlyDecl())) {
         return node;
     }
+
+    auto *parent = node->Parent();
+    while (parent != nullptr && (parent->IsMemberExpression() || parent->IsTSQualifiedName())) {
+        parent = parent->Parent();
+    }
+    if (parent != nullptr && (parent->IsETSTypeReferencePart() || parent->IsETSTypeReference())) {
+        return node;
+    }
     return UnfoldResolvedReference(resolved->Declaration()->Node(), node);
 }
 
