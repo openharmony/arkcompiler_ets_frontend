@@ -25,7 +25,7 @@ import {
   LIMITED_STANDARD_UTILITY_TYPES,
   LIMITED_STANDARD_UTILITY_TYPES2
 } from './utils/consts/LimitedStandardUtilityTypes';
-import { LIKE_FUNCTION, LIKE_FUNCTION_CONSTRUCTOR } from './utils/consts/LikeFunction';
+import { LIKE_FUNCTION, LIKE_FUNCTION_CONSTRUCTOR, FORBIDDEN_FUNCTION_BODY } from './utils/consts/LikeFunction';
 import { METHOD_DECLARATION } from './utils/consts/MethodDeclaration';
 import { METHOD_SIGNATURE } from './utils/consts/MethodSignature';
 import { OPTIONAL_METHOD } from './utils/consts/OptionalMethod';
@@ -5210,6 +5210,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleObjectLiteralAssignmentToClass(tsCallExpr);
     this.checkRestrictedAPICall(tsCallExpr);
     this.handleNoDeprecatedApi(tsCallExpr);
+    this.handleFunctionReturnThisCall(tsCallExpr);
   }
 
   private handleCallExpressionForUI(node: ts.CallExpression): void {
@@ -5665,6 +5666,77 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
   }
 
+  private handleFunctionReturnThisCall(node: ts.CallExpression | ts.NewExpression): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    const args = node.arguments;
+    const isUnsafeCallee = this.checkUnsafeFunctionCalleeName(node.expression);
+    if (!isUnsafeCallee) {
+      return;
+    }
+    if (!args) {
+      return;
+    }
+    if (args.length === 0) {
+      return;
+    }
+    const isForbidden = this.isForbiddenBodyArgument(args[0]);
+    if (isForbidden) {
+      this.incrementCounters(node, FaultID.NoFunctionReturnThis);
+    }
+  }
+
+  private isForbiddenBodyArgument(arg: ts.Expression): boolean {
+    if ((ts.isStringLiteral(arg) || ts.isNoSubstitutionTemplateLiteral(arg)) && arg.text === FORBIDDEN_FUNCTION_BODY) {
+      return true;
+    }
+
+    if (ts.isIdentifier(arg)) {
+      const symbol = this.tsTypeChecker.getSymbolAtLocation(arg);
+      const decl = symbol?.valueDeclaration;
+
+      if (
+        decl &&
+        ts.isVariableDeclaration(decl) &&
+        decl.initializer &&
+        ts.isStringLiteral(decl.initializer) &&
+        decl.initializer.text === FORBIDDEN_FUNCTION_BODY
+      ) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private checkUnsafeFunctionCalleeName(expr: ts.Expression): boolean {
+    if (ts.isIdentifier(expr) && expr.text === LIKE_FUNCTION) {
+      return true;
+    }
+
+    if (ts.isParenthesizedExpression(expr)) {
+      return this.checkUnsafeFunctionCalleeName(expr.expression);
+    }
+
+    if (ts.isPropertyAccessExpression(expr)) {
+      if (expr.name.text === LIKE_FUNCTION) {
+        return true;
+      }
+      return this.checkUnsafeFunctionCalleeName(expr.expression);
+    }
+
+    if (ts.isCallExpression(expr)) {
+      return this.checkUnsafeFunctionCalleeName(expr.expression);
+    }
+
+    if (ts.isBinaryExpression(expr) && expr.operatorToken.kind === ts.SyntaxKind.CommaToken) {
+      return this.checkUnsafeFunctionCalleeName(expr.right);
+    }
+
+    return false;
+  }
+
   private handleStructIdentAndUndefinedInArgs(
     tsCallOrNewExpr: ts.CallExpression | ts.NewExpression,
     callSignature: ts.Signature
@@ -5909,6 +5981,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleSendableGenericTypes(tsNewExpr);
     this.handleInstantiatedJsObject(tsNewExpr, sym);
     this.handlePromiseNeedVoidResolve(tsNewExpr);
+    this.handleFunctionReturnThisCall(tsNewExpr);
   }
 
   handlePromiseNeedVoidResolve(newExpr: ts.NewExpression): void {

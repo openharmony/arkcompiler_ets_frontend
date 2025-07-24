@@ -92,6 +92,7 @@ faultDesc[FaultID.UtilityType] = 'Standard Utility types';
 faultDesc[FaultID.PropertyDeclOnFunction] = 'Property declaration on function';
 faultDesc[FaultID.FunctionApplyCall] = 'Invoking methods of function objects';
 faultDesc[FaultID.FunctionBind] = faultDesc[FaultID.FunctionBindError] = 'Invoking methods of function objects';
+faultDesc[FaultID.NoFunctionReturnThis] = 'no function return this';
 faultDesc[FaultID.ConstAssertion] = '"as const" assertion';
 faultDesc[FaultID.ImportAssertion] = 'Import assertion';
 faultDesc[FaultID.SpreadOperator] = 'Spread operation';

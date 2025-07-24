@@ -100,6 +100,7 @@ faultsAttrs[FaultID.UtilityType] = new FaultAttributes(138);
 faultsAttrs[FaultID.PropertyDeclOnFunction] = new FaultAttributes(139);
 faultsAttrs[FaultID.FunctionBind] = new FaultAttributes(140, ProblemSeverity.WARNING);
 faultsAttrs[FaultID.FunctionBindError] = new FaultAttributes(140);
+faultsAttrs[FaultID.NoFunctionReturnThis] = new FaultAttributes(141);
 faultsAttrs[FaultID.ConstAssertion] = new FaultAttributes(142);
 faultsAttrs[FaultID.ImportAssertion] = new FaultAttributes(143);
 faultsAttrs[FaultID.LimitedStdLibApi] = new FaultAttributes(144);
