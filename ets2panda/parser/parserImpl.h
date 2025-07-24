@@ -112,7 +112,7 @@ public:
         ctx_ = ctx;
     }
 
-    public_lib::Context *Context()
+    public_lib::Context *Context() const
     {
         return ctx_;
     }

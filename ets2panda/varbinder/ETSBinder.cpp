@@ -1566,10 +1566,7 @@ void ETSBinder::ImportGlobalProperties(const ir::ClassDefinition *const classDef
 ArenaVector<parser::Program *> ETSBinder::GetProgramList(const util::StringView &oldPath) const noexcept
 {
     auto const *globalProgram = globalRecordTable_.Program();
-    util::StringView newPath = oldPath;
-    if (auto it = GetContext()->dupPrograms.find(oldPath); it != GetContext()->dupPrograms.end()) {
-        newPath = it->second->AbsoluteName();
-    }
+    util::StringView newPath = GetContext()->GetDupProgramOriginalPath(oldPath);
 
     for (const auto &extRecords : globalProgram->ExternalSources()) {
         for (const auto &program : extRecords.second) {

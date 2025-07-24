@@ -195,6 +195,14 @@ struct Context {
         analyzers_.clear();
     }
 
+    util::StringView GetDupProgramOriginalPath(util::StringView oldPath)
+    {
+        if (auto it = dupPrograms.find(oldPath); it != dupPrograms.end()) {
+            return it->second->AbsoluteName();
+        }
+        return oldPath;
+    }
+
     void MarkGenAbcForExternal(std::unordered_set<std::string> &genAbcList, public_lib::ExternalSource &extSources);
 
     ConfigImpl *config = nullptr;
