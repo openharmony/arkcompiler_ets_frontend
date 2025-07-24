@@ -264,6 +264,12 @@ public:
         return (flags_ & flag) != 0;
     }
 
+    bool IsETSStringLiteralType() const
+    {
+        return superType_ != nullptr && superType_->IsETSObjectType() &&
+               superType_->HasObjectFlag(ETSObjectFlags::STRING);
+    }
+
     ETSFunctionType *GetFunctionalInterfaceInvokeType() const;
 
     ETSObjectFlags BuiltInKind() const
