@@ -15,12 +15,8 @@
 
 declare class ClassWithSymbols {
     public readonly [x: number]: string;
-    public /* @@ label1 */[x: number]: /* @@ label2 */(/* @@ label3 */) /* @@ label4 */=> /* @@ label5 */void;
+    public /* @@ label1 */[x: number]: () => void;
 }
 
 
 /* @@@ label1 Error SyntaxError: Only one index signature can exist in a class  */
-/* @@@ label2 Error SyntaxError: Return type of index signature from exported class or interface need to be identifier.  */
-/* @@@ label3 Error SyntaxError: Unexpected token ')'.  */
-/* @@@ label4 Error SyntaxError: Unexpected token '=>'.  */
-/* @@@ label5 Error SyntaxError: Unexpected token 'void'.  */
