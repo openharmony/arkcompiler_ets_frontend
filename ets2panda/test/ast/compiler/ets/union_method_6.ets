@@ -38,7 +38,6 @@ function test1(v: A|C) {
 /* @@? 21:34 Error SyntaxError: Unexpected token, expected an identifier. */
 /* @@? 21:39 Error SyntaxError: Unexpected token '+'. */
 /* @@? 21:41 Error TypeError: Variable 'v' has already been declared. */
-/* @@? 21:41 Error TypeError: Property 'v' must be accessed through 'this' */
 /* @@? 21:42 Error SyntaxError: Field type annotation expected. */
 /* @@? 21:42 Error SyntaxError: Unexpected token ')'. */
 /* @@? 22:1 Error SyntaxError: Unexpected token '}'. */
