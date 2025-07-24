@@ -56,6 +56,7 @@ ir::MethodDefinition *CreateMethodFunctionDefinition(ir::DummyNode *node, public
                                                      ir::MethodDefinitionKind funcKind)
 {
     auto parser = ctx->parser->AsETSParser();
+    auto allocator = ctx->allocator;
 
     auto indexName = node->GetIndexName();
     if (node->IsBrokenStatement()) {
@@ -65,17 +66,18 @@ ir::MethodDefinition *CreateMethodFunctionDefinition(ir::DummyNode *node, public
         indexName = "_";
     }
     std::string sourceCode;
+
     if (funcKind == ir::MethodDefinitionKind::GET) {
-        sourceCode = "$_get(" + std::string(indexName) +
-                     " : number) : " + std::string(node->GetReturnTypeLiteral()->DumpEtsSrc());
+        sourceCode = "$_get (" + std::string(indexName) + " : @@T1) : @@T2 ";
     } else if (funcKind == ir::MethodDefinitionKind::SET) {
-        sourceCode = "$_set(" + std::string(indexName) + " : number, " +
-                     "value : " + std::string(node->GetReturnTypeLiteral()->DumpEtsSrc()) + " ) : void";
+        sourceCode = "$_set (" + std::string(indexName) + " : @@T1, value : @@T2) : void";
     } else {
         ES2PANDA_UNREACHABLE();
     }
 
-    auto methodDefinition = parser->CreateFormattedClassMethodDefinition(sourceCode);
+    auto methodDefinition =
+        parser->CreateFormattedClassMethodDefinition(sourceCode, node->IndexTypeAnno()->Clone(allocator, nullptr),
+                                                     node->GetReturnTypeLiteral()->Clone(allocator, nullptr));
 
     // NOTE(kaskov): #23399 It is temporary solution, we set default SourcePosition in all nodes in generated code
     compiler::SetSourceRangesRecursively(methodDefinition, node->Range());
