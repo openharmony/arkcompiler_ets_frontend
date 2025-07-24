@@ -904,7 +904,8 @@ export abstract class BaseMode {
   public async runParallel(): Promise<void> {
     this.generateModuleInfos();
 
-    if (!cluster.isPrimary) {
+    const isPrimary = cluster.isPrimary ?? cluster.isMaster; // Adapt to node-v14
+    if (!isPrimary) {
       return;
     }
 
@@ -930,7 +931,8 @@ export abstract class BaseMode {
     this.generateModuleInfos();
     this.generateArkTSConfigForModules();
 
-    if (!cluster.isPrimary) {
+    const isPrimary = cluster.isPrimary ?? cluster.isMaster;
+    if (!isPrimary) {
       return;
     }
 
@@ -1046,8 +1048,8 @@ export abstract class BaseMode {
     if (clearExitListeners) {
       cluster.removeAllListeners('exit');
     }
-
-    cluster.setupPrimary({
+    const setupFn = cluster.setupPrimary ?? cluster.setupMaster; // Adapt to node-v14
+    setupFn({
       exec: execPath,
       execArgv: execArgs,
     });
