@@ -131,12 +131,14 @@ interface es2panda_SuggestionInfo {
     attribute sequence<String> args;
     attribute u32 argc;
     attribute String substitutionCode;
+    attribute es2panda_SourceRange range;
 };
 
 interface es2panda_DiagnosticInfo {
     attribute es2panda_DiagnosticKind kind;
     attribute sequence<String> args;
     attribute u32 argc;
+    attribute es2panda_SourcePosition pos;
 };
 
 dictionary es2panda_PluginDiagnosticType { 
@@ -202,11 +204,11 @@ interface es2panda_Impl {
     es2panda_SourcePosition SourceRangeStart(es2panda_Context context, es2panda_SourceRange range);
     es2panda_SourcePosition SourceRangeEnd(es2panda_Context context, es2panda_SourceRange range);
     es2panda_DiagnosticInfo CreateDiagnosticInfo(es2panda_Context context, es2panda_DiagnosticKind kind,
-                                        sequence<String> args, u32 argc);
+                                        sequence<String> args, u32 argc, es2panda_SourcePosition position);
     es2panda_SuggestionInfo CreateDiagnosticInfo(es2panda_Context context, es2panda_DiagnosticKind kind,
-                                        sequence<String> args, u32 argc, String substitutionCode);
+                                        sequence<String> args, u32 argc, String substitutionCode, es2panda_SourceRange range);
     void LogDiagnosticWithSuggestion(es2panda_Context context, es2panda_DiagnosticInfo diagnosticInfo,
-                                        es2panda_SuggestionInfo suggestionInfo, es2panda_SourceRange range);
+                                        es2panda_SuggestionInfo suggestionInfo);
     void LogTypeError(es2panda_Context context, String errorMsg, es2panda_SourcePosition pos);
     void LogWarning(es2panda_Context context, String warnMsg, es2panda_SourcePosition pos);
     void LogSyntaxError(es2panda_Context context, String errorMsg, es2panda_SourcePosition pos);
