@@ -266,7 +266,8 @@ public:
     }
 
     util::StringView FindNameInAliasMap(const util::StringView &pathAsKey, const util::StringView &aliasName);
-    const ir::AstNode *FindNodeInAliasMap(const util::StringView &pathAsKey, const util::StringView &aliasName);
+    std::pair<util::StringView, const ir::AstNode *> FindNameAndNodeInAliasMap(const util::StringView &pathAsKey,
+                                                                               const util::StringView &aliasName);
 
     void CleanUp() override
     {
