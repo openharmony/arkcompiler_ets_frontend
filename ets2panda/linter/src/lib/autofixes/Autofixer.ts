@@ -63,6 +63,7 @@ import {
 import path from 'node:path';
 import { isStdLibrarySymbol } from '../utils/functions/IsStdLibrary';
 import { propertyAccessReplacements, identifierReplacements } from '../utils/consts/DeprecatedApi';
+import { ARKTS_COLLECTIONS_MODULE, BIT_VECTOR } from '../utils/consts/CollectionsAPI';
 
 const UNDEFINED_NAME = 'undefined';
 
@@ -5200,6 +5201,37 @@ export class Autofixer {
 
     const text = this.printer.printNode(ts.EmitHint.Unspecified, newDecorator, node.getSourceFile());
     return [{ start: node.getStart(), end: node.getEnd(), replacementText: text }];
+  }
+
+  importBitVector(node: ts.Node, lastImportDeclaration: ts.Node | undefined): Autofix | undefined {
+    const importDeclaration = ts.factory.createImportDeclaration(
+      undefined,
+      ts.factory.createImportClause(
+        false,
+        undefined,
+        ts.factory.createNamedImports([
+          ts.factory.createImportSpecifier(false, undefined, ts.factory.createIdentifier(BIT_VECTOR))
+        ])
+      ),
+      ts.factory.createStringLiteral(ARKTS_COLLECTIONS_MODULE),
+      undefined
+    );
+    // find the last import statement;
+
+    let replacementText: string = this.nonCommentPrinter.printNode(
+      ts.EmitHint.Unspecified,
+      importDeclaration,
+      node.getSourceFile()
+    );
+    let start: number = 0;
+    let end: number = 0;
+
+    if (lastImportDeclaration) {
+      start = end = lastImportDeclaration.getEnd();
+      replacementText = this.getNewLine() + replacementText + this.getNewLine();
+    }
+
+    return { start, end, replacementText };
   }
 
   fixRepeat(stmt: ts.ExpressionStatement): Autofix[] {

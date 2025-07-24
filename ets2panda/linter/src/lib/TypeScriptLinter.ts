@@ -87,7 +87,12 @@ import { BUILTIN_GENERIC_CONSTRUCTORS } from './utils/consts/BuiltinGenericConst
 import { DEFAULT_DECORATOR_WHITE_LIST } from './utils/consts/DefaultDecoratorWhitelist';
 import { INVALID_IDENTIFIER_KEYWORDS } from './utils/consts/InValidIndentifierKeywords';
 import { WORKER_MODULES, WORKER_TEXT } from './utils/consts/WorkerAPI';
-import { COLLECTIONS_TEXT, COLLECTIONS_MODULES } from './utils/consts/CollectionsAPI';
+import {
+  COLLECTIONS_TEXT,
+  COLLECTIONS_MODULES,
+  BIT_VECTOR,
+  ARKTS_COLLECTIONS_MODULE
+} from './utils/consts/CollectionsAPI';
 import { ASON_TEXT, ASON_MODULES, ARKTS_UTILS_TEXT, JSON_TEXT, ASON_WHITE_SET } from './utils/consts/ArkTSUtilsAPI';
 import { interanlFunction } from './utils/consts/InternalFunction';
 import { ETS_PART, PATH_SEPARATOR } from './utils/consts/OhmUrl';
@@ -8197,6 +8202,29 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
   }
 
+  private checkCollectionsForPropAccess(node: ts.Node, ident: ts.Node): void {
+    if (!ts.isIdentifier(ident)) {
+      return;
+    }
+    const importBitVectorAutofix = this.checkBitVector(ident);
+    const replace = this.autofixer?.replaceNode(node, ident.getText());
+    let autofix: Autofix[] | undefined = [];
+
+    if (replace) {
+      autofix = replace;
+    }
+
+    if (importBitVectorAutofix) {
+      autofix.push(importBitVectorAutofix);
+    }
+
+    if (autofix.length === 0) {
+      autofix = undefined;
+    }
+
+    this.incrementCounters(node, FaultID.NoNeedStdLibSendableContainer, autofix);
+  }
+
   private checkCollectionsSymbol(node: ts.Node): void {
     if (!this.options.arkts2) {
       return;
@@ -8207,14 +8235,17 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       if (!parent) {
         return;
       }
+
       if (ts.isPropertyAccessExpression(parent)) {
-        const autofix = this.autofixer?.replaceNode(parent, parent.name.text);
-        this.incrementCounters(node, FaultID.NoNeedStdLibSendableContainer, autofix);
+        this.checkCollectionsForPropAccess(parent, parent.name);
+
+        return;
       }
 
       if (ts.isQualifiedName(parent)) {
-        const autofix = this.autofixer?.replaceNode(parent, parent.right.text);
-        this.incrementCounters(node, FaultID.NoNeedStdLibSendableContainer, autofix);
+        this.checkCollectionsForPropAccess(parent, parent.right);
+
+        return;
       }
 
       if (ts.isImportSpecifier(parent) && ts.isIdentifier(node)) {
@@ -8285,6 +8316,64 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (node.getText() === symbolName) {
       cb();
     }
+  }
+
+  private checkBitVector(ident: ts.Identifier): Autofix | undefined {
+    if (!this.isBitVector(ident)) {
+      return undefined;
+    }
+
+    let lastImportDeclaration: ts.Node | undefined;
+    let bitVectorImported: boolean = false;
+    for (const node of this.sourceFile.statements) {
+      if (!ts.isImportDeclaration(node)) {
+        continue;
+      }
+      lastImportDeclaration = node;
+
+      if (this.checkImportDeclarationForBitVector(node)) {
+        bitVectorImported = true;
+      }
+    }
+
+    if (bitVectorImported) {
+      return undefined;
+    }
+
+    return this.autofixer?.importBitVector(ident, lastImportDeclaration);
+  }
+
+  private isBitVector(ident: ts.Identifier): boolean {
+    void this;
+
+    return ident.text === BIT_VECTOR;
+  }
+
+  private checkImportDeclarationForBitVector(node: ts.ImportDeclaration): boolean {
+    const importSpecifier = node.moduleSpecifier;
+    if (!ts.isStringLiteral(importSpecifier)) {
+      return false;
+    }
+    const importSpecifierText = importSpecifier.text;
+
+    const importClause = node.importClause;
+    if (!importClause) {
+      return false;
+    }
+
+    const namedBindings = importClause.namedBindings;
+    if (!namedBindings || !ts.isNamedImports(namedBindings)) {
+      return false;
+    }
+
+    let bitVectorImported = false;
+    for (const specifier of namedBindings.elements) {
+      if (this.isBitVector(specifier.name) && importSpecifierText === ARKTS_COLLECTIONS_MODULE) {
+        bitVectorImported = true;
+      }
+    }
+
+    return bitVectorImported;
   }
 
   interfacesNeedToAlarm: ts.Identifier[] = [];

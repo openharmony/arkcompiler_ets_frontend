@@ -15,13 +15,33 @@
     ],
     "result": [
         {
-            "line": 41,
+            "line": 43,
             "column": 11,
-            "endLine": 41,
+            "endLine": 43,
             "endColumn": 38,
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 47,
+            "column": 11,
+            "endLine": 47,
+            "endColumn": 46,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 47,
+            "column": 27,
+            "endLine": 47,
+            "endColumn": 36,
+            "problem": "DynamicCtorCall",
+            "suggest": "",
+            "rule": "\"new\" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)",
             "severity": "ERROR"
         }
     ]
