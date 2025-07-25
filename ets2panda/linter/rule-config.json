@@ -41,6 +41,7 @@
     "arkts-no-tuples-arrays",
     "arkts-class-static-initialization",
     "arkts-invalid-identifier",
+    "arkts-no-import-json-file",
     "arkts-no-extends-expression",
     "arkts-no-ts-like-function-call",
     "arkts-method-inherit-rule",

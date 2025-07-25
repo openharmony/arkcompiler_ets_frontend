@@ -174,6 +174,7 @@ faultsAttrs[FaultID.MethodOverridingField] = new FaultAttributes(236);
 faultsAttrs[FaultID.NoTuplesArrays] = new FaultAttributes(237);
 faultsAttrs[FaultID.ClassstaticInitialization] = new FaultAttributes(238);
 faultsAttrs[FaultID.InvalidIdentifier] = new FaultAttributes(239);
+faultsAttrs[FaultID.NoImportJsonFile] = new FaultAttributes(245);
 faultsAttrs[FaultID.DoubleExclaBindingNotSupported] = new FaultAttributes(251);
 faultsAttrs[FaultID.DoubleDollarBindingNotSupported] = new FaultAttributes(252);
 faultsAttrs[FaultID.DollarBindingNotSupported] = new FaultAttributes(253);
