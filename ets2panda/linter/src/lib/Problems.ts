@@ -37,6 +37,7 @@ export enum FaultID {
   FunctionExpression,
   IntersectionType,
   ObjectTypeLiteral,
+  ObjectLiteralKeyType,
   CommaOperator,
   LimitedReturnTypeInference,
   ClassExpression,

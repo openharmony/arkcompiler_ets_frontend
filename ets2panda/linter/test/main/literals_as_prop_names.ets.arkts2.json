@@ -555,6 +555,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 136,
+            "column": 3,
+            "endLine": 136,
+            "endColumn": 15,
+            "problem": "ObjectLiteralKeyType",
+            "suggest": "",
+            "rule": "Use string-literal keys with Record (arkts-obj-literal-key-type)",
+            "severity": "ERROR"
+        },
+        {
             "line": 135,
             "column": 37,
             "endLine": 135,

@@ -40,6 +40,7 @@ faultDesc[FaultID.InOperator] = '"in" operations';
 faultDesc[FaultID.FunctionExpression] = 'function expressions';
 faultDesc[FaultID.IntersectionType] = 'intersection types and type literals';
 faultDesc[FaultID.ObjectTypeLiteral] = 'Object type literals';
+faultDesc[FaultID.ObjectLiteralKeyType] = 'Object literal key types';
 faultDesc[FaultID.CommaOperator] = 'comma operator';
 faultDesc[FaultID.LimitedReturnTypeInference] = 'Functions with limited return type inference';
 faultDesc[FaultID.ClassExpression] = 'Class expressions';

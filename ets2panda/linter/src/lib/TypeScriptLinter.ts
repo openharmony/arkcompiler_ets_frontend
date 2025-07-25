@@ -623,6 +623,10 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
 
     const objectLiteralType = this.tsTypeChecker.getContextualType(objectLiteralExpr);
+    if (objectLiteralType && this.options.arkts2) {
+      this.isObjectLiteralKeyTypeValid(objectLiteralExpr, objectLiteralType);
+    }
+
     if (objectLiteralType && this.tsUtils.typeContainsSendableClassOrInterface(objectLiteralType)) {
       this.incrementCounters(node, FaultID.SendableObjectInitialization);
     } else if (
@@ -2698,6 +2702,19 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       const autofix = this.autofixer?.fixVarDeclaration(node as ts.VariableDeclarationList);
       this.incrementCounters(node, FaultID.VarDeclaration, autofix);
     }
+  }
+
+  private isObjectLiteralKeyTypeValid(objectLiteral: ts.ObjectLiteralExpression, contextualType: ts.Type): void {
+    if (!this.tsUtils.isStdRecordType(contextualType)) {
+      return;
+    }
+    objectLiteral.properties.forEach((prop: ts.ObjectLiteralElementLike): void => {
+      if (ts.isPropertyAssignment(prop)) {
+        if (!this.tsUtils.isValidRecordObjectLiteralKey(prop.name)) {
+          this.incrementCounters(prop, FaultID.ObjectLiteralKeyType);
+        }
+      }
+    });
   }
 
   private handleVariableDeclaration(node: ts.Node): void {
