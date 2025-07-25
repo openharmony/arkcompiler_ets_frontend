@@ -178,7 +178,8 @@ private:
     void GenAnnotationProperties(const ir::AnnotationUsage *anno);
     void GenAnnotationPropertyValue(ir::Expression *value);
 
-    void GenTypeParameters(const ir::TSTypeParameterDeclaration *typeParams);
+    void GenTypeParameters(const ir::TSTypeParameterDeclaration *typeParams, bool isStatic = false,
+                           const checker::ETSObjectType *ownerObj = nullptr);
     void GenExport(const ir::Identifier *symbol);
     void GenExport(const ir::Identifier *symbol, const std::string &alias);
     void GenDefaultExport(const ir::Identifier *symbol);
