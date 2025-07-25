@@ -15,7 +15,6 @@
  
 class A<T>{
   getData(a:T):T{
-
     return a;
   }
 }
@@ -23,5 +22,42 @@ class A<T>{
 class B extends A<number>{
   getData(a: number): number {  // no error
     return 123;
+  }
+}
+
+enum E{
+  E1,
+  E2
+}
+
+interface I {
+  fun(e:E):void
+}
+
+class C implements I {
+  fun(e:E):void{  // no error
+
+  }
+}
+
+Class UIAbility {
+  onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void;
+  onWindowStageCreate(windowStage: window.WindowStage): void;
+}
+
+class EntryAbility extends UIAbility {
+  onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void { // no error
+
+  }
+
+  onWindowStageCreate(windowStage: window.WindowStage): void {  // no error
+    try {
+      windowStage.loadContent('pages/Index', (err: BusinessError<void> | null): void => {
+        if (err && err.code) {
+          return;
+        }
+      });
+    } catch (e) {
+    }
   }
 }

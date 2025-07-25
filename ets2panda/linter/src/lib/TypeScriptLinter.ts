@@ -3818,23 +3818,27 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
     const methodName = node.name.text;
     if (allBaseTypes && allBaseTypes.length > 0) {
-      this.checkMethodType(allBaseTypes, methodName, node);
+      this.checkMethodType(allBaseTypes, methodName, node, isStatic);
     }
   }
 
-  private checkMethodType(allBaseTypes: ts.Type[], methodName: string, node: ts.MethodDeclaration): void {
+  private checkMethodType(allBaseTypes: ts.Type[], methodName: string, node: ts.MethodDeclaration, isStatic: boolean = false): void {
     for (const baseType of allBaseTypes) {
-      const baseMethod = baseType.getProperty(methodName);
+      let baseMethod: ts.Symbol | undefined;        
+      if (isStatic) {
+        const constructorType = this.tsTypeChecker.getTypeOfSymbolAtLocation(baseType.getSymbol()!, node);
+        baseMethod = constructorType.getProperty(methodName) || 
+                      baseType.getSymbol()?.members?.get(ts.escapeLeadingUnderscores(methodName));
+      } else {
+        baseMethod = baseType.getProperty(methodName);
+      }
       if (!baseMethod) {
         continue;
       }
-
-      const baseMethodDecl = baseMethod.declarations?.find((d) => {
-        return (
-          (ts.isMethodDeclaration(d) || ts.isMethodSignature(d)) &&
-          this.tsTypeChecker.getTypeAtLocation(d.parent) === baseType
-        );
-      }) as ts.MethodDeclaration | ts.MethodSignature;
+      const baseMethodDecl = baseMethod.declarations?.find(d => 
+                             (ts.isMethodDeclaration(d) || ts.isMethodSignature(d)) &&
+                              this.isSameDeclarationType(d.parent, baseType, isStatic)
+                             ) as ts.MethodDeclaration | ts.MethodSignature;
 
       if (!baseMethodDecl) {
         continue;
@@ -3846,6 +3850,14 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
       break;
     }
+  }
+
+  private isSameDeclarationType(decl: ts.Node, type: ts.Type, isStatic: boolean): boolean {
+    if (isStatic && ts.isClassDeclaration(decl)) {
+      const staticType = this.tsTypeChecker.getTypeAtLocation(decl);
+      return this.isSameType(staticType, type);
+    }
+    return this.tsTypeChecker.getTypeAtLocation(decl) === type;
   }
 
   private checkIncompatibleFunctionTypes(method: ts.MethodDeclaration): void {
@@ -3955,21 +3967,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
   private getAllBaseTypes(type: ts.Type, classDecl: ts.ClassDeclaration, isStatic?: boolean): ts.Type[] | undefined {
     if (isStatic) {
-      const baseTypes: ts.Type[] = [];
-      if (!classDecl.heritageClauses) {
-        return baseTypes;
-      }
-      for (const clause of classDecl.heritageClauses) {
-        if (clause.token !== ts.SyntaxKind.ExtendsKeyword) {
-          continue;
-        }
-        for (const typeNode of clause.types) {
-          const baseType = this.tsTypeChecker.getTypeAtLocation(typeNode);
-          baseTypes.push(baseType);
-        }
-      }
-
-      return baseTypes;
+      return this.getStaticAllBaseTypes(classDecl);
     }
 
     const baseClasses = type.getBaseTypes() || [];
@@ -3981,6 +3979,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (!classDecl.heritageClauses) {
       return resolvedBaseClasses;
     }
+
     const interfaces: ts.Type[] = [];
     for (const clause of classDecl.heritageClauses) {
       if (clause.token !== ts.SyntaxKind.ImplementsKeyword) {
@@ -3999,7 +3998,33 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         });
       }
     }
-    return [...resolvedBaseClasses, ...interfaces];
+    return [...resolvedBaseClasses, ...interfaces];    
+  }
+
+  private getStaticAllBaseTypes(classDecl: ts.ClassDeclaration): ts.Type[] | undefined {
+    const baseTypes: ts.Type[] = [];
+    if (!classDecl.heritageClauses) {
+      return baseTypes;
+    }
+
+    for (const clause of classDecl.heritageClauses) {
+      if (clause.token !== ts.SyntaxKind.ExtendsKeyword) {
+        continue;
+      }
+
+      for (const typeNode of clause.types) {
+        const baseType = this.tsTypeChecker.getTypeAtLocation(typeNode);
+        baseTypes.push(baseType);
+
+        const baseDecl = baseType.getSymbol()?.declarations?.[0];
+        if (baseDecl && ts.isClassDeclaration(baseDecl)) {
+          const staticBaseType = this.tsTypeChecker.getTypeAtLocation(baseDecl);
+          const staticBaseTypes = this.getAllBaseTypes(staticBaseType, baseDecl, true) || [];
+          baseTypes.push(...staticBaseTypes);
+        }
+      }
+    }
+    return baseTypes;
   }
 
   /**
@@ -4138,6 +4163,10 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   }
 
   private isTypeSameOrWider(baseType: ts.Type, derivedType: ts.Type): boolean {
+    if (this.tsTypeChecker.typeToString(baseType) === this.tsTypeChecker.typeToString(derivedType)) {
+      return true;
+    }
+
     if (derivedType.flags & ts.TypeFlags.Any) {
       return true;
     }
