@@ -1833,7 +1833,11 @@ static Type *TransformTypeForMethodReference(ETSChecker *checker, ir::Expression
     auto &signatures = functionType->CallSignatures();
 
     if (signatures.at(0)->HasSignatureFlag(SignatureFlags::PRIVATE)) {
-        checker->LogError(diagnostic::PRIVATE_METHOD_AS_VALUE, getUseSite());
+        checker->LogError(diagnostic::PRIVATE_OR_PROTECTED_METHOD_AS_VALUE, {"Private"}, getUseSite());
+        return checker->GlobalTypeError();
+    }
+    if (signatures.at(0)->HasSignatureFlag(SignatureFlags::PROTECTED)) {
+        checker->LogError(diagnostic::PRIVATE_OR_PROTECTED_METHOD_AS_VALUE, {"Protected"}, getUseSite());
         return checker->GlobalTypeError();
     }
 

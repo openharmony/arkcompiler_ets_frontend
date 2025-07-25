@@ -1184,9 +1184,9 @@ semantic:
   id: 266
   message: "Precondition check failed for {}"
 
-- name: PRIVATE_METHOD_AS_VALUE
+- name: PRIVATE_OR_PROTECTED_METHOD_AS_VALUE
   id: 306
-  message: "Private method is used as value"
+  message: "{} method is used as value"
 
 - name: PROPERTY_CAPTURE
   id: 146
