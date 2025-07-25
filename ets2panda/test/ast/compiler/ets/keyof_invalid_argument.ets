@@ -23,42 +23,36 @@ class ObservableImpl<T> extends Observable<T> {
 
 type NestedKey<T, K extends keyof T> = T[K] extends object ? keyof T[K] : never;
 
-/* @@? 16:24 Error SyntaxError: Unexpected token, expected ',' or ')'. */
-/* @@? 16:24 Error SyntaxError: Invalid Type. */
-/* @@? 16:26 Error SyntaxError: Unexpected token ','. */
-/* @@? 16:28 Error SyntaxError: Unexpected token 'k'. */
-/* @@? 16:31 Error SyntaxError: Label must be followed by a loop statement. */
-/* @@? 16:31 Error TypeError: Unresolved reference keyof */
-/* @@? 16:42 Error SyntaxError: Invalid Type. */
-/* @@? 16:42 Error SyntaxError: Unexpected token, expected ')'. */
-/* @@? 16:45 Error SyntaxError: Unexpected token ')'. */
-/* @@? 16:47 Error SyntaxError: Unexpected token '{'. */
+/* @@? 16:24 Error SyntaxError: Using object literals to declare types in place is not supported. Please declare types and interfaces explicitly! */
+/* @@? 16:42 Error SyntaxError: Using object literals to declare types in place is not supported. Please declare types and interfaces explicitly! */
+/* @@? 16:45 Error TypeError: The `keyof` keyword can only be used for class or interface type. */
 /* @@? 18:33 Error TypeError: Cannot find type 'Observable'. */
 /* @@? 18:33 Error TypeError: The super type of 'ObservableImpl' class is not extensible. */
-/* @@? 20:9 Error TypeError: Type 'ObservableImpl<T>' is generic but type argument were not provided. */
-/* @@? 20:24 Error SyntaxError: Invalid Type. */
-/* @@? 20:24 Error SyntaxError: Unexpected token, expected '>'. */
-/* @@? 20:27 Error TypeError: Unresolved reference K */
-/* @@? 20:29 Error SyntaxError: Unexpected token, expected ',' or ']'. */
-/* @@? 20:29 Error SyntaxError: Unexpected token 'in'. */
-/* @@? 20:29 Error TypeError: Unresolved reference in */
-/* @@? 20:32 Error SyntaxError: Unexpected token 'keyof'. */
-/* @@? 20:32 Error TypeError: This expression is not callable. */
-/* @@? 20:41 Error SyntaxError: Unexpected token, expected ')'. */
+/* @@? 20:24 Error SyntaxError: Using object literals to declare types in place is not supported. Please declare types and interfaces explicitly! */
+/* @@? 20:27 Error SyntaxError: Unexpected token 'K'. */
+/* @@? 20:32 Error SyntaxError: Field type annotation expected. */
+/* @@? 20:41 Error SyntaxError: Unexpected token '&'. */
+/* @@? 20:41 Error SyntaxError: Unexpected token, expected ',' or ')'. */
+/* @@? 20:41 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
+/* @@? 20:44 Error SyntaxError: Field type annotation expected. */
+/* @@? 20:44 Error SyntaxError: Unexpected token ')'. */
 /* @@? 20:45 Error SyntaxError: Unexpected token ']'. */
 /* @@? 20:46 Error SyntaxError: Unexpected token ':'. */
-/* @@? 20:46 Error TypeError: Indexed access is not supported for such expression type. */
-/* @@? 20:60 Error SyntaxError: Unexpected token '>'. */
-/* @@? 20:61 Error SyntaxError: Unexpected token '('. */
-/* @@? 20:62 Error SyntaxError: Unexpected token ')'. */
-/* @@? 22:1 Error SyntaxError: Unexpected token '}'. */
+/* @@? 20:48 Error SyntaxError: Unexpected token '('. */
+/* @@? 20:51 Error SyntaxError: Field type annotation expected. */
+/* @@? 20:51 Error SyntaxError: Unexpected token '&'. */
+/* @@? 20:54 Error SyntaxError: Field type annotation expected. */
+/* @@? 20:54 Error SyntaxError: Unexpected token ')'. */
+/* @@? 20:56 Error SyntaxError: Unexpected token 'K'. */
+/* @@? 20:57 Error SyntaxError: Unexpected token ']'. */
 /* @@? 24:36 Error TypeError: The `keyof` keyword can only be used for class or interface type. */
-/* @@? 24:42 Error SyntaxError: Unexpected token ']'. */
 /* @@? 24:42 Error SyntaxError: Unexpected token, expected ']'. */
+/* @@? 24:42 Error SyntaxError: Unexpected token ']'. */
 /* @@? 24:43 Error SyntaxError: Unexpected token ']'. */
 /* @@? 24:45 Error SyntaxError: Unexpected token 'extends'. */
 /* @@? 24:53 Error SyntaxError: Unexpected token 'object'. */
 /* @@? 24:53 Error TypeError: Type name 'object' used in the wrong context */
+/* @@? 24:62 Error TypeError: Unresolved reference keyof */
 /* @@? 24:68 Error SyntaxError: Unexpected token. */
 /* @@? 24:68 Error TypeError: Unresolved reference T */
 /* @@? 24:68 Error TypeError: Indexed access is not supported for such expression type. */

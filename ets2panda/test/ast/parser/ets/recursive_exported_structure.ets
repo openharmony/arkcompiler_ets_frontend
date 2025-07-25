@@ -88,7 +88,7 @@ const _exported: ExportedType = _exportedStructure;
 
 export default _exported;
 
-/* @@? 26:26 Error SyntaxError: Invalid Type. */
+/* @@? 26:26 Error SyntaxError: Using object literals to declare types in place is not supported. Please declare types and interfaces explicitly! */
 /* @@? 41:12 Error TypeError: No matching call signature for (...) */
 /* @@? 41:23 Error TypeError: need to specify target type for class composite */
 /* @@? 54:20 Error TypeError: No matching call signature for (...) */
