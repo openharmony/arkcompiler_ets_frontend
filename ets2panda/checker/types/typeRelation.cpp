@@ -162,6 +162,7 @@ bool TypeRelation::IsComparableTo(Type *source, Type *target)
 
     // NOTE: vpukhov. reimplement dynamic comparison and remove this check
     ES2PANDA_ASSERT(source != nullptr);
+    ES2PANDA_ASSERT(target != nullptr);
     if (source->IsETSDynamicType() || target->IsETSDynamicType()) {
         if (!(source->IsETSDynamicType() && target->IsETSDynamicType())) {
             return false;
