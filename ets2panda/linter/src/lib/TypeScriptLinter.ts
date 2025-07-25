@@ -10119,20 +10119,8 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
       for (const [idx, param] of ctorParams.entries()) {
         const argument = superCall.arguments[idx];
-        if (!param.isOptional && !argument) {
-          matches[idx] = false;
+        if (!this.checkParameter(param, argument, matches, idx)) {
           continue outer;
-        }
-
-        if (!argument && param.isOptional) {
-          matches[idx] = true;
-          continue;
-        }
-        if (argument !== undefined) {
-          matches[idx] = this.checkIfArgumentAndParamMatches(param, argument);
-          if (!matches[idx]) {
-            continue outer;
-          }
         }
       }
 
@@ -10147,6 +10135,51 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
 
     this.incrementCounters(classDecl, FaultID.MissingSuperCall);
+  }
+
+  private checkParameter(
+    param: ConstructorParameter,
+    argument: ts.Expression | undefined,
+    matches: boolean[],
+    idx: number
+  ): boolean {
+    if (!param.isOptional && !argument) {
+      matches[idx] = false;
+      return false;
+    }
+
+    if (!argument && param.isOptional) {
+      matches[idx] = true;
+      return true;
+    }
+
+    if (argument !== undefined) {
+      if (this.isEnumArgument(argument)) {
+        matches[idx] = true;
+        return true;
+      }
+      matches[idx] = this.checkIfArgumentAndParamMatches(param, argument);
+      return matches[idx];
+    }
+    return true;
+  }
+
+  private isEnumArgument(argument: ts.Expression): boolean {
+    if (!ts.isPropertyAccessExpression(argument)) {
+      return false;
+    }
+
+    const leftSide = argument.expression;
+    const symbol = this.tsTypeChecker?.getSymbolAtLocation(leftSide);
+
+    return (
+      symbol?.declarations?.some((decl) => {
+        return (
+          ts.isEnumDeclaration(decl) ||
+          ts.isVariableDeclaration(decl) && decl.initializer && ts.isEnumDeclaration(decl.initializer)
+        );
+      }) ?? false
+    );
   }
 
   private checkIfArgumentAndParamMatches(param: ConstructorParameter, argument: ts.Expression): boolean {
