@@ -84,6 +84,7 @@ faultDesc[FaultID.ImportAssignment] = 'Import assignments (import = ..)';
 faultDesc[FaultID.GenericCallNoTypeArgs] = 'Generic calls without type arguments';
 faultDesc[FaultID.ParameterProperties] = 'Parameter properties in constructor';
 faultDesc[FaultID.InstanceofUnsupported] = 'Left-hand side of "instanceof" is wrong';
+faultDesc[FaultID.TemplateStringType] = 'Template string type';
 faultDesc[FaultID.ShorthandAmbientModuleDecl] = 'Shorthand ambient module declaration';
 faultDesc[FaultID.WildcardsInModuleName] = 'Wildcards in module name';
 faultDesc[FaultID.UMDModuleDefinition] = 'UMD module definition';

@@ -66,6 +66,7 @@ faultsAttrs[FaultID.CommaOperator] = new FaultAttributes(71);
 faultsAttrs[FaultID.DestructuringDeclaration] = new FaultAttributes(74);
 faultsAttrs[FaultID.ObjectLiteralKeyType] = new FaultAttributes(75);
 faultsAttrs[FaultID.ParameterType] = new FaultAttributes(76);
+faultsAttrs[FaultID.TemplateStringType] = new FaultAttributes(77);
 faultsAttrs[FaultID.CatchWithUnsupportedType] = new FaultAttributes(79);
 faultsAttrs[FaultID.ForInStatement] = new FaultAttributes(80);
 faultsAttrs[FaultID.MappedType] = new FaultAttributes(83);

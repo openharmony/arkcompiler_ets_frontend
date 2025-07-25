@@ -173,6 +173,7 @@ export enum FaultID {
   TaggedTemplates,
   IncompationbleFunctionType,
   InvalidIdentifier,
+  TemplateStringType,
   NoImportJsonFile,
   NoImportNamespaceStarAsVar,
   ExtendsExpression,

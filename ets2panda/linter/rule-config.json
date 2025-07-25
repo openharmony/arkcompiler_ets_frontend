@@ -16,6 +16,7 @@
     "arkts-no-class-add-super-prop-with-readonly",
     "arkts-no-classes-as-obj",
     "arkts-obj-literal-props",
+    "arkts-no-template-string-type",
     "arkts-obj-literal-key-type",
     "arkts-optional-methods",
     "arkts-numeric-semantic",

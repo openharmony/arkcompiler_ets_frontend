@@ -403,6 +403,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     [ts.SyntaxKind.TypeAssertionExpression, this.handleTypeAssertionExpression],
     [ts.SyntaxKind.MethodDeclaration, this.handleMethodDeclaration],
     [ts.SyntaxKind.TupleType, this.handleTupleType],
+    [ts.SyntaxKind.TemplateLiteralType, this.handleTemplateType],
     [ts.SyntaxKind.MethodSignature, this.handleMethodSignature],
     [ts.SyntaxKind.ClassStaticBlockDeclaration, this.handleClassStaticBlockDeclaration],
     [ts.SyntaxKind.Identifier, this.handleIdentifier],
@@ -3690,6 +3691,13 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (this.options.arkts2 && tsTypeAlias.type.kind === ts.SyntaxKind.VoidKeyword) {
       this.incrementCounters(tsTypeAlias.type, FaultID.LimitedVoidType);
     }
+  }
+
+  private handleTemplateType(node: ts.TemplateLiteralTypeNode): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    this.incrementCounters(node, FaultID.TemplateStringType);
   }
 
   private handleTupleType(node: ts.TupleTypeNode): void {

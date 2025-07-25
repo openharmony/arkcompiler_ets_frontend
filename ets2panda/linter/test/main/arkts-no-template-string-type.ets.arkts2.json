@@ -1,0 +1,64 @@
+{
+    "result": [
+        {
+            "line": 18,
+            "column": 16,
+            "endLine": 18,
+            "endColumn": 43,
+            "problem": "TemplateStringType",
+            "suggest": "",
+            "rule": "Template string type is not supported (arkts-no-template-string-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 19,
+            "column": 17,
+            "endLine": 19,
+            "endColumn": 34,
+            "problem": "TemplateStringType",
+            "suggest": "",
+            "rule": "Template string type is not supported (arkts-no-template-string-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 17,
+            "endLine": 20,
+            "endColumn": 41,
+            "problem": "TemplateStringType",
+            "suggest": "",
+            "rule": "Template string type is not supported (arkts-no-template-string-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 25,
+            "column": 15,
+            "endLine": 25,
+            "endColumn": 30,
+            "problem": "TemplateStringType",
+            "suggest": "",
+            "rule": "Template string type is not supported (arkts-no-template-string-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 26,
+            "column": 24,
+            "endLine": 26,
+            "endColumn": 39,
+            "problem": "TemplateStringType",
+            "suggest": "",
+            "rule": "Template string type is not supported (arkts-no-template-string-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 26,
+            "column": 42,
+            "endLine": 26,
+            "endColumn": 53,
+            "problem": "TemplateStringType",
+            "suggest": "",
+            "rule": "Template string type is not supported (arkts-no-template-string-type)",
+            "severity": "ERROR"
+        }
+    ]
+}
