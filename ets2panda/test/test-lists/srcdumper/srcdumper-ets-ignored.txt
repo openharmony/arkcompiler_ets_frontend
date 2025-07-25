@@ -40,6 +40,7 @@ runtime/ets/type_param_in_union.ets
 runtime/ets/StringFasta.ets
 runtime/ets/struct-identifier.ets
 runtime/ets/struct-init2.ets
+runtime/ets/too_many_call_expr.ets
 runtime/ets/too_many_async.ets
 runtime/ets/too_many_await.ets
 runtime/ets/too_many_left_brace.ets
