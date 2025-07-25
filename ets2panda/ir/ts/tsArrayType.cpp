@@ -119,8 +119,11 @@ TSArrayType *TSArrayType::Clone(ArenaAllocator *const allocator, AstNode *const 
 
     if (!Annotations().empty()) {
         ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
+        AnnotationUsage *clonedAnnotationUsage;
         for (auto *annotationUsage : Annotations()) {
-            annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
+            clonedAnnotationUsage = annotationUsage->Clone(allocator, clone);
+            ES2PANDA_ASSERT(clonedAnnotationUsage != nullptr);
+            annotationUsages.push_back(clonedAnnotationUsage->AsAnnotationUsage());
         }
         clone->SetAnnotations(std::move(annotationUsages));
     }
