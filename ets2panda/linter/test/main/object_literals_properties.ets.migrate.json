@@ -195,6 +195,16 @@
             "severity": "ERROR"
         },
         {
+          "line": 207,
+          "column": 3,
+          "endLine": 210,
+          "endColumn": 2,
+          "problem": "NoLocalClass",
+          "suggest": "",
+          "rule": "Creating local classes is not supported (arkts-no-local-class)",
+          "severity": "ERROR"
+        },
+        {
             "line": 212,
             "column": 26,
             "endLine": 212,
@@ -233,6 +243,16 @@
             "suggest": "",
             "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
             "severity": "ERROR"
+        },
+        {
+          "line": 223,
+          "column": 3,
+          "endLine": 223,
+          "endColumn": 39,
+          "problem": "NoLocalClass",
+          "suggest": "",
+          "rule": "Creating local classes is not supported (arkts-no-local-class)",
+          "severity": "ERROR"
         },
         {
             "line": 224,

@@ -935,6 +935,16 @@
             "severity": "ERROR"
         },
         {
+          "line": 167,
+          "column": 3,
+          "endLine": 167,
+          "endColumn": 37,
+          "problem": "NoLocalClass",
+          "suggest": "",
+          "rule": "Creating local classes is not supported (arkts-no-local-class)",
+          "severity": "ERROR"
+        },
+        {
             "line": 167,
             "column": 34,
             "endLine": 167,

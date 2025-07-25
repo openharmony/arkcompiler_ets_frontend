@@ -257,6 +257,7 @@ export enum FaultID {
   UnsupportOperator,
   CustomLayoutNeedAddDecorator,
   InterfaceFieldNotImplemented,
+  NoLocalClass,
   PropDecoratorNotSupported,
   StoragePropDecoratorNotSupported,
   LocalStoragePropDecoratorNotSupported,

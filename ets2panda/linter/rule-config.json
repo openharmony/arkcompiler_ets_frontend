@@ -23,6 +23,7 @@
     "arkts-incompatible-function-types",
     "arkts-limited-void-type",
     "arkts-no-void-operator",
+    "arkts-no-local-class",
     "arkts-no-ts-overload",
     "arkts-limited-literal-types",
     "arkts-no-exponent-op",

@@ -204,6 +204,7 @@ faultsAttrs[FaultID.InteropJSFunctionInvoke] = new FaultAttributes(270);
 faultsAttrs[FaultID.MissingSuperCall] = new FaultAttributes(274);
 faultsAttrs[FaultID.CustomLayoutNeedAddDecorator] = new FaultAttributes(275);
 faultsAttrs[FaultID.InterfaceFieldNotImplemented] = new FaultAttributes(276);
+faultsAttrs[FaultID.NoLocalClass] = new FaultAttributes(277);
 faultsAttrs[FaultID.PropDecoratorNotSupported] = new FaultAttributes(281);
 faultsAttrs[FaultID.StoragePropDecoratorNotSupported] = new FaultAttributes(282);
 faultsAttrs[FaultID.LocalStoragePropDecoratorNotSupported] = new FaultAttributes(283);

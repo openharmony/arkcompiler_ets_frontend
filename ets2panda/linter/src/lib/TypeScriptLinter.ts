@@ -942,6 +942,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       this.interfaceInheritanceLint(node, interfaceNode.heritageClauses);
     }
     this.countDeclarationsWithDuplicateName(interfaceNode.name, interfaceNode);
+    this.handleLocalDeclarationOfClassAndIface(interfaceNode);
   }
 
   private handleTryStatement(node: ts.TryStatement): void {
@@ -3284,6 +3285,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleInvalidIdentifier(tsClassDecl);
     this.handleSdkMethod(tsClassDecl);
     this.handleNotsLikeSmartType(tsClassDecl);
+    this.handleLocalDeclarationOfClassAndIface(tsClassDecl);
   }
 
   private static findFinalExpression(typeNode: ts.TypeNode): ts.Node {
@@ -9314,6 +9316,32 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       }
     }
     return undefined;
+  }
+
+  private handleLocalDeclarationOfClassAndIface(node: ts.ClassDeclaration | ts.InterfaceDeclaration): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    this.isLocalClass(node);
+  }
+
+  private isLocalClass(node: ts.Node): void {
+    if (
+      ts.findAncestor(node, (node) => {
+        return (
+          ts.isArrowFunction(node) ||
+          ts.isFunctionDeclaration(node) ||
+          ts.isMethodDeclaration(node) ||
+          ts.isFunctionExpression(node) ||
+          ts.isConstructorDeclaration(node) ||
+          ts.isGetAccessor(node) ||
+          ts.isSetAccessor(node) ||
+          ts.isBlock(node)
+        );
+      })
+    ) {
+      this.incrementCounters(node, FaultID.NoLocalClass);
+    }
   }
 
   private processPropertyAccessExpression(expression: ts.PropertyAccessExpression): ts.Symbol | undefined {
