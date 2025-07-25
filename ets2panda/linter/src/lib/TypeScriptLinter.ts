@@ -10376,7 +10376,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         return false;
       }
       for (const declaration of symbol.declarations ?? []) {
-        if (!this.tsUtils.isArkts12File(declaration.getSourceFile())) {
+        if (!this.tsUtils.isArkts12File(declaration.getSourceFile()) && !isStdLibrarySymbol(symbol)) {
           return true;
         }
       }
