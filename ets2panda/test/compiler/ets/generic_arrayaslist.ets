@@ -129,7 +129,7 @@ class ArrayAsListt<T> implements Listt<T> {
         arktest.assertTrue(false)
 
         for (let i = 0; i < this.curSize; ++i) {
-            if (__runtimeEquals(this.data[i], e)) {
+            if (this.data[i] === e) {
                 return true;
             }
         }
