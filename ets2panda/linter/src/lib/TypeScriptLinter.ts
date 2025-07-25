@@ -2101,27 +2101,31 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       this.incrementCounters(node, FaultID.GeneratorFunction);
     }
     if (TsUtils.hasSendableDecoratorFunctionOverload(tsFunctionDeclaration)) {
-      if (!this.isSendableDecoratorValid(tsFunctionDeclaration)) {
-        return;
-      }
-      TsUtils.getNonSendableDecorators(tsFunctionDeclaration)?.forEach((decorator) => {
-        this.incrementCounters(decorator, FaultID.SendableFunctionDecorator);
-      });
-      if (!TsUtils.hasSendableDecorator(tsFunctionDeclaration)) {
-        const autofix = this.autofixer?.addSendableDecorator(tsFunctionDeclaration);
-        this.incrementCounters(tsFunctionDeclaration, FaultID.SendableFunctionOverloadDecorator, autofix);
-      }
-      this.scanCapturedVarsInSendableScope(
-        tsFunctionDeclaration,
-        tsFunctionDeclaration,
-        FaultID.SendableFunctionImportedVariables
-      );
+      this.processSendableDecoratorFunctionOverload(tsFunctionDeclaration);
     }
     this.handleTSOverload(tsFunctionDeclaration);
     this.checkNumericSemanticsForFunction(tsFunctionDeclaration);
     this.handleInvalidIdentifier(tsFunctionDeclaration);
     this.checkDefaultParamBeforeRequired(tsFunctionDeclaration);
     this.handleLimitedVoidFunction(tsFunctionDeclaration);
+  }
+
+  private processSendableDecoratorFunctionOverload(tsFunctionDeclaration: ts.FunctionDeclaration): void {
+    if (!this.isSendableDecoratorValid(tsFunctionDeclaration)) {
+      return;
+    }
+    TsUtils.getNonSendableDecorators(tsFunctionDeclaration)?.forEach((decorator) => {
+      this.incrementCounters(decorator, FaultID.SendableFunctionDecorator);
+    });
+    if (!TsUtils.hasSendableDecorator(tsFunctionDeclaration)) {
+      const autofix = this.autofixer?.addSendableDecorator(tsFunctionDeclaration);
+      this.incrementCounters(tsFunctionDeclaration, FaultID.SendableFunctionOverloadDecorator, autofix);
+    }
+    this.scanCapturedVarsInSendableScope(
+      tsFunctionDeclaration,
+      tsFunctionDeclaration,
+      FaultID.SendableFunctionImportedVariables
+    );
   }
 
   private handleMissingReturnType(
