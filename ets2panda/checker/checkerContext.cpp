@@ -473,10 +473,6 @@ void CheckerContext::OnBreakStatement(ir::BreakStatement const *breakStatement)
 
     status_ |= CheckerStatus::MEET_BREAK;
 
-    if (smartCasts_.empty()) {
-        return;
-    }
-
     SmartCastArray smartCasts {};
     smartCasts.reserve(smartCasts_.size());
 
@@ -486,9 +482,7 @@ void CheckerContext::OnBreakStatement(ir::BreakStatement const *breakStatement)
         }
     }
 
-    if (!smartCasts.empty()) {
-        AddBreakSmartCasts(targetStatement, std::move(smartCasts));
-    }
+    AddBreakSmartCasts(targetStatement, std::move(smartCasts));
 
     ClearSmartCasts();
 }
