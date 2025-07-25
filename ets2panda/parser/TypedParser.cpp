@@ -196,7 +196,7 @@ ir::TSTypeAssertion *TypedParser::ParseTypeAssertion()
 
     Lexer()->NextToken();  // eat '>'
     ir::Expression *expression = ParseExpression();
-    if (expression == nullptr || expression->IsBrokenExpression()) {
+    if (expression == nullptr) {
         return nullptr;
     }
     auto *typeAssertion = AllocNode<ir::TSTypeAssertion>(typeAnnotation, expression);
@@ -234,7 +234,7 @@ ir::Statement *TypedParser::ParseNamespace([[maybe_unused]] ir::ModifierFlags fl
     return ParseModuleDeclaration();
 }
 
-ir::ArrowFunctionExpression *TypedParser::ParseGenericArrowFunction(bool isThrowError)
+ir::ArrowFunctionExpression *TypedParser::ParseGenericArrowFunction()
 {
     ArrowFunctionContext arrowFunctionContext(this, false);
 
@@ -245,10 +245,6 @@ ir::ArrowFunctionExpression *TypedParser::ParseGenericArrowFunction(bool isThrow
     ir::TSTypeParameterDeclaration *typeParamDecl = ParseTypeParameterDeclaration(&typeParamDeclOptions);
 
     if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS) {
-        if (isThrowError) {
-            LogError(diagnostic::UNEXPECTED_TOKEN_EXPECTED_PARAM,
-                     {TokenToString(lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS)});
-        }
         return nullptr;
     }
 
@@ -268,9 +264,6 @@ ir::ArrowFunctionExpression *TypedParser::ParseGenericArrowFunction(bool isThrow
     }
 
     if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_ARROW) {
-        if (isThrowError) {
-            LogError(diagnostic::UNEXPECTED_TOKEN_EXPECTED_PARAM, {TokenToString(lexer::TokenType::PUNCTUATOR_ARROW)});
-        }
         return nullptr;
     }
 
