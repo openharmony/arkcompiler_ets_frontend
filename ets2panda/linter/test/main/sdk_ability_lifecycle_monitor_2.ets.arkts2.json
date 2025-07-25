@@ -15,9 +15,19 @@
     ],
     "result": [
         {
-            "line": 22,
+            "line": 29,
+            "column": 7,
+            "endLine": 30,
+            "endColumn": 8,
+            "problem": "ObjectLiteralProperty",
+            "suggest": "",
+            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 29,
             "column": 23,
-            "endLine": 22,
+            "endLine": 29,
             "endColumn": 30,
             "problem": "AnyType",
             "suggest": "",
@@ -26,12 +36,22 @@
         },
         {
             "line": 57,
-            "column": 23,
+            "column": 9,
             "endLine": 57,
-            "endColumn": 30,
-            "problem": "AnyType",
+            "endColumn": 90,
+            "problem": "NumericSemantics",
             "suggest": "",
-            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 17,
+            "column": 3,
+            "endLine": 17,
+            "endColumn": 10,
+            "problem": "StrictDiagnostic",
+            "suggest": "Property 'context' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property 'context' has no initializer and is not definitely assigned in the constructor.",
             "severity": "ERROR"
         }
     ]

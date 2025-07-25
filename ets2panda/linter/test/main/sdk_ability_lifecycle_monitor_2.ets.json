@@ -15,9 +15,9 @@
     ],
     "result": [
         {
-            "line": 22,
+            "line": 29,
             "column": 23,
-            "endLine": 22,
+            "endLine": 29,
             "endColumn": 30,
             "problem": "AnyType",
             "suggest": "",
@@ -25,13 +25,13 @@
             "severity": "ERROR"
         },
         {
-            "line": 57,
-            "column": 23,
-            "endLine": 57,
-            "endColumn": 30,
-            "problem": "AnyType",
-            "suggest": "",
-            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "line": 17,
+            "column": 3,
+            "endLine": 17,
+            "endColumn": 10,
+            "problem": "StrictDiagnostic",
+            "suggest": "Property 'context' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property 'context' has no initializer and is not definitely assigned in the constructor.",
             "severity": "ERROR"
         }
     ]

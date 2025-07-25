@@ -13,9 +13,16 @@
  * limitations under the License.
  */
 
-import AbilityStage from './oh_modules/@ohos.app.ability.AbilityStage';
-import ApplicationContext from './oh_modules/ApplicationContext';
+class AbilityStage {
+  context: ApplicationContext;
+  onCreate(): void;
+}
 
+class ApplicationContext {
+    on(type: 'abilityLifecycle', callback: AbilityLifecycleCallback): number;
+    off(type: 'abilityLifecycle', callbackId: number, callback: AsyncCallback<void>): void;
+    getApplicationContext(): ApplicationContext;
+}
 class MyAbilityStage extends AbilityStage {
   onCreate() {
     let abilityLifecycleCallback: AbilityLifecycleCallback = {
@@ -47,42 +54,6 @@ class MyAbilityStage extends AbilityStage {
       }
     }
     let applicationContext = this.context.getApplicationContext();
-    let lifecycleId = applicationContext.on('abilityLifecycle', abilityLifecycleCallback); // report error normally
+    let lifecycleId = applicationContext.on('abilityLifecycle', abilityLifecycleCallback); // No report error for the source is not target
   }
 }
-
-class MyAbilityStage extends AbilityStage {
-  onCreate() {
-    let abilityLifecycleCallback: AbilityLifecycleCallback = {
-      onAbilityCreate(ability) {
-      },
-      onWindowStageCreate: (ability: UIAbility, windowStage: window.WindowStage): void => {
-        throw new Error('Function not implemented.');
-      },
-      onWindowStageActive: (ability: UIAbility, windowStage: window.WindowStage): void => {
-        throw new Error('Function not implemented.');
-      },
-      onWindowStageInactive: (ability: UIAbility, windowStage: window.WindowStage): void => {
-        throw new Error('Function not implemented.');
-      },
-      onWindowStageDestroy: (ability: UIAbility, windowStage: window.WindowStage): void => {
-        throw new Error('Function not implemented.');
-      },
-      onAbilityDestroy: (ability: UIAbility): void => {
-        throw new Error('Function not implemented.');
-      },
-      onAbilityForeground: (ability: UIAbility): void => {
-        throw new Error('Function not implemented.');
-      },
-      onAbilityBackground: (ability: UIAbility): void => {
-        throw new Error('Function not implemented.');
-      },
-      onAbilityContinue: (ability: UIAbility): void => {
-        throw new Error('Function not implemented.');
-      }
-    }
-    let applicationContext = new ApplicationContext();
-    let lifecycleId = applicationContext.on('abilityLifecycle', abilityLifecycleCallback); // report error normally
-  }
-}
-

@@ -159,7 +159,8 @@ import {
   ON_DISCONNECT,
   PROMISE,
   SERVICE_EXTENSION_ABILITY,
-  VOID
+  VOID,
+  ABILITY_LIFECYCLE_SDK
 } from './utils/consts/AsyncLifecycleSDK';
 import { ERROR_PROP_LIST } from './utils/consts/ErrorProp';
 import { D_ETS, D_TS } from './utils/consts/TsSuffix';
@@ -9692,9 +9693,39 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   }
 
   private isApplicationContext(node: ts.CallExpression): boolean {
+    const expr = node.expression as ts.PropertyAccessExpression;
+    if (!ts.isIdentifier(expr.expression)) {
+      return false;
+    }
+    const type = this.tsTypeChecker.getTypeAtLocation(expr.expression);
+    const symbol = type.getSymbol();
+    return symbol ? this.checkApplicationContextSymbol(symbol) : false;
+  }
+
+  private checkApplicationContextSymbol(symbol: ts.Symbol): boolean {
     void this;
-    const left = (node.expression as ts.PropertyAccessExpression).expression;
-    return ts.isIdentifier(left) && left.text === 'applicationContext';
+    if (symbol.getName() === 'default') {
+      const declarations = symbol.getDeclarations() || [];
+      for (const decl of declarations) {
+        if (
+          ts.isClassDeclaration(decl) &&
+          decl.name?.getText() === ABILITY_LIFECYCLE_SDK &&
+          decl.getSourceFile().fileName.endsWith(`${ABILITY_LIFECYCLE_SDK}${EXTNAME_D_TS}`)
+        ) {
+          return true;
+        }
+      }
+      return false;
+    }
+    const symbolName = symbol.getName();
+    const hasValidName = symbolName === ABILITY_LIFECYCLE_SDK;
+    if (hasValidName) {
+      const declarations = symbol.getDeclarations() || [];
+      return declarations.some((decl) => {
+        return decl.getSourceFile().fileName.endsWith(`${ABILITY_LIFECYCLE_SDK}${EXTNAME_D_TS}`);
+      });
+    }
+    return false;
   }
 
   private handleForOfJsArray(node: ts.ForOfStatement): void {
