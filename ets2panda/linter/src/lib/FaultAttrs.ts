@@ -201,6 +201,7 @@ faultsAttrs[FaultID.InteropJsObjectCallStaticFunc] = new FaultAttributes(267, Pr
 faultsAttrs[FaultID.InteropJsObjectConditionJudgment] = new FaultAttributes(268);
 faultsAttrs[FaultID.InteropJsObjectExpandStaticInstance] = new FaultAttributes(269);
 faultsAttrs[FaultID.InteropJSFunctionInvoke] = new FaultAttributes(270);
+faultsAttrs[FaultID.VariableMissingInitializer] = new FaultAttributes(271);
 faultsAttrs[FaultID.MissingSuperCall] = new FaultAttributes(274);
 faultsAttrs[FaultID.CustomLayoutNeedAddDecorator] = new FaultAttributes(275);
 faultsAttrs[FaultID.InterfaceFieldNotImplemented] = new FaultAttributes(276);

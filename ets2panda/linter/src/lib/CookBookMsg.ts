@@ -293,6 +293,8 @@ cookBookTag[268] = 'Direct usage of interop JS objects is not supported (arkts-i
 cookBookTag[269] =
   'Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-expand-static-instance)';
 cookBookTag[270] = 'ArkTS1.2 cannot catch a non Error instance thrown from JS code (arkts-interop-js2s-js-exception)';
+cookBookTag[271] =
+  'After a variable is declared, a value must be assigned before using it (arkts-var-assignment-before-use)';
 cookBookTag[274] =
   'The subclass constructor must call the parent class\'s parametered constructor (arkts-subclass-must-call-super-constructor-with-args)';
 cookBookTag[275] =

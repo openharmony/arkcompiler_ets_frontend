@@ -14,6 +14,7 @@
     "arkts-no-function-return-this",
     "arkts-limited-stdlib",
     "arkts-no-class-add-super-prop-with-readonly",
+    "arkts-var-assignment-before-use",
     "arkts-no-classes-as-obj",
     "arkts-obj-literal-props",
     "arkts-no-template-string-type",

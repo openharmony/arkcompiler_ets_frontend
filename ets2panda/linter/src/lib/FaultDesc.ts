@@ -169,6 +169,7 @@ faultDesc[FaultID.MethodOverridingField] = '"Method overriding field" to keep st
 faultDesc[FaultID.InteropJsObjectConditionJudgment] = 'Interop JS Object usage in a condition';
 faultDesc[FaultID.InteropJsObjectExpandStaticInstance] = 'Interop JS function usage';
 faultDesc[FaultID.InteropJSFunctionInvoke] = 'Interop JS function invoke';
+faultDesc[FaultID.VariableMissingInitializer] = 'Value must be assigned to variable';
 faultDesc[FaultID.ExplicitFunctionType] = 'Not explicit function type';
 faultDesc[FaultID.ClassstaticInitialization] = 'The static properties of a class need to have initial values';
 faultDesc[FaultID.AvoidUnionTypes] = 'Union types';

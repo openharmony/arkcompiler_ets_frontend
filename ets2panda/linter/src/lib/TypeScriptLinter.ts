@@ -2780,6 +2780,42 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handlePropertyDescriptorInScenarios(tsVarDecl);
     this.handleSdkGlobalApi(tsVarDecl);
     this.handleNoDeprecatedApi(tsVarDecl);
+    this.handleMissingInitializer(tsVarDecl);
+  }
+
+  /**
+   * Reports an error if a `let`/`const` declaration lacks an initializer.
+   */
+  private handleMissingInitializer(decl: ts.VariableDeclaration): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    const list = decl.parent as ts.VariableDeclarationList;
+    if (!(list.flags & (ts.NodeFlags.Let | ts.NodeFlags.Const))) {
+      return;
+    }
+
+    // Skip for‐of/for‐in loop bindings
+    const parentStmt = list.parent;
+    if (ts.isForOfStatement(parentStmt) || ts.isForInStatement(parentStmt)) {
+      return;
+    }
+
+    // Skip explicit function‐type declarations (they are more like methods)
+    if (decl.type && ts.isFunctionTypeNode(decl.type)) {
+      return;
+    }
+
+    // Skip variables declared as void—voids are handled by a different rule
+    if (decl.type && decl.type.kind === ts.SyntaxKind.VoidKeyword) {
+      return;
+    }
+
+    // If no initializer, report
+    if (!decl.initializer) {
+      this.incrementCounters(decl.name, FaultID.VariableMissingInitializer);
+    }
   }
 
   private checkTypeFromSdk(type: ts.TypeNode | undefined): void {
