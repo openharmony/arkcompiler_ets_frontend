@@ -14,6 +14,7 @@
  */
 
 export const ARKTSCONFIG_JSON_FILE: string = 'arktsconfig.json';
+export const MERGED_INTERMEDIATE_FILE: string = 'modules_intermediate.abc';
 export const MERGED_ABC_FILE: string = 'modules_static.abc';
 export const LINKER_INPUT_FILE: string = 'fileInfo.txt';
 export const DEPENDENCY_INPUT_FILE: string = 'dependencyFileInfo.txt';
