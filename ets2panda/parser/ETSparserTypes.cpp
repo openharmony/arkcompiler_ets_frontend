@@ -189,8 +189,7 @@ ir::TypeNode *ETSParser::ParseWildcardType(TypeAnnotationParsingOptions *options
     return wildcardType;
 }
 
-ir::TypeNode *ETSParser::ParseFunctionType(TypeAnnotationParsingOptions *options,
-                                           ir::TSTypeParameterDeclaration *typeParamDecl)
+ir::TypeNode *ETSParser::ParseFunctionType(TypeAnnotationParsingOptions *options)
 {
     auto startLoc = Lexer()->GetToken().Start();
     auto params = ParseFunctionParams();
@@ -214,7 +213,7 @@ ir::TypeNode *ETSParser::ParseFunctionType(TypeAnnotationParsingOptions *options
     }
 
     auto *funcType = AllocNode<ir::ETSFunctionType>(
-        ir::FunctionSignature(typeParamDecl, std::move(params), returnTypeAnnotation, hasReceiver),
+        ir::FunctionSignature(nullptr, std::move(params), returnTypeAnnotation, hasReceiver),
         ir::ScriptFunctionFlags::NONE, Allocator());
     funcType->SetRange({startLoc, returnTypeAnnotation->End()});
 
@@ -274,8 +273,7 @@ ir::TypeNode *ETSParser::ParseETSTupleType(TypeAnnotationParsingOptions *const o
 }
 
 // Helper function for  ETSParser::GetTypeAnnotationFromToken(...) method
-ir::TypeNode *ETSParser::ParsePotentialFunctionalType(TypeAnnotationParsingOptions *options,
-                                                      ir::TSTypeParameterDeclaration *typeParamDecl)
+ir::TypeNode *ETSParser::ParsePotentialFunctionalType(TypeAnnotationParsingOptions *options)
 {
     auto savePos = Lexer()->Save();
     ExpectToken(lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
@@ -305,7 +303,7 @@ ir::TypeNode *ETSParser::ParsePotentialFunctionalType(TypeAnnotationParsingOptio
         GetContext().Status() |= (ParserStatus::ALLOW_DEFAULT_VALUE | ParserStatus::ALLOW_RECEIVER);
         // '(' is consumed in `ParseFunctionType`
         Lexer()->Rewind(savePos);
-        auto typeAnnotation = ParseFunctionType(options, typeParamDecl);
+        auto typeAnnotation = ParseFunctionType(options);
         GetContext().Status() ^= (ParserStatus::ALLOW_DEFAULT_VALUE | ParserStatus::ALLOW_RECEIVER);
         return typeAnnotation;
     }
@@ -369,9 +367,6 @@ std::pair<ir::TypeNode *, bool> ETSParser::GetTypeAnnotationFromToken(TypeAnnota
         case lexer::TokenType::PUNCTUATOR_BACK_TICK: {
             return std::make_pair(ParseMultilineString(), true);
         }
-        case lexer::TokenType::PUNCTUATOR_LESS_THAN: {
-            return GetTypeAnnotationFromArrowFunction(options);
-        }
         case lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS: {
             return GetTypeAnnotationFromParentheses(options);
         }
@@ -402,31 +397,11 @@ std::pair<ir::TypeNode *, bool> ETSParser::GetTypeAnnotationFromToken(TypeAnnota
     return std::make_pair(typeAnnotation, true);
 }
 
-std::pair<ir::TypeNode *, bool> ETSParser::GetTypeAnnotationFromArrowFunction(TypeAnnotationParsingOptions *options)
-{
-    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN);
-    lexer::LexerPosition savedPos = Lexer()->Save();
-
-    auto typeParamDeclOptions = TypeAnnotationParsingOptions::NO_OPTS;
-    ir::TSTypeParameterDeclaration *typeParamDecl = ParseTypeParameterDeclaration(&typeParamDeclOptions);
-    if (typeParamDecl == nullptr) {
-        Lexer()->Rewind(savedPos);
-        return {nullptr, true};
-    }
-
-    if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS) {
-        Lexer()->Rewind(savedPos);
-        return {nullptr, true};
-    }
-    return GetTypeAnnotationFromParentheses(options, typeParamDecl);
-}
-
-std::pair<ir::TypeNode *, bool> ETSParser::GetTypeAnnotationFromParentheses(
-    TypeAnnotationParsingOptions *options, ir::TSTypeParameterDeclaration *typeParamDecl)
+std::pair<ir::TypeNode *, bool> ETSParser::GetTypeAnnotationFromParentheses(TypeAnnotationParsingOptions *options)
 {
     auto startLoc = Lexer()->GetToken().Start();
 
-    ir::TypeNode *typeAnnotation = ParsePotentialFunctionalType(options, typeParamDecl);
+    ir::TypeNode *typeAnnotation = ParsePotentialFunctionalType(options);
     if (typeAnnotation != nullptr) {
         typeAnnotation->SetStart(startLoc);
         return std::make_pair(typeAnnotation, true);

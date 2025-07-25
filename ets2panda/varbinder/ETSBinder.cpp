@@ -135,7 +135,7 @@ void ETSBinder::LookupTypeReference(ir::Identifier *ident)
         }
     }
 
-    if (ident->Variable() != nullptr || LookupInDebugInfoPlugin(ident)) {
+    if (LookupInDebugInfoPlugin(ident)) {
         return;
     }
 

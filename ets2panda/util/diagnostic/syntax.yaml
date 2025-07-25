@@ -371,6 +371,10 @@ syntax:
   id: 314
   message: "Generator functions are not supported, please use async/await mechanism for multitasking"
 
+- name: GENERIC_LAMBDA_NOT_SUPPORTED
+  id: 12842
+  message: "Generic lambda expressions are not supported."
+
 - name: GETTER_FORMAL_PARAMS
   id: 58
   message: "Getter must not have formal parameters."
