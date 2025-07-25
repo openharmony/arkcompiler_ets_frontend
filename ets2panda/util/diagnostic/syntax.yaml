@@ -895,6 +895,10 @@ syntax:
   id: 321
   message: "initModule() only accept string literal as argument."
 
+- name: OPTIONAL_METHOD
+  id: 129375
+  message: "Optional methods are not supported."
+
 - name: OPTIONAL_VARIABLE
   id: 306
   message: "Optional variable is deprecated and no longer supported."

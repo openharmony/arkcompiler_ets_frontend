@@ -687,8 +687,7 @@ ir::AstNode *ETSParser::ParseInnerRest(const ArenaVector<ir::AstNode *> &propert
     };
 
     if (InAmbientContext()) {
-        auto *property = HandleAmbientDeclaration(memberModifiers, parseClassMethod);
-        if (property != nullptr) {
+        if (auto *property = HandleAmbientDeclaration(memberModifiers, parseClassMethod); property != nullptr) {
             return property;
         }
     }
@@ -718,6 +717,7 @@ ir::AstNode *ETSParser::ParseInnerRest(const ArenaVector<ir::AstNode *> &propert
     if (memberName->IsErrorPlaceHolder()) {
         return AllocBrokenStatement(startLoc);
     }
+    ThrowOptionalMethodErrorIfNeeded();
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS ||
         Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
