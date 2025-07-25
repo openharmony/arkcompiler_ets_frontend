@@ -3995,6 +3995,12 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       const baseParamType = this.tsTypeChecker.getTypeAtLocation(baseParams[i]);
       const derivedParamType = this.tsTypeChecker.getTypeAtLocation(derivedParams[i]);
 
+      if (baseParamType.flags & ts.TypeFlags.TypeParameter) {
+        if (!(derivedParamType.flags & ts.TypeFlags.TypeParameter)) {
+          continue;
+        }
+      }
+
       if (!this.isTypeSameOrWider(baseParamType, derivedParamType)) {
         this.incrementCounters(derivedParams[i], FaultID.MethodInheritRule);
       }
@@ -4009,6 +4015,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     derivedMethod: ts.MethodDeclaration,
     baseMethod: ts.MethodDeclaration | ts.MethodSignature
   ): void {
+    if(this.shouldSkipTypeParameterCheck(derivedMethod, baseMethod)) {
+      return;
+    }
     const baseMethodType = this.getActualReturnType(baseMethod);
     const derivedMethodType = this.getActualReturnType(derivedMethod);
     const baseMethodTypeIsVoid = TypeScriptLinter.checkMethodTypeIsVoidOrAny(baseMethodType, true);
@@ -4049,6 +4058,21 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (!this.isTypeAssignable(derivedMethodType, baseMethodType)) {
       this.incrementCounters(derivedMethod.type ? derivedMethod.type : derivedMethod.name, FaultID.MethodInheritRule);
     }
+  }
+
+  private shouldSkipTypeParameterCheck(
+    derivedMethod: ts.MethodDeclaration,
+    baseMethod: ts.MethodDeclaration | ts.MethodSignature
+  ): boolean {
+    const baseMethodType = this.getActualReturnType(baseMethod);
+    const derivedMethodType = this.getActualReturnType(derivedMethod);
+    
+    if (baseMethodType && (baseMethodType.flags & ts.TypeFlags.TypeParameter)) {
+      if (derivedMethodType && !(derivedMethodType.flags & ts.TypeFlags.TypeParameter)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private static checkMethodTypeIsVoidOrAny(
