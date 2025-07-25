@@ -2094,8 +2094,11 @@ ir::AstNode *ETSParser::ParseAmbientSignature(const lexer::SourcePosition &start
         Lexer()->GetToken().SetTokenType(lexer::TokenType::KEYW_NUMBER);
     }
 
+    TypeAnnotationParsingOptions typAnotationOptions = TypeAnnotationParsingOptions::NO_OPTS;
+    auto typeAnno = ParseTypeAnnotation(&typAnotationOptions);
+
     // eat indexType
-    if (Lexer()->NextToken(); Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET) {
+    if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET) {
         // ambient_indexer_7.ets
         LogError(diagnostic::EXPECTED_BRACKETS_IN_INDEX);
 
@@ -2121,7 +2124,7 @@ ir::AstNode *ETSParser::ParseAmbientSignature(const lexer::SourcePosition &start
     }
 
     auto dummyNode = AllocNode<ir::DummyNode>(compiler::Signatures::AMBIENT_INDEXER, indexName, returnType,
-                                              ir::DummyNodeFlag::INDEXER);
+                                              ir::DummyNodeFlag::INDEXER, typeAnno);
     ES2PANDA_ASSERT(dummyNode != nullptr);
     dummyNode->SetRange({startPos, Lexer()->GetToken().End()});
     return dummyNode;
