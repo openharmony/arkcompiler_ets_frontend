@@ -20,15 +20,4 @@ let y: G<{a:String}, B> // Error
 
 /* @@? 18:8 Error TypeError: Cannot find type 'G'. */
 /* @@? 19:8 Error TypeError: Cannot find type 'G'. */
-/* @@? 19:10 Error SyntaxError: Invalid Type. */
-/* @@? 19:10 Error SyntaxError: Unexpected token, expected '>'. */
-/* @@? 19:10 Error SyntaxError: Unexpected token '>'. */
-/* @@? 19:11 Error SyntaxError: Unexpected token 'a'. */
-/* @@? 19:13 Error SyntaxError: Label must be followed by a loop statement. */
-/* @@? 19:13 Error TypeError: Class name 'String' used in the wrong context */
-/* @@? 19:19 Error SyntaxError: Unexpected token '}'. */
-/* @@? 19:20 Error SyntaxError: Unexpected token ','. */
-/* @@? 19:22 Error SyntaxError: Unexpected token 'B'. */
-/* @@? 19:22 Error TypeError: Type name 'B' used in the wrong context */
-/* @@? 19:22 Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type. */
-/* @@? 35:1 Error SyntaxError: Unexpected token 'end of stream'. */
+/* @@? 19:10 Error SyntaxError: Using object literals to declare types in place is not supported. Please declare types and interfaces explicitly! */

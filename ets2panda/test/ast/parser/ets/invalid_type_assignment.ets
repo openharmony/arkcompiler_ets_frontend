@@ -20,11 +20,7 @@ flags: [dynamic-ast]
 type Point = { x: number; y: number };
 type AxeX = Point['x'];
 
-/* @@? 20:14 Error SyntaxError: Invalid Type. */
-/* @@? 20:19 Error SyntaxError: Label must be followed by a loop statement. */
-/* @@? 20:19 Error TypeError: Type name 'number' used in the wrong context */
-/* @@? 20:30 Error SyntaxError: Label must be followed by a loop statement. */
-/* @@? 20:30 Error TypeError: Type name 'number' used in the wrong context */
+/* @@? 20:14 Error SyntaxError: Using object literals to declare types in place is not supported. Please declare types and interfaces explicitly! */
 /* @@? 21:19 Error SyntaxError: Unexpected token, expected ']'. */
 /* @@? 21:19 Error SyntaxError: Unexpected token ']'. */
 /* @@? 21:22 Error SyntaxError: Unexpected token ']'. */

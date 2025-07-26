@@ -1243,3 +1243,7 @@ syntax:
 - name: DEFAULT_PARAM_IN_DECLARE
   id: 307
   message: "A parameter initializer is only allowed in a function or constructor implementation."
+
+- name: ERROR_ARKTS_NO_OBJ_LITERAL_TO_DECL_TYPE
+  id: 308
+  message: "Using object literals to declare types in place is not supported. Please declare types and interfaces explicitly!"
