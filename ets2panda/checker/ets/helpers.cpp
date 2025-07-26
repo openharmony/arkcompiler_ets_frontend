@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+#include <type_traits>
 #include <utility>
 #include "checker/ETSchecker.h"
 
@@ -26,6 +27,7 @@
 #include "evaluate/scopedDebugInfoPlugin.h"
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "compiler/lowering/util.h"
+#include "util/es2pandaMacros.h"
 #include "util/helpers.h"
 #include "util/nameMangler.h"
 
@@ -1851,28 +1853,28 @@ Type *ETSChecker::ResolveReferencedType(varbinder::LocalVariable *refVar, const 
     }
 }
 
-checker::Type *ETSChecker::GetElementTypeOfArray(checker::Type *type)
+checker::Type *ETSChecker::GetElementTypeOfArray(checker::Type *type) const
 {
     if (type->IsTypeError()) {
         return GlobalTypeError();
     }
-
     if (type->IsETSArrayType()) {
         return type->AsETSArrayType()->ElementType();
     }
-
-    ES2PANDA_ASSERT(type->IsETSResizableArrayType());
-    return type->AsETSResizableArrayType()->ElementType();
+    if (type->IsETSResizableArrayType()) {
+        return type->AsETSResizableArrayType()->ElementType();
+    }
+    if (type->IsETSReadonlyArrayType()) {
+        auto const &typeArgs = type->AsETSObjectType()->TypeArguments();
+        ES2PANDA_ASSERT(!typeArgs.empty());
+        return typeArgs.front();
+    }
+    ES2PANDA_UNREACHABLE();
 }
 
 const checker::Type *ETSChecker::GetElementTypeOfArray(const checker::Type *type) const
 {
-    if (type->IsETSArrayType()) {
-        return type->AsETSArrayType()->ElementType();
-    }
-
-    ES2PANDA_ASSERT(type->IsETSResizableArrayType());
-    return type->AsETSResizableArrayType()->ElementType();
+    return GetElementTypeOfArray(const_cast<Type *>(type));
 }
 
 void ETSChecker::ConcatConstantString(util::UString &target, Type *type)

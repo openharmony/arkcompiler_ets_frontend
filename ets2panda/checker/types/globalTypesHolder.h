@@ -16,7 +16,6 @@
 #ifndef ES2PANDA_COMPILER_CHECKER_TYPES_GLOBAL_TYPES_HOLDER_H
 #define ES2PANDA_COMPILER_CHECKER_TYPES_GLOBAL_TYPES_HOLDER_H
 
-#include "ir/astNodeFlags.h"
 #include "checker/types/type.h"
 
 namespace ark::es2panda::checker {
@@ -116,6 +115,7 @@ enum class GlobalTypeId : std::size_t {
     ETS_BIG_INT_BUILTIN,
     ETS_BIG_INT,
     ETS_ARRAY,
+    ETS_READONLY_ARRAY,
 
     ETS_FUNCTION0_CLASS,
     ETS_FUNCTION1_CLASS,
@@ -328,6 +328,7 @@ public:
 
     // ETS escompat layer
     Type *GlobalArrayBuiltinType();
+    Type *GlobalReadonlyArray();
     Type *GlobalAssertionErrorBuiltinType();
     Type *GlobalDivideByZeroErrorBuiltinType();
     Type *GlobalNullPointerErrorBuiltinType();

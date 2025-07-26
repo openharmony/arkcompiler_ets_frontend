@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
+#include <sstream>
+
 #include "resizableArrayLowering.h"
-#include <utility>
 #include "compiler/lowering/util.h"
-#include "ir/ets/etsUnionType.h"
 
 namespace ark::es2panda::compiler {
 
@@ -24,15 +24,22 @@ using AstNodePtr = ir::AstNode *;
 
 static ir::AstNode *ConvertToResizableArrayType(ir::TSArrayType *node, public_lib::Context *ctx, bool insideAnnotdecl)
 {
+    std::stringstream typeAnnotationSrc;
+    typeAnnotationSrc << (insideAnnotdecl ? "FixedArray" : (node->IsReadonlyType() ? "ReadonlyArray" : "Array")) << "<"
+                      << node->ElementType()->DumpEtsSrc() << ">";
+
     auto *parser = ctx->parser->AsETSParser();
-    ir::TypeNode *typeAnnotation = parser->CreateFormattedTypeAnnotation((insideAnnotdecl ? "FixedArray<" : "Array<") +
-                                                                         node->ElementType()->DumpEtsSrc() + ">");
+    ir::TypeNode *typeAnnotation = parser->CreateFormattedTypeAnnotation(typeAnnotationSrc.str());
     ES2PANDA_ASSERT(typeAnnotation != nullptr);
     typeAnnotation->SetAnnotations(node->Annotations());
     typeAnnotation->SetParent(node->Parent());
     typeAnnotation->SetRange(node->Range());
     RefineSourceRanges(node);
-    typeAnnotation->AddModifier(node->Modifiers());
+    auto modifier = node->Modifiers();
+    if (node->IsReadonlyType()) {
+        modifier &= ~ir::ModifierFlags::READONLY_PARAMETER;
+    }
+    typeAnnotation->AddModifier(modifier);
     return typeAnnotation;
 }
 

@@ -1660,8 +1660,7 @@ SignatureInfo *ETSChecker::ComposeSignatureInfo(ir::TSTypeParameterDeclaration *
                 return nullptr;
             }
             ES2PANDA_ASSERT(restParamType != nullptr);
-            if (!restParamType->IsETSTupleType() && !restParamType->IsETSArrayType() &&
-                !restParamType->IsETSResizableArrayType()) {
+            if (!restParamType->IsAnyETSArrayOrTupleType()) {
                 LogError(diagnostic::ONLY_ARRAY_OR_TUPLE_FOR_REST, {}, param->Start());
                 return nullptr;
             }

@@ -13,6 +13,9 @@
  * limitations under the License.
  */
 
+#include "compiler/lowering/ets/unboxLowering.h"
+
+#include "checker/types/type.h"
 #include "generated/tokenType.h"
 #include "ir/visitor/IterateAstVisitor.h"
 #include "checker/ETSchecker.h"
@@ -20,12 +23,12 @@
 #include "checker/types/typeFlag.h"
 #include "checker/types/globalTypesHolder.h"
 #include "compiler/lowering/util.h"
-
-#include "compiler/lowering/ets/unboxLowering.h"
+#include "util/es2pandaMacros.h"
 
 namespace ark::es2panda::compiler {
 
 namespace {
+
 struct UnboxContext {
     // NOLINTNEXTLINE(misc-non-private-member-variables-in-classes,readability-identifier-naming)
     explicit UnboxContext(public_lib::Context *ctx)
@@ -48,66 +51,35 @@ struct UnboxContext {
 
 // NOLINTNEXTLINE(readability-identifier-naming)
 char const *UNBOXER_METHOD_NAME = "unboxed";
-}  // namespace
 
-static bool IsRecursivelyUnboxedReference(checker::Type *t);
-
-static bool IsRecursivelyUnboxed(checker::Type *t)
+bool AnyOfElementTypes(checker::Type *type, const std::function<bool(checker::Type *)> &isFunc)
 {
-    return t->IsETSPrimitiveType() || IsRecursivelyUnboxedReference(t);
+    auto const anyOf = [&isFunc](ArenaVector<checker::Type *> const &list) {
+        auto const pred = [&isFunc](checker::Type *t) { return AnyOfElementTypes(t, isFunc); };
+        return std::any_of(list.begin(), list.end(), pred);
+    };
+    return (type->IsETSTupleType() && anyOf(type->AsETSTupleType()->GetTupleTypesList())) ||
+           (type->IsETSArrayType() && isFunc(type->AsETSArrayType()->ElementType())) ||
+           (type->IsETSUnionType() && anyOf(type->AsETSUnionType()->ConstituentTypes())) ||
+           (type->IsETSObjectType() && anyOf(type->AsETSObjectType()->TypeArguments()));
 }
 
-static checker::Type *GetArrayElementType(checker::Type *arrType)
+bool IsRecursivelyUnboxed(checker::Type *t)
 {
-    if (arrType->IsETSResizableArrayType()) {
-        return arrType->AsETSResizableArrayType()->ElementType();
-    }
-
-    if (arrType->IsETSArrayType()) {
-        return arrType->AsETSArrayType()->ElementType();
-    }
-    return nullptr;
+    return t->IsETSPrimitiveType() || AnyOfElementTypes(t, IsRecursivelyUnboxed);
 }
 
-static bool IsRecursivelyUnboxedReference(checker::Type *t)
-{
-    return (t->IsETSTupleType() &&
-            std::any_of(t->AsETSTupleType()->GetTupleTypesList().begin(),
-                        t->AsETSTupleType()->GetTupleTypesList().end(), IsRecursivelyUnboxedReference)) ||
-           (t->IsETSArrayType() && IsRecursivelyUnboxed(GetArrayElementType(t))) ||
-           (t->IsETSUnionType() &&
-            std::any_of(t->AsETSUnionType()->ConstituentTypes().begin(), t->AsETSUnionType()->ConstituentTypes().end(),
-                        IsRecursivelyUnboxedReference)) ||
-           (t->IsETSObjectType() &&
-            std::any_of(t->AsETSObjectType()->TypeArguments().begin(), t->AsETSObjectType()->TypeArguments().end(),
-                        IsRecursivelyUnboxedReference));
-}
-
-static bool TypeIsBoxedPrimitive(checker::Type *tp)
+bool TypeIsBoxedPrimitive(checker::Type *tp)
 {
     return tp->IsETSObjectType() && tp->AsETSObjectType()->IsBoxedPrimitive();
 }
 
-static bool IsUnboxingApplicableReference(checker::Type *t);
-
-static bool IsUnboxingApplicable(checker::Type *t)
+bool IsUnboxingApplicable(checker::Type *t)
 {
-    return TypeIsBoxedPrimitive(t) || IsUnboxingApplicableReference(t);
+    return TypeIsBoxedPrimitive(t) || AnyOfElementTypes(t, IsUnboxingApplicable);
 }
 
-static bool IsUnboxingApplicableReference(checker::Type *t)
-{
-    return (t->IsETSTupleType() &&
-            std::any_of(t->AsETSTupleType()->GetTupleTypesList().begin(),
-                        t->AsETSTupleType()->GetTupleTypesList().end(), IsUnboxingApplicableReference)) ||
-           (t->IsETSArrayType() && IsUnboxingApplicable(GetArrayElementType(t))) ||
-           (t->IsETSUnionType() &&
-            std::any_of(t->AsETSUnionType()->ConstituentTypes().begin(), t->AsETSUnionType()->ConstituentTypes().end(),
-                        IsUnboxingApplicableReference)) ||
-           (t->IsETSObjectType() &&
-            std::any_of(t->AsETSObjectType()->TypeArguments().begin(), t->AsETSObjectType()->TypeArguments().end(),
-                        IsUnboxingApplicableReference));
-}
+}  // namespace
 
 using TypeIdStorage = std::vector<std::uint64_t>;  // Long recursion chains are unlikely, use vector
 static checker::Type *NormalizeType(UnboxContext *uctx, checker::Type *t, TypeIdStorage *alreadySeen = nullptr);
@@ -735,7 +707,7 @@ static void HandleForOfStatement(UnboxContext *uctx, ir::ForOfStatement *forOf)
 
     checker::Type *elemTp = nullptr;
     if (tp->IsETSArrayType()) {
-        elemTp = GetArrayElementType(tp);
+        elemTp = tp->AsETSArrayType()->ElementType();
     } else if (tp->IsETSStringType()) {
         elemTp = uctx->checker->GlobalCharType();
     } else {
@@ -793,6 +765,11 @@ static void ReplaceInParent(ir::AstNode *from, ir::AstNode *to)
 namespace {
 struct UnboxVisitor : public ir::visitor::EmptyAstVisitor {
     explicit UnboxVisitor(UnboxContext *uctx) : uctx_(uctx) {}
+
+    inline checker::Type *GetArrayElementType(checker::Type *arrType)
+    {
+        return uctx_->checker->GetElementTypeOfArray(arrType);
+    }
 
     void VisitReturnStatement(ir::ReturnStatement *retStmt) override
     {

@@ -617,7 +617,7 @@ public:
                                                    const ir::TSTypeParameterInstantiation *typeParams, size_t idx);
     Type *GetTypeFromTypeParameterReference(varbinder::LocalVariable *var, const lexer::SourcePosition &pos);
     Type *GetNonConstantType(Type *type);
-    checker::Type *GetElementTypeOfArray(checker::Type *type);
+    checker::Type *GetElementTypeOfArray(checker::Type *type) const;
     const checker::Type *GetElementTypeOfArray(const checker::Type *type) const;
     bool IsNullLikeOrVoidExpression(const ir::Expression *expr) const;
     bool IsConstantExpression(ir::Expression *expr, Type *type);
