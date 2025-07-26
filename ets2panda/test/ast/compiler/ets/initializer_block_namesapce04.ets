@@ -13,12 +13,18 @@
  * limitations under the License.
  */
 
-package P2
+export namespace xml {
+  static a: number = 1;
 
-export namespace NS {
-    static {
-        a = 3
-    }
+  static {
+  }
+
+  static {
+  }
 }
 
-/* @@? P2_02.ets:21:5 Error SyntaxError: Only one static block is allowed in one namespace or class. */
+/* @@? 17:3 Error SyntaxError: Unexpected token 'static'. */
+/* @@? 17:10 Error SyntaxError: Unexpected token 'a'. */
+/* @@? 17:13 Error SyntaxError: Label must be followed by a loop statement. */
+/* @@? 17:13 Error TypeError: Type name 'number' used in the wrong context */
+/* @@? 20:3 Error SyntaxError: Only one static block is allowed in one namespace or class. */
