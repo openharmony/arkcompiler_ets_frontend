@@ -190,6 +190,36 @@ void ETSParser::ReportAccessModifierError(const lexer::Token &token)
     }
 }
 
+static std::tuple<ir::ModifierFlags, bool, bool> ParseAccessFlagFromToken(const lexer::Token &token)
+{
+    ir::ModifierFlags accessFlag = ir::ModifierFlags::NONE;
+    switch (token.KeywordType()) {
+        case lexer::TokenType::KEYW_PUBLIC: {
+            accessFlag = ir::ModifierFlags::PUBLIC;
+            break;
+        }
+        case lexer::TokenType::KEYW_PRIVATE: {
+            accessFlag = ir::ModifierFlags::PRIVATE;
+            break;
+        }
+        case lexer::TokenType::KEYW_PROTECTED: {
+            accessFlag = ir::ModifierFlags::PROTECTED;
+            break;
+        }
+        case lexer::TokenType::KEYW_INTERNAL: {
+            accessFlag = ir::ModifierFlags::INTERNAL;
+            break;
+        }
+        case lexer::TokenType::EOS: {  // process invalid tokenType
+            return {ir::ModifierFlags::NONE, false, true};
+        }
+        default: {
+            ES2PANDA_UNREACHABLE();
+        }
+    }
+    return {accessFlag, false, false};
+}
+
 std::tuple<ir::ModifierFlags, bool, bool> ETSParser::ParseClassMemberAccessModifiers()
 {
     if (!IsClassMemberAccessModifier(Lexer()->GetToken().Type())) {
@@ -207,34 +237,22 @@ std::tuple<ir::ModifierFlags, bool, bool> ETSParser::ParseClassMemberAccessModif
     }
 
     ir::ModifierFlags accessFlag = ir::ModifierFlags::NONE;
-
+    bool internalFlag = false;
+    bool earlyReturn = false;
     const auto token = Lexer()->GetToken();
 
-    switch (token.KeywordType()) {
-        case lexer::TokenType::KEYW_PUBLIC: {
-            accessFlag = ir::ModifierFlags::PUBLIC;
-            break;
+    std::tie(accessFlag, internalFlag, earlyReturn) = ParseAccessFlagFromToken(token);
+    if (earlyReturn) {
+        return {accessFlag, internalFlag, earlyReturn};
+    }
+
+    if (token.KeywordType() == lexer::TokenType::KEYW_INTERNAL) {
+        Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);
+        if (Lexer()->GetToken().KeywordType() != lexer::TokenType::KEYW_PROTECTED) {
+            ReportAccessModifierError(token);
+            return {ir::ModifierFlags::INTERNAL, true, false};
         }
-        case lexer::TokenType::KEYW_PRIVATE: {
-            accessFlag = ir::ModifierFlags::PRIVATE;
-            break;
-        }
-        case lexer::TokenType::KEYW_PROTECTED: {
-            accessFlag = ir::ModifierFlags::PROTECTED;
-            break;
-        }
-        case lexer::TokenType::KEYW_INTERNAL: {
-            Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);
-            if (Lexer()->GetToken().KeywordType() != lexer::TokenType::KEYW_PROTECTED) {
-                ReportAccessModifierError(token);
-                return {ir::ModifierFlags::INTERNAL, true, false};
-            }
-            accessFlag = ir::ModifierFlags::INTERNAL_PROTECTED;
-            break;
-        }
-        default: {
-            ES2PANDA_UNREACHABLE();
-        }
+        accessFlag = ir::ModifierFlags::INTERNAL_PROTECTED;
     }
 
     ReportAccessModifierError(token);
