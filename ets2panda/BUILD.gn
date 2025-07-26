@@ -1229,6 +1229,15 @@ ohos_shared_library("libes2panda_public") {
   subsystem_name = "arkcompiler"
 }
 
+if (!(defined(ark_static_standalone_build) && ark_static_standalone_build)) {
+  ohos_shared_headers("libes2panda_public_headers") {
+    include_dirs = [ "$ark_es2panda_root/public" ]
+    deps = [ ":libes2panda_public" ]
+    part_name = "ets_frontend"
+    subsystem_name = "arkcompiler"
+  }
+}
+
 action("generate_ets2panda_info") {
   script = "$ark_root/gn/build/es2panda_info.sh"
   outputs = [ "$target_gen_dir/generated/es2panda_build_info.h" ]
