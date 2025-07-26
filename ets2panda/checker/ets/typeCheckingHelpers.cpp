@@ -1605,6 +1605,9 @@ bool ETSChecker::ResolveLambdaArgumentType(Signature *signature, ir::Expression 
 
 bool ETSChecker::TrailingLambdaTypeInference(Signature *signature, const ArenaVector<ir::Expression *> &arguments)
 {
+    if (arguments.empty() || signature->GetSignatureInfo()->params.empty()) {
+        return false;
+    }
     ES2PANDA_ASSERT(arguments.back()->IsArrowFunctionExpression());
     const size_t lastParamPos = signature->GetSignatureInfo()->params.size() - 1;
     const size_t lastArgPos = arguments.size() - 1;
