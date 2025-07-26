@@ -44,9 +44,6 @@
                 },
                 {
                     "name": "//arkcompiler/ets_frontend/ets2panda:libes2panda_public"
-                },
-                {
-                    "name": "//arkcompiler/ets_frontend/ets2panda:libes2panda_public_headers"
                 }
             ],
             "test": [
