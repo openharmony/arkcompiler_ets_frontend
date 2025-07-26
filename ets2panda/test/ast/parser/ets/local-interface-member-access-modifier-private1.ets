@@ -15,10 +15,11 @@
 
 function foo()
 {
-    interface LocalInterface
+    /* @@ label1 */interface LocalInterface
     {
-        /* @@ label */private property : int;
+        /* @@ label2 */private property : int;
     }
 }
 
-/* @@@ label Error SyntaxError: Local class or interface declaration members can not have access modifies.  */
+/* @@@ label1 Error SyntaxError: Illegal start of INTERFACE expression. */
+/* @@@ label2 Error SyntaxError: Local class or interface declaration members can not have access modifies. */

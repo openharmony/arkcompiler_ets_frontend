@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,11 +13,17 @@
  * limitations under the License.
  */
 
-function main() {
-    const a : int = 1;
-    const b : int = 2 + a;
-    enum Foo {Baz = a, Bar = b}
-    arktest.assertEQ(Foo.Bar, 3)
+enum Foo {Bar, Baz}
 
-    arktest.assertEQ(Foo.Baz, 1)
+function main() {
+
+    {
+      enum Foo {Baz, Bar}
+      arktest.assertEQ(Foo.Bar as int, 1)
+    }
+
+    arktest.assertEQ(Foo.Bar as int, 0)
 }
+
+/* @@? 21:7 Error SyntaxError: Illegal start of ENUM expression.  */
+/* @@? 22:24 Warning Warning: Enum cast is deprecated. Cast support from 'Foo' to 'Int' will be removed. */

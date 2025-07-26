@@ -13,8 +13,9 @@
  * limitations under the License.
  */
 
+enum StringEnum {a = "a", b = "b", c = "c"}
+
 function main():void {
-    enum StringEnum {a = "a", b = "b", c = "c"}
     let se: StringEnum = StringEnum.b
     let s: string = se // n will get the value of "b" 
     arktest.assertEQ(s, "b")

@@ -39,6 +39,11 @@ class A {
     }
 }
 
+// Union type array
+type unionType = (int|string|null)
+//tuple
+type tupleType = [string, int, boolean]
+
 function main() {
     let intArray = new Array<Int>(77, 88, 99)
 
@@ -58,8 +63,6 @@ function main() {
     let arrayMulti : Int[][] = [[7, 8], [10, ...intArray]]
     compMultiArray<Int>(arrayMulti, expectedArray)
 
-        // Union type array
-        type unionType = (int|string|null)
         let unionArray : unionType[] = ["first", "second"]
         let expectedUnion : unionType[] = [100, 200, "first", "second", 500, 600, "first", "second"]
         let arrayUnion: unionType[] = [100, 200, ...unionArray, 500, 600, ...unionArray]
@@ -72,8 +75,6 @@ function main() {
         let arrayObject : Object[] = [obj, ...objectArray]
         compArray<Object>(arrayObject, expectedObject)
 
-        //tuple
-        type tupleType = [string, int, boolean]
         let tuple : tupleType = ["first", 2, true]
         let expectedTuple = ["first", 2, true, 100, 200, "first", 2, true]
         let tuple2 = [...tuple, 100, 200, ...tuple]

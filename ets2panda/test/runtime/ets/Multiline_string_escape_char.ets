@@ -13,11 +13,12 @@
  * limitations under the License.
  */
 
+type UT = `Test escape characters \a\\\'\" \' \b \f \n \r \t \v \\ \x7F \u005c
+              Test escape characters` | "X";
+
 function main(){
     let x  = `Test escape characters \a\\\'\" \' \b \f \n \r \t \v \\ \x7F \u005c
               Test escape characters`;
-    type UT = `Test escape characters \a\\\'\" \' \b \f \n \r \t \v \\ \x7F \u005c
-              Test escape characters` | "X";
     let x2:UT = `Test escape characters \a\\\'\" \' \b \f \n \r \t \v \\ \x7F \u005c
               Test escape characters`
     arktest.assertEQ(x, x2)
