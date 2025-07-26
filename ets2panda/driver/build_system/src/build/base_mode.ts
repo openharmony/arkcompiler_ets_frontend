@@ -534,9 +534,9 @@ export abstract class BaseMode {
     const mainModuleInfo = this.dependentModuleList.find((module: DependentModuleConfig) => module.packageName === this.packageName);
     return {
       isMainModule: this.hasMainModule,
-      packageName: this.packageName,
-      moduleRootPath: this.moduleRootPath,
-      moduleType: this.moduleType,
+      packageName: mainModuleInfo?.packageName ?? this.packageName,
+      moduleRootPath: mainModuleInfo?.modulePath ?? this.moduleRootPath,
+      moduleType: mainModuleInfo?.moduleType ?? this.moduleType,
       sourceRoots: this.sourceRoots,
       entryFile: '',
       arktsConfigFile: path.resolve(this.cacheDir, this.packageName, ARKTSCONFIG_JSON_FILE),
