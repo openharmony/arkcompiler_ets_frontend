@@ -330,6 +330,8 @@ public:
         if (extProgram != nullptr &&
             varBinder->externalRecordTable_.find(extProgram) != varBinder->externalRecordTable_.end()) {
             varBinder->recordTable_ = varBinder->externalRecordTable_[extProgram];
+        } else if (varBinder->GetGlobalRecordTable()->Program() == extProgram) {
+            varBinder->recordTable_ = varBinder->GetGlobalRecordTable();
         }
     }
 

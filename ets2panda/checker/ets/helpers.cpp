@@ -1763,6 +1763,12 @@ void ETSChecker::SetPropertiesForModuleObject(checker::ETSObjectType *moduleObjT
     ES2PANDA_ASSERT(program != nullptr);
     if (!program->IsASTChecked()) {
         // NOTE: helps to avoid endless loop in case of recursive imports that uses all bindings
+        varbinder::RecordTableContext recordTableCtx(VarBinder()->AsETSBinder(), program);
+        // If external program import current program, the checker status should not contain external
+        checker::SavedCheckerContext savedContext(this, Context().Status(), Context().ContainingClass());
+        if (!VarBinder()->AsETSBinder()->GetGlobalRecordTable()->IsExternal()) {
+            RemoveStatus(CheckerStatus::IN_EXTERNAL);
+        }
         program->SetASTChecked();
         program->Ast()->Check(this);
     }
