@@ -294,7 +294,7 @@ void ScopesInitPhase::VisitAnnotationUsage(ir::AnnotationUsage *annoUsage)
     auto annoCtx = LexicalScopeCreateOrEnter<varbinder::AnnotationParamScope>(VarBinder(), annoUsage);
     auto *curScope = annoCtx.GetScope();
     BindScopeNode(curScope, annoUsage);
-    CallNode(annoUsage->Properties());
+    Iterate(annoUsage);
 }
 
 void ScopesInitPhase::VisitDoWhileStatement(ir::DoWhileStatement *doWhileStmt)
