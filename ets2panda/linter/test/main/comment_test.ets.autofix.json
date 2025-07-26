@@ -22,9 +22,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 669,
-                    "end": 684,
-                    "replacementText": "property: number = 123;",
+                    "start": 677,
+                    "end": 677,
+                    "replacementText": ": number",
                     "line": 20,
                     "column": 5,
                     "endLine": 20,
@@ -64,9 +64,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 737,
-                    "end": 750,
-                    "replacementText": "arr: number[] = [1, 0];",
+                    "start": 740,
+                    "end": 740,
+                    "replacementText": ": number[]",
                     "line": 22,
                     "column": 5,
                     "endLine": 22,

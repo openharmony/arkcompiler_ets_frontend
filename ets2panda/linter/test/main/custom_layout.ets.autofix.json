@@ -295,9 +295,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1416,
-                    "end": 1430,
-                    "replacementText": "startPos: number = 300",
+                    "start": 1424,
+                    "end": 1424,
+                    "replacementText": ": number",
                     "line": 54,
                     "column": 9,
                     "endLine": 54,
@@ -337,9 +337,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1476,
-                    "end": 1519,
-                    "replacementText": "pos: number = startPos - child.measureResult.height",
+                    "start": 1479,
+                    "end": 1479,
+                    "replacementText": ": number",
                     "line": 56,
                     "column": 11,
                     "endLine": 56,
@@ -442,9 +442,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1958,
-                    "end": 1968,
-                    "replacementText": "size: number = 100",
+                    "start": 1962,
+                    "end": 1962,
+                    "replacementText": ": number",
                     "line": 80,
                     "column": 9,
                     "endLine": 80,
@@ -631,9 +631,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 2642,
-                    "end": 2652,
-                    "replacementText": "size: number = 100",
+                    "start": 2646,
+                    "end": 2646,
+                    "replacementText": ": number",
                     "line": 110,
                     "column": 9,
                     "endLine": 110,
@@ -736,9 +736,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 3055,
-                    "end": 3069,
-                    "replacementText": "startPos: number = 300",
+                    "start": 3063,
+                    "end": 3063,
+                    "replacementText": ": number",
                     "line": 121,
                     "column": 9,
                     "endLine": 121,
@@ -778,9 +778,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 3115,
-                    "end": 3158,
-                    "replacementText": "pos: number = startPos - child.measureResult.height",
+                    "start": 3118,
+                    "end": 3118,
+                    "replacementText": ": number",
                     "line": 123,
                     "column": 11,
                     "endLine": 123,

@@ -53,9 +53,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 702,
-                    "end": 708,
-                    "replacementText": "b: number = 12",
+                    "start": 703,
+                    "end": 703,
+                    "replacementText": ": number",
                     "line": 18,
                     "column": 11,
                     "endLine": 18,
@@ -95,9 +95,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 730,
-                    "end": 738,
-                    "replacementText": "c: number = 13.0",
+                    "start": 731,
+                    "end": 731,
+                    "replacementText": ": number",
                     "line": 19,
                     "column": 11,
                     "endLine": 19,
@@ -646,9 +646,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 2321,
-                    "end": 2327,
-                    "replacementText": "e: number = 15",
+                    "start": 2322,
+                    "end": 2322,
+                    "replacementText": ": number",
                     "line": 86,
                     "column": 9,
                     "endLine": 86,
@@ -688,9 +688,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 2347,
-                    "end": 2357,
-                    "replacementText": "e1: number = e & 3",
+                    "start": 2349,
+                    "end": 2349,
+                    "replacementText": ": number",
                     "line": 87,
                     "column": 9,
                     "endLine": 87,
@@ -730,9 +730,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 2378,
-                    "end": 2388,
-                    "replacementText": "e2: number = e | 3",
+                    "start": 2380,
+                    "end": 2380,
+                    "replacementText": ": number",
                     "line": 88,
                     "column": 9,
                     "endLine": 88,

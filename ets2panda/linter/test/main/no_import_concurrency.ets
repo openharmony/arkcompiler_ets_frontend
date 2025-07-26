@@ -25,7 +25,6 @@ import fooke from '@ohos.process';
 import { process as ps, collections as clt } from '@kit.ArkTS';
 import process from '@ohos.process';
 import aaa from '@ohos.taskpool'
-import aa from '@arkts.utils'
 import aaaa from '@arkts.collections';
 
 aaa.getTaskPoolInfo()
@@ -37,7 +36,6 @@ function concurrency () {
 
 ps.isIsolatedProcess();
 tsk.cancel();
-aa.locks.AsyncLock
 aaaa.Set()
 clt.Set()
 fooAs.getFoo();

@@ -104,9 +104,9 @@ identity(42);
 
 let an_array = [1,2,3]
 
-let g = an_array[]
+let g2 = an_array[]
 
-const a = 1
+const a2 = 1
 
 enum Test {
   A = 1,  // 显式赋值为 1
@@ -142,7 +142,8 @@ export class G{
 
 const fingerprintPositionY = AppStorage.get<number>(FingerprintConstants.COORDINATE_Y_OF_FINGERPRINT_UD_SCREEN_IN_PX) ?? 0;
 
-private doCloseFolderBackgroundAnimation(): void {
+class Layout {
+  private doCloseFolderBackgroundAnimation(): void {
     openFolderLayout.getGridSwiperLayout().bgHeight = openFolderLayout.getBackgroundLayout().closedHeight;
     openFolderLayout.getGridSwiperLayout().bgWidth = openFolderLayout.getBackgroundLayout().closedWidth;
 
@@ -161,9 +162,10 @@ private doCloseFolderBackgroundAnimation(): void {
       openFolderLayout.getGridSwiperLayout().bgTranslateY = pos[1] + editModeTranslateY -
         openFolderLayout.getBackgroundLayout().closedHeight * 0.5 - openFolderLayout.getBackgroundLayout().openedMargin;
     }
+  }
 }
 
-let f = 0.0;
+let f2 = 0.0;
 let b5: number = 0;
 f = b5; // OK
 
@@ -182,9 +184,9 @@ e = e | 3; // OK
 let arr1 = [1,2,3]
 e += arr1[0]; // OK
 
-let a = 0.0;
-a = fun1();
-a = fun2()!;
+let a3 = 0.0;
+a3 = fun1();
+a3 = fun2()!;
 
 function fun1():number{
   return 1;
@@ -196,17 +198,17 @@ function fun2():number|undefined{
 
 import { ArrayList } from "@kit.ArkTS";
 
-let arr = new ArrayList<number>()
+let arr2 = new ArrayList<number>()
 for (let i:number = 0; i < 100; i++) {
-  arr.add(i)
+  arr2.add(i)
 }
-let cancelIds:ArrayList<number> = arr.subArrayList(6, 86)
-let a: Array<number> = Array.from(cancelIds)
-let arr1: Array<number> = Array.from(new ArrayList<number>())
+let cancelIds:ArrayList<number> = arr2.subArrayList(6, 86)
+let arr3: Array<number> = Array.from(cancelIds)
+let arr4: Array<number> = Array.from(new ArrayList<number>())
 
-let a:number = 0.000;
+let a4: number = 0.000;
 
-const b:number = 0.000;
+const b4: number = 0.000;
 
 export enum WalletStageValue {
   DEFAULT = 0,
@@ -228,4 +230,11 @@ export enum AnimationStage {
 
 class C {
   public static readonly SIX_MONTH = 180 * 24 * 60 * 60 * 1000
+}
+
+function testIndentation(): void {
+  let a = (() => {
+    console.log('hello');
+    return 0;
+  })();
 }

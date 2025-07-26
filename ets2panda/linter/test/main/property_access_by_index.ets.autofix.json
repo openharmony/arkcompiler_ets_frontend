@@ -63,9 +63,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1158,
-                    "end": 1176,
-                    "replacementText": "ar1: number[] = [1, 2, 3, 4]",
+                    "start": 1161,
+                    "end": 1161,
+                    "replacementText": ": number[]",
                     "line": 33,
                     "column": 5,
                     "endLine": 33,
@@ -261,9 +261,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1260,
-                    "end": 1277,
-                    "replacementText": "r0: number = [1, 2, 3][1]",
+                    "start": 1262,
+                    "end": 1262,
+                    "replacementText": ": number",
                     "line": 41,
                     "column": 7,
                     "endLine": 41,
@@ -282,9 +282,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1283,
-                    "end": 1303,
-                    "replacementText": "r1: number = [1, 2, 3, 4][0]",
+                    "start": 1285,
+                    "end": 1285,
+                    "replacementText": ": number",
                     "line": 42,
                     "column": 5,
                     "endLine": 42,
@@ -323,9 +323,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1422,
-                    "end": 1436,
-                    "replacementText": "array1: number[] = [0, 1]",
+                    "start": 1428,
+                    "end": 1428,
+                    "replacementText": ": number[]",
                     "line": 53,
                     "column": 5,
                     "endLine": 53,
@@ -386,9 +386,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1441,
-                    "end": 1461,
-                    "replacementText": "array2: number[] = [1, 2, 3, 4, 5]",
+                    "start": 1447,
+                    "end": 1447,
+                    "replacementText": ": number[]",
                     "line": 54,
                     "column": 5,
                     "endLine": 54,
@@ -1420,9 +1420,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 3802,
-                    "end": 3807,
-                    "replacementText": "i: number = 0",
+                    "start": 3803,
+                    "end": 3803,
+                    "replacementText": ": number",
                     "line": 180,
                     "column": 14,
                     "endLine": 180,

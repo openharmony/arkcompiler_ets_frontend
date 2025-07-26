@@ -761,9 +761,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 2119,
-                    "end": 2145,
-                    "replacementText": "case17: number = Direction17[\"\\\\\"]",
+                    "start": 2125,
+                    "end": 2125,
+                    "replacementText": ": number",
                     "line": 105,
                     "column": 5,
                     "endLine": 105,
@@ -792,9 +792,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 2150,
-                    "end": 2180,
-                    "replacementText": "case172: number = Direction17[\"__x5c\"]",
+                    "start": 2157,
+                    "end": 2157,
+                    "replacementText": ": number",
                     "line": 106,
                     "column": 5,
                     "endLine": 106,

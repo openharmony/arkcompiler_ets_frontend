@@ -93,6 +93,7 @@ export enum FaultID {
   FunctionApplyCall,
   FunctionBind,
   FunctionBindError,
+  NoFunctionReturnThis,
   ConstAssertion,
   ImportAssertion,
   SpreadOperator,

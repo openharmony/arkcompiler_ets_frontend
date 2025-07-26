@@ -346,9 +346,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 742,
-                    "end": 747,
-                    "replacementText": "x: number = 1",
+                    "start": 743,
+                    "end": 743,
+                    "replacementText": ": number",
                     "line": 29,
                     "column": 5,
                     "endLine": 29,
@@ -388,9 +388,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 749,
-                    "end": 754,
-                    "replacementText": "y: number = 2",
+                    "start": 750,
+                    "end": 750,
+                    "replacementText": ": number",
                     "line": 29,
                     "column": 12,
                     "endLine": 29,
@@ -502,9 +502,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 818,
-                    "end": 828,
-                    "replacementText": "x2: number = bar.a",
+                    "start": 820,
+                    "end": 820,
+                    "replacementText": ": number",
                     "line": 37,
                     "column": 5,
                     "endLine": 37,
@@ -523,9 +523,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 830,
-                    "end": 840,
-                    "replacementText": "y2: number = bar.b",
+                    "start": 832,
+                    "end": 832,
+                    "replacementText": ": number",
                     "line": 37,
                     "column": 17,
                     "endLine": 37,

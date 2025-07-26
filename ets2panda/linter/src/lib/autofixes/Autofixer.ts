@@ -20,8 +20,8 @@ import { NameGenerator } from '../utils/functions/NameGenerator';
 import { isAssignmentOperator } from '../utils/functions/isAssignmentOperator';
 import { SymbolCache } from './SymbolCache';
 import { SENDABLE_DECORATOR } from '../utils/consts/SendableAPI';
+import { ARKTSUTILS_LOCKS_MEMBER } from '../utils/consts/LimitedStdAPI';
 import { DEFAULT_MODULE_NAME, PATH_SEPARATOR, SRC_AND_MAIN } from '../utils/consts/OhmUrl';
-import { STRINGLITERAL_NUMBER, STRINGLITERAL_NUMBER_ARRAY } from '../utils/consts/StringLiteral';
 import {
   DOUBLE_DOLLAR_IDENTIFIER,
   THIS_IDENTIFIER,
@@ -2041,7 +2041,7 @@ export class Autofixer {
       !objectLiteralExpr.parent.type
     ) {
       const text = ': ' + newInterfaceName;
-      const pos = Autofixer.getDeclarationTypePositionForObjectLiteral(objectLiteralExpr.parent);
+      const pos = Autofixer.getDeclarationTypePosition(objectLiteralExpr.parent);
       return { start: pos, end: pos, replacementText: text };
     }
 
@@ -2057,7 +2057,7 @@ export class Autofixer {
     return { start: objectLiteralExpr.getStart(), end: objectLiteralExpr.getEnd(), replacementText: text };
   }
 
-  private static getDeclarationTypePositionForObjectLiteral(
+  private static getDeclarationTypePosition(
     decl: ts.VariableDeclaration | ts.PropertyDeclaration | ts.ParameterDeclaration
   ): number {
     if (ts.isPropertyDeclaration(decl)) {
@@ -3373,63 +3373,21 @@ export class Autofixer {
     return this.printer.printNode(ts.EmitHint.Unspecified, node, this.sourceFile);
   }
 
-  fixVariableDeclaration(node: ts.VariableDeclaration, isEnum: boolean): Autofix[] | undefined {
-    const initializer = node.initializer;
-    const name = node.name;
-    const sym = this.typeChecker.getSymbolAtLocation(name);
-    if (!sym || !initializer) {
-      return undefined;
-    }
-    ts.setCommentRange(initializer, { pos: -1, end: -1 });
-
-    const type = this.typeChecker.getTypeOfSymbolAtLocation(sym, name);
-    const typeText = this.typeChecker.typeToString(type);
-    const typeFlags = type.flags;
-
-    if (!TsUtils.isNumberLike(type, typeText, isEnum)) {
-      return undefined;
-    }
-
-    let typeNode: ts.TypeNode;
-    if (typeText === STRINGLITERAL_NUMBER || (typeFlags & ts.TypeFlags.NumberLiteral) !== 0 || isEnum) {
-      typeNode = ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword);
-    } else if (typeText === STRINGLITERAL_NUMBER_ARRAY) {
-      typeNode = ts.factory.createArrayTypeNode(ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword));
-    } else {
-      return undefined;
-    }
-
-    const newVarDecl = ts.factory.createVariableDeclaration(name, undefined, typeNode, initializer);
-    const parent = node.parent;
-    if (!ts.isVariableDeclarationList(parent)) {
-      return undefined;
-    }
-    const text = this.printer.printNode(ts.EmitHint.Unspecified, newVarDecl, node.getSourceFile());
-    return [{ start: node.getStart(), end: node.getEnd(), replacementText: text }];
+  fixNumericSemanticsForDeclaration(
+    node: ts.VariableDeclaration | ts.PropertyDeclaration | ts.ParameterDeclaration,
+    type: ts.Type
+  ): Autofix[] | undefined {
+    const typeNode = this.getTypeForNumericSemantics(type);
+    const text = ': ' + this.printer.printNode(ts.EmitHint.Unspecified, typeNode, node.getSourceFile());
+    const pos = Autofixer.getDeclarationTypePosition(node);
+    return [{ start: pos, end: pos, replacementText: text }];
   }
 
-  fixPropertyDeclarationNumericSemanticsArray(node: ts.PropertyDeclaration): Autofix[] {
-    const newProperty = ts.factory.createPropertyDeclaration(
-      node.modifiers,
-      node.name,
-      undefined,
-      ts.factory.createArrayTypeNode(ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword)),
-      node.initializer
-    );
-
-    const replacementText = this.nonCommentPrinter.printNode(
-      ts.EmitHint.Unspecified,
-      newProperty,
-      node.getSourceFile()
-    );
-
-    return [
-      {
-        start: node.getStart(),
-        end: node.getEnd(),
-        replacementText: replacementText
-      }
-    ];
+  private getTypeForNumericSemantics(type: ts.Type): ts.TypeNode {
+    if (this.utils.isGenericArrayType(type)) {
+      return ts.factory.createArrayTypeNode(ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword));
+    }
+    return ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword);
   }
 
   /**
@@ -3615,56 +3573,6 @@ export class Autofixer {
       });
     }
     return undefined;
-  }
-
-  fixParameter(param: ts.ParameterDeclaration): Autofix[] {
-    const newParam = ts.factory.createParameterDeclaration(
-      param.modifiers,
-      param.dotDotDotToken,
-      param.name,
-      param.questionToken,
-      ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
-      param.initializer
-    );
-    const text = this.printer.printNode(ts.EmitHint.Unspecified, newParam, param.getSourceFile());
-    return [
-      {
-        start: param.getStart(),
-        end: param.getEnd(),
-        replacementText: text
-      }
-    ];
-  }
-
-  fixPropertyDeclaration(node: ts.PropertyDeclaration): Autofix[] | undefined {
-    const initializer = node.initializer;
-    if (initializer === undefined) {
-      return undefined;
-    }
-    const propType = this.typeChecker.getTypeAtLocation(node);
-    let propTypeNode: ts.TypeNode;
-    if (propType.flags & ts.TypeFlags.NumberLike) {
-      propTypeNode = ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword);
-    } else {
-      const inferredTypeNode = this.typeChecker.typeToTypeNode(propType, undefined, ts.NodeBuilderFlags.None);
-
-      if (!inferredTypeNode || !this.utils.isSupportedType(inferredTypeNode)) {
-        return undefined;
-      }
-      propTypeNode = inferredTypeNode;
-    }
-
-    const questionOrExclamationToken = node.questionToken ?? node.exclamationToken ?? undefined;
-    const newPropDecl = ts.factory.createPropertyDeclaration(
-      node.modifiers,
-      node.name,
-      questionOrExclamationToken,
-      propTypeNode,
-      initializer
-    );
-
-    const text = this.nonCommentPrinter.printNode(ts.EmitHint.Unspecified, newPropDecl, node.getSourceFile());
-    return [{ start: node.getStart(), end: node.getEnd(), replacementText: text }];
   }
 
   fixFunctionDeclarationly(
@@ -4174,45 +4082,75 @@ export class Autofixer {
       return undefined;
     }
 
-    // 2) Find the enclosing `new` expression
+    const className = asyncLockProp.name.getText();
+
+    // 2a) Handle static method calls on AsyncLock (e.g. AsyncLock.request, AsyncLock.acquire, etc.)
+    const methodProp = asyncLockProp.parent;
+    if (ts.isPropertyAccessExpression(methodProp)) {
+      const methodName = methodProp.name.getText();
+      const callExpr = methodProp.parent;
+      if (!ts.isCallExpression(callExpr)) {
+        return undefined;
+      }
+
+      const fixes: Autofix[] = [];
+      // Type fix for variable declaration, if necessary
+      const varDecl = Autofixer.findParentVariableDeclaration(callExpr);
+      const typeFix = varDecl ? this.buildConcurrencyLockTypeFix(varDecl, className) : undefined;
+      if (typeFix) {
+        fixes.push(typeFix);
+      }
+
+      // build AsyncLock.<methodName>(...)
+      const fixCall = ts.factory.createCallExpression(
+        ts.factory.createPropertyAccessExpression(
+          ts.factory.createIdentifier(className),
+          ts.factory.createIdentifier(methodName)
+        ),
+        undefined,
+        callExpr.arguments
+      );
+      const replacementText = this.printer.printNode(ts.EmitHint.Unspecified, fixCall, callExpr.getSourceFile());
+      fixes.push({ start: callExpr.getStart(), end: callExpr.getEnd(), replacementText });
+      return fixes;
+    }
+
+    // 2b) Handle `new ArkTSUtils.locks.AsyncLock()`
     const newExpr = asyncLockProp.parent;
     if (!ts.isNewExpression(newExpr)) {
       return undefined;
     }
-
-    const className = asyncLockProp.name.getText();
+    // build `new AsyncLock()`
     const replacement = ts.factory.createNewExpression(ts.factory.createIdentifier(className), undefined, []);
     const replacementText = this.printer.printNode(ts.EmitHint.Unspecified, replacement, newExpr.getSourceFile());
-
     return [{ start: newExpr.getStart(), end: newExpr.getEnd(), replacementText }];
   }
 
-  fixAppStorageCallExpression(callExpr: ts.CallExpression): Autofix[] | undefined {
-    const varDecl = Autofixer.findParentVariableDeclaration(callExpr);
-    if (!varDecl || varDecl.type) {
+  /**
+   * If the variable declaration has a qualified type `*.locks.ClassName`, build a fix to simplify it to `ClassName`.
+   */
+  private buildConcurrencyLockTypeFix(varDecl: ts.VariableDeclaration, className: string): Autofix | undefined {
+    const typeNode = varDecl.type;
+
+    if (!typeNode || !ts.isTypeReferenceNode(typeNode) || !ts.isQualifiedName(typeNode.typeName)) {
       return undefined;
     }
 
-    const updatedVarDecl = ts.factory.updateVariableDeclaration(
-      varDecl,
-      varDecl.name,
-      undefined,
-      ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
-      varDecl.initializer
-    );
+    const qn = typeNode.typeName;
+    const left = qn.left;
+    const right = qn.right;
 
-    const replacementText = this.printer.printNode(ts.EmitHint.Unspecified, updatedVarDecl, varDecl.getSourceFile());
+    // ensure it's of form *.locks.ClassName
+    if (ts.isQualifiedName(left) && left.right.text === ARKTSUTILS_LOCKS_MEMBER && right.text === className) {
+      const simple = ts.factory.createTypeReferenceNode(ts.factory.createIdentifier(className), undefined);
+      const text = this.printer.printNode(ts.EmitHint.Unspecified, simple, varDecl.getSourceFile());
+      return { start: typeNode.getStart(), end: typeNode.getEnd(), replacementText: text };
+    }
 
-    return [
-      {
-        replacementText,
-        start: varDecl.getStart(),
-        end: varDecl.getEnd()
-      }
-    ];
+    return undefined;
   }
 
-  private static findParentVariableDeclaration(node: ts.Node): ts.VariableDeclaration | undefined {
+    private static findParentVariableDeclaration(node: ts.Node): ts.VariableDeclaration | undefined {
     while (node) {
       if (ts.isVariableDeclaration(node)) {
         return node;
@@ -4220,6 +4158,13 @@ export class Autofixer {
       node = node.parent;
     }
     return undefined;
+  }
+
+  fixAppStorageCallExpression(varDecl: ts.VariableDeclaration): Autofix[] | undefined {
+    const typeNode = ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword);
+    const text = ': ' + this.printer.printNode(ts.EmitHint.Unspecified, typeNode, varDecl.getSourceFile());
+    const pos = Autofixer.getDeclarationTypePosition(varDecl);
+    return [{ start: pos, end: pos, replacementText: text }];
   }
 
   private static createVariableForInteropImport(
@@ -5293,31 +5238,6 @@ export class Autofixer {
 
     const text = this.printer.printNode(ts.EmitHint.Unspecified, newDecorator, node.getSourceFile());
     return [{ start: node.getStart(), end: node.getEnd(), replacementText: text }];
-  }
-
-  fixNumericPublicStatic(node: ts.PropertyDeclaration): Autofix[] | undefined {
-    if (!node?.name || node.type) {
-      return undefined;
-    }
-    const typeNode = ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword);
-    const modifiers = ts.getModifiers(node) || [];
-    const updatedProperty = ts.factory.updatePropertyDeclaration(
-      node,
-      modifiers,
-      node.name,
-      node.questionToken,
-      typeNode,
-      node.initializer
-    );
-
-    const newText = this.printer.printNode(ts.EmitHint.Unspecified, updatedProperty, node.getSourceFile());
-    return [
-      {
-        start: node.getStart(),
-        end: node.getEnd(),
-        replacementText: newText
-      }
-    ];
   }
 
   fixRepeat(stmt: ts.ExpressionStatement): Autofix[] {

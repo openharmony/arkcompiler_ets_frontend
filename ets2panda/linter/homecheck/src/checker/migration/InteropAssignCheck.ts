@@ -29,6 +29,10 @@ import {
     ArkNamespace,
     PrimitiveType,
     UnclearReferenceType,
+    AnyType,
+    UnionType,
+    NullType,
+    UndefinedType,
 } from 'arkanalyzer/lib';
 import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
 import { BaseChecker, BaseMetaData } from '../BaseChecker';
@@ -101,9 +105,13 @@ export class InteropAssignCheck implements BaseChecker {
                 let hasTargetArg = false;
                 const invoke = cs.getInvokeExpr()!;
                 const csMethod = cs.getCfg().getDeclaringMethod();
-                invoke.getArgs().forEach(arg => {
+                invoke.getArgs().forEach((arg, argIdx) => {
                     const argTy = arg.getType();
                     if (argTy instanceof PrimitiveType || this.isBoxedType(argTy)) {
+                        return;
+                    }
+                    const paramTy = invoke.getMethodSignature().getMethodSubSignature().getParameterTypes()[argIdx];
+                    if (this.isAnyType(paramTy) || this.isESObjectType(paramTy)) {
                         return;
                     }
                     const argTyLang = this.getTypeDefinedLang(argTy, scene) ?? csMethod?.getLanguage() ?? Language.UNKNOWN;
@@ -124,6 +132,28 @@ export class InteropAssignCheck implements BaseChecker {
                 const defeats = new Defects(line, column, column, problem, desc, severity, ruleId, filePath, '', true, false, false);
                 this.issues.push(new IssueReport(defeats, undefined));
             });
+    }
+
+    private isAnyType(ty: Type): boolean {
+        return ty instanceof AnyType || (ty instanceof UnclearReferenceType && ty.getName() === 'Any');
+    }
+
+    private isESObjectType(ty: Type): boolean {
+        if (!(ty instanceof UnionType)) {
+            return false;
+        }
+        const types = ty.getTypes();
+        if (types.length !== 3) {
+            return false;
+        }
+        const isObjectTy = (type: Type): boolean => {
+            return type instanceof ClassType && type.getClassSignature().getClassName() === 'Object';
+        };
+        return (
+            types.find(ty => ty instanceof NullType) !== undefined &&
+            types.find(ty => ty instanceof UndefinedType) !== undefined &&
+            types.find(ty => isObjectTy(ty)) !== undefined
+        );
     }
 
     private isBoxedType(checkType: Type): boolean {

@@ -27,7 +27,6 @@ import bbbb from '@kit.ArkTS';
 
 
 
-
 taskpool.getTaskPoolInfo()
 
 function concurrency () {
@@ -37,7 +36,6 @@ function concurrency () {
 
 process.isIsolatedProcess();
 taskpool.cancel();
-ArkTSUtils.locks.AsyncLock
 Set()
 Set()
 fooAs.getFoo();

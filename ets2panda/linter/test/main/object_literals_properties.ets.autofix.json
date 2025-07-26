@@ -184,9 +184,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 875,
-                    "end": 880,
-                    "replacementText": "x: number = 1",
+                    "start": 876,
+                    "end": 876,
+                    "replacementText": ": number",
                     "line": 31,
                     "column": 5,
                     "endLine": 31,
@@ -578,9 +578,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1351,
-                    "end": 1357,
-                    "replacementText": "x2: number = 1",
+                    "start": 1353,
+                    "end": 1353,
+                    "replacementText": ": number",
                     "line": 65,
                     "column": 5,
                     "endLine": 65,
@@ -620,9 +620,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1359,
-                    "end": 1365,
-                    "replacementText": "y2: number = 2",
+                    "start": 1361,
+                    "end": 1361,
+                    "replacementText": ": number",
                     "line": 65,
                     "column": 13,
                     "endLine": 65,
@@ -662,9 +662,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1367,
-                    "end": 1373,
-                    "replacementText": "z2: number = 3",
+                    "start": 1369,
+                    "end": 1369,
+                    "replacementText": ": number",
                     "line": 65,
                     "column": 21,
                     "endLine": 65,
@@ -1023,9 +1023,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1866,
-                    "end": 1874,
-                    "replacementText": "x2: number = 10;",
+                    "start": 1868,
+                    "end": 1868,
+                    "replacementText": ": number",
                     "line": 103,
                     "column": 3,
                     "endLine": 103,
@@ -1065,9 +1065,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1877,
-                    "end": 1885,
-                    "replacementText": "y2: number = 20;",
+                    "start": 1879,
+                    "end": 1879,
+                    "replacementText": ": number",
                     "line": 104,
                     "column": 3,
                     "endLine": 104,
@@ -1107,9 +1107,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1888,
-                    "end": 1896,
-                    "replacementText": "z2: number = 30;",
+                    "start": 1890,
+                    "end": 1890,
+                    "replacementText": ": number",
                     "line": 105,
                     "column": 3,
                     "endLine": 105,
@@ -1271,9 +1271,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 2200,
-                    "end": 2208,
-                    "replacementText": "x2: number = 10;",
+                    "start": 2202,
+                    "end": 2202,
+                    "replacementText": ": number",
                     "line": 125,
                     "column": 3,
                     "endLine": 125,
@@ -1313,9 +1313,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 2211,
-                    "end": 2219,
-                    "replacementText": "y2: number = 20;",
+                    "start": 2213,
+                    "end": 2213,
+                    "replacementText": ": number",
                     "line": 126,
                     "column": 3,
                     "endLine": 126,
@@ -1355,9 +1355,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 2222,
-                    "end": 2230,
-                    "replacementText": "z2: number = 30;",
+                    "start": 2224,
+                    "end": 2224,
+                    "replacementText": ": number",
                     "line": 127,
                     "column": 3,
                     "endLine": 127,
@@ -1438,9 +1438,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 2469,
-                    "end": 2474,
-                    "replacementText": "a: number = 1",
+                    "start": 2470,
+                    "end": 2470,
+                    "replacementText": ": number",
                     "line": 141,
                     "column": 7,
                     "endLine": 141,
@@ -1480,9 +1480,9 @@
             "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 2476,
-                    "end": 2481,
-                    "replacementText": "b: number = 2",
+                    "start": 2477,
+                    "end": 2477,
+                    "replacementText": ": number",
                     "line": 141,
                     "column": 14,
                     "endLine": 141,

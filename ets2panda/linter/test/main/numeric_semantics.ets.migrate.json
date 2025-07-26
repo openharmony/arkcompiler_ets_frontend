@@ -26,9 +26,9 @@
         },
         {
             "line": 117,
-            "column": 26,
+            "column": 27,
             "endLine": 117,
-            "endColumn": 26,
+            "endColumn": 27,
             "problem": "ArrayIndexExprType",
             "suggest": "",
             "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
@@ -55,49 +55,39 @@
             "severity": "ERROR"
         },
         {
-            "line": 156,
-            "column": 6,
-            "endLine": 156,
-            "endColumn": 7,
-            "problem": "ObjectLiteralNoContextType",
-            "suggest": "",
-            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
-            "severity": "ERROR"
-        },
-        {
             "line": 162,
             "column": 9,
             "endLine": 162,
-            "endColumn": 20,
-            "problem": "ObjectLiteralProperty",
-            "suggest": "",
-            "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 162,
-            "column": 9,
-            "endLine": 162,
-            "endColumn": 11,
-            "problem": "InvalidIdentifier",
-            "suggest": "",
-            "rule": "This keyword cannot be used as identifiers (arkts-invalid-identifier)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 162,
-            "column": 12,
-            "endLine": 162,
-            "endColumn": 15,
+            "endColumn": 61,
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
             "severity": "ERROR"
         },
         {
-            "line": 196,
+            "line": 171,
+            "column": 61,
+            "endLine": 171,
+            "endColumn": 67,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 172,
+            "column": 61,
+            "endLine": 172,
+            "endColumn": 67,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 195,
             "column": 6,
-            "endLine": 196,
+            "endLine": 195,
             "endColumn": 13,
             "problem": "RuntimeArrayCheck",
             "suggest": "",
@@ -105,9 +95,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 210,
+            "line": 209,
             "column": 1,
-            "endLine": 210,
+            "endLine": 209,
             "endColumn": 40,
             "problem": "ImportAfterStatement",
             "suggest": "",
@@ -115,29 +105,29 @@
             "severity": "ERROR"
         },
         {
-            "line": 212,
+            "line": 211,
             "column": 5,
-            "endLine": 212,
-            "endColumn": 34,
+            "endLine": 211,
+            "endColumn": 35,
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
             "severity": "ERROR"
         },
         {
-            "line": 212,
-            "column": 15,
-            "endLine": 212,
-            "endColumn": 24,
+            "line": 211,
+            "column": 16,
+            "endLine": 211,
+            "endColumn": 25,
             "problem": "DynamicCtorCall",
             "suggest": "",
             "rule": "\"new\" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)",
             "severity": "ERROR"
         },
         {
-            "line": 218,
+            "line": 217,
             "column": 42,
-            "endLine": 218,
+            "endLine": 217,
             "endColumn": 51,
             "problem": "DynamicCtorCall",
             "suggest": "",
@@ -145,10 +135,20 @@
             "severity": "ERROR"
         },
         {
-            "line": 225,
+            "line": 224,
             "column": 13,
-            "endLine": 225,
+            "endLine": 224,
             "endColumn": 14,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 225,
+            "column": 17,
+            "endLine": 225,
+            "endColumn": 18,
             "problem": "NumericSemantics",
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
@@ -176,18 +176,8 @@
         },
         {
             "line": 228,
-            "column": 17,
-            "endLine": 228,
-            "endColumn": 18,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 229,
             "column": 19,
-            "endLine": 229,
+            "endLine": 228,
             "endColumn": 20,
             "problem": "NumericSemantics",
             "suggest": "",
@@ -195,9 +185,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 230,
+            "line": 229,
             "column": 18,
-            "endLine": 230,
+            "endLine": 229,
             "endColumn": 19,
             "problem": "NumericSemantics",
             "suggest": "",
@@ -205,9 +195,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 231,
+            "line": 230,
             "column": 20,
-            "endLine": 231,
+            "endLine": 230,
             "endColumn": 21,
             "problem": "NumericSemantics",
             "suggest": "",
@@ -215,9 +205,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 235,
+            "line": 234,
             "column": 10,
-            "endLine": 235,
+            "endLine": 234,
             "endColumn": 11,
             "problem": "NumericSemantics",
             "suggest": "",
@@ -225,9 +215,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 236,
+            "line": 235,
             "column": 11,
-            "endLine": 236,
+            "endLine": 235,
             "endColumn": 12,
             "problem": "NumericSemantics",
             "suggest": "",
@@ -235,9 +225,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 237,
+            "line": 236,
             "column": 14,
-            "endLine": 237,
+            "endLine": 236,
             "endColumn": 15,
             "problem": "NumericSemantics",
             "suggest": "",
@@ -245,9 +235,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 238,
+            "line": 237,
             "column": 16,
-            "endLine": 238,
+            "endLine": 237,
             "endColumn": 17,
             "problem": "NumericSemantics",
             "suggest": "",
@@ -255,9 +245,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 239,
+            "line": 238,
             "column": 14,
-            "endLine": 239,
+            "endLine": 238,
             "endColumn": 15,
             "problem": "NumericSemantics",
             "suggest": "",
