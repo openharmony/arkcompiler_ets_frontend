@@ -13,22 +13,10 @@
  * limitations under the License.
  */
 
-interface I {
-    set text(s: string)
+function foo<T extends Record<string, A>>(record: Record<string, Partial<T>>){
+
 }
 
-class B implements I {
-    text: string = ""
-    s : string
-    this.text = s;
-}
+foo({})
 
-function main() {
-    let ins: I = new B();
-    ins.text = "He";
-}
-
-/* @@? 23:5 Error SyntaxError: Unexpected token 'this'. */
-/* @@? 23:9 Error SyntaxError: Unexpected token '.'. */
-/* @@? 23:10 Error TypeError: Variable 'text' has already been declared. */
-/* @@? 23:17 Error TypeError: Property 's' must be accessed through 'this' */
+/* @@? 16:39 Error TypeError: Cannot find type 'A'. */

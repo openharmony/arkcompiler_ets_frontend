@@ -16,6 +16,7 @@
 #include "ETSAnalyzer.h"
 
 #include "checker/ETSchecker.h"
+#include "compiler/lowering/util.h"
 #include "generated/diagnostic.h"
 #include "checker/types/globalTypesHolder.h"
 #include "checker/types/ets/etsTupleType.h"
@@ -23,7 +24,6 @@
 #include "evaluate/scopedDebugInfoPlugin.h"
 #include "types/signature.h"
 #include "compiler/lowering/ets/setJumpTarget.h"
-#include "compiler/lowering/util.h"
 #include "checker/types/ets/etsAsyncFuncReturnType.h"
 #include "types/ts/nullType.h"
 #include "types/type.h"
@@ -107,7 +107,18 @@ checker::Type *ETSAnalyzer::Check(ir::ClassProperty *st) const
     ETSChecker *checker = GetETSChecker();
 
     if (st->Id()->Variable() == nullptr) {
-        st->Id()->Check(checker);
+        // Now invalid or dummy nodes obtaining after parsing don't have associated variables at all, that leads to
+        // incorrect AST and multiple reported errors in AST verifier. Need to create and bind [special]? variables for
+        // them with default TypeError set[?]. Why can't we directly check the 'Id'? During the process of
+        // resolveIdentifier, we might obtain the wrong variable, which breaks the consistency between the variable and
+        // its tsType. see wrong_variable_binding.ets for more details.
+        auto ident = st->Id();
+        auto [decl, var] = checker->VarBinder()->NewVarDecl<varbinder::LetDecl>(
+            ident->Start(), compiler::GenName(checker->ProgramAllocator()).View());
+        var->SetScope(checker->VarBinder()->GetScope());
+        ident->SetVariable(var);
+        decl->BindNode(ident);
+        ident->SetTsType(var->SetTsType(checker->GlobalTypeError()));
     }
 
     ES2PANDA_ASSERT(st->Id()->Variable() != nullptr);

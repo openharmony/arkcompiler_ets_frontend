@@ -19,4 +19,3 @@ class C {
 }
 
 /* @@@ label Error TypeError: Variable 'foo' has already been declared.  */
-/* @@@ label Error TypeError: Property 'foo' must be accessed through 'this' */

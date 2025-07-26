@@ -24,4 +24,3 @@ function main(): void {
 }
 
 /* @@? 19:12 Error TypeError: Variable 'a' has already been declared. */
-/* @@? 19:12 Error TypeError: Property 'a' must be accessed through 'this' */
