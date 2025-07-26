@@ -8122,6 +8122,58 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
       this.handleMissingSuperCallInExtendedClass(node);
       this.handleFieldTypesMatchingBetweenDerivedAndBaseClass(node);
+      this.checkReadonlyOverridesFromBase(node);
+    }
+  }
+
+  private checkReadonlyOverridesFromBase(node: ts.HeritageClause): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    if (node.token !== ts.SyntaxKind.ExtendsKeyword) {
+      return;
+    }
+    const childClass = node.parent;
+    const baseTypeNode = node.types[0];
+    if (!ts.isClassDeclaration(childClass) || !baseTypeNode) {
+      return;
+    }
+    const baseType = this.tsTypeChecker.getTypeAtLocation(baseTypeNode);
+    if (!baseType) {
+      return;
+    }
+    const baseProps = baseType.getProperties();
+    this.validateReadonlyOverrides(childClass, baseProps);
+  }
+
+  private validateReadonlyOverrides(childClass: ts.ClassDeclaration, baseProps: ts.Symbol[]): void {
+    for (const member of childClass.members) {
+      if (!ts.isPropertyDeclaration(member) || !member.name) {
+        continue;
+      }
+      const isDerivedReadonly = TsUtils.hasModifier(member.modifiers, ts.SyntaxKind.ReadonlyKeyword);
+      if (!isDerivedReadonly) {
+        continue;
+      }
+      const memberName = ts.isIdentifier(member.name) ? member.name.text : undefined;
+      if (!memberName) {
+        continue;
+      }
+      const baseProp = baseProps.find((p) => {
+        return p.name === memberName;
+      });
+      if (!baseProp) {
+        continue;
+      }
+
+      const baseDecl = baseProp.valueDeclaration;
+      if (!baseDecl || !ts.isPropertyDeclaration(baseDecl)) {
+        continue;
+      }
+      const isBaseReadonly = TsUtils.hasModifier(baseDecl.modifiers, ts.SyntaxKind.ReadonlyKeyword);
+      if (!isBaseReadonly) {
+        this.incrementCounters(member, FaultID.NoClassSuperPropReadonly);
+      }
     }
   }
 

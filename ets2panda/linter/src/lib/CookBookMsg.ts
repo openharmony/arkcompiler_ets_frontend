@@ -178,7 +178,8 @@ cookBookTag[144] = 'Usage of standard library is restricted (arkts-limited-stdli
 cookBookTag[145] = 'Strict type checking is enforced (arkts-strict-typing)';
 cookBookTag[146] = 'Switching off type checks with in-place comments is not allowed (arkts-strict-typing-required)';
 cookBookTag[147] = 'No dependencies on TypeScript code are currently allowed (arkts-no-ts-deps)';
-cookBookTag[148] = '';
+cookBookTag[148] =
+  'Overriding with "readonly" field is not allowed when base field is not "readonly" (arkts-no-class-add-super-prop-with-readonly)';
 cookBookTag[149] = 'Classes cannot be used as objects (arkts-no-classes-as-obj)';
 cookBookTag[150] = '"import" statements after other statements are not allowed (arkts-no-misplaced-imports)';
 cookBookTag[151] = 'Usage of \'ESValue\' type is restricted (arkts-limited-esobj)';

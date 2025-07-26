@@ -58,6 +58,7 @@ export enum FaultID {
   ConditionalType,
   MappedType,
   NamespaceAsObject,
+  NoClassSuperPropReadonly,
   ClassAsObject,
   ClassAsObjectError,
   NonDeclarationInNamespace,

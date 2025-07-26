@@ -61,6 +61,7 @@ faultDesc[FaultID.PrivateIdentifier] = 'Private identifiers (with "#" prefix)';
 faultDesc[FaultID.LocalFunction] = 'Local function declarations';
 faultDesc[FaultID.ConditionalType] = 'Conditional type';
 faultDesc[FaultID.MappedType] = 'Mapped type';
+faultDesc[FaultID.NoClassSuperPropReadonly] = 'Readonly property overrides non-readonly parent property';
 faultDesc[FaultID.NamespaceAsObject] = 'Namespaces used as objects';
 faultDesc[FaultID.ClassAsObject] = faultDesc[FaultID.ClassAsObjectError] = 'Class used as object';
 faultDesc[FaultID.NonDeclarationInNamespace] = 'Non-declaration statements in namespaces';

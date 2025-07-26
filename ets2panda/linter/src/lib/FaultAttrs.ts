@@ -108,6 +108,7 @@ faultsAttrs[FaultID.ImportAssertion] = new FaultAttributes(143);
 faultsAttrs[FaultID.LimitedStdLibApi] = new FaultAttributes(144);
 faultsAttrs[FaultID.StrictDiagnostic] = new FaultAttributes(145);
 faultsAttrs[FaultID.ErrorSuppression] = new FaultAttributes(146);
+faultsAttrs[FaultID.NoClassSuperPropReadonly] = new FaultAttributes(148);
 faultsAttrs[FaultID.ClassAsObject] = new FaultAttributes(149, ProblemSeverity.WARNING);
 faultsAttrs[FaultID.ClassAsObjectError] = new FaultAttributes(149);
 faultsAttrs[FaultID.ImportAfterStatement] = new FaultAttributes(150);
