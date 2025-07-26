@@ -27,3 +27,5 @@ defaultExportObjectLiteral_exp.ets
 forOfCustomIterator3.ets
 too_many_async.ets
 typeAlias_2.ets
+Multiline_string.ets
+Multiline_string_escape_char.ets

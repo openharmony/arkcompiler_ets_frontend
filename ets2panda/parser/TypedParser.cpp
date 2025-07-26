@@ -145,7 +145,7 @@ ir::Statement *TypedParser::ParsePotentialExpressionStatement(StatementParsingFl
 
     switch (Lexer()->GetToken().KeywordType()) {
         case lexer::TokenType::KEYW_TYPE: {
-            const auto maybeAlias = ParseTypeAliasDeclaration();
+            const auto maybeAlias = ParseTypeAliasStatement();
             if (maybeAlias != nullptr) {
                 return maybeAlias;
             }
@@ -1549,6 +1549,11 @@ ParserStatus TypedParser::ValidateArrowParameter(ir::Expression *expr, bool *see
     }
     LogError(diagnostic::INSUFFICIENT_PARAM_IN_ARROW_FUN);
     return ParserStatus::NO_OPTS;
+}
+
+ir::Statement *TypedParser::ParseTypeAliasStatement()
+{
+    return ParseTypeAliasDeclaration();
 }
 
 }  // namespace ark::es2panda::parser

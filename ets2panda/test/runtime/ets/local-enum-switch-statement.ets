@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-function main():void {
-    enum Color {Red = 0, Green = 1, Blue = 0}
-    enum Commands { Open = "fopen", Close = "fclose", Open2 = "fopen" }
+enum Color {Red = 0, Green = 1, Blue = 0}
+enum Commands { Open = "fopen", Close = "fclose", Open2 = "fopen" }
 
+function main():void {
     let ie : Color = Color.Blue;
     switch (ie) {
         case Color.Red:

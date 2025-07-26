@@ -39,10 +39,14 @@ function main() {
 
 
 /* @@? 19:29 Error TypeError: Cannot cast type 'Char' to 'Byte'  */
-/* @@? 21:28 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type.  */
+/* @@? 21:5 Error SyntaxError: Illegal start of ENUM expression.  */
+/* @@? 22:22 Error TypeError: Unresolved reference TestEnum1  */
 /* @@? 24:30 Error TypeError: Cannot cast type 'Char' to 'Short'  */
-/* @@? 26:28 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type.  */
+/* @@? 26:5 Error SyntaxError: Illegal start of ENUM expression.  */
+/* @@? 27:22 Error TypeError: Unresolved reference TestEnum2  */
 /* @@? 29:28 Error TypeError: Cannot cast type 'Char' to 'Int'  */
-/* @@? 31:28 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type.  */
+/* @@? 31:5 Error SyntaxError: Illegal start of ENUM expression.  */
+/* @@? 32:22 Error TypeError: Unresolved reference TestEnum3  */
 /* @@? 34:29 Error TypeError: Cannot cast type 'Char' to 'Long'  */
-/* @@? 36:28 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type.  */
+/* @@? 36:5 Error SyntaxError: Illegal start of ENUM expression.  */
+/* @@? 37:22 Error TypeError: Unresolved reference TestEnum4  */

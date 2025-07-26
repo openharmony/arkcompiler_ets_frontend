@@ -226,10 +226,10 @@ function main(): void {
 /* @@? 92:7 Error TypeError: Variable 'A' has already been declared. */
 /* @@? 92:7 Error TypeError: Merging declarations is not supported, please keep all definitions of classes, interfaces and enums compact in the codebase! */
 /* @@? 93:3 Error SyntaxError: Unexpected token. A constructor, method, accessor, or property was expected. */
-/* @@? 115:26 Error SyntaxError: Unexpected token, expected an identifier. */
-/* @@? 115:26 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
-/* @@? 115:26 Error SyntaxError: Unexpected token, expected ',' or ')'. */
 /* @@? 115:26 Error SyntaxError: Unexpected token 'case'. */
+/* @@? 115:26 Error SyntaxError: Unexpected token, expected ',' or ')'. */
+/* @@? 115:26 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
+/* @@? 115:26 Error SyntaxError: Unexpected token, expected an identifier. */
 /* @@? 115:30 Error SyntaxError: Unexpected token ':'. */
 /* @@? 115:32 Error SyntaxError: Unexpected token 'U'. */
 /* @@? 115:32 Error TypeError: Unresolved reference U */
@@ -240,10 +240,10 @@ function main(): void {
 /* @@? 115:38 Error SyntaxError: Unexpected token '{'. */
 /* @@? 116:5 Error SyntaxError: return keyword should be used in function body. */
 /* @@? 116:12 Error TypeError: All return statements in the function should be empty or have a value. */
-/* @@? 119:26 Error SyntaxError: Unexpected token, expected an identifier. */
+/* @@? 119:26 Error SyntaxError: Unexpected token 'case'. */
 /* @@? 119:26 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
 /* @@? 119:26 Error SyntaxError: Unexpected token, expected ',' or ')'. */
-/* @@? 119:26 Error SyntaxError: Unexpected token 'case'. */
+/* @@? 119:26 Error SyntaxError: Unexpected token, expected an identifier. */
 /* @@? 119:30 Error SyntaxError: Unexpected token ':'. */
 /* @@? 119:32 Error SyntaxError: Unexpected token 'U'. */
 /* @@? 119:33 Error SyntaxError: Unexpected token ')'. */
@@ -278,8 +278,8 @@ function main(): void {
 /* @@? 161:9 Error SyntaxError: Hard keyword 'let' cannot be used as identifier */
 /* @@? 162:9 Error SyntaxError: Hard keyword 'const' cannot be used as identifier */
 /* @@? 162:9 Error SyntaxError: Identifier expected, got 'const'. */
-/* @@? 163:9 Error SyntaxError: Identifier expected, got 'new'. */
 /* @@? 163:9 Error SyntaxError: Hard keyword 'new' cannot be used as identifier */
+/* @@? 163:9 Error SyntaxError: Identifier expected, got 'new'. */
 /* @@? 164:5 Error TypeError: This expression is not callable. */
 /* @@? 165:5 Error TypeError: This expression is not callable. */
 /* @@? 166:5 Error TypeError: Expected 1 arguments, got 0. */

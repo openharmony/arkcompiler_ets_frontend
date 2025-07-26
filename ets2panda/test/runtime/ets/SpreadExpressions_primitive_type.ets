@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
+type t = (int|string|boolean)
+
 function main() {
 
     let intArray: int[] = [77, 88, 99]
@@ -41,7 +43,6 @@ function main() {
         arktest.assertEQ(expectedBoolArr[i], newBoolArr[i])
     }
 
-    type t = (int|string|boolean)
     let tArray0: t[] = [1, "a", true]
     let tArray1: t[] = [2, "b", false]
     let newTArr: t[] = [10, "aa", ...tArray0, ...tArray1]

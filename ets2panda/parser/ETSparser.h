@@ -351,6 +351,9 @@ private:
     // NOLINTNEXTLINE(google-default-arguments)
     ir::Statement *ParseStructStatement(StatementParsingFlags flags, ir::ClassDefinitionModifiers modifiers,
                                         ir::ModifierFlags modFlags = ir::ModifierFlags::NONE) override;
+    ir::Statement *ParseInterfaceStatement(StatementParsingFlags flags) override;
+    ir::Statement *ParseEnumStatement(StatementParsingFlags flags) override;
+    ir::Statement *ParseTypeAliasStatement() override;
     ir::AstNode *ParseClassElement(const ArenaVector<ir::AstNode *> &properties, ir::ClassDefinitionModifiers modifiers,
                                    ir::ModifierFlags flags) override;
     std::tuple<bool, bool, bool> HandleClassElementModifiers(ir::ModifierFlags &memberModifiers);
