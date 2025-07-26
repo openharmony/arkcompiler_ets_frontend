@@ -628,6 +628,9 @@ static TargetType PerformMultiplicativeOperation(TargetType leftNum, TargetType 
                 return std::numeric_limits<TargetType>::max();
             }
             if constexpr (std::is_integral_v<TargetType>) {
+                if (isIntegralDivideResOverflow()) {
+                    return 0;
+                }
                 return leftNum % rightNum;
             } else {
                 return std::fmod(leftNum, rightNum);

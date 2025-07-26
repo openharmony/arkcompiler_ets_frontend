@@ -124,3 +124,6 @@ RecursiveTypeAlias10.ets
 first_match/namespace.ets
 first_match/namespace2.ets
 first_match/namespace3.ets
+
+# Issue #28214
+large_number_parse.ets
