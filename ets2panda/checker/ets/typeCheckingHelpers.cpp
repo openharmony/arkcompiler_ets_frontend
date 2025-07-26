@@ -1197,7 +1197,8 @@ static auto IsNonArrayLiteral(ir::Expression *init)
         return true;
     }
 
-    if (init->TsType()->IsETSEnumType() && init->TsType()->AsETSEnumType()->NodeIsEnumLiteral(init)) {
+    if (init->TsType() != nullptr && init->TsType()->IsETSEnumType() &&
+        init->TsType()->AsETSEnumType()->NodeIsEnumLiteral(init)) {
         return true;
     }
     return false;

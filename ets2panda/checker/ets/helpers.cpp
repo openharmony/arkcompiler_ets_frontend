@@ -1809,6 +1809,10 @@ Type *ETSChecker::GetReferencedTypeBase(ir::Expression *name)
         return name->Check(this);
     }
 
+    if (name->IsLiteral()) {
+        return name->Check(this);
+    }
+
     ES2PANDA_ASSERT(name->IsIdentifier());
     if (name->AsIdentifier()->Variable() == nullptr) {
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
