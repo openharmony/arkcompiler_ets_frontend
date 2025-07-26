@@ -36,6 +36,7 @@ import {
   MERGED_ABC_FILE,
   TS_SUFFIX,
   DEPENDENCY_INPUT_FILE,
+  MERGED_INTERMEDIATE_FILE,
 } from '../pre_define';
 import {
   changeDeclgenFileExtension,
@@ -307,6 +308,10 @@ export abstract class BaseMode {
   }
 
   public compileMultiFiles(filePaths: string[], moduleInfo: ModuleInfo): void {
+    const intermediateFilePath = path.resolve(this.cacheDir, MERGED_INTERMEDIATE_FILE);
+    this.abcFiles.clear();
+    this.abcFiles.add(intermediateFilePath);
+
     let ets2pandaCmd: string[] = [
       '_',
       '--extension',
@@ -314,10 +319,10 @@ export abstract class BaseMode {
       '--arktsconfig',
       moduleInfo.arktsConfigFile,
       '--output',
-      path.resolve(this.outputDir, MERGED_ABC_FILE),
+      intermediateFilePath,
       '--simultaneous'
     ];
-    ensurePathExists(path.resolve(this.outputDir, MERGED_ABC_FILE));
+    ensurePathExists(intermediateFilePath);
     if (this.isDebug) {
       ets2pandaCmd.push('--debug-info');
     }
@@ -829,6 +834,8 @@ export abstract class BaseMode {
         this.logger.printErrorAndExit(logData);
       }
     }
+    
+    this.mergeAbcFiles();
   }
 
   // -- runParallell code begins --
