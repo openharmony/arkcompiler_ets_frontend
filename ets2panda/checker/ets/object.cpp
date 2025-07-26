@@ -636,7 +636,9 @@ void ETSChecker::ResolveDeclaredMembersOfObject(const Type *type)
     auto *objectType = type->AsETSObjectType();
     auto *declNode = objectType->GetDeclNode();
 
-    if (declNode == nullptr || !(declNode->IsClassDefinition() || declNode->IsTSInterfaceDeclaration())) {
+    // Note: the DeclNode of ETSStringLiteralType is totally the same as its super type: `ETSObjectType-String`.
+    if (objectType->IsETSStringLiteralType() || declNode == nullptr ||
+        !(declNode->IsClassDefinition() || declNode->IsTSInterfaceDeclaration())) {
         return;
     }
 
