@@ -212,6 +212,14 @@ checker::Type *MemberExpression::TraverseUnionMember(checker::ETSChecker *checke
             return;
         }
 
+        if (memberType->IsETSMethodType() && memberType->AsETSFunctionType()->CallSignatures().size() > 1U) {
+            if (!Parent()->IsCallExpression() || Parent()->AsCallExpression()->Callee() != this) {
+                commonPropType = checker->GlobalTypeError();
+                checker->LogError(diagnostic::OVERLOADED_METHOD_AS_VALUE, Start());
+                return;
+            }
+        }
+
         if (!commonPropType->IsETSMethodType() && !memberType->IsETSMethodType()) {
             if (!checker->IsTypeIdenticalTo(commonPropType, memberType)) {
                 checker->LogError(diagnostic::MEMBER_TYPE_MISMATCH_ACROSS_UNION, {}, Start());
