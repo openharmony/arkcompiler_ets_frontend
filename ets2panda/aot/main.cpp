@@ -198,23 +198,23 @@ static int Run(Span<const char *const> args)
         return 1;
     }
 
+    int res;
     if (options->GetCompilationMode() == CompilationMode::PROJECT) {
-        diagnosticEngine.FlushDiagnostic();
-        return CompileFromConfig(compiler, options.get(), diagnosticEngine);
-    }
-
-    std::string sourceFile;
-    std::string_view parserInput;
-    if (options->GetCompilationMode() == CompilationMode::GEN_STD_LIB) {
-        sourceFile = "etsstdlib.ets";
-        parserInput = "";
+        res = CompileFromConfig(compiler, options.get(), diagnosticEngine);
     } else {
-        sourceFile = options->SourceFileName();
-        auto [buf, size] = options->CStrParserInputContents();
-        parserInput = std::string_view(buf, size);
+        std::string sourceFile;
+        std::string_view parserInput;
+        if (options->GetCompilationMode() == CompilationMode::GEN_STD_LIB) {
+            sourceFile = "etsstdlib.ets";
+            parserInput = "";
+        } else {
+            sourceFile = options->SourceFileName();
+            auto [buf, size] = options->CStrParserInputContents();
+            parserInput = std::string_view(buf, size);
+        }
+        es2panda::SourceFile input(sourceFile, parserInput, options->IsModule(), options->GetOutput());
+        res = CompileFromSource(compiler, input, *options.get(), diagnosticEngine);
     }
-    es2panda::SourceFile input(sourceFile, parserInput, options->IsModule(), options->GetOutput());
-    auto res = CompileFromSource(compiler, input, *options.get(), diagnosticEngine);
     diagnosticEngine.FlushDiagnostic();
     return res;
 }
