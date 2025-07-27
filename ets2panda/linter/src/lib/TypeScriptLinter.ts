@@ -856,7 +856,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     });
     this.handleDeclarationDestructuring(tsParam);
     this.handleDeclarationInferredType(tsParam);
-    this.handleInvalidIdentifier(tsParam);
+    if (!ts.isArrowFunction(node.parent)) {
+      this.handleInvalidIdentifier(tsParam);
+    }
     this.handleSdkGlobalApi(tsParam);
     const typeNode = tsParam.type;
     if (this.options.arkts2 && typeNode && TsUtils.typeContainsVoid(typeNode)) {

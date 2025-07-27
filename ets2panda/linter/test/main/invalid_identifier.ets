@@ -85,7 +85,7 @@ const implements: string = "implements";
 
 const protected: string = "protected";
 
-const public: string = "public"; 
+const public: string = "public";
 
 const do: string = "do"
 
@@ -134,11 +134,11 @@ const string: string = "hello";
 const void: void = undefined;
 
 class String {
-    
+
     private const: string = "const";
 
     string: string = "hello";
-    
+
     constructor(string: string) {
     }
 
@@ -246,3 +246,8 @@ _as as as
 };
 
 let a = 1;
+
+let records: Record<string, string>[] = [];
+
+records.forEach(Map => {})
+records.forEach(json => {})
