@@ -278,6 +278,10 @@ ets2panda_add_gtest(lsp_api_test_fix_convert_const_to_let CPP_SOURCES
     fix_convert_const_to_let_test.cpp
 )
 
+ets2panda_add_gtest(lsp_api_test_fix_extends_interface_becomes_implements CPP_SOURCES
+    fix_extends_interface_becomes_implements_test.cpp
+)
+
 ets2panda_add_gtest(lsp_api_test_forgotten_this_property_access CPP_SOURCES
     forgotten_this_property_access_test.cpp
 )

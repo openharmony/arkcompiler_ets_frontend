@@ -494,6 +494,7 @@ semantic:
 - name: EXTENDING_UTILITY_TYPE
   id: 176
   message: "The super type of '{}' class is not extensible."
+  code_fix_ids: [extendsInterfaceBecomesImplements]
 
 - name: EXTENDS_NON_OBJECT
   id: 185
