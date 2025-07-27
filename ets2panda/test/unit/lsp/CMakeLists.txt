@@ -259,6 +259,9 @@ ets2panda_add_gtest(lsp_api_test_offset CPP_SOURCES
 ets2panda_add_gtest(lsp_api_test_code_fix_registration CPP_SOURCES
     code_fix_registration_test.cpp
 )
+ets2panda_add_gtest(lsp_api_test_super_must_precede_this CPP_SOURCES
+    fix_class_super_must_precede_this_access_test.cpp
+)
 
 ets2panda_add_gtest(lsp_api_test_fix_return_type_in_async_func CPP_SOURCES
     fix_return_type_in_async_function_test.cpp
