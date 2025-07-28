@@ -16,7 +16,7 @@
 interface A { foo(): void}
 const x: A = {foo() {}}
 
-/* @@? 17:15 Error TypeError: Method 'foo' cannot be used as a key of object literal. */
+/* @@? 17:15 Error TypeError: Class or interface methods cannot be initialized within an object literal. */
 /* @@? 17:18 Error SyntaxError: Unexpected token, expected ':'. */
 /* @@? 17:19 Error SyntaxError: Unexpected token ')'. */
 /* @@? 17:21 Error SyntaxError: Unexpected token. */
