@@ -64,7 +64,7 @@ void BuildOverloadHelperFunction(public_lib::Context *ctx, ir::MethodDefinition 
     auto *varBinder = ctx->checker->VarBinder()->AsETSBinder();
 
     auto const &[minArg, maxArg, needHelperOverload, isDeclare, hasRestVar, returnVoid] = method->GetOverloadInfo();
-    ES2PANDA_ASSERT(needHelperOverload);
+    ES2PANDA_ASSERT(needHelperOverload && method->Function() != nullptr);
 
     auto params = ArenaVector<ir::Expression *>(allocator->Adapter());
     GenerateOverloadHelperParams(ctx, minArg, maxArg, hasRestVar, params);
@@ -77,6 +77,7 @@ void BuildOverloadHelperFunction(public_lib::Context *ctx, ir::MethodDefinition 
         allocator,
         ir::ScriptFunction::ScriptFunctionData {nullptr, ir::FunctionSignature(nullptr, std::move(params), returnAnno),
                                                 functionFlag, method->Function()->Modifiers()});
+    ES2PANDA_ASSERT(func != nullptr && method->Id() != nullptr);
     auto *methodId = ctx->AllocNode<ir::Identifier>(method->Id()->Name(), allocator);
     func->SetIdent(methodId);
     auto *funcExpr = ctx->AllocNode<ir::FunctionExpression>(func);
@@ -85,7 +86,8 @@ void BuildOverloadHelperFunction(public_lib::Context *ctx, ir::MethodDefinition 
                                                                 method->Modifiers(), allocator, false);
 
     method->AddOverload(helperOverload);
-    ES2PANDA_ASSERT(helperOverload->Function());
+    ES2PANDA_ASSERT(helperOverload->Function() != nullptr);
+    ES2PANDA_ASSERT(helperOverload->Id() != nullptr);
     helperOverload->Function()->ClearFlag((ir::ScriptFunctionFlags::OVERLOAD));
     helperOverload->SetParent(method);
 
