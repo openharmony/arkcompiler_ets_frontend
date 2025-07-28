@@ -776,6 +776,15 @@ std::tuple<ForStatementKind, ir::Expression *, ir::Expression *> ParserImpl::Par
     ir::Expression *rightNode = nullptr;
 
     if (lexer_->GetToken().IsForInOf()) {
+        ES2PANDA_ASSERT(initNode != nullptr);
+        if (!initNode->IsVariableDeclaration()) {
+            LogError(diagnostic::INVALID_LEFT_HAND_IN_FOR_OF, {}, lexer_->GetToken().Start());
+            return {forKind, rightNode, updateNode};
+        }
+        if (initNode->AsVariableDeclaration()->Declarators().empty()) {
+            LogError(diagnostic::INVALID_LEFT_HAND_IN_FOR_OF, {}, initNode->Start());
+            return {forKind, rightNode, updateNode};
+        }
         const ir::VariableDeclarator *varDecl = initNode->AsVariableDeclaration()->Declarators().front();
 
         if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_IN) {
@@ -869,6 +878,8 @@ std::tuple<ForStatementKind, ir::AstNode *, ir::Expression *, ir::Expression *> 
 std::tuple<ForStatementKind, ir::AstNode *, ir::Expression *, ir::Expression *> ParserImpl::ParseForInOf(
     ir::Expression *leftNode, ExpressionParseFlags exprFlags, bool isAwait)
 {
+    ES2PANDA_ASSERT(lexer_ != nullptr);
+    ES2PANDA_ASSERT(leftNode != nullptr);
     ir::Expression *updateNode = nullptr;
     ir::Expression *rightNode = nullptr;
     if (lexer_->GetToken().IsForInOf()) {
@@ -1000,6 +1011,8 @@ bool ParserImpl::GetCanBeForInOf(ir::Expression *leftNode, ir::AstNode *initNode
         if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SEMI_COLON) {
             lexer_->NextToken();
             canBeForInOf = false;
+        } else if (!initNode->IsVariableDeclaration()) {
+            LogError(diagnostic::INVALID_LEFT_HAND_IN_FOR_OF);
         } else if (initNode->AsVariableDeclaration()->Declarators().size() > 1 && lexer_->GetToken().IsForInOf()) {
             LogError(diagnostic::INVALID_LEFT_HAND_IN_FOR_OF, {},
                      initNode->AsVariableDeclaration()->Declarators()[1]->Start());
