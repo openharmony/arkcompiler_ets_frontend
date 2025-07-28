@@ -174,6 +174,7 @@ faultDesc[FaultID.AvoidUnionTypes] = 'Union types';
 faultDesc[FaultID.TaggedTemplates] = 'Tagged template';
 faultDesc[FaultID.InvalidIdentifier] = 'Invalid identifiers';
 faultDesc[FaultID.NoImportJsonFile] = 'No import JSON file';
+faultDesc[FaultID.NoImportNamespaceStarAsVar] = 'No import namespace star as var';
 faultDesc[FaultID.ExtendsExpression] = 'Extends Expression';
 faultDesc[FaultID.NumericSemantics] = 'Numeric semantics';
 faultDesc[FaultID.AnimatableExtendDecoratorTransform] = '"@AnimatableExtend" decorator';

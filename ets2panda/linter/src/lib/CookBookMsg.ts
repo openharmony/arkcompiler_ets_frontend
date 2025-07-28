@@ -267,6 +267,7 @@ cookBookTag[237] = 'Array and tuple are different type(arkts-no-tuples-arrays)';
 cookBookTag[238] = 'The static property has no initializer (arkts-class-static-initialization)';
 cookBookTag[239] = 'This keyword cannot be used as identifiers (arkts-invalid-identifier)';
 cookBookTag[245] = 'JSON files cannot be imported (arkts-no-import-json-file)';
+cookBookTag[249] = 'The namespace imported by import * as cannot be used as a variable (arkts-no-import-namespace-with-star-as-var)';
 cookBookTag[251] = '"!!" for bidirectional data binding is not supported (arkui-no-!!-bidirectional-data-binding)';
 cookBookTag[252] = '"$$" for bidirectional data binding is not supported (arkui-no-$$-bidirectional-data-binding)';
 cookBookTag[253] = '"${variable}" for decorator binding is not supported (arkui-link-decorator-passing)';

@@ -4462,6 +4462,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (isNewArkTS && this.tsTypeChecker.isArgumentsSymbol(tsIdentSym)) {
       this.incrementCounters(node, FaultID.ArgumentsObject);
     }
+    this.checkInvalidNamespaceUsage(node);
   }
 
   private handlePropertyDescriptorInScenarios(node: ts.Node): void {
@@ -4533,6 +4534,30 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
     if (matchedApi) {
       this.incrementCounters(tsIdentifier, FaultID.NoPropertyDescriptor);
+    }
+  }
+
+  private checkInvalidNamespaceUsage(node: ts.Identifier): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    if (ts.isNamespaceImport(node.parent)) {
+      return;
+    }
+    const symbol = this.tsTypeChecker.getSymbolAtLocation(node);
+    if (!symbol) {
+      return;
+    }
+    const isNamespace = symbol.declarations?.some((decl) => {
+      return ts.isNamespaceImport(decl);
+    });
+    if (!isNamespace) {
+      return;
+    }
+    const parent = node.parent;
+    const isValidUsage = ts.isPropertyAccessExpression(parent) && parent.expression === node;
+    if (!isValidUsage) {
+      this.incrementCounters(node, FaultID.NoImportNamespaceStarAsVar);
     }
   }
 

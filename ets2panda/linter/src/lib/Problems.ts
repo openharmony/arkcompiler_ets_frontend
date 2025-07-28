@@ -174,6 +174,7 @@ export enum FaultID {
   IncompationbleFunctionType,
   InvalidIdentifier,
   NoImportJsonFile,
+  NoImportNamespaceStarAsVar,
   ExtendsExpression,
   NumericSemantics,
   AnimatableExtendDecoratorTransform,
