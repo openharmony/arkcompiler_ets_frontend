@@ -288,8 +288,9 @@ private:
 
 class TypeStackElement {
 public:
-    explicit TypeStackElement(Checker *checker, void *element, const std::optional<util::DiagnosticWithParams> &diag,
-                              const lexer::SourcePosition &pos, bool isRecursive = false)
+    explicit TypeStackElement(Checker *checker, const void *element,
+                              const std::optional<util::DiagnosticWithParams> &diag, const lexer::SourcePosition &pos,
+                              bool isRecursive = false)
         : checker_(checker), element_(element), isRecursive_(isRecursive)
     {
         if (!checker->typeStack_.insert({element, nullptr}).second) {
@@ -335,7 +336,7 @@ public:
 
 private:
     Checker *checker_;
-    void *element_;
+    const void *element_;
     bool hasErrorChecker_ {false};
     bool isRecursive_;
     bool cleanup_ {true};
