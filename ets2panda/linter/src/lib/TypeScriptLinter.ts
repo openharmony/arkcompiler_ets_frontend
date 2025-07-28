@@ -178,6 +178,7 @@ import { COMMON_UNION_MEMBER_ACCESS_WHITELIST } from './utils/consts/ArktsWhiteA
 import type { BaseClassConstructorInfo, ConstructorParameter, ExtendedIdentifierInfo } from './utils/consts/Types';
 import { ExtendedIdentifierType } from './utils/consts/Types';
 import { STRING_ERROR_LITERAL } from './utils/consts/Literals';
+import { ES_OBJECT } from './utils/consts/ESObject';
 
 export class TypeScriptLinter extends BaseTypeScriptLinter {
   supportedStdCallApiChecker: SupportedStdCallApiChecker;
@@ -3846,11 +3847,12 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
   private checkMethodType(allBaseTypes: ts.Type[], methodName: string, node: ts.MethodDeclaration, isStatic: boolean = false): void {
     for (const baseType of allBaseTypes) {
-      let baseMethod: ts.Symbol | undefined;        
-      if (isStatic) {
-        const constructorType = this.tsTypeChecker.getTypeOfSymbolAtLocation(baseType.getSymbol()!, node);
+      let baseMethod: ts.Symbol | undefined;
+      const symbol =  baseType.getSymbol();        
+      if (isStatic && symbol) {
+        const constructorType = this.tsTypeChecker.getTypeOfSymbolAtLocation(symbol, node);
         baseMethod = constructorType.getProperty(methodName) || 
-                      baseType.getSymbol()?.members?.get(ts.escapeLeadingUnderscores(methodName));
+                      symbol.members?.get(ts.escapeLeadingUnderscores(methodName));
       } else {
         baseMethod = baseType.getProperty(methodName);
       }
@@ -6452,6 +6454,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
   private handleTypeReference(node: ts.Node): void {
     const typeRef = node as ts.TypeReferenceNode;
+    this.handleESObjectUsage(typeRef);
     this.handleBuiltinCtorCallSignature(typeRef);
     this.handleSharedArrayBuffer(typeRef);
     this.handleSdkGlobalApi(typeRef);
@@ -8204,7 +8207,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
   }
 
-  /**
+    /**
    * Ensures classes fully implement all properties from their interfaces.
    */
   private handleInterfaceFieldImplementation(clause: ts.HeritageClause): void {
@@ -13478,6 +13481,19 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       }
     }
     return true;
+  }
+
+    private handleESObjectUsage(typeRef: ts.TypeReferenceNode): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    if (
+      (ts.isIdentifier(typeRef.typeName) && typeRef.typeName.text === ES_OBJECT) ||
+      (ts.isQualifiedName(typeRef.typeName) && typeRef.typeName.right.text === ES_OBJECT)
+    ) {
+      this.incrementCounters(typeRef, FaultID.NoESObjectSupport);
+    }
   }
 
   private handleNodeForBuilderNode(node: ts.TypeReferenceNode | ts.NewExpression): void {

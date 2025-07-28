@@ -271,3 +271,4 @@ faultDesc[FaultID.NoDeprecatedApi] = 'ArkUI deprecated api check';
 faultDesc[FaultID.BuilderNodeGenericNoTuple] = 'Generic of "BuilderNode" does not support tuple"';
 faultDesc[FaultID.BuilderNodeUpdateNoLiteral] = '"update" interface of "BuilderNode" cannot pass an object literal';
 faultDesc[FaultID.BuilderNodeNoNestingBuilderSupported] = '"nestingBuilderSupported" is not supported';
+faultDesc[FaultID.NoESObjectSupport] = 'ESObject type cannot be used';

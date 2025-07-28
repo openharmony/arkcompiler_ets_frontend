@@ -270,6 +270,7 @@ faultsAttrs[FaultID.WrapBuilderGenericNeedArrowFunc] = new FaultAttributes(362);
 faultsAttrs[FaultID.BuilderNodeGenericNoTuple] = new FaultAttributes(363);
 faultsAttrs[FaultID.BuilderNodeUpdateNoLiteral] = new FaultAttributes(364);
 faultsAttrs[FaultID.BuilderNodeNoNestingBuilderSupported] = new FaultAttributes(365);
+faultsAttrs[FaultID.NoESObjectSupport] = new FaultAttributes(366);
 faultsAttrs[FaultID.NosparseArray] = new FaultAttributes(370);
 faultsAttrs[FaultID.NoEnumPropAsType] = new FaultAttributes(371);
 faultsAttrs[FaultID.NoTsLikeSmartType] = new FaultAttributes(372);

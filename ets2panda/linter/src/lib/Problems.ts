@@ -267,6 +267,7 @@ export enum FaultID {
   RepeatDisableVirtualScroll,
   WrappedBuilderGenericNeedArrowFunc,
   WrapBuilderGenericNeedArrowFunc,
+  NoESObjectSupport,
   NoDeprecatedApi,
   BuilderNodeGenericNoTuple,
   BuilderNodeUpdateNoLiteral,
