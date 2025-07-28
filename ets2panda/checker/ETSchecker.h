@@ -453,6 +453,11 @@ public:
                                                               Substitution *substitution);
     [[nodiscard]] bool EnhanceSubstitutionForObject(const ArenaVector<Type *> &typeParams, ETSObjectType *paramType,
                                                     Type *argumentType, Substitution *substitution);
+    [[nodiscard]] bool EnhanceSubstitutionTypeParameter(ETSTypeParameter *paramType, Type *argumentType,
+                                                        Substitution *substitution);
+    [[nodiscard]] bool EnhanceSubstitutionForNonNullish(const ArenaVector<Type *> &typeParams,
+                                                        ETSNonNullishType *paramType, Type *argumentType,
+                                                        Substitution *substitution);
     [[nodiscard]] bool EnhanceSubstitutionForFunction(const ArenaVector<Type *> &typeParams, ETSFunctionType *paramType,
                                                       Type *argumentType, Substitution *substitution);
     [[nodiscard]] bool EnhanceSubstitutionForUnion(const ArenaVector<Type *> &typeParams, ETSUnionType *paramUn,
@@ -974,7 +979,8 @@ public:
     }
 
     // This helper finds the intersection of two callSignatures sets
-    // The result is stored in callSignatures of newly created ETSFunctionType
+    // The result is stored in callSignatures of newly created
+    // ETSFunctionType
     checker::ETSFunctionType *IntersectSignatureSets(const checker::ETSFunctionType *left,
                                                      const checker::ETSFunctionType *right);
 
