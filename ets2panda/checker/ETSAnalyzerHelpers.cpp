@@ -213,7 +213,7 @@ void DoBodyTypeChecking(ETSChecker *checker, ir::MethodDefinition *node, ir::Scr
         checker->AddStatus(checker::CheckerStatus::IN_CONSTRUCTOR);
     }
 
-    if (node->IsExtensionMethod()) {
+    if (node->IsExtensionMethod() && scriptFunc->Signature() != nullptr) {
         CheckExtensionMethod(checker, scriptFunc, node);
     }
 
