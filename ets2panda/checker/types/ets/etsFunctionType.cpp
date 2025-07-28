@@ -79,7 +79,7 @@ static ETSObjectType *FunctionTypeToFunctionalInterfaceType(ETSChecker *checker,
         auto nPosParams = arity < sigParamsSize ? arity : sigParamsSize;
         auto *functionN = checker->GlobalBuiltinFunctionType(nPosParams, true);
         auto *substitution = checker->NewSubstitution();
-        ES2PANDA_ASSERT(functionN != nullptr);
+        ES2PANDA_ASSERT(functionN != nullptr && nPosParams <= functionN->TypeArguments().size());
         ES2PANDA_ASSERT(substitution != nullptr);
         for (size_t i = 0; i < nPosParams; i++) {
             substitution->emplace(functionN->TypeArguments()[i]->AsETSTypeParameter(),
