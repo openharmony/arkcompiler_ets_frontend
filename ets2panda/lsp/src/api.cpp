@@ -51,6 +51,10 @@ DefinitionInfo GetDefinitionAtPosition(es2panda_Context *context, size_t positio
 {
     auto ctx = reinterpret_cast<public_lib::Context *>(context);
     SetPhaseManager(ctx->phaseManager);
+    auto importFilePath = GetImportFilePath(context, position);
+    if (!importFilePath.empty()) {
+        return {importFilePath, 0, 0};
+    }
     auto declInfo = GetDefinitionAtPositionImpl(context, position);
     DefinitionInfo result {};
     if (declInfo.first == nullptr) {

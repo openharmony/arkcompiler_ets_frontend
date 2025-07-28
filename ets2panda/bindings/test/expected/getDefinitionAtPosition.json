@@ -53,5 +53,10 @@
     "fileName": "taskpool.ets",
     "start": 686,
     "length": 4
+  },
+  "12": {
+    "fileName": "getDefinitionAtPosition1.ets",
+    "start": 0,
+    "length": 0
   }
 }

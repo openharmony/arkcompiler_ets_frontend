@@ -140,6 +140,7 @@ ir::Identifier *GetIdentFromNewClassExprPart(const ir::Expression *value);
 varbinder::Decl *FindDeclInFunctionScope(varbinder::Scope *scope, const util::StringView &name);
 varbinder::Decl *FindDeclInGlobalScope(varbinder::Scope *scope, const util::StringView &name);
 varbinder::Decl *FindDeclInScopeWithFallback(varbinder::Scope *scope, const util::StringView &name);
+std::string GetImportFilePath(es2panda_Context *context, size_t pos);
 
 }  // namespace ark::es2panda::lsp
 
