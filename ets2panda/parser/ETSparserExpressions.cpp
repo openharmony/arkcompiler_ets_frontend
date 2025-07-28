@@ -821,6 +821,14 @@ void ETSParser::ValidateInstanceOfExpression(ir::Expression *expr)
 // NOLINTNEXTLINE(google-default-arguments)
 ir::Expression *ETSParser::ParseExpression(ExpressionParseFlags flags)
 {
+    TrackRecursive trackRecursive(RecursiveCtx());
+    if (!trackRecursive) {
+        LogError(diagnostic::DEEP_NESTING);
+        while (Lexer()->GetToken().Type() != lexer::TokenType::EOS) {
+            Lexer()->NextToken();
+        }
+        return AllocBrokenExpression(Lexer()->GetToken().Loc());
+    }
     ArenaVector<ir::AnnotationUsage *> annotations {Allocator()->Adapter()};
     if (Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_AT)) {
         annotations = ParseAnnotations(false);
