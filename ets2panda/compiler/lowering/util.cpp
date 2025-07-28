@@ -92,6 +92,9 @@ ir::AstNode *RefineSourceRanges(ir::AstNode *node)
 void ClearTypesVariablesAndScopes(ir::AstNode *node) noexcept
 {
     std::function<void(ir::AstNode *)> doNode = [&](ir::AstNode *nn) {
+        if (nn->IsOpaqueTypeNode()) {
+            return;
+        }
         if (nn->IsScopeBearer()) {
             nn->ClearScope();
         }
