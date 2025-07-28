@@ -262,6 +262,11 @@ public:
         return (flags_ & flag) != 0;
     }
 
+    bool IsInterface() const
+    {
+        return HasObjectFlag(ETSObjectFlags::INTERFACE);
+    }
+
     bool IsETSStringLiteralType() const
     {
         return superType_ != nullptr && superType_->IsETSObjectType() &&
