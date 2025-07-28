@@ -303,6 +303,7 @@ semantic:
 - name: CTOR_MISSING_SUPER_CALL
   id: 192
   message: "Must call super constructor"
+  code_fix_ids: [ConstructorDerivedNeedSuper]
 
 - name: CTOR_REF_INVALID_CTX_GLOBAL
   id: 203
