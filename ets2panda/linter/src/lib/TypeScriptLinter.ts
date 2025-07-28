@@ -2109,6 +2109,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (tsFunctionDeclaration.body) {
       this.reportThisKeywordsInScope(tsFunctionDeclaration.body);
     }
+    if (this.options.arkts2) {
+      this.handleParamType(tsFunctionDeclaration);
+    }
     const funcDeclParent = tsFunctionDeclaration.parent;
     if (!ts.isSourceFile(funcDeclParent) && !ts.isModuleBlock(funcDeclParent)) {
       const autofix = this.autofixer?.fixNestedFunction(tsFunctionDeclaration);
@@ -2143,6 +2146,15 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       tsFunctionDeclaration,
       FaultID.SendableFunctionImportedVariables
     );
+  }
+
+  private handleParamType(decl: ts.FunctionLikeDeclaration): void {
+    for (const param of decl.parameters) {
+      if (param.type) {
+        continue;
+      }
+      this.incrementCounters(param, FaultID.ParameterType);
+    }
   }
 
   private handleMissingReturnType(
@@ -3733,6 +3745,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
           break;
         }
       }
+    }
+    if (this.options.arkts2) {
+      this.handleParamType(tsMethodDecl);
     }
     if (tsMethodDecl.body && isStatic) {
       this.reportThisKeywordsInScope(tsMethodDecl.body);

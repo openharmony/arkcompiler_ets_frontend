@@ -79,6 +79,7 @@ export enum FaultID {
   ImportAssignment,
   GenericCallNoTypeArgs,
   ParameterProperties,
+  ParameterType,
   InstanceofUnsupported,
   ShorthandAmbientModuleDecl,
   WildcardsInModuleName,

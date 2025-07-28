@@ -4150,7 +4150,7 @@ export class Autofixer {
     return undefined;
   }
 
-    private static findParentVariableDeclaration(node: ts.Node): ts.VariableDeclaration | undefined {
+  private static findParentVariableDeclaration(node: ts.Node): ts.VariableDeclaration | undefined {
     while (node) {
       if (ts.isVariableDeclaration(node)) {
         return node;
@@ -5356,11 +5356,9 @@ export class Autofixer {
   }
 
   fixSideEffectImport(importDeclNode: ts.ImportDeclaration): Autofix[] {
-    const initModuleCall = ts.factory.createCallExpression(
-      ts.factory.createIdentifier("initModule"),
-      undefined,
-      [importDeclNode.moduleSpecifier]
-    );
+    const initModuleCall = ts.factory.createCallExpression(ts.factory.createIdentifier('initModule'), undefined, [
+      importDeclNode.moduleSpecifier
+    ]);
     const expressionStatement = ts.factory.createExpressionStatement(initModuleCall);
     const replacedText = this.printer.printNode(
       ts.EmitHint.Unspecified,
@@ -5368,10 +5366,12 @@ export class Autofixer {
       importDeclNode.getSourceFile()
     );
 
-    return [{
-      start: importDeclNode.getStart(),
-      end: importDeclNode.getEnd(),
-      replacementText: replacedText
-    }];
+    return [
+      {
+        start: importDeclNode.getStart(),
+        end: importDeclNode.getEnd(),
+        replacementText: replacedText
+      }
+    ];
   }
 }

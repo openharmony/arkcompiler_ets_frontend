@@ -25,10 +25,50 @@
             "severity": "ERROR"
         },
         {
+            "line": 49,
+            "column": 9,
+            "endLine": 49,
+            "endColumn": 66,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 50,
+            "column": 9,
+            "endLine": 50,
+            "endColumn": 90,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
             "line": 57,
             "column": 23,
             "endLine": 57,
             "endColumn": 30,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 84,
+            "column": 9,
+            "endLine": 84,
+            "endColumn": 54,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 85,
+            "column": 9,
+            "endLine": 85,
+            "endColumn": 90,
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",

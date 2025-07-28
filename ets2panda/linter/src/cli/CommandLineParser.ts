@@ -218,7 +218,7 @@ function getConfigureRulePath(options: OptionValues): string {
   }
   const stats = fs.statSync(path.normalize(options.ruleConfig));
   if (!stats.isFile()) {
-    Logger.error(`The file at ${options.ruleConfigPath} path does not exist! 
+    Logger.error(`The file at ${options.ruleConfigPath} path does not exist!
           And will use the default configure rule`);
     return getDefaultConfigurePath();
   }

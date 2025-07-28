@@ -29,6 +29,26 @@
             "column": 23,
             "endLine": 22,
             "endColumn": 30,
+            "problem": "ParameterType",
+            "suggest": "",
+            "rule": "Type of parameter must be defined explicitly (arkts-require-func-arg-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 22,
+            "column": 23,
+            "endLine": 22,
+            "endColumn": 30,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 49,
+            "column": 9,
+            "endLine": 49,
+            "endColumn": 66,
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
@@ -39,19 +59,9 @@
             "column": 9,
             "endLine": 50,
             "endColumn": 90,
-            "problem": "NumericSemantics",
+            "problem": "AnyType",
             "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 50,
-            "column": 23,
-            "endLine": 50,
-            "endColumn": 90,
-            "problem": "SdkAbilityLifecycleMonitor",
-            "suggest": "",
-            "rule": "The UIAbility of 1.2 needs to be listened by the new StaticAbilityLifecycleCallback. The original AbilityLifecycleCallback can only listen to the UIAbility of 1.1 (sdk-ability-lifecycle-monitor)",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
             "severity": "ERROR"
         },
         {
@@ -69,9 +79,39 @@
             "column": 23,
             "endLine": 57,
             "endColumn": 30,
+            "problem": "ParameterType",
+            "suggest": "",
+            "rule": "Type of parameter must be defined explicitly (arkts-require-func-arg-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 57,
+            "column": 23,
+            "endLine": 57,
+            "endColumn": 30,
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 84,
+            "column": 9,
+            "endLine": 84,
+            "endColumn": 54,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 84,
+            "column": 34,
+            "endLine": 84,
+            "endColumn": 52,
+            "problem": "DynamicCtorCall",
+            "suggest": "",
+            "rule": "\"new\" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)",
             "severity": "ERROR"
         },
         {
@@ -79,19 +119,9 @@
             "column": 9,
             "endLine": 85,
             "endColumn": 90,
-            "problem": "NumericSemantics",
+            "problem": "AnyType",
             "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 85,
-            "column": 23,
-            "endLine": 85,
-            "endColumn": 90,
-            "problem": "SdkAbilityLifecycleMonitor",
-            "suggest": "",
-            "rule": "The UIAbility of 1.2 needs to be listened by the new StaticAbilityLifecycleCallback. The original AbilityLifecycleCallback can only listen to the UIAbility of 1.1 (sdk-ability-lifecycle-monitor)",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
             "severity": "ERROR"
         }
     ]
