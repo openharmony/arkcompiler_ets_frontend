@@ -578,7 +578,7 @@ ir::AstNode *ETSParser::ParseInnerTypeDeclaration(ir::ModifierFlags memberModifi
     Lexer()->GetToken().SetTokenType(Lexer()->GetToken().KeywordType());
     ir::AstNode *typeDecl = ParseTypeDeclaration(true);
     if (typeDecl == nullptr) {
-        return nullptr;
+        return AllocBrokenStatement({savedPos.GetToken().Start(), Lexer()->GetToken().End()});
     }
     memberModifiers &= (ir::ModifierFlags::PUBLIC | ir::ModifierFlags::PROTECTED | ir::ModifierFlags::PRIVATE |
                         ir::ModifierFlags::INTERNAL);
