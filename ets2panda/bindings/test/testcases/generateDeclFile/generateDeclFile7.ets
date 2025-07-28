@@ -69,7 +69,7 @@ function getCurrentValue(): DataValue {
 function getFirstValue(): number {
   let currentFirstValue: DataValue = {
     a: 23,
-    b: '124f',
+    b: '124.0f',
     c: 'gfr',
     d: 767
   };
