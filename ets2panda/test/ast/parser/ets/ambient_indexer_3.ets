@@ -29,4 +29,4 @@ function main() {
 /* @@? 17:20 Error SyntaxError: Return type of index signature from exported class or interface need to be identifier. */
 /* @@? 17:20 Error SyntaxError: Unexpected token ']'. */
 /* @@? 17:22 Error SyntaxError: Unexpected token ':'. */
-/* @@? 17:30 Error SyntaxError: Field type annotation expected. */
+/* @@? 17:24 Error SyntaxError: string is a predefined type, cannot be used as an identifier */
