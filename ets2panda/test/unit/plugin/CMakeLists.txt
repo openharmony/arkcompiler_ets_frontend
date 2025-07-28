@@ -108,6 +108,8 @@ set(PLUGIN_TESTS
     "use_plugin_to_test_column_number compile.ets ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
     "plugin_proceed_to_state_check_jsdoc compile.ets ${EXPECTED_MODE} cpp ${EXECUTABLE_PLUGIN}"
     "plugin_proceed_to_state_parse_and_verifier_position compile.ets ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
+    "plugin_proceed_to_state_check_recheck_opaque_type_node compile.ets ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
+    "plugin_proceed_to_state_check_recheck_create_opaque_type compile.ets ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
     "plugin_proceed_to_state_check_recheck_trailinglambda compile.ets ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
     "plugin_proceed_to_state_test_global_func_call_dump compile.ets ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
     "plugin_proceed_to_state_test_interface_duplicate_setter compile.ets ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
