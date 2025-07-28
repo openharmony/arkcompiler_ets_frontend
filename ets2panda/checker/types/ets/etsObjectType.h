@@ -434,10 +434,11 @@ private:
 
     /* Properties and construct signatures are instantiated lazily. */
     void InstantiateProperties() const;
+    void CheckAndInstantiateProperties() const;
     void EnsurePropertiesInstantiated() const
     {
         if (!propertiesInstantiated_) {
-            InstantiateProperties();
+            CheckAndInstantiateProperties();
             propertiesInstantiated_ = true;
         }
     }
