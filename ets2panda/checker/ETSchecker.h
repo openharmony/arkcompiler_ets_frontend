@@ -229,6 +229,7 @@ public:
     ETSTypeParameter *SetUpParameterType(ir::TSTypeParameter *param);
     void GetInterfacesOfClass(ETSObjectType *type, ArenaVector<ETSObjectType *> &interfaces);
     void CheckIfOverrideIsValidInInterface(ETSObjectType *classType, Signature *sig, Signature *sigFunc);
+    void CheckDynamicInheritanceAndImplement(ETSObjectType *const interfaceOrClassType);
     void CheckFunctionRedeclarationInInterface(ETSObjectType *classType, ArenaVector<Signature *> &similarSignatures,
                                                Signature *sigFunc);
     void ValidateAbstractMethodsToBeImplemented(ArenaVector<ETSFunctionType *> &abstractsToBeImplemented,

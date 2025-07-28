@@ -21,11 +21,11 @@ import { A, I, Animal } from "dynamic_import_tests/modules/module"
 
 let a = /* @@ label */new Animal() // CTE
 
-class Bird extends Animal { // OK
+class Bird extends Animal /* @@ label1 */{ // OK
     move(): void { }
 }
 
-class C extends A {
+class C extends A /* @@ label2 */{
     override foo(p: double): string {
     } //ok
 } // ok
@@ -33,12 +33,12 @@ class C extends A {
 let c = new C()
 c.f1 // ok
 C.f2 // ok
-c./* @@ label1 */f3 // cte
+c./* @@ label3 */f3 // cte
 c.foo(123) // ok
 C.bar() // ok
-c./* @@ label2 */foa() //cte
+c./* @@ label4 */foa() //cte
 
-class C1 implements I { // ok
+class C1 implements I /* @@ label5 */{ // ok
     s: string
     f1(p: string): double {
         return 12
@@ -50,13 +50,16 @@ class C1 implements I { // ok
 
 function foo(i: I) {
     i.s // ok
-    i./* @@ label3 */n // cte
+    i./* @@ label6 */n // cte
     i.f1("") // ok
-    i./* @@ label4 */f3() // cte
+    i./* @@ label7 */f3() // cte
 }
 
 /* @@@ label Error TypeError: Animal is abstract therefore cannot be instantiated. */
-/* @@@ label1 Error TypeError: Property 'f3' does not exist on type 'C' */
-/* @@@ label2 Error TypeError: Property 'foa' does not exist on type 'C' */
-/* @@@ label3 Error TypeError: Property 'n' does not exist on type 'I' */
-/* @@@ label4 Error TypeError: Property 'f3' does not exist on type 'I' */
+/* @@@ label1 Error TypeError: class Bird can not extends class Animal which is from dynamic declaration file. */
+/* @@@ label2 Error TypeError: class C can not extends class A which is from dynamic declaration file. */
+/* @@@ label3 Error TypeError: Property 'f3' does not exist on type 'C' */
+/* @@@ label4 Error TypeError: Property 'foa' does not exist on type 'C' */
+/* @@@ label5 Error TypeError: class C1 can not implements interface I which is from dynamic declaration file. */
+/* @@@ label6 Error TypeError: Property 'n' does not exist on type 'I' */
+/* @@@ label7 Error TypeError: Property 'f3' does not exist on type 'I' */
