@@ -939,6 +939,7 @@ semantic:
 - name: MISSING_RETURN_STMT
   id: 103
   message: "Function with a non void return type must return a value."
+  code_fix_ids: [FixAddFunctionReturnStatement]
 
 - name: MISSING_RETURN_TYPE
   id: 18
