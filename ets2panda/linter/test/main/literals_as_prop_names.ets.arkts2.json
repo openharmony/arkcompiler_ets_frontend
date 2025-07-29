@@ -755,6 +755,26 @@
             "severity": "ERROR"
         },
         {
+            "line": 170,
+            "column": 3,
+            "endLine": 170,
+            "endColumn": 18,
+            "problem": "LiteralAsPropertyName",
+            "suggest": "",
+            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 174,
+            "column": 20,
+            "endLine": 174,
+            "endColumn": 41,
+            "problem": "UnsupportPropNameFromValue",
+            "suggest": "",
+            "rule": "Enum cannot get member name by member value (arkts-enum-no-props-by-index)",
+            "severity": "ERROR"
+        },
+        {
             "line": 115,
             "column": 2,
             "endLine": 115,

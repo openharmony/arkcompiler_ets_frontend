@@ -1033,8 +1033,10 @@ export class Autofixer {
     if (this.renameSymbolAsIdentifierCache.has(symbol)) {
       return this.renameSymbolAsIdentifierCache.get(symbol);
     }
-
-    if (!TsUtils.isPropertyOfInternalClassOrInterface(symbol)) {
+    if (
+      !TsUtils.isPropertyOfInternalClassOrInterface(symbol) &&
+      !(enumMember?.parent && ts.isEnumDeclaration(enumMember.parent))
+    ) {
       this.renameSymbolAsIdentifierCache.set(symbol, undefined);
       return undefined;
     }
