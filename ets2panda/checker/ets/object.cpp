@@ -52,6 +52,8 @@
 
 namespace ark::es2panda::checker {
 
+static constexpr std::string_view SET_PROTOTYPE_OF = "setPrototypeOf";
+
 static bool CheckGetterSetterDecl(varbinder::LocalVariable const *child, varbinder::LocalVariable const *parent)
 {
     auto readonlyCheck = [](varbinder::LocalVariable const *var, bool isParent, bool isReadonly) {
@@ -1954,7 +1956,11 @@ void ETSChecker::ValidateResolvedProperty(varbinder::LocalVariable **property, c
 
     auto *newProp = target->GetProperty(ident->Name(), newFlags);
     if (newProp == nullptr) {
-        LogError(diagnostic::PROPERTY_NONEXISTENT, {ident->Name(), target->Name()}, ident->Start());
+        if (ident->Name() == SET_PROTOTYPE_OF) {
+            LogError(diagnostic::ERROR_ARKTS_NO_RUNTIME_PROTOTYPE_INHERITANCE, {}, ident->Start());
+        } else {
+            LogError(diagnostic::PROPERTY_NONEXISTENT, {ident->Name(), target->Name()}, ident->Start());
+        }
         return;
     }
 
