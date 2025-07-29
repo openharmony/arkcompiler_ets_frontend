@@ -408,6 +408,7 @@ void GlobalClassHandler::SetupGlobalClass(const ArenaVector<parser::Program *> &
     globalDecl->SetParent(globalProgram->Ast());
     globalClass->SetGlobalInitialized();
     CollectProgramGlobalClasses(globalProgram, namespaces);
+    TransformBrokenNamespace(globalProgram->Ast(), globalProgram);
     auto initializerBlockStmts =
         FormInitStaticBlockMethodStatements(globalProgram, moduleDependencies, std::move(initializerBlock));
     CollectExportedClasses(globalProgram, globalClass, globalProgram->Ast()->Statements());
