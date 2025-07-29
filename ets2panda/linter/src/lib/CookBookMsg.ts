@@ -102,8 +102,8 @@ cookBookTag[71] = 'The comma operator "," is supported only in "for" loops (arkt
 cookBookTag[72] = '';
 cookBookTag[73] = '';
 cookBookTag[74] = 'Destructuring variable declarations are not supported (arkts-no-destruct-decls)';
-cookBookTag[75] = '';
-cookBookTag[76] = '';
+cookBookTag[75] = 'Use string-literal keys with Record (arkts-obj-literal-key-type)';
+cookBookTag[76] = 'Type of parameter must be defined explicitly (arkts-require-func-arg-type)';
 cookBookTag[77] = '';
 cookBookTag[78] = '';
 cookBookTag[79] = 'Type annotation in catch clause is not supported (arkts-no-types-in-catch)';
@@ -178,7 +178,8 @@ cookBookTag[144] = 'Usage of standard library is restricted (arkts-limited-stdli
 cookBookTag[145] = 'Strict type checking is enforced (arkts-strict-typing)';
 cookBookTag[146] = 'Switching off type checks with in-place comments is not allowed (arkts-strict-typing-required)';
 cookBookTag[147] = 'No dependencies on TypeScript code are currently allowed (arkts-no-ts-deps)';
-cookBookTag[148] = '';
+cookBookTag[148] =
+  'Overriding with "readonly" field is not allowed when base field is not "readonly" (arkts-no-class-add-super-prop-with-readonly)';
 cookBookTag[149] = 'Classes cannot be used as objects (arkts-no-classes-as-obj)';
 cookBookTag[150] = '"import" statements after other statements are not allowed (arkts-no-misplaced-imports)';
 cookBookTag[151] = 'Usage of \'ESValue\' type is restricted (arkts-limited-esobj)';
@@ -250,8 +251,7 @@ cookBookTag[206] = '"debugger" is not supported (arkts-no-debugger)';
 cookBookTag[207] = 'Special arguments object inside functions are not supported (arkts-no-arguments-obj)';
 cookBookTag[208] = 'Tagged templates are not supported (arkts-no-tagged-templates)';
 cookBookTag[209] = 'The index expression must be of a numeric type (arkts-array-index-expr-type)';
-cookBookTag[210] =
-  'The switch expression type must be of type char, byte, short, int, long, string or enum (arkts-switch-expr)';
+cookBookTag[210] = 'The switch expression type must be of type number, string or enum (arkts-switch-expr)';
 cookBookTag[211] = 'No two case constant expressions have identical values.(arkts-case-expr)';
 cookBookTag[212] = 'The index expression must be zero or positive value.(arkts-array-index-negative)';
 cookBookTag[213] = 'Class cannot have static codeblocks. (arkts-class-lazy-import)';
@@ -377,7 +377,13 @@ cookBookTag[359] = '"@LocalBuilder" Decorator is not supported (arkui-no-localbu
 cookBookTag[360] =
   '"Repeat" natively supports virtual scrolling capability in ArkTS1.2, so the default virtual scrolling should be disabled (arkui-repeat-disable-default-virtualscroll)';
 cookBookTag[361] =
-  'When using "WrappedBuilder" and "wrapBuilder", generics are required and must be declared as arrow function (arkui-wrapbuilder-require-arrow-func-generic)';
+  'When using "WrappedBuilder", generics are required and must be declared as arrow function (arkui-wrappedbuilder-require-arrow-func-generic)';
+cookBookTag[362] =
+  'When using "wrapBuilder", generics must be declared as arrow function (arkui-wrapbuilder-require-arrow-func-generic)';
+cookBookTag[363] = 'The generic of "BuilderNode" does not accept tuple (arkui-buildernode-generic-no-tuple)';
+cookBookTag[364] =
+  'The "update" interface of "BuilderNode" does not accept an object literal. Please replace it with an instance of the class specified in the generic when creating a new "BuilderNode", and ensure that the instance has the same field values as the literal (arkui-buildernode-update-no-literal)';
+cookBookTag[365] = 'Property "nestingBuilderSupported" is not supported (arkui-buildernode-no-nestingbuildersupported)';
 cookBookTag[370] = 'Sparse array is not supported in ArkTS1.2 (arkts-no-sparse-array)';
 cookBookTag[371] = 'Enum elements cannot be types in ArkTS1.2 (arkts-no-enum-prop-as-type)';
 cookBookTag[372] = 'Smart type differences (arkts-no-ts-like-smart-type)';

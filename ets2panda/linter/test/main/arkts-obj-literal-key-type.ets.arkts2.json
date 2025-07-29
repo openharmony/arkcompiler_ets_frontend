@@ -1,0 +1,178 @@
+{
+    "copyright": [
+      "Copyright (c) 2025 Huawei Device Co., Ltd.",
+      "Licensed under the Apache License, Version 2.0 (the 'License');",
+      "you may not use this file except in compliance with the License.",
+      "You may obtain a copy of the License at",
+      "",
+      "http://www.apache.org/licenses/LICENSE-2.0",
+      "",
+      "Unless required by applicable law or agreed to in writing, software",
+      "distributed under the License is distributed on an 'AS IS' BASIS,",
+      "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+      "See the License for the specific language governing permissions and",
+      "limitations under the License."
+    ],
+    "result": [
+    {
+      "line": 23,
+      "column": 25,
+      "endLine": 23,
+      "endColumn": 27,
+      "problem": "NumericSemantics",
+      "suggest": "",
+      "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 27,
+      "column": 28,
+      "endLine": 27,
+      "endColumn": 31,
+      "problem": "NumericSemantics",
+      "suggest": "",
+      "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 28,
+      "column": 25,
+      "endLine": 28,
+      "endColumn": 27,
+      "problem": "NumericSemantics",
+      "suggest": "",
+      "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 31,
+      "column": 13,
+      "endLine": 31,
+      "endColumn": 18,
+      "problem": "LiteralAsPropertyName",
+      "suggest": "",
+      "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 31,
+      "column": 20,
+      "endLine": 31,
+      "endColumn": 22,
+      "problem": "NumericSemantics",
+      "suggest": "",
+      "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 33,
+      "column": 35,
+      "endLine": 33,
+      "endColumn": 42,
+      "problem": "ObjectLiteralKeyType",
+      "suggest": "",
+      "rule": "Use string-literal keys with Record (arkts-obj-literal-key-type)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 33,
+      "column": 33,
+      "endLine": 33,
+      "endColumn": 34,
+      "problem": "ObjectLiteralNoContextType",
+      "suggest": "",
+      "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 33,
+      "column": 40,
+      "endLine": 33,
+      "endColumn": 42,
+      "problem": "NumericSemantics",
+      "suggest": "",
+      "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 35,
+      "column": 13,
+      "endLine": 35,
+      "endColumn": 19,
+      "problem": "LiteralAsPropertyName",
+      "suggest": "",
+      "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 35,
+      "column": 31,
+      "endLine": 35,
+      "endColumn": 36,
+      "problem": "LiteralAsPropertyName",
+      "suggest": "",
+      "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 35,
+      "column": 39,
+      "endLine": 35,
+      "endColumn": 41,
+      "problem": "NumericSemantics",
+      "suggest": "",
+      "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 37,
+      "column": 34,
+      "endLine": 37,
+      "endColumn": 46,
+      "problem": "ObjectLiteralKeyType",
+      "suggest": "",
+      "rule": "Use string-literal keys with Record (arkts-obj-literal-key-type)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 37,
+      "column": 48,
+      "endLine": 37,
+      "endColumn": 55,
+      "problem": "ObjectLiteralKeyType",
+      "suggest": "",
+      "rule": "Use string-literal keys with Record (arkts-obj-literal-key-type)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 37,
+      "column": 33,
+      "endLine": 37,
+      "endColumn": 34,
+      "problem": "ObjectLiteralNoContextType",
+      "suggest": "",
+      "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 37,
+      "column": 43,
+      "endLine": 37,
+      "endColumn": 46,
+      "problem": "NumericSemantics",
+      "suggest": "",
+      "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 37,
+      "column": 53,
+      "endLine": 37,
+      "endColumn": 55,
+      "problem": "NumericSemantics",
+      "suggest": "",
+      "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+      "severity": "ERROR"
+    }
+  ]
+}

@@ -37,6 +37,7 @@ export enum FaultID {
   FunctionExpression,
   IntersectionType,
   ObjectTypeLiteral,
+  ObjectLiteralKeyType,
   CommaOperator,
   LimitedReturnTypeInference,
   ClassExpression,
@@ -57,6 +58,7 @@ export enum FaultID {
   ConditionalType,
   MappedType,
   NamespaceAsObject,
+  NoClassSuperPropReadonly,
   ClassAsObject,
   ClassAsObjectError,
   NonDeclarationInNamespace,
@@ -78,6 +80,7 @@ export enum FaultID {
   ImportAssignment,
   GenericCallNoTypeArgs,
   ParameterProperties,
+  ParameterType,
   InstanceofUnsupported,
   ShorthandAmbientModuleDecl,
   WildcardsInModuleName,
@@ -261,7 +264,11 @@ export enum FaultID {
   PromiseVoidNeedResolveArg,
   RepeatDisableVirtualScroll,
   WrappedBuilderGenericNeedArrowFunc,
+  WrapBuilderGenericNeedArrowFunc,
   NoDeprecatedApi,
+  BuilderNodeGenericNoTuple,
+  BuilderNodeUpdateNoLiteral,
+  BuilderNodeNoNestingBuilderSupported,
   // this should always be last enum
   LAST_ID
 }

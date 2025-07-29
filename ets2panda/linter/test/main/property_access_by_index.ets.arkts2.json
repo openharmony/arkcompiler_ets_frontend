@@ -868,7 +868,7 @@
             "line": 177,
             "column": 23,
             "endLine": 177,
-            "endColumn": 34,
+            "endColumn": 44,
             "problem": "NoNeedStdLibSendableContainer",
             "suggest": "",
             "rule": "Sendable containers are not supported (arkts-no-need-stdlib-sendable-containers)",

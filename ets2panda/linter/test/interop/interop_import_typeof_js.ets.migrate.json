@@ -16,78 +16,38 @@
     "result": [
         {
             "line": 16,
-            "column": 5,
+            "column": 1,
             "endLine": 16,
-            "endColumn": 70,
-            "problem": "AnyType",
+            "endColumn": 69,
+            "problem": "InterOpImportJs",
             "suggest": "",
-            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
             "severity": "ERROR"
         },
         {
             "line": 17,
-            "column": 5,
+            "column": 1,
             "endLine": 17,
-            "endColumn": 74,
-            "problem": "AnyType",
+            "endColumn": 54,
+            "problem": "InterOpImportJs",
             "suggest": "",
-            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
             "severity": "ERROR"
         },
         {
             "line": 18,
-            "column": 5,
+            "column": 1,
             "endLine": 18,
-            "endColumn": 68,
-            "problem": "AnyType",
+            "endColumn": 55,
+            "problem": "InterOpImportJs",
             "suggest": "",
-            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 19,
-            "column": 5,
-            "endLine": 19,
-            "endColumn": 74,
-            "problem": "AnyType",
-            "suggest": "",
-            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 20,
-            "column": 5,
-            "endLine": 20,
-            "endColumn": 70,
-            "problem": "AnyType",
-            "suggest": "",
-            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
             "severity": "ERROR"
         },
         {
             "line": 21,
             "column": 5,
             "endLine": 21,
-            "endColumn": 69,
-            "problem": "AnyType",
-            "suggest": "",
-            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 22,
-            "column": 5,
-            "endLine": 22,
-            "endColumn": 70,
-            "problem": "AnyType",
-            "suggest": "",
-            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 25,
-            "column": 5,
-            "endLine": 25,
             "endColumn": 25,
             "problem": "AnyType",
             "suggest": "",
@@ -95,9 +55,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 33,
+            "line": 29,
             "column": 5,
-            "endLine": 33,
+            "endLine": 29,
             "endColumn": 35,
             "problem": "AnyType",
             "suggest": "",
@@ -105,9 +65,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 39,
+            "line": 35,
             "column": 5,
-            "endLine": 39,
+            "endLine": 35,
             "endColumn": 37,
             "problem": "AnyType",
             "suggest": "",
@@ -115,9 +75,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 40,
+            "line": 36,
             "column": 5,
-            "endLine": 40,
+            "endLine": 36,
             "endColumn": 42,
             "problem": "AnyType",
             "suggest": "",
@@ -125,9 +85,29 @@
             "severity": "ERROR"
         },
         {
-            "line": 53,
+            "line": 42,
+            "column": 10,
+            "endLine": 42,
+            "endColumn": 30,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 47,
+            "column": 21,
+            "endLine": 47,
+            "endColumn": 41,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 49,
             "column": 7,
-            "endLine": 53,
+            "endLine": 49,
             "endColumn": 13,
             "problem": "InvalidIdentifier",
             "suggest": "",

@@ -21,27 +21,7 @@
             "endColumn": 52,
             "problem": "WrappedBuilderGenericNeedArrowFunc",
             "suggest": "",
-            "rule": "When using \"WrappedBuilder\" and \"wrapBuilder\", generics are required and must be declared as arrow function (arkui-wrapbuilder-require-arrow-func-generic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 29,
-            "column": 58,
-            "endLine": 29,
-            "endColumn": 80,
-            "problem": "WrappedBuilderGenericNeedArrowFunc",
-            "suggest": "",
-            "rule": "When using \"WrappedBuilder\" and \"wrapBuilder\", generics are required and must be declared as arrow function (arkui-wrapbuilder-require-arrow-func-generic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 29,
-            "column": 82,
-            "endLine": 29,
-            "endColumn": 106,
-            "problem": "WrappedBuilderGenericNeedArrowFunc",
-            "suggest": "",
-            "rule": "When using \"WrappedBuilder\" and \"wrapBuilder\", generics are required and must be declared as arrow function (arkui-wrapbuilder-require-arrow-func-generic)",
+            "rule": "When using \"WrappedBuilder\", generics are required and must be declared as arrow function (arkui-wrappedbuilder-require-arrow-func-generic)",
             "severity": "ERROR"
         },
         {
@@ -51,7 +31,7 @@
             "endColumn": 52,
             "problem": "WrappedBuilderGenericNeedArrowFunc",
             "suggest": "",
-            "rule": "When using \"WrappedBuilder\" and \"wrapBuilder\", generics are required and must be declared as arrow function (arkui-wrapbuilder-require-arrow-func-generic)",
+            "rule": "When using \"WrappedBuilder\", generics are required and must be declared as arrow function (arkui-wrappedbuilder-require-arrow-func-generic)",
             "severity": "ERROR"
         },
         {
@@ -59,9 +39,9 @@
             "column": 58,
             "endLine": 30,
             "endColumn": 98,
-            "problem": "WrappedBuilderGenericNeedArrowFunc",
+            "problem": "WrapBuilderGenericNeedArrowFunc",
             "suggest": "",
-            "rule": "When using \"WrappedBuilder\" and \"wrapBuilder\", generics are required and must be declared as arrow function (arkui-wrapbuilder-require-arrow-func-generic)",
+            "rule": "When using \"wrapBuilder\", generics must be declared as arrow function (arkui-wrapbuilder-require-arrow-func-generic)",
             "severity": "ERROR"
         },
         {
@@ -69,9 +49,9 @@
             "column": 100,
             "endLine": 30,
             "endColumn": 142,
-            "problem": "WrappedBuilderGenericNeedArrowFunc",
+            "problem": "WrapBuilderGenericNeedArrowFunc",
             "suggest": "",
-            "rule": "When using \"WrappedBuilder\" and \"wrapBuilder\", generics are required and must be declared as arrow function (arkui-wrapbuilder-require-arrow-func-generic)",
+            "rule": "When using \"wrapBuilder\", generics must be declared as arrow function (arkui-wrapbuilder-require-arrow-func-generic)",
             "severity": "ERROR"
         },
         {
@@ -81,7 +61,7 @@
             "endColumn": 52,
             "problem": "WrappedBuilderGenericNeedArrowFunc",
             "suggest": "",
-            "rule": "When using \"WrappedBuilder\" and \"wrapBuilder\", generics are required and must be declared as arrow function (arkui-wrapbuilder-require-arrow-func-generic)",
+            "rule": "When using \"WrappedBuilder\", generics are required and must be declared as arrow function (arkui-wrappedbuilder-require-arrow-func-generic)",
             "severity": "ERROR"
         },
         {
@@ -91,7 +71,7 @@
             "endColumn": 87,
             "problem": "WrappedBuilderGenericNeedArrowFunc",
             "suggest": "",
-            "rule": "When using \"WrappedBuilder\" and \"wrapBuilder\", generics are required and must be declared as arrow function (arkui-wrapbuilder-require-arrow-func-generic)",
+            "rule": "When using \"WrappedBuilder\", generics are required and must be declared as arrow function (arkui-wrappedbuilder-require-arrow-func-generic)",
             "severity": "ERROR"
         },
         {
@@ -111,7 +91,7 @@
             "endColumn": 120,
             "problem": "WrappedBuilderGenericNeedArrowFunc",
             "suggest": "",
-            "rule": "When using \"WrappedBuilder\" and \"wrapBuilder\", generics are required and must be declared as arrow function (arkui-wrapbuilder-require-arrow-func-generic)",
+            "rule": "When using \"WrappedBuilder\", generics are required and must be declared as arrow function (arkui-wrappedbuilder-require-arrow-func-generic)",
             "severity": "ERROR"
         },
         {
@@ -131,7 +111,7 @@
             "endColumn": 52,
             "problem": "WrappedBuilderGenericNeedArrowFunc",
             "suggest": "",
-            "rule": "When using \"WrappedBuilder\" and \"wrapBuilder\", generics are required and must be declared as arrow function (arkui-wrapbuilder-require-arrow-func-generic)",
+            "rule": "When using \"WrappedBuilder\", generics are required and must be declared as arrow function (arkui-wrappedbuilder-require-arrow-func-generic)",
             "severity": "ERROR"
         },
         {
@@ -141,7 +121,7 @@
             "endColumn": 105,
             "problem": "WrappedBuilderGenericNeedArrowFunc",
             "suggest": "",
-            "rule": "When using \"WrappedBuilder\" and \"wrapBuilder\", generics are required and must be declared as arrow function (arkui-wrapbuilder-require-arrow-func-generic)",
+            "rule": "When using \"WrappedBuilder\", generics are required and must be declared as arrow function (arkui-wrappedbuilder-require-arrow-func-generic)",
             "severity": "ERROR"
         },
         {
@@ -161,7 +141,7 @@
             "endColumn": 156,
             "problem": "WrappedBuilderGenericNeedArrowFunc",
             "suggest": "",
-            "rule": "When using \"WrappedBuilder\" and \"wrapBuilder\", generics are required and must be declared as arrow function (arkui-wrapbuilder-require-arrow-func-generic)",
+            "rule": "When using \"WrappedBuilder\", generics are required and must be declared as arrow function (arkui-wrappedbuilder-require-arrow-func-generic)",
             "severity": "ERROR"
         },
         {
@@ -181,7 +161,7 @@
             "endColumn": 65,
             "problem": "WrappedBuilderGenericNeedArrowFunc",
             "suggest": "",
-            "rule": "When using \"WrappedBuilder\" and \"wrapBuilder\", generics are required and must be declared as arrow function (arkui-wrapbuilder-require-arrow-func-generic)",
+            "rule": "When using \"WrappedBuilder\", generics are required and must be declared as arrow function (arkui-wrappedbuilder-require-arrow-func-generic)",
             "severity": "ERROR"
         },
         {
@@ -201,7 +181,7 @@
             "endColumn": 65,
             "problem": "WrappedBuilderGenericNeedArrowFunc",
             "suggest": "",
-            "rule": "When using \"WrappedBuilder\" and \"wrapBuilder\", generics are required and must be declared as arrow function (arkui-wrapbuilder-require-arrow-func-generic)",
+            "rule": "When using \"WrappedBuilder\", generics are required and must be declared as arrow function (arkui-wrappedbuilder-require-arrow-func-generic)",
             "severity": "ERROR"
         },
         {
@@ -221,7 +201,7 @@
             "endColumn": 65,
             "problem": "WrappedBuilderGenericNeedArrowFunc",
             "suggest": "",
-            "rule": "When using \"WrappedBuilder\" and \"wrapBuilder\", generics are required and must be declared as arrow function (arkui-wrapbuilder-require-arrow-func-generic)",
+            "rule": "When using \"WrappedBuilder\", generics are required and must be declared as arrow function (arkui-wrappedbuilder-require-arrow-func-generic)",
             "severity": "ERROR"
         },
         {
@@ -241,7 +221,7 @@
             "endColumn": 65,
             "problem": "WrappedBuilderGenericNeedArrowFunc",
             "suggest": "",
-            "rule": "When using \"WrappedBuilder\" and \"wrapBuilder\", generics are required and must be declared as arrow function (arkui-wrapbuilder-require-arrow-func-generic)",
+            "rule": "When using \"WrappedBuilder\", generics are required and must be declared as arrow function (arkui-wrappedbuilder-require-arrow-func-generic)",
             "severity": "ERROR"
         },
         {

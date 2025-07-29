@@ -15,89 +15,59 @@
     ],
     "result": [
         {
-            "line": 20,
-            "column": 31,
-            "endLine": 20,
-            "endColumn": 39,
-            "problem": "NoDeprecatedApi",
-            "suggest": "",
-            "rule": "ArkUI deprecated api check (arkui-no-deprecated-api)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 23,
-            "column": 21,
-            "endLine": 23,
-            "endColumn": 22,
+            "line": 25,
+            "column": 19,
+            "endLine": 25,
+            "endColumn": 21,
             "problem": "NumericSemantics",
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
-            "line": 24,
-            "column": 66,
-            "endLine": 24,
-            "endColumn": 67,
+            "line": 26,
+            "column": 16,
+            "endLine": 26,
+            "endColumn": 19,
             "problem": "NumericSemantics",
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
-            "line": 28,
-            "column": 29,
-            "endLine": 28,
-            "endColumn": 37,
-            "problem": "NoDeprecatedApi",
-            "suggest": "",
-            "rule": "ArkUI deprecated api check (arkui-no-deprecated-api)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 32,
-            "column": 29,
-            "endLine": 32,
-            "endColumn": 37,
-            "problem": "NoDeprecatedApi",
-            "suggest": "",
-            "rule": "ArkUI deprecated api check (arkui-no-deprecated-api)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 36,
-            "column": 29,
-            "endLine": 36,
-            "endColumn": 37,
-            "problem": "NoDeprecatedApi",
-            "suggest": "",
-            "rule": "ArkUI deprecated api check (arkui-no-deprecated-api)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 40,
-            "column": 29,
-            "endLine": 40,
-            "endColumn": 37,
-            "problem": "NoDeprecatedApi",
-            "suggest": "",
-            "rule": "ArkUI deprecated api check (arkui-no-deprecated-api)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 43,
-            "column": 35,
-            "endLine": 43,
-            "endColumn": 36,
+            "line": 27,
+            "column": 17,
+            "endLine": 27,
+            "endColumn": 19,
             "problem": "NumericSemantics",
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
-            "line": 17,
+            "line": 30,
+            "column": 12,
+            "endLine": 30,
+            "endColumn": 15,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 41,
+            "column": 19,
+            "endLine": 41,
+            "endColumn": 21,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 18,
             "column": 2,
-            "endLine": 17,
+            "endLine": 18,
             "endColumn": 7,
             "problem": "UIInterfaceImport",
             "suggest": "",
@@ -105,9 +75,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 18,
+            "line": 19,
             "column": 2,
-            "endLine": 18,
+            "endLine": 19,
             "endColumn": 11,
             "problem": "UIInterfaceImport",
             "suggest": "",
@@ -115,23 +85,23 @@
             "severity": "ERROR"
         },
         {
-            "line": 20,
+            "line": 21,
             "column": 4,
-            "endLine": 20,
-            "endColumn": 9,
+            "endLine": 21,
+            "endColumn": 11,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "The ArkUI interface \"State\" should be imported before it is used (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Builder\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
             "line": 23,
             "column": 5,
             "endLine": 23,
-            "endColumn": 11,
+            "endColumn": 9,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "The ArkUI interface \"Column\" should be imported before it is used (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"Flex\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -145,53 +115,43 @@
             "severity": "ERROR"
         },
         {
-            "line": 25,
-            "column": 7,
-            "endLine": 25,
-            "endColumn": 10,
+            "line": 28,
+            "column": 20,
+            "endLine": 28,
+            "endColumn": 29,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "The ArkUI interface \"Row\" should be imported before it is used (arkui-modular-interface)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 26,
-            "column": 9,
-            "endLine": 26,
-            "endColumn": 15,
-            "problem": "UIInterfaceImport",
-            "suggest": "",
-            "rule": "The ArkUI interface \"Button\" should be imported before it is used (arkui-modular-interface)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 30,
-            "column": 9,
-            "endLine": 30,
-            "endColumn": 15,
-            "problem": "UIInterfaceImport",
-            "suggest": "",
-            "rule": "The ArkUI interface \"Button\" should be imported before it is used (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"TextAlign\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
             "line": 34,
-            "column": 9,
+            "column": 5,
             "endLine": 34,
-            "endColumn": 15,
+            "endColumn": 11,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "The ArkUI interface \"Column\" should be imported before it is used (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 35,
+            "column": 7,
+            "endLine": 35,
+            "endColumn": 13,
             "problem": "UIInterfaceImport",
             "suggest": "",
             "rule": "The ArkUI interface \"Button\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
-            "line": 38,
-            "column": 9,
-            "endLine": 38,
-            "endColumn": 15,
+            "line": 45,
+            "column": 17,
+            "endLine": 45,
+            "endColumn": 32,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "The ArkUI interface \"Button\" should be imported before it is used (arkui-modular-interface)",
+            "rule": "The ArkUI interface \"HorizontalAlign\" should be imported before it is used (arkui-modular-interface)",
             "severity": "ERROR"
         }
     ]

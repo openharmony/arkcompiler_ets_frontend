@@ -16,59 +16,29 @@
     "result": [
         {
             "line": 16,
-            "column": 5,
+            "column": 1,
             "endLine": 16,
-            "endColumn": 70,
-            "problem": "AnyType",
+            "endColumn": 89,
+            "problem": "InterOpImportJs",
             "suggest": "",
-            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 17,
-            "column": 5,
-            "endLine": 17,
-            "endColumn": 74,
-            "problem": "AnyType",
-            "suggest": "",
-            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
             "severity": "ERROR"
         },
         {
             "line": 18,
-            "column": 5,
+            "column": 16,
             "endLine": 18,
-            "endColumn": 86,
-            "problem": "AnyType",
+            "endColumn": 28,
+            "problem": "LimitedReturnTypeInference",
             "suggest": "",
-            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 19,
-            "column": 5,
-            "endLine": 19,
-            "endColumn": 86,
-            "problem": "AnyType",
-            "suggest": "",
-            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 20,
-            "column": 5,
-            "endLine": 20,
-            "endColumn": 88,
-            "problem": "AnyType",
-            "suggest": "",
-            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "rule": "Function return type inference is limited (arkts-no-implicit-return-types)",
             "severity": "ERROR"
         },
         {
             "line": 22,
             "column": 16,
             "endLine": 22,
-            "endColumn": 28,
+            "endColumn": 33,
             "problem": "LimitedReturnTypeInference",
             "suggest": "",
             "rule": "Function return type inference is limited (arkts-no-implicit-return-types)",
@@ -78,16 +48,6 @@
             "line": 26,
             "column": 16,
             "endLine": 26,
-            "endColumn": 33,
-            "problem": "LimitedReturnTypeInference",
-            "suggest": "",
-            "rule": "Function return type inference is limited (arkts-no-implicit-return-types)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 30,
-            "column": 16,
-            "endLine": 30,
             "endColumn": 31,
             "problem": "LimitedReturnTypeInference",
             "suggest": "",
@@ -98,16 +58,6 @@
             "line": 34,
             "column": 16,
             "endLine": 34,
-            "endColumn": 30,
-            "problem": "LimitedReturnTypeInference",
-            "suggest": "",
-            "rule": "Function return type inference is limited (arkts-no-implicit-return-types)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 38,
-            "column": 16,
-            "endLine": 38,
             "endColumn": 32,
             "problem": "LimitedReturnTypeInference",
             "suggest": "",
@@ -115,9 +65,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 43,
+            "line": 39,
             "column": 9,
-            "endLine": 43,
+            "endLine": 39,
             "endColumn": 20,
             "problem": "LimitedReturnTypeInference",
             "suggest": "",
@@ -125,9 +75,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 47,
+            "line": 43,
             "column": 13,
-            "endLine": 49,
+            "endLine": 45,
             "endColumn": 4,
             "problem": "LimitedReturnTypeInference",
             "suggest": "",
@@ -135,9 +85,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 52,
+            "line": 48,
             "column": 20,
-            "endLine": 52,
+            "endLine": 48,
             "endColumn": 21,
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
@@ -145,9 +95,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 53,
+            "line": 49,
             "column": 3,
-            "endLine": 55,
+            "endLine": 51,
             "endColumn": 4,
             "problem": "ObjectLiteralProperty",
             "suggest": "",
@@ -155,9 +105,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 53,
+            "line": 49,
             "column": 9,
-            "endLine": 53,
+            "endLine": 49,
             "endColumn": 18,
             "problem": "LimitedReturnTypeInference",
             "suggest": "",
@@ -165,9 +115,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 57,
+            "line": 53,
             "column": 17,
-            "endLine": 59,
+            "endLine": 55,
             "endColumn": 4,
             "problem": "LimitedReturnTypeInference",
             "suggest": "",

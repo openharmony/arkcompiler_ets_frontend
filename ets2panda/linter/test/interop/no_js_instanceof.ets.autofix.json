@@ -20,26 +20,6 @@
             "endLine": 16,
             "endColumn": 88,
             "problem": "InterOpImportJs",
-            "autofix": [
-                {
-                    "start": 605,
-                    "end": 692,
-                    "replacementText": "",
-                    "line": 16,
-                    "column": 1,
-                    "endLine": 16,
-                    "endColumn": 88
-                },
-                {
-                    "start": 692,
-                    "end": 692,
-                    "replacementText": "let Foo = ESValue.load('./no_js_instanceof_file.js').getProperty('Foo');\nlet foo = ESValue.load('./no_js_instanceof_file.js').getProperty('foo');\nlet CreatePerson = ESValue.load('./no_js_instanceof_file.js').getProperty('CreatePerson');\nlet a = ESValue.load('./no_js_instanceof_file.js').getProperty('a');\nlet b = ESValue.load('./no_js_instanceof_file.js').getProperty('b');\nlet MyNamespace = ESValue.load('./no_js_instanceof_file.js').getProperty('MyNamespace');",
-                    "line": 16,
-                    "column": 1,
-                    "endLine": 16,
-                    "endColumn": 88
-                }
-            ],
             "suggest": "",
             "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
             "severity": "ERROR"

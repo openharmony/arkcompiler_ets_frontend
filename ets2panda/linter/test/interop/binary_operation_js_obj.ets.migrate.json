@@ -16,19 +16,19 @@
     "result": [
         {
             "line": 15,
-            "column": 5,
+            "column": 1,
             "endLine": 15,
-            "endColumn": 74,
-            "problem": "AnyType",
+            "endColumn": 53,
+            "problem": "InterOpImportJs",
             "suggest": "",
-            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
             "severity": "ERROR"
         },
         {
             "line": 16,
             "column": 5,
             "endLine": 16,
-            "endColumn": 70,
+            "endColumn": 29,
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
@@ -38,16 +38,6 @@
             "line": 17,
             "column": 5,
             "endLine": 17,
-            "endColumn": 70,
-            "problem": "AnyType",
-            "suggest": "",
-            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 18,
-            "column": 5,
-            "endLine": 18,
             "endColumn": 29,
             "problem": "AnyType",
             "suggest": "",
@@ -55,19 +45,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 19,
-            "column": 5,
-            "endLine": 19,
-            "endColumn": 29,
-            "problem": "AnyType",
-            "suggest": "",
-            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 25,
+            "line": 23,
             "column": 1,
-            "endLine": 25,
+            "endLine": 23,
             "endColumn": 15,
             "problem": "MathPow",
             "suggest": "",
@@ -75,9 +55,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 29,
+            "line": 27,
             "column": 1,
-            "endLine": 29,
+            "endLine": 27,
             "endColumn": 37,
             "problem": "MathPow",
             "suggest": "",
@@ -85,9 +65,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 35,
+            "line": 33,
             "column": 1,
-            "endLine": 35,
+            "endLine": 33,
             "endColumn": 15,
             "problem": "MathPow",
             "suggest": "",
@@ -95,9 +75,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 47,
+            "line": 45,
             "column": 1,
-            "endLine": 47,
+            "endLine": 45,
             "endColumn": 17,
             "problem": "MathPow",
             "suggest": "",

@@ -238,3 +238,9 @@ function testIndentation(): void {
     return 0;
   })();
 }
+
+@Sendable
+export function add(a: number, b: number) {
+  console.log("SharedModule: Hap call ShareFile add");
+  return a + b;
+} 

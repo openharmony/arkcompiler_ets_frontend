@@ -30,26 +30,6 @@
             "endLine": 17,
             "endColumn": 106,
             "problem": "InterOpImportJs",
-            "autofix": [
-                {
-                    "start": 636,
-                    "end": 740,
-                    "replacementText": "",
-                    "line": 17,
-                    "column": 2,
-                    "endLine": 17,
-                    "endColumn": 106
-                },
-                {
-                    "start": 740,
-                    "end": 740,
-                    "replacementText": "let foo = ESValue.load('./interop_convert_import_js.js').getProperty('foo');\r\nlet foo2 = ESValue.load('./interop_convert_import_js.js').getProperty('foo2');\r\nlet foo3 = ESValue.load('./interop_convert_import_js.js').getProperty('foo3');\r\nlet foo4 = ESValue.load('./interop_convert_import_js.js').getProperty('foo4');\r\nlet array_val = ESValue.load('./interop_convert_import_js.js').getProperty('array_val');\r\nlet null_val = ESValue.load('./interop_convert_import_js.js').getProperty('null_val');\r\nlet undefined_val = ESValue.load('./interop_convert_import_js.js').getProperty('undefined_val');",
-                    "line": 17,
-                    "column": 2,
-                    "endLine": 17,
-                    "endColumn": 106
-                }
-            ],
             "suggest": "",
             "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
             "severity": "ERROR"

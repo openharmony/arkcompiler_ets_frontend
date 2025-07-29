@@ -12,8 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-let ff3 = ESValue.load('./interop_import_js_rules_js').getProperty('ff3');
-let foo = ESValue.load('./interop_import_js_index_js').getProperty('foo');
+import { ff3 } from "./interop_import_js_rules_js"
+import {foo} from "./interop_import_js_index_js"
 let arr = foo.getProperty("arr")
 arr.getProperty(1.0)
 arr.setProperty(3.0, ESValue.wrap(4.0))

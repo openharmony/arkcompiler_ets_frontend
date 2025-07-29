@@ -12,10 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-let foo = ESValue.load('./call_function_js').getProperty('foo');
-let bar = ESValue.load('./call_function_js').getProperty('bar');
-let a = ESValue.load('./call_function_js').getProperty('a');
-let b = ESValue.load('./call_function_js').getProperty('b');
+import {foo,bar} from "./call_function_js"
+import {a,b} from "./call_function_js"
 
 foo.invoke()
 bar.invoke(ESValue.wrap(123.0))

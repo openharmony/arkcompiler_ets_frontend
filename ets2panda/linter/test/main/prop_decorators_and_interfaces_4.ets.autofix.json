@@ -115,9 +115,9 @@
             "problem": "PropDecoratorNotSupported",
             "autofix": [
                 {
-                    "start": 1396,
+                    "start": 1397,
                     "end": 1401,
-                    "replacementText": "@PropRef",
+                    "replacementText": "PropRef",
                     "line": 58,
                     "column": 3,
                     "endLine": 58,
@@ -136,9 +136,9 @@
             "problem": "PropDecoratorNotSupported",
             "autofix": [
                 {
-                    "start": 1710,
+                    "start": 1711,
                     "end": 1715,
-                    "replacementText": "@PropRef",
+                    "replacementText": "PropRef",
                     "line": 76,
                     "column": 3,
                     "endLine": 76,
@@ -199,9 +199,9 @@
             "problem": "PropDecoratorNotSupported",
             "autofix": [
                 {
-                    "start": 2040,
+                    "start": 2041,
                     "end": 2045,
-                    "replacementText": "@PropRef",
+                    "replacementText": "PropRef",
                     "line": 94,
                     "column": 3,
                     "endLine": 94,

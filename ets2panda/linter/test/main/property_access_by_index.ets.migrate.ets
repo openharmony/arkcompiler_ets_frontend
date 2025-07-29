@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 import {OhosInterface} from './oh_modules/ohos_lib';
+import { BitVector } from "@arkts.collections";
+
 
 // #14071
 class A {

@@ -19,7 +19,9 @@
 
 
 
-import { collections as definedCollections } from './ignore_files/user_defined_collections'; //legal
+import { collections as definedCollections } from './ignore_files/user_defined_collections';
+import { BitVector } from "@arkts.collections";
+ //legal
 
 function tesCollectionsUsage() {
 
@@ -39,4 +41,8 @@ function tesCollectionsUsage() {
 
 function test(array: Array<string>) {
     const map = Map<string, string>();
+}
+
+function testBitVector(bv: BitVector<string>) {
+    const bitVector = new BitVector<string>();
 }

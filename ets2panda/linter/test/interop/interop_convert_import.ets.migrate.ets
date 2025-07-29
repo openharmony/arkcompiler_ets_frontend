@@ -14,13 +14,7 @@
  */
  'use static'
 
- let foo = ESValue.load('./interop_convert_import_js.js').getProperty('foo');
-let foo2 = ESValue.load('./interop_convert_import_js.js').getProperty('foo2');
-let foo3 = ESValue.load('./interop_convert_import_js.js').getProperty('foo3');
-let foo4 = ESValue.load('./interop_convert_import_js.js').getProperty('foo4');
-let array_val = ESValue.load('./interop_convert_import_js.js').getProperty('array_val');
-let null_val = ESValue.load('./interop_convert_import_js.js').getProperty('null_val');
-let undefined_val = ESValue.load('./interop_convert_import_js.js').getProperty('undefined_val');
+ import {foo, foo2, foo3, foo4, array_val, null_val, undefined_val} from "./interop_convert_import_js.js"
 
  let a: number = foo.getProperty("num").toNumber()
  let a1: boolean = foo2.getProperty("bool").toBoolean()

@@ -81,7 +81,7 @@
             "line": 26,
             "column": 23,
             "endLine": 26,
-            "endColumn": 34,
+            "endColumn": 40,
             "problem": "NoNeedStdLibSendableContainer",
             "autofix": [
                 {
@@ -91,7 +91,7 @@
                     "line": 26,
                     "column": 23,
                     "endLine": 26,
-                    "endColumn": 34
+                    "endColumn": 40
                 }
             ],
             "suggest": "",
@@ -102,7 +102,7 @@
             "line": 26,
             "column": 55,
             "endLine": 26,
-            "endColumn": 66,
+            "endColumn": 72,
             "problem": "NoNeedStdLibSendableContainer",
             "autofix": [
                 {
@@ -112,7 +112,7 @@
                     "line": 26,
                     "column": 55,
                     "endLine": 26,
-                    "endColumn": 66
+                    "endColumn": 72
                 }
             ],
             "suggest": "",
@@ -123,7 +123,7 @@
             "line": 28,
             "column": 28,
             "endLine": 28,
-            "endColumn": 44,
+            "endColumn": 50,
             "problem": "NoNeedStdLibSendableContainer",
             "autofix": [
                 {
@@ -133,7 +133,7 @@
                     "line": 28,
                     "column": 28,
                     "endLine": 28,
-                    "endColumn": 44
+                    "endColumn": 50
                 }
             ],
             "suggest": "",
@@ -144,7 +144,7 @@
             "line": 30,
             "column": 28,
             "endLine": 30,
-            "endColumn": 42,
+            "endColumn": 48,
             "problem": "NoNeedStdLibSendableContainer",
             "autofix": [
                 {
@@ -154,7 +154,7 @@
                     "line": 30,
                     "column": 28,
                     "endLine": 30,
-                    "endColumn": 42
+                    "endColumn": 48
                 }
             ],
             "suggest": "",
@@ -165,7 +165,7 @@
             "line": 32,
             "column": 21,
             "endLine": 32,
-            "endColumn": 37,
+            "endColumn": 43,
             "problem": "NoNeedStdLibSendableContainer",
             "autofix": [
                 {
@@ -175,7 +175,7 @@
                     "line": 32,
                     "column": 21,
                     "endLine": 32,
-                    "endColumn": 37
+                    "endColumn": 43
                 }
             ],
             "suggest": "",
@@ -186,7 +186,7 @@
             "line": 34,
             "column": 23,
             "endLine": 34,
-            "endColumn": 39,
+            "endColumn": 45,
             "problem": "NoNeedStdLibSendableContainer",
             "autofix": [
                 {
@@ -196,7 +196,7 @@
                     "line": 34,
                     "column": 23,
                     "endLine": 34,
-                    "endColumn": 39
+                    "endColumn": 45
                 }
             ],
             "suggest": "",
@@ -207,7 +207,7 @@
             "line": 34,
             "column": 60,
             "endLine": 34,
-            "endColumn": 76,
+            "endColumn": 82,
             "problem": "NoNeedStdLibSendableContainer",
             "autofix": [
                 {
@@ -217,7 +217,7 @@
                     "line": 34,
                     "column": 60,
                     "endLine": 34,
-                    "endColumn": 76
+                    "endColumn": 82
                 }
             ],
             "suggest": "",
@@ -228,7 +228,7 @@
             "line": 40,
             "column": 22,
             "endLine": 40,
-            "endColumn": 33,
+            "endColumn": 39,
             "problem": "NoNeedStdLibSendableContainer",
             "autofix": [
                 {
@@ -238,7 +238,7 @@
                     "line": 40,
                     "column": 22,
                     "endLine": 40,
-                    "endColumn": 33
+                    "endColumn": 39
                 }
             ],
             "suggest": "",
@@ -259,7 +259,7 @@
             "line": 41,
             "column": 17,
             "endLine": 41,
-            "endColumn": 28,
+            "endColumn": 32,
             "problem": "NoNeedStdLibSendableContainer",
             "autofix": [
                 {
@@ -269,7 +269,7 @@
                     "line": 41,
                     "column": 17,
                     "endLine": 41,
-                    "endColumn": 28
+                    "endColumn": 32
                 }
             ],
             "suggest": "",
@@ -284,6 +284,86 @@
             "problem": "ClassAsObjectError",
             "suggest": "",
             "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 44,
+            "column": 28,
+            "endLine": 44,
+            "endColumn": 49,
+            "problem": "NoNeedStdLibSendableContainer",
+            "autofix": [
+                {
+                    "start": 1514,
+                    "end": 1535,
+                    "replacementText": "BitVector",
+                    "line": 44,
+                    "column": 28,
+                    "endLine": 44,
+                    "endColumn": 49
+                },
+                {
+                    "start": 919,
+                    "end": 919,
+                    "replacementText": "\nimport { BitVector } from \"@arkts.collections\";\n",
+                    "line": 44,
+                    "column": 28,
+                    "endLine": 44,
+                    "endColumn": 49
+                }
+            ],
+            "suggest": "",
+            "rule": "Sendable containers are not supported (arkts-no-need-stdlib-sendable-containers)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 45,
+            "column": 11,
+            "endLine": 45,
+            "endColumn": 58,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 45,
+            "column": 27,
+            "endLine": 45,
+            "endColumn": 48,
+            "problem": "DynamicCtorCall",
+            "suggest": "",
+            "rule": "\"new\" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 45,
+            "column": 27,
+            "endLine": 45,
+            "endColumn": 48,
+            "problem": "NoNeedStdLibSendableContainer",
+            "autofix": [
+                {
+                    "start": 1573,
+                    "end": 1594,
+                    "replacementText": "BitVector",
+                    "line": 45,
+                    "column": 27,
+                    "endLine": 45,
+                    "endColumn": 48
+                },
+                {
+                    "start": 919,
+                    "end": 919,
+                    "replacementText": "\nimport { BitVector } from \"@arkts.collections\";\n",
+                    "line": 45,
+                    "column": 27,
+                    "endLine": 45,
+                    "endColumn": 48
+                }
+            ],
+            "suggest": "",
+            "rule": "Sendable containers are not supported (arkts-no-need-stdlib-sendable-containers)",
             "severity": "ERROR"
         }
     ]

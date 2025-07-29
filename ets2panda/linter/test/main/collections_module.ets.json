@@ -33,6 +33,16 @@
             "suggest": "",
             "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
             "severity": "WARNING"
+        },
+        {
+            "line": 45,
+            "column": 11,
+            "endLine": 45,
+            "endColumn": 58,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
         }
     ]
 }
