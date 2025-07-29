@@ -11740,24 +11740,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       instanceProps: new Map<string, ts.Type>()
     };
 
-    classDecl.members.forEach((member) => {
-      if (!ts.isPropertyDeclaration(member)) {
-        return;
-      }
-
-      const propName = member.name.getText();
-      const propType = this.tsTypeChecker.getTypeAtLocation(member);
-      const isStatic = member.modifiers?.some((m) => {
-        return m.kind === ts.SyntaxKind.StaticKeyword;
-      });
-
-      if (isStatic) {
-        result.staticProps.set(propName, propType);
-      } else {
-        result.instanceProps.set(propName, propType);
-      }
-    });
-
+    this.tsUtils.collectPropertiesFromClass(classDecl, result);
     return result;
   }
 

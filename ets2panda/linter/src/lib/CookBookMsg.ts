@@ -267,7 +267,8 @@ cookBookTag[237] = 'Array and tuple are different type(arkts-no-tuples-arrays)';
 cookBookTag[238] = 'The static property has no initializer (arkts-class-static-initialization)';
 cookBookTag[239] = 'This keyword cannot be used as identifiers (arkts-invalid-identifier)';
 cookBookTag[245] = 'JSON files cannot be imported (arkts-no-import-json-file)';
-cookBookTag[249] = 'The namespace imported by import * as cannot be used as a variable (arkts-no-import-namespace-with-star-as-var)';
+cookBookTag[249] =
+  'The namespace imported by import * as cannot be used as a variable (arkts-no-import-namespace-with-star-as-var)';
 cookBookTag[251] = '"!!" for bidirectional data binding is not supported (arkui-no-!!-bidirectional-data-binding)';
 cookBookTag[252] = '"$$" for bidirectional data binding is not supported (arkui-no-$$-bidirectional-data-binding)';
 cookBookTag[253] = '"${variable}" for decorator binding is not supported (arkui-link-decorator-passing)';
@@ -300,6 +301,7 @@ cookBookTag[274] =
 cookBookTag[275] =
   'The Custom component with custom layout capability needs to add the "@CustomLayout" decorator (arkui-custom-layout-need-add-decorator)';
 cookBookTag[276] =
+  'ArkTS 1.2 should implement all fields in the interface in the class (arkts-no-class-omit-interface-optional-prop)';
 cookBookTag[277] = 'Creating local classes is not supported (arkts-no-local-class)';
 cookBookTag[281] = '"@Prop" decorator is not supported (arkui-no-prop-decorator)';
 cookBookTag[282] = '"@StorageProp" decorator is not supported (arkui-no-storageprop-decorator)';
