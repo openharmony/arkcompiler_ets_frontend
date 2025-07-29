@@ -1103,10 +1103,6 @@ syntax:
   id: 188
   message: "Type expected."
 
-- name: TYPE_IMPORT_MISSING_SELECTIVE_BINDING
-  id: 110
-  message: "Type import requires selective binding to define the required imported elements."
-
 - name: TYPE_PARAM_DEC_EXPECTED
   id: 176
   message: "Type parameter declaration expected."
@@ -1284,6 +1280,7 @@ graveyard:
 - 74
 - 103
 - 109
+- 110
 - 123
 - 139
 - 142
