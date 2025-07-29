@@ -2553,6 +2553,46 @@
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
+        },
+        {
+            "line": 316,
+            "column": 9,
+            "endLine": 316,
+            "endColumn": 16,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 316,
+            "column": 24,
+            "endLine": 316,
+            "endColumn": 27,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 322,
+            "column": 1,
+            "endLine": 322,
+            "endColumn": 6,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 322,
+            "column": 14,
+            "endLine": 322,
+            "endColumn": 18,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
         }
     ]
 }

@@ -308,3 +308,15 @@ for (let i = 0; i < concatArray.length; i++) {
 if (concatArray.length > 10) {
     concatArray[10]
 };
+
+class DummyClass {
+    public a1: Array<number> = new Array<number>();
+
+    foo() {
+        this.a1[123] = 123;
+    }
+}
+
+let dc = new DummyClass();
+
+dc.a1[123] = 1234;
