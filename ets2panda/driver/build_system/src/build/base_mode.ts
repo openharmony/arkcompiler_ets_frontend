@@ -30,17 +30,21 @@ import {
   ARKTSCONFIG_JSON_FILE,
   DEFAULT_WOKER_NUMS,
   DECL_ETS_SUFFIX,
+  DECL_TS_SUFFIX,
+  DEPENDENCY_INPUT_FILE,
   DEPENDENCY_JSON_FILE,
   LANGUAGE_VERSION,
   LINKER_INPUT_FILE,
   MERGED_ABC_FILE,
-  TS_SUFFIX,
-  DEPENDENCY_INPUT_FILE,
   MERGED_INTERMEDIATE_FILE,
+  STATIC_RECORD_FILE,
+  STATIC_RECORD_FILE_CONTENT,
+  TS_SUFFIX
 } from '../pre_define';
 import {
   changeDeclgenFileExtension,
   changeFileExtension,
+  createFileIfNotExists,
   ensurePathExists,
   getFileHash,
   isMac
@@ -169,6 +173,18 @@ export abstract class BaseMode {
     const arkts: ArkTS = this.buildConfig.arkts;
     let errorStatus = false;
     try {
+      const staticRecordPath = path.join(
+        moduleInfo.declgenV1OutPath as string,
+        STATIC_RECORD_FILE
+      )
+      const declEtsOutputDir = path.dirname(declEtsOutputPath);
+      const staticRecordRelativePath = changeFileExtension(
+        path.relative(declEtsOutputDir, staticRecordPath).replaceAll(/\\/g, '\/'),
+        "",
+        DECL_TS_SUFFIX
+      );
+      createFileIfNotExists(staticRecordPath, STATIC_RECORD_FILE_CONTENT);
+
       arktsGlobal.filePath = fileInfo.filePath;
       arktsGlobal.config = arkts.Config.create([
         '_',
@@ -197,7 +213,8 @@ export abstract class BaseMode {
         declEtsOutputPath,
         etsOutputPath,
         false,
-        false
+        false,
+        staticRecordRelativePath
       ); // Generate 1.0 declaration files & 1.0 glue code
       this.logger.printInfo('declaration files generated');
     } catch (error) {

@@ -34,6 +34,7 @@ struct DeclgenOptions {
     bool isolated = false;
     std::string outputDeclEts;
     std::string outputEts;
+    std::string recordFile;
 };
 
 // Consume program after checker stage and generate out_path typescript file with declarations
@@ -74,6 +75,7 @@ public:
     bool Generate();
     void GenImportDeclarations();
     void GenExportNamedDeclarations();
+    void GenImportRecordDeclarations(const std::string &source);
 
     std::string GetDtsOutput() const
     {
@@ -230,7 +232,6 @@ private:
     void ProcessInterfacesDependencies(const ArenaVector<checker::ETSObjectType *> &interfaces);
     void AddObjectDependencies(const util::StringView &typeName, const std::string &alias = "");
     void GenDeclarations();
-    void GenOtherDeclarations();
     void CloseClassBlock(const bool isDts);
 
     void EmitDeclarationPrefix(const ir::ClassDefinition *classDef, const std::string &typeName,
