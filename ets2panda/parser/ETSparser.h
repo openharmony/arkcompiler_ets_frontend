@@ -440,6 +440,7 @@ private:
     // NOLINTNEXTLINE(google-default-arguments)
     ir::Expression *ParseExpression(ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS) override;
     ir::Expression *ParseExpressionOrTypeAnnotation(lexer::TokenType type, ExpressionParseFlags flags) override;
+    void ValidateKeywordIn();
     ir::Expression *ParsePotentialExpressionSequence(ir::Expression *expr, ExpressionParseFlags flags) override;
     ir::Expression *ParseGenericLambdaOrTypeAssertion();
     ir::ModifierFlags ParseTypeVarianceModifier(TypeAnnotationParsingOptions *const options);
