@@ -43,6 +43,16 @@ void CopyAnnotationProperties(public_lib::Context *ctx, ir::AnnotationUsage *st)
         st->Properties().front()->AsClassProperty()->Id()->Name() == compiler::Signatures::ANNOTATION_KEY_VALUE) {
         auto *param = st->Properties().front()->AsClassProperty();
         auto singleField = annoDecl->Properties().front()->AsClassProperty();
+        // annotationDecl must have a name and type annotation; otherwise, it means it is a broken node.
+        if (singleField->Key() == nullptr || singleField->TypeAnnotation() == nullptr) {
+            ES2PANDA_ASSERT(ctx->GetChecker()->AsETSChecker()->IsAnyError());
+            return;
+        }
+        if (singleField->Key()->IsBrokenExpression() ||
+            (singleField->Value() != nullptr && singleField->Value()->IsBrokenExpression())) {
+            ES2PANDA_ASSERT(ctx->GetChecker()->AsETSChecker()->IsAnyError());
+            return;
+        }
         auto clone = singleField->TypeAnnotation()->Clone(ctx->Allocator(), param);
         param->SetTypeAnnotation(clone);
         return;

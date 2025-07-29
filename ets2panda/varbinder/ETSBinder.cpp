@@ -55,7 +55,7 @@ void ETSBinder::LookupTypeArgumentReferences(ir::ETSTypeReference *typeRef)
     }
 }
 
-static bool IsSpecialName(const util::StringView &name)
+bool ETSBinder::IsSpecialName(const util::StringView &name)
 {
     return name == compiler::Signatures::ANY_TYPE_NAME || name == compiler::Signatures::UNDEFINED ||
            name == compiler::Signatures::NULL_LITERAL || name == compiler::Signatures::READONLY_TYPE_NAME ||
