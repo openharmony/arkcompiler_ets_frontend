@@ -21,6 +21,7 @@ abstract class A<T extends A<T>>{
 /* @@? 16:9 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
 /* @@? 16:9 Error SyntaxError: Unexpected token, expected ',' or ')'. */
 /* @@? 16:12 Error SyntaxError: Unexpected token ','. */
+/* @@? 16:27 Error TypeError: T in Partial<T> must be a class or an interface type. */
 /* @@? 16:42 Error SyntaxError: Unexpected token ')'. */
 /* @@? 16:43 Error SyntaxError: Unexpected token ':'. */
 /* @@? 16:45 Error SyntaxError: void is a predefined type, cannot be used as an identifier */

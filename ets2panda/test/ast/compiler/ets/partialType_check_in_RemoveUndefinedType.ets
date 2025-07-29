@@ -21,6 +21,7 @@ function main() {
   genericFunc<{a: number, b: string}>({a: 1})
 }
 
+/* @@? 16:35 Error TypeError: T in Partial<T> must be a class or an interface type. */
 /* @@? 21:3 Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type. */
 /* @@? 21:15 Error TypeError: need to specify target type for class composite */
 /* @@? 21:38 Error TypeError: need to specify target type for class composite */

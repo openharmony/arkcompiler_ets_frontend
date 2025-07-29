@@ -70,16 +70,16 @@ function test_3(): void {
 
 // -----------------------------------------------
 
-class Class6<T> {
+class Class6 {
     mmeb: Number = 2;
-    foo(a0: Partial<T>){
+    foo(a0: Partial<Class7>){
         if(this.mmeb == 3){
             return;
         }
 
         this.bar(a0);
     }
-    bar(a0: Partial<T>){
+    bar(a0: Partial<Class7>){
         this.mmeb = 3;
         this.foo(a0);
     }
@@ -88,14 +88,14 @@ class Class6<T> {
 class Class7 { fld: Number = 6;}
 
 class Class8 <T extends Class7> {
-    baz(a0: Partial<T>){
+    baz(a0: Partial<Class7>){
         a0.fld = undefined;
     }
 }
 
 function test_4(): void {
     let class7_partial: Partial<Class7> = {fld: 8};
-    let class6_original: Class6<Class7> = new Class6<Class7>();
+    let class6_original: Class6 = new Class6();
     class6_original.foo(class7_partial);
 }
 
