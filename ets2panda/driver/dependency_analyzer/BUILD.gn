@@ -46,7 +46,7 @@ ohos_executable("dependency_analyzer") {
     deps += [
       "$ark_root/bytecode_optimizer:libarktsbytecodeopt_package",
       "$ark_root/libpandabase:libarktsbase_package",
-      "$ark_root/libpandafile:libarktsfile_package",
+      "$ark_root/libarkfile:libarktsfile_package",
     ]
   }
 
