@@ -2175,8 +2175,7 @@ ir::TSTypeParameter *ETSParser::ParseTypeParameter([[maybe_unused]] TypeAnnotati
     ir::TypeNode *constraint = nullptr;
     if (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_EXTENDS) {
         Lexer()->NextToken();
-        TypeAnnotationParsingOptions newOptions =
-            TypeAnnotationParsingOptions::REPORT_ERROR | TypeAnnotationParsingOptions::IGNORE_FUNCTION_TYPE;
+        TypeAnnotationParsingOptions newOptions = TypeAnnotationParsingOptions::REPORT_ERROR;
         constraint = ParseTypeAnnotation(&newOptions);
     }
 
