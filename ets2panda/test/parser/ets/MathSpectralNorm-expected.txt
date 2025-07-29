@@ -7361,7 +7361,7 @@
                                   },
                                   "end": {
                                     "line": 92,
-                                    "column": 32,
+                                    "column": 31,
                                     "program": "MathSpectralNorm.ets"
                                   }
                                 }
@@ -7374,7 +7374,7 @@
                                 },
                                 "end": {
                                   "line": 92,
-                                  "column": 32,
+                                  "column": 31,
                                   "program": "MathSpectralNorm.ets"
                                 }
                               }

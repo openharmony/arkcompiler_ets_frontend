@@ -6250,7 +6250,7 @@
                                   },
                                   "end": {
                                     "line": 79,
-                                    "column": 26,
+                                    "column": 25,
                                     "program": "MathCordic.ets"
                                   }
                                 }
@@ -6263,7 +6263,7 @@
                                 },
                                 "end": {
                                   "line": 79,
-                                  "column": 26,
+                                  "column": 25,
                                   "program": "MathCordic.ets"
                                 }
                               }

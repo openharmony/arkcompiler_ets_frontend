@@ -207,7 +207,7 @@
                 },
                 "end": {
                   "line": 18,
-                  "column": 14,
+                  "column": 12,
                   "program": "assignNullableToNonNullableTypeAlias.ets"
                 }
               }
@@ -220,7 +220,7 @@
               },
               "end": {
                 "line": 18,
-                "column": 14,
+                "column": 12,
                 "program": "assignNullableToNonNullableTypeAlias.ets"
               }
             }
@@ -500,7 +500,7 @@
                                   },
                                   "end": {
                                     "line": 21,
-                                    "column": 20,
+                                    "column": 19,
                                     "program": "assignNullableToNonNullableTypeAlias.ets"
                                   }
                                 }
@@ -513,7 +513,7 @@
                                 },
                                 "end": {
                                   "line": 21,
-                                  "column": 20,
+                                  "column": 19,
                                   "program": "assignNullableToNonNullableTypeAlias.ets"
                                 }
                               }
@@ -598,7 +598,7 @@
                                   },
                                   "end": {
                                     "line": 22,
-                                    "column": 18,
+                                    "column": 16,
                                     "program": "assignNullableToNonNullableTypeAlias.ets"
                                   }
                                 }
@@ -611,7 +611,7 @@
                                 },
                                 "end": {
                                   "line": 22,
-                                  "column": 18,
+                                  "column": 16,
                                   "program": "assignNullableToNonNullableTypeAlias.ets"
                                 }
                               }
@@ -661,7 +661,7 @@
                                   },
                                   "end": {
                                     "line": 22,
-                                    "column": 25,
+                                    "column": 24,
                                     "program": "assignNullableToNonNullableTypeAlias.ets"
                                   }
                                 }
@@ -674,7 +674,7 @@
                                 },
                                 "end": {
                                   "line": 22,
-                                  "column": 25,
+                                  "column": 24,
                                   "program": "assignNullableToNonNullableTypeAlias.ets"
                                 }
                               }

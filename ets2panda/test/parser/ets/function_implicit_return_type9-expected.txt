@@ -102,7 +102,7 @@
                       },
                       "end": {
                         "line": 18,
-                        "column": 39,
+                        "column": 37,
                         "program": "function_implicit_return_type9.ets"
                       }
                     }
@@ -115,7 +115,7 @@
                     },
                     "end": {
                       "line": 18,
-                      "column": 39,
+                      "column": 37,
                       "program": "function_implicit_return_type9.ets"
                     }
                   }
@@ -977,8 +977,8 @@
                                 "program": "function_implicit_return_type9.ets"
                               },
                               "end": {
-                                "line": 34,
-                                "column": 2,
+                                "line": 33,
+                                "column": 13,
                                 "program": "function_implicit_return_type9.ets"
                               }
                             }
@@ -990,8 +990,8 @@
                               "program": "function_implicit_return_type9.ets"
                             },
                             "end": {
-                              "line": 34,
-                              "column": 2,
+                              "line": 33,
+                              "column": 13,
                               "program": "function_implicit_return_type9.ets"
                             }
                           }
@@ -1486,7 +1486,7 @@
                                   },
                                   "end": {
                                     "line": 42,
-                                    "column": 27,
+                                    "column": 26,
                                     "program": "function_implicit_return_type9.ets"
                                   }
                                 }
@@ -1499,7 +1499,7 @@
                                 },
                                 "end": {
                                   "line": 42,
-                                  "column": 27,
+                                  "column": 26,
                                   "program": "function_implicit_return_type9.ets"
                                 }
                               }

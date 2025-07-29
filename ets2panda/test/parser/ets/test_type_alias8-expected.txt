@@ -49,7 +49,7 @@
             },
             "end": {
               "line": 16,
-              "column": 20,
+              "column": 19,
               "program": "test_type_alias8.ets"
             }
           }
@@ -62,7 +62,7 @@
           },
           "end": {
             "line": 16,
-            "column": 20,
+            "column": 19,
             "program": "test_type_alias8.ets"
           }
         }
@@ -292,7 +292,7 @@
                             },
                             "end": {
                               "line": 18,
-                              "column": 24,
+                              "column": 23,
                               "program": "test_type_alias8.ets"
                             }
                           }
@@ -305,7 +305,7 @@
                           },
                           "end": {
                             "line": 18,
-                            "column": 24,
+                            "column": 23,
                             "program": "test_type_alias8.ets"
                           }
                         }
@@ -319,7 +319,7 @@
                         },
                         "end": {
                           "line": 18,
-                          "column": 24,
+                          "column": 23,
                           "program": "test_type_alias8.ets"
                         }
                       }
@@ -332,7 +332,7 @@
                       },
                       "end": {
                         "line": 18,
-                        "column": 24,
+                        "column": 23,
                         "program": "test_type_alias8.ets"
                       }
                     }
@@ -493,7 +493,7 @@
                             },
                             "end": {
                               "line": 21,
-                              "column": 22,
+                              "column": 21,
                               "program": "test_type_alias8.ets"
                             }
                           }
@@ -506,7 +506,7 @@
                           },
                           "end": {
                             "line": 21,
-                            "column": 22,
+                            "column": 21,
                             "program": "test_type_alias8.ets"
                           }
                         }
@@ -520,7 +520,7 @@
                         },
                         "end": {
                           "line": 21,
-                          "column": 22,
+                          "column": 21,
                           "program": "test_type_alias8.ets"
                         }
                       }
@@ -533,7 +533,7 @@
                       },
                       "end": {
                         "line": 21,
-                        "column": 22,
+                        "column": 21,
                         "program": "test_type_alias8.ets"
                       }
                     }
@@ -715,7 +715,7 @@
                                   },
                                   "end": {
                                     "line": 25,
-                                    "column": 18,
+                                    "column": 16,
                                     "program": "test_type_alias8.ets"
                                   }
                                 }
@@ -728,7 +728,7 @@
                                 },
                                 "end": {
                                   "line": 25,
-                                  "column": 18,
+                                  "column": 16,
                                   "program": "test_type_alias8.ets"
                                 }
                               }
@@ -828,7 +828,7 @@
                                   },
                                   "end": {
                                     "line": 26,
-                                    "column": 20,
+                                    "column": 18,
                                     "program": "test_type_alias8.ets"
                                   }
                                 }
@@ -841,7 +841,7 @@
                                 },
                                 "end": {
                                   "line": 26,
-                                  "column": 20,
+                                  "column": 18,
                                   "program": "test_type_alias8.ets"
                                 }
                               }

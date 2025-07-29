@@ -911,7 +911,7 @@
                                   },
                                   "end": {
                                     "line": 29,
-                                    "column": 21,
+                                    "column": 19,
                                     "program": "internalParsing.ets"
                                   }
                                 }
@@ -924,7 +924,7 @@
                                 },
                                 "end": {
                                   "line": 29,
-                                  "column": 21,
+                                  "column": 19,
                                   "program": "internalParsing.ets"
                                 }
                               }
@@ -974,7 +974,7 @@
                                   },
                                   "end": {
                                     "line": 29,
-                                    "column": 28,
+                                    "column": 27,
                                     "program": "internalParsing.ets"
                                   }
                                 }
@@ -987,7 +987,7 @@
                                 },
                                 "end": {
                                   "line": 29,
-                                  "column": 28,
+                                  "column": 27,
                                   "program": "internalParsing.ets"
                                 }
                               }

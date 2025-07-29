@@ -529,7 +529,7 @@
                                   },
                                   "end": {
                                     "line": 23,
-                                    "column": 20,
+                                    "column": 18,
                                     "program": "conditionalExpressionType.ets"
                                   }
                                 }
@@ -542,7 +542,7 @@
                                 },
                                 "end": {
                                   "line": 23,
-                                  "column": 20,
+                                  "column": 18,
                                   "program": "conditionalExpressionType.ets"
                                 }
                               }
@@ -856,7 +856,7 @@
                                   },
                                   "end": {
                                     "line": 29,
-                                    "column": 19,
+                                    "column": 17,
                                     "program": "conditionalExpressionType.ets"
                                   }
                                 }
@@ -869,7 +869,7 @@
                                 },
                                 "end": {
                                   "line": 29,
-                                  "column": 19,
+                                  "column": 17,
                                   "program": "conditionalExpressionType.ets"
                                 }
                               }
@@ -1453,7 +1453,7 @@
                                   },
                                   "end": {
                                     "line": 40,
-                                    "column": 19,
+                                    "column": 17,
                                     "program": "conditionalExpressionType.ets"
                                   }
                                 }
@@ -1466,7 +1466,7 @@
                                 },
                                 "end": {
                                   "line": 40,
-                                  "column": 19,
+                                  "column": 17,
                                   "program": "conditionalExpressionType.ets"
                                 }
                               }
@@ -1714,7 +1714,7 @@
                                   },
                                   "end": {
                                     "line": 44,
-                                    "column": 18,
+                                    "column": 16,
                                     "program": "conditionalExpressionType.ets"
                                   }
                                 }
@@ -1727,7 +1727,7 @@
                                 },
                                 "end": {
                                   "line": 44,
-                                  "column": 18,
+                                  "column": 16,
                                   "program": "conditionalExpressionType.ets"
                                 }
                               }
@@ -2421,7 +2421,7 @@
                                   },
                                   "end": {
                                     "line": 54,
-                                    "column": 20,
+                                    "column": 18,
                                     "program": "conditionalExpressionType.ets"
                                   }
                                 }
@@ -2434,7 +2434,7 @@
                                 },
                                 "end": {
                                   "line": 54,
-                                  "column": 20,
+                                  "column": 18,
                                   "program": "conditionalExpressionType.ets"
                                 }
                               }

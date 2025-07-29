@@ -583,7 +583,7 @@
                                   },
                                   "end": {
                                     "line": 24,
-                                    "column": 22,
+                                    "column": 20,
                                     "program": "launch_ret.ets"
                                   }
                                 }
@@ -596,7 +596,7 @@
                                 },
                                 "end": {
                                   "line": 24,
-                                  "column": 22,
+                                  "column": 20,
                                   "program": "launch_ret.ets"
                                 }
                               }

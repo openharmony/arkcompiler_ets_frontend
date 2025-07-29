@@ -2219,7 +2219,7 @@
                                   },
                                   "end": {
                                     "line": 45,
-                                    "column": 32,
+                                    "column": 31,
                                     "program": "BitopsBitsInByte.ets"
                                   }
                                 }
@@ -2232,7 +2232,7 @@
                                 },
                                 "end": {
                                   "line": 45,
-                                  "column": 32,
+                                  "column": 31,
                                   "program": "BitopsBitsInByte.ets"
                                 }
                               }

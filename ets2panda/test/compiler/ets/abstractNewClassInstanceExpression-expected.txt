@@ -489,7 +489,7 @@
                     },
                     "end": {
                       "line": 26,
-                      "column": 20,
+                      "column": 19,
                       "program": "abstractNewClassInstanceExpression.ets"
                     }
                   }
@@ -502,7 +502,7 @@
                   },
                   "end": {
                     "line": 26,
-                    "column": 20,
+                    "column": 19,
                     "program": "abstractNewClassInstanceExpression.ets"
                   }
                 }
@@ -556,7 +556,7 @@
                   },
                   "end": {
                     "line": 26,
-                    "column": 13,
+                    "column": 11,
                     "program": "abstractNewClassInstanceExpression.ets"
                   }
                 }
@@ -569,7 +569,7 @@
                 },
                 "end": {
                   "line": 26,
-                  "column": 13,
+                  "column": 11,
                   "program": "abstractNewClassInstanceExpression.ets"
                 }
               }
@@ -1091,7 +1091,7 @@
                                 },
                                 "end": {
                                   "line": 32,
-                                  "column": 21,
+                                  "column": 20,
                                   "program": "abstractNewClassInstanceExpression.ets"
                                 }
                               }
@@ -1104,7 +1104,7 @@
                               },
                               "end": {
                                 "line": 32,
-                                "column": 21,
+                                "column": 20,
                                 "program": "abstractNewClassInstanceExpression.ets"
                               }
                             }

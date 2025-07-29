@@ -221,7 +221,7 @@
                                     },
                                     "end": {
                                       "line": 16,
-                                      "column": 29,
+                                      "column": 28,
                                       "program": "trailing_lambda_overload_1.ets"
                                     }
                                   }
@@ -234,7 +234,7 @@
                                   },
                                   "end": {
                                     "line": 16,
-                                    "column": 29,
+                                    "column": 28,
                                     "program": "trailing_lambda_overload_1.ets"
                                   }
                                 }
@@ -248,7 +248,7 @@
                                 },
                                 "end": {
                                   "line": 16,
-                                  "column": 29,
+                                  "column": 28,
                                   "program": "trailing_lambda_overload_1.ets"
                                 }
                               }
@@ -261,7 +261,7 @@
                               },
                               "end": {
                                 "line": 16,
-                                "column": 29,
+                                "column": 28,
                                 "program": "trailing_lambda_overload_1.ets"
                               }
                             }

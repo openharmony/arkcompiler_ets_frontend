@@ -368,7 +368,7 @@
                             },
                             "end": {
                               "line": 18,
-                              "column": 20,
+                              "column": 19,
                               "program": "generic_function_call_1.ets"
                             }
                           }
@@ -381,7 +381,7 @@
                           },
                           "end": {
                             "line": 18,
-                            "column": 20,
+                            "column": 19,
                             "program": "generic_function_call_1.ets"
                           }
                         }
@@ -395,7 +395,7 @@
                         },
                         "end": {
                           "line": 18,
-                          "column": 20,
+                          "column": 19,
                           "program": "generic_function_call_1.ets"
                         }
                       }
@@ -408,7 +408,7 @@
                       },
                       "end": {
                         "line": 18,
-                        "column": 20,
+                        "column": 19,
                         "program": "generic_function_call_1.ets"
                       }
                     }
@@ -640,7 +640,7 @@
                                   },
                                   "end": {
                                     "line": 21,
-                                    "column": 17,
+                                    "column": 16,
                                     "program": "generic_function_call_1.ets"
                                   }
                                 }
@@ -653,7 +653,7 @@
                                 },
                                 "end": {
                                   "line": 21,
-                                  "column": 17,
+                                  "column": 16,
                                   "program": "generic_function_call_1.ets"
                                 }
                               }
@@ -773,7 +773,7 @@
                                   },
                                   "end": {
                                     "line": 23,
-                                    "column": 8,
+                                    "column": 7,
                                     "program": "generic_function_call_1.ets"
                                   }
                                 }
@@ -786,7 +786,7 @@
                                 },
                                 "end": {
                                   "line": 23,
-                                  "column": 8,
+                                  "column": 7,
                                   "program": "generic_function_call_1.ets"
                                 }
                               }

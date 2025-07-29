@@ -1148,7 +1148,7 @@
                                   },
                                   "end": {
                                     "line": 33,
-                                    "column": 21,
+                                    "column": 19,
                                     "program": "internalProtectedParsing.ets"
                                   }
                                 }
@@ -1161,7 +1161,7 @@
                                 },
                                 "end": {
                                   "line": 33,
-                                  "column": 21,
+                                  "column": 19,
                                   "program": "internalProtectedParsing.ets"
                                 }
                               }
@@ -1211,7 +1211,7 @@
                                   },
                                   "end": {
                                     "line": 33,
-                                    "column": 28,
+                                    "column": 27,
                                     "program": "internalProtectedParsing.ets"
                                   }
                                 }
@@ -1224,7 +1224,7 @@
                                 },
                                 "end": {
                                   "line": 33,
-                                  "column": 28,
+                                  "column": 27,
                                   "program": "internalProtectedParsing.ets"
                                 }
                               }

@@ -249,7 +249,7 @@
                                             },
                                             "end": {
                                               "line": 17,
-                                              "column": 22,
+                                              "column": 21,
                                               "program": "lambda_cast_type_has_pramas.ets"
                                             }
                                           }
@@ -262,7 +262,7 @@
                                           },
                                           "end": {
                                             "line": 17,
-                                            "column": 22,
+                                            "column": 21,
                                             "program": "lambda_cast_type_has_pramas.ets"
                                           }
                                         }
@@ -276,7 +276,7 @@
                                         },
                                         "end": {
                                           "line": 17,
-                                          "column": 22,
+                                          "column": 21,
                                           "program": "lambda_cast_type_has_pramas.ets"
                                         }
                                       }
@@ -289,7 +289,7 @@
                                       },
                                       "end": {
                                         "line": 17,
-                                        "column": 22,
+                                        "column": 21,
                                         "program": "lambda_cast_type_has_pramas.ets"
                                       }
                                     }
@@ -406,7 +406,7 @@
                                           },
                                           "end": {
                                             "line": 17,
-                                            "column": 52,
+                                            "column": 51,
                                             "program": "lambda_cast_type_has_pramas.ets"
                                           }
                                         }
@@ -419,7 +419,7 @@
                                         },
                                         "end": {
                                           "line": 17,
-                                          "column": 52,
+                                          "column": 51,
                                           "program": "lambda_cast_type_has_pramas.ets"
                                         }
                                       }
@@ -433,7 +433,7 @@
                                       },
                                       "end": {
                                         "line": 17,
-                                        "column": 52,
+                                        "column": 51,
                                         "program": "lambda_cast_type_has_pramas.ets"
                                       }
                                     }
@@ -446,7 +446,7 @@
                                     },
                                     "end": {
                                       "line": 17,
-                                      "column": 52,
+                                      "column": 51,
                                       "program": "lambda_cast_type_has_pramas.ets"
                                     }
                                   }
@@ -480,8 +480,8 @@
                                       "program": "lambda_cast_type_has_pramas.ets"
                                     },
                                     "end": {
-                                      "line": 18,
-                                      "column": 8,
+                                      "line": 17,
+                                      "column": 59,
                                       "program": "lambda_cast_type_has_pramas.ets"
                                     }
                                   }
@@ -493,8 +493,8 @@
                                     "program": "lambda_cast_type_has_pramas.ets"
                                   },
                                   "end": {
-                                    "line": 18,
-                                    "column": 8,
+                                    "line": 17,
+                                    "column": 59,
                                     "program": "lambda_cast_type_has_pramas.ets"
                                   }
                                 }
@@ -506,8 +506,8 @@
                                   "program": "lambda_cast_type_has_pramas.ets"
                                 },
                                 "end": {
-                                  "line": 18,
-                                  "column": 8,
+                                  "line": 17,
+                                  "column": 59,
                                   "program": "lambda_cast_type_has_pramas.ets"
                                 }
                               }
@@ -598,7 +598,7 @@
                                           },
                                           "end": {
                                             "line": 18,
-                                            "column": 29,
+                                            "column": 28,
                                             "program": "lambda_cast_type_has_pramas.ets"
                                           }
                                         }
@@ -611,7 +611,7 @@
                                         },
                                         "end": {
                                           "line": 18,
-                                          "column": 29,
+                                          "column": 28,
                                           "program": "lambda_cast_type_has_pramas.ets"
                                         }
                                       }
@@ -625,7 +625,7 @@
                                       },
                                       "end": {
                                         "line": 18,
-                                        "column": 29,
+                                        "column": 28,
                                         "program": "lambda_cast_type_has_pramas.ets"
                                       }
                                     }
@@ -638,7 +638,7 @@
                                     },
                                     "end": {
                                       "line": 18,
-                                      "column": 29,
+                                      "column": 28,
                                       "program": "lambda_cast_type_has_pramas.ets"
                                     }
                                   }
@@ -673,7 +673,7 @@
                                     },
                                     "end": {
                                       "line": 18,
-                                      "column": 38,
+                                      "column": 36,
                                       "program": "lambda_cast_type_has_pramas.ets"
                                     }
                                   }
@@ -686,7 +686,7 @@
                                   },
                                   "end": {
                                     "line": 18,
-                                    "column": 38,
+                                    "column": 36,
                                     "program": "lambda_cast_type_has_pramas.ets"
                                   }
                                 }
@@ -699,7 +699,7 @@
                                 },
                                 "end": {
                                   "line": 18,
-                                  "column": 38,
+                                  "column": 36,
                                   "program": "lambda_cast_type_has_pramas.ets"
                                 }
                               }

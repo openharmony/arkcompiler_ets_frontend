@@ -625,7 +625,7 @@
                                     },
                                     "end": {
                                       "line": 20,
-                                      "column": 32,
+                                      "column": 31,
                                       "program": "inferTypeOfArray.ets"
                                     }
                                   }
@@ -638,7 +638,7 @@
                                   },
                                   "end": {
                                     "line": 20,
-                                    "column": 32,
+                                    "column": 31,
                                     "program": "inferTypeOfArray.ets"
                                   }
                                 }
@@ -1548,7 +1548,7 @@
                         },
                         "end": {
                           "line": 20,
-                          "column": 32,
+                          "column": 31,
                           "program": "inferTypeOfArray.ets"
                         }
                       }
@@ -1561,7 +1561,7 @@
                       },
                       "end": {
                         "line": 20,
-                        "column": 32,
+                        "column": 31,
                         "program": "inferTypeOfArray.ets"
                       }
                     }

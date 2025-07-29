@@ -1046,7 +1046,8 @@ ir::TypeNode *ETSParser::ParseTypeReference(TypeAnnotationParsingOptions *option
 
         typeRefPart = AllocNode<ir::ETSTypeReferencePart>(typeName, typeParams, typeRefPart, Allocator());
         ES2PANDA_ASSERT(typeRefPart != nullptr);
-        typeRefPart->SetRange({partPos, Lexer()->GetToken().End()});
+        auto endPos = typeParams == nullptr ? typeName->End() : typeParams->End();
+        typeRefPart->SetRange({partPos, endPos});
 
         if (!Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_PERIOD)) {
             break;
@@ -1060,7 +1061,7 @@ ir::TypeNode *ETSParser::ParseTypeReference(TypeAnnotationParsingOptions *option
 
     auto *typeReference = AllocNode<ir::ETSTypeReference>(typeRefPart, Allocator());
     ES2PANDA_ASSERT(typeReference != nullptr);
-    typeReference->SetRange({startPos, Lexer()->GetToken().End()});
+    typeReference->SetRange({startPos, typeRefPart->End()});
     return typeReference;
 }
 

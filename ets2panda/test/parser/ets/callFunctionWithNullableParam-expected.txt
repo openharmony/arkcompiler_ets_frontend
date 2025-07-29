@@ -368,7 +368,7 @@
                             },
                             "end": {
                               "line": 18,
-                              "column": 20,
+                              "column": 19,
                               "program": "callFunctionWithNullableParam.ets"
                             }
                           }
@@ -381,7 +381,7 @@
                           },
                           "end": {
                             "line": 18,
-                            "column": 20,
+                            "column": 19,
                             "program": "callFunctionWithNullableParam.ets"
                           }
                         }
@@ -395,7 +395,7 @@
                         },
                         "end": {
                           "line": 18,
-                          "column": 20,
+                          "column": 19,
                           "program": "callFunctionWithNullableParam.ets"
                         }
                       }
@@ -408,7 +408,7 @@
                       },
                       "end": {
                         "line": 18,
-                        "column": 20,
+                        "column": 19,
                         "program": "callFunctionWithNullableParam.ets"
                       }
                     }
@@ -593,7 +593,7 @@
                                       },
                                       "end": {
                                         "line": 21,
-                                        "column": 17,
+                                        "column": 15,
                                         "program": "callFunctionWithNullableParam.ets"
                                       }
                                     }
@@ -606,7 +606,7 @@
                                     },
                                     "end": {
                                       "line": 21,
-                                      "column": 17,
+                                      "column": 15,
                                       "program": "callFunctionWithNullableParam.ets"
                                     }
                                   }
@@ -685,7 +685,7 @@
                                   },
                                   "end": {
                                     "line": 21,
-                                    "column": 31,
+                                    "column": 30,
                                     "program": "callFunctionWithNullableParam.ets"
                                   }
                                 }
@@ -698,7 +698,7 @@
                                 },
                                 "end": {
                                   "line": 21,
-                                  "column": 31,
+                                  "column": 30,
                                   "program": "callFunctionWithNullableParam.ets"
                                 }
                               }

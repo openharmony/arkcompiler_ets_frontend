@@ -1099,7 +1099,7 @@
                                   },
                                   "end": {
                                     "line": 38,
-                                    "column": 27,
+                                    "column": 26,
                                     "program": "function_implicit_return_type8.ets"
                                   }
                                 }
@@ -1112,7 +1112,7 @@
                                 },
                                 "end": {
                                   "line": 38,
-                                  "column": 27,
+                                  "column": 26,
                                   "program": "function_implicit_return_type8.ets"
                                 }
                               }

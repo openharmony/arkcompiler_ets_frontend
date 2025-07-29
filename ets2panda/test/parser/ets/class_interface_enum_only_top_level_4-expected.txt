@@ -394,8 +394,8 @@
                           "program": "class_interface_enum_only_top_level_4.ets"
                         },
                         "end": {
-                          "line": 21,
-                          "column": 2,
+                          "line": 20,
+                          "column": 4,
                           "program": "class_interface_enum_only_top_level_4.ets"
                         }
                       }

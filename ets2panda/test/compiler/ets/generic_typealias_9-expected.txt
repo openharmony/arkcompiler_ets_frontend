@@ -99,8 +99,8 @@
                 "program": "generic_typealias_9.ets"
               },
               "end": {
-                "line": 17,
-                "column": 9,
+                "line": 15,
+                "column": 53,
                 "program": "generic_typealias_9.ets"
               }
             }
@@ -112,8 +112,8 @@
               "program": "generic_typealias_9.ets"
             },
             "end": {
-              "line": 17,
-              "column": 9,
+              "line": 15,
+              "column": 53,
               "program": "generic_typealias_9.ets"
             }
           }
@@ -125,8 +125,8 @@
             "program": "generic_typealias_9.ets"
           },
           "end": {
-            "line": 17,
-            "column": 9,
+            "line": 15,
+            "column": 53,
             "program": "generic_typealias_9.ets"
           }
         }
@@ -450,7 +450,7 @@
                                           },
                                           "end": {
                                             "line": 18,
-                                            "column": 31,
+                                            "column": 30,
                                             "program": "generic_typealias_9.ets"
                                           }
                                         }
@@ -463,7 +463,7 @@
                                         },
                                         "end": {
                                           "line": 18,
-                                          "column": 31,
+                                          "column": 30,
                                           "program": "generic_typealias_9.ets"
                                         }
                                       }
@@ -490,7 +490,7 @@
                                   },
                                   "end": {
                                     "line": 18,
-                                    "column": 33,
+                                    "column": 31,
                                     "program": "generic_typealias_9.ets"
                                   }
                                 }
@@ -503,7 +503,7 @@
                                 },
                                 "end": {
                                   "line": 18,
-                                  "column": 33,
+                                  "column": 31,
                                   "program": "generic_typealias_9.ets"
                                 }
                               }
@@ -608,7 +608,7 @@
                                     },
                                     "end": {
                                       "line": 18,
-                                      "column": 54,
+                                      "column": 51,
                                       "program": "generic_typealias_9.ets"
                                     }
                                   }
@@ -621,7 +621,7 @@
                                   },
                                   "end": {
                                     "line": 18,
-                                    "column": 54,
+                                    "column": 51,
                                     "program": "generic_typealias_9.ets"
                                   }
                                 }

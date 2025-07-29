@@ -205,7 +205,7 @@
               },
               "end": {
                 "line": 17,
-                "column": 20,
+                "column": 18,
                 "program": "inheritance2.ets"
               }
             }
@@ -218,7 +218,7 @@
             },
             "end": {
               "line": 17,
-              "column": 20,
+              "column": 18,
               "program": "inheritance2.ets"
             }
           }
@@ -406,7 +406,7 @@
               },
               "end": {
                 "line": 18,
-                "column": 20,
+                "column": 18,
                 "program": "inheritance2.ets"
               }
             }
@@ -419,7 +419,7 @@
             },
             "end": {
               "line": 18,
-              "column": 20,
+              "column": 18,
               "program": "inheritance2.ets"
             }
           }
@@ -607,7 +607,7 @@
               },
               "end": {
                 "line": 19,
-                "column": 20,
+                "column": 18,
                 "program": "inheritance2.ets"
               }
             }
@@ -620,7 +620,7 @@
             },
             "end": {
               "line": 19,
-              "column": 20,
+              "column": 18,
               "program": "inheritance2.ets"
             }
           }
@@ -992,7 +992,7 @@
                                   },
                                   "end": {
                                     "line": 22,
-                                    "column": 16,
+                                    "column": 14,
                                     "program": "inheritance2.ets"
                                   }
                                 }
@@ -1005,7 +1005,7 @@
                                 },
                                 "end": {
                                   "line": 22,
-                                  "column": 16,
+                                  "column": 14,
                                   "program": "inheritance2.ets"
                                 }
                               }
@@ -1055,7 +1055,7 @@
                                   },
                                   "end": {
                                     "line": 22,
-                                    "column": 23,
+                                    "column": 22,
                                     "program": "inheritance2.ets"
                                   }
                                 }
@@ -1068,7 +1068,7 @@
                                 },
                                 "end": {
                                   "line": 22,
-                                  "column": 23,
+                                  "column": 22,
                                   "program": "inheritance2.ets"
                                 }
                               }
@@ -1152,7 +1152,7 @@
                                   },
                                   "end": {
                                     "line": 23,
-                                    "column": 16,
+                                    "column": 14,
                                     "program": "inheritance2.ets"
                                   }
                                 }
@@ -1165,7 +1165,7 @@
                                 },
                                 "end": {
                                   "line": 23,
-                                  "column": 16,
+                                  "column": 14,
                                   "program": "inheritance2.ets"
                                 }
                               }
@@ -1266,7 +1266,7 @@
                                   },
                                   "end": {
                                     "line": 24,
-                                    "column": 16,
+                                    "column": 14,
                                     "program": "inheritance2.ets"
                                   }
                                 }
@@ -1279,7 +1279,7 @@
                                 },
                                 "end": {
                                   "line": 24,
-                                  "column": 16,
+                                  "column": 14,
                                   "program": "inheritance2.ets"
                                 }
                               }
@@ -1380,7 +1380,7 @@
                                   },
                                   "end": {
                                     "line": 25,
-                                    "column": 16,
+                                    "column": 14,
                                     "program": "inheritance2.ets"
                                   }
                                 }
@@ -1393,7 +1393,7 @@
                                 },
                                 "end": {
                                   "line": 25,
-                                  "column": 16,
+                                  "column": 14,
                                   "program": "inheritance2.ets"
                                 }
                               }
@@ -1494,7 +1494,7 @@
                                   },
                                   "end": {
                                     "line": 26,
-                                    "column": 21,
+                                    "column": 19,
                                     "program": "inheritance2.ets"
                                   }
                                 }
@@ -1507,7 +1507,7 @@
                                 },
                                 "end": {
                                   "line": 26,
-                                  "column": 21,
+                                  "column": 19,
                                   "program": "inheritance2.ets"
                                 }
                               }

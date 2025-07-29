@@ -884,7 +884,7 @@
                                   },
                                   "end": {
                                     "line": 26,
-                                    "column": 29,
+                                    "column": 28,
                                     "program": "catch-soft-keyword.ets"
                                   }
                                 }
@@ -897,7 +897,7 @@
                                 },
                                 "end": {
                                   "line": 26,
-                                  "column": 29,
+                                  "column": 28,
                                   "program": "catch-soft-keyword.ets"
                                 }
                               }

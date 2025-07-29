@@ -491,7 +491,7 @@
                                 },
                                 "end": {
                                   "line": 21,
-                                  "column": 21,
+                                  "column": 20,
                                   "program": "binary_op.ets"
                                 }
                               }
@@ -504,7 +504,7 @@
                               },
                               "end": {
                                 "line": 21,
-                                "column": 21,
+                                "column": 20,
                                 "program": "binary_op.ets"
                               }
                             }
@@ -3073,7 +3073,7 @@
                                 },
                                 "end": {
                                   "line": 53,
-                                  "column": 32,
+                                  "column": 31,
                                   "program": "binary_op.ets"
                                 }
                               }
@@ -3086,7 +3086,7 @@
                               },
                               "end": {
                                 "line": 53,
-                                "column": 32,
+                                "column": 31,
                                 "program": "binary_op.ets"
                               }
                             }
@@ -3099,7 +3099,7 @@
                             },
                             "end": {
                               "line": 53,
-                              "column": 32,
+                              "column": 31,
                               "program": "binary_op.ets"
                             }
                           }
@@ -3112,7 +3112,7 @@
                           },
                           "end": {
                             "line": 53,
-                            "column": 32,
+                            "column": 31,
                             "program": "binary_op.ets"
                           }
                         }
@@ -3125,7 +3125,7 @@
                         },
                         "end": {
                           "line": 53,
-                          "column": 32,
+                          "column": 31,
                           "program": "binary_op.ets"
                         }
                       }
@@ -6116,7 +6116,7 @@
                     },
                     "end": {
                       "line": 21,
-                      "column": 21,
+                      "column": 20,
                       "program": "binary_op.ets"
                     }
                   }
@@ -6129,7 +6129,7 @@
                   },
                   "end": {
                     "line": 21,
-                    "column": 21,
+                    "column": 20,
                     "program": "binary_op.ets"
                   }
                 }
@@ -6226,7 +6226,7 @@
                       },
                       "end": {
                         "line": 22,
-                        "column": 17,
+                        "column": 15,
                         "program": "binary_op.ets"
                       }
                     }
@@ -6239,7 +6239,7 @@
                     },
                     "end": {
                       "line": 22,
-                      "column": 17,
+                      "column": 15,
                       "program": "binary_op.ets"
                     }
                   }
@@ -8585,7 +8585,7 @@
                     },
                     "end": {
                       "line": 53,
-                      "column": 32,
+                      "column": 31,
                       "program": "binary_op.ets"
                     }
                   }
@@ -8598,7 +8598,7 @@
                   },
                   "end": {
                     "line": 53,
-                    "column": 32,
+                    "column": 31,
                     "program": "binary_op.ets"
                   }
                 }
@@ -8611,7 +8611,7 @@
                 },
                 "end": {
                   "line": 53,
-                  "column": 32,
+                  "column": 31,
                   "program": "binary_op.ets"
                 }
               }
@@ -8632,7 +8632,7 @@
               },
               "end": {
                 "line": 53,
-                "column": 32,
+                "column": 31,
                 "program": "binary_op.ets"
               }
             }
