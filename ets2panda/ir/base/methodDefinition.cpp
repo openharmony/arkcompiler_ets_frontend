@@ -29,12 +29,12 @@ void MethodDefinition::SetDefaultAccessModifier(bool isDefault)
     this->GetOrCreateHistoryNodeAs<MethodDefinition>()->isDefault_ = isDefault;
 }
 
-void MethodDefinition::SetBaseOverloadMethod(MethodDefinition *baseOverloadMethod)
+void MethodDefinition::SetBaseOverloadMethod(MethodDefinition *const baseOverloadMethod)
 {
     this->GetOrCreateHistoryNodeAs<MethodDefinition>()->baseOverloadMethod_ = baseOverloadMethod;
 }
 
-void MethodDefinition::SetAsyncPairMethod(MethodDefinition *asyncPairMethod)
+void MethodDefinition::SetAsyncPairMethod(MethodDefinition *const asyncPairMethod)
 {
     this->GetOrCreateHistoryNodeAs<MethodDefinition>()->asyncPairMethod_ = asyncPairMethod;
 }

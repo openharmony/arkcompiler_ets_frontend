@@ -206,7 +206,7 @@ export class Lsp {
         return;
       }
       buildConfig.compileFiles.forEach((compilefilePath: string) => {
-        if (!this.moduleInfos.hasOwnProperty(compilefilePath)) {
+        if (!Object.prototype.hasOwnProperty.call(this.moduleInfos, compilefilePath)) {
           return;
         }
         const [cfg, ctx] = this.createContext(compilefilePath);
@@ -244,7 +244,7 @@ export class Lsp {
     // source file
     let sourceFilePath = path.resolve(modifyFilePath.valueOf());
     let moduleInfo: ModuleInfo;
-    if (this.moduleInfos.hasOwnProperty(sourceFilePath)) {
+    if (Object.prototype.hasOwnProperty.call(this.moduleInfos, sourceFilePath)) {
       moduleInfo = this.moduleInfos[sourceFilePath];
     } else {
       const [newModuleName, newModuleRootPath] = getModuleNameAndPath(modifyFilePath, this.pathConfig.projectPath);
@@ -268,7 +268,7 @@ export class Lsp {
     }
     const moduleName = moduleInfo.packageName;
     const moduleRootPath = moduleInfo.moduleRootPath;
-    if (!this.buildConfigs.hasOwnProperty(moduleName)) {
+    if (!Object.prototype.hasOwnProperty.call(this.buildConfigs, moduleName)) {
       return;
     }
     const buildConfig = this.buildConfigs[moduleName];
