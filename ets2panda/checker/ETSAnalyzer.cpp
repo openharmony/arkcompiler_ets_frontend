@@ -1193,6 +1193,42 @@ static bool IsInvalidMethodAssignment(const ir::AssignmentExpression *const expr
     return false;
 }
 
+// In assignment expression or object literal, we need the type of the setter instead of the type of the getter
+static checker::Type *GetSetterType(varbinder::Variable *const var, ETSChecker *checker)
+{
+    if (var == nullptr || !checker->IsVariableGetterSetter(var)) {
+        return nullptr;
+    }
+
+    if (var->TsType()->IsETSFunctionType()) {
+        auto *funcType = var->TsType()->AsETSFunctionType();
+        if (funcType->HasTypeFlag(checker::TypeFlag::SETTER)) {
+            auto *setter = funcType->FindSetter();
+            ES2PANDA_ASSERT(setter != nullptr && setter->Params().size() == 1);
+            return setter->Params()[0]->TsType();
+        }
+    }
+
+    return nullptr;
+}
+
+// Helper to set the target of assignment expression
+bool ETSAnalyzer::SetAssignmentExpressionTarget(ir::AssignmentExpression *const expr, ETSChecker *checker) const
+{
+    if (expr->Left()->IsIdentifier()) {
+        expr->target_ = expr->Left()->AsIdentifier()->Variable();
+    } else if (expr->Left()->IsMemberExpression()) {
+        if (!expr->IsIgnoreConstAssign() &&
+            expr->Left()->AsMemberExpression()->Object()->TsType()->HasTypeFlag(TypeFlag::READONLY)) {
+            checker->LogError(diagnostic::READONLY_PROPERTY_REASSIGN, {}, expr->Left()->Start());
+        }
+        expr->target_ = expr->Left()->AsMemberExpression()->PropVar();
+    } else {
+        return false;
+    }
+    return true;
+}
+
 checker::Type *ETSAnalyzer::Check(ir::AssignmentExpression *const expr) const
 {
     if (expr->TsType() != nullptr) {
@@ -1205,22 +1241,14 @@ checker::Type *ETSAnalyzer::Check(ir::AssignmentExpression *const expr) const
         checker->WarnForEndlessLoopInGetterSetter(expr->Left()->AsMemberExpression());
     }
 
-    const auto leftType = expr->Left()->Check(checker);
+    checker::Type *leftType = expr->Left()->Check(checker);
 
     if (IsInvalidArrayMemberAssignment(expr, checker) || IsInvalidMethodAssignment(expr, checker)) {
         expr->SetTsType(checker->GlobalTypeError());
         return expr->TsType();
     }
 
-    if (expr->Left()->IsIdentifier()) {
-        expr->target_ = expr->Left()->AsIdentifier()->Variable();
-    } else if (expr->Left()->IsMemberExpression()) {
-        if (!expr->IsIgnoreConstAssign() &&
-            expr->Left()->AsMemberExpression()->Object()->TsType()->HasTypeFlag(TypeFlag::READONLY)) {
-            checker->LogError(diagnostic::READONLY_PROPERTY_REASSIGN, {}, expr->Left()->Start());
-        }
-        expr->target_ = expr->Left()->AsMemberExpression()->PropVar();
-    } else {
+    if (!SetAssignmentExpressionTarget(expr, checker)) {
         checker->LogError(diagnostic::ASSIGNMENT_INVALID_LHS, {}, expr->Left()->Start());
         expr->SetTsType(checker->GlobalTypeError());
         return expr->TsType();
@@ -1228,6 +1256,11 @@ checker::Type *ETSAnalyzer::Check(ir::AssignmentExpression *const expr) const
 
     if (expr->target_ != nullptr && !expr->IsIgnoreConstAssign()) {
         checker->ValidateUnaryOperatorOperand(expr->target_, expr);
+    }
+
+    if (auto setterType = GetSetterType(expr->target_, checker); setterType != nullptr) {
+        leftType = setterType;
+        expr->Left()->SetTsType(leftType);
     }
 
     auto [rightType, relationNode] = CheckAssignmentExprOperatorType(expr, leftType);
@@ -2533,6 +2566,10 @@ void ETSAnalyzer::CheckObjectExprProps(const ir::ObjectExpression *expr,
         if (propType->IsETSMethodType()) {
             checker->LogError(diagnostic::OBJECT_LITERAL_METHOD_KEY, {pname}, propExpr->Start());
             return;
+        }
+
+        if (auto setterType = GetSetterType(lv, checker); setterType != nullptr) {
+            propType = setterType;
         }
 
         value->SetPreferredType(propType);
