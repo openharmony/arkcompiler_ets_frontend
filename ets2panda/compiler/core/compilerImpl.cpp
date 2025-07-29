@@ -178,6 +178,7 @@ static bool RunVerifierAndPhases(public_lib::Context &context, parser::Program &
     const auto verifierEachPhase = options.IsAstVerifierEachPhase();
 
     ast_verifier::ASTVerifier verifier(context, program);
+    verifier.Before();
     checker::IsolatedDeclgenChecker isolatedDeclgenChecker(*context.diagnosticEngine, program);
     if (options.IsGenerateDeclEnableIsolated()) {
         options.SetGenerateDeclEnabled(true);
@@ -229,6 +230,7 @@ static bool RunVerifierAndPhases(public_lib::Context &context, parser::Program &
         }
     }
 
+    verifier.After();
     return true;
 }
 
