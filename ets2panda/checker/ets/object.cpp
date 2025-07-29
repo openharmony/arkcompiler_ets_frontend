@@ -1893,15 +1893,15 @@ void ETSChecker::ValidateNamespaceProperty(varbinder::Variable *property, const 
 {
     ir::AstNode *parent = nullptr;
     if (property->TsType() != nullptr && !property->TsType()->IsTypeError()) {
-        if (property->TsType()->IsETSMethodType() && !property->HasFlag(varbinder::VariableFlags::OVERLOAD)) {
+        if (property->TsType()->IsETSMethodType()) {
             auto funcType = property->TsType()->AsETSFunctionType();
-            property = funcType->CallSignatures()[0]->OwnerVar();
+            property = !property->HasFlag(varbinder::VariableFlags::OVERLOAD)
+                           ? funcType->CallSignatures()[0]->OwnerVar()
+                           : property;
             ES2PANDA_ASSERT(property != nullptr);
-        } else {
-            if (ident->Parent()->IsMemberExpression() &&
-                ident->Parent()->AsMemberExpression()->Object()->IsSuperExpression()) {
-                LogError(diagnostic::SUPER_NOT_ACCESSIBLE, {ident->Name()}, ident->Start());
-            }
+        } else if (ident->Parent()->IsMemberExpression() &&
+                   ident->Parent()->AsMemberExpression()->Object()->IsSuperExpression()) {
+            LogError(diagnostic::SUPER_NOT_ACCESSIBLE, {ident->Name()}, ident->Start());
         }
     }
 
