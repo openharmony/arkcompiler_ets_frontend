@@ -18,13 +18,13 @@ import { foo, person, TestHelper, Machine, User, Person, Employee } from "./inte
 
 foo.getProperty("name")
 foo.setProperty("name", ESValue.wrap("456"))
-person.setProperty("age", ESValue.wrap(23.0))
-person.setProperty("male", ESValue.wrap([2.0, 3.0]))
-foo.setProperty("age", ESValue.wrap(12.0))
+person.setProperty("age", ESValue.wrap(23))
+person.setProperty("male", ESValue.wrap([2, 3]))
+foo.setProperty("age", ESValue.wrap(12))
 if (foo.setProperty("name", ESValue.wrap("456"))) { print("true") }
 
 let a = foo.instantiate()
-a.setProperty("age", ESValue.wrap(12.0))
+a.setProperty("age", ESValue.wrap(12))
 
 let test_helper = TestHelper.instantiate(ESValue.wrap("TEST_INSTANTIATE_JS_OBJECT"));
 test_helper.invokeMethod("test", ESValue.wrap(() => {
@@ -38,8 +38,8 @@ test_helper.invokeMethod("test", ESValue.wrap(() => {
 }), ESValue.wrap("user.id === 'Bob'"));
 
 test_helper.invokeMethod("test", ESValue.wrap(() => {
-let user = User.instantiate(ESValue.wrap(10.0));
-return user.getProperty("id").areStrictlyEqual(10.0);// arkts-interop-js2s-access-js-prop
+let user = User.instantiate(ESValue.wrap(10));
+return user.getProperty("id").areStrictlyEqual(10);// arkts-interop-js2s-access-js-prop
 }), ESValue.wrap("user.id === 10"));
 
 test_helper.invokeMethod("test", ESValue.wrap(() => {
@@ -53,7 +53,7 @@ test_helper.invokeMethod("test", ESValue.wrap(() => {
 }), ESValue.wrap("user.id === true"));
 
 test_helper.invokeMethod("test", ESValue.wrap(() => {
-    let machine = Person.instantiate(ESValue.wrap("John"), ESValue.wrap(10.0));
+    let machine = Person.instantiate(ESValue.wrap("John"), ESValue.wrap(10));
     return machine.getProperty("name").areStrictlyEqual("machine"); // arkts-interop-js2s-access-js-prop
 }), ESValue.wrap("machine.name === 'machine'"));
 

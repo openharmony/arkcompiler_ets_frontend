@@ -27,9 +27,9 @@ function tesCollectionsUsage() {
 
   const collections1: Array<number> = new Array<number>();
 
-  const collections2: number[] = new Array<number>();
+  const collections2 = new Array<number>();
 
-  const collections3: number[] = new Array<number>();
+  const collections3 = new Array<number>();
 
   let collections4: Array<number>;
 

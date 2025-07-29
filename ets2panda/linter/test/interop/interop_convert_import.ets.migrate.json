@@ -48,7 +48,7 @@
             "line": 25,
             "column": 44,
             "endLine": 25,
-            "endColumn": 68,
+            "endColumn": 62,
             "problem": "GenericCallNoTypeArgs",
             "suggest": "",
             "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",

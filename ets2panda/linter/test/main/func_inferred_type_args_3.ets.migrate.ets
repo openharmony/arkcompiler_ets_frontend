@@ -61,7 +61,7 @@ struct Child {
   }
 }
 
-let para: Record<string,number> = { 'PropA': 47.0 };
+let para: Record<string,number> = { 'PropA': 47 };
 let storage: LocalStorage = new LocalStorage(para);
 let propA: number | undefined = storage.get<number>('PropA');
 let link1: SubscribedAbstractProperty<number> = storage.link<number>('PropA');

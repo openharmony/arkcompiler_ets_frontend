@@ -176,27 +176,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 41,
-            "column": 29,
-            "endLine": 41,
-            "endColumn": 33,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 1420,
-                    "end": 1424,
-                    "replacementText": "1000.0",
-                    "line": 41,
-                    "column": 29,
-                    "endLine": 41,
-                    "endColumn": 33
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 42,
             "column": 8,
             "endLine": 42,
@@ -204,27 +183,6 @@
             "problem": "LimitedVoidType",
             "suggest": "",
             "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 42,
-            "column": 37,
-            "endLine": 42,
-            "endColumn": 41,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 1463,
-                    "end": 1467,
-                    "replacementText": "1000.0",
-                    "line": 42,
-                    "column": 37,
-                    "endLine": 42,
-                    "endColumn": 41
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -485,69 +443,6 @@
             "problem": "LimitedVoidType",
             "suggest": "",
             "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 83,
-            "column": 19,
-            "endLine": 83,
-            "endColumn": 20,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 2625,
-                    "end": 2626,
-                    "replacementText": "1.0",
-                    "line": 83,
-                    "column": 19,
-                    "endLine": 83,
-                    "endColumn": 20
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 83,
-            "column": 22,
-            "endLine": 83,
-            "endColumn": 23,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 2628,
-                    "end": 2629,
-                    "replacementText": "2.0",
-                    "line": 83,
-                    "column": 22,
-                    "endLine": 83,
-                    "endColumn": 23
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 83,
-            "column": 25,
-            "endLine": 83,
-            "endColumn": 26,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 2631,
-                    "end": 2632,
-                    "replacementText": "3.0",
-                    "line": 83,
-                    "column": 25,
-                    "endLine": 83,
-                    "endColumn": 26
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -1343,27 +1238,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 212,
-            "column": 12,
-            "endLine": 212,
-            "endColumn": 13,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 5557,
-                    "end": 5558,
-                    "replacementText": "0.0",
-                    "line": 212,
-                    "column": 12,
-                    "endLine": 212,
-                    "endColumn": 13
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 217,
             "column": 30,
             "endLine": 217,
@@ -1401,27 +1275,6 @@
             "problem": "LimitedVoidType",
             "suggest": "",
             "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 218,
-            "column": 11,
-            "endLine": 218,
-            "endColumn": 12,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 5645,
-                    "end": 5646,
-                    "replacementText": "0.0",
-                    "line": 218,
-                    "column": 11,
-                    "endLine": 218,
-                    "endColumn": 12
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -1505,27 +1358,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 226,
-            "column": 25,
-            "endLine": 226,
-            "endColumn": 26,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 5789,
-                    "end": 5790,
-                    "replacementText": "1.0",
-                    "line": 226,
-                    "column": 25,
-                    "endLine": 226,
-                    "endColumn": 26
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 228,
             "column": 31,
             "endLine": 228,
@@ -1581,48 +1413,6 @@
             "problem": "LimitedVoidType",
             "suggest": "",
             "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 229,
-            "column": 14,
-            "endLine": 229,
-            "endColumn": 16,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 5852,
-                    "end": 5854,
-                    "replacementText": "12.0",
-                    "line": 229,
-                    "column": 14,
-                    "endLine": 229,
-                    "endColumn": 16
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 231,
-            "column": 21,
-            "endLine": 231,
-            "endColumn": 23,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 5890,
-                    "end": 5892,
-                    "replacementText": "18.0",
-                    "line": 231,
-                    "column": 21,
-                    "endLine": 231,
-                    "endColumn": 23
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -1746,26 +1536,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 252,
-            "column": 10,
-            "endLine": 252,
-            "endColumn": 11,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 253,
-            "column": 10,
-            "endLine": 253,
-            "endColumn": 11,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 257,
             "column": 22,
             "endLine": 257,
@@ -1875,27 +1645,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 270,
-            "column": 13,
-            "endLine": 270,
-            "endColumn": 14,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 6497,
-                    "end": 6498,
-                    "replacementText": "0.0",
-                    "line": 270,
-                    "column": 13,
-                    "endLine": 270,
-                    "endColumn": 14
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 278,
             "column": 21,
             "endLine": 278,
@@ -1933,27 +1682,6 @@
             "problem": "LimitedVoidType",
             "suggest": "",
             "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 279,
-            "column": 13,
-            "endLine": 279,
-            "endColumn": 14,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 6628,
-                    "end": 6629,
-                    "replacementText": "0.0",
-                    "line": 279,
-                    "column": 13,
-                    "endLine": 279,
-                    "endColumn": 14
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -2006,27 +1734,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 288,
-            "column": 13,
-            "endLine": 288,
-            "endColumn": 14,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 6764,
-                    "end": 6765,
-                    "replacementText": "0.0",
-                    "line": 288,
-                    "column": 13,
-                    "endLine": 288,
-                    "endColumn": 14
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 294,
             "column": 21,
             "endLine": 294,
@@ -2064,27 +1771,6 @@
             "problem": "LimitedVoidType",
             "suggest": "",
             "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 295,
-            "column": 13,
-            "endLine": 295,
-            "endColumn": 14,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 6864,
-                    "end": 6865,
-                    "replacementText": "0.0",
-                    "line": 295,
-                    "column": 13,
-                    "endLine": 295,
-                    "endColumn": 14
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -2177,27 +1863,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 308,
-            "column": 11,
-            "endLine": 308,
-            "endColumn": 12,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 7040,
-                    "end": 7041,
-                    "replacementText": "0.0",
-                    "line": 308,
-                    "column": 11,
-                    "endLine": 308,
-                    "endColumn": 12
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 316,
             "column": 28,
             "endLine": 316,
@@ -2235,27 +1900,6 @@
             "problem": "LimitedVoidType",
             "suggest": "",
             "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 317,
-            "column": 11,
-            "endLine": 317,
-            "endColumn": 12,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 7164,
-                    "end": 7165,
-                    "replacementText": "0.0",
-                    "line": 317,
-                    "column": 11,
-                    "endLine": 317,
-                    "endColumn": 12
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -2308,27 +1952,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 326,
-            "column": 11,
-            "endLine": 326,
-            "endColumn": 12,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 7293,
-                    "end": 7294,
-                    "replacementText": "0.0",
-                    "line": 326,
-                    "column": 11,
-                    "endLine": 326,
-                    "endColumn": 12
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 332,
             "column": 28,
             "endLine": 332,
@@ -2366,27 +1989,6 @@
             "problem": "LimitedVoidType",
             "suggest": "",
             "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 333,
-            "column": 11,
-            "endLine": 333,
-            "endColumn": 12,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 7390,
-                    "end": 7391,
-                    "replacementText": "0.0",
-                    "line": 333,
-                    "column": 11,
-                    "endLine": 333,
-                    "endColumn": 12
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {

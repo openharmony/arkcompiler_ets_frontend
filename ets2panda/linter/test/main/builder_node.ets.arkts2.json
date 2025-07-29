@@ -15,66 +15,6 @@
     ],
     "result": [
         {
-            "line": 33,
-            "column": 17,
-            "endLine": 33,
-            "endColumn": 19,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 40,
-            "column": 60,
-            "endLine": 40,
-            "endColumn": 61,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 40,
-            "column": 64,
-            "endLine": 40,
-            "endColumn": 65,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 40,
-            "column": 86,
-            "endLine": 40,
-            "endColumn": 89,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 40,
-            "column": 94,
-            "endLine": 40,
-            "endColumn": 95,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 47,
-            "column": 10,
-            "endLine": 47,
-            "endColumn": 13,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 53,
             "column": 24,
             "endLine": 53,
@@ -115,16 +55,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 63,
-            "column": 12,
-            "endLine": 63,
-            "endColumn": 15,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 71,
             "column": 27,
             "endLine": 71,
@@ -142,26 +72,6 @@
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
             "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 71,
-            "column": 81,
-            "endLine": 71,
-            "endColumn": 84,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 71,
-            "column": 94,
-            "endLine": 71,
-            "endColumn": 97,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -185,26 +95,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 72,
-            "column": 90,
-            "endLine": 72,
-            "endColumn": 93,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 72,
-            "column": 103,
-            "endLine": 72,
-            "endColumn": 106,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 73,
             "column": 27,
             "endLine": 73,
@@ -225,26 +115,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 73,
-            "column": 81,
-            "endLine": 73,
-            "endColumn": 84,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 73,
-            "column": 94,
-            "endLine": 73,
-            "endColumn": 97,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 74,
             "column": 27,
             "endLine": 74,
@@ -262,26 +132,6 @@
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
             "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 74,
-            "column": 85,
-            "endLine": 74,
-            "endColumn": 88,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 74,
-            "column": 98,
-            "endLine": 74,
-            "endColumn": 101,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -322,56 +172,6 @@
             "problem": "WrapBuilderGenericNeedArrowFunc",
             "suggest": "",
             "rule": "When using \"wrapBuilder\", generics must be declared as arrow function (arkui-wrapbuilder-require-arrow-func-generic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 89,
-            "column": 16,
-            "endLine": 89,
-            "endColumn": 19,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 91,
-            "column": 46,
-            "endLine": 91,
-            "endColumn": 47,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 91,
-            "column": 50,
-            "endLine": 91,
-            "endColumn": 51,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 91,
-            "column": 72,
-            "endLine": 91,
-            "endColumn": 75,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 91,
-            "column": 80,
-            "endLine": 91,
-            "endColumn": 81,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -425,16 +225,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 99,
-            "column": 52,
-            "endLine": 99,
-            "endColumn": 55,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 100,
             "column": 9,
             "endLine": 100,
@@ -445,36 +235,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 100,
-            "column": 34,
-            "endLine": 100,
-            "endColumn": 35,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 100,
-            "column": 38,
-            "endLine": 100,
-            "endColumn": 39,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 100,
-            "column": 47,
-            "endLine": 100,
-            "endColumn": 48,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 102,
             "column": 9,
             "endLine": 102,
@@ -482,16 +242,6 @@
             "problem": "BuilderNodeUpdateNoLiteral",
             "suggest": "",
             "rule": "The \"update\" interface of \"BuilderNode\" does not accept an object literal. Please replace it with an instance of the class specified in the generic when creating a new \"BuilderNode\", and ensure that the instance has the same field values as the literal (arkui-buildernode-update-no-literal)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 102,
-            "column": 52,
-            "endLine": 102,
-            "endColumn": 55,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {

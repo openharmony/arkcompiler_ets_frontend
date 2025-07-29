@@ -82,8 +82,8 @@ class MyClassB {
 }
 
 const testMap: Map<string, number> = new Map<string, number>([
-  ['123', 1.0], // my comment 1
-  ['sfe', 2.0] // my comment 2
+  ['123', 1], // my comment 1
+  ['sfe', 2] // my comment 2
 ]);
 let a : Array<string> = new Array<string>();
 function foo(arr:Array<string>) { }

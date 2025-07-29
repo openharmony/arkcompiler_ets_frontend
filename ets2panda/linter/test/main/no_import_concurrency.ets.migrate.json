@@ -15,9 +15,9 @@
     ],
     "result": [
         {
-            "line": 39,
+            "line": 41,
             "column": 1,
-            "endLine": 39,
+            "endLine": 41,
             "endColumn": 6,
             "problem": "GenericCallNoTypeArgs",
             "suggest": "",
@@ -25,13 +25,33 @@
             "severity": "ERROR"
         },
         {
-            "line": 40,
+            "line": 42,
             "column": 1,
-            "endLine": 40,
+            "endLine": 42,
             "endColumn": 6,
             "problem": "GenericCallNoTypeArgs",
             "suggest": "",
             "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 46,
+            "column": 5,
+            "endLine": 46,
+            "endColumn": 28,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 46,
+            "column": 17,
+            "endLine": 46,
+            "endColumn": 26,
+            "problem": "DynamicCtorCall",
+            "suggest": "",
+            "rule": "\"new\" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)",
             "severity": "ERROR"
         }
     ]

@@ -2519,6 +2519,14 @@ export class Autofixer {
       if (ts.isIdentifier(node) && !ts.isImportClause(node.parent) && !ts.isImportSpecifier(node.parent)) {
         const nodeSymbol = this.typeChecker.getSymbolAtLocation(node);
         if (nodeSymbol === originalSymbol) {
+          // Skip any identifier that is part of a 'locks' qualification
+          const parent = node.parent;
+          if (
+            ts.isQualifiedName(parent) && parent.right.text === ARKTSUTILS_LOCKS_MEMBER ||
+            ts.isPropertyAccessExpression(parent) && parent.name.text === ARKTSUTILS_LOCKS_MEMBER
+          ) {
+            return;
+          }
           fixes.push({
             start: node.getStart(),
             end: node.getEnd(),
@@ -5373,6 +5381,17 @@ export class Autofixer {
         start: importDeclNode.getStart(),
         end: importDeclNode.getEnd(),
         replacementText: replacedText
+      }
+    ];
+  }
+
+  fixNumericLiteralToFloat(node: ts.NumericLiteral): Autofix[] {
+    void this;
+    return [
+      {
+        start: node.getStart(),
+        end: node.getEnd(),
+        replacementText: `${node.text}.0`
       }
     ];
   }

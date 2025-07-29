@@ -3860,4 +3860,17 @@ export class TsUtils {
       }
     }
   }
+
+ isNumberArrayType(type: ts.Type): boolean {
+      if (!type.symbol || !this.isGenericArrayType(type)) {
+        return false;
+      }
+
+      const typeArguments = this.tsTypeChecker.getTypeArguments(type as ts.TypeReference);
+      if (!typeArguments || typeArguments.length === 0) {
+        return false;
+      }
+
+      return (typeArguments[0].flags & ts.TypeFlags.Number) !== 0;
+    }
 }

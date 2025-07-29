@@ -55,16 +55,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 34,
-            "column": 18,
-            "endLine": 34,
-            "endColumn": 22,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 39,
             "column": 3,
             "endLine": 42,
@@ -85,16 +75,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 41,
-            "column": 18,
-            "endLine": 41,
-            "endColumn": 22,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 46,
             "column": 9,
             "endLine": 46,
@@ -105,16 +85,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 48,
-            "column": 18,
-            "endLine": 48,
-            "endColumn": 22,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 53,
             "column": 9,
             "endLine": 53,
@@ -122,16 +92,6 @@
             "problem": "SdkAbilityAsynchronousLifecycle",
             "suggest": "",
             "rule": "1.2 Void cannot be combined. OnDestroy/onDisconnect (The return type of the method is now void | Promise) needs to be split into two interfaces. (sdk-ability-asynchronous-lifecycle)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 55,
-            "column": 18,
-            "endLine": 55,
-            "endColumn": 22,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -155,16 +115,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 62,
-            "column": 18,
-            "endLine": 62,
-            "endColumn": 22,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 67,
             "column": 3,
             "endLine": 70,
@@ -172,16 +122,6 @@
             "problem": "LimitedVoidTypeFromSdk",
             "suggest": "",
             "rule": "Type \"void\" has no instances.(sdk-limited-void-type)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 69,
-            "column": 19,
-            "endLine": 69,
-            "endColumn": 23,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         }
     ]

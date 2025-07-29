@@ -44,7 +44,7 @@ function refreshToGetFontScale(): number {
   
   const TAG = 'SCBScreenLock-refreshToGetFontScale';
   const log: LogHelper = LogHelper.getLogHelper(LogDomain.KG, TAG);
-  const FONT_SCALE_DEFAULT: number = 1.0;
+  const FONT_SCALE_DEFAULT: number = 1;
   try {
     return uiAppearance.getFontScale();
   } catch (err) {

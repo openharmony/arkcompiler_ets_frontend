@@ -448,7 +448,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     [ts.SyntaxKind.AwaitExpression, this.handleAwaitExpression],
     [ts.SyntaxKind.PostfixUnaryExpression, this.handlePostfixUnaryExpression],
     [ts.SyntaxKind.BigIntLiteral, this.handleBigIntLiteral],
-    [ts.SyntaxKind.NumericLiteral, this.handleNumericLiteral]
   ]);
 
   lint(): void {
@@ -736,7 +735,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
 
     this.checkArrayElementsAndReportErrors(node, arrayLitNode, arrayLitType);
-
     this.handleObjectLiteralAssignmentToClass(arrayLitNode);
   }
 
@@ -1811,7 +1809,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleDeclarationInferredType(node);
     this.handleDefiniteAssignmentAssertion(node);
     this.handleSendableClassProperty(node);
-    this.checkNumericSemanticsForProperty(node);
     this.handleInvalidIdentifier(node);
     this.handleStructPropertyDecl(node);
     this.handlePropertyDeclarationForProp(node);
@@ -2124,7 +2121,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       this.processSendableDecoratorFunctionOverload(tsFunctionDeclaration);
     }
     this.handleTSOverload(tsFunctionDeclaration);
-    this.checkNumericSemanticsForFunction(tsFunctionDeclaration);
     this.handleInvalidIdentifier(tsFunctionDeclaration);
     this.checkDefaultParamBeforeRequired(tsFunctionDeclaration);
     this.handleLimitedVoidFunction(tsFunctionDeclaration);
@@ -2380,6 +2376,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleArkTSPropertyAccess(tsBinaryExpr);
     this.handleObjectLiteralAssignmentToClass(tsBinaryExpr);
     this.handleAssignmentNotsLikeSmartType(tsBinaryExpr);
+    this.checkNumericSemanticsForBinaryExpression(tsBinaryExpr)
   }
 
   private checkInterOpImportJsDataCompare(expr: ts.BinaryExpression): void {
@@ -2521,108 +2518,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
   }
 
-  private checkNumericSemanticsForVariable(node: ts.VariableDeclaration): void {
-    if (!this.options.arkts2) {
-      return;
-    }
-    const initializer = node.initializer;
-    const name = node.name;
-    if (node.type || !initializer || !ts.isIdentifier(name)) {
-      return;
-    }
-
-    // Early return if the variable is imported from JS
-    if (this.tsUtils.isPossiblyImportedFromJS(name) || this.tsUtils.isPossiblyImportedFromJS(initializer)) {
-      return;
-    }
-
-    if (
-      ts.isBinaryExpression(initializer) &&
-      ts.isCallExpression(initializer.left) &&
-      TsUtils.isAppStorageAccess(initializer.left)
-    ) {
-      return;
-    }
-
-    const sym = this.tsTypeChecker.getSymbolAtLocation(name);
-    if (!sym) {
-      return;
-    }
-
-    const type = this.tsTypeChecker.getTypeOfSymbolAtLocation(sym, name);
-    if (this.tsUtils.isNumberLike(type)) {
-      const autofix = this.autofixer?.fixNumericSemanticsForDeclaration(node, type);
-      this.incrementCounters(node, FaultID.NumericSemantics, autofix);
-    }
-  }
-
-  private checkNumericSemanticsForFunction(node: ts.FunctionDeclaration): void {
-    if (!this.options.arkts2) {
-      return;
-    }
-    for (const param of node.parameters) {
-      if (param.type) {
-        continue;
-      }
-      const sym = this.tsTypeChecker.getSymbolAtLocation(param.name);
-      if (!sym) {
-        continue;
-      }
-
-      const type = this.tsTypeChecker.getTypeOfSymbolAtLocation(sym, param.name);
-      if (this.tsUtils.isNumberLike(type)) {
-        const autofix = this.autofixer?.fixNumericSemanticsForDeclaration(param, type);
-        if (autofix) {
-          this.incrementCounters(node, FaultID.NumericSemantics, autofix);
-        }
-      }
-    }
-    if (!node.type) {
-      const signature = this.tsTypeChecker.getSignatureFromDeclaration(node);
-      if (!signature) {
-        return;
-      }
-      const retType = this.tsTypeChecker.getReturnTypeOfSignature(signature);
-      if ((retType.getFlags() & ts.TypeFlags.Number) !== 0) {
-        const returnTypeNode = this.tsTypeChecker.typeToTypeNode(retType, node, ts.NodeBuilderFlags.None);
-        if (!returnTypeNode) {
-          return;
-        }
-        const autofix = this.autofixer?.fixMissingReturnType(node, returnTypeNode);
-        this.incrementCounters(node, FaultID.NumericSemantics, autofix);
-      }
-    }
-  }
-
-  private checkNumericSemanticsForProperty(node: ts.PropertyDeclaration): void {
-    if (!this.options.arkts2) {
-      return;
-    }
-
-    const initializer = node.initializer;
-    const name = node.name;
-    if (node.type || !initializer || !ts.isIdentifier(name)) {
-      return;
-    }
-
-    const isNumberArray = ts.isArrayLiteralExpression(initializer) && TypeScriptLinter.isNumberArray(initializer);
-    const isNumber = !isNumberArray && TypeScriptLinter.isNumericInitializer(initializer);
-
-    if (!isNumber && !isNumberArray) {
-      return;
-    }
-
-    const sym = this.tsTypeChecker.getSymbolAtLocation(name);
-    if (!sym) {
-      return;
-    }
-
-    const type = this.tsTypeChecker.getTypeOfSymbolAtLocation(sym, name);
-    if (this.tsUtils.isNumberLike(type)) {
-      const autofix = this.autofixer?.fixNumericSemanticsForDeclaration(node, type);
-      this.incrementCounters(node, FaultID.NumericSemantics, autofix);
-    }
-  }
 
   private static isNumericInitializer(node: ts.Node): boolean {
     if (ts.isNumericLiteral(node)) {
@@ -2767,7 +2662,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleDefiniteAssignmentAssertion(tsVarDecl);
     this.handleLimitedVoidType(tsVarDecl);
     this.handleInvalidIdentifier(tsVarDecl);
-    this.checkNumericSemanticsForVariable(tsVarDecl);
     this.checkTypeFromSdk(tsVarDecl.type);
     this.handleObjectLiteralforUnionTypeInterop(tsVarDecl);
     this.handleObjectLiteralAssignmentToClass(tsVarDecl);
@@ -2776,6 +2670,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleSdkGlobalApi(tsVarDecl);
     this.handleNoDeprecatedApi(tsVarDecl);
     this.handleMissingInitializer(tsVarDecl);
+    this.checkNumericSemanticsForVariable(tsVarDecl);
   }
 
   /**
@@ -2811,6 +2706,129 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (!decl.initializer) {
       this.incrementCounters(decl.name, FaultID.VariableMissingInitializer);
     }
+  }
+
+  private checkNumericSemanticsForBinaryExpression(node: ts.BinaryExpression): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    const isInArrayContext = this.isInArrayAssignmentContext(node);
+
+    const isDivision = node.operatorToken.kind === ts.SyntaxKind.SlashToken;
+    const isNullishCoalescing = node.operatorToken.kind === ts.SyntaxKind.QuestionQuestionToken;
+
+    if (!isDivision && !isNullishCoalescing) {
+      return;
+    }
+
+    if (this.tsUtils.isPossiblyImportedFromJS(node.left) ||
+      this.tsUtils.isPossiblyImportedFromJS(node.right)) {
+      return;
+    }
+
+    if (isDivision && isInArrayContext) {
+      this.checkNumericSemanticsForDivisionOperation(node);
+    } else {
+      this.checkNumericSemanticsForNullishCoalescing(node);
+    }
+  }
+
+  private isInArrayAssignmentContext(node: ts.BinaryExpression): boolean {
+    if (ts.isArrayLiteralExpression(node.parent)) {
+      return true;
+    }
+
+    if (ts.isBinaryExpression(node.parent) &&
+      node.parent.operatorToken.kind === ts.SyntaxKind.EqualsToken &&
+      ts.isElementAccessExpression(node.parent.left)) {
+      return true;
+    }
+
+    if (ts.isBinaryExpression(node.parent) &&
+      node.parent.operatorToken.kind === ts.SyntaxKind.EqualsToken &&
+      this.tsUtils.isNumberArrayType(this.tsTypeChecker.getTypeAtLocation(node.parent.left))) {
+      return true;
+    }
+
+    return false;
+  }
+
+  private checkNumericSemanticsForDivisionOperation(node: ts.BinaryExpression): void {
+    const left = node.left;
+    const right = node.right;
+    if (ts.isNumericLiteral(left)) {
+      const leftText = left.getText();
+      if (!leftText.includes('.')) {
+        const autofix = this.autofixer?.fixNumericLiteralToFloat(left);
+        this.incrementCounters(left, FaultID.NumericSemantics, autofix);
+      }
+    }
+
+    if (ts.isNumericLiteral(right)) {
+      const rightText = right.getText();
+      if (!rightText.includes('.')) {
+        const autofix = this.autofixer?.fixNumericLiteralToFloat(right);
+        this.incrementCounters(right, FaultID.NumericSemantics, autofix);
+      }
+    }
+  }
+
+  private checkNumericSemanticsForNullishCoalescing(node: ts.BinaryExpression): void {
+    if (!ts.isArrayLiteralExpression(node.right)) {
+      return;
+    }
+
+    const leftType = this.tsTypeChecker.getTypeAtLocation(node.left);
+    if (!this.tsUtils.isNumberArrayType(leftType)) {
+      return;
+    }
+    this.checkNumericSemanticsForArrayLiteral(node.right);
+  }
+
+  private checkNumericSemanticsForArrayLiteral(node: ts.ArrayLiteralExpression): void {
+    const arrayType = this.tsTypeChecker.getTypeAtLocation(node);
+    if (!this.tsUtils.isNumberArrayType(arrayType)) {
+      return;
+    }
+
+    for (const element of node.elements) {
+      if (ts.isNumericLiteral(element) && !element.text.includes('.')) {
+        const autofix = this.autofixer?.fixNumericLiteralToFloat(element);
+        this.incrementCounters(element, FaultID.NumericSemantics, autofix);
+      }
+      else if (ts.isBinaryExpression(element) &&
+        element.operatorToken.kind === ts.SyntaxKind.SlashToken) {
+        this.checkNumericSemanticsForDivisionOperation(element);
+      }
+    }
+  }
+
+
+  private checkNumericSemanticsForVariable(node: ts.VariableDeclaration): void {
+    if (!this.options.arkts2 || !node.initializer) {
+      return;
+    }
+
+    const type = this.tsTypeChecker.getTypeAtLocation(node.name);
+    if (!this.tsUtils.isNumberArrayType(type)) {
+      return;
+    }
+
+    if (ts.isBinaryExpression(node.initializer) &&
+      node.initializer.operatorToken.kind === ts.SyntaxKind.BarBarToken) {
+      this.checkNumericSemanticsForNullishCoalescing(node.initializer);
+    } else if (ts.isConditionalExpression(node.initializer)) {
+      this.checkNumericSemanticsForTernaryOperator(node.initializer);
+    }
+  }
+
+  private checkNumericSemanticsForTernaryOperator(node: ts.ConditionalExpression): void {
+    if (!ts.isArrayLiteralExpression(node.whenFalse)) {
+      return;
+    }
+    const arrayLiteral = node.whenFalse;
+
+    this.checkNumericSemanticsForArrayLiteral(arrayLiteral);
   }
 
   private checkTypeFromSdk(type: ts.TypeNode | undefined): void {
@@ -4952,7 +4970,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         this.incrementCounters(argExpr, FaultID.ArrayIndexExprType, autofix);
       }
     } else if (this.tsTypeChecker.typeToString(argType) === 'number') {
-      if (this.isArrayIndexValidNumber(argExpr) || this.hasNonIntegerInitializer(argExpr)) {
+      if (this.isArrayIndexValidNumber(argExpr)) {
         return;
       }
       const autofix = this.autofixer?.fixArrayIndexExprType(argExpr);
@@ -4964,27 +4982,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (ts.isConditionalExpression(argExpr)) {
       this.incrementCounters(argExpr, FaultID.ArrayIndexExprType);
     }
-  }
-
-  /**
-   * Returns true if the identifier’s initializer is a non-integer numeric literal (e.g. 1.3, 2.5).
-   */
-  private hasNonIntegerInitializer(argExpr: ts.Expression): boolean {
-    if (!ts.isIdentifier(argExpr)) {
-      return false;
-    }
-    const declNode = this.tsUtils.getDeclarationNode(argExpr);
-    if (
-      declNode &&
-      ts.isVariableDeclaration(declNode) &&
-      declNode.initializer &&
-      ts.isNumericLiteral(declNode.initializer)
-    ) {
-      const raw = declNode.initializer.getText();
-      const num = Number(raw);
-      return !Number.isInteger(num);
-    }
-    return false;
   }
 
   private checkNumericArgumentDeclaration(argExpr: ts.Expression): void {
@@ -5023,7 +5020,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return null;
     }
 
-    if (declaration.type !== undefined) {
+    if (declaration.type !== undefined && declaration.type.getText() !== NUMBER_LITERAL) {
       return 'skip';
     }
 
@@ -5064,12 +5061,12 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return false;
     }
 
-    const valueString = String(evaluatedValue);
-
     if (!Number.isInteger(evaluatedValue)) {
       return false;
     }
-    if (valueString.includes('.')) {
+
+    const valueString = String(evaluatedValue);
+    if (valueString.includes('.') && !valueString.endsWith('.0')) {
       return false;
     }
 
@@ -5313,7 +5310,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       this.incrementCounters(node, faultId);
     }
     this.handleLimitedVoidWithCall(tsCallExpr);
-    this.handleAppStorageCallExpression(tsCallExpr);
     this.fixJsImportCallExpression(tsCallExpr);
     this.handleInteropForCallJSExpression(tsCallExpr, calleeSym, callSignature);
     this.handleNoTsLikeFunctionCall(tsCallExpr);
@@ -5353,56 +5349,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     } else {
       const autofix = this.autofixer?.fixNoTsLikeFunctionCall(callExpr);
       this.incrementCounters(expression, FaultID.ExplicitFunctionType, autofix);
-    }
-  }
-
-  private handleAppStorageCallExpression(tsCallExpr: ts.CallExpression): void {
-    if (!this.options.arkts2 || !tsCallExpr) {
-      return;
-    }
-
-    if (!TsUtils.isAppStorageAccess(tsCallExpr)) {
-      return;
-    }
-
-    let varDecl: ts.VariableDeclaration | undefined;
-    let parent = tsCallExpr.parent;
-
-    while (parent) {
-      if (ts.isVariableDeclaration(parent)) {
-        varDecl = parent;
-        break;
-      }
-      parent = parent.parent;
-    }
-
-    if (!varDecl || varDecl.type) {
-      return;
-    }
-    const callReturnType = this.tsTypeChecker.getTypeAtLocation(tsCallExpr);
-    const isNumberReturnType = callReturnType.flags & ts.TypeFlags.Number;
-    const isNumberGeneric = ((): boolean => {
-      if (tsCallExpr.typeArguments?.length !== 1) {
-        return false;
-      }
-      const callText = tsCallExpr.getText();
-      if (callText.startsWith('Array<') || callText.startsWith('Set<') || callText.startsWith('Map<')) {
-        return false;
-      }
-      const typeArg = tsCallExpr.typeArguments[0];
-      if (typeArg.kind === ts.SyntaxKind.NumberKeyword) {
-        return true;
-      }
-
-      if (ts.isTypeReferenceNode(typeArg)) {
-        return ts.isIdentifier(typeArg.typeName) && typeArg.typeName.text === STRINGLITERAL_NUMBER;
-      }
-      return typeArg.getText().trim() === STRINGLITERAL_NUMBER;
-    })();
-
-    if (isNumberGeneric && !isNumberReturnType) {
-      const autofix = this.autofixer?.fixAppStorageCallExpression(varDecl);
-      this.incrementCounters(tsCallExpr, FaultID.NumericSemantics, autofix);
     }
   }
 
@@ -10254,7 +10200,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
 
-    const moduleName = (importDeclaration.moduleSpecifier as ts.StringLiteral).text;
+    const moduleName = path.basename((importDeclaration.moduleSpecifier as ts.StringLiteral).text);
     const expectedImports = MODULE_IMPORTS[moduleName];
     if (!expectedImports) {
       return;
@@ -11895,74 +11841,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     return binaryOperators.includes(kind);
   }
 
-  private handleNumericLiteral(node: ts.Node): void {
-    if (!this.options.arkts2 || !ts.isNumericLiteral(node)) {
-      return;
-    }
-    if (TypeScriptLinter.isInEnumOrSwitchCase(node)) {
-      this.incrementCounters(node, FaultID.NumericSemantics);
-      return;
-    }
-    const isInElementAccessExpression = (node: ts.NumericLiteral): boolean => {
-      for (let parent = node.parent; parent; parent = parent.parent) {
-        if (ts.isElementAccessExpression(parent)) {
-          return true;
-        }
-      }
-      return false;
-    };
-    const isStandardFloatFormat = (): boolean => {
-      const text = node.getText();
-      return /\.\d*0+$/.test(text);
-    };
-    const isNoNeedFix =
-      isInElementAccessExpression(node) ||
-      ('name' in node.parent && node.parent.name === node) ||
-      isStandardFloatFormat();
-    if (isNoNeedFix) {
-      return;
-    }
-
-    const value = parseFloat(node.text);
-    const nodeText = node.getText();
-    const hasScientificOrRadixNotation = /[a-zA-Z]/.test(nodeText);
-    const isIntegerWithoutZero = Number.isInteger(value) && !nodeText.endsWith('.0');
-    if (isIntegerWithoutZero && !hasScientificOrRadixNotation) {
-      const autofix = this.autofixer?.fixNumericLiteralIntToNumber(node);
-      this.incrementCounters(node, FaultID.NumericSemantics, autofix);
-    }
-  }
-
-  private static isInEnumOrSwitchCase(node: ts.NumericLiteral): boolean {
-    const text = node.getText();
-    const isStrictInteger = !text.includes('.');
-
-    if (TypeScriptLinter.isInSwitchCase(node) && isStrictInteger) {
-      return true;
-    }
-    if (TypeScriptLinter.isInEnumMember(node)) {
-      return isStrictInteger;
-    }
-    return false;
-  }
-
-  private static isInSwitchCase(node: ts.NumericLiteral): boolean {
-    for (let parent = node.parent; parent; parent = parent.parent) {
-      if (ts.isCaseClause(parent) && ts.isSwitchStatement(parent.parent.parent)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  private static isInEnumMember(node: ts.NumericLiteral): boolean {
-    for (let parent = node.parent; parent; parent = parent.parent) {
-      if (ts.isEnumMember(parent)) {
-        return true;
-      }
-    }
-    return false;
-  }
 
   private checkArrayUsageWithoutBound(accessExpr: ts.ElementAccessExpression): void {
     if (this.shouldSkipArrayBoundCheck(accessExpr)) {
@@ -13551,8 +13429,8 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
 
     if (
-      (ts.isIdentifier(typeRef.typeName) && typeRef.typeName.text === ES_OBJECT) ||
-      (ts.isQualifiedName(typeRef.typeName) && typeRef.typeName.right.text === ES_OBJECT)
+      ts.isIdentifier(typeRef.typeName) && typeRef.typeName.text === ES_OBJECT ||
+      ts.isQualifiedName(typeRef.typeName) && typeRef.typeName.right.text === ES_OBJECT
     ) {
       this.incrementCounters(typeRef, FaultID.NoESObjectSupport);
     }

@@ -27,10 +27,12 @@ import bbbb from '@kit.ArkTS';
 
 
 
+
+
 taskpool.getTaskPoolInfo()
 
 function concurrency () {
-    const aaa: number = 123.0;
+    const aaa = 123;
     console.log(aaa);
 }
 
@@ -39,3 +41,6 @@ taskpool.cancel();
 Set()
 Set()
 fooAs.getFoo();
+
+let lock1: AsyncLock = AsyncLock.request('lock1');
+let lock2 = new AsyncLock();

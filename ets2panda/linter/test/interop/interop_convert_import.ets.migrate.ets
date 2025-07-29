@@ -22,12 +22,12 @@
  let a3: bigint = foo4.getProperty("big").toBigInt()
 
 test_helper.test(() => {
-return (array_val as Array).toString() === new Array(1.0, 2.0, 3.0).toString();// 扫描出 arkts-interop-js2s-convert-js-type - no pass
+return (array_val as Array).toString() === new Array(1, 2, 3).toString();// 扫描出 arkts-interop-js2s-convert-js-type - no pass
 }, "array_val as Array === [1, 2, 3]");
 
 // convert type - Array
 test_helper.test(() => {
-return (array_val as number[]).toString() === [1.0,2.0,3.0].toString();// 扫描出 arkts-interop-js2s-convert-js-type - no pass
+return (array_val as number[]).toString() === [1,2,3].toString();// 扫描出 arkts-interop-js2s-convert-js-type - no pass
 }, "array_val as Array === [1, 2, 3]");
 
 // convert type - null
