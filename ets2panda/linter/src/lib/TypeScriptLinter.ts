@@ -3833,6 +3833,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       }) || false;
     const classType: ts.Type | undefined = this.getClassType(classDecl, isStatic);
     const allBaseTypes = classType && this.getAllBaseTypes(classType, classDecl, isStatic);
+  
     if (!allBaseTypes || allBaseTypes.length === 0) {
       return;
     }
@@ -4051,12 +4052,23 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
    * Checks method parameter compatibility
    * Derived parameter types must be same or wider than base (contravariance principle)
    */
+
   private checkMethodParameters(
     derivedMethod: ts.MethodDeclaration,
     baseMethod: ts.MethodDeclaration | ts.MethodSignature
   ): void {
     const derivedParams = derivedMethod.parameters;
     const baseParams = baseMethod.parameters;
+
+    for (let i = 0; i < Math.min(derivedParams.length, baseParams.length); i++) {
+      const baseParam = baseParams[i];
+      const derivedParam = derivedParams[i];
+      
+      if (!baseParam.questionToken && derivedParam.questionToken) {
+        this.incrementCounters(derivedParam, FaultID.MethodInheritRule);
+        return;
+      }
+    }
 
     if (derivedParams.length !== baseParams.length) {
       this.incrementCounters(derivedMethod.name, FaultID.MethodInheritRule);
