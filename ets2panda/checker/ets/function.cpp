@@ -664,7 +664,8 @@ bool ETSChecker::ValidateSignatureRestParams(Signature *substitutedSig, const Ar
         // backing out of check that results in a signature mismatch would be difficult
         // so only attempt it if there is only one candidate signature
         restArgument->SetPreferredType(targetType);
-        auto const argumentType = restArgument->Check(this);
+        argument->Check(this);
+        auto const argumentType = restArgument->TsType();
 
         auto const invocationCtx = checker::InvocationContext(
             Relation(), restArgument, argumentType, substitutedSig->RestVar()->TsType(), argument->Start(),

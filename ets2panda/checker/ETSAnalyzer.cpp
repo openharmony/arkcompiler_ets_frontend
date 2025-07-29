@@ -415,7 +415,7 @@ checker::Type *ETSAnalyzer::Check(ir::SpreadElement *expr) const
         return expr->SetTsType(exprType->AsETSObjectType()->TypeArguments().front());
     }
 
-    if (!exprType->IsETSArrayType() && !exprType->IsETSTupleType()) {
+    if (!exprType->IsETSArrayType() && !exprType->IsETSTupleType() && !exprType->IsETSReadonlyArrayType()) {
         if (!exprType->IsTypeError()) {
             // Don't duplicate error messages for the same error
             checker->LogError(diagnostic::SPREAD_OF_INVALID_TYPE, {exprType}, expr->Start());
