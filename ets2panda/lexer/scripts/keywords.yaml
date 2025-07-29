@@ -592,6 +592,7 @@ keywords:
   - name: 'with'
     token: KEYW_WITH
     keyword: [js, ts]
+    keyword_like: [ets]
 
   - name: 'yield'
     token: KEYW_YIELD

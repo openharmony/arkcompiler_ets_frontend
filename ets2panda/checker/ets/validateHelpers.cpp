@@ -82,6 +82,12 @@ void ETSChecker::ValidateCallExpressionIdentifier(ir::Identifier *const ident, T
         return;
     }
 
+    if (ident->Variable()->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE)) {
+        if (callExpr->Callee()->Variable() != nullptr && callExpr->Callee()->Variable()->Name().Is("with")) {
+            LogError(diagnostic::ERROR_ARKTS_NO_WITH, callExpr->Start());
+        }
+    }
+
     if (ident->Variable()->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE) && callExpr->Callee() != ident &&
         callExpr->Callee() != ident->Parent()) {
         std::ignore =
