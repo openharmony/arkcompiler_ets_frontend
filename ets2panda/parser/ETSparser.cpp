@@ -1329,9 +1329,6 @@ ArenaVector<ir::ETSImportDeclaration *> ETSParser::ParseImportDeclarations()
         ArenaVector<ir::AstNode *> defaultSpecifiers(Allocator()->Adapter());
 
         if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_MULTIPLY) {
-            if (importKind == ir::ImportKinds::TYPES) {
-                LogError(diagnostic::TYPE_IMPORT_MISSING_SELECTIVE_BINDING);
-            }
             ParseNameSpaceSpecifier(&specifiers);
         } else if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
             auto specs = ParseNamedSpecifiers();
