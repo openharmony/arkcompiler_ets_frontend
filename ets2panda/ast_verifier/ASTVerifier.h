@@ -91,20 +91,30 @@ public:
         for (size_t i = 0; i < VerifierInvariants::COUNT; i++) {
             enabled_[i] = TreatAsWarning(VerifierInvariants {i}) || TreatAsError(VerifierInvariants {i});
         }
-        if (Options().IsAstVerifierBeforePhases()) {
-            Verify("before");
-        }
     }
 
     ~ASTVerifier()
     {
-        if (!suppressed_) {
-            if (Options().IsAstVerifierAfterPhases()) {
-                Verify("after");
-            }
-            if (HasErrors() || HasWarnings()) {
-                DumpMessages();
-            }
+        ES2PANDA_ASSERT(!HasErrors());
+        ES2PANDA_ASSERT(!HasWarnings());
+    }
+
+    void After()
+    {
+        if (Options().IsAstVerifierAfterPhases()) {
+            Verify("after");
+        }
+        if (!suppressed_ && (HasErrors() || HasWarnings())) {
+            DumpMessages();
+            hasErrors_ = false;
+            hasWarnings_ = false;
+        }
+    }
+
+    void Before()
+    {
+        if (Options().IsAstVerifierBeforePhases()) {
+            Verify("before");
         }
     }
 
