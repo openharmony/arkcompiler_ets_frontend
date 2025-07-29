@@ -145,6 +145,10 @@ syntax:
   id: 127
   message: "Conflicting modifiers '!' and '?' on field."
 
+- name: CONSTRUCTOR_FUNC_TYPE_NOT_SUPPORTED
+  id: 93489
+  message: "Constructor function types are not supported."
+
 - name: DECALRE_IN_AMBIENT_CONTEXT
   id: 104
   message: "A 'declare' modifier cannot be used in an already ambient context."

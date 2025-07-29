@@ -842,13 +842,20 @@ ir::TSTypeAliasDeclaration *ETSParser::ParseTypeAliasDeclaration()
 
     ExpectToken(lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
 
+    if (Lexer()->TryEatTokenFromKeywordType(lexer::TokenType::KEYW_NEW)) {
+        LogError(diagnostic::CONSTRUCTOR_FUNC_TYPE_NOT_SUPPORTED, {}, typeStart);
+        typeAliasDecl->SetTsTypeAnnotation(AllocBrokenType(typeStart));
+    }
+
     TypeAnnotationParsingOptions options =
         TypeAnnotationParsingOptions::REPORT_ERROR | TypeAnnotationParsingOptions::TYPE_ALIAS_CONTEXT;
     ir::TypeNode *typeAnnotation = ParseTypeAnnotation(&options);
     if (typeAnnotation == nullptr) {
         return nullptr;
     }
-    typeAliasDecl->SetTsTypeAnnotation(typeAnnotation);
+    if (typeAliasDecl->TypeAnnotation() == nullptr) {
+        typeAliasDecl->SetTsTypeAnnotation(typeAnnotation);
+    }
     typeAnnotation->SetParent(typeAliasDecl);
     typeAliasDecl->SetRange({typeStart, Lexer()->GetToken().End()});
     return typeAliasDecl;
