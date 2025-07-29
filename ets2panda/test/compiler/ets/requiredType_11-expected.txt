@@ -1333,3 +1333,4 @@
     }
   }
 }
+TypeError: T in Required<T> must be a class or an interface type. [requiredType_11.ets:21:18]

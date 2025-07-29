@@ -25,7 +25,7 @@ as_string.ets
 function_type_with_receiver/extensionFunctionType_return_this.ets
 defaultExportObjectLiteral_exp.ets
 forOfCustomIterator3.ets
-too_many_async.ets
+fuzz/too_many_async.ets
 typeAlias_2.ets
 Multiline_string.ets
 Multiline_string_escape_char.ets
