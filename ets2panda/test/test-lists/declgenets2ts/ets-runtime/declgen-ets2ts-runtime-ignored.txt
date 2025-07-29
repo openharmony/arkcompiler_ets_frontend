@@ -2,8 +2,9 @@
 lambda_with_receiver/lambda_with_receiver_generics_return_this.ets
 first_match/ctor_need_fix_bytecode.ets
 overload_declaration/constructor_overload_sig_with_ref_type.ets
-#FailKind.ABORT_FAIL - 1 tests:
+#FailKind.ABORT_FAIL - 2 tests:
 type_param_in_union.ets
+mypackage/implicit_package_import_2.ets
 #FailKind.TSC_FAIL - 21 tests:
 ClassNewInstance.ets
 Enum7.ets
