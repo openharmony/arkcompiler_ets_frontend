@@ -13,9 +13,16 @@
  * limitations under the License.
  */
 
-//Not support non-declare function has same assembly code
-export class A<T> {}
-export declare function foo(a:A<number>):void
-export function foo(a:A<string>):number {}
+let a1: [number] | null = null;
+let a2: [number] = [0x00000001];
 
-/* @@? 19:8 Error TypeError: Method declaration `foo` must all ambient or non-ambient */
+declare function capset(...p: [number]): void;
+
+function capset(...p: [number]) {}
+
+function main() {
+  capset(...(a1 ?? a2));
+}
+
+/* @@? 21:1 Error TypeError: Method declaration `capset` must all ambient or non-ambient */
+/* @@? 24:3 Error TypeError: This expression is not callable. */
