@@ -27,6 +27,7 @@
 #include "evaluate/scopedDebugInfoPlugin.h"
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "compiler/lowering/util.h"
+#include "generated/diagnostic.h"
 #include "util/es2pandaMacros.h"
 #include "util/helpers.h"
 #include "util/nameMangler.h"
@@ -715,6 +716,9 @@ static bool SetPreferredTypeForExpression(ETSChecker *checker, ir::Identifier *i
 bool ETSChecker::CheckInit(ir::Identifier *ident, ir::TypeNode *typeAnnotation, ir::Expression *init,
                            checker::Type *annotationType, varbinder::Variable *const bindingVar)
 {
+    if (init->IsETSTypeReference()) {
+        LogError(diagnostic::INVALID_TYPE_AS_VALUE, {init->DumpEtsSrc()}, init->Start());
+    }
     if (typeAnnotation == nullptr) {
         if (init->IsArrayExpression()) {
             annotationType = CheckArrayElements(init->AsArrayExpression());
