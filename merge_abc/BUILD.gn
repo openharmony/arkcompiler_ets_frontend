@@ -172,15 +172,16 @@ ohos_source_set("assembly_proto_static") {
       "$ark_third_party_root/protobuf:protobuf_static",
     ]
   }
+  
+  if (enable_hilog) {
+    external_deps += [ "hilog:libhilog" ]
+  }
 
   if (defined(ohos_indep_compiler_enable) && ohos_indep_compiler_enable) {
     external_deps += [
       "abseil-cpp:absl_base_static",
       "runtime_core:libarkassembler_static",
     ]
-    if (enable_hilog) {
-      external_deps += [ "hilog:libhilog" ]
-    }
   }
 
   sources = proto_generated_header + proto_generated_source +
