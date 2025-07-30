@@ -328,3 +328,9 @@ export interface ArkTSConfigObject {
     useEmptyPackage?: boolean;
   }
 };
+
+export interface CompilePayload {
+  fileInfo: CompileFileInfo;
+  buildConfig: BuildConfig;
+  moduleInfos: [string, ModuleInfo][];
+}

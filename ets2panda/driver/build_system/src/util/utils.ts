@@ -24,14 +24,18 @@ import {
   LANGUAGE_VERSION,
   NATIVE_MODULE,
   sdkConfigPrefix
-} from './pre_define';
+} from '../pre_define';
 import {
   Logger,
   LogData,
   LogDataFactory
-} from './logger';
-import { ErrorCode } from './error_code';
-import { BuildConfig, ModuleInfo, OHOS_MODULE_TYPE } from './types';
+} from '../logger';
+import { ErrorCode } from '../error_code';
+import {
+  ModuleInfo,
+  OHOS_MODULE_TYPE,
+  BuildConfig
+} from '../types';
 
 const WINDOWS: string = 'Windows_NT';
 const LINUX: string = 'Linux';
@@ -213,4 +217,23 @@ export function isMixCompileProject(buildConfig: BuildConfig): boolean {
     }
   }
   return false;
+}
+
+export function createTaskId(): string {
+  const timestamp = Date.now().toString(36);
+  const randomPart = Math.random().toString(36).slice(2, 6);
+  return `task-${timestamp}-${randomPart}`;
+}
+
+export function serializeWithIgnore(obj: any, ignoreKeys: string[] = []): any {
+  const jsonStr = JSON.stringify(obj, (key, value) => {
+    if (typeof value === 'bigint') {
+      return undefined;
+    }
+    if (ignoreKeys.includes(key)) {
+      return undefined;
+    }
+    return value;
+  });
+  return JSON.parse(jsonStr);
 }

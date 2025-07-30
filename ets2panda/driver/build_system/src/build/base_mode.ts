@@ -18,17 +18,11 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as child_process from 'child_process';
 import * as crypto from 'crypto';
-
-
-import cluster, {
-  Cluster,
-  Worker,
-} from 'cluster';
 import { Worker as ThreadWorker } from 'worker_threads';
+
 import {
   ABC_SUFFIX,
   ARKTSCONFIG_JSON_FILE,
-  DEFAULT_WOKER_NUMS,
   DECL_ETS_SUFFIX,
   DECL_TS_SUFFIX,
   DEPENDENCY_INPUT_FILE,
@@ -48,8 +42,9 @@ import {
   ensurePathExists,
   getFileHash,
   isMac,
-  isMixCompileProject
-} from '../utils';
+  isMixCompileProject,
+  serializeWithIgnore
+} from '../util/utils';
 import {
   PluginDriver,
   PluginHook
@@ -72,14 +67,16 @@ import {
   JobInfo,
   KPointer,
   ModuleInfo,
-  ES2PANDA_MODE
+  ES2PANDA_MODE,
+  CompilePayload
 } from '../types';
 import {
   ArkTSConfig,
   ArkTSConfigGenerator
 } from './generate_arktsconfig';
-import { SetupClusterOptions } from '../types';
 import { KitImportTransformer } from '../plugins/KitImportTransformer';
+import { TaskManager } from '../util/TaskManager';
+import { handleCompileWorkerExit } from '../util/worker_exit_handler';
 
 export abstract class BaseMode {
   public buildConfig: BuildConfig;
@@ -877,16 +874,11 @@ export abstract class BaseMode {
         this.logger.printErrorAndExit(logData);
       }
     }
-    
+
     this.mergeAbcFiles();
   }
 
   // -- runParallell code begins --
-  private terminateAllWorkers(): void {
-    Object.values(cluster.workers || {}).forEach(worker => {
-      worker?.kill();
-    });
-  };
 
   public generatedependencyFileMap(): void {
     if (this.enableDeclgenEts2Ts) {
@@ -954,18 +946,21 @@ export abstract class BaseMode {
   public async runParallel(): Promise<void> {
     this.generateModuleInfos();
 
-    const isPrimary = cluster.isPrimary ?? cluster.isMaster; // Adapt to node-v14
-    if (!isPrimary) {
-      return;
-    }
+    const taskManager = new TaskManager<CompilePayload>(path.resolve(__dirname, 'compile_worker.js'), handleCompileWorkerExit);
 
     try {
-      this.setupCluster(cluster, {
-        clearExitListeners: true,
-        execPath: path.resolve(__dirname, 'compile_worker.js'),
-      });
-      await this.dispatchTasks();
-      this.logger.printInfo('All tasks complete, merging...');
+      taskManager.startWorkers();
+
+      const taskPromises = Array.from(this.compileFiles.values()).map(task =>
+        taskManager.submitTask({
+          fileInfo: task,
+          buildConfig: this.getSerializableConfig() as BuildConfig,
+          moduleInfos: Array.from(this.moduleInfos.entries())
+        })
+      );
+
+      await Promise.all(taskPromises);
+
       this.mergeAbcFiles();
     } catch (error) {
       this.logger.printError(LogDataFactory.newInstance(
@@ -973,137 +968,46 @@ export abstract class BaseMode {
         'Compile abc files failed.'
       ));
     } finally {
-      this.terminateAllWorkers();
+      await taskManager.shutdown();
     }
   }
 
   public async generateDeclarationParallell(): Promise<void> {
     this.generateModuleInfos();
-    this.generateArkTSConfigForModules();
 
-    const isPrimary = cluster.isPrimary ?? cluster.isMaster;
-    if (!isPrimary) {
-      return;
-    }
+    const taskManager = new TaskManager<CompilePayload>(
+      path.resolve(__dirname, 'declgen_worker.js'),
+      handleCompileWorkerExit
+    );
 
     try {
-      this.setupCluster(cluster, {
-        clearExitListeners: true,
-        execPath: path.resolve(__dirname, 'declgen_worker.js'),
-      });
-      await this.dispatchTasks();
+      taskManager.startWorkers();
+
+      const taskPromises = Array.from(this.compileFiles.values()).map(task =>
+        taskManager.submitTask({
+          fileInfo: task,
+          buildConfig: this.getSerializableConfig() as BuildConfig,
+          moduleInfos: Array.from(this.moduleInfos.entries())
+        })
+      );
+
+      await Promise.all(taskPromises);
+
       this.logger.printInfo('All declaration generation tasks complete.');
     } catch (error) {
       this.logger.printError(LogDataFactory.newInstance(
         ErrorCode.BUILDSYSTEM_DECLGEN_FAIL,
-        'Generate declaration files failed.'
+        `Generate declaration files failed.\n${(error as Error)?.message || error}`
       ));
     } finally {
-      this.terminateAllWorkers();
+      await taskManager.shutdown();
     }
-  }
-
-  private async dispatchTasks(): Promise<void> {
-    const numCPUs = os.cpus().length;
-    const taskQueue = Array.from(this.compileFiles.values());
-
-    const configuredWorkers = this.buildConfig?.maxWorkers;
-    const defaultWorkers = DEFAULT_WOKER_NUMS;
-
-    let effectiveWorkers: number;
-
-    if (configuredWorkers) {
-      effectiveWorkers = Math.min(configuredWorkers, numCPUs - 1);
-    } else {
-      effectiveWorkers = Math.min(defaultWorkers, numCPUs - 1);
-    }
-
-    const maxWorkers = Math.min(taskQueue.length, effectiveWorkers);
-
-    const chunkSize = Math.ceil(taskQueue.length / maxWorkers);
-    const serializableConfig = this.getSerializableConfig();
-    const workerExitPromises: Promise<void>[] = [];
-
-    const moduleInfosArray = Array.from(this.moduleInfos.entries());
-
-    for (let i = 0; i < maxWorkers; i++) {
-      const taskChunk = taskQueue.slice(i * chunkSize, (i + 1) * chunkSize);
-      const worker = cluster.fork();
-
-      this.setupWorkerMessageHandler(worker);
-      worker.send({ taskList: taskChunk, buildConfig: serializableConfig, moduleInfos: moduleInfosArray });
-
-      const exitPromise = new Promise<void>((resolve, reject) => {
-        worker.on('exit', (status) => status === 0 ? resolve() : reject());
-      });
-
-      workerExitPromises.push(exitPromise);
-    }
-
-    await Promise.all(workerExitPromises);
-  }
-
-  private setupWorkerMessageHandler(worker: Worker): void {
-    worker.on('message', (message: {
-      success: boolean;
-      filePath?: string;
-      error?: string;
-      isDeclFile?: boolean;
-    }) => {
-      if (message.success) {
-        return;
-      }
-      if (message.isDeclFile) {
-        this.logger.printError(LogDataFactory.newInstance(
-          ErrorCode.BUILDSYSTEM_DECLGEN_FAIL,
-          'Generate declaration files failed in worker.',
-          message.error || 'Unknown error',
-          message.filePath
-        ));
-        return;
-      }
-      this.logger.printError(LogDataFactory.newInstance(
-        ErrorCode.BUILDSYSTEM_COMPILE_ABC_FAIL,
-        'Compile abc files failed in worker.',
-        message.error || 'Unknown error',
-        message.filePath
-      ));
-    });
   }
 
   private getSerializableConfig(): Object {
-    const ignoreList = [
-      'arkts',
-    ];
-    const jsonStr = JSON.stringify(this.buildConfig, (key, value) => {
-      if (typeof value === 'bigint') {
-        return undefined;
-      }
-      //remove useless data from buildConfig
-      if (ignoreList.includes(key)) {
-        return undefined;
-      }
-      return value;
-    });
-    return JSON.parse(jsonStr);
+    return serializeWithIgnore(this.buildConfig, ['arkts']);
   }
 
-  setupCluster(cluster: Cluster, options: SetupClusterOptions): void {
-    const {
-      clearExitListeners,
-      execPath,
-      execArgs = [],
-    } = options;
-
-    if (clearExitListeners) {
-      cluster.removeAllListeners('exit');
-    }
-    const setupFn = cluster.setupPrimary ?? cluster.setupMaster; // Adapt to node-v14
-    setupFn({
-      exec: execPath,
-      execArgv: execArgs,
-    });
-  }
   // -- runParallell code ends --
 
 
