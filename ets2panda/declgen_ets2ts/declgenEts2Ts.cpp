@@ -415,7 +415,8 @@ void TSDeclGen::GenImportDeclarations()
 
 void TSDeclGen::GenImportRecordDeclarations(const std::string &source)
 {
-    if (importSet_.find("Record") != importSet_.end()) {
+    const std::string recordKey = "Record";
+    if (indirectDependencyObjects_.find(recordKey) != indirectDependencyObjects_.end()) {
         OutDts("import type { Record } from \"", source, "\";\n");
     }
 }
@@ -576,6 +577,8 @@ bool TSDeclGen::HandleObjectType(const checker::Type *checkerType)
         OutDts("number");
     } else if (typeStr == "BigInt") {
         OutDts("bigint");
+    } else if (typeStr == "ESValue") {
+        OutDts("ESObject");
     } else {
         GenObjectType(checkerType->AsETSObjectType());
     }
@@ -2008,7 +2011,7 @@ void TSDeclGen::GenPartName(std::string &partName)
         partName = "string";
     } else if (numberTypes_.count(partName) != 0U) {
         partName = "number";
-    } else if (partName == "ESObject") {
+    } else if (partName == "ESValue") {
         partName = "ESObject";
     } else if (partName == "BigInt") {
         partName = "bigint";
@@ -2016,6 +2019,8 @@ void TSDeclGen::GenPartName(std::string &partName)
         partName = "Error";
     } else if (partName == "Any") {
         partName = "ESObject";
+    } else if (partName == "Floating" || partName == "Integral") {
+        partName = "number";
     }
 }
 
@@ -2242,6 +2247,9 @@ bool TSDeclGen::ShouldSkipMethodDeclaration(const ir::MethodDefinition *methodDe
 
 void TSDeclGen::EmitMethodGlueCode(const std::string &methodName, const ir::Identifier *methodIdentifier)
 {
+    if (!state_.inGlobalClass && (!state_.inNamespace || state_.isClassInNamespace || state_.isInterfaceInNamespace)) {
+        return;
+    }
     if (!ShouldEmitDeclarationSymbol(methodIdentifier)) {
         return;
     }
@@ -2473,10 +2481,12 @@ void TSDeclGen::GenPropAccessor(const ir::ClassProperty *classProp, const std::s
 
     const auto propName = GetKeyIdent(classProp->Key())->Name().Mutf8();
     OutDts(accessorKind, propName, accessorKind == "set " ? "(value: " : "(): ");
-    if (classProp->TypeAnnotation() != nullptr) {
-        ProcessTypeAnnotationType(classProp->TypeAnnotation(), classProp->TsType());
+    auto typeAnnotation = classProp->TypeAnnotation();
+    auto tsType = classProp->TsType();
+    if (typeAnnotation != nullptr) {
+        ProcessTypeAnnotationType(typeAnnotation, tsType);
     } else {
-        GenType(classProp->TsType());
+        GenType(tsType);
     }
     OutDts(accessorKind == "set " ? ");" : ";");
     OutEndlDts();
@@ -2489,7 +2499,11 @@ void TSDeclGen::GenGlobalVarDeclaration(const ir::ClassProperty *globalVar)
     }
 
     const auto symbol = GetKeyIdent(globalVar->Key());
-    const auto varName = symbol->Name().Mutf8();
+    auto varName = symbol->Name().Mutf8();
+    const std::string prefix = "gensym%%_";
+    if (varName.rfind(prefix, 0) == 0) {
+        varName = varName.substr(prefix.size());
+    }
     const bool isConst = globalVar->IsConst();
     const bool isDefaultExported = globalVar->IsDefaultExported();
     DebugPrint("GenGlobalVarDeclaration: " + varName);
