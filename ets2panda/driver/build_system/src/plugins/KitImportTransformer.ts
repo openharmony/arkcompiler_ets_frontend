@@ -22,18 +22,21 @@ import {
     LogDataFactory
 } from '../logger';
 import { ErrorCode } from '../error_code';
-import { DYNAMIC_PREFIX, KIT_CONFIGS_PATH_FROM_SDK } from '../pre_define';
+import {
+  DYNAMIC_PREFIX,
+  KIT_CONFIGS_PATH_FROM_SDK,
+} from '../pre_define';
 
 export class KitImportTransformer {
 
     private arkts: ArkTS;
     private extraImports: ArkTS['ETSImportDeclaration'][] = [];
-    private sdkAliasConfig: Map<string, Map<string, AliasConfig>>;
+    private sdkAliasConfig: Record<string, Record<string, AliasConfig>>;
     private buildSdkPath: string;
     private program: object;
     private logger: Logger;
 
-    constructor(arkts: ArkTS, program: object, buildSdkPath: string, aliasMap: Map<string, Map<string, AliasConfig>>) {
+    constructor(arkts: ArkTS, program: object, buildSdkPath: string, aliasMap: Record<string, Record<string, AliasConfig>>) {
         this.arkts = arkts;
         this.buildSdkPath = buildSdkPath;
         this.sdkAliasConfig = aliasMap;
@@ -128,6 +131,7 @@ export class KitImportTransformer {
             }
     
             const sourcePath = DYNAMIC_PREFIX + symbolEntry.source.replace(/\.d\.ts$/, '');
+            console.log('sourcePath',sourcePath);
             if (!grouped.has(sourcePath)) {
                 grouped.set(sourcePath, []);
             }
@@ -160,12 +164,12 @@ export class KitImportTransformer {
     private getDynamicAliasNames(): Set<string> {
         const dynamicAliasNames = new Set<string>();
     
-        if (this.sdkAliasConfig.size === 0) {
+        if (Object.keys(this.sdkAliasConfig).length === 0) {
             return dynamicAliasNames;
         }
     
-        for (const innerMap of this.sdkAliasConfig.values()) {
-            for (const [aliasName, aliasConfig] of innerMap.entries()) {
+        for (const innerMap of Object.values(this.sdkAliasConfig)) {
+            for (const [aliasName, aliasConfig] of Object.entries(innerMap)) {
                 if (!aliasConfig.originalAPIName.startsWith('@kit')) {
                     continue;
                 }
@@ -178,9 +182,9 @@ export class KitImportTransformer {
     }
 
     private getOriginalNameByAlias(aliasName: string): string {
-        for (const innerMap of this.sdkAliasConfig.values()) {
-            if (innerMap.has(aliasName)) {
-                return innerMap.get(aliasName)!.originalAPIName;
+        for (const innerMap of Object.values(this.sdkAliasConfig)) {
+            if (aliasName in innerMap) {
+                return innerMap[aliasName].originalAPIName;
             }
         }
         return '';

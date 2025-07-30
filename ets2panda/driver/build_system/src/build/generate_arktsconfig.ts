@@ -138,7 +138,7 @@ export class ArkTSConfigGenerator {
   private buildConfig: BuildConfig;
 
   private logger: Logger;
-  private aliasConfig: Map<string, Map<string, AliasConfig>>;
+  private aliasConfig: Record<string, Record<string, AliasConfig>>;
   private dynamicSDKPaths: Set<string>;
   private systemPathSection: Record<string, string[]>;
   private systemDependenciesSection: Record<string, DependencyItem>;
@@ -323,18 +323,20 @@ export class ArkTSConfigGenerator {
   }
 
   private processAlias(arktsconfigs: ArkTSConfig): void {
-    const aliasForPkg: Map<string, AliasConfig> | undefined = this.aliasConfig?.get(arktsconfigs.getPackageName());
-
-    aliasForPkg?.forEach((aliasConfig, aliasName) => {
+    const aliasForPkg = this.aliasConfig?.[arktsconfigs.getPackageName()];
+    if (!aliasForPkg) {
+      return;
+    }
+    for (const [aliasName, aliasConfig] of Object.entries(aliasForPkg)) {
       if (aliasConfig.isStatic) {
-        return;
+        continue;
       }
       if (aliasConfig.originalAPIName.startsWith('@kit')) {
         this.processStaticAlias(aliasName, aliasConfig, arktsconfigs);
       } else {
         this.processDynamicAlias(aliasName, aliasConfig, arktsconfigs);
       }
-    });
+    }
   }
 
   private traverseDependencies(
