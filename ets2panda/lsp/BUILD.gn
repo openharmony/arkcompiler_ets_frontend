@@ -92,6 +92,7 @@ ohos_source_set("libes2panda_lsp_static") {
     "src/register_code_fix/fix_add_function_return_statement.cpp",
     "src/register_code_fix/fix_class_doesnt_implement_inherited_abstract_member.cpp",
     "src/register_code_fix/fix_expected_comma.cpp",
+    "src/register_code_fix/fix_extends_interface_becomes_implements.cpp",
     "src/register_code_fix/fix_missing_call_parantheses.cpp",
     "src/register_code_fix/fix_nan_equality.cpp",
     "src/register_code_fix/fix_return_type_in_async_function.cpp",
