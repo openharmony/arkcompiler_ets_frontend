@@ -334,11 +334,7 @@ void TSDeclGen::AddSuperType(const ir::Expression *super)
     if (super->TsType() == nullptr) {
         return;
     }
-    const auto superType = checker::ETSChecker::ETSType(super->TsType());
-    if (superType == checker::TypeFlag::ETS_OBJECT) {
-        auto objectType = super->TsType()->AsETSObjectType();
-        AddObjectDependencies(objectType->Name());
-    }
+    AddSuperType(super->TsType());
 }
 
 void TSDeclGen::AddSuperType(const checker::Type *tsType)
@@ -347,6 +343,11 @@ void TSDeclGen::AddSuperType(const checker::Type *tsType)
     if (superType == checker::TypeFlag::ETS_OBJECT) {
         auto objectType = tsType->AsETSObjectType();
         AddObjectDependencies(objectType->Name());
+    } else if (superType == checker::TypeFlag::ETS_UNION) {
+        auto unionType = tsType->AsETSUnionType();
+        std::vector<checker::Type *> filteredTypes = FilterUnionTypes(unionType->ConstituentTypes());
+        GenSeparated(
+            filteredTypes, [this](checker::Type *type) { AddSuperType(type); }, "");
     }
 }
 
@@ -414,7 +415,10 @@ void TSDeclGen::GenImportDeclarations()
 
 void TSDeclGen::GenImportRecordDeclarations(const std::string &source)
 {
-    OutDts("import type { Record } from \"", source, "\";\n");
+    const std::string recordKey = "Record";
+    if (indirectDependencyObjects_.find(recordKey) != indirectDependencyObjects_.end()) {
+        OutDts("import type { Record } from \"", source, "\";\n");
+    }
 }
 
 template <class T, class CB>
@@ -573,6 +577,8 @@ bool TSDeclGen::HandleObjectType(const checker::Type *checkerType)
         OutDts("number");
     } else if (typeStr == "BigInt") {
         OutDts("bigint");
+    } else if (typeStr == "ESValue") {
+        OutDts("ESObject");
     } else {
         GenObjectType(checkerType->AsETSObjectType());
     }
@@ -2005,7 +2011,7 @@ void TSDeclGen::GenPartName(std::string &partName)
         partName = "string";
     } else if (numberTypes_.count(partName) != 0U) {
         partName = "number";
-    } else if (partName == "ESObject") {
+    } else if (partName == "ESValue") {
         partName = "ESObject";
     } else if (partName == "BigInt") {
         partName = "bigint";
@@ -2241,6 +2247,9 @@ bool TSDeclGen::ShouldSkipMethodDeclaration(const ir::MethodDefinition *methodDe
 
 void TSDeclGen::EmitMethodGlueCode(const std::string &methodName, const ir::Identifier *methodIdentifier)
 {
+    if (!state_.inGlobalClass && (!state_.inNamespace || state_.isClassInNamespace || state_.isInterfaceInNamespace)) {
+        return;
+    }
     if (!ShouldEmitDeclarationSymbol(methodIdentifier)) {
         return;
     }
@@ -2474,9 +2483,7 @@ void TSDeclGen::GenPropAccessor(const ir::ClassProperty *classProp, const std::s
     OutDts(accessorKind, propName, accessorKind == "set " ? "(value: " : "(): ");
     auto typeAnnotation = classProp->TypeAnnotation();
     auto tsType = classProp->TsType();
-    if (tsType != nullptr && tsType->IsETSTypeParameter()) {
-        OutDts("ESObject");
-    } else if (typeAnnotation != nullptr) {
+    if (typeAnnotation != nullptr) {
         ProcessTypeAnnotationType(typeAnnotation, tsType);
     } else {
         GenType(tsType);

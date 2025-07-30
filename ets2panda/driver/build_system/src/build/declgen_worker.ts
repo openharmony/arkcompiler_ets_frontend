@@ -72,7 +72,7 @@ process.on('message', async (message: {
     const staticRecordPath = path.join(moduleInfo.declgenV1OutPath!, STATIC_RECORD_FILE);
     const declEtsOutputDir = path.dirname(declEtsOutputPath);
     const staticRecordRelativePath = changeFileExtension(
-      path.relative(declEtsOutputDir, staticRecordPath).replaceAll(/\\/g, '/'),
+      path.relative(declEtsOutputDir, staticRecordPath).replace(/\\/g, '/'),
       '',
       DECL_TS_SUFFIX
     );
