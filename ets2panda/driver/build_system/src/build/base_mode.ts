@@ -392,7 +392,7 @@ export abstract class BaseMode {
       linkerInputContent += abcFile + os.EOL;
     });
     fs.writeFileSync(linkerInputFile, linkerInputContent);
-
+    this.abcLinkerCmd.push('--strip-unused');
     this.abcLinkerCmd.push('--output');
     this.abcLinkerCmd.push('"' + this.mergedAbcFile + '"');
     this.abcLinkerCmd.push('--');
