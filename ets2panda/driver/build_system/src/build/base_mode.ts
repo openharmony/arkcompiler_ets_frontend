@@ -252,11 +252,15 @@ export abstract class BaseMode {
       arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_PARSED, arktsGlobal.compilerContext.peer);
       this.logger.printInfo('es2panda proceedToState parsed');
       let ast = arkts.EtsScript.fromContext();
-      if (this.buildConfig.aliasConfig?.size > 0) {
+      if (this.buildConfig.aliasConfig && Object.keys(this.buildConfig.aliasConfig).length > 0) {
         // if aliasConfig is set, transform aliasName@kit.xxx to default@ohos.xxx through the plugin
         this.logger.printInfo('Transforming import statements with alias config');
-        let transformAst = new KitImportTransformer(arkts, arktsGlobal.compilerContext.program,
-          this.buildConfig.buildSdkPath, this.buildConfig.aliasConfig).transform(ast);
+        let transformAst = new KitImportTransformer(
+          arkts,
+          arktsGlobal.compilerContext.program,
+          this.buildConfig.buildSdkPath,
+          this.buildConfig.aliasConfig
+        ).transform(ast);
         PluginDriver.getInstance().getPluginContext().setArkTSAst(transformAst);
       } else {
         PluginDriver.getInstance().getPluginContext().setArkTSAst(ast);
@@ -270,7 +274,7 @@ export abstract class BaseMode {
       if (this.hasMainModule && (this.byteCodeHar || this.moduleType === OHOS_MODULE_TYPE.SHARED)) {
         let filePathFromModuleRoot: string = path.relative(this.moduleRootPath, fileInfo.filePath);
         let declEtsOutputPath: string = changeFileExtension(
-          path.join(this.declgenV2OutPath as string, this.packageName, filePathFromModuleRoot),
+          path.join(this.declgenV2OutPath as string, filePathFromModuleRoot),
           DECL_ETS_SUFFIX
         );
         ensurePathExists(declEtsOutputPath);
@@ -341,6 +345,21 @@ export abstract class BaseMode {
       arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_PARSED, arktsGlobal.compilerContext.peer);
       this.logger.printInfo('es2panda proceedToState parsed');
       let ast = arkts.EtsScript.fromContext();
+
+      if (this.buildConfig.aliasConfig && Object.keys(this.buildConfig.aliasConfig).length > 0) {
+        // if aliasConfig is set, transform aliasName@kit.xxx to default@ohos.xxx through the plugin
+        this.logger.printInfo('Transforming import statements with alias config');
+        let transformAst = new KitImportTransformer(
+          arkts,
+          arktsGlobal.compilerContext.program,
+          this.buildConfig.buildSdkPath,
+          this.buildConfig.aliasConfig
+        ).transform(ast);
+        PluginDriver.getInstance().getPluginContext().setArkTSAst(transformAst);
+      } else {
+        PluginDriver.getInstance().getPluginContext().setArkTSAst(ast);
+      }
+
       PluginDriver.getInstance().getPluginContext().setArkTSAst(ast);
       PluginDriver.getInstance().runPluginHook(PluginHook.PARSED);
       this.logger.printInfo('plugin parsed finished');
