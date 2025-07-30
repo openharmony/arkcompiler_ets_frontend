@@ -108,7 +108,7 @@ public:
         }
     }
 
-    void Verify(std::string_view phaseName);
+    void Verify(std::string_view phaseName) noexcept;
 
     void IntroduceNewInvariants(std::string_view occurredPhaseName)
     {

@@ -674,6 +674,7 @@ static void ConvertRestArguments(checker::ETSChecker *const checker, const ir::C
                 elements.emplace_back(expr->Arguments()[i]);
             }
             auto *arrayExpression = checker->AllocNode<ir::ArrayExpression>(std::move(elements), checker->Allocator());
+            ES2PANDA_ASSERT(arrayExpression != nullptr);
             arrayExpression->SetParent(const_cast<ir::CallExpression *>(expr));
             auto restType = signature->RestVar()->TsType()->AsETSArrayType();
             arrayExpression->SetTsType(restType);

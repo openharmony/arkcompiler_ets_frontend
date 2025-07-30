@@ -311,6 +311,7 @@ void ETSLReference::SetValueGetterSetter(const ir::MemberExpression *memberExpr)
 {
     ES2PANDA_ASSERT(memberExpr->PropVar() != nullptr);
     const auto *sig = memberExpr->PropVar()->TsType()->AsETSFunctionType()->FindSetter();
+    ES2PANDA_ASSERT(sig != nullptr);
 
     auto argReg = etsg_->AllocReg();
     etsg_->StoreAccumulator(Node(), argReg);
@@ -343,8 +344,8 @@ void ETSLReference::SetValue() const
         return;
     }
 
-    if (memberExpr->PropVar() != nullptr &&
-        memberExpr->PropVar()->TsType()->HasTypeFlag(checker::TypeFlag::GETTER_SETTER)) {
+    ES2PANDA_ASSERT(memberExpr->PropVar() != nullptr);
+    if (memberExpr->PropVar()->TsType()->HasTypeFlag(checker::TypeFlag::GETTER_SETTER)) {
         SetValueGetterSetter(memberExpr);
         return;
     }

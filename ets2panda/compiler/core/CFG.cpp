@@ -201,6 +201,7 @@ CFG::BasicBlock *CFG::Build(ir::ScriptFunction *scriptFunctionNode)
     }
 
     BasicBlock *entryBB = CreateNewBB({});
+    ES2PANDA_ASSERT(entryBB != nullptr);
     entryBB->SetFlag(BasicBlockFlags::ENTRY);
     functionNodeBBMap_[scriptFunctionNode] = entryBB;
     if (scriptFunctionNode->Id() != nullptr) {
@@ -507,6 +508,7 @@ CFG::BasicBlock *CFG::Build(ir::WhileStatement *whileStatementNode, BasicBlock *
 {
     ++inLoop_;
     auto testBB = CreateNewBB({bb});
+    ES2PANDA_ASSERT(testBB != nullptr);
     testBB->SetFlag(BasicBlockFlags::CONDITION);
     --inLoop_;
     auto falseBB = CreateNewBB({testBB}, {&falseLabel_});
@@ -515,6 +517,7 @@ CFG::BasicBlock *CFG::Build(ir::WhileStatement *whileStatementNode, BasicBlock *
     bb = Build(whileStatementNode->Test(), testBB);
     auto trueBB = CreateNewBB({bb}, {&trueLabel_});
     trueBB = Build(whileStatementNode->Body(), trueBB);
+    ES2PANDA_ASSERT(trueBB != nullptr);
     trueBB->AddSuccessor(testBB);
     --inLoop_;
     return falseBB;
@@ -525,12 +528,14 @@ CFG::BasicBlock *CFG::Build(ir::DoWhileStatement *doWhileStatementNode, BasicBlo
     ++inLoop_;
     auto bodyBB = CreateNewBB({bb});
     auto testBB = CreateNewBB({});
+    ES2PANDA_ASSERT(testBB != nullptr);
     testBB->SetFlag(BasicBlockFlags::CONDITION);
     --inLoop_;
     auto falseBB = CreateNewBB({testBB}, {&falseLabel_});
     ++inLoop_;
     loopStmtJumpTargetMap_[doWhileStatementNode] = std::make_pair(testBB, falseBB);
     bb = Build(doWhileStatementNode->Body(), bodyBB);
+    ES2PANDA_ASSERT(bb != nullptr);
     testBB = Build(doWhileStatementNode->Test(), testBB);
     bb->AddSuccessor(testBB);
     AddBBEdge(testBB, bodyBB, &trueLabel_);
@@ -636,6 +641,7 @@ CFG::BasicBlock *CFG::Build(ir::ForOfStatement *forOfStatementNode, BasicBlock *
     loopStmtJumpTargetMap_[forOfStatementNode] = std::make_pair(bb, nextBB);
     bb = Build(forOfStatementNode->Body(), bb);
     --inLoop_;
+    ES2PANDA_ASSERT(bb != nullptr);
     bb->AddSuccessor(loopBB);
     bb->AddSuccessor(nextBB);
     return nextBB;
@@ -656,6 +662,7 @@ CFG::BasicBlock *CFG::Build(ir::ForUpdateStatement *forUpdateStatementNode, Basi
         testBB = Build(forUpdateStatementNode->Test(), testBB);
         auto bodyBB = Build(forUpdateStatementNode->Body(), trueBB);
         bodyBB = Build(forUpdateStatementNode->Update(), bodyBB);
+        ES2PANDA_ASSERT(bodyBB != nullptr);
         bodyBB->AddSuccessor(testBB);
         --inLoop_;
         return falseBB;
@@ -667,6 +674,7 @@ CFG::BasicBlock *CFG::Build(ir::ForUpdateStatement *forUpdateStatementNode, Basi
     loopStmtJumpTargetMap_[forUpdateStatementNode] = std::make_pair(bodyStartBB, nextBB);
     auto bodyBB = Build(forUpdateStatementNode->Body(), bodyStartBB);
     bodyBB = Build(forUpdateStatementNode->Update(), bodyBB);
+    ES2PANDA_ASSERT(bodyBB != nullptr);
     bodyBB->AddSuccessor(bodyStartBB);
     --inLoop_;
     return nextBB;

@@ -117,6 +117,7 @@ checker::Type *TSTupleType::GetType(checker::TSChecker *checker)
 
         auto *memberVar =
             varbinder::Scope::CreateVar(checker->Allocator(), memberIndex, varbinder::VariableFlags::PROPERTY, it);
+        ES2PANDA_ASSERT(memberVar != nullptr);
 
         checker::ElementFlags memberFlag;
         if (it->IsTSNamedTupleMember()) {
