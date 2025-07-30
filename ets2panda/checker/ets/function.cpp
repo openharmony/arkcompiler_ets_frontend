@@ -407,12 +407,17 @@ static void ClearPreferredTypeForArray(checker::ETSChecker *checker, ir::Express
     }
 }
 
+// CC-OFFNXT(huge_method[C++], G.FUN.01-CPP, G.FUD.05) solid logic
 bool ETSChecker::ValidateSignatureRequiredParams(Signature *substitutedSig,
                                                  const ArenaVector<ir::Expression *> &arguments, TypeRelationFlag flags,
                                                  const std::vector<bool> &argTypeInferenceRequired, bool reportError)
 {
     auto commonArity = std::min(arguments.size(), substitutedSig->ArgCount());
     if ((flags & TypeRelationFlag::NO_CHECK_TRAILING_LAMBDA) != 0) {
+        if (commonArity == 0) {
+            ES2PANDA_ASSERT(substitutedSig->GetSignatureInfo()->params.empty());
+            return true;
+        }
         commonArity = commonArity - 1;
     }
     for (size_t index = 0; index < commonArity; ++index) {
