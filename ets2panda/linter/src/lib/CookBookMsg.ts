@@ -267,6 +267,7 @@ cookBookTag[237] = 'Array and tuple are different type(arkts-no-tuples-arrays)';
 cookBookTag[238] = 'The static property has no initializer (arkts-class-static-initialization)';
 cookBookTag[239] = 'This keyword cannot be used as identifiers (arkts-invalid-identifier)';
 cookBookTag[245] = 'JSON files cannot be imported (arkts-no-import-json-file)';
+cookBookTag[249] = 'The namespace imported by import * as cannot be used as a variable (arkts-no-import-namespace-with-star-as-var)';
 cookBookTag[251] = '"!!" for bidirectional data binding is not supported (arkui-no-!!-bidirectional-data-binding)';
 cookBookTag[252] = '"$$" for bidirectional data binding is not supported (arkui-no-$$-bidirectional-data-binding)';
 cookBookTag[253] = '"${variable}" for decorator binding is not supported (arkui-link-decorator-passing)';
@@ -296,6 +297,8 @@ cookBookTag[274] =
   'The subclass constructor must call the parent class\'s parametered constructor (arkts-subclass-must-call-super-constructor-with-args)';
 cookBookTag[275] =
   'The Custom component with custom layout capability needs to add the "@CustomLayout" decorator (arkui-custom-layout-need-add-decorator)';
+cookBookTag[276] =
+  'ArkTS 1.2 should implement all fields in the interface in the class (arkts-no-class-omit-interface-optional-prop)';
 cookBookTag[281] = '"@Prop" decorator is not supported (arkui-no-prop-decorator)';
 cookBookTag[282] = '"@StorageProp" decorator is not supported (arkui-no-storageprop-decorator)';
 cookBookTag[283] = '"@LocalStorageProp" decorator is not supported (arkui-no-localstorageprop-decorator)';
@@ -384,6 +387,7 @@ cookBookTag[363] = 'The generic of "BuilderNode" does not accept tuple (arkui-bu
 cookBookTag[364] =
   'The "update" interface of "BuilderNode" does not accept an object literal. Please replace it with an instance of the class specified in the generic when creating a new "BuilderNode", and ensure that the instance has the same field values as the literal (arkui-buildernode-update-no-literal)';
 cookBookTag[365] = 'Property "nestingBuilderSupported" is not supported (arkui-buildernode-no-nestingbuildersupported)';
+cookBookTag[366] = 'ESObject type cannot be used (arkts-no-esobject-support)';
 cookBookTag[370] = 'Sparse array is not supported in ArkTS1.2 (arkts-no-sparse-array)';
 cookBookTag[371] = 'Enum elements cannot be types in ArkTS1.2 (arkts-no-enum-prop-as-type)';
 cookBookTag[372] = 'Smart type differences (arkts-no-ts-like-smart-type)';

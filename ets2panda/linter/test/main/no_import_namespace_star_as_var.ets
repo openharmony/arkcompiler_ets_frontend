@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,5 +13,34 @@
  * limitations under the License.
  */
 
-export const ES_VALUE = 'ESValue';
-export const ES_OBJECT = 'ESObject';
+import * as host from './file1';
+const alias = host; // error
+alias.run();
+
+function getHost() {
+  return host; // error
+}
+const edgeCase = getHost();
+
+function run(h: any) {
+  h.doSomething();
+}
+run(host); // error
+
+host(); // error
+
+const { foo } = host; // error
+
+let g;
+g = host; // error
+
+host.doSomething() // valid
+new host.Host(); // valid
+
+const h2 = host.h2(); // valid
+
+function f1() {
+  return host.b(); // valid
+}
+
+const fn = () => host.work(); // valid

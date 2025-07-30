@@ -45,6 +45,7 @@
     "arkts-class-static-initialization",
     "arkts-invalid-identifier",
     "arkts-no-import-json-file",
+    "arkts-no-import-namespace-with-star-as-var",
     "arkts-no-extends-expression",
     "arkts-no-ts-like-function-call",
     "arkts-method-inherit-rule",
@@ -53,6 +54,7 @@
     "arkts-limited-stdlib-no-setCloneList",
     "arkts-limited-stdlib-no-setTransferList",
     "arkts-builtin-object-getOwnPropertyNames",
+    "arkts-no-class-omit-interface-optional-prop",
     "arkts-no-sparse-array",
     "arkts-no-enum-prop-as-type",
     "arkts-no-ts-like-smart-type",
@@ -64,7 +66,8 @@
     "arkts-unsupport-operator",
 	"arkts-no-duplicate-function-name",
     "arkts-require-func-arg-type",
-	"arkts-subclass-must-call-super-constructor-with-args"
+	"arkts-subclass-must-call-super-constructor-with-args",
+    "arkts-no-esobject-support"
   ],
   "interop": [
     "arkts-interop-js2s-inherit-js-class",

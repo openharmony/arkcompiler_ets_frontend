@@ -178,6 +178,7 @@ import { COMMON_UNION_MEMBER_ACCESS_WHITELIST } from './utils/consts/ArktsWhiteA
 import type { BaseClassConstructorInfo, ConstructorParameter, ExtendedIdentifierInfo } from './utils/consts/Types';
 import { ExtendedIdentifierType } from './utils/consts/Types';
 import { STRING_ERROR_LITERAL } from './utils/consts/Literals';
+import { ES_OBJECT } from './utils/consts/ESObject';
 
 export class TypeScriptLinter extends BaseTypeScriptLinter {
   supportedStdCallApiChecker: SupportedStdCallApiChecker;
@@ -856,7 +857,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     });
     this.handleDeclarationDestructuring(tsParam);
     this.handleDeclarationInferredType(tsParam);
-    this.handleInvalidIdentifier(tsParam);
+    if (!ts.isArrowFunction(node.parent)) {
+      this.handleInvalidIdentifier(tsParam);
+    }
     this.handleSdkGlobalApi(tsParam);
     const typeNode = tsParam.type;
     if (this.options.arkts2 && typeNode && TsUtils.typeContainsVoid(typeNode)) {
@@ -3844,11 +3847,12 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
   private checkMethodType(allBaseTypes: ts.Type[], methodName: string, node: ts.MethodDeclaration, isStatic: boolean = false): void {
     for (const baseType of allBaseTypes) {
-      let baseMethod: ts.Symbol | undefined;        
-      if (isStatic) {
-        const constructorType = this.tsTypeChecker.getTypeOfSymbolAtLocation(baseType.getSymbol()!, node);
+      let baseMethod: ts.Symbol | undefined;
+      const symbol =  baseType.getSymbol();        
+      if (isStatic && symbol) {
+        const constructorType = this.tsTypeChecker.getTypeOfSymbolAtLocation(symbol, node);
         baseMethod = constructorType.getProperty(methodName) || 
-                      baseType.getSymbol()?.members?.get(ts.escapeLeadingUnderscores(methodName));
+                      symbol.members?.get(ts.escapeLeadingUnderscores(methodName));
       } else {
         baseMethod = baseType.getProperty(methodName);
       }
@@ -4460,6 +4464,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (isNewArkTS && this.tsTypeChecker.isArgumentsSymbol(tsIdentSym)) {
       this.incrementCounters(node, FaultID.ArgumentsObject);
     }
+    this.checkInvalidNamespaceUsage(node);
   }
 
   private handlePropertyDescriptorInScenarios(node: ts.Node): void {
@@ -4531,6 +4536,30 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
     if (matchedApi) {
       this.incrementCounters(tsIdentifier, FaultID.NoPropertyDescriptor);
+    }
+  }
+
+  private checkInvalidNamespaceUsage(node: ts.Identifier): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    if (ts.isNamespaceImport(node.parent)) {
+      return;
+    }
+    const symbol = this.tsTypeChecker.getSymbolAtLocation(node);
+    if (!symbol) {
+      return;
+    }
+    const isNamespace = symbol.declarations?.some((decl) => {
+      return ts.isNamespaceImport(decl);
+    });
+    if (!isNamespace) {
+      return;
+    }
+    const parent = node.parent;
+    const isValidUsage = ts.isPropertyAccessExpression(parent) && parent.expression === node;
+    if (!isValidUsage) {
+      this.incrementCounters(node, FaultID.NoImportNamespaceStarAsVar);
     }
   }
 
@@ -6425,6 +6454,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
   private handleTypeReference(node: ts.Node): void {
     const typeRef = node as ts.TypeReferenceNode;
+    this.handleESObjectUsage(typeRef);
     this.handleBuiltinCtorCallSignature(typeRef);
     this.handleSharedArrayBuffer(typeRef);
     this.handleSdkGlobalApi(typeRef);
@@ -8119,7 +8149,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
           this.handleNoDeprecatedApi(expr);
         }
       });
-
+      this.handleInterfaceFieldImplementation(node);
       this.handleMissingSuperCallInExtendedClass(node);
       this.handleFieldTypesMatchingBetweenDerivedAndBaseClass(node);
       this.checkReadonlyOverridesFromBase(node);
@@ -8175,6 +8205,98 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         this.incrementCounters(member, FaultID.NoClassSuperPropReadonly);
       }
     }
+  }
+
+    /**
+   * Ensures classes fully implement all properties from their interfaces.
+   */
+  private handleInterfaceFieldImplementation(clause: ts.HeritageClause): void {
+    // Only process implements clauses
+    if (clause.token !== ts.SyntaxKind.ImplementsKeyword) {
+      return;
+    }
+    const classDecl = clause.parent as ts.ClassDeclaration;
+    if (!ts.isClassDeclaration(classDecl) || !classDecl.name) {
+      return;
+    }
+
+    for (const interfaceType of clause.types) {
+      const expr = interfaceType.expression;
+      if (!ts.isIdentifier(expr)) {
+        continue;
+      }
+      const sym = this.tsUtils.trueSymbolAtLocation(expr);
+      const interfaceDecl = sym?.declarations?.find(ts.isInterfaceDeclaration);
+      if (!interfaceDecl) {
+        continue;
+      }
+      // Gather all inherited interfaces
+      const allInterfaces = this.getAllInheritedInterfaces(interfaceDecl);
+      // If the class fails to implement any member, report once and exit
+      if (!this.classImplementsAllMembers(classDecl, allInterfaces)) {
+        this.incrementCounters(classDecl.name, FaultID.InterfaceFieldNotImplemented);
+        return;
+      }
+    }
+  }
+
+  /**
+   * Recursively collects an interface and all its ancestor interfaces.
+   */
+  private getAllInheritedInterfaces(root: ts.InterfaceDeclaration): ts.InterfaceDeclaration[] {
+    const collected: ts.InterfaceDeclaration[] = [];
+    const stack: ts.InterfaceDeclaration[] = [root];
+    while (stack.length) {
+      const current = stack.pop()!;
+      collected.push(current);
+      if (!current.heritageClauses) {
+        continue;
+      }
+      for (const clause of current.heritageClauses) {
+        if (clause.token !== ts.SyntaxKind.ExtendsKeyword) {
+          continue;
+        }
+        for (const typeNode of clause.types) {
+          const expr = typeNode.expression;
+          if (!ts.isIdentifier(expr)) {
+            continue;
+          }
+          const sym = this.tsUtils.trueSymbolAtLocation(expr);
+          const decl = sym?.declarations?.find(ts.isInterfaceDeclaration);
+          if (decl) {
+            stack.push(decl);
+          }
+        }
+      }
+    }
+    return collected;
+  }
+
+  /**
+   * Returns true if the class declaration declares every property or method
+   * signature from the provided list of interface declarations.
+   */
+  private classImplementsAllMembers(classDecl: ts.ClassDeclaration, interfaces: ts.InterfaceDeclaration[]): boolean {
+    void this;
+
+    for (const intf of interfaces) {
+      for (const member of intf.members) {
+        if ((ts.isPropertySignature(member) || ts.isMethodSignature(member)) && ts.isIdentifier(member.name)) {
+          const name = member.name.text;
+          const found = classDecl.members.some((m) => {
+            return (
+              (ts.isPropertyDeclaration(m) || ts.isMethodDeclaration(m)) &&
+              ts.isIdentifier(m.name) &&
+              m.name.text === name
+            );
+          });
+          if (!found) {
+            return false;
+          }
+        }
+      }
+    }
+    return true;
   }
 
   private isVariableReference(identifier: ts.Identifier): boolean {
@@ -13359,6 +13481,19 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       }
     }
     return true;
+  }
+
+    private handleESObjectUsage(typeRef: ts.TypeReferenceNode): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    if (
+      (ts.isIdentifier(typeRef.typeName) && typeRef.typeName.text === ES_OBJECT) ||
+      (ts.isQualifiedName(typeRef.typeName) && typeRef.typeName.right.text === ES_OBJECT)
+    ) {
+      this.incrementCounters(typeRef, FaultID.NoESObjectSupport);
+    }
   }
 
   private handleNodeForBuilderNode(node: ts.TypeReferenceNode | ts.NewExpression): void {
