@@ -214,7 +214,7 @@ static bool RunVerifierAndPhases(public_lib::Context &context, parser::Program &
         }
 
         // Stop lowerings processing after Checker phase if any error happened.
-        if (phase->Name() == compiler::CheckerPhase::NAME && context.diagnosticEngine->IsAnyError()) {
+        if (name == "plugins-after-check" && context.diagnosticEngine->IsAnyError()) {
             return false;
         }
 
