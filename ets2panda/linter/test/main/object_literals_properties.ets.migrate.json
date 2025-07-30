@@ -305,16 +305,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 272,
-            "column": 1,
-            "endLine": 274,
-            "endColumn": 2,
-            "problem": "MissingSuperCall",
-            "suggest": "",
-            "rule": "The subclass constructor must call the parent class's parametered constructor (arkts-subclass-must-call-super-constructor-with-args)",
-            "severity": "ERROR"
-        },
-        {
             "line": 284,
             "column": 1,
             "endLine": 286,
@@ -342,16 +332,6 @@
             "problem": "ObjectLiteralProperty",
             "suggest": "",
             "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 301,
-            "column": 1,
-            "endLine": 303,
-            "endColumn": 2,
-            "problem": "MissingSuperCall",
-            "suggest": "",
-            "rule": "The subclass constructor must call the parent class's parametered constructor (arkts-subclass-must-call-super-constructor-with-args)",
             "severity": "ERROR"
         },
         {

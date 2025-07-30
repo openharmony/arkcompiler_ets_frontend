@@ -4,7 +4,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,9 +13,4 @@
  * limitations under the License.
  */
 
-export const COLLECTIONS_TEXT = 'collections';
-export const ARKTS_COLLECTIONS_MODULE = '@arkts.collections';
-export const BIT_VECTOR = 'BitVector';
-export const COLLECTIONS_MODULES = ['@arkts.collections', '@kit.ArkTS'];
-
-export type BitVectorUsage = undefined | { ns: string; used: boolean };
+declare function getContext(component?: Object): Context;

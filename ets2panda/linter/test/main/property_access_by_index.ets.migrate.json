@@ -15,9 +15,9 @@
     ],
     "result": [
         {
-            "line": 24,
+            "line": 22,
             "column": 3,
-            "endLine": 24,
+            "endLine": 22,
             "endColumn": 14,
             "problem": "PropertyAccessByIndex",
             "suggest": "",
@@ -25,13 +25,33 @@
             "severity": "ERROR"
         },
         {
-            "line": 27,
+            "line": 25,
             "column": 10,
-            "endLine": 27,
+            "endLine": 25,
             "endColumn": 21,
             "problem": "PropertyAccessByIndex",
             "suggest": "",
             "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 37,
+            "column": 1,
+            "endLine": 37,
+            "endColumn": 7,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 38,
+            "column": 1,
+            "endLine": 38,
+            "endColumn": 7,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
             "severity": "ERROR"
         },
         {
@@ -45,29 +65,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 40,
-            "column": 1,
-            "endLine": 40,
-            "endColumn": 7,
-            "problem": "RuntimeArrayCheck",
-            "suggest": "",
-            "rule": "Array bound not checked. (arkts-runtime-array-check)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 41,
-            "column": 1,
-            "endLine": 41,
-            "endColumn": 7,
-            "problem": "RuntimeArrayCheck",
-            "suggest": "",
-            "rule": "Array bound not checked. (arkts-runtime-array-check)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 48,
+            "line": 46,
             "column": 3,
-            "endLine": 48,
+            "endLine": 46,
             "endColumn": 9,
             "problem": "PropertyAccessByIndex",
             "suggest": "",
@@ -75,9 +75,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 52,
+            "line": 50,
             "column": 3,
-            "endLine": 52,
+            "endLine": 50,
             "endColumn": 9,
             "problem": "PropertyAccessByIndex",
             "suggest": "",
@@ -85,9 +85,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 59,
+            "line": 57,
             "column": 5,
-            "endLine": 59,
+            "endLine": 57,
             "endColumn": 27,
             "problem": "AnyType",
             "suggest": "",
@@ -95,13 +95,33 @@
             "severity": "ERROR"
         },
         {
-            "line": 59,
+            "line": 57,
             "column": 14,
-            "endLine": 59,
+            "endLine": 57,
             "endColumn": 27,
             "problem": "GenericCallNoTypeArgs",
             "suggest": "",
             "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 70,
+            "column": 1,
+            "endLine": 70,
+            "endColumn": 10,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 71,
+            "column": 1,
+            "endLine": 71,
+            "endColumn": 10,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
             "severity": "ERROR"
         },
         {
@@ -178,7 +198,7 @@
             "line": 79,
             "column": 1,
             "endLine": 79,
-            "endColumn": 10,
+            "endColumn": 11,
             "problem": "RuntimeArrayCheck",
             "suggest": "",
             "rule": "Array bound not checked. (arkts-runtime-array-check)",
@@ -188,7 +208,7 @@
             "line": 80,
             "column": 1,
             "endLine": 80,
-            "endColumn": 10,
+            "endColumn": 11,
             "problem": "RuntimeArrayCheck",
             "suggest": "",
             "rule": "Array bound not checked. (arkts-runtime-array-check)",
@@ -245,29 +265,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 86,
+            "line": 97,
             "column": 1,
-            "endLine": 86,
-            "endColumn": 11,
-            "problem": "RuntimeArrayCheck",
-            "suggest": "",
-            "rule": "Array bound not checked. (arkts-runtime-array-check)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 87,
-            "column": 1,
-            "endLine": 87,
-            "endColumn": 11,
-            "problem": "RuntimeArrayCheck",
-            "suggest": "",
-            "rule": "Array bound not checked. (arkts-runtime-array-check)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 99,
-            "column": 1,
-            "endLine": 99,
+            "endLine": 97,
             "endColumn": 18,
             "problem": "UnsupportPropNameFromValue",
             "suggest": "",
@@ -275,9 +275,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 100,
+            "line": 98,
             "column": 1,
-            "endLine": 100,
+            "endLine": 98,
             "endColumn": 17,
             "problem": "UnsupportPropNameFromValue",
             "suggest": "",
@@ -285,9 +285,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 101,
+            "line": 99,
             "column": 1,
-            "endLine": 101,
+            "endLine": 99,
             "endColumn": 17,
             "problem": "UnsupportPropNameFromValue",
             "suggest": "",
@@ -295,9 +295,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 109,
+            "line": 107,
             "column": 24,
-            "endLine": 109,
+            "endLine": 107,
             "endColumn": 39,
             "problem": "ArrayIndexExprType",
             "suggest": "",
@@ -305,9 +305,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 109,
+            "line": 107,
             "column": 24,
-            "endLine": 109,
+            "endLine": 107,
             "endColumn": 39,
             "problem": "BuiltinSymbolIterator",
             "suggest": "",
@@ -315,9 +315,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 110,
+            "line": 108,
             "column": 5,
-            "endLine": 110,
+            "endLine": 108,
             "endColumn": 40,
             "problem": "AnyType",
             "suggest": "",
@@ -325,9 +325,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 119,
+            "line": 117,
             "column": 20,
-            "endLine": 119,
+            "endLine": 117,
             "endColumn": 35,
             "problem": "ArrayIndexExprType",
             "suggest": "",
@@ -335,9 +335,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 119,
+            "line": 117,
             "column": 20,
-            "endLine": 119,
+            "endLine": 117,
             "endColumn": 35,
             "problem": "BuiltinSymbolIterator",
             "suggest": "",
@@ -345,9 +345,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 120,
+            "line": 118,
             "column": 5,
-            "endLine": 120,
+            "endLine": 118,
             "endColumn": 36,
             "problem": "AnyType",
             "suggest": "",
@@ -355,9 +355,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 141,
+            "line": 139,
             "column": 12,
-            "endLine": 141,
+            "endLine": 139,
             "endColumn": 31,
             "problem": "CreatingPrimitiveTypes",
             "suggest": "",
@@ -365,10 +365,30 @@
             "severity": "ERROR"
         },
         {
-            "line": 161,
+            "line": 159,
             "column": 3,
-            "endLine": 161,
+            "endLine": 159,
             "endColumn": 9,
+            "problem": "PropertyAccessByIndex",
+            "suggest": "",
+            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 172,
+            "column": 1,
+            "endLine": 172,
+            "endColumn": 9,
+            "problem": "PropertyAccessByIndex",
+            "suggest": "",
+            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 173,
+            "column": 1,
+            "endLine": 173,
+            "endColumn": 13,
             "problem": "PropertyAccessByIndex",
             "suggest": "",
             "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)",
@@ -378,16 +398,6 @@
             "line": 174,
             "column": 1,
             "endLine": 174,
-            "endColumn": 9,
-            "problem": "PropertyAccessByIndex",
-            "suggest": "",
-            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 175,
-            "column": 1,
-            "endLine": 175,
             "endColumn": 13,
             "problem": "PropertyAccessByIndex",
             "suggest": "",
@@ -395,40 +405,20 @@
             "severity": "ERROR"
         },
         {
-            "line": 176,
+            "line": 181,
             "column": 1,
-            "endLine": 176,
-            "endColumn": 13,
-            "problem": "PropertyAccessByIndex",
+            "endLine": 181,
+            "endColumn": 10,
+            "problem": "LimitedStdLibNoSendableDecorator",
             "suggest": "",
-            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)",
+            "rule": "Usage of standard library is restricted(arkts-limited-stdlib-no-sendable-decorator)",
             "severity": "ERROR"
         },
         {
-            "line": 183,
-            "column": 7,
-            "endLine": 183,
-            "endColumn": 14,
-            "problem": "PropertyAccessByIndex",
-            "suggest": "",
-            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 194,
+            "line": 197,
             "column": 1,
-            "endLine": 194,
+            "endLine": 197,
             "endColumn": 5,
-            "problem": "PropertyAccessByIndex",
-            "suggest": "",
-            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 195,
-            "column": 1,
-            "endLine": 195,
-            "endColumn": 7,
             "problem": "PropertyAccessByIndex",
             "suggest": "",
             "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)",
@@ -438,6 +428,16 @@
             "line": 198,
             "column": 1,
             "endLine": 198,
+            "endColumn": 7,
+            "problem": "PropertyAccessByIndex",
+            "suggest": "",
+            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 201,
+            "column": 1,
+            "endLine": 201,
             "endColumn": 23,
             "problem": "PropertyAccessByIndex",
             "suggest": "",
@@ -445,9 +445,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 210,
+            "line": 213,
             "column": 1,
-            "endLine": 210,
+            "endLine": 213,
             "endColumn": 20,
             "problem": "PropertyAccessByIndex",
             "suggest": "",

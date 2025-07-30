@@ -13,15 +13,13 @@
  * limitations under the License.
  */
 
+import { collections } from './oh_modules/@arkts.collections';
 
 
 
 
 
-
-import { collections as definedCollections } from './ignore_files/user_defined_collections';
-import { BitVector } from "@arkts.collections";
- //legal
+import { collections as definedCollections } from './ignore_files/user_defined_collections'; //legal
 
 function tesCollectionsUsage() {
 
@@ -43,6 +41,6 @@ function test(array: Array<string>) {
     const map = Map<string, string>();
 }
 
-function testBitVector(bv: BitVector<string>) {
-    const bitVector = new BitVector<string>();
+function testBitVector(bv: collections.BitVector<string>) {
+    const bitVector = new collections.BitVector<string>();
 }

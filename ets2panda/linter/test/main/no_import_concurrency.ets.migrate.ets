@@ -23,7 +23,7 @@ import doo, { fooModule as fooAs, too } from '@kit.ArkTS';
 import bbbb from '@kit.ArkTS';
 
 
-
+import process from '@ohos.process';
 
 
 

@@ -257,17 +257,6 @@
             "endLine": 26,
             "endColumn": 15,
             "problem": "LimitedStdLibNoImportConcurrency",
-            "autofix": [
-                {
-                    "start": 1138,
-                    "end": 1174,
-                    "replacementText": "",
-                    "line": 26,
-                    "column": 8,
-                    "endLine": 26,
-                    "endColumn": 15
-                }
-            ],
             "suggest": "",
             "rule": "Import Concurrency is not required (arkts-limited-stdlib-no-import-concurrency)",
             "severity": "ERROR"
