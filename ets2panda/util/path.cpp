@@ -76,7 +76,8 @@ void Path::InitializeFileName()
     }
 
     size_t extensionPosition = fileNameWithExtension_.Mutf8().find_last_of('.');
-    fileName_ = fileNameWithExtension_.Substr(0, extensionPosition);
+    fileName_ = extensionPosition == std::string::npos ? fileNameWithExtension_
+                                                       : fileNameWithExtension_.Substr(0, extensionPosition);
 }
 
 void Path::InitializeFileNameWithExtension()
