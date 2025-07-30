@@ -11,3 +11,6 @@ splay
 
 #27146
 json-stringify-inspector
+
+#27014
+pdfjs
