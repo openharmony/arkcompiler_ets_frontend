@@ -62,6 +62,7 @@ process.on('message', (message: {
       ];
       if (isDebug) {
         ets2pandaCmd.push('--debug-info');
+        ets2pandaCmd.push('--opt-level=0');
       }
       ets2pandaCmd.push(fileInfo.filePath);
 
@@ -86,7 +87,7 @@ process.on('message', (message: {
       if (buildConfig.hasMainModule && (buildConfig.byteCodeHar || buildConfig.moduleType === OHOS_MODULE_TYPE.SHARED)) {
         let filePathFromModuleRoot: string = path.relative(buildConfig.moduleRootPath, fileInfo.filePath);
         let declEtsOutputPath: string = changeFileExtension(
-          path.join(buildConfig.declgenV2OutPath as string, buildConfig.packageName, filePathFromModuleRoot),
+          path.join(buildConfig.declgenV2OutPath as string, filePathFromModuleRoot),
           DECL_ETS_SUFFIX
         );
         ensurePathExists(declEtsOutputPath);
