@@ -817,6 +817,10 @@ semantic:
   id: 55
   message: "'{}' cannot be spread in tuple."
 
+- name: INVALID_TYPE_AS_VALUE
+  id: 134683
+  message: "'{}' only refers to a type, but is being used as a value here. "
+
 - name: INVALID_TYPE_PARAM
   id: 168
   message: "Type '{}' is not valid for generic type arguments"
