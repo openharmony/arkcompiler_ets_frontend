@@ -21,4 +21,7 @@ const b2: Base = /* @@ label */{ ...{n: 200} }
 const c1: Child = /* @@ label1 */{ ...b1, a: "a" }
 
 /* @@@ label Error TypeError: The object literal properties must be key-value pairs */
+/* @@@ label Error TypeError: Non-optional property 'n' in type 'Base' is missing in object literal. */
 /* @@@ label1 Error TypeError: The object literal properties must be key-value pairs */
+/* @@@ label1 Error TypeError: Non-optional property 'n' in super type 'Base' of type 'Child' is missing in object literal. */
+/* @@@ label1 Error TypeError: Non-optional property 'a' in type 'Child' is missing in object literal. */
