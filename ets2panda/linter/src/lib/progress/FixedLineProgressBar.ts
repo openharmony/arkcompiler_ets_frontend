@@ -16,6 +16,7 @@
 import chalk from 'chalk';
 import * as cliProgress from 'cli-progress';
 import type { CmdProgressInfo } from './CmdProgressInfo';
+import type { ProgressPayload } from './ProgressPayload';
 
 export class FixedLineProgressBar {
   private readonly bar: cliProgress.SingleBar;
@@ -24,19 +25,16 @@ export class FixedLineProgressBar {
   private isActive = false;
   private lastOutput = '';
   private static fixedLinePosition = 0;
+  private readonly minBarWidth = 20;
+  private readonly fixedPartsWidth = 40;
+  private resizeListener: (() => void) | null = null;
+  private lastTerminalWidth: number = 0;
 
   constructor() {
     this.bar = new cliProgress.SingleBar(
       {
         format: (options, params, payload): string => {
-          const bar = options.barCompleteString!.substring(0, Math.round(params.progress * options.barsize!));
-          const statusColor =
-            payload.status === 'scanning' ? chalk.blue : payload.status === 'fixing' ? chalk.yellow : chalk.green;
-
-          return (
-            `${chalk.bold(payload.task)} ${statusColor(payload.statusText)} [${bar}]` +
-            `${Math.round(params.progress * 100)}%`
-          );
+          return this.generateBarString(params.progress, payload);
         },
         barCompleteChar: '\u2588',
         barIncompleteChar: '\u2591',
@@ -51,12 +49,46 @@ export class FixedLineProgressBar {
       },
       cliProgress.Presets.shades_grey
     );
+
+    this.resizeListener = (): void => {
+      if (!this.isActive) {
+        return;
+      }
+      const currentWidth = process.stdout.columns || 80;
+      // Only redraw when width changes by more than 5 characters to avoid excessive refreshes
+      if (Math.abs(currentWidth - this.lastTerminalWidth) > 5) {
+        this.renderToFixedLine();
+        this.lastTerminalWidth = currentWidth;
+      }
+    };
+    process.stdout.on('resize', this.resizeListener);
+    this.lastTerminalWidth = process.stdout.columns || 80;
+  }
+
+  private generateBarString(progress: number, payload: ProgressPayload): string {
+    const terminalWidth = process.stdout.columns || 80;
+    const availableWidth = terminalWidth - this.fixedPartsWidth;
+    const barWidth = Math.max(this.minBarWidth, availableWidth);
+
+    const completedLength = Math.max(0, Math.min(barWidth, Math.floor(progress * barWidth)));
+    const remainingLength = Math.max(0, barWidth - completedLength);
+
+    const completedBar = this.bar.options.barCompleteChar!.repeat(completedLength);
+    const remainingBar = this.bar.options.barIncompleteChar!.repeat(remainingLength);
+    const progressBar = `${completedBar}${remainingBar}`;
+
+    const progressPercent = Math.round(progress * 100);
+    const statusColor =
+      payload.status === 'scanning' ? chalk.blue : payload.status === 'fixing' ? chalk.yellow : chalk.green;
+
+    return `${chalk.bold(payload.task)} ${statusColor(payload.statusText)} [${progressBar}] ${progressPercent}%`;
   }
 
   startBar(taskName: string, total: number, initialStatus: 'scanning' | 'fixing'): void {
     this.isActive = true;
     this.currentTask = taskName;
     this.currentStatus = initialStatus;
+    this.lastTerminalWidth = process.stdout.columns || 80;
 
     this.bar.start(total, 0, {
       task: `${taskName.padEnd(12)}`,
@@ -154,6 +186,11 @@ export class FixedLineProgressBar {
     if (this.isActive) {
       this.isActive = false;
       process.stderr.write('\x1B[1F\x1B[0G\x1B[2K');
+    }
+
+    if (this.resizeListener) {
+      process.stdout.off('resize', this.resizeListener);
+      this.resizeListener = null;
     }
   }
 }
