@@ -1194,7 +1194,8 @@ static ir::ClassDeclaration *CreateLambdaClass(public_lib::Context *ctx, checker
     return classDeclaration;
 }
 
-static ir::ETSNewClassInstanceExpression *CreateConstructorCall(public_lib::Context *ctx, ir::AstNode *lambdaOrFuncRef,
+static ir::ETSNewClassInstanceExpression *CreateConstructorCall(public_lib::Context *ctx,
+                                                                ir::TypedAstNode *lambdaOrFuncRef,
                                                                 ir::ClassDeclaration *lambdaClass,
                                                                 LambdaInfo const *info)
 {
@@ -1235,6 +1236,9 @@ static ir::ETSNewClassInstanceExpression *CreateConstructorCall(public_lib::Cont
                                                    objectType->AsETSObjectType());
     auto scopeCtx = checker::ScopeContext(ctx->GetChecker(), nearestScope);
     newExpr->Check(checker);
+    // NOTE: We need to set back the TsType, which is ETSFunctionType, to ensure to insert correct invoke calls.
+    ES2PANDA_ASSERT(lambdaOrFuncRef->TsType()->IsETSFunctionType());
+    newExpr->SetTsType(lambdaOrFuncRef->TsType());
 
     return newExpr;
 }
@@ -1474,9 +1478,7 @@ static ir::AstNode *InsertInvokeCall(public_lib::Context *ctx, ir::CallExpressio
     auto *oldType = checker->GetApparentType(oldCallee->TsType());
     ES2PANDA_ASSERT(oldType != nullptr);
     size_t arity = call->Arguments().size();
-    auto *ifaceType = oldType->IsETSObjectType()
-                          ? oldType->AsETSObjectType()
-                          : oldType->AsETSFunctionType()->ArrowToFunctionalInterfaceDesiredArity(checker, arity);
+    auto *ifaceType = oldType->AsETSFunctionType()->ArrowToFunctionalInterfaceDesiredArity(checker, arity);
     ES2PANDA_ASSERT(ifaceType != nullptr);
     bool hasRestParam =
         (oldType->IsETSFunctionType() && oldType->AsETSFunctionType()->ArrowSignature()->HasRestParameter()) ||
@@ -1499,9 +1501,7 @@ static ir::AstNode *InsertInvokeCall(public_lib::Context *ctx, ir::CallExpressio
     newCallee->SetObjectType(ifaceType);
 
     /* Pull out substituted call signature */
-    auto *funcIface =
-        ifaceType->HasObjectFlag(checker::ETSObjectFlags::INTERFACE) ? ifaceType : ifaceType->Interfaces()[0];
-    checker::Signature *callSig = funcIface->GetFunctionalInterfaceInvokeType()->CallSignatures()[0];
+    checker::Signature *callSig = ifaceType->GetFunctionalInterfaceInvokeType()->CallSignatures()[0];
     ES2PANDA_ASSERT(callSig != nullptr);
 
     call->SetCallee(newCallee);
