@@ -235,6 +235,7 @@ export abstract class BaseMode {
 
     if (this.isDebug) {
       ets2pandaCmd.push('--debug-info');
+      ets2pandaCmd.push('--opt-level=0');
     }
     ets2pandaCmd.push(fileInfo.filePath);
     this.logger.printInfo('ets2pandaCmd: ' + ets2pandaCmd.join(' '));
@@ -270,7 +271,7 @@ export abstract class BaseMode {
       if (this.hasMainModule && (this.byteCodeHar || this.moduleType === OHOS_MODULE_TYPE.SHARED)) {
         let filePathFromModuleRoot: string = path.relative(this.moduleRootPath, fileInfo.filePath);
         let declEtsOutputPath: string = changeFileExtension(
-          path.join(this.declgenV2OutPath as string, this.packageName, filePathFromModuleRoot),
+          path.join(this.declgenV2OutPath as string, filePathFromModuleRoot),
           DECL_ETS_SUFFIX
         );
         ensurePathExists(declEtsOutputPath);
@@ -325,6 +326,7 @@ export abstract class BaseMode {
     ensurePathExists(intermediateFilePath);
     if (this.isDebug) {
       ets2pandaCmd.push('--debug-info');
+      ets2pandaCmd.push('--opt-level=0');
     }
     ets2pandaCmd.push(this.buildConfig.compileFiles[0]);
     this.logger.printInfo('ets2pandaCmd: ' + ets2pandaCmd.join(' '));
@@ -1381,6 +1383,7 @@ export abstract class BaseMode {
 
       if (this.isDebug) {
         ets2pandaCmd.push('--debug-info');
+        ets2pandaCmd.push('--opt-level=0');
       }
       ets2pandaCmd.push(fileInfo.filePath);
 
