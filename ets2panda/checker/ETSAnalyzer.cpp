@@ -324,7 +324,7 @@ checker::Type *ETSAnalyzer::Check(ir::SpreadElement *expr) const
     }
 
     ETSChecker *checker = GetETSChecker();
-    Type *exprType = expr->AsSpreadElement()->Argument()->Check(checker);
+    Type *exprType = expr->Argument()->Check(checker);
 
     if (exprType->IsETSResizableArrayType()) {
         return expr->SetTsType(exprType->AsETSObjectType()->TypeArguments().front());
