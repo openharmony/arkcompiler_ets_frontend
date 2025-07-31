@@ -69,6 +69,10 @@ semantic:
   id: 175
   message: "A 'const' initializer in an ambient context must be a string or numeric literal: {}"
 
+- name: AMBIGUOUS_AMBIENT
+  id: 399
+  message: "Method declaration `{}` must all ambient or non-ambient"
+
 - name: AMBIGUOUS_CALL
   id: 142
   message: "Call to `{}` is ambiguous as `2` versions of `{}` are available: `{}{}` and `{}{}`"
