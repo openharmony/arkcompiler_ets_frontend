@@ -1213,6 +1213,10 @@ static varbinder::Variable *ResolveMemberExpressionProperty(ir::MemberExpression
         return nullptr;
     }
 
+    if (!me->Property()->IsIdentifier()) {
+        return nullptr;
+    }
+
     auto option =
         varbinder::ResolveBindingOptions::STATIC_DECLARATION | varbinder::ResolveBindingOptions::STATIC_VARIABLES;
     return scope->FindLocal(me->Property()->AsIdentifier()->Name(), option);
