@@ -348,6 +348,9 @@ ir::AstNode *EnumPostCheckLoweringPhase::GenerateValueOfCall(ir::AstNode *const 
         return node;
     }
     node->Parent()->AddAstNodeFlags(ir::AstNodeFlags::RECHECK);
+    if (node->AsExpression()->TsType()->IsTypeError()) {
+        return node;
+    }
     if (node->AsExpression()->TsType()->AsETSEnumType()->NodeIsEnumLiteral(node->AsExpression())) {
         return InlineValueOf(node->AsMemberExpression(), context_->Allocator());
     }
@@ -403,6 +406,15 @@ static void RecheckNode(ir::AstNode *node, checker::ETSChecker *checker)
     }
 }
 
+ir::AstNode *EnumPostCheckLoweringPhase::BuildEnumCasting(ir::AstNode *const node)
+{
+    auto castFlag = NeedHandleEnumCasting(node->AsTSAsExpression());
+    if (castFlag == EnumCastType::NONE) {
+        return node;
+    }
+    return GenerateEnumCasting(node->AsTSAsExpression(), castFlag);
+};
+
 bool EnumPostCheckLoweringPhase::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
     if (program->Extension() != ScriptExtension::ETS) {
@@ -421,14 +433,14 @@ bool EnumPostCheckLoweringPhase::PerformForModule(public_lib::Context *ctx, pars
                 RecheckNode(node, checker_);
             }
             if (node->HasAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF)) {
-                return GenerateValueOfCall(node);
+                auto newNode = node;
+                if (node->IsTSAsExpression()) {
+                    newNode = BuildEnumCasting(newNode);
+                }
+                return GenerateValueOfCall(newNode);
             }
             if (node->IsTSAsExpression()) {
-                auto castFlag = NeedHandleEnumCasting(node->AsTSAsExpression());
-                if (castFlag == EnumCastType::NONE) {
-                    return node;
-                }
-                return GenerateEnumCasting(node->AsTSAsExpression(), castFlag);
+                return BuildEnumCasting(node);
             }
             if (node->IsSwitchStatement() && (node->AsSwitchStatement()->Discriminant()->TsType() != nullptr) &&
                 node->AsSwitchStatement()->Discriminant()->TsType()->IsETSEnumType()) {
