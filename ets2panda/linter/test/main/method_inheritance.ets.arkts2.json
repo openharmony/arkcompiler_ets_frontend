@@ -395,6 +395,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 319,
+            "column": 9,
+            "endLine": 319,
+            "endColumn": 11,
+            "problem": "VariableMissingInitializer",
+            "suggest": "",
+            "rule": "After a variable is declared, a value must be assigned before using it (arkts-var-assignment-before-use)",
+            "severity": "ERROR"
+        },
+        {
             "line": 324,
             "column": 3,
             "endLine": 324,
@@ -405,6 +415,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 325,
+            "column": 9,
+            "endLine": 325,
+            "endColumn": 11,
+            "problem": "VariableMissingInitializer",
+            "suggest": "",
+            "rule": "After a variable is declared, a value must be assigned before using it (arkts-var-assignment-before-use)",
+            "severity": "ERROR"
+        },
+        {
             "line": 330,
             "column": 3,
             "endLine": 330,
@@ -412,6 +432,16 @@
             "problem": "MethodInheritRule",
             "suggest": "",
             "rule": "Overridden method parameters and return types must respect type inheritance principles (arkts-method-inherit-rule)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 331,
+            "column": 9,
+            "endLine": 331,
+            "endColumn": 11,
+            "problem": "VariableMissingInitializer",
+            "suggest": "",
+            "rule": "After a variable is declared, a value must be assigned before using it (arkts-var-assignment-before-use)",
             "severity": "ERROR"
         },
         {

@@ -125,6 +125,16 @@
             "severity": "ERROR"
         },
         {
+          "line": 56,
+          "column": 5,
+          "endLine": 56,
+          "endColumn": 6,
+          "problem": "VariableMissingInitializer",
+          "suggest": "",
+          "rule": "After a variable is declared, a value must be assigned before using it (arkts-var-assignment-before-use)",
+          "severity": "ERROR"
+        },
+        {
             "line": 56,
             "column": 8,
             "endLine": 56,
@@ -283,6 +293,16 @@
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
             "severity": "ERROR"
+        },
+        {
+          "line": 72,
+          "column": 7,
+          "endLine": 72,
+          "endColumn": 8,
+          "problem": "VariableMissingInitializer",
+          "suggest": "",
+          "rule": "After a variable is declared, a value must be assigned before using it (arkts-var-assignment-before-use)",
+          "severity": "ERROR"
         },
         {
             "line": 72,

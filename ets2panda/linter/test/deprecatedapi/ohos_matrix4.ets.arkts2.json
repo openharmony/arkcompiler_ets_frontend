@@ -105,6 +105,26 @@
             "severity": "ERROR"
         },
         {
+            "line": 31,
+            "column": 52,
+            "endLine": 31,
+            "endColumn": 68,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 31,
+            "column": 73,
+            "endLine": 31,
+            "endColumn": 89,
+            "problem": "RuntimeArrayCheck",
+            "suggest": "",
+            "rule": "Array bound not checked. (arkts-runtime-array-check)",
+            "severity": "ERROR"
+        },
+        {
             "line": 32,
             "column": 3,
             "endLine": 32,

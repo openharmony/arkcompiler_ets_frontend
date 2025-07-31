@@ -115,6 +115,26 @@
             "severity": "ERROR"
         },
         {
+          "line": 62,
+          "column": 3,
+          "endLine": 66,
+          "endColumn": 4,
+          "problem": "NoLocalClass",
+          "suggest": "",
+          "rule": "Creating local classes is not supported (arkts-no-local-class)",
+          "severity": "ERROR"
+        },
+        {
+          "line": 67,
+          "column": 3,
+          "endLine": 71,
+          "endColumn": 4,
+          "problem": "NoLocalClass",
+          "suggest": "",
+          "rule": "Creating local classes is not supported (arkts-no-local-class)",
+          "severity": "ERROR"
+        },
+        {
             "line": 73,
             "column": 12,
             "endLine": 73,

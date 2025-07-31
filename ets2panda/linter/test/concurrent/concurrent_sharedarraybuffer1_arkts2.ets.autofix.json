@@ -57,6 +57,16 @@
             "severity": "ERROR"
         },
         {
+          "line": 20,
+          "column": 5,
+          "endLine": 20,
+          "endColumn": 7,
+          "problem": "VariableMissingInitializer",
+          "suggest": "",
+          "rule": "After a variable is declared, a value must be assigned before using it (arkts-var-assignment-before-use)",
+          "severity": "ERROR"
+        },
+        {
             "line": 23,
             "column": 34,
             "endLine": 23,
@@ -78,6 +88,16 @@
             "severity": "ERROR"
         },
         {
+          "line": 24,
+          "column": 7,
+          "endLine": 24,
+          "endColumn": 9,
+          "problem": "VariableMissingInitializer",
+          "suggest": "",
+          "rule": "After a variable is declared, a value must be assigned before using it (arkts-var-assignment-before-use)",
+          "severity": "ERROR"
+        },
+        {
             "line": 27,
             "column": 34,
             "endLine": 27,
@@ -97,6 +117,16 @@
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
+        },
+        {
+          "line": 28,
+          "column": 7,
+          "endLine": 28,
+          "endColumn": 9,
+          "problem": "VariableMissingInitializer",
+          "suggest": "",
+          "rule": "After a variable is declared, a value must be assigned before using it (arkts-var-assignment-before-use)",
+          "severity": "ERROR"
         }
     ]
 }

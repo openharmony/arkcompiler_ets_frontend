@@ -194,3 +194,41 @@ class A {
         }
     }
 }
+
+export class K {
+    _t:string
+    constructor(t:string) {
+        this._t = t;
+    }
+}
+
+export class P extends K {
+    constructor(t:string){
+        super(t)
+    }
+    toString(): string {
+        return this._t // legal
+    }
+}
+
+export class H {
+  protected _t:string
+  constructor(t:string) {
+      this._t = t;
+  }
+}
+
+export class T extends H {
+    constructor(t:string) {
+      super(t)
+    }
+}
+
+export class N extends T {
+    constructor(t:string){
+        super(t)
+    }
+    toString(): string {
+        return this._t // legal
+    }
+}

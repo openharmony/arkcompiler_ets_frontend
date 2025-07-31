@@ -104,7 +104,7 @@ cookBookTag[73] = '';
 cookBookTag[74] = 'Destructuring variable declarations are not supported (arkts-no-destruct-decls)';
 cookBookTag[75] = 'Use string-literal keys with Record (arkts-obj-literal-key-type)';
 cookBookTag[76] = 'Type of parameter must be defined explicitly (arkts-require-func-arg-type)';
-cookBookTag[77] = '';
+cookBookTag[77] = 'Template string type is not supported (arkts-no-template-string-type)';
 cookBookTag[78] = '';
 cookBookTag[79] = 'Type annotation in catch clause is not supported (arkts-no-types-in-catch)';
 cookBookTag[80] = '"for .. in" is not supported (arkts-no-for-in)';
@@ -267,7 +267,8 @@ cookBookTag[237] = 'Array and tuple are different type(arkts-no-tuples-arrays)';
 cookBookTag[238] = 'The static property has no initializer (arkts-class-static-initialization)';
 cookBookTag[239] = 'This keyword cannot be used as identifiers (arkts-invalid-identifier)';
 cookBookTag[245] = 'JSON files cannot be imported (arkts-no-import-json-file)';
-cookBookTag[249] = 'The namespace imported by import * as cannot be used as a variable (arkts-no-import-namespace-with-star-as-var)';
+cookBookTag[249] =
+  'The namespace imported by import * as cannot be used as a variable (arkts-no-import-namespace-with-star-as-var)';
 cookBookTag[251] = '"!!" for bidirectional data binding is not supported (arkui-no-!!-bidirectional-data-binding)';
 cookBookTag[252] = '"$$" for bidirectional data binding is not supported (arkui-no-$$-bidirectional-data-binding)';
 cookBookTag[253] = '"${variable}" for decorator binding is not supported (arkui-link-decorator-passing)';
@@ -293,12 +294,15 @@ cookBookTag[268] = 'Direct usage of interop JS objects is not supported (arkts-i
 cookBookTag[269] =
   'Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-expand-static-instance)';
 cookBookTag[270] = 'ArkTS1.2 cannot catch a non Error instance thrown from JS code (arkts-interop-js2s-js-exception)';
+cookBookTag[271] =
+  'After a variable is declared, a value must be assigned before using it (arkts-var-assignment-before-use)';
 cookBookTag[274] =
   'The subclass constructor must call the parent class\'s parametered constructor (arkts-subclass-must-call-super-constructor-with-args)';
 cookBookTag[275] =
   'The Custom component with custom layout capability needs to add the "@CustomLayout" decorator (arkui-custom-layout-need-add-decorator)';
 cookBookTag[276] =
   'ArkTS 1.2 should implement all fields in the interface in the class (arkts-no-class-omit-interface-optional-prop)';
+cookBookTag[277] = 'Creating local classes is not supported (arkts-no-local-class)';
 cookBookTag[281] = '"@Prop" decorator is not supported (arkui-no-prop-decorator)';
 cookBookTag[282] = '"@StorageProp" decorator is not supported (arkui-no-storageprop-decorator)';
 cookBookTag[283] = '"@LocalStorageProp" decorator is not supported (arkui-no-localstorageprop-decorator)';
