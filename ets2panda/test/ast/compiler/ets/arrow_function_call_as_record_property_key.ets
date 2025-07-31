@@ -45,7 +45,7 @@ const b: Record<number, (x: string) => number> = {
 /* @@? 23:6 Error TypeError: Indexed access is not supported for such expression type. */
 /* @@? 24:20 Error TypeError: Wrong operand type for unary expression */
 /* @@? 24:32 Error SyntaxError: Unexpected token ':'. */
-/* @@? 24:35 Error TypeError: Unresolved reference y */
+/* @@? 24:32 Error TypeError: This expression is not callable. */
 /* @@? 24:36 Error SyntaxError: Unexpected token ':'. */
 /* @@? 24:36 Error SyntaxError: Unexpected token, expected ',' or ')'. */
 /* @@? 24:38 Error SyntaxError: Unexpected token 'string'. */
@@ -54,4 +54,5 @@ const b: Record<number, (x: string) => number> = {
 /* @@? 24:45 Error SyntaxError: Unexpected token ':'. */
 /* @@? 24:46 Error SyntaxError: Unexpected token 'number'. */
 /* @@? 24:46 Error TypeError: The type of parameter 'number' cannot be inferred */
+/* @@? 24:56 Error TypeError: Unresolved reference y */
 /* @@? 25:1 Error SyntaxError: Unexpected token '}'. */

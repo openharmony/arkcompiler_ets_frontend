@@ -1525,6 +1525,9 @@ checker::Type *ETSChecker::BuildMethodSignature(ir::MethodDefinition *method)
     auto *methodId = method->Id();
     ES2PANDA_ASSERT(methodId != nullptr);
     ES2PANDA_ASSERT(method->Function() != nullptr);
+    if (methodId->AsIdentifier()->IsErrorPlaceHolder()) {
+        return methodId->Variable()->SetTsType(GlobalTypeError());
+    }
     method->Function()->Id()->SetVariable(methodId->Variable());
     BuildFunctionSignature(method->Function(), method->IsConstructor());
     if (method->Function()->Signature() == nullptr) {
