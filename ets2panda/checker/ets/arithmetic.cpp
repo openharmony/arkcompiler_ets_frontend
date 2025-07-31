@@ -821,6 +821,9 @@ bool ETSChecker::AdjustNumberLiteralType(ir::NumberLiteral *const literal, Type 
         if (objectType->HasObjectFlag(ETSObjectFlags::BUILTIN_TYPE) && !objectType->IsETSStringType()) {
             literal->RemoveBoxingUnboxingFlags(GetBoxingFlag(literalType));
             literalType = MaybeUnboxInRelation(objectType);
+            if (literalType == nullptr) {
+                return false;
+            }
             literal->SetTsType(literalType);
             literal->AddBoxingUnboxingFlags(GetBoxingFlag(literalType));
             return true;
