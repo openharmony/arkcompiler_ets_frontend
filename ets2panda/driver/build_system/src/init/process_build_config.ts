@@ -27,7 +27,6 @@ import {
   ARKTS,
   COMPONENT,
   KITS,
-  KOALA_WRAPPER_PATH_FROM_SDK,
   PANDA_SDK_PATH_FROM_SDK,
   PROJECT_BUILD_CONFIG_FILE
 } from '../pre_define';
@@ -42,6 +41,7 @@ import {
   BUILD_MODE,
   AliasConfig
 } from '../types';
+import { initKoalaModules } from './init_koala_modules';
 
 export function processBuildConfig(projectConfig: BuildConfig): BuildConfig {
   let buildConfig: BuildConfig = { 
@@ -58,7 +58,7 @@ export function processBuildConfig(projectConfig: BuildConfig): BuildConfig {
   checkCacheProjectConfig(buildConfig);
   initPlatformSpecificConfig(buildConfig);
   initBuildEnv(buildConfig);
-  initKoalaWrapper(buildConfig);
+  initKoalaModules(buildConfig);
   PluginDriver.getInstance().initPlugins(buildConfig);
   initAliasConfig(buildConfig);
   initInteropSDKInfo(buildConfig);
@@ -140,14 +140,6 @@ export function initBuildEnv(buildConfig: BuildConfig): void {
     process.env.DYLD_LIBRARY_PATH = `${currentPath}${path.delimiter}${pandaLibPath}`;
   }
   logger.printInfo(`Updated PATH: ${process.env.PATH}`);
-}
-
-function initKoalaWrapper(buildConfig: BuildConfig): void {
-  let koalaWrapperPath: string = process.env.KOALA_WRAPPER_PATH ?? path.resolve(buildConfig.buildSdkPath as string, KOALA_WRAPPER_PATH_FROM_SDK);
-  const { arkts, arktsGlobal } = require(koalaWrapperPath);
-  buildConfig.arkts = arkts;
-  buildConfig.arktsGlobal = arktsGlobal;
-  buildConfig.arktsGlobal.es2panda._SetUpSoPath(buildConfig.pandaSdkPath);
 }
 
 function initAliasConfig(buildConfig: BuildConfig): void {
