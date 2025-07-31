@@ -697,10 +697,13 @@ public:
     bool CompareIdentifiersValuesAreDifferent(ir::Expression *compareValue, const std::string &caseValue);
     void CheckIdentifierSwitchCase(ir::Expression *currentCase, ir::Expression *compareCase,
                                    const lexer::SourcePosition &pos);
-    varbinder::Variable *FindVariableInFunctionScope(util::StringView name);
+    varbinder::Variable *FindVariableInFunctionScope(
+        util::StringView name, const varbinder::ResolveBindingOptions options = varbinder::ResolveBindingOptions::ALL);
     std::pair<varbinder::Variable *, const ETSObjectType *> FindVariableInClassOrEnclosing(
         util::StringView name, const ETSObjectType *classType);
-    varbinder::Variable *FindVariableInGlobal(const ir::Identifier *identifier);
+    varbinder::Variable *FindVariableInGlobal(
+        const ir::Identifier *identifier,
+        const varbinder::ResolveBindingOptions options = varbinder::ResolveBindingOptions::ALL);
     varbinder::Variable *ExtraCheckForResolvedError(ir::Identifier *ident);
     void ValidateResolvedIdentifier(ir::Identifier *ident);
     static bool IsVariableStatic(const varbinder::Variable *var);
