@@ -132,13 +132,8 @@ ir::Expression *ETSParser::CreateUnaryExpressionFromArgument(ir::Expression *arg
     return returnExpr;
 }
 
-static bool IsLeftHandSideExpression(lexer::TokenType &operatorType, lexer::NextTokenFlags &tokenFlags,
-                                     lexer::TokenType keywordType)
+static bool IsLeftHandSideExpression(lexer::TokenType &operatorType, lexer::NextTokenFlags &tokenFlags)
 {
-    if (operatorType == lexer::TokenType::LITERAL_IDENT && keywordType == lexer::TokenType::KEYW_TYPEOF) {
-        operatorType = lexer::TokenType::KEYW_TYPEOF;
-    }
-
     switch (operatorType) {
         case lexer::TokenType::PUNCTUATOR_MINUS:
             tokenFlags = lexer::NextTokenFlags::UNARY_MINUS;
@@ -161,7 +156,7 @@ ir::Expression *ETSParser::ParseUnaryOrPrefixUpdateExpression(ExpressionParseFla
 {
     auto tokenFlags = lexer::NextTokenFlags::NONE;
     lexer::TokenType operatorType = Lexer()->GetToken().Type();
-    if (IsLeftHandSideExpression(operatorType, tokenFlags, Lexer()->GetToken().KeywordType())) {
+    if (IsLeftHandSideExpression(operatorType, tokenFlags)) {
         return ParseLeftHandSideExpression(flags);
     }
 
