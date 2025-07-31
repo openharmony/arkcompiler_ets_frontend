@@ -875,7 +875,7 @@ Signature *ETSChecker::GetMostSpecificSignature(ArenaVector<Signature *> &compat
     return mostSpecificSignature;
 }
 
-void ETSChecker::ThrowSignatureMismatch(ArenaVector<Signature *> &signatures,
+void ETSChecker::ThrowSignatureMismatch(ArenaVector<Signature *> const &signatures,
                                         const ArenaVector<ir::Expression *> &arguments,
                                         const lexer::SourcePosition &pos, std::string_view signatureKind)
 {
@@ -885,7 +885,7 @@ void ETSChecker::ThrowSignatureMismatch(ArenaVector<Signature *> &signatures,
 
         if (someSignature->HasFunction()) {
             if (someSignature->Function()->IsConstructor()) {
-                msg.append(util::Helpers::GetClassDefiniton(someSignature->Function())->InternalName().Mutf8());
+                msg.append(util::Helpers::GetClassDefinition(someSignature->Function())->InternalName().Mutf8());
             } else {
                 msg.append(someSignature->Function()->Id()->Name().Mutf8());
             }
@@ -947,6 +947,16 @@ Signature *ETSChecker::ValidateSignatures(ArenaVector<Signature *> &signatures,
     return nullptr;
 }
 
+//  Excluded from 'FindMostSpecificSignature' to reduce its size due to code-style check
+static std::size_t GetParameterNumber(Signature const *const sig)
+{
+    if (sig->HasFunction()) {
+        return sig->Function()->Params().size();
+    }
+    auto num = sig->Params().size();
+    return !sig->HasRestParameter() ? num : ++num;
+}
+
 Signature *ETSChecker::FindMostSpecificSignature(const ArenaVector<Signature *> &signatures,
                                                  const ArenaMultiMap<size_t, Signature *> &bestSignaturesForParameter,
                                                  size_t paramCount)
@@ -971,25 +981,25 @@ Signature *ETSChecker::FindMostSpecificSignature(const ArenaVector<Signature *> 
             continue;
         }
 
-        const auto candidateLength = candidate->Function()->Params().size();
+        const auto candidateLength = GetParameterNumber(candidate);
         if (candidateLength > currentMinLength && !candidate->HasRestParameter()) {
             continue;
         }
 
         if (result == nullptr) {
             result = candidate;  // First valid candidate
-            currentMinLength = result->Function()->Params().size();
+            currentMinLength = GetParameterNumber(result);
             continue;
         }
 
-        const auto currentLength = result->Function()->Params().size();
+        const auto currentLength = GetParameterNumber(result);
         if (candidate->HasRestParameter() && result->HasRestParameter()) {
             if (result->Owner() == candidate->Owner()) {
                 result = nullptr;
             }
         } else if (candidateLength < currentLength) {
             result = candidate;  // Shorter parameter count wins
-            currentMinLength = result->Function()->Params().size();
+            currentMinLength = GetParameterNumber(result);
         } else if (candidateLength >= currentLength) {
             continue;
             // NOTE (smartin): all other cases below are unreachable code
@@ -1080,7 +1090,7 @@ void ETSChecker::SearchAmongMostSpecificTypes(Type *&mostSpecificType, Signature
 {
     auto [pos, idx, sig] = info;
     Type *sigType = GetParameterTypeOrRestAtIdx(this, sig, idx);
-    if (prevSig->Function()->Params()[idx]->IsETSParameterExpression()) {
+    if (prevSig->HasFunction() && prevSig->Function()->Params()[idx]->IsETSParameterExpression()) {
         Relation()->SetNode(prevSig->Function()->Params()[idx]->AsETSParameterExpression());
     }
     const bool isClassType =
