@@ -2914,13 +2914,6 @@ export class TsUtils {
       if (TsUtils.hasModifier(ts.getModifiers(propDecl.parent), ts.SyntaxKind.ExportKeyword)) {
         return false;
       }
-
-      if (
-        ts.isStringLiteral(propDecl.name) &&
-        (ts.isClassDeclaration(propDecl.parent) || ts.isInterfaceDeclaration(propDecl.parent))
-      ) {
-        return false;
-      }
     }
 
     return true;

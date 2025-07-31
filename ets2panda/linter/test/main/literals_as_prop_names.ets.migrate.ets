@@ -29,18 +29,18 @@ enum LiteralAsPropertyNameEnum {
 class LiteralAsPropertyName {
   public one: string = "1111111111";
   private __2: string;
-  'Two': number;
+  Two: number;
 }
 
 const litAsPropName: LiteralAsPropertyName = {
   one: "1",
   __2: 'two',
-  'Two': 2.0,
+  Two: 2.0,
 };
 
 console.log(litAsPropName.one);
 console.log(litAsPropName.__2);
-console.log(litAsPropName["Two"]);
+console.log(litAsPropName.Two);
 
 class LiteralAsPropertyName_fix {
   public one: string = "1111111111";
@@ -82,12 +82,12 @@ console.log(x_fix._2);
 interface litAsPropNameIface {
   one: string;
   ___2: string;
-  '__2': number;
+  __2: number;
 }
 const int: litAsPropNameIface = {
   one: '12321',
   ___2: 'weqwewq',
-  '__2': 123.0
+  __2: 123.0
 };
 
 const imp: ExportLitAsPropName = { 1: 234.0 };
@@ -138,7 +138,7 @@ let a:A = { age: 30.0}
 
 
 class B {
-  public 'age': number = 1.0 // error in arkts2
+  public age: number = 1.0 // error in arkts2
 }
 
 let obj11: Record<string, number> = {
@@ -172,3 +172,13 @@ enum TEST2 {
 let de3 = TEST2[TEST.A] //error
 let de4 = TEST2[TEST.A| TEST.B] //error
 let de5 = TEST[TEST.C] //ok
+
+export enum DeviceTypes12 {
+  PHONE = 'phone',
+  TABLET = 'tablet',
+  __2IN1 = '2in1',
+}
+
+export class A{
+  public static a= DeviceTypes12.__2IN1
+}
