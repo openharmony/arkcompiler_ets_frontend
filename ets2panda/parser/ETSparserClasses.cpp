@@ -513,7 +513,7 @@ void ETSParser::ParseClassFieldDefinition(ir::Identifier *fieldName, ir::Modifie
     } else if (typeAnnotation == nullptr) {
         typeAnnotation = AllocNode<ir::BrokenTypeNode>(Allocator());
         typeAnnotation->SetRange({endLoc, endLoc});
-        LogError(diagnostic::FIELD_TPYE_ANNOTATION_MISSING, {}, endLoc);
+        LogError(diagnostic::FIELD_TYPE_ANNOTATION_MISSING, {}, endLoc);
     }
 
     ValidateFieldModifiers(modifiers, optionalField, initializer, start);

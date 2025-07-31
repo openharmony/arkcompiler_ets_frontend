@@ -550,31 +550,33 @@ void ChangeTracker::InsertTypeParameters(es2panda_Context *context, const ir::As
 void ChangeTracker::InsertNodeAtConstructorStart(es2panda_Context *context, ir::AstNode *ctr,
                                                  ir::Statement *newStatement)
 {
-    if (!ctr->IsConstructor()) {
+    if (ctr == nullptr || newStatement == nullptr) {
         return;
     }
-    std::vector<ir::Statement *> statements;
-    ir::Statement *superStatement;
+    if (!ctr->Parent()->IsConstructor()) {
+        return;
+    }
 
-    ctr->FindChild([&statements, &superStatement](ir::AstNode *n) {
-        if (n->IsSuperExpression()) {
-            superStatement = n->AsStatement();
-            return true;
-        }
+    std::vector<ir::Statement *> statements;
+    ir::Statement *firstStatement = nullptr;
+
+    ctr->FindChild([&](ir::AstNode *n) {
         if (n->IsStatement()) {
+            if (firstStatement == nullptr) {
+                firstStatement = n->AsStatement();
+            }
             statements.push_back(n->AsStatement());
         }
-
         return false;
     });
-    if (superStatement == nullptr && !statements.empty()) {
-        ReplaceConstructorBody(context, ctr, statements);
+
+    if (firstStatement == nullptr && statements.empty()) {
+        std::vector<ir::Statement *> newStatements = {newStatement};
+        newStatements.insert(newStatements.end(), statements.begin(), statements.end());
+        ReplaceConstructorBody(context, ctr, newStatements);
     } else {
-        if (superStatement != nullptr) {
-            InsertNodeAfter(context, superStatement, newStatement->AsStatement());
-        } else {
-            InsertNodeBefore(context, ctr, newStatement->AsStatement());
-        }
+        // Insert the new statement before the first statement
+        InsertNodeBefore(context, firstStatement, newStatement);
     }
 }
 

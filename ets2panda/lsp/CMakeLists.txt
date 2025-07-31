@@ -114,6 +114,7 @@ set(ES2PANDA_LSP_SRC
   ./src/register_code_fix/fix_class_doesnt_implement_inherited_abstract_member.cpp
   ./src/register_code_fix/fix_expected_comma.cpp
   ./src/register_code_fix/fix_extends_interface_becomes_implements.cpp
+  ./src/register_code_fix/fix_class_super_must_precede_this_access.cpp
   ./src/register_code_fix/fix_return_type_in_async_function.cpp
   ./src/register_code_fix/add_missing_declare_property.cpp
   ./src/register_code_fix/convert_const_to_let.cpp
@@ -147,3 +148,4 @@ panda_target_link_libraries(${LSP_LIB}
 
 panda_add_sanitizers(TARGET ${LSP_LIB} SANITIZERS
   ${PANDA_SANITIZERS_LIST})
+
