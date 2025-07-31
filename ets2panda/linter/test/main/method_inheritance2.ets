@@ -114,3 +114,13 @@ class Derived5 extends Base5 {
     return new A();
   }
 }
+
+interface I{
+  pp(key:string,value:string):void
+  pp(key:string):void
+}
+
+class J implements I{
+  pp(key: string,value?:string):void {  // 漏报arkts-method-inherit-rule
+  }
+}
