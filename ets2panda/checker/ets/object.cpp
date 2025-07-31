@@ -14,6 +14,7 @@
  */
 
 #include <mutex>
+#include <string_view>
 #include "checker/ETSchecker.h"
 #include "checker/ets/typeRelationContext.h"
 #include "checker/types/ets/etsObjectType.h"
@@ -525,6 +526,36 @@ Type *ETSChecker::BuildBasicInterfaceProperties(ir::TSInterfaceDeclaration *inte
     }
 
     return type;
+}
+
+void ETSChecker::CheckDynamicInheritanceAndImplement(ETSObjectType *const interfaceOrClassType)
+{
+    auto getTypeString = [](ETSObjectType *type) { return type->IsInterface() ? "interface" : "class"; };
+    auto extendsOrImplements = [](ETSObjectType *type) { return type->IsInterface() ? "extends" : "implements"; };
+    auto isFromDynamicDecl = [](ETSObjectType *type) {
+        auto declNode = type->GetDeclNode();
+        if (declNode->IsTSInterfaceDeclaration()) {
+            return declNode->AsTSInterfaceDeclaration()->Language().IsDynamic();
+        }
+        if (declNode->IsClassDefinition()) {
+            return declNode->AsClassDefinition()->Language().IsDynamic();
+        }
+        return false;
+    };
+    for (ETSObjectType *interType : interfaceOrClassType->Interfaces()) {
+        if (isFromDynamicDecl(interType)) {
+            LogError(diagnostic::INTERFACE_OR_CLASS_CANNOT_IMPL_OR_EXTEND_DYNAMIC,
+                     {getTypeString(interfaceOrClassType), interfaceOrClassType->Name(),
+                      extendsOrImplements(interfaceOrClassType), getTypeString(interType), interType->Name()},
+                     interfaceOrClassType->GetDeclNode()->Start());
+        }
+    }
+    if (isFromDynamicDecl(interfaceOrClassType->SuperType())) {
+        LogError(diagnostic::INTERFACE_OR_CLASS_CANNOT_IMPL_OR_EXTEND_DYNAMIC,
+                 {getTypeString(interfaceOrClassType), interfaceOrClassType->Name(), "extends",
+                  getTypeString(interfaceOrClassType->SuperType()), interfaceOrClassType->SuperType()->Name()},
+                 interfaceOrClassType->GetDeclNode()->Start());
+    }
 }
 
 Type *ETSChecker::BuildBasicClassProperties(ir::ClassDefinition *classDef)
@@ -1347,6 +1378,7 @@ void ETSChecker::CheckClassDefinition(ir::ClassDefinition *classDef)
         return;
     }
 
+    CheckDynamicInheritanceAndImplement(classType);
     CheckConstructors(classDef, classType);
     CheckValidInheritance(classType, classDef);
     CheckConstFields(classType);

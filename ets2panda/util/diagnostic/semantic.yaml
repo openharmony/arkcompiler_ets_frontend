@@ -746,6 +746,10 @@ semantic:
   id: 187
   message: "Method '{}' is declared in {} and {} interfaces."
 
+- name: INTERFACE_OR_CLASS_CANNOT_IMPL_OR_EXTEND_DYNAMIC
+  id: 24143
+  message: "{} {} can not {} {} {} which is from dynamic declaration file."
+
 - name: INTERFACE_PROPERTY_REQUIRES_SETTER
   id: 337
   message: "Cannot implement interface {}: property '{}' must have a setter, but the implementation is readonly"
@@ -1609,7 +1613,6 @@ semantic:
 - name: WRONG_OPERAND_TYPE_FOR_UNARY_EXPRESSION
   id: 347
   message: "Wrong operand type for unary expression"
-
 
 graveyard:
 - 8
