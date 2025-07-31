@@ -31,6 +31,7 @@ import {
   OHOS_MODULE_TYPE
 } from '../types';
 import { Logger } from '../logger';
+import { initKoalaModules } from '../init/init_koala_modules';
 
 process.on('message', (message: {
   taskList: CompileFileInfo[];
@@ -45,8 +46,7 @@ process.on('message', (message: {
 
   Logger.getInstance(buildConfig);
   PluginDriver.getInstance().initPlugins(buildConfig);
-  const koalaWrapperPath = process.env.KOALA_WRAPPER_PATH ?? path.resolve(buildConfig.buildSdkPath, KOALA_WRAPPER_PATH_FROM_SDK);
-  let { arkts, arktsGlobal } = require(koalaWrapperPath);
+  let { arkts, arktsGlobal } = initKoalaModules(buildConfig)
   const { KitImportTransformer } = require('../plugins/KitImportTransformer');
 
   for (const fileInfo of taskList) {

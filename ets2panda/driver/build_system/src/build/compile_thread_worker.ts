@@ -14,8 +14,7 @@
  */
 
 import { parentPort, workerData } from 'worker_threads';
-import { CompileFileInfo, JobInfo } from '../types';
-import * as fs from 'fs';
+import { JobInfo } from '../types';
 import * as path from 'path';
 import {
   changeFileExtension,
@@ -38,6 +37,7 @@ import {
 } from '../logger';
 import { ErrorCode } from '../error_code';
 import { KitImportTransformer } from '../plugins/KitImportTransformer';
+import { initKoalaModules } from '../init/init_koala_modules';
 
 const { workerId } = workerData;
 
@@ -45,8 +45,7 @@ function compileAbc(jobInfo: JobInfo): void {
   let config = jobInfo.buildConfig as BuildConfig;
   Logger.getInstance(config);
   PluginDriver.getInstance().initPlugins(config);
-  const koalaWrapperPath = path.resolve(config.buildSdkPath, KOALA_WRAPPER_PATH_FROM_SDK);
-  let { arkts, arktsGlobal } = require(koalaWrapperPath);
+  let { arkts, arktsGlobal } = initKoalaModules(config)
   const isDebug = config.buildMode === BUILD_MODE.DEBUG;
 
   let errorStatus = false;
@@ -124,8 +123,7 @@ function compileExternalProgram(jobInfo: JobInfo): void {
   let config = jobInfo.buildConfig as BuildConfig;
   Logger.getInstance(config);
   PluginDriver.getInstance().initPlugins(config);
-  const koalaWrapperPath = path.resolve(config.buildSdkPath, KOALA_WRAPPER_PATH_FROM_SDK);
-  let { arkts, arktsGlobal } = require(koalaWrapperPath);
+  let { arkts, arktsGlobal } = initKoalaModules(config)
   const isDebug = config.buildMode === BUILD_MODE.DEBUG;
 
   let errorStatus = false;
