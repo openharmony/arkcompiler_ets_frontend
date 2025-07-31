@@ -758,6 +758,8 @@ void ETSCompiler::Compile(const ir::CallExpression *expr) const
     auto const callee = expr->Callee();
     checker::Signature *const signature = expr->Signature();
 
+    ES2PANDA_ASSERT(signature != nullptr);
+
     ES2PANDA_ASSERT(!callee->TsType()->IsETSArrowType());  // should have been lowered
 
     bool const isStatic = signature->HasSignatureFlag(checker::SignatureFlags::STATIC);
@@ -951,7 +953,21 @@ void ETSCompiler::Compile(const ir::MemberExpression *expr) const
     } else if (objectType->IsETSUnionType()) {
         etsg->LoadPropertyByName(expr, objReg, checker::ETSChecker::FormNamedAccessMetadata(expr->PropVar()));
     } else {
-        const auto fullName = etsg->FormClassPropReference(objectType->AsETSObjectType(), propName);
+        auto *id = expr->Property()->AsIdentifier();
+        auto *var = id->Variable();
+        ES2PANDA_ASSERT(var != nullptr && var->Declaration() != nullptr);
+
+        auto *decl = var->Declaration();
+        ES2PANDA_ASSERT(decl->Node() != nullptr);
+
+        auto *declNode = decl->Node();
+        ES2PANDA_ASSERT(declNode->Parent() != nullptr && declNode->Parent()->IsTyped());
+
+        auto *typedOwner = declNode->Parent()->AsTyped();
+        const checker::Type *expectedObjType = typedOwner->TsType();
+        ES2PANDA_ASSERT(expectedObjType != nullptr && expectedObjType->IsETSObjectType());
+
+        const auto fullName = etsg->FormClassPropReference(expectedObjType->AsETSObjectType(), propName);
         etsg->LoadProperty(expr, variableType, objReg, fullName);
     }
     etsg->GuardUncheckedType(expr, expr->UncheckedType(), expr->TsType());
