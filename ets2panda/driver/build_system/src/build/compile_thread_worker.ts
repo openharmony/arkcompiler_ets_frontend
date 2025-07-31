@@ -62,6 +62,7 @@ function compileAbc(jobInfo: JobInfo): void {
 
     if (isDebug) {
       ets2pandaCmd.push('--debug-info');
+      ets2pandaCmd.push('--opt-level=0');
     }
     ets2pandaCmd.push(fileInfo.filePath);
 
@@ -134,6 +135,7 @@ function compileExternalProgram(jobInfo: JobInfo): void {
 
     if (isDebug) {
       ets2pandaCmd.push('--debug-info');
+      ets2pandaCmd.push('--opt-level=0');
     }
     ets2pandaCmd.push(fileInfo.filePath);
 
