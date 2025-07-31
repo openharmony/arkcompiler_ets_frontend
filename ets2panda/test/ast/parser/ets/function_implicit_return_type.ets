@@ -24,8 +24,6 @@ let void6: (i: int  )       /* @@ label */= void1 /* @@ label1 */; // CTE; need 
 
 function main() {}
 
-/* @@@ label Error SyntaxError: Unexpected token, expected '=>'. */
-/* @@@ label Error SyntaxError: Unexpected token, expected '('. */
-/* @@@ label Error SyntaxError: Invalid Type. */
-/* @@@ label Error SyntaxError: Unexpected token '('. */
-/* @@@ label1 Error SyntaxError: Unexpected token, expected ')'. */
+/* @@? 23:43 Error SyntaxError: Unexpected token, expected '=>'. */
+/* @@? 23:43 Error SyntaxError: Unexpected token '=>'. */
+/* @@? 23:45 Error SyntaxError: Unexpected token 'void1'. */

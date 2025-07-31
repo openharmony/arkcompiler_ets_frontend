@@ -65,7 +65,7 @@ ir::Expression *ETSParser::ParseFunctionParameterExpression(ir::AnnotatedExpress
         auto defaultValue = ParseExpression();
         if (!paramIdent->IsIdentifier()) {
             LogError(diagnostic::IDENTIFIER_EXPECTED);
-            return nullptr;
+            return AllocBrokenExpression(Lexer()->GetToken().Loc());
         }
 
         paramExpression = AllocNode<ir::ETSParameterExpression>(paramIdent->AsIdentifier(), defaultValue, Allocator());

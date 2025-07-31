@@ -26,11 +26,16 @@ declare class Environment {
 /* @@? 17:23 Error SyntaxError: Using object literals to declare types in place is not supported. Please declare types and interfaces explicitly! */
 /* @@? 18:25 Error SyntaxError: Using object literals to declare types in place is not supported. Please declare types and interfaces explicitly! */
 /* @@? 19:25 Error SyntaxError: Invalid Type. */
+/* @@? 21:16 Error TypeError: Native and Declare methods should have explicit return type. */
 /* @@? 21:20 Error SyntaxError: Invalid Type. */
 /* @@? 21:28 Error SyntaxError: Invalid Type. */
 /* @@? 21:37 Error SyntaxError: Unexpected token, expected '=>'. */
-/* @@? 21:37 Error SyntaxError: Unexpected token, expected '('. */
-/* @@? 21:37 Error SyntaxError: Invalid Type. */
+/* @@? 21:39 Error SyntaxError: Unexpected token '--'. */
+/* @@? 21:41 Error SyntaxError: Unexpected token '-'. */
+/* @@? 21:42 Error SyntaxError: Unexpected token ','. */
+/* @@? 21:43 Error SyntaxError: Unexpected token ')'. */
+/* @@? 21:44 Error SyntaxError: Unexpected token ':'. */
+/* @@? 21:45 Error SyntaxError: void is a predefined type, cannot be used as an identifier */
 /* @@? 22:20 Error SyntaxError: Invalid Type. */
 /* @@? 23:25 Error SyntaxError: Using object literals to declare types in place is not supported. Please declare types and interfaces explicitly! */
 /* @@? 23:36 Error SyntaxError: Unexpected token ','. */

@@ -1498,6 +1498,7 @@ ir::Expression *ParserImpl::ParseOptionalChain(ir::Expression *leftSideExpr)
     if (tokenType == lexer::TokenType::PUNCTUATOR_BACK_TICK ||
         lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_BACK_TICK) {
         LogError(diagnostic::TAGGED_TEMPLATE_LITERALS_IN_OPTIONALCHAIN);
+        return AllocBrokenExpression(lexer_->GetToken().Loc());
     }
 
     return returnExpression;
