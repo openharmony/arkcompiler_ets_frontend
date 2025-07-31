@@ -71,6 +71,8 @@ faultDesc[FaultID.PropertyAccessByIndex] = 'property access by index';
 faultDesc[FaultID.NoStaticOnClass] = 'No static blocks on classes';
 faultDesc[FaultID.NoConstructorOnClass] = 'No constructor field on object';
 faultDesc[FaultID.RuntimeArrayCheck] = 'Array bound not checked';
+faultDesc[FaultID.NoSignatureDistinctWithObjectPublicApi] =
+  'Method’s signature in a class/interface must match the public interface of the object.';
 faultDesc[FaultID.JsxElement] = 'JSX Elements';
 faultDesc[FaultID.EnumMemberNonConstInit] = 'Enum members with non-constant initializer';
 faultDesc[FaultID.ImplementsClass] = 'Class type mentioned in "implements" clause';

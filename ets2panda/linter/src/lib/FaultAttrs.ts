@@ -171,6 +171,7 @@ faultsAttrs[FaultID.IndexNegative] = new FaultAttributes(212);
 faultsAttrs[FaultID.NoStaticOnClass] = new FaultAttributes(213);
 faultsAttrs[FaultID.NoConstructorOnClass] = new FaultAttributes(214);
 faultsAttrs[FaultID.RuntimeArrayCheck] = new FaultAttributes(215);
+faultsAttrs[FaultID.NoSignatureDistinctWithObjectPublicApi] = new FaultAttributes(216);
 faultsAttrs[FaultID.NoSideEffectImport] = new FaultAttributes(222);
 faultsAttrs[FaultID.ImportLazyIdentifier] = new FaultAttributes(232);
 faultsAttrs[FaultID.DynamicImport] = new FaultAttributes(233);

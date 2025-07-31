@@ -78,6 +78,7 @@ import {
   MODULE_IMPORTS,
   ARKTSUTILS_MODULES,
   ARKTSUTILS_LOCKS_MEMBER,
+  OBJECT_PUBLIC_API_METHOD_SIGNATURES,
   ARKTSUTILS_PROCESS_MEMBER,
   PROCESS_DEPRECATED_INTERFACES
 } from './utils/consts/LimitedStdAPI';
@@ -940,6 +941,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
     this.countDeclarationsWithDuplicateName(interfaceNode.name, interfaceNode);
     this.handleLocalDeclarationOfClassAndIface(interfaceNode);
+    this.checkObjectPublicApiMethods(interfaceNode);
   }
 
   private handleTryStatement(node: ts.TryStatement): void {
@@ -3345,6 +3347,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleSdkMethod(tsClassDecl);
     this.handleNotsLikeSmartType(tsClassDecl);
     this.handleLocalDeclarationOfClassAndIface(tsClassDecl);
+    this.checkObjectPublicApiMethods(tsClassDecl);
   }
 
   private static findFinalExpression(typeNode: ts.TypeNode): ts.Node {
@@ -3849,6 +3852,31 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleLimitedVoidFunction(tsMethodDecl);
     this.checkVoidLifecycleReturn(tsMethodDecl);
     this.handleNoDeprecatedApi(tsMethodDecl);
+  }
+
+  private checkObjectPublicApiMethods(node: ts.ClassDeclaration | ts.InterfaceDeclaration): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    for (const member of node.members) {
+      if (!((ts.isMethodDeclaration(member) || ts.isMethodSignature(member)) && ts.isIdentifier(member.name))) {
+        continue;
+      }
+      const methodName = member.name.text;
+      const expectedSignature = OBJECT_PUBLIC_API_METHOD_SIGNATURES.get(methodName);
+      if (!expectedSignature) {
+        continue;
+      }
+      const methodType = this.tsTypeChecker.getTypeAtLocation(member);
+      const signature = TsUtils.getFunctionalTypeSignature(methodType);
+      if (!signature) {
+        continue;
+      }
+      const actualSignature = this.tsTypeChecker.signatureToString(signature);
+      if (actualSignature !== expectedSignature) {
+        this.incrementCounters(member, FaultID.NoSignatureDistinctWithObjectPublicApi);
+      }
+    }
   }
 
   private handleLimitedVoidFunction(node: ts.FunctionLikeDeclaration): void {

@@ -258,6 +258,8 @@ cookBookTag[212] = 'The index expression must be zero or positive value.(arkts-a
 cookBookTag[213] = 'Class cannot have static codeblocks. (arkts-class-lazy-import)';
 cookBookTag[214] = 'Objects have no constructor property in ArkTS1.2 (arkts-obj-no-constructor)';
 cookBookTag[215] = 'Array bound not checked. (arkts-runtime-array-check)';
+cookBookTag[216] =
+  'The signature of a method in a class/interface cannot be different from the public interface in an object. (arkts-class-no-signature-distinct-with-object-public-api)';
 cookBookTag[222] = 'Import for side-effect only is prohibited.(arkts-no-side-effect-import)';
 cookBookTag[232] = 'Lazy import is not supported(arkts-no-lazy-import)';
 cookBookTag[233] = 'Dynamic import is not supported(arkts-no-dynamic-import)';

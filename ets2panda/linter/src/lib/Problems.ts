@@ -71,6 +71,7 @@ export enum FaultID {
   NoStaticOnClass,
   NoConstructorOnClass,
   RuntimeArrayCheck,
+  NoSignatureDistinctWithObjectPublicApi,
   MethodReassignment,
   MultipleStaticBlocks,
   ThisType,
