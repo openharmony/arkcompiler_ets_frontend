@@ -13,11 +13,10 @@
  * limitations under the License.
  */
 
+enum Color {Red = 0, Green = 1, Blue = 0}
+enum Commands { Open = "fopen", Close = "fclose", Open2 = "fopen" }
 
 function main() {
-    enum Color {Red = 0, Green = 1, Blue = 0}
-    enum Commands { Open = "fopen", Close = "fclose", Open2 = "fopen" }
-
     if (Color.Red != Color.Blue)
         arktest.assertTrue(false)
     if (Color.Red == Color.Blue)

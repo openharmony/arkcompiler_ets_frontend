@@ -13,11 +13,10 @@
  * limitations under the License.
  */
 
+enum Color { Red, Green = 10, Blue }
+enum Commands { Open = "fopen",  Close = "fclose" }
 
 function main() : void {
-    enum Color { Red, Green = 10, Blue }
-    enum Commands { Open = "fopen",  Close = "fclose" }
-
     let colors = Color.values()
     arktest.assertEQ(colors[0], Color.Red)
     try {

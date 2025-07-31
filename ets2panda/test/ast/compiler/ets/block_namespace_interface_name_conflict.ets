@@ -21,6 +21,5 @@
     }
 }
 
+/* @@? 18:5 Error SyntaxError: Illegal start of INTERFACE expression. */
 /* @@? 20:5 Error SyntaxError: Namespace is allowed only at the top level or inside a namespace. */
-/* @@? 20:15 Error TypeError: Variable 'A' has already been declared. */
-/* @@? 20:15 Error TypeError: Merging declarations is not supported, please keep all definitions of classes, interfaces and enums compact in the codebase! */

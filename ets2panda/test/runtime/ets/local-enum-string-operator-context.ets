@@ -13,11 +13,10 @@
  * limitations under the License.
  */
 
+enum Color { Red, Green, Blue }
+enum Commands { Open = "fopen", Close = "fclose" }
 
 function main():void {
-    enum Color { Red, Green, Blue }
-    enum Commands { Open = "fopen", Close = "fclose" }
-
     let s1 = "Enum:"+ Color.Green;
     arktest.assertEQ(s1, "Enum:1")
     let s2 = "String enum:"+ Commands.Open;

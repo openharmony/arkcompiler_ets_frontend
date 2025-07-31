@@ -24,11 +24,12 @@ function foo(f: (s1: String, s2: String, s3: String, s4: String, s5: String,
                              "12", "13", "14", "15", "16", "17");
                  }
 
-function main(): void {
-    type fn_type = (s1: String, s2: String, s3: String, s4: String, s5: String,
+type fn_type = (s1: String, s2: String, s3: String, s4: String, s5: String,
                     s6: String, s7: String, s8: String, s9: String, s10: String,
                     s11: String, s12: String, s13: String, s14: String, s15: String,
                     s16: String, s17: String) => void;
+
+function main(): void {
 
     let fn: fn_type = (str1: String, str2: String, str3: String): void => {
         arktest.assertEQ(str1 + str2 + str3, "helloworld!");
