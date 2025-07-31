@@ -431,11 +431,10 @@ SignatureHelpItems GetSignatureHelpItems(es2panda_Context *context, size_t posit
     return ark::es2panda::lsp::GetSignature(context, position);
 }
 
-size_t GetOffsetByColAndLine(es2panda_Context *context, size_t line, size_t column)
+size_t GetOffsetByColAndLine(const std::string &sourceCode, size_t line, size_t column)
 {
-    auto ctx = reinterpret_cast<public_lib::Context *>(context);
-    auto index = lexer::LineIndex(ctx->parserProgram->SourceCode());
-    return index.GetOffset(lexer::SourceLocation(line, column, ctx->parserProgram));
+    auto index = lexer::LineIndex(util::StringView(sourceCode));
+    return index.GetOffset(lexer::SourceLocation(line, column, nullptr));
 }
 
 std::vector<CodeFixActionInfo> GetCodeFixesAtPosition(es2panda_Context *context, size_t startPosition,

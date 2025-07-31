@@ -1801,13 +1801,12 @@ KNativePointer impl_getSignatureHelpItems(KNativePointer context, KInt position)
 }
 TS_INTEROP_2(getSignatureHelpItems, KNativePointer, KNativePointer, KInt)
 
-KInt impl_getOffsetByColAndLine(KNativePointer contextPtr, KInt line, KInt column)
+KInt impl_getOffsetByColAndLine(KStringPtr &sourceCodePtr, KInt line, KInt column)
 {
-    auto context = reinterpret_cast<es2panda_Context *>(contextPtr);
     LSPAPI const *impl = GetImpl();
-    return impl->getOffsetByColAndLine(context, line, column);
+    return impl->getOffsetByColAndLine(sourceCodePtr.data(), line, column);
 }
-TS_INTEROP_3(getOffsetByColAndLine, KInt, KNativePointer, KInt, KInt)
+TS_INTEROP_3(getOffsetByColAndLine, KInt, KStringPtr, KInt, KInt)
 
 KNativePointer impl_getClassDefinition(KNativePointer astNodePtr, KStringPtr &nodeNamePtr)
 {
