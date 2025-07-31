@@ -1766,6 +1766,13 @@ bool ETSChecker::ValidateTupleIndex(const ETSTupleType *const tuple, ir::MemberE
         return false;
     }
 
+    if (expr->Property()->IsAssignmentExpression()) {
+        if (reportError) {
+            LogError(diagnostic::TUPLE_INDEX_NONCONST, {}, expr->Property()->Start());
+        }
+        return false;
+    }
+
     auto exprValue = GetTupleElementAccessValue(expr->Property());
     if (!exprValue.has_value() || (*exprValue >= tuple->GetTupleSize())) {
         if (reportError) {
