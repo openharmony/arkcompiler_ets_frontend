@@ -503,6 +503,18 @@ ir::TypeNode *ETSParser::ParseThisType(TypeAnnotationParsingOptions *options)
     return thisType;
 }
 
+ir::TypeNode *ETSParser::CreateErrorForWrongArrayType(lexer::SourcePosition &startPos)
+{
+    if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_STRING) {
+        LogExpectedToken(lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET);
+    } else {
+        Lexer()->NextToken();  // eat string lteral
+        Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET);
+        LogError(diagnostic::INDEXED_ACCESS_TYPE, {}, startPos);
+    }
+    return AllocBrokenType({startPos, Lexer()->GetToken().End()});
+}
+
 ir::TypeNode *ETSParser::ParseTsArrayType(ir::TypeNode *typeNode, TypeAnnotationParsingOptions *options)
 {
     while (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET) {
@@ -516,8 +528,7 @@ ir::TypeNode *ETSParser::ParseTsArrayType(ir::TypeNode *typeNode, TypeAnnotation
 
         if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET) {
             if ((*options & TypeAnnotationParsingOptions::REPORT_ERROR) != 0) {
-                LogExpectedToken(lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET);
-                return AllocBrokenType({Lexer()->GetToken().Start(), Lexer()->GetToken().End()});
+                return CreateErrorForWrongArrayType(startPos);
             }
             return nullptr;
         }

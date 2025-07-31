@@ -270,6 +270,7 @@ private:
     ir::TypeNode *ParseFunctionType(TypeAnnotationParsingOptions *options,
                                     ir::TSTypeParameterDeclaration *typeParamDecl = nullptr);
     ir::TypeNode *ParseETSTupleType(TypeAnnotationParsingOptions *options);
+    ir::TypeNode *CreateErrorForWrongArrayType(lexer::SourcePosition &startPos);
     ir::TypeNode *ParseTsArrayType(ir::TypeNode *typeNode, TypeAnnotationParsingOptions *options);
     bool ParseTriplePeriod(bool spreadTypePresent);
     std::string PrimitiveTypeToName(ir::PrimitiveType type) const;
