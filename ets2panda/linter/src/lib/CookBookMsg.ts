@@ -296,6 +296,8 @@ cookBookTag[269] =
 cookBookTag[270] = 'ArkTS1.2 cannot catch a non Error instance thrown from JS code (arkts-interop-js2s-js-exception)';
 cookBookTag[271] =
   'After a variable is declared, a value must be assigned before using it (arkts-var-assignment-before-use)';
+cookBookTag[272] =
+  'This API of process is obsolete in ArkTS 1.1. It\'s no longer supported in ArkTS 1.2 (arkts-concurrent-deprecated-apis)';
 cookBookTag[274] =
   'The subclass constructor must call the parent class\'s parametered constructor (arkts-subclass-must-call-super-constructor-with-args)';
 cookBookTag[275] =

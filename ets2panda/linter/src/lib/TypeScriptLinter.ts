@@ -76,7 +76,9 @@ import {
   LIMITED_STD_REFLECT_API,
   MODULE_IMPORTS,
   ARKTSUTILS_MODULES,
-  ARKTSUTILS_LOCKS_MEMBER
+  ARKTSUTILS_LOCKS_MEMBER,
+  ARKTSUTILS_PROCESS_MEMBER,
+  PROCESS_DEPRECATED_INTERFACES
 } from './utils/consts/LimitedStdAPI';
 import { SupportedStdCallApiChecker } from './utils/functions/SupportedStdCallAPI';
 import { identiferUseInValueContext } from './utils/functions/identiferUseInValueContext';
@@ -8111,7 +8113,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       res = true;
     };
     if (symbol) {
-      this.checkSymbolAndExecute(symbol, identifier.text, SYSTEM_MODULES, cb);
+      this.checkSymbolAndExecute(symbol, [identifier.text], SYSTEM_MODULES, cb);
     }
     return res;
   }
@@ -8446,50 +8448,58 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       this.incrementCounters(node, FaultID.NoNeedStdlibWorker);
     };
 
-    this.checkSymbolAndExecute(symbol, WORKER_TEXT, WORKER_MODULES, cb);
+    this.checkSymbolAndExecute(symbol, [WORKER_TEXT], WORKER_MODULES, cb);
   }
 
   private checkConcurrencySymbol(symbol: ts.Symbol, node: ts.Node): void {
     const cb = (): void => {
       const parent = node.parent;
+
       if (!ts.isPropertyAccessExpression(parent)) {
         return;
       }
+
       if (parent.name.text === ARKTSUTILS_LOCKS_MEMBER) {
         const autofix = this.autofixer?.fixConcurrencyLock(parent);
         this.incrementCounters(node, FaultID.LimitedStdLibNoImportConcurrency, autofix);
       }
+
+      if (PROCESS_DEPRECATED_INTERFACES.includes(parent.name.text)) {
+        this.incrementCounters(node, FaultID.DeprecatedProcessApi);
+      }
     };
 
-    this.checkSymbolAndExecute(symbol, ARKTSUTILS_LOCKS_MEMBER, ARKTSUTILS_MODULES, cb);
+    this.checkSymbolAndExecute(symbol, [ARKTSUTILS_LOCKS_MEMBER, ARKTSUTILS_PROCESS_MEMBER], ARKTSUTILS_MODULES, cb);
   }
 
-  private checkSymbolAndExecute(symbol: ts.Symbol, symbolName: string, modules: string[], cb: () => void): void {
+  private checkSymbolAndExecute(symbol: ts.Symbol, symbolNames: string[], modules: string[], cb: () => void): void {
     void this;
-    if (symbol.name === symbolName) {
-      const decl = TsUtils.getDeclaration(symbol);
 
-      if (!decl) {
-        cb();
-        return;
-      }
+    // Only execute if the provided list contains the symbol’s actual name
+    if (!symbolNames.includes(symbol.name)) {
+      return;
+    }
 
-      const fileName = TypeScriptLinter.getFileName(decl);
+    const decl = TsUtils.getDeclaration(symbol);
+    if (!decl) {
+      cb();
+      return;
+    }
 
-      if (
-        modules.some((moduleName) => {
-          return fileName.startsWith(moduleName);
-        })
-      ) {
-        cb();
-      }
+    const fileName = TypeScriptLinter.getFileName(decl);
+    if (
+      modules.some((moduleName) => {
+        return fileName.startsWith(moduleName);
+      })
+    ) {
+      cb();
     }
   }
 
   private checkNodeForUsage(node: ts.Node, symbolName: string, modules: string[], cb: () => void): void {
     const symbol = this.tsUtils.trueSymbolAtLocation(node);
     if (symbol) {
-      this.checkSymbolAndExecute(symbol, symbolName, modules, cb);
+      this.checkSymbolAndExecute(symbol, [symbolName], modules, cb);
 
       return;
     }

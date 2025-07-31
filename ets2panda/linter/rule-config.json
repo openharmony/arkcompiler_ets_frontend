@@ -15,6 +15,7 @@
     "arkts-limited-stdlib",
     "arkts-no-class-add-super-prop-with-readonly",
     "arkts-var-assignment-before-use",
+    "arkts-concurrent-deprecated-apis",
     "arkts-no-classes-as-obj",
     "arkts-obj-literal-props",
     "arkts-no-template-string-type",

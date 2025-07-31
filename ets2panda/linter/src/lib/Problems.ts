@@ -190,6 +190,7 @@ export enum FaultID {
   InteropTSFunctionInvoke,
   InteropJSFunctionInvoke,
   VariableMissingInitializer,
+  DeprecatedProcessApi,
   LimitedVoidTypeFromSdk,
   EntryAnnotation,
   SdkAbilityLifecycleMonitor,

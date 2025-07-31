@@ -160,5 +160,16 @@ export const MODULE_IMPORTS: Record<string, string[]> = {
   '@arkts.collections': ['collections']
 };
 
-export const ARKTSUTILS_MODULES = ['@arkts.utils', '@kit.ArkTS'];
+export const ARKTSUTILS_MODULES = ['@arkts.utils', '@ohos.process', '@kit.ArkTS'];
 export const ARKTSUTILS_LOCKS_MEMBER = 'locks';
+export const ARKTSUTILS_PROCESS_MEMBER = 'process';
+
+export const PROCESS_DEPRECATED_INTERFACES = [
+  'isAppUid',
+  'getUidForName',
+  'getThreadPriority',
+  'getSystemConfig',
+  'getEnvironmentVar',
+  'exit',
+  'kill'
+];
