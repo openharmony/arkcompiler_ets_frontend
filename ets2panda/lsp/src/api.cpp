@@ -41,6 +41,7 @@
 #include "signature_help.h"
 #include "completions_details.h"
 #include "get_name_or_dotted_name_span.h"
+#include "get_signature.h"
 
 using ark::es2panda::lsp::details::GetCompletionEntryDetailsImpl;
 
@@ -427,10 +428,7 @@ InlayHintList ProvideInlayHints(es2panda_Context *context, const TextSpan *span)
 
 SignatureHelpItems GetSignatureHelpItems(es2panda_Context *context, size_t position)
 {
-    const size_t defaultTime = 20;
-    auto invokedReason = ark::es2panda::lsp::SignatureHelpInvokedReason();
-    auto cancellationToken = ark::es2panda::lsp::CancellationToken(defaultTime, nullptr);
-    return ark::es2panda::lsp::GetSignatureHelpItems(context, position, invokedReason, cancellationToken);
+    return ark::es2panda::lsp::GetSignature(context, position);
 }
 
 size_t GetOffsetByColAndLine(es2panda_Context *context, size_t line, size_t column)

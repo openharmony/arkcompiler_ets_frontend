@@ -301,6 +301,10 @@ ets2panda_add_gtest(lsp_get_import_file_path_test CPP_SOURCES
     get_import_file_path_test.cpp
 )
 
+ets2panda_add_gtest(lsp_get_signature_test CPP_SOURCES
+    get_signature_test.cpp
+)
+
 ets2panda_add_gtest(lsp_api_get_node_test CPP_SOURCES
     get_node_test.cpp
 )

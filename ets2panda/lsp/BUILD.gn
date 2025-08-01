@@ -72,6 +72,7 @@ ohos_source_set("libes2panda_lsp_static") {
     "src/get_name_or_dotted_name_span.cpp",
     "src/get_node.cpp",
     "src/get_safe_delete_info.cpp",
+    "src/get_signature.cpp",
     "src/inlay_hints.cpp",
     "src/internal_api.cpp",
     "src/isolated_declaration.cpp",
