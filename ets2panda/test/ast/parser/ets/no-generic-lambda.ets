@@ -13,29 +13,13 @@
  * limitations under the License.
  */
 
-function main() {
-    let foo = <T> (p: T) : T => {
-        let t: T = p
-        return t
-    }
+let foo = <T>(i: T) : void => { }
+let bar = <T extends U, U>() => { }
 
-    // Explicitly deducing generics
-    let res1 = foo<int>(1)
-    arktest.assertEQ(res1, 1)
+foo<number>(1.0);
+bar<Int, Object>();
 
-    let res2 = foo<double>(1.5)
-    arktest.assertEQ(res2, 1.5)
-
-    let res3 = foo<string>("abc")
-    arktest.assertEQ(res3, "abc")
-
-    // Implicit derivation of generics
-    let res4 = foo(1)
-    arktest.assertEQ(res4, 1)
-
-    let res5 = foo(1.5)
-    arktest.assertEQ(res5, 1.5)
-
-    let res6 = foo("abc")
-    arktest.assertEQ(res6, "abc")
-}
+/* @@? 16:11 Error SyntaxError: Generic lambda expressions are not supported. */
+/* @@? 17:11 Error SyntaxError: Generic lambda expressions are not supported. */
+/* @@? 19:1 Error TypeError: This expression is not callable. */
+/* @@? 20:1 Error TypeError: This expression is not callable. */

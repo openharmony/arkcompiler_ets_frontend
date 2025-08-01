@@ -502,7 +502,6 @@ void VarBinder::VisitScriptFunctionWithPotentialTypeParams(ir::ScriptFunction *f
 {
     if (func->TypeParams() != nullptr) {
         auto typeParamScopeCtx = LexicalScope<Scope>::Enter(this, func->TypeParams()->Scope());
-        ResolveReferences(func->TypeParams());
         VisitScriptFunction(func);
         return;
     }

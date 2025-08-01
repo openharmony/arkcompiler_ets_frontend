@@ -713,13 +713,8 @@ void ScopeInitTyped::VisitTSTypeParameter(ir::TSTypeParameter *typeParam)
 
 void ScopeInitTyped::VisitTSTypeParameterDeclaration(ir::TSTypeParameterDeclaration *paramDecl)
 {
-    if (VarBinder()->GetScope()->IsFunctionParamScope() && VarBinder()->GetScope()->Parent()->IsLocalScope()) {
-        BindScopeNode(VarBinder()->GetScope()->Parent()->AsLocalScope(), paramDecl);
-        Iterate(paramDecl);
-    } else {
-        BindScopeNode(VarBinder()->GetScope()->AsLocalScope(), paramDecl);
-        Iterate(paramDecl);
-    }
+    BindScopeNode(VarBinder()->GetScope()->AsLocalScope(), paramDecl);
+    Iterate(paramDecl);
 }
 
 void ScopeInitTyped::VisitClassDefinition(ir::ClassDefinition *classDef)
@@ -1240,9 +1235,7 @@ void InitScopesPhaseETS::VisitETSNewClassInstanceExpression(ir::ETSNewClassInsta
 
 void InitScopesPhaseETS::VisitTSTypeParameter(ir::TSTypeParameter *typeParam)
 {
-    if (typeParam->Name()->Variable() != nullptr &&
-        VarBinder()->GetScope()->FindLocal(typeParam->Name()->Name(),
-                                           varbinder::ResolveBindingOptions::ALL_VARIABLES) != nullptr) {
+    if (typeParam->Name()->Variable() != nullptr) {
         return;
     }
     auto [decl, var] =
