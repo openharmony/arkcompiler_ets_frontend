@@ -15,16 +15,6 @@
     ],
     "result": [
         {
-            "line": 18,
-            "column": 12,
-            "endLine": 18,
-            "endColumn": 16,
-            "problem": "IncompationbleFunctionType",
-            "suggest": "",
-            "rule": "Stricter assignments into variables of function type (arkts-incompatible-function-types)",
-            "severity": "ERROR"
-        },
-        {
             "line": 23,
             "column": 1,
             "endLine": 23,
@@ -42,16 +32,6 @@
             "problem": "PropertyAccessByIndex",
             "suggest": "",
             "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 34,
-            "column": 12,
-            "endLine": 34,
-            "endColumn": 16,
-            "problem": "IncompationbleFunctionType",
-            "suggest": "",
-            "rule": "Stricter assignments into variables of function type (arkts-incompatible-function-types)",
             "severity": "ERROR"
         }
     ]

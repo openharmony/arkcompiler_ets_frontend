@@ -4054,7 +4054,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   }
 
   private isSameDeclarationType(decl: ts.Node, type: ts.Type, isStatic: boolean): boolean {
-    if (isStatic && ts.isClassDeclaration(decl)) {
+    if (isStatic && ts.isClassDeclaration(decl) || ts.isInterfaceDeclaration(decl)) {
       const staticType = this.tsTypeChecker.getTypeAtLocation(decl);
       return this.isSameType(staticType, type);
     }
