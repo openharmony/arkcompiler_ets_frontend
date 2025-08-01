@@ -350,13 +350,22 @@ static ETSObjectType *InitializeGlobalBuiltinObjectType(ETSChecker *checker, Glo
     }
 }
 
+static bool DeclarationInNameSpace(ETSChecker *checker)
+{
+    auto *conclass = checker->Context().ContainingClass();
+    if (conclass == nullptr || conclass->GetDeclNode() == nullptr || !conclass->GetDeclNode()->IsClassDefinition()) {
+        return false;
+    }
+    return conclass->GetDeclNode()->AsClassDefinition()->IsNamespaceTransformed();
+}
+
 ETSObjectType *ETSChecker::CreateETSObjectTypeOrBuiltin(ir::AstNode *declNode, ETSObjectFlags flags)
 {
     if (LIKELY(HasStatus(CheckerStatus::BUILTINS_INITIALIZED))) {
         return CreateETSObjectType(declNode, flags);
     }
     auto const globalId = GetGlobalTypesHolder()->NameToId(GetObjectTypeDeclNames(declNode).first);
-    if (!globalId.has_value()) {
+    if (!globalId.has_value() || DeclarationInNameSpace(this)) {
         return CreateETSObjectType(declNode, flags);
     }
     return InitializeGlobalBuiltinObjectType(this, globalId.value(), declNode, flags);
