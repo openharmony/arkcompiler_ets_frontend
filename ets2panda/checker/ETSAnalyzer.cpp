@@ -2501,6 +2501,10 @@ void ETSAnalyzer::CheckObjectExprProps(const ir::ObjectExpression *expr,
     ETSChecker *checker = GetETSChecker();
     checker::ETSObjectType *objType = objectTypeForProperties;
 
+    if (objType->IsGlobalETSObjectType() && !expr->Properties().empty()) {
+        checker->LogError(diagnostic::ERROR_ARKTS_NO_UNTYPED_OBJ_LITERALS, expr->Start());
+    }
+
     for (ir::Expression *propExpr : expr->Properties()) {
         if (!propExpr->IsProperty()) {
             checker->LogError(diagnostic::OBJECT_LITERAL_NOT_KV, {}, expr->Start());
