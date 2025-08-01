@@ -168,6 +168,7 @@ export enum FaultID {
   MethodOverridingField,
   InteropJsObjectConditionJudgment,
   InteropJsObjectExpandStaticInstance,
+  NotSupportTupleGenericValidation,
   ExplicitFunctionType,
   ClassstaticInitialization,
   TaggedTemplates,

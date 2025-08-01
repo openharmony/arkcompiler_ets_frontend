@@ -213,6 +213,7 @@ faultsAttrs[FaultID.LocalStoragePropDecoratorNotSupported] = new FaultAttributes
 faultsAttrs[FaultID.PropFunctionNotSupported] = new FaultAttributes(284);
 faultsAttrs[FaultID.SetAndPropFunctionNotSupported] = new FaultAttributes(285);
 faultsAttrs[FaultID.PropNeedCallMethodForDeepCopy] = new FaultAttributes(286);
+faultsAttrs[FaultID.NotSupportTupleGenericValidation] = new FaultAttributes(290);
 faultsAttrs[FaultID.ExplicitFunctionType] = new FaultAttributes(300);
 faultsAttrs[FaultID.OhmUrlFullPath] = new FaultAttributes(301);
 faultsAttrs[FaultID.InteropCallObjectParam] = new FaultAttributes(302);

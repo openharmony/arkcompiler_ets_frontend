@@ -71,7 +71,8 @@
 	"arkts-no-duplicate-function-name",
     "arkts-require-func-arg-type",
 	"arkts-subclass-must-call-super-constructor-with-args",
-    "arkts-no-esobject-support"
+    "arkts-no-esobject-support",
+    "arkts-not-support-tuple-generic-validation"
   ],
   "interop": [
     "arkts-interop-js2s-inherit-js-class",

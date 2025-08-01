@@ -19,7 +19,7 @@ import { FaultID } from './Problems';
 import { TypeScriptLinterConfig } from './TypeScriptLinterConfig';
 import type { Autofix } from './autofixes/Autofixer';
 import { Autofixer } from './autofixes/Autofixer';
-import { PROMISE_METHODS, SYMBOL, SYMBOL_CONSTRUCTOR, TsUtils } from './utils/TsUtils';
+import { PROMISE_METHODS, PROMISE_METHODS_WITH_NO_TUPLE_SUPPORT, SYMBOL, SYMBOL_CONSTRUCTOR, TsUtils } from './utils/TsUtils';
 import { FUNCTION_HAS_NO_RETURN_ERROR_CODE } from './utils/consts/FunctionHasNoReturnErrorCode';
 import {
   LIMITED_STANDARD_UTILITY_TYPES,
@@ -5317,6 +5317,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.checkRestrictedAPICall(tsCallExpr);
     this.handleNoDeprecatedApi(tsCallExpr);
     this.handleFunctionReturnThisCall(tsCallExpr);
+    this.handlePromiseTupleGeneric(tsCallExpr);
   }
 
   private handleCallExpressionForUI(node: ts.CallExpression): void {
@@ -13579,5 +13580,33 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       }
     }
     return false;
+  }
+
+  private handlePromiseTupleGeneric(node: ts.CallExpression): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    if (
+      ts.isPropertyAccessExpression(node.expression) &&
+      ts.isIdentifier(node.expression.expression) &&
+      node.expression.expression.text === PROMISE
+    ) {
+      const methodName = node.expression.name.text;
+
+      if (!PROMISE_METHODS_WITH_NO_TUPLE_SUPPORT.has(methodName)) {
+        return;
+      }
+
+      const typeArguments = node.typeArguments;
+      if (!typeArguments || typeArguments.length === 0) {
+        return;
+      }
+
+      const firstArg = typeArguments[0];
+      if (ts.isTupleTypeNode(firstArg)) {
+        this.incrementCounters(firstArg, FaultID.NotSupportTupleGenericValidation);
+      }
+    }
   }
 }

@@ -49,6 +49,7 @@ import { EXTNAME_ETS, EXTNAME_JS, EXTNAME_D_ETS } from './consts/ExtensionName';
 import { CONCAT_ARRAY, STRING_ERROR_LITERAL } from './consts/Literals';
 
 export const PROMISE_METHODS = new Set(['all', 'race', 'any', 'resolve', 'allSettled']);
+export const PROMISE_METHODS_WITH_NO_TUPLE_SUPPORT = new Set(['all', 'race', 'any', 'allSettled']);
 export const SYMBOL = 'Symbol';
 export const SYMBOL_CONSTRUCTOR = 'SymbolConstructor';
 const ITERATOR = 'iterator';
