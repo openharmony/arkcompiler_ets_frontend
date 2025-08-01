@@ -648,13 +648,12 @@ void ETSObjectType::SubstitutePartialTypes(TypeRelation *relation, Type *other)
 void ETSObjectType::IdenticalUptoTypeArguments(TypeRelation *relation, Type *other)
 {
     relation->Result(false);
+    if (!other->IsETSObjectType() || !CheckIdenticalFlags(other->AsETSObjectType())) {
+        return;
+    }
 
     if (IsPartial()) {
         SubstitutePartialTypes(relation, other);
-    }
-
-    if (!other->IsETSObjectType() || !CheckIdenticalFlags(other->AsETSObjectType())) {
-        return;
     }
 
     // NOTE: (DZ) only both Partial types can be compatible.
