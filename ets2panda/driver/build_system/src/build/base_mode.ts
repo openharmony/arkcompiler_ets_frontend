@@ -391,6 +391,20 @@ export abstract class BaseMode {
       arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_CHECKED, arktsGlobal.compilerContext.peer);
       this.logger.printInfo('es2panda proceedToState checked');
 
+      if (this.hasMainModule && (this.byteCodeHar || this.moduleType === OHOS_MODULE_TYPE.SHARED)) {
+        for (const sourceFilePath of this.buildConfig.compileFiles) {
+          const filePathFromModuleRoot: string = path.relative(this.moduleRootPath, sourceFilePath);
+
+          const declEtsOutputPath: string = changeFileExtension(
+            path.join(this.declgenV2OutPath as string, filePathFromModuleRoot),
+            DECL_ETS_SUFFIX
+          );
+          ensurePathExists(declEtsOutputPath);
+
+          arkts.generateStaticDeclarationsFromContext(declEtsOutputPath);
+        }
+      }
+
       ast = arkts.EtsScript.fromContext();
       PluginDriver.getInstance().getPluginContext().setArkTSAst(ast);
       PluginDriver.getInstance().runPluginHook(PluginHook.CHECKED);

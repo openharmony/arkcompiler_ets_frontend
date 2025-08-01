@@ -87,19 +87,15 @@ process.on('message', (message: {
       PluginDriver.getInstance().runPluginHook(PluginHook.PARSED);
 
       arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_CHECKED, arktsGlobal.compilerContext.peer);
-
       if (buildConfig.hasMainModule && (buildConfig.byteCodeHar || buildConfig.moduleType === OHOS_MODULE_TYPE.SHARED)) {
-        let filePathFromModuleRoot: string = path.relative(buildConfig.moduleRootPath, fileInfo.filePath);
-        let declEtsOutputPath: string = changeFileExtension(
-          path.join(buildConfig.declgenV2OutPath as string, filePathFromModuleRoot),
+        const filePathFromModuleRoot = path.relative(buildConfig.moduleRootPath, fileInfo.filePath);
+        const declEtsOutputPath = changeFileExtension(
+          path.join(buildConfig.declgenV2OutPath!, filePathFromModuleRoot),
           DECL_ETS_SUFFIX
         );
         ensurePathExists(declEtsOutputPath);
-
-        // Generate 1.2 declaration files(a temporary solution while binary import not pushed)
         arkts.generateStaticDeclarationsFromContext(declEtsOutputPath);
       }
-
       PluginDriver.getInstance().runPluginHook(PluginHook.CHECKED);
 
       arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_BIN_GENERATED, arktsGlobal.compilerContext.peer);
