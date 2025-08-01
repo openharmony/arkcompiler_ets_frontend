@@ -44,26 +44,26 @@ interface Todo {
 /* @@? 22:18 Error SyntaxError: Unexpected token, expected ','. */
 /* @@? 22:18 Error SyntaxError: Unexpected token, expected 'private' or identifier. */
 /* @@? 23:65 Error TypeError: need to specify target type for class composite */
-/* @@? 26:1 Error SyntaxError: Using object literals to declare types in place is not supported. Please declare types and interfaces explicitly! */
-/* @@? 26:1 Error SyntaxError: Interface fields must have type annotation. */
 /* @@? 26:1 Error SyntaxError: Unexpected token, expected 'private' or identifier. */
 /* @@? 26:1 Error SyntaxError: Unexpected token, expected ','. */
-/* @@? 26:1 Error TypeError: Cannot find type 'todo1'. */
+/* @@? 26:1 Error SyntaxError: Unexpected token, expected 'private' or identifier. */
+/* @@? 26:1 Error SyntaxError: Identifier expected. */
+/* @@? 26:1 Error SyntaxError: Using object literals to declare types in place is not supported. Please declare types and interfaces explicitly! */
+/* @@? 26:1 Error SyntaxError: Unexpected token, expected ','. */
+/* @@? 26:1 Error SyntaxError: Interface fields must have type annotation. */
 /* @@? 27:24 Error SyntaxError: Unexpected token ','. */
+/* @@? 28:28 Error SyntaxError: Field type annotation expected. */
 /* @@? 28:28 Error SyntaxError: Unexpected token ','. */
-/* @@? 28:28 Error SyntaxError: Field type annotation expected. */
 /* @@? 28:28 Error SyntaxError: Unexpected token 'ription: '. */
-/* @@? 28:28 Error SyntaxError: Field type annotation expected. */
-/* @@? 31:1 Error SyntaxError: Interface fields must have type annotation. */
-/* @@? 31:1 Error SyntaxError: Using object literals to declare types in place is not supported. Please declare types and interfaces explicitly! */
-/* @@? 31:1 Error SyntaxError: Interface fields must have type annotation. */
 /* @@? 31:1 Error SyntaxError: Unexpected token, expected 'private' or identifier. */
+/* @@? 31:1 Error SyntaxError: Interface fields must have type annotation. */
 /* @@? 31:1 Error SyntaxError: Unexpected token, expected ','. */
 /* @@? 31:1 Error SyntaxError: Unexpected token, expected 'private' or identifier. */
+/* @@? 31:1 Error SyntaxError: Interface fields must have type annotation. */
+/* @@? 31:1 Error SyntaxError: Using object literals to declare types in place is not supported. Please declare types and interfaces explicitly! */
 /* @@? 31:1 Error TypeError: Cannot find type 'updateTodo'. */
 /* @@? 32:36 Error SyntaxError: Unexpected token ','. */
 /* @@? 33:35 Error SyntaxError: Unexpected token, expected ','. */
 /* @@? 33:35 Error SyntaxError: Unexpected token, expected 'private' or identifier. */
 /* @@? 33:35 Error SyntaxError: Identifier expected. */
-/* @@? 33:35 Error TypeError: Property '*ERROR_LITERAL*' must be accessed through 'this' */
 /* @@? 69:67 Error SyntaxError: Unexpected token, expected '}'. */

@@ -1074,6 +1074,11 @@ ir::AstNode *ETSParser::ParseInterfaceField()
 
     auto *name = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
 
+    if (name->IsErrorPlaceHolder()) {
+        Lexer()->NextToken();
+        return AllocBrokenExpression(Lexer()->GetToken().Loc());
+    }
+
     auto parseClassMethod = [&fieldModifiers, &startLoc, this](ir::Identifier *methodName) {
         auto *classMethod = ParseClassMethodDefinition(methodName, fieldModifiers, false);
         ES2PANDA_ASSERT(classMethod != nullptr);
