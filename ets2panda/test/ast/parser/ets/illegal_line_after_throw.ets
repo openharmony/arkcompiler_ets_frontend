@@ -17,7 +17,7 @@ try
 {
 
 }
-catch(e: Error)
+catch(e)
 {
 
 }

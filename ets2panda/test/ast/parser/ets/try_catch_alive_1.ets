@@ -36,10 +36,14 @@ function foo2(): int {
 function foo3(): int {
     try {
         return 0;  
-    } catch (e: ArithmeticError) {
-        return 1;
-    } catch (e: ClassCastError) {
-        return 2;
+    } catch (e) {
+        if (e instanceof ArithmeticError) {
+            return 1;
+        } else if (e instanceof ClassCastError) {
+            return 2;
+        } else {
+            return 3;
+        }
     }
 }
 

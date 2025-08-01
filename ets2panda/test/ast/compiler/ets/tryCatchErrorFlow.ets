@@ -18,7 +18,7 @@ function main(): void {
     throw new DivideByZeroError();
   } catch (p){
     //Do something.
-  } /* @@ label */catch (p: DivideByZeroError) {
+  } /* @@ label */catch (p) {
     //Do something.
   }
 }

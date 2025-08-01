@@ -20,8 +20,8 @@ function main() {
             .catch((a: object | null | undefined): never => {
                 throw a as Error
             })
-    } catch (e: Error) {
-        arktest.assertEQ(e.message, "Dynamic import is not supported")
+    } catch (e) {
+        arktest.assertEQ((e as Error).message, "Dynamic import is not supported")
         return
     }
     arktest.assertTrue(!"nothing was thrown")
