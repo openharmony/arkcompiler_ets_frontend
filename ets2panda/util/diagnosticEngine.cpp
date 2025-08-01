@@ -37,6 +37,15 @@ void CLIDiagnosticPrinter::Print(const DiagnosticBase &diagnostic) const
     Print(diagnostic, std::cout);
 }
 
+void DiagnosticEngine::CleanDuplicateLog(DiagnosticType type)
+{
+    DiagnosticStorage &log = diagnostics_[type];
+    std::sort(log.begin(), log.end(), [](const auto &lhs, const auto &rhs) { return *lhs < *rhs; });
+    auto last =
+        std::unique(log.begin(), log.end(), [&](const auto &rhs, const auto &lhs) -> bool { return *rhs == *lhs; });
+    log.resize(std::distance(log.begin(), last));
+}
+
 const DiagnosticStorage &DiagnosticEngine::GetDiagnosticStorage(DiagnosticType type)
 {
     return diagnostics_[type];

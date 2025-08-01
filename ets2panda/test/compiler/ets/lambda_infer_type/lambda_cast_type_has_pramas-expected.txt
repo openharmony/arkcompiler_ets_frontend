@@ -28,112 +28,6 @@
             "type": "MethodDefinition",
             "key": {
               "type": "Identifier",
-              "name": "_$init$_",
-              "decorators": [],
-              "loc": {
-                "start": {
-                  "line": 1,
-                  "column": 1,
-                  "program": null
-                },
-                "end": {
-                  "line": 1,
-                  "column": 1,
-                  "program": null
-                }
-              }
-            },
-            "kind": "method",
-            "accessibility": "public",
-            "static": true,
-            "optional": false,
-            "computed": false,
-            "value": {
-              "type": "FunctionExpression",
-              "function": {
-                "type": "ScriptFunction",
-                "id": {
-                  "type": "Identifier",
-                  "name": "_$init$_",
-                  "decorators": [],
-                  "loc": {
-                    "start": {
-                      "line": 1,
-                      "column": 1,
-                      "program": null
-                    },
-                    "end": {
-                      "line": 1,
-                      "column": 1,
-                      "program": null
-                    }
-                  }
-                },
-                "generator": false,
-                "async": false,
-                "expression": false,
-                "params": [],
-                "body": {
-                  "type": "BlockStatement",
-                  "statements": [],
-                  "loc": {
-                    "start": {
-                      "line": 1,
-                      "column": 1,
-                      "program": "lambda_cast_type_has_pramas.ets"
-                    },
-                    "end": {
-                      "line": 1,
-                      "column": 1,
-                      "program": "lambda_cast_type_has_pramas.ets"
-                    }
-                  }
-                },
-                "loc": {
-                  "start": {
-                    "line": 1,
-                    "column": 1,
-                    "program": "lambda_cast_type_has_pramas.ets"
-                  },
-                  "end": {
-                    "line": 1,
-                    "column": 1,
-                    "program": "lambda_cast_type_has_pramas.ets"
-                  }
-                }
-              },
-              "loc": {
-                "start": {
-                  "line": 1,
-                  "column": 1,
-                  "program": "lambda_cast_type_has_pramas.ets"
-                },
-                "end": {
-                  "line": 1,
-                  "column": 1,
-                  "program": "lambda_cast_type_has_pramas.ets"
-                }
-              }
-            },
-            "overloads": [],
-            "decorators": [],
-            "loc": {
-              "start": {
-                "line": 1,
-                "column": 1,
-                "program": "lambda_cast_type_has_pramas.ets"
-              },
-              "end": {
-                "line": 1,
-                "column": 1,
-                "program": "lambda_cast_type_has_pramas.ets"
-              }
-            }
-          },
-          {
-            "type": "MethodDefinition",
-            "key": {
-              "type": "Identifier",
               "name": "main",
               "decorators": [],
               "loc": {
@@ -519,8 +413,8 @@
                                 "program": "lambda_cast_type_has_pramas.ets"
                               },
                               "end": {
-                                "line": 17,
-                                "column": 38,
+                                "line": 18,
+                                "column": 8,
                                 "program": "lambda_cast_type_has_pramas.ets"
                               }
                             }
@@ -532,8 +426,8 @@
                               "program": "lambda_cast_type_has_pramas.ets"
                             },
                             "end": {
-                              "line": 17,
-                              "column": 38,
+                              "line": 18,
+                              "column": 8,
                               "program": "lambda_cast_type_has_pramas.ets"
                             }
                           }
@@ -547,8 +441,8 @@
                           "program": "lambda_cast_type_has_pramas.ets"
                         },
                         "end": {
-                          "line": 17,
-                          "column": 38,
+                          "line": 18,
+                          "column": 8,
                           "program": "lambda_cast_type_has_pramas.ets"
                         }
                       }

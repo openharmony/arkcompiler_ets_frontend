@@ -67,7 +67,7 @@ TEST_F(LspSuggestionTests, hasSupportedNumberOfArguments)
         }
         return false;
     });
-    EXPECT_TRUE(ark::es2panda::lsp::HasSupportedNumberOfArguments(callExprs.at(0)));
+    EXPECT_TRUE(ark::es2panda::lsp::HasSupportedNumberOfArguments(callExprs.at(1)));
     initializer.DestroyContext(ctx);
 }
 TEST_F(LspSuggestionTests, hasSupportedNumberOfArguments2)
@@ -86,7 +86,7 @@ TEST_F(LspSuggestionTests, hasSupportedNumberOfArguments2)
 
         return false;
     });
-    EXPECT_TRUE(ark::es2panda::lsp::HasSupportedNumberOfArguments(callExprs.at(0)));
+    EXPECT_TRUE(ark::es2panda::lsp::HasSupportedNumberOfArguments(callExprs.at(1)));
     initializer.DestroyContext(ctx);
 }
 TEST_F(LspSuggestionTests, hasSupportedNumberOfArguments3)
@@ -104,7 +104,7 @@ TEST_F(LspSuggestionTests, hasSupportedNumberOfArguments3)
         }
         return false;
     });
-    EXPECT_TRUE(ark::es2panda::lsp::HasSupportedNumberOfArguments(callExprs.at(0)));
+    EXPECT_TRUE(ark::es2panda::lsp::HasSupportedNumberOfArguments(callExprs.at(1)));
     initializer.DestroyContext(ctx);
 }
 TEST_F(LspSuggestionTests, hasSupportedNumberOfArguments4)
@@ -122,7 +122,7 @@ TEST_F(LspSuggestionTests, hasSupportedNumberOfArguments4)
         }
         return false;
     });
-    EXPECT_TRUE(ark::es2panda::lsp::HasSupportedNumberOfArguments(callExprs.at(0)));
+    EXPECT_TRUE(ark::es2panda::lsp::HasSupportedNumberOfArguments(callExprs.at(1)));
     initializer.DestroyContext(ctx);
 }
 
@@ -222,7 +222,7 @@ TEST_F(LspSuggestionTests, isPromiseHandler)
         }
         return false;
     });
-    EXPECT_TRUE(ark::es2panda::lsp::IsPromiseHandler(callExprs.at(0)));
+    EXPECT_TRUE(ark::es2panda::lsp::IsPromiseHandler(callExprs.at(1)));
     initializer.DestroyContext(ctx);
 }
 
@@ -241,7 +241,7 @@ TEST_F(LspSuggestionTests, isPromiseHandler2)
         }
         return false;
     });
-    EXPECT_TRUE(ark::es2panda::lsp::IsPromiseHandler(callExprs.at(0)));
+    EXPECT_TRUE(ark::es2panda::lsp::IsPromiseHandler(callExprs.at(1)));
     initializer.DestroyContext(ctx);
 }
 
@@ -260,7 +260,7 @@ TEST_F(LspSuggestionTests, isPromiseHandler3)
         }
         return false;
     });
-    EXPECT_TRUE(ark::es2panda::lsp::IsPromiseHandler(callExprs.at(0)));
+    EXPECT_TRUE(ark::es2panda::lsp::IsPromiseHandler(callExprs.at(1)));
     initializer.DestroyContext(ctx);
 }
 
@@ -279,7 +279,7 @@ TEST_F(LspSuggestionTests, isPromiseHandler4)
         }
         return false;
     });
-    EXPECT_TRUE(ark::es2panda::lsp::IsPromiseHandler(callExprs.at(0)));
+    EXPECT_TRUE(ark::es2panda::lsp::IsPromiseHandler(callExprs.at(1)));
     initializer.DestroyContext(ctx);
 }
 }  // namespace

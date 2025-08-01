@@ -14,6 +14,7 @@
  */
 
 #include "compiler/lowering/ets/topLevelStmts/globalDeclTransformer.h"
+#include "compiler/lowering/util.h"
 
 namespace ark::es2panda::compiler {
 
@@ -172,15 +173,9 @@ ir::Identifier *GlobalDeclTransformer::RefIdent(const util::StringView &name)
     return callee;
 }
 
-ir::ExpressionStatement *GlobalDeclTransformer::InitTopLevelProperty(ir::ClassProperty *classProperty)
+ir::ExpressionStatement *GlobalDeclTransformer::CreateAssignmentStatement(ir::ClassProperty *classProperty,
+                                                                          ir::Expression *initializer)
 {
-    const auto initializer = classProperty->Value();
-    ES2PANDA_ASSERT(classProperty->Id() != nullptr);
-    if (classProperty->IsConst() || initializer == nullptr) {
-        classProperty->SetStart(classProperty->Id()->Start());
-        return nullptr;
-    }
-
     auto const ident = RefIdent(classProperty->Id()->Name());
     ES2PANDA_ASSERT(ident != nullptr);
     ident->SetRange(classProperty->Id()->Range());
@@ -195,16 +190,30 @@ ir::ExpressionStatement *GlobalDeclTransformer::InitTopLevelProperty(ir::ClassPr
     auto expressionStatement = util::NodeAllocator::Alloc<ir::ExpressionStatement>(allocator_, assignmentExpression);
     ES2PANDA_ASSERT(expressionStatement != nullptr);
     expressionStatement->SetRange(classProperty->Range());
+    assignmentExpression->SetIgnoreConstAssign();
 
-    classProperty->SetRange({ident->Start(), initializer->End()});
-
-    if (classProperty->TypeAnnotation() != nullptr) {
-        classProperty->SetValue(nullptr);
-    } else {
-        // Code will be ignored, but checker is going to deduce the type.
-        classProperty->SetValue(initializer->Clone(allocator_, classProperty)->AsExpression());
-    }
     return expressionStatement;
+}
+
+ir::ExpressionStatement *GlobalDeclTransformer::InitTopLevelProperty(ir::ClassProperty *classProperty)
+{
+    ES2PANDA_ASSERT(classProperty->Id() != nullptr);
+    if (classProperty->Value() == nullptr) {
+        classProperty->SetStart(classProperty->Id()->Start());
+        return nullptr;
+    }
+
+    ir::Expression *initializer = nullptr;
+    if (classProperty->TypeAnnotation() != nullptr && !classProperty->IsConst()) {
+        initializer = classProperty->Value();
+        classProperty->SetEnd(classProperty->Value()->Start());
+        classProperty->SetValue(nullptr);
+        return CreateAssignmentStatement(classProperty, initializer);
+    }
+
+    // Code will be ignored, but checker is going to deduce the type.
+    initializer = classProperty->Value()->Clone(allocator_, classProperty)->AsExpression();
+    return CreateAssignmentStatement(classProperty, initializer);
 }
 
 void GlobalDeclTransformer::HandleNode(ir::AstNode *node)

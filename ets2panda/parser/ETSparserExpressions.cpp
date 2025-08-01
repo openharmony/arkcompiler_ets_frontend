@@ -673,7 +673,8 @@ ir::Expression *ETSParser::ParsePotentialAsExpression(ir::Expression *primaryExp
 
     auto *asExpression = AllocNode<ir::TSAsExpression>(primaryExpr, type, false);
     ES2PANDA_ASSERT(asExpression != nullptr);
-    asExpression->SetRange(primaryExpr->Range());
+    asExpression->SetStart(primaryExpr->Start());
+    asExpression->SetEnd(type->End());
     return asExpression;
 }
 

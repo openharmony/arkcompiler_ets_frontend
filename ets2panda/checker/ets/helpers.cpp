@@ -595,6 +595,63 @@ checker::Type *ETSChecker::CheckArrayElements(ir::ArrayExpression *init)
     return CreateETSResizableArrayType(elementType);
 }
 
+static void SetTypeforLambdaParamWithoutTypeAnnotation(ir::ETSParameterExpression *param, Type *type)
+{
+    auto *const lambdaParam = param->Ident();
+    if (lambdaParam->TypeAnnotation() != nullptr) {
+        return;
+    }
+    if (lambdaParam->Variable() != nullptr) {
+        lambdaParam->Variable()->SetTsType(type);
+    }
+    lambdaParam->SetTsType(type);
+}
+
+void ETSChecker::InferLambdaInAssignmentExpression(ir::AssignmentExpression *const expr)
+{
+    auto *left = expr->Left();
+    auto *right = expr->Right();
+
+    if (!right->IsArrowFunctionExpression()) {
+        return;
+    }
+
+    if (left->TsType() == nullptr || !left->TsType()->IsETSFunctionType() ||
+        left->TsType()->AsETSFunctionType()->CallSignaturesOfMethodOrArrow().empty()) {
+        return;
+    }
+
+    ArenaVector<ir::Expression *> lambdaParams = right->AsArrowFunctionExpression()->Function()->Params();
+    Signature *sig = left->TsType()->AsETSFunctionType()->CallSignaturesOfMethodOrArrow()[0];
+
+    size_t paramCount = sig->Params().size();
+    if (sig->RestVar() != nullptr) {
+        paramCount++;
+    }
+
+    if (paramCount != lambdaParams.size()) {
+        return;
+    }
+
+    if (std::any_of(lambdaParams.begin(), lambdaParams.end(),
+                    [](auto &param) { return !param->IsETSParameterExpression(); })) {
+        return;
+    }
+
+    if (sig->RestVar() != nullptr) {
+        if (!lambdaParams.back()->AsETSParameterExpression()->IsRestParameter()) {
+            return;
+        }
+        SetTypeforLambdaParamWithoutTypeAnnotation(lambdaParams.back()->AsETSParameterExpression(),
+                                                   sig->RestVar()->TsType());
+        paramCount--;
+    }
+    for (size_t i = 0; i < paramCount; i++) {
+        auto *inferredType = sig->Params()[i]->TsType();
+        SetTypeforLambdaParamWithoutTypeAnnotation(lambdaParams[i]->AsETSParameterExpression(), inferredType);
+    }
+}
+
 void ETSChecker::InferAliasLambdaType(ir::TypeNode *localTypeAnnotation, ir::ArrowFunctionExpression *init)
 {
     ES2PANDA_ASSERT(localTypeAnnotation != nullptr);

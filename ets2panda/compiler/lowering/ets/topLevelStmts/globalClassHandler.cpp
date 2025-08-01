@@ -225,12 +225,7 @@ void GlobalClassHandler::SetupGlobalMethods(ArenaVector<ir::Statement *> &&initS
         return;
     }
 
-    ir::MethodDefinition *initMethod = CreateGlobalMethod(compiler::Signatures::INIT_METHOD, std::move(initStatements));
-    InsertInGlobal(globalClass, initMethod);
-    ES2PANDA_ASSERT(initMethod->Function());
-    if (!initMethod->Function()->Body()->AsBlockStatement()->Statements().empty()) {
-        AddInitCallToStaticBlock(globalClass, initMethod);
-    }
+    AddInitStatementsToStaticBlock(globalClass, std::move(initStatements));
 }
 
 void GlobalClassHandler::MergeNamespace(ArenaVector<ir::ETSModule *> &namespaces, parser::Program *program)
@@ -425,6 +420,26 @@ void GlobalClassHandler::SetupGlobalClass(const ArenaVector<parser::Program *> &
     SetupInitializerBlock(std::move(initializerBlockStmts), globalClass);
 }
 
+static std::pair<lexer::SourcePosition, lexer::SourcePosition> GetBoundInBody(parser::Program *program,
+                                                                              ir::BlockStatement *body)
+{
+    auto minBound = lexer::SourcePosition(program);
+    auto maxBound = lexer::SourcePosition(program);
+    if (!body->Statements().empty()) {
+        minBound = body->Statements().front()->Start();
+        maxBound = body->Statements().front()->End();
+        for (const auto &stmt : body->Statements()) {
+            if (stmt->Start().index < minBound.index) {
+                minBound = stmt->Start();
+            }
+            if (stmt->End().index > maxBound.index) {
+                maxBound = stmt->End();
+            }
+        }
+    }
+    return std::make_pair(minBound, maxBound);
+}
+
 ir::MethodDefinition *GlobalClassHandler::CreateGlobalMethod(const std::string_view name,
                                                              ArenaVector<ir::Statement *> &&statements)
 {
@@ -450,24 +465,13 @@ ir::MethodDefinition *GlobalClassHandler::CreateGlobalMethod(const std::string_v
                                                                  identClone->AsExpression(), funcExpr,
                                                                  functionModifiers, allocator_, false);
     ES2PANDA_ASSERT(methodDef != nullptr);
-    auto minBound = lexer::SourcePosition(globalProgram_);
-    auto maxBound = lexer::SourcePosition(globalProgram_);
-    if (!body->Statements().empty()) {
-        minBound = body->Statements().front()->Start();
-        maxBound = body->Statements().front()->End();
-        for (const auto &stmt : body->Statements()) {
-            if (stmt->Start().index < minBound.index) {
-                minBound = stmt->Start();
-            }
-            if (stmt->End().index > maxBound.index) {
-                maxBound = stmt->End();
-            }
-        }
-    }
+
+    auto [minBound, maxBound] = GetBoundInBody(globalProgram_, body);
     body->SetRange({minBound, maxBound});
     func->SetRange({minBound, maxBound});
     funcExpr->SetRange({minBound, maxBound});
     methodDef->SetRange({minBound, maxBound});
+
     return methodDef;
 }
 
@@ -509,6 +513,30 @@ void GlobalClassHandler::AddInitCallToStaticBlock(ir::ClassDefinition *globalCla
     ES2PANDA_ASSERT(exprStmt != nullptr);
     exprStmt->SetParent(blockBody);
     blockBody->AddStatement(exprStmt);
+}
+
+void GlobalClassHandler::AddInitStatementsToStaticBlock(ir::ClassDefinition *globalClass,
+                                                        ArenaVector<ir::Statement *> &&initStatements)
+{
+    auto &globalBody = globalClass->Body();
+    auto maybeStaticBlock = std::find_if(globalBody.begin(), globalBody.end(),
+                                         [](ir::AstNode *node) { return node->IsClassStaticBlock(); });
+    ES2PANDA_ASSERT(maybeStaticBlock != globalBody.end());
+
+    auto *staticBlock = (*maybeStaticBlock)->AsClassStaticBlock();
+
+    auto *blockBody = staticBlock->Function()->Body()->AsBlockStatement();
+    for (auto &stmt : initStatements) {
+        blockBody->AddStatement(stmt);
+    }
+
+    auto [minBound, maxBound] = GetBoundInBody(globalProgram_, blockBody);
+    blockBody->SetRange({minBound, maxBound});
+    staticBlock->Function()->SetRange({minBound, maxBound});
+    staticBlock->Value()->SetRange({minBound, maxBound});
+    staticBlock->SetRange({minBound, maxBound});
+
+    globalClass->SetInitInCctor();
 }
 
 ir::Identifier *GlobalClassHandler::RefIdent(const util::StringView &name)
