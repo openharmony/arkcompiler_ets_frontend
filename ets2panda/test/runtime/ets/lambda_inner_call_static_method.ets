@@ -15,7 +15,7 @@
 
 function foo(callback: () => string) { }
 
-const bar = (): string => {
+const bar: () => string = (): string => {
     return A.fob();
 }
 

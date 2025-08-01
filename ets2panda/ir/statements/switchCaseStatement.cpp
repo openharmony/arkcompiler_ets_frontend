@@ -148,7 +148,7 @@ SwitchCaseStatement *SwitchCaseStatement::Clone(ArenaAllocator *const allocator,
 {
     Expression *test = nullptr;
     if (test_ != nullptr) {
-        test = test_->Clone(allocator, nullptr)->AsExpression();
+        test = test_ == nullptr ? nullptr : test_->Clone(allocator, nullptr)->AsExpression();
     }
     ArenaVector<Statement *> consequent(allocator->Adapter());
 

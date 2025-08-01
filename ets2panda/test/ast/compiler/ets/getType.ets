@@ -19,9 +19,9 @@ declare type type_tuple_union = [string, boolean, number] | (this.mnum === other
 /* @@? 15:66 Error SyntaxError: Unexpected token, expected ')'. */
 /* @@? 15:67 Error TypeError: Unresolved reference mnum */
 /* @@? 15:76 Error TypeError: Unresolved reference other */
-/* @@? 15:90 Error TypeError: Cannot reference 'this' in this context. */
-/* @@? 15:95 Error TypeError: Property 'mden' does not exist on type 'Error' */
+/* @@? 15:90 Error TypeError: 'this' cannot be referenced from a static context */
+/* @@? 15:95 Error TypeError: Property 'mden' does not exist on type 'ETSGLOBAL' */
 /* @@? 16:1 Error SyntaxError: Unexpected token ')'. */
 /* @@? 16:1 Error TypeError: Indexed access is not supported for such expression type. */
 /* @@? 16:3 Error SyntaxError: Unexpected token ']'. */
-/* @@? 27:67 Error SyntaxError: Unexpected token, expected ']'. */
+/* @@? 28:1 Error SyntaxError: Unexpected token, expected ']'. */

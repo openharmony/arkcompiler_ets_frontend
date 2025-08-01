@@ -216,6 +216,7 @@ DiagnosticReferences GetSemanticDiagnostics(es2panda_Context *context)
 {
     DiagnosticReferences result {};
     auto ctx = reinterpret_cast<public_lib::Context *>(context);
+    ctx->diagnosticEngine->CleanDuplicateLog(util::DiagnosticType::SEMANTIC);
     SetPhaseManager(ctx->phaseManager);
     const auto &diagnostics = ctx->diagnosticEngine->GetDiagnosticStorage(util::DiagnosticType::SEMANTIC);
     for (const auto &diagnostic : diagnostics) {
@@ -228,6 +229,7 @@ DiagnosticReferences GetSyntacticDiagnostics(es2panda_Context *context)
 {
     DiagnosticReferences result {};
     auto ctx = reinterpret_cast<public_lib::Context *>(context);
+    ctx->diagnosticEngine->CleanDuplicateLog(util::DiagnosticType::SYNTAX);
     SetPhaseManager(ctx->phaseManager);
     const auto &diagnostics = ctx->diagnosticEngine->GetDiagnosticStorage(util::DiagnosticType::SYNTAX);
     const auto &diagnosticsPluginError =

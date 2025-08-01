@@ -91,7 +91,8 @@ a = 1;
     const size_t length = 1;
     const size_t expectedTextChangeStart = 1;
     const size_t expectedTextChangeLength = 5;
-    const int expectedFixResultSize = 1;
+    const int expectedFixResultSize = 2;
+    const int expectedCombinedFixResultSize = 1;
     const int expectedCombinedTextChangesSize = 1;
 
     std::vector<int> errorCodes(ERROR_CODES.begin(), ERROR_CODES.end());
@@ -104,7 +105,7 @@ a = 1;
 
     CombinedCodeActionsInfo combinedFixResult =
         ark::es2panda::lsp::GetCombinedCodeFixImpl(context, EXPECTED_FIX_NAME.data(), emptyOptions);
-    ASSERT_EQ(combinedFixResult.changes_.size(), expectedFixResultSize);
+    ASSERT_EQ(combinedFixResult.changes_.size(), expectedCombinedFixResultSize);
     ASSERT_EQ(combinedFixResult.changes_[0].textChanges.size(), expectedCombinedTextChangesSize);
     ASSERT_EQ(combinedFixResult.changes_[0].fileName, filePaths[0]);
     ASSERT_EQ(combinedFixResult.changes_[0].textChanges[0].span.start, expectedTextChangeStart);
@@ -135,7 +136,8 @@ b = 2;
     const size_t expectedTextChangeLength1 = 5;
     const size_t expectedTextChangeStart2 = 14;
     const size_t expectedTextChangeLength2 = 5;
-    const int expectedFixResultSize = 1;
+    const int expectedFixResultSize = 2;
+    const int expectedCombinedFixResultSize = 1;
     const int expectedCombinedTextChangesSize = 2;
 
     std::vector<int> errorCodes(ERROR_CODES.begin(), ERROR_CODES.end());
@@ -152,7 +154,7 @@ b = 2;
 
     CombinedCodeActionsInfo combinedFixResult =
         ark::es2panda::lsp::GetCombinedCodeFixImpl(context, EXPECTED_FIX_NAME.data(), emptyOptions);
-    ASSERT_EQ(combinedFixResult.changes_.size(), expectedFixResultSize);
+    ASSERT_EQ(combinedFixResult.changes_.size(), expectedCombinedFixResultSize);
     ASSERT_EQ(combinedFixResult.changes_[0].textChanges.size(), expectedCombinedTextChangesSize);
     ASSERT_EQ(combinedFixResult.changes_[0].fileName, filePaths[0]);
     ASSERT_EQ(combinedFixResult.changes_[0].textChanges[0].span.start, expectedTextChangeStart1);
@@ -181,7 +183,8 @@ a = 2;
     const size_t length = 1;
     const size_t expectedTextChangeStart = 16;
     const size_t expectedTextChangeLength = 5;
-    const int expectedFixResultSize = 1;
+    const int expectedFixResultSize = 2;
+    const int expectedCombinedFixResultSize = 1;
     const int expectedCombinedTextChangesSize = 1;
 
     std::vector<int> errorCodes(ERROR_CODES.begin(), ERROR_CODES.end());
@@ -193,7 +196,7 @@ a = 2;
 
     CombinedCodeActionsInfo combinedFixResult =
         ark::es2panda::lsp::GetCombinedCodeFixImpl(context, EXPECTED_FIX_NAME.data(), emptyOptions);
-    ASSERT_EQ(combinedFixResult.changes_.size(), 1);
+    ASSERT_EQ(combinedFixResult.changes_.size(), expectedCombinedFixResultSize);
     ASSERT_EQ(combinedFixResult.changes_[0].textChanges.size(), expectedCombinedTextChangesSize);
     ASSERT_EQ(combinedFixResult.changes_[0].fileName, filePaths[0]);
     ASSERT_EQ(combinedFixResult.changes_[0].textChanges[0].span.start, expectedTextChangeStart);

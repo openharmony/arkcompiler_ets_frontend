@@ -164,6 +164,11 @@ checker::Type *ETSAnalyzer::Check(ir::ClassStaticBlock *st) const
     } else {
         st->SetTsType(checker->BuildMethodType(func));
     }
+
+    if (!func->HasBody() || (func->IsExternal() && !func->IsExternalOverload())) {
+        return st->TsType();
+    }
+
     checker::ScopeContext scopeCtx(checker, func->Scope());
     checker::SavedCheckerContext savedContext(checker, checker->Context().Status(),
                                               checker->Context().ContainingClass());
@@ -1279,6 +1284,8 @@ checker::Type *ETSAnalyzer::Check(ir::AssignmentExpression *const expr) const
     if (expr->target_ != nullptr && !expr->IsIgnoreConstAssign()) {
         checker->ValidateUnaryOperatorOperand(expr->target_, expr);
     }
+
+    checker->InferLambdaInAssignmentExpression(expr);
 
     if (auto setterType = GetSetterType(expr->target_, checker); setterType != nullptr) {
         leftType = setterType;

@@ -111,18 +111,9 @@ void ETSFunction::CompileAsStaticBlock(ETSGen *etsg)
 {
     const auto *classDef = etsg->ContainingObjectType()->GetDeclNode()->AsClassDefinition();
 
-    auto const checkInitializer = [](ArenaVector<ir::AstNode *> const &nodes) -> bool {
-        for (auto const *const node : nodes) {
-            if (node->IsMethodDefinition() && node->AsClassElement()->Key()->IsIdentifier() &&
-                node->AsClassElement()->Id()->Name() == compiler::Signatures::INIT_METHOD) {
-                return false;
-            }
-        }
-        return true;
-    };
-
-    // Check if it is the Global class static constructor and the special '_$init$_" method exists
-    bool const compileInitializer = classDef->IsGlobal() ? checkInitializer(classDef->Body()) : true;
+    if (classDef->IsGlobal() && classDef->IsInitInCctor()) {
+        return;
+    }
 
     for (const auto *prop : classDef->Body()) {
         if (!prop->IsClassProperty() || !prop->IsStatic()) {
@@ -131,8 +122,8 @@ void ETSFunction::CompileAsStaticBlock(ETSGen *etsg)
 
         // Don't compile variable initializers if they present in '_$init$_" method
         auto *const item = prop->AsClassProperty();
-        if (item->Value() != nullptr &&
-            (compileInitializer || item->IsConst() || item->Value()->IsArrowFunctionExpression())) {
+
+        if (item->Value() != nullptr) {
             item->Compile(etsg);
         }
     }

@@ -91,6 +91,8 @@ private:
     ir::ClassDeclaration *CreateGlobalClass(const parser::Program *globalProgram);
     ir::ClassStaticBlock *CreateStaticBlock(ir::ClassDefinition *classDef);
     ir::MethodDefinition *CreateGlobalMethod(std::string_view name, ArenaVector<ir::Statement *> &&statements);
+    void AddInitStatementsToStaticBlock(ir::ClassDefinition *globalClass,
+                                        ArenaVector<ir::Statement *> &&initStatements);
     void AddInitCallToStaticBlock(ir::ClassDefinition *globalClass, ir::MethodDefinition *initMethod);
     void AddInitializerBlockToStaticBlock(ir::ClassDefinition *globalClass,
                                           ArenaVector<ir::Statement *> &&initializerBlocks);

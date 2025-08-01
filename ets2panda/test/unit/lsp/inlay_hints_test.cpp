@@ -221,7 +221,6 @@ TEST_F(LSPInlayHintsTests, VisitFunctionDeclarationLikeForReturnTypeTest1)
     const size_t i0 = 0;
     const size_t i1 = 1;
     const size_t i2 = 2;
-    const size_t i3 = 3;
     const auto filePaths = CreateTempFile(files, fileContent);
     ASSERT_EQ(filePaths.size(), i1);
     InlayHintList result;
@@ -238,10 +237,10 @@ TEST_F(LSPInlayHintsTests, VisitFunctionDeclarationLikeForReturnTypeTest1)
         }
         return false;
     });
+    ASSERT_EQ(result.hints[i1].text, doubleString);
+    ASSERT_EQ(result.hints[i1].number, addIndex);
     ASSERT_EQ(result.hints[i2].text, doubleString);
-    ASSERT_EQ(result.hints[i2].number, addIndex);
-    ASSERT_EQ(result.hints[i3].text, doubleString);
-    ASSERT_EQ(result.hints[i3].number, multiplyIndex);
+    ASSERT_EQ(result.hints[i2].number, multiplyIndex);
     initializer.DestroyContext(ctx);
 }
 
@@ -265,7 +264,6 @@ TEST_F(LSPInlayHintsTests, VisitFunctionDeclarationLikeForReturnTypeTest2)
     const size_t i0 = 0;
     const size_t i1 = 1;
     const size_t i2 = 2;
-    const size_t i3 = 3;
 
     const auto filePaths = CreateTempFile(files, fileContent);
     ASSERT_EQ(filePaths.size(), i1);
@@ -283,10 +281,10 @@ TEST_F(LSPInlayHintsTests, VisitFunctionDeclarationLikeForReturnTypeTest2)
         }
         return false;
     });
-    ASSERT_EQ(result.hints[i2].text, stdString);
-    ASSERT_EQ(result.hints[i2].number, greetIndex);
-    ASSERT_EQ(result.hints[i3].text, voidString);
-    ASSERT_EQ(result.hints[i3].number, sayHelloIndex);
+    ASSERT_EQ(result.hints[i1].text, stdString);
+    ASSERT_EQ(result.hints[i1].number, greetIndex);
+    ASSERT_EQ(result.hints[i2].text, voidString);
+    ASSERT_EQ(result.hints[i2].number, sayHelloIndex);
     initializer.DestroyContext(ctx);
 }
 

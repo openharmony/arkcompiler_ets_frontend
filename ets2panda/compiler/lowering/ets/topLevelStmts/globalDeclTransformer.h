@@ -89,6 +89,7 @@ public:
 
     ir::Identifier *RefIdent(const util::StringView &name);
 
+    ir::ExpressionStatement *CreateAssignmentStatement(ir::ClassProperty *classProperty, ir::Expression *initializer);
     ir::ExpressionStatement *InitTopLevelProperty(ir::ClassProperty *classProperty);
 
     [[nodiscard]] bool IsMultiInitializer() const

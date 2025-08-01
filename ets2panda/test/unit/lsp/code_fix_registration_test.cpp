@@ -86,7 +86,7 @@ TEST(RefactorProviderRegistrationTest, RegistersConvertFunctionRefactor)
     const auto &fixIdToRegistration = provider.GetFixIdToRegistration();
     EXPECT_FALSE(errors.empty());
     EXPECT_FALSE(fixIdToRegistration.empty());
-    EXPECT_EQ(errors.size(), fixIdToRegistration.size());
+    EXPECT_TRUE(errors.size() >= fixIdToRegistration.size());
 }
 
 TEST_F(CodeFixProviderTest, CreatesCodeFixActionWithoutFixAll)
@@ -192,7 +192,8 @@ a = 1;
     const size_t length = 1;
     const size_t expectedTextChangeStart = 1;
     const size_t expectedTextChangeLength = 5;
-    const int expectedFixResultSize = 1;
+    const int expectedFixResultSize = 2;
+    const int expectedcombinedFixResultSize = 1;
     const int expectedCombinedTextChangesSize = 1;
 
     std::vector<int> errorCodes(ERROR_CODES.begin(), ERROR_CODES.end());
@@ -206,7 +207,7 @@ a = 1;
 
     CombinedCodeActionsInfo combinedFixResult = ark::es2panda::lsp::GetCombinedCodeFixImpl(
         context, std::string(ark::es2panda::lsp::codefixes::FIX_CONVERT_CONST_TO_LET.GetFixId()), emptyOptions);
-    ASSERT_EQ(combinedFixResult.changes_.size(), expectedFixResultSize);
+    ASSERT_EQ(combinedFixResult.changes_.size(), expectedcombinedFixResultSize);
     ASSERT_EQ(combinedFixResult.changes_[0].textChanges.size(), expectedCombinedTextChangesSize);
     ASSERT_EQ(combinedFixResult.changes_[0].fileName, filePaths[0]);
     ASSERT_EQ(combinedFixResult.changes_[0].textChanges[0].span.start, expectedTextChangeStart);

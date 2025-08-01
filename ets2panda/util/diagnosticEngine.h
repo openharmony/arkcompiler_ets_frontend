@@ -141,6 +141,8 @@ public:
         wError_ = wError;
     }
 
+    void CleanDuplicateLog(DiagnosticType type);
+
     const DiagnosticStorage &GetDiagnosticStorage(DiagnosticType type);
 
     static void InitializeSignalHandlers();
