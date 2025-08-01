@@ -250,12 +250,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "test-type-alias-call4.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "test-type-alias-call4.ets"
                     }
                   }
                 },

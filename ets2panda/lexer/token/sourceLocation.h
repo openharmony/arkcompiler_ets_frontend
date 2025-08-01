@@ -52,6 +52,7 @@ public:
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 
     const parser::Program *Program() const;
+    void SetProgram(const parser::Program *program);
 
     bool operator!=(const SourcePosition &other) const
     {
@@ -79,6 +80,8 @@ public:
     {
         return start != other.start || end != other.end;
     }
+
+    void SetProgram(const parser::Program *program);
 };
 
 class CompressedSourceRange {
@@ -116,6 +119,11 @@ public:
     {
         SetStart(r.start);
         SetEnd(r.end);
+    }
+
+    void SetProgram(const parser::Program *program)
+    {
+        program_ = program;
     }
 
     SourceRange GetRange() const

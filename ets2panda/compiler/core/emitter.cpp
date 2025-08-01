@@ -183,13 +183,12 @@ static size_t GetIRNodeWholeLength(const IRNode *node)
 
 static std::string WholeLine(const lexer::SourceRange &range)
 {
-    // NOTE(rsipka, #24105): The program shouldn't be nullptr
     auto program = range.start.Program();
-    if (program == nullptr || program->SourceCode().Empty()) {
+    ES2PANDA_ASSERT(program != nullptr);
+    auto source = program->SourceCode();
+    if (source.Empty()) {
         return {};
     }
-
-    auto source = program->SourceCode();
 
     ES2PANDA_ASSERT(range.end.index <= source.Length());
     ES2PANDA_ASSERT(range.end.index >= range.start.index);

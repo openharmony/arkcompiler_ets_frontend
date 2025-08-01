@@ -146,6 +146,7 @@ ETSTypeReference *ETSTypeReference::Clone(ArenaAllocator *const allocator, AstNo
     }
     auto *const clone = allocator->New<ETSTypeReference>(partClone, allocator);
     ES2PANDA_ASSERT(clone != nullptr);
+    clone->SetRange(Range());
 
     if (partClone != nullptr) {
         partClone->SetParent(clone);
@@ -167,7 +168,6 @@ ETSTypeReference *ETSTypeReference::Clone(ArenaAllocator *const allocator, AstNo
         clone->SetAnnotations(std::move(annotationUsages));
     }
 
-    clone->SetRange(Range());
     return clone;
 }
 
