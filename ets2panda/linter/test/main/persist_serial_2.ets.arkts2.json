@@ -16,6 +16,16 @@
     "result": [
         {
             "line": 38,
+            "column": 35,
+            "endLine": 38,
+            "endColumn": 40,
+            "problem": "BuiltinNewCtor",
+            "suggest": "",
+            "rule": "API is not support initial ctor signature (arkts-builtin-new-cotr)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 38,
             "column": 31,
             "endLine": 38,
             "endColumn": 46,
@@ -86,12 +96,32 @@
         },
         {
             "line": 52,
+            "column": 104,
+            "endLine": 52,
+            "endColumn": 109,
+            "problem": "BuiltinNewCtor",
+            "suggest": "",
+            "rule": "API is not support initial ctor signature (arkts-builtin-new-cotr)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 52,
             "column": 100,
             "endLine": 52,
             "endColumn": 115,
             "problem": "GenericCallNoTypeArgs",
             "suggest": "",
             "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 53,
+            "column": 104,
+            "endLine": 53,
+            "endColumn": 109,
+            "problem": "BuiltinNewCtor",
+            "suggest": "",
+            "rule": "API is not support initial ctor signature (arkts-builtin-new-cotr)",
             "severity": "ERROR"
         },
         {
@@ -116,6 +146,16 @@
         },
         {
             "line": 54,
+            "column": 104,
+            "endLine": 54,
+            "endColumn": 109,
+            "problem": "BuiltinNewCtor",
+            "suggest": "",
+            "rule": "API is not support initial ctor signature (arkts-builtin-new-cotr)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 54,
             "column": 100,
             "endLine": 54,
             "endColumn": 117,
@@ -136,6 +176,16 @@
         },
         {
             "line": 55,
+            "column": 104,
+            "endLine": 55,
+            "endColumn": 109,
+            "problem": "BuiltinNewCtor",
+            "suggest": "",
+            "rule": "API is not support initial ctor signature (arkts-builtin-new-cotr)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 55,
             "column": 100,
             "endLine": 55,
             "endColumn": 125,
@@ -152,6 +202,16 @@
             "problem": "PersistentPropsNeedImplementMethod",
             "suggest": "",
             "rule": "The class of the \"defaultValue\" parameter in the literal passed to the \"persistProps\" method must be a primitive type or Date type, or implement the \"toJson\" and \"fromJson\" methods (arkui-persistent-props-serialization)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 56,
+            "column": 104,
+            "endLine": 56,
+            "endColumn": 109,
+            "problem": "BuiltinNewCtor",
+            "suggest": "",
+            "rule": "API is not support initial ctor signature (arkts-builtin-new-cotr)",
             "severity": "ERROR"
         },
         {

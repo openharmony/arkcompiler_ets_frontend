@@ -135,6 +135,26 @@
             "severity": "ERROR"
         },
         {
+            "line": 206,
+            "column": 33,
+            "endLine": 206,
+            "endColumn": 37,
+            "problem": "BuiltinDisableApi",
+            "suggest": "",
+            "rule": "API has been disabled (arkts-builtin-disable-api)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 207,
+            "column": 33,
+            "endLine": 207,
+            "endColumn": 37,
+            "problem": "BuiltinDisableApi",
+            "suggest": "",
+            "rule": "API has been disabled (arkts-builtin-disable-api)",
+            "severity": "ERROR"
+        },
+        {
             "line": 207,
             "column": 42,
             "endLine": 207,

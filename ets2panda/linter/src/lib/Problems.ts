@@ -288,6 +288,12 @@ export enum FaultID {
   PersistentPropNeedImplementMethod,
   PersistentPropsNeedImplementMethod,
   PersistenceV2ConnectNeedAddParam,
+  BuiltinNewCtor,
+  UninitializedArrayElements,
+  BuiltinFinalClass,
+  BuiltinNarrowTypes,
+  BuiltinDisableApi,
+  BuiltinIteratorResultValue,
   // this should always be last enum
   LAST_ID
 }

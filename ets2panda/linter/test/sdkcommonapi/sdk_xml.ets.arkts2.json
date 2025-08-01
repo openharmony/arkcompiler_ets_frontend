@@ -156,6 +156,26 @@
         },
         {
             "line": 32,
+            "column": 19,
+            "endLine": 32,
+            "endColumn": 28,
+            "problem": "SdkCommonApiWhiteList",
+            "suggest": "",
+            "rule": "The \"stringify\" in SDK is no longer supported.(sdk-method-not-supported)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 32,
+            "column": 19,
+            "endLine": 32,
+            "endColumn": 28,
+            "problem": "BuiltinNarrowTypes",
+            "suggest": "",
+            "rule": "Using narrowing of types is not allowed in this API (arkts-builtin-narrow-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 32,
             "column": 34,
             "endLine": 32,
             "endColumn": 55,
