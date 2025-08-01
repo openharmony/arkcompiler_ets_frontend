@@ -24,7 +24,8 @@
                 "bounds_checking_function",
                 "protobuf",
                 "icu",
-                "abseil-cpp"
+                "abseil-cpp",
+                "hilog"
             ],
             "third_party": []
         },
