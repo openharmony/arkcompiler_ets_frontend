@@ -1124,6 +1124,13 @@ ir::OverloadDeclaration *ETSParser::ParseInterfaceOverload(ir::ModifierFlags mod
     ValidateOverloadList(overloadDef->OverloadedList());
     return overloadDef;
 }
+void ETSParser::ThrowOptionalMethodErrorIfNeeded()
+{
+    if ((Lexer()->Lookahead() == lexer::LEX_CHAR_LEFT_PAREN || Lexer()->Lookahead() == lexer::LEX_CHAR_LESS_THAN) &&
+        Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_QUESTION_MARK)) {
+        LogError(diagnostic::OPTIONAL_METHOD, {});
+    }
+}
 
 // CC-OFFNXT(huge_method[C++], G.FUN.01-CPP) solid logic
 ir::MethodDefinition *ETSParser::ParseInterfaceMethod(ir::ModifierFlags flags, ir::MethodDefinitionKind methodKind)
@@ -1140,6 +1147,8 @@ ir::MethodDefinition *ETSParser::ParseInterfaceMethod(ir::ModifierFlags flags, i
         Lexer()->NextToken();
     }
     FunctionContext functionContext(this, ParserStatus::FUNCTION);
+
+    ThrowOptionalMethodErrorIfNeeded();
 
     lexer::SourcePosition startLoc = Lexer()->GetToken().Start();
 
@@ -1215,6 +1224,18 @@ bool ETSParser::IsFieldStartToken(lexer::TokenType tokenType)
            tokenType == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS;
 }
 
+void ETSParser::LookForOptionalMethod(char32_t &nextCp)
+{
+    if (nextCp == lexer::LEX_CHAR_QUESTION) {
+        const auto startPos = Lexer()->Save();
+        Lexer()->NextToken();
+        if (Lexer()->Lookahead() == lexer::LEX_CHAR_LEFT_PAREN || Lexer()->Lookahead() == lexer::LEX_CHAR_LESS_THAN) {
+            nextCp = Lexer()->Lookahead();
+        }
+        Lexer()->Rewind(startPos);
+    }
+}
+
 ir::AstNode *ETSParser::ParseTypeLiteralOrInterfaceMember()
 {
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_AT) {
@@ -1238,6 +1259,7 @@ ir::AstNode *ETSParser::ParseTypeLiteralOrInterfaceMember()
         overloadDeclaration->SetStart(startLoc);
         return overloadDeclaration;
     }
+    LookForOptionalMethod(nextCp);
 
     if (nextCp == lexer::LEX_CHAR_LEFT_PAREN || nextCp == lexer::LEX_CHAR_LESS_THAN) {
         if (isReadonly) {

@@ -234,6 +234,7 @@ private:
     ir::TypeNode *ParseInterfaceTypeAnnotation(ir::Identifier *name);
     void ParseInterfaceModifiers(ir::ModifierFlags &fieldModifiers, bool &optionalField);
     ir::OverloadDeclaration *ParseInterfaceOverload(ir::ModifierFlags modifiers);
+    void ThrowOptionalMethodErrorIfNeeded();
     ir::MethodDefinition *ParseInterfaceMethod(ir::ModifierFlags flags, ir::MethodDefinitionKind methodKind);
     void ReportAccessModifierError(const lexer::Token &token);
     std::tuple<ir::ModifierFlags, bool, bool> ParseClassMemberAccessModifiers();
@@ -314,6 +315,7 @@ private:
     ir::VariableDeclarator *ParseVariableDeclaratorInitializer(ir::Expression *init, VariableParsingFlags flags,
                                                                const lexer::SourcePosition &startLoc) override;
     bool IsFieldStartToken(lexer::TokenType t);
+    void LookForOptionalMethod(char32_t &nextCp);
     ir::AstNode *ParseTypeLiteralOrInterfaceMember() override;
     ir::AstNode *ParseAnnotationsInInterfaceBody();
     void ParseNameSpaceSpecifier(ArenaVector<ir::AstNode *> *specifiers, bool isReExport = false);
