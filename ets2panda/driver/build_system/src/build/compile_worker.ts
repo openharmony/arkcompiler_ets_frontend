@@ -90,6 +90,7 @@ process.on('message', async (message: {
     }
     PluginDriver.getInstance().runPluginHook(PluginHook.PARSED);
 
+    arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_CHECKED, arktsGlobal.compilerContext.peer);
     if (buildConfig.hasMainModule && (buildConfig.byteCodeHar || buildConfig.moduleType === OHOS_MODULE_TYPE.SHARED)) {
       const filePathFromModuleRoot = path.relative(buildConfig.moduleRootPath, fileInfo.filePath);
       const declEtsOutputPath = changeFileExtension(
@@ -99,7 +100,6 @@ process.on('message', async (message: {
       ensurePathExists(declEtsOutputPath);
       arkts.generateStaticDeclarationsFromContext(declEtsOutputPath);
     }
-    arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_CHECKED, arktsGlobal.compilerContext.peer);
     PluginDriver.getInstance().runPluginHook(PluginHook.CHECKED);
 
     arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_BIN_GENERATED, arktsGlobal.compilerContext.peer);
