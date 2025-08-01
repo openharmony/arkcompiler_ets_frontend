@@ -126,6 +126,7 @@ set(ES2PANDA_LSP_SRC
   ./src/register_code_fix/fix_add_function_return_statement.cpp
   ./src/register_code_fix/ui_plugin_suggest.cpp
   ./src/get_name_or_dotted_name_span.cpp
+  ./src/get_node.cpp
 )
 
 panda_add_library(${LSP_LIB} SHARED ${ES2PANDA_LSP_SRC})

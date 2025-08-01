@@ -13,4 +13,9 @@
  * limitations under the License.
  */
 
- let indexStr: string = "generateDeclFile";
+'use static';
+export class Foo {
+  Foo(a:number, b:number): number {
+    return a + b;
+  }
+}

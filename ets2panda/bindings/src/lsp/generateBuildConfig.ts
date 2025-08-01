@@ -17,13 +17,14 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as JSON5 from 'json5';
 import { BuildConfig, PathConfig } from '../common/types';
-import { DEFAULT_CACHE_DIR, EXTERNAL_API_PATH_FROM_SDK } from '../common/preDefine';
+import { DEFAULT_CACHE_DIR, EXTERNAL_API_PATH_FROM_SDK, LANGUAGE_VERSION } from '../common/preDefine';
+import { getFileLanguageVersion } from '../common/utils';
 
 export interface ModuleDescriptor {
-  arktsversion: string;
   name: string;
   moduleType: string;
   srcPath: string;
+  arktsversion?: string;
   aceModuleJsonPath?: string;
 }
 
@@ -172,6 +173,28 @@ function addPluginPathConfigs(buildConfig: BuildConfig, module: ModuleDescriptor
   buildConfig.aceModuleJsonPath = module.aceModuleJsonPath;
 }
 
+function getModuleLanguageVersion(compileFiles: Set<string>): string {
+  let found1_1 = false;
+  let found1_2 = false;
+
+  for (const file of compileFiles) {
+    const sourceFile = fs.readFileSync(file, 'utf8');
+    const languageVersion = getFileLanguageVersion(sourceFile);
+
+    if (languageVersion === LANGUAGE_VERSION.ARKTS_1_2) {
+      found1_2 = true;
+    } else if (languageVersion === LANGUAGE_VERSION.ARKTS_1_1) {
+      found1_1 = true;
+    }
+
+    if (found1_1 && found1_2) {
+      return LANGUAGE_VERSION.ARKTS_HYBRID;
+    }
+  }
+
+  return found1_2 ? LANGUAGE_VERSION.ARKTS_1_2 : found1_1 ? LANGUAGE_VERSION.ARKTS_1_1 : '';
+}
+
 export function generateBuildConfigs(
   pathConfig: PathConfig,
   modules?: ModuleDescriptor[]
@@ -185,8 +208,6 @@ export function generateBuildConfigs(
 
   const definedModules = modules;
 
-  const enableDeclgen: Map<string, boolean> = new Map(modules.map((module) => [module.name, false]));
-
   for (const module of definedModules) {
     const modulePath = module.srcPath;
     const compileFiles = new Set(getEtsFiles(modulePath));
@@ -196,19 +217,15 @@ export function generateBuildConfigs(
     const dependencies = getModuleDependencies(modulePath);
     for (const depPath of dependencies) {
       getEtsFiles(depPath).forEach((file) => compileFiles.add(file));
-      const depModule = definedModules.find((m) => m.srcPath === depPath);
-      if (module.arktsversion === '1.1' && depModule?.arktsversion === '1.2') {
-        enableDeclgen.set(depModule.name, true);
-      }
     }
-
+    let languageVersion = getModuleLanguageVersion(compileFiles);
     allBuildConfigs[module.name] = {
       plugins: pluginMap,
       compileFiles: Array.from(compileFiles),
       packageName: module.name,
       moduleType: module.moduleType,
       moduleRootPath: modulePath,
-      language: module.arktsversion,
+      language: languageVersion,
       buildSdkPath: pathConfig.buildSdkPath,
       projectPath: pathConfig.projectPath,
       declgenOutDir: pathConfig.declgenOutDir,
@@ -217,30 +234,24 @@ export function generateBuildConfigs(
         : path.resolve(pathConfig.buildSdkPath, EXTERNAL_API_PATH_FROM_SDK),
       cacheDir:
         pathConfig.cacheDir !== undefined ? pathConfig.cacheDir : path.join(pathConfig.projectPath, DEFAULT_CACHE_DIR),
-      enableDeclgenEts2Ts: false,
       declFilesPath:
-        module.arktsversion === '1.1'
-          ? path.join(pathConfig.declgenOutDir, 'static', module.name, 'decl-fileInfo.json')
+        languageVersion !== LANGUAGE_VERSION.ARKTS_1_2
+          ? path.join(pathConfig.declgenOutDir, module.name, 'declgen', 'dynamic', 'decl-fileInfo.json')
+          : undefined,
+      declgenV1OutPath:
+        languageVersion !== LANGUAGE_VERSION.ARKTS_1_1
+          ? path.join(pathConfig.declgenOutDir, module.name, 'declgen', 'static')
+          : undefined,
+      declgenBridgeCodePath:
+        languageVersion !== LANGUAGE_VERSION.ARKTS_1_1
+          ? path.join(pathConfig.declgenOutDir, module.name, 'declgen', 'static', 'declgenBridgeCode')
           : undefined,
       dependencies: dependencies.map((dep) => {
         const depModule = definedModules.find((m) => m.srcPath === dep);
-        return depModule!.name;
+        return depModule ? depModule.name : '';
       })
     };
     addPluginPathConfigs(allBuildConfigs[module.name], module);
   }
-  Object.entries(allBuildConfigs).forEach(([key, config]) => {
-    if (enableDeclgen.get(key) === true) {
-      config.enableDeclgenEts2Ts = true;
-      config.declgenV1OutPath = path.join(pathConfig.declgenOutDir, 'dynamic', key, 'declgenV1');
-      config.declgenBridgeCodePath = path.join(pathConfig.declgenOutDir, 'dynamic', key, 'declgenBridgeCode');
-      if (!fs.existsSync(config.declgenV1OutPath)) {
-        fs.mkdirSync(config.declgenV1OutPath, { recursive: true });
-      }
-      if (!fs.existsSync(config.declgenBridgeCodePath)) {
-        fs.mkdirSync(config.declgenBridgeCodePath, { recursive: true });
-      }
-    }
-  });
   return allBuildConfigs;
 }

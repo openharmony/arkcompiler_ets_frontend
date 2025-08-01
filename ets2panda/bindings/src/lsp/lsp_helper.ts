@@ -60,7 +60,9 @@ import {
   WorkerInfo,
   ModuleInfo,
   PathConfig,
-  TextDocumentChangeInfo
+  TextDocumentChangeInfo,
+  NodeInfo,
+  AstNodeType
 } from '../common/types';
 import { PluginDriver, PluginHook } from '../common/ui_plugins_driver';
 import { ModuleDescriptor, generateBuildConfigs } from './generateBuildConfig';
@@ -72,12 +74,12 @@ import { KInt, KNativePointer, KPointer } from '../common/InteropTypes';
 import { passPointerArray } from '../common/private';
 import { NativePtrDecoder } from '../common/Platform';
 import { Worker as ThreadWorker } from 'worker_threads';
-import { ensurePathExists } from '../common/utils';
+import { ensurePathExists, getFileLanguageVersion } from '../common/utils';
 import * as child_process from 'child_process';
-import { DECL_ETS_SUFFIX, DEFAULT_CACHE_DIR, TS_SUFFIX } from '../common/preDefine';
+import { DECL_ETS_SUFFIX, DEFAULT_CACHE_DIR, LANGUAGE_VERSION, TS_SUFFIX } from '../common/preDefine';
 import * as crypto from 'crypto';
 import * as os from 'os';
-import { changeDeclgenFileExtension, getModuleNameAndPath } from '../common/utils';
+import { changeDeclgenFileExtension } from '../common/utils';
 
 const ets2pandaCmdPrefix = ['-', '--extension', 'ets', '--arktsconfig'];
 
@@ -104,6 +106,7 @@ export class Lsp {
   private moduleInfos: Record<string, ModuleInfo>; // Map<fileName, ModuleInfo>
   private pathConfig: PathConfig;
   private lspDriverHelper = new LspDriverHelper();
+  private declFileMap: Record<string, string> = {}; // Map<declFilePath, sourceFilePath>
 
   constructor(pathConfig: PathConfig, getContentCallback?: (filePath: string) => string, modules?: ModuleDescriptor[]) {
     initBuildEnv();
@@ -123,7 +126,7 @@ export class Lsp {
     this.moduleInfos = generateArkTsConfigs(this.buildConfigs);
     this.pathConfig = pathConfig;
     PluginDriver.getInstance().initPlugins(Object.values(this.buildConfigs)[0]);
-    this.generateDeclFile();
+    this.initDeclFile();
   }
 
   // Partially update for new file
@@ -197,110 +200,42 @@ export class Lsp {
     }
   }
 
-  generateDeclFile(): void {
-    for (const [moduleName, buildConfig] of Object.entries(this.buildConfigs)) {
-      if (!buildConfig.enableDeclgenEts2Ts) {
-        continue;
+  private generateDeclFile(filePath: string): void {
+    const fileSource = this.getFileSource(filePath);
+    if (getFileLanguageVersion(fileSource) === LANGUAGE_VERSION.ARKTS_1_2) {
+      const [cfg, ctx] = this.createContext(filePath);
+      try {
+        let moduleInfo = this.moduleInfos[filePath];
+        let modulePath: string = path.relative(moduleInfo.moduleRootPath, filePath);
+        let declEtsOutputPath: string = changeDeclgenFileExtension(
+          path.join(moduleInfo.declgenV1OutPath!, modulePath),
+          DECL_ETS_SUFFIX
+        );
+        let etsOutputPath: string = changeDeclgenFileExtension(
+          path.join(moduleInfo.declgenBridgeCodePath!, modulePath),
+          TS_SUFFIX
+        );
+        this.declFileMap[declEtsOutputPath] = filePath;
+        ensurePathExists(declEtsOutputPath);
+        ensurePathExists(etsOutputPath);
+        global.es2pandaPublic._GenerateTsDeclarationsFromContext(ctx, declEtsOutputPath, etsOutputPath, 1, 0, '');
+      } finally {
+        this.destroyContext(cfg, ctx);
       }
-      if (!buildConfig.declgenOutDir || buildConfig.declgenOutDir === '') {
-        return;
-      }
-      buildConfig.compileFiles.forEach((compilefilePath: string) => {
-        if (!this.moduleInfos.hasOwnProperty(compilefilePath)) {
-          return;
-        }
-        const [cfg, ctx] = this.createContext(compilefilePath);
-        try {
-          // declgen file
-          let moduleInfo = this.moduleInfos[compilefilePath];
-          let modulePath: string = path.relative(buildConfig.moduleRootPath, compilefilePath);
-          let declOut: string = '';
-          let declBridgeOut: string = '';
-          if (!moduleInfo.declgenV1OutPath) {
-            declOut = path.join(buildConfig.declgenOutDir, moduleName);
-          }
-          if (!moduleInfo.declgenBridgeCodePath) {
-            declBridgeOut = path.join(buildConfig.declgenOutDir, moduleName);
-          }
-          let declEtsOutputPath: string = changeDeclgenFileExtension(
-            path.join(moduleInfo.declgenV1OutPath ?? declOut, modulePath),
-            DECL_ETS_SUFFIX
-          );
-          let etsOutputPath: string = changeDeclgenFileExtension(
-            path.join(moduleInfo.declgenBridgeCodePath ?? declBridgeOut, modulePath),
-            TS_SUFFIX
-          );
-          ensurePathExists(declEtsOutputPath);
-          ensurePathExists(etsOutputPath);
-          global.es2pandaPublic._GenerateTsDeclarationsFromContext(ctx, declEtsOutputPath, etsOutputPath, 1, 0, '');
-        } finally {
-          this.destroyContext(cfg, ctx);
-        }
-      });
     }
   }
 
-  modifyDeclFile(modifyFilePath: string, arktsConfigFile?: string): void {
-    // source file
-    let sourceFilePath = path.resolve(modifyFilePath.valueOf());
-    let moduleInfo: ModuleInfo;
-    if (this.moduleInfos.hasOwnProperty(sourceFilePath)) {
-      moduleInfo = this.moduleInfos[sourceFilePath];
-    } else {
-      const [newModuleName, newModuleRootPath] = getModuleNameAndPath(modifyFilePath, this.pathConfig.projectPath);
-      if (newModuleName && newModuleName !== '' && newModuleRootPath && newModuleRootPath !== '') {
-        moduleInfo = {
-          packageName: newModuleName,
-          moduleRootPath: newModuleRootPath,
-          moduleType: '',
-          entryFile: '',
-          arktsConfigFile: arktsConfigFile ?? '',
-          compileFiles: [],
-          declgenV1OutPath: '',
-          declgenBridgeCodePath: '',
-          staticDepModuleInfos: [],
-          dynamicDepModuleInfos: [],
-          language: ''
-        };
-      } else {
-        return;
-      }
+  private initDeclFile(): void {
+    for (const filePath of Object.keys(this.moduleInfos)) {
+      this.generateDeclFile(filePath);
     }
-    const moduleName = moduleInfo.packageName;
-    const moduleRootPath = moduleInfo.moduleRootPath;
-    if (!this.buildConfigs.hasOwnProperty(moduleName)) {
+  }
+
+  updateDeclFile(filePath: string): void {
+    if (!this.moduleInfos.hasOwnProperty(filePath)) {
       return;
     }
-    const buildConfig = this.buildConfigs[moduleName];
-    if (!buildConfig.enableDeclgenEts2Ts) {
-      return;
-    }
-    const [cfg, ctx] = this.createContext(sourceFilePath);
-    try {
-      // declgen file
-      let declOut: string = '';
-      let declBridgeOut: string = '';
-      if (!moduleInfo.declgenV1OutPath) {
-        declOut = path.join(buildConfig.declgenOutDir, moduleName);
-      }
-      if (!moduleInfo.declgenBridgeCodePath) {
-        declBridgeOut = path.join(buildConfig.declgenOutDir, moduleName);
-      }
-      let filePathFromModuleRoot: string = path.relative(moduleRootPath, modifyFilePath);
-      let declEtsOutputPath: string = changeDeclgenFileExtension(
-        path.join(moduleInfo.declgenV1OutPath ?? declOut, filePathFromModuleRoot),
-        DECL_ETS_SUFFIX
-      );
-      let etsOutputPath: string = changeDeclgenFileExtension(
-        path.join(moduleInfo.declgenBridgeCodePath ?? declBridgeOut, filePathFromModuleRoot),
-        TS_SUFFIX
-      );
-      ensurePathExists(declEtsOutputPath);
-      ensurePathExists(etsOutputPath);
-      global.es2pandaPublic._GenerateTsDeclarationsFromContext(ctx, declEtsOutputPath, etsOutputPath, 1, 0, '');
-    } finally {
-      this.destroyContext(cfg, ctx);
-    }
+    this.generateDeclFile(filePath);
   }
 
   getOffsetByColAndLine(filename: String, line: number, column: number): number {
@@ -314,12 +249,37 @@ export class Lsp {
     return ptr;
   }
 
-  getDefinitionAtPosition(filename: String, offset: number): LspDefinitionData {
+  getDefinitionAtPosition(filename: String, offset: number, nodeInfos?: NodeInfo[]): LspDefinitionData {
+    if (nodeInfos) {
+      return this.getDefinitionAtPositionByNodeInfos(filename, nodeInfos);
+    }
     let ptr: KPointer;
     const [cfg, ctx] = this.createContext(filename);
     try {
       ptr = global.es2panda._getDefinitionAtPosition(ctx, offset);
     } finally {
+      this.destroyContext(cfg, ctx);
+    }
+    return new LspDefinitionData(ptr);
+  }
+
+  private getDefinitionAtPositionByNodeInfos(declFilePath: String, nodeInfos: NodeInfo[]): LspDefinitionData {
+    let ptr: KPointer;
+    const sourceFilePath = this.declFileMap[declFilePath.valueOf()];
+    const [cfg, ctx] = this.createContext(sourceFilePath);
+    let astNode = global.es2panda._getProgramAst(ctx);
+    let currentNodeName: string = '';
+    try {
+      nodeInfos.forEach((nodeInfo) => {
+        currentNodeName = nodeInfo.name;
+        if (nodeInfo.kind === AstNodeType.CLASS_DEFINITION) {
+          astNode = global.es2panda._getClassDefinition(astNode, currentNodeName);
+        } else if (nodeInfo.kind === AstNodeType.IDENTIFIER) {
+          astNode = global.es2panda._getIdentifier(astNode, currentNodeName);
+        }
+      });
+    } finally {
+      ptr = global.es2panda._getDefinitionDataFromNode(astNode, currentNodeName);
       this.destroyContext(cfg, ctx);
     }
     return new LspDefinitionData(ptr);
@@ -902,7 +862,14 @@ export class Lsp {
   }
 
   private collectCompileJobs(jobs: Record<string, Job>, isValid: boolean = false): void {
-    let entryFileList: string[] = Object.keys(this.moduleInfos);
+    let entryFileList: string[] = Object.keys(this.moduleInfos).filter((file) => {
+      if (this.moduleInfos[file].language === LANGUAGE_VERSION.ARKTS_1_2) {
+        return true;
+      } else if (this.moduleInfos[file].language === LANGUAGE_VERSION.ARKTS_HYBRID) {
+        const fileSource = this.getFileSource(file);
+        return getFileLanguageVersion(fileSource) === LANGUAGE_VERSION.ARKTS_1_2;
+      }
+    });
     this.getFileDependencies(entryFileList, this.fileDependencies);
     const data = fs.readFileSync(this.fileDependencies, 'utf-8');
     let fileDepsInfo: FileDepsInfo = JSON.parse(data) as FileDepsInfo;
@@ -1021,6 +988,10 @@ export class Lsp {
         files.push(job.fileList[i]);
       }
     });
+
+    if (files.length === 0) {
+      return;
+    }
 
     let ets2pandaCmd: string[] = [
       '_',
@@ -1189,7 +1160,9 @@ export class Lsp {
     this.collectCompileJobs(jobs);
     this.initGlobalContext(jobs);
     this.initCompileQueues(jobs, queues);
-
+    if (Object.keys(jobs).length === 0 && queues.length === 0) {
+      return;
+    }
     const processingJobs = new Set<string>();
     const workers: ThreadWorker[] = [];
     await this.invokeWorkers(jobs, queues, processingJobs, workers, numWorkers);

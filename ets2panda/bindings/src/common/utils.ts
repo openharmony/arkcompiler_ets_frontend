@@ -16,7 +16,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
-import { DECL_ETS_SUFFIX } from './preDefine';
+import { DECL_ETS_SUFFIX, LANGUAGE_VERSION } from './preDefine';
 
 export function throwError(error: string): never {
   throw new Error(error);
@@ -66,4 +66,55 @@ export function getModuleNameAndPath(filePath: string, projectPath: string): [st
     moduleRootPath = path.join(projectPath, moduleName);
   }
   return [moduleName, moduleRootPath];
+}
+
+// Skip comment, check whether the first valid line contains 'use static'.
+export function getFileLanguageVersion(fileSource: string): string {
+  const lines = fileSource.split('\n');
+  let inMultiLineComment = false;
+  let effectiveLine = '';
+
+  for (let i = 0; i < lines.length; i++) {
+    let line = lines[i];
+
+    if (inMultiLineComment) {
+      const endIndex = line.indexOf('*/');
+      if (endIndex !== -1) {
+        line = line.substring(endIndex + 2);
+        inMultiLineComment = false;
+      } else {
+        continue;
+      }
+    }
+
+    const singleLineIndex = line.indexOf('//');
+    if (singleLineIndex !== -1) {
+      line = line.substring(0, singleLineIndex);
+    }
+
+    const multiLineStart = line.indexOf('/*');
+    if (multiLineStart !== -1) {
+      const multiLineEnd = line.indexOf('*/', multiLineStart + 2);
+      if (multiLineEnd !== -1) {
+        line = line.substring(0, multiLineStart) + line.substring(multiLineEnd + 2);
+      } else {
+        line = line.substring(0, multiLineStart);
+        inMultiLineComment = true;
+      }
+    }
+
+    const trimmedLine = line.trim();
+    if (trimmedLine === '') {
+      continue;
+    }
+
+    effectiveLine = trimmedLine;
+    break;
+  }
+
+  if (effectiveLine.includes('use static')) {
+    return LANGUAGE_VERSION.ARKTS_1_2;
+  }
+
+  return LANGUAGE_VERSION.ARKTS_1_1;
 }

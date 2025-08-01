@@ -985,6 +985,22 @@ export class Es2pandaNativeModule {
   _InvalidateFileCache(globalContextPtr: KPtr, filename: String): void {
     throw new Error('Not implemented');
   }
+
+  _getProgramAst(context: KPtr): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getClassDefinition(astNode: KPtr, nodeName: String): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getDefinitionDataFromNode(astNode: KPtr, nodeName: String): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getIdentifier(astNode: KPtr, nodeName: String): KPtr {
+    throw new Error('Not implemented');
+  }
 }
 
 export function initEs2panda(): Es2pandaNativeModule {

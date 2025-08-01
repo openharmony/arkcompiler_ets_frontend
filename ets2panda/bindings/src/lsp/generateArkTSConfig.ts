@@ -26,9 +26,14 @@ function collectDepModuleInfos(moduleInfo: ModuleInfo, allBuildConfig: Record<st
   if (moduleInfo.dependencies) {
     moduleInfo.dependencies.forEach((moduleName: string) => {
       let depModule = allBuildConfig[moduleName];
-      depModule.language === LANGUAGE_VERSION.ARKTS_1_2
-        ? staticDepModules.push(depModule.packageName)
-        : dynamicDepModules.push(depModule.packageName);
+      if (depModule.language === LANGUAGE_VERSION.ARKTS_1_2) {
+        staticDepModules.push(depModule.packageName);
+      } else if (depModule.language === LANGUAGE_VERSION.ARKTS_1_1) {
+        dynamicDepModules.push(depModule.packageName);
+      } else {
+        staticDepModules.push(depModule.packageName);
+        dynamicDepModules.push(depModule.packageName);
+      }
     });
   }
   moduleInfo.dynamicDepModuleInfos = dynamicDepModules;
@@ -69,10 +74,10 @@ export function generateModuleInfo(allBuildConfig: Record<string, BuildConfig>, 
 
 export function generateArkTsConfigs(allBuildConfig: Record<string, BuildConfig>): Record<string, ModuleInfo> {
   let moduleInfos: Record<string, ModuleInfo> = collectModuleInfos(allBuildConfig);
-  Object.keys(moduleInfos).forEach((filePath: string) => {
-    let packageName = moduleInfos[filePath].packageName;
-    let generator = ArkTSConfigGenerator.getGenerator(allBuildConfig[packageName], moduleInfos);
-    generator.writeArkTSConfigFile(moduleInfos[filePath]);
+  Object.keys(moduleInfos).forEach((packageName: string) => {
+    let buildConfig = allBuildConfig[packageName];
+    let generator = ArkTSConfigGenerator.getGenerator(buildConfig, moduleInfos);
+    generator.writeArkTSConfigFile(moduleInfos[packageName]);
   });
   let fileToModuleInfo: Record<string, ModuleInfo> = {};
   Object.values(moduleInfos).forEach((moduleInfo: ModuleInfo) => {

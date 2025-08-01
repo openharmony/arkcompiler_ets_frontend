@@ -18,8 +18,8 @@
 #include <string>
 #include <vector>
 #include "class_hierarchy.h"
+#include "get_node.h"
 #include "lsp/include/organize_imports.h"
-#include "compiler/lowering/util.h"
 #include "get_safe_delete_info.h"
 #include "internal_api.h"
 #include "ir/astNode.h"
@@ -465,6 +465,49 @@ TextSpan *GetNameOrDottedNameSpan(es2panda_Context *context, int startPos)
     return result;
 }
 
+es2panda_AstNode *GetProgramAst(es2panda_Context *context)
+{
+    return GetProgramAstImpl(context);
+}
+
+es2panda_AstNode *GetClassDefinition(es2panda_AstNode *astNode, const std::string &nodeName)
+{
+    return GetClassDefinitionImpl(astNode, nodeName);
+}
+
+es2panda_AstNode *GetIdentifier(es2panda_AstNode *astNode, const std::string &nodeName)
+{
+    return GetIdentifierImpl(astNode, nodeName);
+}
+
+DefinitionInfo GetDefinitionDataFromNode(es2panda_AstNode *astNode, const std::string &nodeName)
+{
+    DefinitionInfo result;
+    if (astNode == nullptr) {
+        return result;
+    }
+    auto node = reinterpret_cast<ir::AstNode *>(astNode);
+    auto targetNode = node->IsIdentifier() ? node : node->FindChild([&nodeName](ir::AstNode *childNode) {
+        return childNode->IsIdentifier() && std::string(childNode->AsIdentifier()->Name()) == nodeName;
+    });
+    std::string filePath;
+    while (node != nullptr) {
+        if (node->Range().start.Program() != nullptr) {
+            filePath = std::string(node->Range().start.Program()->SourceFile().GetAbsolutePath().Utf8());
+            break;
+        }
+        if (node->IsETSModule()) {
+            filePath = std::string(node->AsETSModule()->Program()->SourceFilePath());
+            break;
+        }
+        node = node->Parent();
+    }
+    if (targetNode != nullptr) {
+        result = {filePath, targetNode->Start().index, targetNode->End().index - targetNode->Start().index};
+    }
+    return result;
+}
+
 LSPAPI g_lspImpl = {GetDefinitionAtPosition,
                     GetApplicableRefactors,
                     GetImplementationAtPosition,
@@ -505,7 +548,11 @@ LSPAPI g_lspImpl = {GetDefinitionAtPosition,
                     GetOffsetByColAndLine,
                     GetCodeFixesAtPosition,
                     GetCombinedCodeFix,
-                    GetNameOrDottedNameSpan};
+                    GetNameOrDottedNameSpan,
+                    GetProgramAst,
+                    GetClassDefinition,
+                    GetIdentifier,
+                    GetDefinitionDataFromNode};
 }  // namespace ark::es2panda::lsp
 
 CAPI_EXPORT LSPAPI const *GetImpl()

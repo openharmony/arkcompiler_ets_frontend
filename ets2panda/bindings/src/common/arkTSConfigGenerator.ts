@@ -16,7 +16,7 @@
 import * as path from 'path';
 import * as fs from 'fs';
 
-import { changeFileExtension, ensurePathExists } from './utils';
+import { changeFileExtension, ensurePathExists, getFileLanguageVersion } from './utils';
 import { BuildConfig, ModuleInfo } from './types';
 import { LANGUAGE_VERSION, PANDA_SDK_PATH_FROM_SDK, SYSTEM_SDK_PATH_FROM_SDK } from './preDefine';
 
@@ -120,6 +120,20 @@ export class ArkTSConfigGenerator {
     });
   }
 
+  private getAlias(fullPath: string, entryRoot: string): string {
+    const normalizedFull = path.normalize(fullPath);
+    const normalizedEntry = path.normalize(entryRoot);
+    const entryDir = normalizedEntry.endsWith(path.sep) ? normalizedEntry : normalizedEntry + path.sep;
+    if (!normalizedFull.startsWith(entryDir)) {
+      throw new Error(`Path ${fullPath} is not under entry root ${entryRoot}`);
+    }
+    const entryName = path.basename(normalizedEntry);
+    const relativePath = normalizedFull.substring(entryDir.length);
+    const formatPath = path.join(entryName, relativePath).replace(/\\/g, '/');
+    const alias = formatPath;
+    return changeFileExtension(alias, '');
+  }
+
   private getPathSection(moduleInfo: ModuleInfo): Record<string, string[]> {
     if (Object.keys(this.pathSection).length !== 0) {
       return this.pathSection;
@@ -132,8 +146,26 @@ export class ArkTSConfigGenerator {
 
     Object.values(moduleInfo.staticDepModuleInfos).forEach((depModuleName: string) => {
       let depModuleInfo = this.moduleInfos[depModuleName];
-      this.pathSection[depModuleInfo.packageName] = [path.resolve(depModuleInfo.moduleRootPath)];
+      if (depModuleInfo.language === LANGUAGE_VERSION.ARKTS_1_2) {
+        this.pathSection[depModuleInfo.packageName] = [path.resolve(depModuleInfo.moduleRootPath)];
+      } else if (depModuleInfo.language === LANGUAGE_VERSION.ARKTS_HYBRID) {
+        depModuleInfo.compileFiles.forEach((file) => {
+          const firstLine = fs.readFileSync(file, 'utf-8').split('\n')[0];
+          if (firstLine.includes('use static')) {
+            this.pathSection[this.getAlias(file, depModuleInfo.moduleRootPath)] = [path.resolve(file)];
+          }
+        });
+      }
     });
+
+    if (moduleInfo.language === LANGUAGE_VERSION.ARKTS_HYBRID) {
+      moduleInfo.compileFiles.forEach((file) => {
+        const firstLine = fs.readFileSync(file, 'utf-8').split('\n')[0];
+        if (getFileLanguageVersion(firstLine) === LANGUAGE_VERSION.ARKTS_1_2) {
+          this.pathSection[this.getAlias(file, moduleInfo.moduleRootPath)] = [path.resolve(file)];
+        }
+      });
+    }
 
     return this.pathSection;
   }
@@ -144,31 +176,39 @@ export class ArkTSConfigGenerator {
     return changeFileExtension(ohmurl, '');
   }
 
+  private parseDeclFile(moduleInfo: ModuleInfo, dependencySection: Record<string, DependencyItem>) {
+    if (!moduleInfo.declFilesPath || !fs.existsSync(moduleInfo.declFilesPath)) {
+      console.error(`Module ${moduleInfo.packageName} depends on dynamic module ${moduleInfo.packageName}, but
+          decl file not found on path ${moduleInfo.declFilesPath}`);
+      return;
+    }
+    let declFilesObject = JSON.parse(fs.readFileSync(moduleInfo.declFilesPath, 'utf-8'));
+    Object.keys(declFilesObject.files).forEach((file: string) => {
+      let ohmurl: string = this.getOhmurl(file, moduleInfo);
+      dependencySection[ohmurl] = {
+        language: 'js',
+        path: declFilesObject.files[file].declPath,
+        ohmUrl: declFilesObject.files[file].ohmUrl
+      };
+
+      let absFilePath: string = path.resolve(moduleInfo.moduleRootPath, file);
+      let entryFileWithoutExtension: string = changeFileExtension(moduleInfo.entryFile, '');
+      if (absFilePath === entryFileWithoutExtension) {
+        dependencySection[moduleInfo.packageName] = dependencySection[ohmurl];
+      }
+    });
+  }
+
   private getDependenciesSection(moduleInfo: ModuleInfo, dependencySection: Record<string, DependencyItem>): void {
     let depModules: string[] = moduleInfo.dynamicDepModuleInfos;
     depModules.forEach((depModuleName: string) => {
       let depModuleInfo = this.moduleInfos[depModuleName];
-      if (!depModuleInfo.declFilesPath || !fs.existsSync(depModuleInfo.declFilesPath)) {
-        console.error(`Module ${moduleInfo.packageName} depends on dynamic module ${depModuleInfo.packageName}, but
-          decl file not found on path ${depModuleInfo.declFilesPath}`);
-        return;
-      }
-      let declFilesObject = JSON.parse(fs.readFileSync(depModuleInfo.declFilesPath, 'utf-8'));
-      Object.keys(declFilesObject.files).forEach((file: string) => {
-        let ohmurl: string = this.getOhmurl(file, depModuleInfo);
-        dependencySection[ohmurl] = {
-          language: 'js',
-          path: declFilesObject.files[file].declPath,
-          ohmUrl: declFilesObject.files[file].ohmUrl
-        };
-
-        let absFilePath: string = path.resolve(depModuleInfo.moduleRootPath, file);
-        let entryFileWithoutExtension: string = changeFileExtension(depModuleInfo.entryFile, '');
-        if (absFilePath === entryFileWithoutExtension) {
-          dependencySection[depModuleInfo.packageName] = dependencySection[ohmurl];
-        }
-      });
+      this.parseDeclFile(depModuleInfo, dependencySection);
     });
+
+    if (moduleInfo.language === LANGUAGE_VERSION.ARKTS_HYBRID) {
+      this.parseDeclFile(moduleInfo, dependencySection);
+    }
   }
 
   public writeArkTSConfigFile(moduleInfo: ModuleInfo): void {

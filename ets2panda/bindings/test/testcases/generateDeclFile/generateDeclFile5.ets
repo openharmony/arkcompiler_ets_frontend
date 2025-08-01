@@ -13,8 +13,9 @@
  * limitations under the License.
  */
 
-function getC(a:number, b:number): number {
-  return a + b;
+'use static';
+export class A {
+  Foo(a:number, b:number): number {
+    return a + b;
+  }
 }
-
-getC(1, 120);

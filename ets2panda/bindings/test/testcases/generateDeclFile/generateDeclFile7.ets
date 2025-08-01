@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+'use static';
 interface DataValue {
   a: number;
   b: string;

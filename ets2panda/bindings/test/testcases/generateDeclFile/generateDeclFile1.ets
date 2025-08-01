@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+'use static';
 let currentValue: string = 'currentValue';
 
 let resultValue: number  = -1;

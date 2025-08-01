@@ -13,19 +13,9 @@
  * limitations under the License.
  */
 
-export class A {
-  Foo(a:number, b:number): number {
-    return a + b;
-  }
-  readTest1(c:number, d:number): number {
-    return a - b;
-  }
+'use static';
+function getC(a:number, b:number): number {
+  return a + b;
+}
 
-  readTest2(e:number, f:number): number {
-    return a * b;
-  }
-
-  readTest3(e:number, f:number): number {
-    return a / b;
-  }
-};
+getC(1, 120);

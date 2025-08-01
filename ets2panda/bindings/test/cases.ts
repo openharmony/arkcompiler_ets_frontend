@@ -15,6 +15,7 @@
 
 import path from 'path';
 import { TextSpan } from '../src/lsp/lspNode';
+import { AstNodeType, NodeInfo } from '../src/lsp';
 
 export interface TestConfig {
   expectedFilePath: string;
@@ -45,7 +46,23 @@ export const basicCases: TestCases = {
     '8': [resolveTestPath('test/testcases/getDefinitionAtPosition/getDefinitionAtPosition15.ets'), 617],
     '9': [resolveTestPath('test/testcases/getDefinitionAtPosition/getDefinitionAtPosition17.ets'), 677],
     '11': [resolveTestPath('test/testcases/getDefinitionAtPosition/getDefinitionAtPosition19.ets'), 634],
-    '12': [resolveTestPath('test/testcases/getDefinitionAtPosition/getDefinitionAtPosition2.ets'), 637]
+    '12': [resolveTestPath('test/testcases/getDefinitionAtPosition/getDefinitionAtPosition2.ets'), 637],
+    '13': [
+      resolveTestPath(
+        'test/testcases/.idea/.deveco/getDefinitionAtPosition/declgen/static/getDefinitionAtPosition20.d.ets'
+      ),
+      0,
+      [
+        {
+          kind: AstNodeType.CLASS_DEFINITION,
+          name: 'Foo'
+        },
+        {
+          kind: AstNodeType.IDENTIFIER,
+          name: 'Foo'
+        }
+      ] as NodeInfo[]
+    ]
   },
   getSemanticDiagnostics: {
     expectedFilePath: resolveTestPath('test/expected/getSemanticDiagnostics.json'),
@@ -177,17 +194,9 @@ export const basicCases: TestCases = {
   entry: {
     expectedFilePath: '',
     '1': [resolveTestPath('test/testcases/entry/Index.ets'), 615]
-  }
-};
-
-export const singleModuleCases: TestCases = {
-  generateDeclFile: {
-    expectedFilePath: resolveTestPath('test/expected/generateDeclFile.json'),
-    '1': []
   },
-  modifyDeclFile: {
-    expectedFilePath: resolveTestPath('test/expected/modifyDeclFile.json'),
-    '1': [resolveTestPath('test/testcases/modifyDeclFile/entry/index.ets')]
+  generateDeclFile: {
+    expectedFilePath: resolveTestPath('test/expected/generateDeclFile.json')
   }
 };
 
