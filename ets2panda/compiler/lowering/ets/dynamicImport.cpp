@@ -371,11 +371,14 @@ AstNodePtr TransformMemberExpression(ir::MemberExpression *memberExpr, public_li
 
 bool DynamicImport::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
+    auto dynamicImports = program->VarBinder()->AsETSBinder()->DynamicImports();
+    if (dynamicImports.empty()) {
+        return true;
+    }
     auto allocator = ctx->GetChecker()->ProgramAllocator();
     ArenaUnorderedMap<varbinder::Variable *, ir::ClassDefinition *> varMap {allocator->Adapter()};
     ArenaUnorderedMap<util::StringView, checker::ETSObjectType *> moduleMap {allocator->Adapter()};
 
-    auto dynamicImports = program->VarBinder()->AsETSBinder()->DynamicImports();
     for (auto *importDecl : dynamicImports) {
         BuildLazyImportObject(ctx, importDecl, program, moduleMap, varMap);
     }
