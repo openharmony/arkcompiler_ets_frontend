@@ -804,6 +804,9 @@ export class TsUtils {
     if (this.skipStructuralTypingCheckForFunctionals(lhsType, rhsType)) {
       return false;
     }
+    if (this.skipCheckForArrayBufferLike(lhsType, rhsType)) {
+      return false;
+    }
     if (rhsType.isUnion() || lhsType.isUnion()) {
       return this.needToDeduceStructuralIdentityHandleUnions(lhsType, rhsType, rhsExpr, isStrict);
     }
@@ -898,6 +901,16 @@ export class TsUtils {
       isStrictLhs = this.isSendableClassOrInterface(lhsType);
     }
     return isStrictLhs && this.typeContainsNonSendableClassOrInterface(rhsType);
+  }
+
+  skipCheckForArrayBufferLike(lhsType: string | ts.Type, rhsType: string | ts.Type): boolean {
+    const lhsIsArrayBufferLike = TsUtils.isArrayBufferType(
+      typeof lhsType === 'string' ? lhsType : this.tsTypeChecker.typeToString(lhsType)
+    );
+    const rhsIsArrayBufferLike = TsUtils.isArrayBufferType(
+      typeof rhsType === 'string' ? rhsType : this.tsTypeChecker.typeToString(rhsType)
+    );
+    return !!this.options.arkts2 && lhsIsArrayBufferLike && rhsIsArrayBufferLike;
   }
 
   private processExtendedParentTypes(typeA: ts.Type, typeB: ts.Type): boolean {
@@ -2112,6 +2125,11 @@ export class TsUtils {
   static isFunctionalType(type: ts.Type): boolean {
     const callSigns = type.getCallSignatures();
     return callSigns && callSigns.length > 0;
+  }
+
+  static isArrayBufferType(typeStr: string): boolean {
+    const arrayBufferLikeArr = ['ArrayBuffer', 'ArrayBufferLike'];
+    return arrayBufferLikeArr.includes(typeStr);
   }
 
   static getFunctionalTypeSignature(type: ts.Type): ts.Signature | undefined {

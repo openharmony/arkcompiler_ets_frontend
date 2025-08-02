@@ -3998,7 +3998,6 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (!ts.isClassDeclaration(classDecl)) {
       return;
     }
-    this.checkIncompatibleFunctionTypes(node);
     const isStatic =
       node.modifiers?.some((mod) => {
         return mod.kind === ts.SyntaxKind.StaticKeyword;
@@ -4013,6 +4012,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (allBaseTypes && allBaseTypes.length > 0) {
       this.checkMethodType(allBaseTypes, methodName, node, isStatic);
     }
+    this.checkIncompatibleFunctionTypes(node);
   }
 
   private checkMethodType(
@@ -4075,6 +4075,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       const actualReturnType = this.tsTypeChecker.getTypeAtLocation(returnStmt.expression);
       const actualReturnTypeStr = this.tsTypeChecker.typeToString(actualReturnType);
       if (declaredReturnTypeStr === actualReturnTypeStr) {
+        return;
+      }
+      if (this.tsUtils.skipCheckForArrayBufferLike(declaredReturnTypeStr, actualReturnTypeStr)) {
         return;
       }
       if (actualReturnType.flags & ts.TypeFlags.Any || declaredReturnType.flags & ts.TypeFlags.Any) {
