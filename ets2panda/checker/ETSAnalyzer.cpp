@@ -3186,6 +3186,19 @@ checker::Type *ETSAnalyzer::Check(ir::ContinueStatement *st) const
         return checker->GlobalTypeError();
     }
 
+    // CTE if target is outside the function
+    auto getEnclosingMethod = [](const ir::AstNode *node) {
+        const ir::AstNode *enclosingMethod = node->Parent();
+        while (enclosingMethod != nullptr && !enclosingMethod->IsMethodDefinition() &&
+               !enclosingMethod->IsArrowFunctionExpression()) {
+            enclosingMethod = enclosingMethod->Parent();
+        }
+        return enclosingMethod;
+    };
+    if (getEnclosingMethod(st) != getEnclosingMethod(st->Target())) {
+        checker->LogError(diagnostic::CONTINUE_TARGET_OUTSIDE_FUNCTION, {}, st->Start());
+    }
+
     checker->AddStatus(CheckerStatus::MEET_CONTINUE);
     return ReturnTypeForStatement(st);
 }
