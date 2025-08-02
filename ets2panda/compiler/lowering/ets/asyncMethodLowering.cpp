@@ -173,12 +173,17 @@ void ComposeAsyncImplMethod(checker::ETSChecker *checker, ir::MethodDefinition *
     node->Function()->SetAsyncPairMethod(implMethod->Function());
 
     ES2PANDA_ASSERT(node->Function() != nullptr);
-    if (node->Function()->IsOverload()) {
+    if (node->Function()->IsOverload() && node->BaseOverloadMethod()->AsyncPairMethod() != nullptr) {
         auto *baseOverloadImplMethod = node->BaseOverloadMethod()->AsyncPairMethod();
         ES2PANDA_ASSERT(implMethod->Function() != nullptr && baseOverloadImplMethod->Function() != nullptr);
         implMethod->Function()->Id()->SetVariable(baseOverloadImplMethod->Function()->Id()->Variable());
         baseOverloadImplMethod->AddOverload(implMethod);
         implMethod->SetParent(baseOverloadImplMethod);
+    } else if (node->Function()->IsOverload() && node->BaseOverloadMethod()->AsyncPairMethod() == nullptr) {
+        // If it's base overload function doesnot marked as async,
+        // then current AsyncImpl should be treated as AsyncPairMethod in base overload.
+        node->BaseOverloadMethod()->SetAsyncPairMethod(implMethod);
+        classDef->EmplaceBody(implMethod);
     } else {
         classDef->EmplaceBody(implMethod);
     }

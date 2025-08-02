@@ -32,7 +32,7 @@ CheckResult EveryChildHasValidParent::operator()(const ir::AstNode *ast)
             auto overloads = maybeBaseOverloadMethod->Overloads();
             auto res =
                 std::find_if(overloads.begin(), overloads.end(), [node](ir::MethodDefinition *m) { return m == node; });
-            return res != overloads.end();
+            return res != overloads.end() || maybeBaseOverloadMethod->AsyncPairMethod() == node;
         }
         return false;
     };
