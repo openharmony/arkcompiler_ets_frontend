@@ -415,6 +415,12 @@ cookBookTag[381] =
   'The code block passed to stateStyles needs to be an arrow function (arkui-statestyles-block-need-arrow-func)';
 cookBookTag[382] =
   'Promise<void>constructor only supports using resolve (undefined) (arkts-promise-with-void-type-need-undefined-as-resolve-arg)';
+cookBookTag[391] =
+  'The class of the second parameter passed to the "persistProp" method must be a primitive type or Date type, or implement the "toJson" and "fromJson" methods (arkui-persistent-prop-serialization)';
+cookBookTag[392] =
+  'The class of the "defaultValue" parameter in the literal passed to the "persistProps" method must be a primitive type or Date type, or implement the "toJson" and "fromJson" methods (arkui-persistent-props-serialization)';
+cookBookTag[393] =
+  'When calling the "globalConnect" and "connect" methods, the parameter list of the methods needs to include "toJson" and "fromJson" (arkui-persistencev2-connect-serialization)';
 cookBookTag[399] = 'ArkUI deprecated api check (arkui-no-deprecated-api)';
 cookBookTag[400] = 'ArkUI sdk common deprecated api check (arkui-sdk-common-deprecated-api)';
 cookBookTag[401] = 'ArkUI sdk common whitelist api check (arkui-sdk-common-whitelist-api)';

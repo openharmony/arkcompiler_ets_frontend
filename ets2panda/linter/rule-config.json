@@ -142,7 +142,10 @@
     "arkui-buildernode-no-nestingbuildersupported",
     "arkui-sdk-common-deprecated-api",
     "arkui-sdk-common-whitelist-api",
-    "arkui-sdk-common-behaviorchange-api"
+    "arkui-sdk-common-behaviorchange-api",
+    "arkui-persistent-prop-serialization",
+    "arkui-persistent-props-serialization",
+    "arkui-persistencev2-connect-serialization"
   ],
   "builtin": [
     "arkts-builtin-thisArgs",

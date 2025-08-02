@@ -122,7 +122,15 @@ import {
   VIRTUAL_SCROLL_IDENTIFIER,
   BUILDERNODE_D_TS,
   BuilderNodeFunctionName,
-  NESTING_BUILDER_SUPPORTED
+  NESTING_BUILDER_SUPPORTED,
+  COMMON_TS_ETS_API_D_TS,
+  UI_STATE_MANAGEMENT_D_TS,
+  PERSIST_PROP_FUNC_NAME,
+  PERSIST_PROPS_FUNC_NAME,
+  GLOBAL_CONNECT_FUNC_NAME,
+  CONNECT_FUNC_NAME,
+  serializationTypeFlags,
+  serializationTypeName
 } from './utils/consts/ArkuiConstants';
 import { arkuiImportList } from './utils/consts/ArkuiImportList';
 import type { IdentifierAndArguments, ForbidenAPICheckResult } from './utils/consts/InteropAPI';
@@ -5575,6 +5583,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleStateStyles(node);
     this.handleCallExpressionForRepeat(node);
     this.handleNodeForWrappedBuilder(node);
+    this.handleCallExpressionForSerialization(node);
   }
 
   handleNoTsLikeFunctionCall(callExpr: ts.CallExpression): void {
@@ -14580,5 +14589,123 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       ts.isNumericLiteral(node.right) &&
       node.right.text === '0'
     );
+  }
+
+  private handleCallExpressionForSerialization(node: ts.CallExpression): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    const propertyAccess = node.expression;
+    if (!ts.isPropertyAccessExpression(propertyAccess)) {
+      return;
+    }
+
+    const persistentClass = propertyAccess.expression;
+    if (!ts.isIdentifier(persistentClass)) {
+      return;
+    }
+
+    switch (persistentClass.getText()) {
+      case StorageTypeName.PersistentStorage:
+        if (this.isDeclInTargetFile(persistentClass, COMMON_TS_ETS_API_D_TS)) {
+          this.handleCallExpressionForPersistentStorage(node, propertyAccess);
+        }
+        break;
+      case StorageTypeName.PersistenceV2:
+        if (this.isDeclInTargetFile(persistentClass, UI_STATE_MANAGEMENT_D_TS)) {
+          this.handleCallExpressionForPersistenceV2(node, propertyAccess);
+        }
+        break;
+      default:
+    }
+  }
+
+  private handleCallExpressionForPersistentStorage(
+    callExpr: ts.CallExpression,
+    propertyAccess: ts.PropertyAccessExpression
+  ): void {
+    const funcName = propertyAccess.name.getText();
+
+    switch (funcName) {
+      case PERSIST_PROP_FUNC_NAME:
+        if (!this.checkPersistPropForSerialization(callExpr)) {
+          this.incrementCounters(callExpr, FaultID.PersistentPropNeedImplementMethod);
+        }
+        break;
+      case PERSIST_PROPS_FUNC_NAME:
+        if (!this.checkPersistPropsForSerialization(callExpr)) {
+          this.incrementCounters(callExpr, FaultID.PersistentPropsNeedImplementMethod);
+        }
+        break;
+      default:
+    }
+  }
+
+  private checkPersistPropForSerialization(callExpr: ts.CallExpression): boolean {
+    const arg = callExpr.arguments?.[1];
+    return !arg || this.checkArgumentForSerialization(arg);
+  }
+
+  private checkPersistPropsForSerialization(callExpr: ts.CallExpression): boolean {
+    const arg = callExpr.arguments?.[0];
+    if (!arg || !ts.isArrayLiteralExpression(arg)) {
+      return true;
+    }
+
+    const literals = arg.elements;
+    let serializable: boolean = true;
+    for (const literal of literals) {
+      if (!ts.isObjectLiteralExpression(literal)) {
+        continue;
+      }
+      const property = literal.properties?.[1];
+      if (!property || !ts.isPropertyAssignment(property)) {
+        continue;
+      }
+      if (!this.checkArgumentForSerialization(property.initializer)) {
+        serializable = false;
+        break;
+      }
+    }
+
+    return serializable;
+  }
+
+  private checkArgumentForSerialization(arg: ts.Node): boolean {
+    const type = this.tsTypeChecker.getTypeAtLocation(arg);
+
+    if (type.isUnion()) {
+      if (
+        type.types.some((type) => {
+          return !this.isSpecificTypeOfSerialization(type);
+        })
+      ) {
+        return false;
+      }
+      return true;
+    }
+
+    return this.isSpecificTypeOfSerialization(type);
+  }
+
+  private isSpecificTypeOfSerialization(type: ts.Type): boolean {
+    const typeName = this.tsTypeChecker.typeToString(type);
+    return serializationTypeFlags.has(type.flags) || serializationTypeName.has(typeName);
+  }
+
+  private handleCallExpressionForPersistenceV2(
+    callExpr: ts.CallExpression,
+    propertyAccess: ts.PropertyAccessExpression
+  ): void {
+    const funcName = propertyAccess.name.getText();
+    if (funcName !== GLOBAL_CONNECT_FUNC_NAME && funcName !== CONNECT_FUNC_NAME) {
+      return;
+    }
+
+    const errorMsg =
+      `When calling the "${funcName}" method, the parameter list of the methods needs to include ` +
+      '"toJson" and "fromJson" (arkui-persistencev2-connect-serialization)';
+    this.incrementCounters(callExpr, FaultID.PersistenceV2ConnectNeedAddParam, undefined, errorMsg);
   }
 }

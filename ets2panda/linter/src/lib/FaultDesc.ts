@@ -286,3 +286,6 @@ faultDesc[FaultID.NoESObjectSupport] = 'ESObject type cannot be used';
 faultDesc[FaultID.SdkCommonApiDeprecated] = 'ArkUI sdk common deprecated api check';
 faultDesc[FaultID.SdkCommonApiWhiteList] = 'ArkUI sdk common whiteList api check';
 faultDesc[FaultID.SdkCommonApiBehaviorChange] = 'ArkUI sdk common behavior change api check';
+faultDesc[FaultID.PersistentPropNeedImplementMethod] = 'Serialization needs class to implement the specific methods';
+faultDesc[FaultID.PersistentPropsNeedImplementMethod] = 'Serialization needs class to implement the specific methods';
+faultDesc[FaultID.PersistenceV2ConnectNeedAddParam] = 'Serialization needs class to implement the specific methods';

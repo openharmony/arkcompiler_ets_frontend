@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
-import { BuilderNode } from './@ohos.arkui.node';
-import { PersistenceV2 } from './@ohos.arkui.StateManagement';
-export { BuilderNode, PersistenceV2 };
+export declare class PersistentStorage {
+  static persistProp(): void;
+  static PersistProps(): void;
+}
