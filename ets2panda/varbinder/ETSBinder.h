@@ -132,6 +132,7 @@ public:
     [[nodiscard]] bool BuildInternalName(ir::ScriptFunction *scriptFunc) override;
     void AddCompilableFunction(ir::ScriptFunction *func) override;
 
+    static bool IsSpecialName(const util::StringView &name);
     [[nodiscard]] bool LookupInDebugInfoPlugin(ir::Identifier *ident);
     void LookupTypeReference(ir::Identifier *ident);
     void LookupTypeArgumentReferences(ir::ETSTypeReference *typeRef);
