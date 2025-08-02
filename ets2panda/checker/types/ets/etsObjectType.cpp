@@ -1435,6 +1435,25 @@ ETSChecker *ETSObjectType::GetETSChecker()
     return relation_->GetChecker()->AsETSChecker();
 }
 
+void ETSObjectType::CheckAndInstantiateProperties() const
+{
+    auto *checker = relation_->GetChecker()->AsETSChecker();
+    auto *declNode = GetDeclNode();
+    if (HasObjectFlag(ETSObjectFlags::BUILTIN_TYPE) && declNode == nullptr) {
+        declNode = SuperType()->GetDeclNode();
+    }
+    if (declNode == nullptr) {
+        ES2PANDA_ASSERT(checker->IsAnyError());
+        return;
+    }
+
+    TypeStackElement tse {checker, this, {{diagnostic::CYCLIC_INHERITANCE, {this->Name()}}}, declNode->Start()};
+    if (tse.HasTypeError()) {
+        return;
+    }
+    InstantiateProperties();
+}
+
 void ETSObjectType::InstantiateProperties() const
 {
     ES2PANDA_ASSERT(relation_ != nullptr);
