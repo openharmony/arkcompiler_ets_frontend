@@ -15,16 +15,6 @@
     ],
     "result": [
         {
-            "line": 25,
-            "column": 21,
-            "endLine": 25,
-            "endColumn": 23,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 18,
             "column": 2,
             "endLine": 18,

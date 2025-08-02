@@ -296,16 +296,6 @@
         },
         {
             "line": 31,
-            "column": 11,
-            "endLine": 31,
-            "endColumn": 12,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 31,
             "column": 14,
             "endLine": 31,
             "endColumn": 22,

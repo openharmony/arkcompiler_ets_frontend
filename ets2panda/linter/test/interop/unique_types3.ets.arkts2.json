@@ -75,16 +75,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 93,
-            "column": 27,
-            "endLine": 93,
-            "endColumn": 28,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 97,
             "column": 17,
             "endLine": 97,
@@ -315,16 +305,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 135,
-            "column": 17,
-            "endLine": 135,
-            "endColumn": 18,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 139,
             "column": 19,
             "endLine": 139,
@@ -372,16 +352,6 @@
             "problem": "InteropDirectAccessToTSTypes",
             "suggest": "",
             "rule": "Cannot access typescript types directly (arkts-interop-ts2s-static-access-ts-type)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 153,
-            "column": 35,
-            "endLine": 153,
-            "endColumn": 37,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -482,16 +452,6 @@
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
             "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 169,
-            "column": 34,
-            "endLine": 169,
-            "endColumn": 35,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {

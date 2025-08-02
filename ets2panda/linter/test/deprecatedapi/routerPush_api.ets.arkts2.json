@@ -23,36 +23,6 @@
             "suggest": "",
             "rule": "ArkUI deprecated api check (arkui-no-deprecated-api)",
             "severity": "ERROR"
-        },
-        {
-            "line": 37,
-            "column": 40,
-            "endLine": 37,
-            "endColumn": 43,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 37,
-            "column": 45,
-            "endLine": 37,
-            "endColumn": 48,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 37,
-            "column": 50,
-            "endLine": 37,
-            "endColumn": 53,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
         }
     ]
 }

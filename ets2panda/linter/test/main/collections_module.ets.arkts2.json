@@ -19,9 +19,29 @@
             "column": 10,
             "endLine": 16,
             "endColumn": 21,
+            "problem": "LimitedStdLibNoImportConcurrency",
+            "suggest": "",
+            "rule": "Import Concurrency is not required (arkts-limited-stdlib-no-import-concurrency)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 16,
+            "column": 10,
+            "endLine": 16,
+            "endColumn": 21,
             "problem": "NoNeedStdLibSendableContainer",
             "suggest": "",
             "rule": "Sendable containers are not supported (arkts-no-need-stdlib-sendable-containers)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 18,
+            "column": 10,
+            "endLine": 18,
+            "endColumn": 41,
+            "problem": "LimitedStdLibNoImportConcurrency",
+            "suggest": "",
+            "rule": "Import Concurrency is not required (arkts-limited-stdlib-no-import-concurrency)",
             "severity": "ERROR"
         },
         {
@@ -32,6 +52,16 @@
             "problem": "NoNeedStdLibSendableContainer",
             "suggest": "",
             "rule": "Sendable containers are not supported (arkts-no-need-stdlib-sendable-containers)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 10,
+            "endLine": 20,
+            "endColumn": 39,
+            "problem": "LimitedStdLibNoImportConcurrency",
+            "suggest": "",
+            "rule": "Import Concurrency is not required (arkts-limited-stdlib-no-import-concurrency)",
             "severity": "ERROR"
         },
         {
@@ -85,14 +115,14 @@
             "severity": "ERROR"
         },
         {
-          "line": 32,
-          "column": 7,
-          "endLine": 32,
-          "endColumn": 19,
-          "problem": "VariableMissingInitializer",
-          "suggest": "",
-          "rule": "After a variable is declared, a value must be assigned before using it (arkts-var-assignment-before-use)",
-          "severity": "ERROR"
+            "line": 32,
+            "column": 7,
+            "endLine": 32,
+            "endColumn": 19,
+            "problem": "VariableMissingInitializer",
+            "suggest": "",
+            "rule": "After a variable is declared, a value must be assigned before using it (arkts-var-assignment-before-use)",
+            "severity": "ERROR"
         },
         {
             "line": 32,
@@ -125,14 +155,14 @@
             "severity": "ERROR"
         },
         {
-          "line": 36,
-          "column": 7,
-          "endLine": 36,
-          "endColumn": 19,
-          "problem": "VariableMissingInitializer",
-          "suggest": "",
-          "rule": "After a variable is declared, a value must be assigned before using it (arkts-var-assignment-before-use)",
-          "severity": "ERROR"
+            "line": 36,
+            "column": 7,
+            "endLine": 36,
+            "endColumn": 19,
+            "problem": "VariableMissingInitializer",
+            "suggest": "",
+            "rule": "After a variable is declared, a value must be assigned before using it (arkts-var-assignment-before-use)",
+            "severity": "ERROR"
         },
         {
             "line": 40,

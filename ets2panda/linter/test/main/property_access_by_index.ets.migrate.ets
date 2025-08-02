@@ -32,16 +32,16 @@ function test() {
   return GetProperty<A, string>(a, 'v') + GetProperty<A, string>(a, 'u');
 }
 
-let ar1: number[] = [1.0, 2.0, 3.0, 4.0];
-let ar2 = [1.0, '2', 3.0, 4.0];
+let ar1 = [1, 2, 3, 4];
+let ar2 = [1, '2', 3, 4];
 let ar3: number[] = [];
 
 ar1[2];
 ar2[2];
 ar3[2];
 
-const r0: number = [1, 2, 3][1];
-let r1: number = [1, 2, 3, 4][0]
+const r0 = [1, 2, 3][1];
+let r1 = [1, 2, 3, 4][0]
 let r2 = [1, '2', 3, 4][0]
 
 function fobject1(o: object) {
@@ -52,22 +52,22 @@ function fobject2(o: Object) {
   o['k']
 }
 
-let array1: number[] = [0.0,1.0]
-let array2: number[] = [1.0,2.0,3.0,4.0,5.0]
-let array3: number[] = [1.0,2.0,3.0,4.0,5.0]
-let array4: Array<number> = [1.0,2.0,3.0,4.0,5.0]
-let array5 = new Array(10.0)
-let array6 = new Int8Array(10.0)
-let array7 = new Uint8Array(10.0)
-let array8 = new Uint8ClampedArray(10.0)
-let array9 = new Int16Array(10.0)
-let array10 = new Uint16Array(10.0)
-let array11 = new Int32Array(10.0)
-let array12 = new Uint32Array(10.0)
-let array13 = new Float32Array(10.0)
-let array14 = new Float64Array(10.0)
-let array15 = new BigInt64Array(10.0)
-let array16 = new BigUint64Array(10.0)
+let array1 = [0,1]
+let array2 = [1,2,3,4,5]
+let array3: number[] = [1,2,3,4,5]
+let array4: Array<number> = [1,2,3,4,5]
+let array5 = new Array(10)
+let array6 = new Int8Array(10)
+let array7 = new Uint8Array(10)
+let array8 = new Uint8ClampedArray(10)
+let array9 = new Int16Array(10)
+let array10 = new Uint16Array(10)
+let array11 = new Int32Array(10)
+let array12 = new Uint32Array(10)
+let array13 = new Float32Array(10)
+let array14 = new Float64Array(10)
+let array15 = new BigInt64Array(10)
+let array16 = new BigUint64Array(10)
 
 array1[0];
 array2[0];
@@ -104,7 +104,7 @@ CCCCCCCCC[CCCCCCCCC.KATE]
 CCCCCCCCC[CCCCCCCCC.BOB]
 CCCCCCCCC[CCCCCCCCC.ROB]
 
-let arr32 = new Float32Array([1.0,2.0,3.0])
+let arr32 = new Float32Array([1,2,3])
 
 let iter_arr32 = arr32[Symbol.iterator]()
 let tmp_arr32 = iter_arr32.next().value;
@@ -178,9 +178,9 @@ mmap3["kkr"];
 
 class MyClass extends BitVector {
   constructor() {
-    super(0.0);
-    for (let i: number = 0.0; i < this.length; i++) {
-      this[i] = 1.0;
+    super(0);
+    for (let i = 0; i < this.length; i++) {
+      this[i] = 1;
     }
   }
 }

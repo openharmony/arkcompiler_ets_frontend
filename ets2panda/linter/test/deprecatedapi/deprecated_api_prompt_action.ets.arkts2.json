@@ -15,16 +15,6 @@
     ],
     "result": [
         {
-            "line": 25,
-            "column": 17,
-            "endLine": 25,
-            "endColumn": 21,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 48,
             "column": 9,
             "endLine": 48,
@@ -62,16 +52,6 @@
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 72,
-            "column": 36,
-            "endLine": 72,
-            "endColumn": 37,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {

@@ -411,27 +411,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 42,
-            "column": 24,
-            "endLine": 42,
-            "endColumn": 27,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 1300,
-                    "end": 1303,
-                    "replacementText": "111.0",
-                    "line": 42,
-                    "column": 24,
-                    "endLine": 42,
-                    "endColumn": 27
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 44,
             "column": 3,
             "endLine": 44,
@@ -481,27 +460,6 @@
             "problem": "LimitedVoidType",
             "suggest": "",
             "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 47,
-            "column": 35,
-            "endLine": 47,
-            "endColumn": 38,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 1391,
-                    "end": 1394,
-                    "replacementText": "111.0",
-                    "line": 47,
-                    "column": 35,
-                    "endLine": 47,
-                    "endColumn": 38
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -774,27 +732,6 @@
             ],
             "suggest": "",
             "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 72,
-            "column": 28,
-            "endLine": 72,
-            "endColumn": 30,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 1967,
-                    "end": 1969,
-                    "replacementText": "22.0",
-                    "line": 72,
-                    "column": 28,
-                    "endLine": 72,
-                    "endColumn": 30
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         }
     ]

@@ -26,6 +26,8 @@ import { process as ps, collections as clt } from '@kit.ArkTS';
 import process from '@ohos.process';
 import aaa from '@ohos.taskpool'
 import aaaa from '@arkts.collections';
+import utils from './oh_modules/@arkts.utils'
+import { ArkTSUtils } from './oh_modules/@kit.ArkTS';
 
 aaa.getTaskPoolInfo()
 
@@ -39,3 +41,6 @@ tsk.cancel();
 aaaa.Set()
 clt.Set()
 fooAs.getFoo();
+
+let lock1: utils.locks.AsyncLock = utils.locks.AsyncLock.request('lock1');
+let lock2 = new ArkTSUtils.locks.AsyncLock();

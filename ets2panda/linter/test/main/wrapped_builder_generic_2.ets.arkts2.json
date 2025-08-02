@@ -165,16 +165,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 40,
-            "column": 35,
-            "endLine": 40,
-            "endColumn": 37,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 42,
             "column": 33,
             "endLine": 42,
@@ -182,16 +172,6 @@
             "problem": "WrappedBuilderGenericNeedArrowFunc",
             "suggest": "",
             "rule": "When using \"WrappedBuilder\", generics are required and must be declared as arrow function (arkui-wrappedbuilder-require-arrow-func-generic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 43,
-            "column": 35,
-            "endLine": 43,
-            "endColumn": 37,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -205,16 +185,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 46,
-            "column": 35,
-            "endLine": 46,
-            "endColumn": 37,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 48,
             "column": 33,
             "endLine": 48,
@@ -222,16 +192,6 @@
             "problem": "WrappedBuilderGenericNeedArrowFunc",
             "suggest": "",
             "rule": "When using \"WrappedBuilder\", generics are required and must be declared as arrow function (arkui-wrappedbuilder-require-arrow-func-generic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 49,
-            "column": 35,
-            "endLine": 49,
-            "endColumn": 37,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {

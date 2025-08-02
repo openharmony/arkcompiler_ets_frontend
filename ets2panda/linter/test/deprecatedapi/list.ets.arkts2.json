@@ -15,66 +15,6 @@
     ],
     "result": [
         {
-            "line": 20,
-            "column": 21,
-            "endLine": 20,
-            "endColumn": 23,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 20,
-            "column": 39,
-            "endLine": 20,
-            "endColumn": 40,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 25,
-            "column": 24,
-            "endLine": 25,
-            "endColumn": 25,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 27,
-            "column": 24,
-            "endLine": 27,
-            "endColumn": 26,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 28,
-            "column": 22,
-            "endLine": 28,
-            "endColumn": 24,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 37,
-            "column": 21,
-            "endLine": 37,
-            "endColumn": 22,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 15,
             "column": 2,
             "endLine": 15,

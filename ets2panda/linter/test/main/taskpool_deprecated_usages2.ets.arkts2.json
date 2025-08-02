@@ -25,13 +25,13 @@
             "severity": "ERROR"
         },
         {
-            "line": 20,
-            "column": 26,
-            "endLine": 20,
-            "endColumn": 27,
-            "problem": "NumericSemantics",
+            "line": 18,
+            "column": 10,
+            "endLine": 18,
+            "endColumn": 31,
+            "problem": "LimitedStdLibNoImportConcurrency",
             "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "rule": "Import Concurrency is not required (arkts-limited-stdlib-no-import-concurrency)",
             "severity": "ERROR"
         },
         {

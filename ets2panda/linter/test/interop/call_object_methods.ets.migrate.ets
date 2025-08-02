@@ -14,5 +14,5 @@
  */
 import { foo } from "./call_object_methods_js"
 
-foo.invokeMethod("bar", ESValue.wrap(123.0))
+foo.invokeMethod("bar", ESValue.wrap(123))
 

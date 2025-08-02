@@ -16,7 +16,7 @@ import {foo,bar} from "./call_function_js"
 import {a,b} from "./call_function_js"
 
 foo.invoke()
-bar.invoke(ESValue.wrap(123.0))
+bar.invoke(ESValue.wrap(123))
 
 //a();
 b.invoke();

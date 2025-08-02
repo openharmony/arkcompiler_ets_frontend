@@ -35,7 +35,7 @@ if(foo.isInstanceOf(Foo1)) {
 
 }
 
-let person: CreatePerson = CreatePerson.invoke(ESValue.wrap('xc'), ESValue.wrap(18.0))
+let person: CreatePerson = CreatePerson.invoke(ESValue.wrap('xc'), ESValue.wrap(18))
 
 if(person.isInstanceOf(CreatePerson)) {
 

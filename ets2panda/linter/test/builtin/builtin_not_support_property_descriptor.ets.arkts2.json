@@ -125,16 +125,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 26,
-            "column": 9,
-            "endLine": 26,
-            "endColumn": 10,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 28,
             "column": 7,
             "endLine": 28,
@@ -232,16 +222,6 @@
             "problem": "NoPropertyDescriptor",
             "suggest": "",
             "rule": "Not support propertydescriptor (arkts-builtin-no-property-descriptor)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 47,
-            "column": 12,
-            "endLine": 47,
-            "endColumn": 13,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {

@@ -28,7 +28,7 @@ import {
 
 class User {
   name: string = ""
-  age: number = 0.0
+  age: number = 0
 }
 
 @Entry

@@ -305,16 +305,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 104,
-            "column": 24,
-            "endLine": 104,
-            "endColumn": 26,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 106,
             "column": 7,
             "endLine": 106,
@@ -322,16 +312,6 @@
             "problem": "InvalidIdentifier",
             "suggest": "",
             "rule": "This keyword cannot be used as identifiers (arkts-invalid-identifier)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 106,
-            "column": 22,
-            "endLine": 106,
-            "endColumn": 25,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -372,16 +352,6 @@
             "problem": "InvalidIdentifier",
             "suggest": "",
             "rule": "This keyword cannot be used as identifiers (arkts-invalid-identifier)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 112,
-            "column": 22,
-            "endLine": 112,
-            "endColumn": 25,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -435,16 +405,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 120,
-            "column": 21,
-            "endLine": 120,
-            "endColumn": 23,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 122,
             "column": 7,
             "endLine": 122,
@@ -452,16 +412,6 @@
             "problem": "InvalidIdentifier",
             "suggest": "",
             "rule": "This keyword cannot be used as identifiers (arkts-invalid-identifier)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 122,
-            "column": 23,
-            "endLine": 122,
-            "endColumn": 28,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -485,16 +435,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 126,
-            "column": 21,
-            "endLine": 126,
-            "endColumn": 23,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 128,
             "column": 7,
             "endLine": 128,
@@ -502,16 +442,6 @@
             "problem": "InvalidIdentifier",
             "suggest": "",
             "rule": "This keyword cannot be used as identifiers (arkts-invalid-identifier)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 128,
-            "column": 23,
-            "endLine": 128,
-            "endColumn": 28,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -685,16 +615,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 176,
-            "column": 21,
-            "endLine": 176,
-            "endColumn": 24,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 177,
             "column": 3,
             "endLine": 177,
@@ -705,16 +625,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 177,
-            "column": 18,
-            "endLine": 177,
-            "endColumn": 21,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 178,
             "column": 3,
             "endLine": 178,
@@ -722,16 +632,6 @@
             "problem": "InvalidIdentifier",
             "suggest": "",
             "rule": "This keyword cannot be used as identifiers (arkts-invalid-identifier)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 178,
-            "column": 21,
-            "endLine": 178,
-            "endColumn": 24,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -785,16 +685,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 205,
-            "column": 12,
-            "endLine": 205,
-            "endColumn": 13,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 206,
             "column": 3,
             "endLine": 206,
@@ -802,16 +692,6 @@
             "problem": "InvalidIdentifier",
             "suggest": "",
             "rule": "This keyword cannot be used as identifiers (arkts-invalid-identifier)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 206,
-            "column": 9,
-            "endLine": 206,
-            "endColumn": 10,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -962,26 +842,6 @@
             "problem": "InvalidIdentifier",
             "suggest": "",
             "rule": "This keyword cannot be used as identifiers (arkts-invalid-identifier)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 248,
-            "column": 5,
-            "endLine": 248,
-            "endColumn": 10,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 248,
-            "column": 9,
-            "endLine": 248,
-            "endColumn": 10,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
