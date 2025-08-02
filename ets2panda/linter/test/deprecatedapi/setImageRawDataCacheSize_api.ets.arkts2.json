@@ -13,7 +13,7 @@
         "See the License for the specific language governing permissions and",
         "limitations under the License."
     ],
-     "result": [
+    "result": [
         {
             "line": 19,
             "column": 9,
@@ -23,16 +23,6 @@
             "suggest": "",
             "rule": "ArkUI deprecated api check (arkui-no-deprecated-api)",
             "severity": "ERROR"
-        },
-        {
-            "line": 19,
-            "column": 34,
-            "endLine": 19,
-            "endColumn": 43,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
         }
-     ]
+    ]
 }

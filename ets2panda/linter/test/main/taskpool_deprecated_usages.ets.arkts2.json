@@ -105,16 +105,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 24,
-            "column": 47,
-            "endLine": 24,
-            "endColumn": 49,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 25,
             "column": 6,
             "endLine": 25,
@@ -135,16 +125,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 31,
-            "column": 26,
-            "endLine": 31,
-            "endColumn": 27,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 33,
             "column": 5,
             "endLine": 33,
@@ -162,16 +142,6 @@
             "problem": "DynamicCtorCall",
             "suggest": "",
             "rule": "\"new\" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 33,
-            "column": 49,
-            "endLine": 33,
-            "endColumn": 51,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {

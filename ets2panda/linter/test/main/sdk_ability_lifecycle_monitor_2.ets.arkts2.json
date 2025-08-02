@@ -29,19 +29,19 @@
             "column": 23,
             "endLine": 29,
             "endColumn": 30,
-            "problem": "AnyType",
+            "problem": "ParameterType",
             "suggest": "",
-            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "rule": "Type of parameter must be defined explicitly (arkts-require-func-arg-type)",
             "severity": "ERROR"
         },
         {
-            "line": 57,
-            "column": 9,
-            "endLine": 57,
-            "endColumn": 90,
-            "problem": "NumericSemantics",
+            "line": 29,
+            "column": 23,
+            "endLine": 29,
+            "endColumn": 30,
+            "problem": "AnyType",
             "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
             "severity": "ERROR"
         },
         {

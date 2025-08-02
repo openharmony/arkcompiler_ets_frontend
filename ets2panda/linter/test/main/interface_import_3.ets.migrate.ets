@@ -37,7 +37,7 @@ c.getContext()
 
 const err = (err: Base.BusinessError) => {}
 
-export const DEFAULT_WINDOW_SIZE: window.size = { width: 1280.0, height: 2580.0}
+export const DEFAULT_WINDOW_SIZE: window.size = { width: 1280, height: 2580}
 
 function test (aa: common2D.Rect) {
 

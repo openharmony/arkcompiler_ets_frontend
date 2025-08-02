@@ -163,3 +163,13 @@ enum TEST2 {
 let de3 = TEST2[TEST.A] //error
 let de4 = TEST2[TEST.A| TEST.B] //error
 let de5 = TEST[TEST.C] //ok
+
+export enum DeviceTypes12 {
+  PHONE = 'phone',
+  TABLET = 'tablet',
+  "2IN1" = '2in1',
+}
+
+export class A{
+  public static a= DeviceTypes12["2IN1"]
+}

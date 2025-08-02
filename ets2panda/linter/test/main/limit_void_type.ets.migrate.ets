@@ -38,8 +38,8 @@ function wrapper(fn: () => void) {
 function func3(): void { }
 let g: void = func3() as void;
 // Example 8: Callback function
-setTimeout((): void => { }, 1000.0);
-let h: void = setTimeout(() => { }, 1000.0);
+setTimeout((): void => { }, 1000);
+let h: void = setTimeout(() => { }, 1000);
 // Example 9: Array operation
 const funcArr: (() => void)[] = [() => { }];
 let i: void = funcArr[0]();
@@ -80,7 +80,7 @@ function withParam(param?: string): void { }
 let q: void = withParam();
 // Example 18: Rest parameter
 function sum(...nums: number[]): void { }
-let r: void = sum(1.0, 2.0, 3.0);
+let r: void = sum(1, 2, 3);
 // Example 19: This parameter
 function withThis(this: Window): void { }
 let s: void = withThis.call(window);
@@ -217,14 +217,14 @@ function foo1():void{
 }
 
 function foocfe(a: number): string | undefined {
-  if (a >= 0.0) {
+  if (a >= 0) {
     return "a >= 0";
   }
   return undefined;
 }
 
 function foocfe2(a: number): string | undefined {
-  if (a < 0.0) {
+  if (a < 0) {
     return undefined;
   }
   return "a >= 0";
@@ -232,12 +232,12 @@ function foocfe2(a: number): string | undefined {
 function fooefc(): void { }
 let ss: void = foo()
 let t: void | number = foo()
-let t2: void | number = 1.0;
+let t2: void | number = 1;
 
 function greet(hour: number): string | undefined {
-  if (hour < 12.0) {
+  if (hour < 12) {
     return undefined;
-  } else if (hour < 18.0) {
+  } else if (hour < 18) {
     return "Good afternoon";
   } else {
     return undefined;
@@ -280,7 +280,7 @@ class A1 {
   aa?: boolean | void
 
   test(a: number): boolean | undefined {
-    if (a > 0.0) {
+    if (a > 0) {
       // will return
       return undefined;
     }
@@ -289,7 +289,7 @@ class A1 {
   }
 
   test1(a: number): undefined | boolean {
-    if (a > 0.0) {
+    if (a > 0) {
       // will return
       return true;
     }
@@ -298,7 +298,7 @@ class A1 {
   }
 
   test2(a: number): undefined | boolean {
-    if (a > 0.0) {
+    if (a > 0) {
       // will return
       return undefined;
     }
@@ -306,7 +306,7 @@ class A1 {
   }
 
   test3(a: number): undefined | boolean {
-    if (a > 0.0) {
+    if (a > 0) {
       // will return
       return undefined;
     }
@@ -321,7 +321,7 @@ class A1 {
 }
 
 function test(a: number): boolean | undefined {
-  if (a > 0.0) {
+  if (a > 0) {
     // will return
     return undefined;
   }
@@ -330,7 +330,7 @@ function test(a: number): boolean | undefined {
 }
 
 function test1(a: number): undefined | boolean {
-  if (a > 0.0) {
+  if (a > 0) {
     // will return
     return true;
   }
@@ -339,7 +339,7 @@ function test1(a: number): undefined | boolean {
 }
 
 function test2(a: number): undefined | boolean {
-  if (a > 0.0) {
+  if (a > 0) {
     // will return
     return undefined;
   }
@@ -347,7 +347,7 @@ function test2(a: number): undefined | boolean {
 }
 
 function test3(a: number): undefined | boolean {
-  if (a > 0.0) {
+  if (a > 0) {
     // will return
     return undefined;
   }

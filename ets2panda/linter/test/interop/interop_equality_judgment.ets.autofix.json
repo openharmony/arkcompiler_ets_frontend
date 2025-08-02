@@ -14,32 +14,12 @@
         "limitations under the License."
     ],
     "result": [
-       {
+        {
             "line": 16,
             "column": 1,
             "endLine": 16,
             "endColumn": 58,
             "problem": "InterOpImportJs",
-            "autofix": [
-                {
-                    "start": 605,
-                    "end": 662,
-                    "replacementText": "",
-                    "line": 16,
-                    "column": 1,
-                    "endLine": 16,
-                    "endColumn": 58
-                },
-                {
-                    "start": 662,
-                    "end": 662,
-                    "replacementText": "let a = ESValue.load('./interop_equality_judgment_js').getProperty('a');\nlet b = ESValue.load('./interop_equality_judgment_js').getProperty('b');\nlet c = ESValue.load('./interop_equality_judgment_js').getProperty('c');\nlet d = ESValue.load('./interop_equality_judgment_js').getProperty('d');",
-                    "line": 16,
-                    "column": 1,
-                    "endLine": 16,
-                    "endColumn": 58
-                }
-            ],
             "suggest": "",
             "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
             "severity": "ERROR"
@@ -380,5 +360,5 @@
             "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
             "severity": "ERROR"
         }
-  ]
+    ]
 }

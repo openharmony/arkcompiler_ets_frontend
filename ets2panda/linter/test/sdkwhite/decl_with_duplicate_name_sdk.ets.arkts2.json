@@ -75,36 +75,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 24,
-            "column": 14,
-            "endLine": 24,
-            "endColumn": 20,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 24,
-            "column": 18,
-            "endLine": 24,
-            "endColumn": 20,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 24,
-            "column": 26,
-            "endLine": 24,
-            "endColumn": 28,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 25,
             "column": 31,
             "endLine": 25,
@@ -185,6 +155,16 @@
             "severity": "ERROR"
         },
         {
+          "line": 52,
+          "column": 5,
+          "endLine": 52,
+          "endColumn": 19,
+          "problem": "VariableMissingInitializer",
+          "suggest": "",
+          "rule": "After a variable is declared, a value must be assigned before using it (arkts-var-assignment-before-use)",
+          "severity": "ERROR"
+        },
+        {
             "line": 53,
             "column": 18,
             "endLine": 53,
@@ -192,6 +172,16 @@
             "problem": "DuplicateDeclNameFromSdk",
             "suggest": "",
             "rule": "API path have changed - please update your imports accordingly (sdk-no-decl-with-duplicate-name)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 54,
+            "column": 15,
+            "endLine": 54,
+            "endColumn": 37,
+            "problem": "ParameterType",
+            "suggest": "",
+            "rule": "Type of parameter must be defined explicitly (arkts-require-func-arg-type)",
             "severity": "ERROR"
         },
         {

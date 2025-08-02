@@ -135,16 +135,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 54,
-            "column": 38,
-            "endLine": 54,
-            "endColumn": 41,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 57,
             "column": 10,
             "endLine": 57,
@@ -152,16 +142,6 @@
             "problem": "LimitedVoidTypeFromSdk",
             "suggest": "",
             "rule": "Type \"void\" has no instances.(sdk-limited-void-type)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 57,
-            "column": 22,
-            "endLine": 57,
-            "endColumn": 25,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -175,16 +155,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 60,
-            "column": 46,
-            "endLine": 60,
-            "endColumn": 49,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 61,
             "column": 21,
             "endLine": 61,
@@ -192,16 +162,6 @@
             "problem": "LimitedVoidTypeFromSdk",
             "suggest": "",
             "rule": "Type \"void\" has no instances.(sdk-limited-void-type)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 61,
-            "column": 31,
-            "endLine": 61,
-            "endColumn": 34,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {

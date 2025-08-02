@@ -15,6 +15,26 @@
     ],
     "result": [
         {
+            "line": 32,
+            "column": 7,
+            "endLine": 32,
+            "endColumn": 19,
+            "problem": "VariableMissingInitializer",
+            "suggest": "",
+            "rule": "After a variable is declared, a value must be assigned before using it (arkts-var-assignment-before-use)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 36,
+            "column": 7,
+            "endLine": 36,
+            "endColumn": 19,
+            "problem": "VariableMissingInitializer",
+            "suggest": "",
+            "rule": "After a variable is declared, a value must be assigned before using it (arkts-var-assignment-before-use)",
+            "severity": "ERROR"
+        },
+        {
             "line": 41,
             "column": 11,
             "endLine": 41,
@@ -22,6 +42,26 @@
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 45,
+            "column": 11,
+            "endLine": 45,
+            "endColumn": 58,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 45,
+            "column": 27,
+            "endLine": 45,
+            "endColumn": 48,
+            "problem": "DynamicCtorCall",
+            "suggest": "",
+            "rule": "\"new\" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)",
             "severity": "ERROR"
         }
     ]

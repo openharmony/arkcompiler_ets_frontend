@@ -40,3 +40,7 @@ function tesCollectionsUsage() {
 function test(array: collections.Array<string>) {
     const map = collections.Map<string, string>();
 }
+
+function testBitVector(bv: collections.BitVector<string>) {
+    const bitVector = new collections.BitVector<string>();
+}

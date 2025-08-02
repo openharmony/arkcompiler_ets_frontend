@@ -31,7 +31,7 @@ struct RepeatExampleWithTemplates {
   @Local dataArr: Array<string> = [];
 
   aboutToAppear(): void {
-    for (let i: number = 0.0; i < 50.0; i++) {
+    for (let i = 0; i < 50; i++) {
       this.dataArr.push(`data_${i}`);
     }
   }
@@ -42,7 +42,7 @@ struct RepeatExampleWithTemplates {
         Repeat<string>(this.dataArr)
           .each((ri: RepeatItem<string>) => {
             ListItem() {
-              Text('each_' + ri.item).fontSize(30.0).fontColor('rgb(161,10,33)')
+              Text('each_' + ri.item).fontSize(30).fontColor('rgb(161,10,33)')
             }
           })
           .key((item: string, index: number): string => JSON.stringify(item))
@@ -52,7 +52,7 @@ struct RepeatExampleWithTemplates {
         Repeat<string>(this.dataArr)
           .each((ri: RepeatItem<string>) => {
             ListItem() {
-              Text('each_' + ri.item).fontSize(30.0).fontColor('rgb(161,10,33)')
+              Text('each_' + ri.item).fontSize(30).fontColor('rgb(161,10,33)')
             }
           })
           .key((item: string, index: number): string => JSON.stringify(item))
@@ -61,7 +61,7 @@ struct RepeatExampleWithTemplates {
         Repeat<string>(this.dataArr)
           .each((ri: RepeatItem<string>) => {
             ListItem() {
-              Text('each_' + ri.item).fontSize(30.0).fontColor('rgb(161,10,33)')
+              Text('each_' + ri.item).fontSize(30).fontColor('rgb(161,10,33)')
             }
           })
           .virtualScroll({ disableVirtualScroll: true })

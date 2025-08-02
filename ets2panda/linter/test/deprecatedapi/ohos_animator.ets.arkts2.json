@@ -15,33 +15,13 @@
     ],
     "result": [
         {
-            "line": 19,
-            "column": 13,
-            "endLine": 19,
-            "endColumn": 17,
-            "problem": "NumericSemantics",
+            "line": 30,
+            "column": 1,
+            "endLine": 30,
+            "endColumn": 31,
+            "problem": "BuilderNodeUpdateNoLiteral",
             "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 21,
-            "column": 10,
-            "endLine": 21,
-            "endColumn": 11,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 24,
-            "column": 15,
-            "endLine": 24,
-            "endColumn": 16,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "rule": "The \"update\" interface of \"BuilderNode\" does not accept an object literal. Please replace it with an instance of the class specified in the generic when creating a new \"BuilderNode\", and ensure that the instance has the same field values as the literal (arkui-buildernode-update-no-literal)",
             "severity": "ERROR"
         },
         {

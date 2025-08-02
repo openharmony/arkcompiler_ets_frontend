@@ -96,9 +96,9 @@
         },
         {
             "line": 31,
-            "column": 28,
+            "column": 20,
             "endLine": 31,
-            "endColumn": 28,
+            "endColumn": 20,
             "problem": "ArrayIndexExprType",
             "suggest": "",
             "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
@@ -106,18 +106,18 @@
         },
         {
             "line": 34,
-            "column": 19,
+            "column": 11,
             "endLine": 34,
-            "endColumn": 30,
+            "endColumn": 22,
             "problem": "RuntimeArrayCheck",
             "suggest": "",
             "rule": "Array bound not checked. (arkts-runtime-array-check)",
             "severity": "ERROR"
         },
         {
-            "line": 44,
+            "line": 46,
             "column": 1,
-            "endLine": 44,
+            "endLine": 46,
             "endColumn": 15,
             "problem": "RuntimeArrayCheck",
             "suggest": "",
@@ -125,9 +125,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 45,
+            "line": 50,
             "column": 1,
-            "endLine": 45,
+            "endLine": 50,
             "endColumn": 15,
             "problem": "RuntimeArrayCheck",
             "suggest": "",
@@ -142,16 +142,6 @@
             "problem": "EnumMemberNonConstInit",
             "suggest": "",
             "rule": "Enumeration members can be initialized only with compile time expressions of the same type (arkts-no-enum-mixed-types)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 70,
-            "column": 8,
-            "endLine": 70,
-            "endColumn": 9,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {

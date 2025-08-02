@@ -497,6 +497,8 @@ export const arkuiImportList: Set<string> = new Set([
   'GestureRecognizerState',
   'GestureStyle',
   'GestureType',
+  'getInspectorByKey',
+  'getInspectorTree',
   'GetItemMainSizeByIndex',
   'GradientDirection',
   'Grid',
@@ -1615,7 +1617,9 @@ export const arkuiImportList: Set<string> = new Set([
   'px2vp',
   'setAppBgColor',
   'sharedTransitionOptions',
-  'vp2px'
+  'vp2px',
+  '$r',
+  '$rawfile'
 ]);
 
 export const arkTsBuiltInTypeName: Set<string> = new Set([
