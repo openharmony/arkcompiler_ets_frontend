@@ -254,6 +254,10 @@ syntax:
   id: 312
   message: "Importing by 'require' and 'import' assignment is not supported, use 'import * as ... from ...' form instead!"
 
+- name: ERROR_ARKTS_NO_RUNTIME_PROTOTYPE_INHERITANCE
+  id: 167923
+  message: "Runtime prototype inheritance is not supported because of static typing."
+
 - name: ERROR_ARKTS_NO_SIDE_EFFECT_IMPORT
   id: 73297
   message: "Importing for side-effect only is prohibited! Please provide objects to be imported explicitly or use * to import
