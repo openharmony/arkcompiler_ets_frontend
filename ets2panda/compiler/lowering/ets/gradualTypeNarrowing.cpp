@@ -18,6 +18,7 @@
 #include "checker/ETSchecker.h"
 #include "checker/types/ets/etsTupleType.h"
 #include "checker/types/gradualType.h"
+#include "varbinder/ETSBinder.h"
 #include "es2panda.h"
 #include "ir/astNode.h"
 #include "ir/opaqueTypeNode.h"
@@ -123,6 +124,11 @@ bool GradualTypeNarrowing::PerformForModule(public_lib::Context *ctx, parser::Pr
 {
     context_ = ctx;
     checker_ = ctx->GetChecker()->AsETSChecker();
+
+    auto dynamicImports = program->VarBinder()->AsETSBinder()->DynamicImports();
+    if (dynamicImports.empty()) {
+        return true;
+    }
 
     program->Ast()->TransformChildrenRecursively(
         // CC-OFFNXT(G.FMT.14-CPP) project code style
