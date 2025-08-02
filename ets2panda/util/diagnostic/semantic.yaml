@@ -971,7 +971,7 @@ semantic:
 
 - name: OBJECT_LITERAL_METHOD_KEY
   id: 74
-  message: "Method '{}' cannot be used as a key of object literal."
+  message: "Class or interface methods cannot be initialized within an object literal."
 
 - name: OBJECT_LITERAL_NOT_KV
   id: 64

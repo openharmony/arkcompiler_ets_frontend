@@ -2535,7 +2535,7 @@ void ETSAnalyzer::CheckObjectExprProps(const ir::ObjectExpression *expr,
 
         auto *propType = checker->GetTypeOfVariable(lv);
         if (propType->IsETSMethodType()) {
-            checker->LogError(diagnostic::OBJECT_LITERAL_METHOD_KEY, {pname}, propExpr->Start());
+            checker->LogError(diagnostic::OBJECT_LITERAL_METHOD_KEY, {}, propExpr->Start());
             return;
         }
 
