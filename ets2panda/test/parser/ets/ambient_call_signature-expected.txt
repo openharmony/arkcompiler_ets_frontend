@@ -209,7 +209,7 @@
                   },
                   "end": {
                     "line": 17,
-                    "column": 5,
+                    "column": 22,
                     "program": "ambient_call_signature.ets"
                   }
                 }
@@ -222,7 +222,7 @@
                 },
                 "end": {
                   "line": 17,
-                  "column": 5,
+                  "column": 22,
                   "program": "ambient_call_signature.ets"
                 }
               }
@@ -237,7 +237,7 @@
               },
               "end": {
                 "line": 17,
-                "column": 5,
+                "column": 22,
                 "program": "ambient_call_signature.ets"
               }
             }

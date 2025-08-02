@@ -563,6 +563,11 @@ ir::ScriptFunction *ETSParser::ParseFunction(ParserStatus newStatus)
         LogError(diagnostic::ASYNC_IN_AMBIENT_CONTEXT);
     }
 
+    if (isDeclare && signature.ReturnType() != nullptr) {
+        // Note: if the return type annotation is null, the error handler will set later.
+        endLoc = signature.ReturnType()->Range().end;
+    }
+
     // clang-format off
     ir::ModifierFlags mFlags = isDeclare ? ir::ModifierFlags::DECLARE : ir::ModifierFlags::NONE;
     ir::ScriptFunctionFlags funcFlags =

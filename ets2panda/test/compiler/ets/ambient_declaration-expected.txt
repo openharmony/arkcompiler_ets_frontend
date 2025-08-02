@@ -342,7 +342,7 @@
                               },
                               "end": {
                                 "line": 16,
-                                "column": 21,
+                                "column": 50,
                                 "program": "ambient_declaration.ets"
                               }
                             }
@@ -359,7 +359,7 @@
                               },
                               "end": {
                                 "line": 16,
-                                "column": 21,
+                                "column": 50,
                                 "program": "ambient_declaration.ets"
                               }
                             }
@@ -372,7 +372,7 @@
                             },
                             "end": {
                               "line": 16,
-                              "column": 21,
+                              "column": 50,
                               "program": "ambient_declaration.ets"
                             }
                           }
@@ -385,7 +385,7 @@
                           },
                           "end": {
                             "line": 16,
-                            "column": 21,
+                            "column": 50,
                             "program": "ambient_declaration.ets"
                           }
                         }
@@ -398,7 +398,7 @@
                         },
                         "end": {
                           "line": 16,
-                          "column": 21,
+                          "column": 50,
                           "program": "ambient_declaration.ets"
                         }
                       }
@@ -418,7 +418,7 @@
                             },
                             "end": {
                               "line": 16,
-                              "column": 21,
+                              "column": 50,
                               "program": "ambient_declaration.ets"
                             }
                           }
@@ -434,7 +434,7 @@
                             },
                             "end": {
                               "line": 16,
-                              "column": 21,
+                              "column": 50,
                               "program": "ambient_declaration.ets"
                             }
                           }
@@ -454,7 +454,7 @@
                           },
                           "end": {
                             "line": 16,
-                            "column": 21,
+                            "column": 50,
                             "program": "ambient_declaration.ets"
                           }
                         }
@@ -468,7 +468,7 @@
                       },
                       "end": {
                         "line": 16,
-                        "column": 21,
+                        "column": 50,
                         "program": "ambient_declaration.ets"
                       }
                     }
@@ -482,7 +482,7 @@
                   },
                   "end": {
                     "line": 16,
-                    "column": 21,
+                    "column": 50,
                     "program": "ambient_declaration.ets"
                   }
                 }
@@ -495,7 +495,7 @@
                 },
                 "end": {
                   "line": 16,
-                  "column": 21,
+                  "column": 50,
                   "program": "ambient_declaration.ets"
                 }
               }
@@ -510,7 +510,7 @@
               },
               "end": {
                 "line": 16,
-                "column": 21,
+                "column": 50,
                 "program": "ambient_declaration.ets"
               }
             }

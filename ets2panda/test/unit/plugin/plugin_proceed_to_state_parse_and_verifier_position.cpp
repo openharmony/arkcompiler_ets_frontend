@@ -85,6 +85,11 @@ export { ClassOutside, val, foo }
 export { PI, E } from "std/math"
 
 export NS
+
+export declare function fooDecl(
+  options: number,
+  myop: string
+): void
 )";
 
 constexpr size_t NS_START_LINE = 11;
@@ -114,6 +119,7 @@ constexpr size_t INTERFACE_FOO4_START_LINE = 37;
 constexpr size_t FUNCTION_PARAM1_START_LINE = 55;
 constexpr size_t FUNCTION_PARAM2_START_LINE = 56;
 constexpr size_t FUNCTION_PARAM3_START_LINE = 43;
+constexpr size_t FUNCTION_DECL_START_LINE = 66;
 
 constexpr size_t NS_END_LINE = 30;
 constexpr size_t INNERNS_END_LINE = 29;
@@ -142,6 +148,7 @@ constexpr size_t INTERFACE_FOO4_END_LINE = 37;
 constexpr size_t FUNCTION_PARAM1_END_LINE = 55;
 constexpr size_t FUNCTION_PARAM2_END_LINE = 56;
 constexpr size_t FUNCTION_PARAM3_END_LINE = 43;
+constexpr size_t FUNCTION_DECL_END_LINE = 69;
 
 constexpr size_t NS_START_COL = 1;
 constexpr size_t INNERNS_START_COL = 3;
@@ -170,6 +177,7 @@ constexpr size_t INTERFACE_FOO4_START_COL = 5;
 constexpr size_t FUNCTION_PARAM1_START_COL = 3;
 constexpr size_t FUNCTION_PARAM2_START_COL = 3;
 constexpr size_t FUNCTION_PARAM3_START_COL = 11;
+constexpr size_t FUNCTION_DECL_START_COL = 8;
 
 constexpr size_t NS_END_COL = 2;
 constexpr size_t INNERNS_END_COL = 23;
@@ -198,6 +206,7 @@ constexpr size_t INTERFACE_FOO4_END_COL = 25;
 constexpr size_t FUNCTION_PARAM1_END_COL = 16;
 constexpr size_t FUNCTION_PARAM2_END_COL = 16;
 constexpr size_t FUNCTION_PARAM3_END_COL = 21;
+constexpr size_t FUNCTION_DECL_END_COL = 8;
 
 static std::map<std::string, size_t> startLineMap = {{"exportNamedDecl", EXPORT_NAMED_DECL_START_LINE},
                                                      {"exportSingleNamedDecl", EXPORT_SINGLE_NAMED_DECL_START_LINE},
@@ -225,7 +234,8 @@ static std::map<std::string, size_t> startLineMap = {{"exportNamedDecl", EXPORT_
                                                      {"interfaceFoo4", INTERFACE_FOO4_START_LINE},
                                                      {"fooP1", FUNCTION_PARAM1_START_LINE},
                                                      {"fooP2", FUNCTION_PARAM2_START_LINE},
-                                                     {"p3", FUNCTION_PARAM3_START_LINE}};
+                                                     {"p3", FUNCTION_PARAM3_START_LINE},
+                                                     {"fooDecl", FUNCTION_DECL_START_LINE}};
 
 static std::map<std::string, size_t> startColMap = {{"exportNamedDecl", EXPORT_NAMED_DECL_START_COL},
                                                     {"exportSingleNamedDecl", EXPORT_SINGLE_NAMED_DECL_START_COL},
@@ -253,7 +263,8 @@ static std::map<std::string, size_t> startColMap = {{"exportNamedDecl", EXPORT_N
                                                     {"interfaceFoo4", INTERFACE_FOO4_START_COL},
                                                     {"fooP1", FUNCTION_PARAM1_START_COL},
                                                     {"fooP2", FUNCTION_PARAM2_START_COL},
-                                                    {"p3", FUNCTION_PARAM3_START_COL}};
+                                                    {"p3", FUNCTION_PARAM3_START_COL},
+                                                    {"fooDecl", FUNCTION_DECL_START_COL}};
 
 static std::map<std::string, size_t> endLineMap = {{"exportNamedDecl", EXPORT_NAMED_DECL_END_LINE},
                                                    {"exportSingleNamedDecl", EXPORT_SINGLE_NAMED_DECL_END_LINE},
@@ -281,7 +292,8 @@ static std::map<std::string, size_t> endLineMap = {{"exportNamedDecl", EXPORT_NA
                                                    {"interfaceFoo4", INTERFACE_FOO4_END_LINE},
                                                    {"fooP1", FUNCTION_PARAM1_END_LINE},
                                                    {"fooP2", FUNCTION_PARAM2_END_LINE},
-                                                   {"p3", FUNCTION_PARAM3_END_LINE}};
+                                                   {"p3", FUNCTION_PARAM3_END_LINE},
+                                                   {"fooDecl", FUNCTION_DECL_END_LINE}};
 
 static std::map<std::string, size_t> endColMap = {{"exportNamedDecl", EXPORT_NAMED_DECL_END_COL},
                                                   {"exportSingleNamedDecl", EXPORT_SINGLE_NAMED_DECL_END_COL},
@@ -309,11 +321,29 @@ static std::map<std::string, size_t> endColMap = {{"exportNamedDecl", EXPORT_NAM
                                                   {"interfaceFoo4", INTERFACE_FOO4_END_COL},
                                                   {"fooP1", FUNCTION_PARAM1_END_COL},
                                                   {"fooP2", FUNCTION_PARAM2_END_COL},
-                                                  {"p3", FUNCTION_PARAM3_END_COL}};
+                                                  {"p3", FUNCTION_PARAM3_END_COL},
+                                                  {"fooDecl", FUNCTION_DECL_END_COL}};
 
 static es2panda_Impl *impl = nullptr;
 es2panda_Context *context = nullptr;
 es2panda_AstNode *fooDecl = nullptr;
+static void FindFunctionDecl(es2panda_AstNode *ast, [[maybe_unused]] void *ctx)
+{
+    if (!impl->IsFunctionDeclaration(ast)) {
+        return;
+    }
+    auto scriptFunc = impl->FunctionDeclarationFunction(context, ast);
+
+    auto *ident = impl->ScriptFunctionId(context, scriptFunc);
+    if (ident == nullptr) {
+        return;
+    }
+
+    auto name = std::string(impl->IdentifierName(context, ident));
+    if (name == "fooDecl") {
+        fooDecl = ast;
+    }
+}
 
 static std::map<std::string, es2panda_AstNode *> namespaceDecl = {{"NS", nullptr}, {"InnerNS", nullptr}};
 static void FindNamespaceDecl(es2panda_AstNode *ast, [[maybe_unused]] void *ctx)
@@ -475,12 +505,18 @@ static void FindTargetAst(es2panda_AstNode *ast, [[maybe_unused]] void *ctx)
     impl->AstNodeForEach(ast, FindMethodDef, context);
     impl->AstNodeForEach(ast, FindETSParamDecl, context);
     impl->AstNodeForEach(ast, FindEnumMember, context);
+    impl->AstNodeForEach(ast, FindFunctionDecl, context);
 }
 
 static bool CheckLineAndCol(es2panda_AstNode *ast, std::string name)
 {
     auto start = impl->AstNodeStartConst(context, ast);
     auto end = impl->AstNodeEndConst(context, ast);
+    [[maybe_unused]] auto a = impl->SourcePositionLine(context, start);
+    [[maybe_unused]] auto b = impl->SourcePositionCol(context, start);
+    [[maybe_unused]] auto c = impl->SourcePositionLine(context, end);
+    [[maybe_unused]] auto d = impl->SourcePositionCol(context, end);
+
     auto res = startLineMap[name] == impl->SourcePositionLine(context, start);
     ASSERT(startLineMap[name] == impl->SourcePositionLine(context, start));
 
@@ -501,6 +537,7 @@ static bool CheckAllNode()
     res &= CheckLineAndCol(exportSingleNamedDecl, "exportSingleNamedDecl");
     res &= CheckLineAndCol(reExportedDecl, "reExportedDecl");
     res &= CheckLineAndCol(importDecl, "importDecl");
+    res &= CheckLineAndCol(fooDecl, "fooDecl");
     for (const auto &[name, targetAst] : namespaceDecl) {
         res &= CheckLineAndCol(targetAst, name);
     }
