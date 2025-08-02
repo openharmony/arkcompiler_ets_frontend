@@ -1294,6 +1294,10 @@ semantic:
   id: 228
   message: "Type argument '{}' should be a subtype of '{}'-constraint"
 
+- name: TYPES_CANNOT_BE_MODIFIED_AT_RUNTIME
+  id: 55815
+  message: "Types cannot be modified at runtime with '{}'."
+
 - name: TYPE_FROM_STRING_LITERAL_TYPE_UNSUPPORTED
   id: 287
   message: "Acquiring types for string literal types is not supported."

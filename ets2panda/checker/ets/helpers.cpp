@@ -158,6 +158,11 @@ void ETSChecker::NotResolvedError(ir::Identifier *const ident, const varbinder::
                                   const ETSObjectType *classType)
 {
     if (classVar == nullptr || (classVar->TsType() != nullptr && classVar->TsType()->IsTypeError())) {
+        if (ident->Name() == compiler::Signatures::DELETE) {
+            LogError(diagnostic::TYPES_CANNOT_BE_MODIFIED_AT_RUNTIME, {ident->Name()}, ident->Start());
+            return;
+        }
+
         LogUnresolvedReferenceError(ident);
         return;
     }

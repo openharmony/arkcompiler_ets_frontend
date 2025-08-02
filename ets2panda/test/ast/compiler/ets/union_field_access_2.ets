@@ -19,7 +19,7 @@
 
 /* @@? 18:1 Error TypeError: Indexed access is not supported for such expression type. */
 /* @@? 18:2 Error TypeError: Unresolved reference a */
-/* @@? 18:6 Error TypeError: Unresolved reference delete */
+/* @@? 18:6 Error TypeError: Types cannot be modified at runtime with 'delete'. */
 /* @@? 18:13 Error SyntaxError: Unexpected token. */
 /* @@? 18:13 Error TypeError: Unresolved reference arguments */
 /* @@? 18:24 Error TypeError: need to specify target type for class composite */

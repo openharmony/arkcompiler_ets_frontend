@@ -251,6 +251,8 @@ defines:
     ref: CLASS_INITIALIZE_METHOD
   - name: 'constructor'
     ref: CONSTRUCTOR_NAME
+  - name: 'delete'
+    ref: DELETE
 
 packages:
   - name: 'std.core'
