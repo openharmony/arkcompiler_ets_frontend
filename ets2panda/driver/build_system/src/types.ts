@@ -195,7 +195,7 @@ export interface BuildConfig extends BuildBaseConfig, DeclgenConfig, LoggerConfi
   compileFiles: string[];
   entryFiles?: string[];
   dependentModuleList: DependentModuleConfig[];
-  aliasConfig: Map<string, Map<string, AliasConfig>>;
+  aliasConfig: Record<string, Record<string, AliasConfig>>;
 }
 // ProjectConfig ends
 

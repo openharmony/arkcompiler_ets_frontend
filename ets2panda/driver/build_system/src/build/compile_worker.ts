@@ -73,11 +73,15 @@ process.on('message', (message: {
       PluginDriver.getInstance().getPluginContext().setArkTSProgram(arktsGlobal.compilerContext.program);
 
       arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_PARSED, arktsGlobal.compilerContext.peer);
-      if (buildConfig.aliasConfig?.size > 0) {
+      if (buildConfig.aliasConfig && Object.keys(buildConfig.aliasConfig).length > 0) {
         // if aliasConfig is set, transform aliasName@kit.xxx to default@ohos.xxx through the plugin
         let ast = arkts.EtsScript.fromContext();
-        let transformAst = new KitImportTransformer(arkts, arktsGlobal.compilerContext.program,
-                                                    buildConfig.buildSdkPath, buildConfig.aliasConfig).transform(ast);
+        let transformAst = new KitImportTransformer(
+          arkts,
+          arktsGlobal.compilerContext.program,
+          buildConfig.buildSdkPath,
+          buildConfig.aliasConfig
+        ).transform(ast);
         PluginDriver.getInstance().getPluginContext().setArkTSAst(transformAst);
       }
       PluginDriver.getInstance().runPluginHook(PluginHook.PARSED);

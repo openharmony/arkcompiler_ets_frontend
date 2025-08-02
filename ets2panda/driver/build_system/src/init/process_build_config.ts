@@ -151,7 +151,7 @@ function initKoalaWrapper(buildConfig: BuildConfig): void {
 }
 
 function initAliasConfig(buildConfig: BuildConfig): void {
-  buildConfig.aliasConfig = new Map();
+  buildConfig.aliasConfig = {};
   buildConfig.sdkAliasMap = buildConfig.sdkAliasMap instanceof Map
     ? buildConfig.sdkAliasMap
     : new Map(Object.entries(buildConfig.sdkAliasMap || {}));
@@ -162,7 +162,7 @@ function initAliasConfig(buildConfig: BuildConfig): void {
   for (const [pkgName, filePath] of buildConfig.sdkAliasMap) {
     const rawContent = fs.readFileSync(filePath, 'utf-8');
     const jsonData = JSON.parse(rawContent);
-    const pkgAliasMap = new Map<string, AliasConfig>();
+    const pkgAliasObj: Record<string, AliasConfig> = {};
 
     for (const [aliasKey, config] of Object.entries(jsonData)) {
       if (typeof config !== 'object' || config === null ||
@@ -176,13 +176,13 @@ function initAliasConfig(buildConfig: BuildConfig): void {
       }
 
       const aliasConfig = config as AliasConfig;
-      pkgAliasMap.set(aliasKey, {
+      pkgAliasObj[aliasKey] = {
         originalAPIName: aliasConfig.originalAPIName,
         isStatic: aliasConfig.isStatic
-      });
+      };
     }
 
-    buildConfig.aliasConfig.set(pkgName, pkgAliasMap);
+    buildConfig.aliasConfig[pkgName] = pkgAliasObj;
   }
 }
 

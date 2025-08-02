@@ -49,7 +49,7 @@ export const NATIVE_MODULE: Set<string> = new Set(
 
 export const ARKTS_MODULE_NAME: string = 'arkts';
 
-export const KITS: string = 'kit';
+export const KITS: string = 'kits';
 export const API: string = 'api';
 export const ARKTS:string = 'arkts';
 export const COMPONENT:string = 'component';

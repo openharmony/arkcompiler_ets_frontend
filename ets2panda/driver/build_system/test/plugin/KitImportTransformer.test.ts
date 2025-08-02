@@ -25,9 +25,11 @@ jest.mock('../../src/logger', () => ({
     },
   }));
 jest.mock('../../src/pre_define', () => ({
+    DYNAMIC_PREFIX: 'dynamic/',
     KIT_CONFIGS_PATH_FROM_SDK: './plugin'
 }));
 import { KitImportTransformer } from '../../src/plugins/KitImportTransformer';
+import { DYNAMIC_PREFIX } from '../../src/pre_define';
 
 export const arktsMock: Partial<ArkTS> = {
     isEtsScript: jest.fn((node) => true),
@@ -57,17 +59,17 @@ export const arktsMock: Partial<ArkTS> = {
     }
   };
 
-const mockAliasConfig: Map<string, Map<string, AliasConfig>> = new Map([
-  ['har', new Map<string, AliasConfig>([
-    ['dynamic@kit.abilityKit', { isStatic: false, originalAPIName: '@kit.abilityKit' }],
-  ])],
-]);
+const mockAliasConfig: Record<string, Record<string, AliasConfig>> = {
+  har: {
+    'dynamic@kit.abilityKit': { isStatic: false, originalAPIName: '@kit.abilityKit' }
+  }
+};
   
 const mockProgram = {};
 
 describe('KitImportTransformer', () => {
 
-  it('should transform kit import to default@ohos.* imports', () => {
+  it('should transform kit import to dynamic/@ohos.* imports', () => {
     const transformer = new KitImportTransformer(arktsMock as ArkTS, mockProgram,'./test', mockAliasConfig);
 
     const astInput = {
@@ -83,16 +85,15 @@ describe('KitImportTransformer', () => {
     };
 
     const result = transformer.transform(astInput as any);
-
-    expect(result.statements).toContainEqual({
+    expect(result.statements[0]).toEqual({
       kind: 'ImportDeclaration',
-      source: { str: 'default@ohos.app.ability.common' },
+      source: { str: 'dynamic/@ohos.app.ability.common' },
       specifiers: [{ imported: { name: 'foo' } }]
     });
 
-    expect(result.statements).toContainEqual({
+    expect(result.statements[1]).toEqual({
       kind: 'ImportDeclaration',
-      source: { str: 'default@ohos.app.ability.ConfigurationConstant' },
+      source: { str: 'dynamic/@ohos.app.ability.ConfigurationConstant' },
       specifiers: [{ imported: { name: 'bar' } }]
     });
   });
