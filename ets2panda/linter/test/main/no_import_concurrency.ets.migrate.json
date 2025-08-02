@@ -15,6 +15,16 @@
     ],
     "result": [
         {
+            "line": 26,
+            "column": 8,
+            "endLine": 26,
+            "endColumn": 15,
+            "problem": "LimitedStdLibNoImportConcurrency",
+            "suggest": "",
+            "rule": "Import Concurrency is not required (arkts-limited-stdlib-no-import-concurrency)",
+            "severity": "ERROR"
+        },
+        {
             "line": 41,
             "column": 1,
             "endLine": 41,

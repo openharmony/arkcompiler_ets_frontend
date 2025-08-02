@@ -101,3 +101,24 @@ class B extends A {
     super(EEE.E1)
   }
 }
+
+class A2 {
+  constructor() {
+    console.log("Parent constructor")
+  }
+}
+
+class C2 extends A2 {
+  // ok 不用报
+}
+
+class A3 {}
+
+class C3 extends A3 {
+  constructor() {
+    super()
+  }
+}
+
+class C4 extends A3 {
+}

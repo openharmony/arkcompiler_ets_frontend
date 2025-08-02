@@ -87,12 +87,8 @@ import { BUILTIN_GENERIC_CONSTRUCTORS } from './utils/consts/BuiltinGenericConst
 import { DEFAULT_DECORATOR_WHITE_LIST } from './utils/consts/DefaultDecoratorWhitelist';
 import { INVALID_IDENTIFIER_KEYWORDS } from './utils/consts/InValidIndentifierKeywords';
 import { WORKER_MODULES, WORKER_TEXT } from './utils/consts/WorkerAPI';
-import {
-  COLLECTIONS_TEXT,
-  COLLECTIONS_MODULES,
-  BIT_VECTOR,
-  ARKTS_COLLECTIONS_MODULE
-} from './utils/consts/CollectionsAPI';
+import type { BitVectorUsage } from './utils/consts/CollectionsAPI';
+import { COLLECTIONS_TEXT, COLLECTIONS_MODULES, BIT_VECTOR } from './utils/consts/CollectionsAPI';
 import { ASON_TEXT, ASON_MODULES, ARKTS_UTILS_TEXT, JSON_TEXT, ASON_WHITE_SET } from './utils/consts/ArkTSUtilsAPI';
 import { interanlFunction } from './utils/consts/InternalFunction';
 import { ETS_PART, PATH_SEPARATOR } from './utils/consts/OhmUrl';
@@ -3893,7 +3889,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       }) || false;
     const classType: ts.Type | undefined = this.getClassType(classDecl, isStatic);
     const allBaseTypes = classType && this.getAllBaseTypes(classType, classDecl, isStatic);
-  
+
     if (!allBaseTypes || allBaseTypes.length === 0) {
       return;
     }
@@ -4131,7 +4127,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     for (let i = 0; i < Math.min(derivedParams.length, baseParams.length); i++) {
       const baseParam = baseParams[i];
       const derivedParam = derivedParams[i];
-      
+
       if (!baseParam.questionToken && derivedParam.questionToken) {
         this.incrementCounters(derivedParam, FaultID.MethodInheritRule);
         return;
@@ -8392,21 +8388,10 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (!ts.isIdentifier(ident)) {
       return;
     }
-    const importBitVectorAutofix = this.checkBitVector(ident);
-    const replace = this.autofixer?.replaceNode(node, ident.getText());
-    let autofix: Autofix[] | undefined = [];
-
-    if (replace) {
-      autofix = replace;
+    if (this.isBitVector(ident)) {
+      return;
     }
-
-    if (importBitVectorAutofix) {
-      autofix.push(importBitVectorAutofix);
-    }
-
-    if (autofix.length === 0) {
-      autofix = undefined;
-    }
+    const autofix = this.autofixer?.replaceNode(node, ident.getText());
 
     this.incrementCounters(node, FaultID.NoNeedStdLibSendableContainer, autofix);
   }
@@ -8435,9 +8420,19 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       }
 
       if (ts.isImportSpecifier(parent) && ts.isIdentifier(node)) {
+        const bitVectorUsed = this.checkBitVector(node.getSourceFile());
+
+        if (bitVectorUsed?.used) {
+          const ns = bitVectorUsed.ns;
+          if (parent.name.text === ns) {
+            return;
+          }
+        }
+
         if (parent.propertyName && node.text === parent.propertyName.text) {
           return;
         }
+
         const autofix = this.autofixer?.removeImport(node, parent);
         this.incrementCounters(node, FaultID.NoNeedStdLibSendableContainer, autofix);
       }
@@ -8504,62 +8499,34 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
   }
 
-  private checkBitVector(ident: ts.Identifier): Autofix | undefined {
-    if (!this.isBitVector(ident)) {
+  private checkBitVector(node: ts.Node): BitVectorUsage {
+    if (!ts.isIdentifier(node)) {
+      let isBitVector: BitVectorUsage;
+      node.forEachChild((child) => {
+        const checked = this.checkBitVector(child);
+        if (checked?.used) {
+          isBitVector = checked;
+        }
+      });
+
+      return isBitVector;
+    }
+
+    if (!this.isBitVector(node)) {
+      return { ns: '', used: false };
+    }
+
+    if (!ts.isPropertyAccessExpression(node.parent)) {
       return undefined;
     }
 
-    let lastImportDeclaration: ts.Node | undefined;
-    let bitVectorImported: boolean = false;
-    for (const node of this.sourceFile.statements) {
-      if (!ts.isImportDeclaration(node)) {
-        continue;
-      }
-      lastImportDeclaration = node;
-
-      if (this.checkImportDeclarationForBitVector(node)) {
-        bitVectorImported = true;
-      }
-    }
-
-    if (bitVectorImported) {
-      return undefined;
-    }
-
-    return this.autofixer?.importBitVector(ident, lastImportDeclaration);
+    return { ns: node.parent.expression.getText(), used: true };
   }
 
   private isBitVector(ident: ts.Identifier): boolean {
     void this;
 
     return ident.text === BIT_VECTOR;
-  }
-
-  private checkImportDeclarationForBitVector(node: ts.ImportDeclaration): boolean {
-    const importSpecifier = node.moduleSpecifier;
-    if (!ts.isStringLiteral(importSpecifier)) {
-      return false;
-    }
-    const importSpecifierText = importSpecifier.text;
-
-    const importClause = node.importClause;
-    if (!importClause) {
-      return false;
-    }
-
-    const namedBindings = importClause.namedBindings;
-    if (!namedBindings || !ts.isNamedImports(namedBindings)) {
-      return false;
-    }
-
-    let bitVectorImported = false;
-    for (const specifier of namedBindings.elements) {
-      if (this.isBitVector(specifier.name) && importSpecifierText === ARKTS_COLLECTIONS_MODULE) {
-        bitVectorImported = true;
-      }
-    }
-
-    return bitVectorImported;
   }
 
   interfacesNeedToAlarm: ts.Identifier[] = [];
@@ -8584,14 +8551,37 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   }
 
   private isInterfaceImportNeeded(identifier: ts.Identifier): boolean {
+    const name = identifier.getText();
     return (
-      arkuiImportList.has(identifier.getText()) &&
-      !skipImportDecoratorName.has(identifier.getText()) &&
-      !this.interfacesAlreadyImported.has(identifier.getText()) &&
+      arkuiImportList.has(name) &&
+      !skipImportDecoratorName.has(name) &&
+      !this.interfacesAlreadyImported.has(name) &&
       !this.isParentAlreadyImported(identifier.parent) &&
       !this.isDeclarationInSameFile(identifier) &&
+      !this.isDeprecatedInterface(identifier) &&
       !TypeScriptLinter.isWrappedByExtendDecorator(identifier)
     );
+  }
+
+  private isDeprecatedInterface(node: ts.Identifier): boolean {
+    const symbol = this.tsUtils.trueSymbolAtLocation(node);
+    const decl = TsUtils.getDeclaration(symbol);
+    if (!decl) {
+      return false;
+    }
+
+    const parName = this.tsUtils.getParentSymbolName(symbol);
+    const parameters = ts.isFunctionLike(decl) ? decl.parameters : undefined;
+    const returnType = ts.isFunctionLike(decl) ? decl.type?.getText() : undefined;
+    const fileName = path.basename(decl.getSourceFile().fileName) + '';
+
+    const deprecatedApiCheckMap = TypeScriptLinter.updateDeprecatedApiCheckMap(
+      parName === undefined ? DEPRECATE_UNNAMED : parName,
+      parameters,
+      returnType,
+      fileName
+    );
+    return this.isMatchedDeprecatedApi(node.getText(), deprecatedApiCheckMap);
   }
 
   private static isWrappedByExtendDecorator(node: ts.Identifier): boolean {
@@ -10222,11 +10212,27 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     });
 
     if (defaultIsForbidden) {
-      const autofix = this.autofixer?.removeDefaultImport(importDeclaration, defaultImport, expectedImports[0]);
-      this.incrementCounters(defaultImport, FaultID.LimitedStdLibNoImportConcurrency, autofix);
+      if (defaultImport?.getText() === 'process') {
+        this.incrementCounters(defaultImport, FaultID.LimitedStdLibNoImportConcurrency);
+      } else {
+        const autofix = this.autofixer?.removeDefaultImport(importDeclaration, defaultImport, expectedImports[0]);
+        this.incrementCounters(defaultImport, FaultID.LimitedStdLibNoImportConcurrency, autofix);
+      }
     }
 
+    this.processImportSpecifier(forbiddenNamed, importDeclaration);
+  }
+
+  private processImportSpecifier(forbiddenNamed: ts.ImportSpecifier[], importDeclaration: ts.ImportDeclaration): void {
     for (const spec of forbiddenNamed) {
+      const bitVectorUsed = this.checkBitVector(spec.getSourceFile());
+
+      if (bitVectorUsed?.used) {
+        const ns = bitVectorUsed.ns;
+        if (spec.name.text === ns) {
+          continue;
+        }
+      }
       const autofix = this.autofixer?.removeImportSpecifier(spec, importDeclaration);
       this.incrementCounters(spec, FaultID.LimitedStdLibNoImportConcurrency, autofix);
     }
@@ -10395,6 +10401,12 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       // If it's class, get the constructor's parameters and match against it.
       const extendedClassInfo = this.extractExtendedClassConstructorInfo(identInfo.decl);
       if (!extendedClassInfo) {
+        return;
+      }
+
+      // If there are only non parametric constructions, do not check.
+      const value = extendedClassInfo.values().next().value;
+      if (extendedClassInfo.size === 1 && value && value.length === 0) {
         return;
       }
 

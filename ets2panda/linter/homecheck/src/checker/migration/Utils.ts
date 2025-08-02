@@ -13,18 +13,7 @@
  * limitations under the License.
  */
 
-import {
-    ArkAssignStmt,
-    ArkMethod,
-    CallGraph,
-    CallGraphBuilder,
-    Local,
-    LOG_MODULE_TYPE,
-    Logger,
-    Scene,
-    Stmt,
-    Value,
-} from 'arkanalyzer/lib';
+import { ArkAssignStmt, ArkMethod, CallGraph, CallGraphBuilder, Local, LOG_MODULE_TYPE, Logger, Scene, Stmt, Value } from 'arkanalyzer/lib';
 import { WarnInfo } from '../../utils/common/Utils';
 import { Language } from 'arkanalyzer/lib/core/model/ArkFile';
 import { DVFG, DVFGNode } from 'arkanalyzer/lib/VFG/DVFG';
@@ -153,7 +142,7 @@ export function getLineAndColumn(stmt: Stmt, operand: Value, exactEndInfo: boole
         if (exactEndInfo) {
             const endLine = originPosition.getLastLine();
             const endCol = originPosition.getLastCol();
-            return { line, startCol, endLine: endLine,  endCol: endCol, filePath: originPath };
+            return { line, startCol, endLine: endLine, endCol: endCol, filePath: originPath };
         } else {
             return { line, startCol, endCol: startCol, filePath: originPath };
         }

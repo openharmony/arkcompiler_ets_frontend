@@ -744,14 +744,14 @@
             "severity": "ERROR"
         },
         {
-          "line": 167,
-          "column": 3,
-          "endLine": 167,
-          "endColumn": 37,
-          "problem": "NoLocalClass",
-          "suggest": "",
-          "rule": "Creating local classes is not supported (arkts-no-local-class)",
-          "severity": "ERROR"
+            "line": 167,
+            "column": 3,
+            "endLine": 167,
+            "endColumn": 37,
+            "problem": "NoLocalClass",
+            "suggest": "",
+            "rule": "Creating local classes is not supported (arkts-no-local-class)",
+            "severity": "ERROR"
         },
         {
             "line": 168,
@@ -801,16 +801,6 @@
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
             "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 216,
-            "column": 1,
-            "endLine": 218,
-            "endColumn": 2,
-            "problem": "MissingSuperCall",
-            "suggest": "",
-            "rule": "The subclass constructor must call the parent class's parametered constructor (arkts-subclass-must-call-super-constructor-with-args)",
             "severity": "ERROR"
         },
         {

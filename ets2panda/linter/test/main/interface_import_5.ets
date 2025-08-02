@@ -13,9 +13,27 @@
  * limitations under the License.
  */
 
-export const COLLECTIONS_TEXT = 'collections';
-export const ARKTS_COLLECTIONS_MODULE = '@arkts.collections';
-export const BIT_VECTOR = 'BitVector';
-export const COLLECTIONS_MODULES = ['@arkts.collections', '@kit.ArkTS'];
+import * from './ui_modules/common';
 
-export type BitVectorUsage = undefined | { ns: string; used: boolean };
+@Entry
+@Component
+struct Index {
+  @State message: string = 'Hello World'
+
+  build() {
+    Row() {
+      Column() {
+        Text(this.message)
+          .fontSize(50)
+          .fontWeight(FontWeight.Bold)
+          .onClick(() => {
+            // 建议使用this.getUIContext().getHostContext()
+            let context: Context = getContext(this) as Context;
+            console.info("CacheDir:" + context.cacheDir);
+          })
+      }
+      .width('100%')
+    }
+    .height('100%')
+  }
+}

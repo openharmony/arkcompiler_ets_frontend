@@ -13,9 +13,7 @@
  * limitations under the License.
  */
 import {OhosInterface} from './oh_modules/ohos_lib';
-import { BitVector } from "@arkts.collections";
-
-
+import { collections } from './@arkts.collections';
 // #14071
 class A {
   v: string = '';
@@ -176,7 +174,12 @@ mmap2['222'];
 mmap3["kkr"];
 
 
-class MyClass extends BitVector {
+
+
+
+
+@Sendable
+class MyClass extends collections.BitVector {
   constructor() {
     super(0);
     for (let i = 0; i < this.length; i++) {

@@ -15,48 +15,6 @@
     ],
     "result": [
         {
-          "line": 16,
-          "column": 10,
-          "endLine": 16,
-          "endColumn": 21,
-          "problem": "LimitedStdLibNoImportConcurrency",
-          "autofix": [
-            {
-              "start": 662,
-              "end": 713,
-              "replacementText": "",
-              "line": 16,
-              "column": 10,
-              "endLine": 16,
-              "endColumn": 21
-            }
-          ],
-          "suggest": "",
-          "rule": "Import Concurrency is not required (arkts-limited-stdlib-no-import-concurrency)",
-          "severity": "ERROR"
-        },
-        {
-            "line": 16,
-            "column": 10,
-            "endLine": 16,
-            "endColumn": 21,
-            "problem": "NoNeedStdLibSendableContainer",
-            "autofix": [
-                {
-                    "start": 662,
-                    "end": 713,
-                    "replacementText": "",
-                    "line": 16,
-                    "column": 10,
-                    "endLine": 16,
-                    "endColumn": 21
-                }
-            ],
-            "suggest": "",
-            "rule": "Sendable containers are not supported (arkts-no-need-stdlib-sendable-containers)",
-            "severity": "ERROR"
-        },
-        {
             "line": 22,
             "column": 3,
             "endLine": 22,
@@ -465,36 +423,6 @@
             ],
             "suggest": "",
             "rule": "Usage of standard library is restricted(arkts-limited-stdlib-no-sendable-decorator)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 177,
-            "column": 23,
-            "endLine": 177,
-            "endColumn": 44,
-            "problem": "NoNeedStdLibSendableContainer",
-            "autofix": [
-                {
-                    "start": 3733,
-                    "end": 3754,
-                    "replacementText": "BitVector",
-                    "line": 177,
-                    "column": 23,
-                    "endLine": 177,
-                    "endColumn": 44
-                },
-                {
-                    "start": 713,
-                    "end": 713,
-                    "replacementText": "\nimport { BitVector } from \"@arkts.collections\";\n",
-                    "line": 177,
-                    "column": 23,
-                    "endLine": 177,
-                    "endColumn": 44
-                }
-            ],
-            "suggest": "",
-            "rule": "Sendable containers are not supported (arkts-no-need-stdlib-sendable-containers)",
             "severity": "ERROR"
         },
         {
