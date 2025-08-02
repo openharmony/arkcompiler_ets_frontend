@@ -834,9 +834,9 @@ void ETSGen::EmitFailedTypeCastException(const ir::AstNode *node, const VReg src
     const auto errorReg = AllocReg();
 
     if (isUndef) {
-        Sa().Emit<Movi>(node, errorReg, 1.0);
+        Ra().Emit<Movi>(node, errorReg, 1.0);
     } else {
-        Sa().Emit<Movi>(node, errorReg, 0.0);
+        Ra().Emit<Movi>(node, errorReg, 0.0);
     }
     SetVRegType(errorReg, Checker()->GlobalETSBooleanType());
     LoadAccumulatorString(node, util::UString(target->ToString(), Allocator()).View());
