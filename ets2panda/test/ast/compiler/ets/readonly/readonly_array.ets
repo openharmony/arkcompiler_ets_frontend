@@ -15,7 +15,5 @@
 
 let a: readonly int [""];
 
-/* @@? 16:22 Error SyntaxError: Unexpected token, expected ']'. */
-/* @@? 16:22 Error SyntaxError: 'readonly' type modifier is only permitted on resizable array and tuple types. */
-/* @@? 16:22 Error SyntaxError: Unexpected token ']'. */
-/* @@? 16:24 Error SyntaxError: Unexpected token ']'. */
+/* @@? 16:21 Error SyntaxError: Indexed access types are not supported, use type name instead! */
+/* @@? 16:25 Error SyntaxError: 'readonly' type modifier is only permitted on resizable array and tuple types. */

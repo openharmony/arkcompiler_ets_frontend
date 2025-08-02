@@ -473,6 +473,10 @@ syntax:
   id: 234
   message: "Property or signature expected."
 
+- name: INDEXED_ACCESS_TYPE
+  id: 49888
+  message: "Indexed access types are not supported, use type name instead!"
+
 - name: INDEX_MISSING_IDENTIFIER
   id: 21
   message: "Return type of index signature from exported class or interface need to be identifier."

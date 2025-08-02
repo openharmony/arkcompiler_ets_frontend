@@ -13,12 +13,8 @@
  * limitations under the License.
  */
 
-/*---
-flags: [dynamic-ast]
----*/
+type Point = /* @@ label1 */{x: number = 0; y: number = 0}
+type N = Point/* @@ label2 */["x"]
 
-    type Point = { x: number; y: number };
-    type AxeX = Point['x'];
-
-/* @@? 20:18 Error SyntaxError: Using object literals to declare types in place is not supported. Please declare types and interfaces explicitly! */
-/* @@? 21:22 Error SyntaxError: Indexed access types are not supported, use type name instead! */
+/* @@@ label1 Error SyntaxError: Using object literals to declare types in place is not supported. Please declare types and interfaces explicitly!  */
+/* @@@ label2 Error SyntaxError: Indexed access types are not supported, use type name instead!  */
