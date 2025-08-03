@@ -34,7 +34,6 @@
     "arkts-no-debugger",
     "arkts-no-arguments-obj",
     "arkts-no-tagged-templates",
-    "arkts-array-index-expr-type",
     "arkts-switch-expr",
     "arkts-case-expr",
     "arkts-array-index-negative",
