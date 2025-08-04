@@ -35,16 +35,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 26,
-            "column": 12,
-            "endLine": 26,
-            "endColumn": 15,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 45,
             "column": 3,
             "endLine": 45,
@@ -85,26 +75,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 45,
-            "column": 30,
-            "endLine": 45,
-            "endColumn": 33,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 48,
-            "column": 12,
-            "endLine": 48,
-            "endColumn": 15,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 52,
             "column": 12,
             "endLine": 52,
@@ -125,16 +95,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 70,
-            "column": 30,
-            "endLine": 70,
-            "endColumn": 33,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 75,
             "column": 3,
             "endLine": 75,
@@ -142,16 +102,6 @@
             "problem": "NoSignatureDistinctWithObjectPublicApi",
             "suggest": "",
             "rule": "The signature of a method in a class/interface cannot be different from the public interface in an object. (arkts-class-no-signature-distinct-with-object-public-api)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 75,
-            "column": 30,
-            "endLine": 75,
-            "endColumn": 33,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {

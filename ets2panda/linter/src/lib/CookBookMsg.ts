@@ -106,7 +106,8 @@ cookBookTag[74] = 'Destructuring variable declarations are not supported (arkts-
 cookBookTag[75] = 'Use string-literal keys with Record (arkts-obj-literal-key-type)';
 cookBookTag[76] = 'Type of parameter must be defined explicitly (arkts-require-func-arg-type)';
 cookBookTag[77] = 'Template string type is not supported (arkts-no-template-string-type)';
-cookBookTag[78] = '';
+cookBookTag[78] =
+  'Numeric value literals outside of integer range require long representation (arkts-use-long-for-large-numeric-literal)';
 cookBookTag[79] = 'Type annotation in catch clause is not supported (arkts-no-types-in-catch)';
 cookBookTag[80] = '"for .. in" is not supported (arkts-no-for-in)';
 cookBookTag[81] = '';

@@ -89,6 +89,7 @@ faultDesc[FaultID.ParameterProperties] = 'Parameter properties in constructor';
 faultDesc[FaultID.InstanceofUnsupported] = 'Left-hand side of "instanceof" is wrong';
 faultDesc[FaultID.TemplateStringType] = 'Template string type';
 faultDesc[FaultID.ShorthandAmbientModuleDecl] = 'Shorthand ambient module declaration';
+faultDesc[FaultID.LongNumeric] = 'Use long for big numbers';
 faultDesc[FaultID.WildcardsInModuleName] = 'Wildcards in module name';
 faultDesc[FaultID.UMDModuleDefinition] = 'UMD module definition';
 faultDesc[FaultID.NewTarget] = '"new.target" meta-property';

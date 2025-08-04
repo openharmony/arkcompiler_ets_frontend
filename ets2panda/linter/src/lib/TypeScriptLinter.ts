@@ -448,7 +448,8 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     [ts.SyntaxKind.TypeOfExpression, this.handleInterOpImportJsOnTypeOfNode],
     [ts.SyntaxKind.AwaitExpression, this.handleAwaitExpression],
     [ts.SyntaxKind.PostfixUnaryExpression, this.handlePostfixUnaryExpression],
-    [ts.SyntaxKind.BigIntLiteral, this.handleBigIntLiteral]
+    [ts.SyntaxKind.BigIntLiteral, this.handleBigIntLiteral],
+    [ts.SyntaxKind.NumericLiteral, this.handleNumericLiteral]
   ]);
 
   lint(): void {
@@ -11912,6 +11913,29 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       ts.SyntaxKind.AsteriskAsteriskToken
     ];
     return binaryOperators.includes(kind);
+  }
+
+  private handleNumericLiteral(node: ts.Node): void {
+    if (!this.options.arkts2 || !ts.isNumericLiteral(node)) {
+      return;
+    }
+    this.handleLargeNumericLiteral(node);
+  }
+
+  private handleLargeNumericLiteral(node: ts.NumericLiteral): void {
+    const parent = node.parent;
+    const isPrefix = ts.isPrefixUnaryExpression(parent) && parent.operator === ts.SyntaxKind.MinusToken;
+
+    const type = isPrefix ? this.tsTypeChecker.getContextualType(parent) : this.tsTypeChecker.getContextualType(node);
+    const isLarge = TsUtils.ifLargerThanInt(node, isPrefix);
+    if (!isLarge) {
+      return;
+    }
+    const isLong = this.tsUtils.isStdLongType(type);
+    if (isLong) {
+      return;
+    }
+    this.incrementCounters(node, FaultID.LongNumeric);
   }
 
   private checkArrayUsageWithoutBound(accessExpr: ts.ElementAccessExpression): void {

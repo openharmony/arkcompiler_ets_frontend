@@ -65,6 +65,7 @@ faultsAttrs[FaultID.InOperator] = new FaultAttributes(66);
 faultsAttrs[FaultID.DestructuringAssignment] = new FaultAttributes(69);
 faultsAttrs[FaultID.CommaOperator] = new FaultAttributes(71);
 faultsAttrs[FaultID.DestructuringDeclaration] = new FaultAttributes(74);
+faultsAttrs[FaultID.LongNumeric] = new FaultAttributes(78);
 faultsAttrs[FaultID.ObjectLiteralKeyType] = new FaultAttributes(75);
 faultsAttrs[FaultID.ParameterType] = new FaultAttributes(76);
 faultsAttrs[FaultID.TemplateStringType] = new FaultAttributes(77);

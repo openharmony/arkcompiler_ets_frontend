@@ -21,6 +21,7 @@
     "arkts-no-template-string-type",
     "arkts-obj-literal-key-type",
     "arkts-optional-methods",
+    "arkts-use-long-for-large-numeric-literal",
     "arkts-numeric-semantic",
     "arkts-incompatible-function-types",
     "arkts-limited-void-type",

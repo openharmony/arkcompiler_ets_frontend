@@ -181,6 +181,7 @@ export enum FaultID {
   NoImportNamespaceStarAsVar,
   ExtendsExpression,
   NumericSemantics,
+  LongNumeric,
   AnimatableExtendDecoratorTransform,
   NoDuplicateFunctionName,
   OhmUrlFullPath,
