@@ -944,7 +944,7 @@ export class Es2pandaNativeModule {
     throw new Error('Not implemented');
   }
 
-  _getOffsetByColAndLine(context: KPtr, line: KInt, column: KInt): KInt {
+  _getOffsetByColAndLine(sourceCode: String, line: KInt, column: KInt): KInt {
     throw new Error('Not implemented');
   }
 
