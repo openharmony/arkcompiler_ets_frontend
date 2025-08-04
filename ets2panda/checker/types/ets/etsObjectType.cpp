@@ -664,7 +664,7 @@ void ETSObjectType::IdenticalUptoTypeArguments(TypeRelation *relation, Type *oth
 
     auto *thisBase = GetOriginalBaseType();
     auto *otherBase = other->AsETSObjectType()->GetOriginalBaseType();
-    if (thisBase->Variable() != otherBase->Variable()) {
+    if (thisBase->Variable()->Declaration()->Node() != otherBase->Variable()->Declaration()->Node()) {
         return;
     }
 
