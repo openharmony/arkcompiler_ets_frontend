@@ -65,6 +65,13 @@ static void HandleAnonymousConst(public_lib::Context *const ctx, parser::Program
     auto &stmt = module->StatementsForUpdates();
     auto iterator = std::find_if(stmt.begin(), stmt.end(), isExportAnonymousConst);
 
+    [[maybe_unused]] const size_t exportDefaultMaxSize = 1;
+    if ((*iterator)->AsExportNamedDeclaration()->Specifiers().size() != exportDefaultMaxSize) {
+        ctx->GetChecker()->AsETSChecker()->LogError(diagnostic::MULTIPLE_DEFAULT_EXPORTS,
+                                                    (*iterator)->AsExportNamedDeclaration()->Start());
+        return;
+    }
+
     auto *anonymousVariableDecl =
         CreateAnonymousVariableDecl(ctx, (*iterator)->AsExportNamedDeclaration())->AsStatement();
     stmt.insert(iterator, anonymousVariableDecl);
