@@ -47,7 +47,8 @@ import {
   LspRenameLocation,
   LspRenameInfoType,
   LspRenameInfoSuccess,
-  LspRenameInfoFailure
+  LspRenameInfoFailure,
+  LspSourceLocation
 } from './lspNode';
 import { passStringArray, unpackString } from '../common/private';
 import { Es2pandaContextState } from '../generated/Es2pandaEnums';
@@ -241,6 +242,11 @@ export class Lsp {
   getOffsetByColAndLine(filename: String, line: number, column: number): number {
     const sourceCode = this.getFileSource(filename.valueOf());
     return global.es2panda._getOffsetByColAndLine(sourceCode, line, column);
+  }
+
+  getColAndLineByOffset(filename: String, offset: number): LspSourceLocation {
+    const sourceCode = this.getFileSource(filename.valueOf());
+    return new LspSourceLocation(global.es2panda._getColAndLineByOffset(sourceCode, offset));
   }
 
   getDefinitionAtPosition(filename: String, offset: number, nodeInfos?: NodeInfo[]): LspDefinitionData {

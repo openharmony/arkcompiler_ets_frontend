@@ -546,6 +546,7 @@ typedef struct LSPAPI {
     InlayHintList (*provideInlayHints)(es2panda_Context *context, const TextSpan *span);
     SignatureHelpItems (*getSignatureHelpItems)(es2panda_Context *context, size_t position);
     size_t (*getOffsetByColAndLine)(const std::string &sourceCode, size_t line, size_t column);
+    std::pair<size_t, size_t> (*getColAndLineByOffset)(const std::string &sourceCode, size_t offset);
     std::vector<CodeFixActionInfo> (*getCodeFixesAtPosition)(es2panda_Context *context, size_t start_position,
                                                              size_t end_position, std::vector<int> &errorCodes,
                                                              CodeFixOptions &codeFixOptions);

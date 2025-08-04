@@ -229,6 +229,16 @@ export class LspTextSpan extends LspNode {
   readonly length: KInt;
 }
 
+export class LspSourceLocation extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.line = global.es2panda._getSourceLocationLine(peer);
+    this.column = global.es2panda._getSourceLocationColumn(peer);
+  }
+  readonly line: number;
+  readonly column: number;
+}
+
 export interface TextSpan {
   start: KInt;
   length: KInt;
