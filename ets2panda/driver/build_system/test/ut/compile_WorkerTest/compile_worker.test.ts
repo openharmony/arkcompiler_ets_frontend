@@ -83,6 +83,8 @@ afterEach(() => {
 });
 
 // Test the functions of the compile_worker.ts file
+import { changeFileExtension } from '../../../src/utils';
+import { DECL_ETS_SUFFIX } from '../../../src/pre_define';
 describe('compile_worker', () => {
     const fileInfo = {
         filePath: '/src/foo.ets',
@@ -153,6 +155,17 @@ describe('compile_worker', () => {
             (process as any).emit('message', { taskList: [fileInfo], buildConfig: config, moduleInfos });
         }).toThrow('exit');
         expect(fakeArkts.generateStaticDeclarationsFromContext).not.toHaveBeenCalled();
+        require('path').relative.mockImplementation((from: string, to: string) => to.replace(from, '').replace(/^\//, ''));
+        require('fs').readFileSync.mockReturnValue(Buffer.from('source code'));
+        config = { ...buildConfig, hasMainModule: true, byteCodeHar: true };
+        require('../../../src/build/compile_worker');
+        expect(() => {
+            (process as any).emit('message', { taskList: [fileInfo], buildConfig: config, moduleInfos });
+        }).toThrow('exit');
+        let filePathFromModuleRoot = require('path').relative(buildConfig.moduleRootPath, fileInfo.filePath);
+        let declarationPath = require('path').join(buildConfig.declgenV2OutPath, filePathFromModuleRoot);
+        let declarationFilePath = changeFileExtension(declarationPath, DECL_ETS_SUFFIX);
+        expect(fakeArkts.generateStaticDeclarationsFromContext).toHaveBeenCalledWith(declarationFilePath);
     });
 
     test('throw while process.send is undefined', () => {
