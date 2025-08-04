@@ -29,8 +29,8 @@ type Loop<T, U extends Loop<T, U>> = {
 /* @@? 17:23 Error TypeError: Indexed signatures are not allowed. Use arrays instead! */
 /* @@? 17:24 Error SyntaxError: Unexpected token ']'. */
 /* @@? 17:26 Error SyntaxError: Unexpected token 'extends'. */
-/* @@? 17:34 Error SyntaxError: Unexpected token 'boolean'. */
+/* @@? 17:34 Error SyntaxError: boolean is a predefined type, cannot be used as an identifier */
 /* @@? 17:42 Error SyntaxError: Unexpected token '?'. */
 /* @@? 17:44 Error SyntaxError: number is a predefined type, cannot be used as an identifier */
 /* @@? 17:51 Error SyntaxError: Unexpected token ':'. */
-/* @@? 17:59 Error SyntaxError: Field type annotation expected. */
+/* @@? 17:53 Error SyntaxError: string is a predefined type, cannot be used as an identifier */

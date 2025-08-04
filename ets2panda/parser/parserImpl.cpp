@@ -1334,8 +1334,7 @@ ir::Identifier *ParserImpl::ExpectIdentifier([[maybe_unused]] bool isReference, 
     }
 
     auto const &tokenStart = token.Start();
-    if (token.IsPredefinedType() && !util::Helpers::IsStdLib(program_) &&
-        ((options & TypeAnnotationParsingOptions::ADD_TYPE_PARAMETER_BINDING) == 0)) {
+    if (!IsValidIdentifierName(token) && ((options & TypeAnnotationParsingOptions::ADD_TYPE_PARAMETER_BINDING) == 0)) {
         LogError(diagnostic::PREDEFINED_TYPE_AS_IDENTIFIER, {token.Ident()}, tokenStart);
         lexer_->NextToken();
         return AllocBrokenExpression(tokenStart);

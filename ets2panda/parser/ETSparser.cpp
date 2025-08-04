@@ -99,6 +99,11 @@ bool ETSParser::IsETSParser() const noexcept
     return true;
 }
 
+bool ETSParser::IsValidIdentifierName(const lexer::Token &token) const noexcept
+{
+    return !token.IsPredefinedType() || util::Helpers::IsStdLib(GetProgram());
+}
+
 std::unique_ptr<lexer::Lexer> ETSParser::InitLexer(const SourceFile &sourceFile)
 {
     GetProgram()->SetSource(sourceFile);
@@ -1078,7 +1083,7 @@ ir::TypeNode *ETSParser::ParseBaseTypeReference(TypeAnnotationParsingOptions *op
 
 ir::TypeNode *ETSParser::ParseLiteralIdent(TypeAnnotationParsingOptions *options)
 {
-    if (Lexer()->GetToken().IsDefinableTypeName()) {
+    if (Lexer()->GetToken().IsPredefinedType()) {
         return GetTypeAnnotationOfPrimitiveType(Lexer()->GetToken().KeywordType(), options);
     }
 

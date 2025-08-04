@@ -84,6 +84,11 @@ public:
         return false;
     }
 
+    [[nodiscard]] virtual bool IsValidIdentifierName([[maybe_unused]] const lexer::Token &token) const noexcept
+    {
+        return true;
+    }
+
     ETSParser *AsETSParser()
     {
         ES2PANDA_ASSERT(IsETSParser());
