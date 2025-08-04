@@ -148,6 +148,7 @@ static bool RunVerifierAndPhases(public_lib::Context &context, parser::Program &
     const auto verifierEachPhase = options.IsAstVerifierEachPhase();
 
     ast_verifier::ASTVerifier verifier(context, program);
+    verifier.Before();
 
     bool afterCheckerPhase = false;
     while (auto phase = context.phaseManager->NextPhase()) {
@@ -177,6 +178,7 @@ static bool RunVerifierAndPhases(public_lib::Context &context, parser::Program &
         }
     }
 
+    verifier.After();
     return true;
 }
 
