@@ -131,7 +131,6 @@ export class KitImportTransformer {
             }
     
             const sourcePath = DYNAMIC_PREFIX + symbolEntry.source.replace(/\.d\.ts$/, '');
-            console.log('sourcePath',sourcePath);
             if (!grouped.has(sourcePath)) {
                 grouped.set(sourcePath, []);
             }

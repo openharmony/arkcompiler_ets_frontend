@@ -248,10 +248,9 @@ export class ArkTSConfigGenerator {
   }
   
   
-  private getOhmurl(file: string, moduleInfo: ModuleInfo): string {
+  private getDependencyKey(file: string, moduleInfo: ModuleInfo): string {
     let unixFilePath: string = file.replace(/\\/g, '/');
-    let ohmurl: string = moduleInfo.packageName + '/' + unixFilePath;
-    return changeFileExtension(ohmurl, '');
+    return moduleInfo.packageName + '/' + unixFilePath;
   }
 
   private getDependenciesSection(moduleInfo: ModuleInfo, arktsconfig: ArkTSConfig): void {
@@ -268,7 +267,7 @@ export class ArkTSConfigGenerator {
       const files = declFilesObject.files;
 
       Object.keys(files).forEach((file: string) => {
-        const ohmurl: string = this.getOhmurl(file, depModuleInfo);
+        const dependencyKey: string = this.getDependencyKey(file, depModuleInfo);
         const depItem: DependencyItem = {
           language: 'js',
           path: files[file].declPath,
@@ -276,7 +275,7 @@ export class ArkTSConfigGenerator {
         };
 
         arktsconfig.addDependency({
-          name: ohmurl,
+          name: dependencyKey,
           item: depItem
         });
 
