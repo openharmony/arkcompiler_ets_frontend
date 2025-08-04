@@ -88,7 +88,8 @@ cookBookTag[57] = '';
 cookBookTag[58] = '';
 cookBookTag[59] = '"delete" operator is not supported (arkts-no-delete)';
 cookBookTag[60] = '"typeof" operator is allowed only in expression contexts (arkts-no-type-query)';
-cookBookTag[61] = '';
+cookBookTag[61] =
+  'The bitwise inversion gives different result for "Infinity" (arkts-distinct-infinity-bitwise-inversion)';
 cookBookTag[62] = '';
 cookBookTag[63] = '';
 cookBookTag[64] = '';

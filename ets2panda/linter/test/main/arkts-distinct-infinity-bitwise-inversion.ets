@@ -13,16 +13,7 @@
  * limitations under the License.
  */
 
-export const STRINGLITERAL_NUMBER = 'number';
-export const STRINGLITERAL_NUMBER_ARRAY = 'number[]';
-export const STRINGLITERAL_STRING = 'string';
-export const STRINGLITERAL_INT = 'int';
-export const STRINGLITERAL_BYTE = 'byte';
-export const STRINGLITERAL_SHORT = 'short';
-export const STRINGLITERAL_LONG = 'long';
-export const STRINGLITERAL_CHAR = 'char';
-export const STRINGLITERAL_ANY = 'ANY';
-export const STRINGLITERAL_ENUM = 'enum';
-export const STRINGLITERAL_FROM = 'from';
-export const STRINGLITERAL_ARRAY = 'Array';
-export const STRINGLITERAL_INFINITY = 'Infinity';
+-Infinity !== -1 ;
++Infinity !== -1 ;
+Infinity !== -1 ;
+~Infinity !== -1 ;

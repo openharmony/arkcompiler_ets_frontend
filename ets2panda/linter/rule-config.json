@@ -24,6 +24,7 @@
     "arkts-numeric-semantic",
     "arkts-incompatible-function-types",
     "arkts-limited-void-type",
+    "arkts-distinct-infinity-bitwise-inversion",
     "arkts-no-void-operator",
     "arkts-no-local-class",
     "arkts-no-ts-overload",

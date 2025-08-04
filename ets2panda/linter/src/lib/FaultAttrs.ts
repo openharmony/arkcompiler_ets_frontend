@@ -59,6 +59,7 @@ faultsAttrs[FaultID.JsxElement] = new FaultAttributes(54);
 faultsAttrs[FaultID.UnaryArithmNotNumber] = new FaultAttributes(55);
 faultsAttrs[FaultID.DeleteOperator] = new FaultAttributes(59);
 faultsAttrs[FaultID.TypeQuery] = new FaultAttributes(60);
+faultsAttrs[FaultID.PrefixUnaryInfinity] = new FaultAttributes(61);
 faultsAttrs[FaultID.InstanceofUnsupported] = new FaultAttributes(65);
 faultsAttrs[FaultID.InOperator] = new FaultAttributes(66);
 faultsAttrs[FaultID.DestructuringAssignment] = new FaultAttributes(69);

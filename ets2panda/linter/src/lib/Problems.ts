@@ -103,6 +103,7 @@ export enum FaultID {
   LimitedStdLibApi,
   LimitedStdLibNoASON,
   NoNeedStdLibSendableContainer,
+  PrefixUnaryInfinity,
   ErrorSuppression,
   StrictDiagnostic,
   ImportAfterStatement,
