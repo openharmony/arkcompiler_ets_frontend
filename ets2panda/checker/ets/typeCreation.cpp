@@ -319,7 +319,7 @@ static ETSObjectType *InitializeGlobalBuiltinObjectType(ETSChecker *checker, Glo
             return bigIntObj;
         }
         case GlobalTypeId::ETS_ARRAY_BUILTIN: {
-            if (declNode->AsClassDefinition()->InternalName().Utf8() != "escompat.Array") {
+            if (declNode->AsClassDefinition()->InternalName().Utf8() != compiler::Signatures::ESCOMPAT_ARRAY) {
                 return checker->CreateETSObjectType(declNode, flags);
             }
             auto *arrayObj =
@@ -328,6 +328,10 @@ static ETSObjectType *InitializeGlobalBuiltinObjectType(ETSChecker *checker, Glo
             return arrayObj;
         }
         case GlobalTypeId::ETS_READONLY_ARRAY:
+            if (declNode->IsClassDefinition() || declNode->AsTSInterfaceDeclaration()->InternalName().Utf8() !=
+                                                     compiler::Signatures::ESCOMPAT_READONLYARRAY) {
+                return checker->CreateETSObjectType(declNode, flags);
+            }
             return setType(globalId, create(ETSObjectFlags::BUILTIN_READONLY_ARRAY))->AsETSObjectType();
         case GlobalTypeId::ETS_BOOLEAN_BUILTIN:
             return create(ETSObjectFlags::BUILTIN_BOOLEAN);
@@ -355,6 +359,7 @@ ETSObjectType *ETSChecker::CreateETSObjectTypeOrBuiltin(ir::AstNode *declNode, E
     if (LIKELY(HasStatus(CheckerStatus::BUILTINS_INITIALIZED))) {
         return CreateETSObjectType(declNode, flags);
     }
+    // Note (zengran): should be determined whether is a builtin type through InternalName instead of DeclName.
     auto const globalId = GetGlobalTypesHolder()->NameToId(GetObjectTypeDeclNames(declNode).first);
     if (!globalId.has_value()) {
         return CreateETSObjectType(declNode, flags);

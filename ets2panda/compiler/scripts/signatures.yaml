@@ -184,6 +184,8 @@ defines:
     ref: SYMBOL
   - name: 'escompat.Array'
     ref: ESCOMPAT_ARRAY
+  - name: 'escompat.ReadonlyArray'
+    ref: ESCOMPAT_READONLYARRAY
   - name: 'ByteType.VAL'
     ref: BYTETYPE_VAL
   - name: 'IntType.VAL'
