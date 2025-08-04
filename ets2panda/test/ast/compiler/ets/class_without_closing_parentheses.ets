@@ -37,4 +37,4 @@ export default class TreeMap<K, V> implements ReadonlyTreeMap<K, V> {
 /* @@? 21:15 Error TypeError: Variable 'buffer' has already been declared. */
 /* @@? 21:15 Error TypeError: Merging declarations is not supported, please keep all definitions of classes, interfaces and enums compact in the codebase! */
 /* @@? 24:32 Error TypeError: Indexed access is not supported for such expression type. */
-/* @@? 26:20 Error TypeError: Cannot find type 'buffer'. */
+/* @@? 26:20 Error TypeError: Namespace 'buffer' cannot be used as a type. */
