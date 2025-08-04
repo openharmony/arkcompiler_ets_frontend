@@ -361,6 +361,7 @@ bool ETSChecker::CheckDefaultTypeParameter(const ir::TSTypeParameter *param, Typ
                 typeParameterDecls.count(variable) == 0U) {
                 LogError(diagnostic::TYPE_PARAM_USE_BEFORE_DEFINE,
                          {defaultTypePart->Name()->AsIdentifier()->Name().Utf8()}, node->Start());
+                variable->SetTsType(GlobalTypeError());
                 ok = false;
             } else if (defaultType != nullptr && defaultType->IsTypeError()) {
                 ok = false;
