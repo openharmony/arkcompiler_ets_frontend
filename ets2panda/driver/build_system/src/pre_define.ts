@@ -19,8 +19,10 @@ export const LINKER_INPUT_FILE: string = 'fileInfo.txt';
 export const DEPENDENCY_INPUT_FILE: string = 'dependencyFileInfo.txt';
 export const DEPENDENCY_JSON_FILE: string = 'dependency.json';
 export const PROJECT_BUILD_CONFIG_FILE: string = 'projectionConfig.json';
+export const STATIC_RECORD_FILE: string = 'static.Record.d.ts';
 
 export const DECL_ETS_SUFFIX: string = '.d.ets';
+export const DECL_TS_SUFFIX: string = '.d.ts';
 export const ETS_SUFFIX: string = '.ets';
 export const TS_SUFFIX: string = '.ts';
 export const ABC_SUFFIX: string = '.abc';
@@ -45,3 +47,9 @@ export const DEFAULT_WOKER_NUMS: number = 4;
 
 export const ETS_1_1 = 'ets1.1';
 export const ETS_1_1_INTEROP = 'ets1.1interop';
+
+export const STATIC_RECORD_FILE_CONTENT: string = `// generated for static Record
+export type Record<K extends keyof any, T> = {
+  [P in K]: T;
+};
+`;

@@ -76,9 +76,9 @@ export class DriverHelper {
     global.destroyCfg();
   }
 
-  public generateTsDecl(declOutPath: string, etsOutPath: string, exportAll: boolean): void {
+  public generateTsDecl(declOutPath: string, etsOutPath: string, exportAll: boolean, recordFile: string): void {
     let exportAll_: KBoolean = exportAll ? 1 : 0;
-    global.es2panda._GenerateTsDeclarationsFromContext(this._cfg.peer, declOutPath, etsOutPath, exportAll_);
+    global.es2panda._GenerateTsDeclarationsFromContext(this._cfg.peer, declOutPath, etsOutPath, exportAll_, recordFile);
   }
 }
 

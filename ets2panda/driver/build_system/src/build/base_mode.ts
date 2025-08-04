@@ -27,18 +27,23 @@ import {
   BUILD_MODE,
   DEFAULT_WOKER_NUMS,
   DECL_ETS_SUFFIX,
+  DECL_TS_SUFFIX,
+  DEPENDENCY_INPUT_FILE,
   DEPENDENCY_JSON_FILE,
   LANGUAGE_VERSION,
   LINKER_INPUT_FILE,
   MERGED_ABC_FILE,
-  TS_SUFFIX,
-  DEPENDENCY_INPUT_FILE,
+  STATIC_RECORD_FILE,
+  STATIC_RECORD_FILE_CONTENT,
+  TS_SUFFIX
 } from '../pre_define';
 import {
   changeDeclgenFileExtension,
   changeFileExtension,
+  createFileIfNotExists,
   ensurePathExists,
   getFileHash,
+  isHybrid,
   isMac
 } from '../utils';
 import {
@@ -95,6 +100,7 @@ export abstract class BaseMode {
   public dependencyFileMap: DependencyFileConfig | null;
   public isBuildConfigModified: boolean | undefined;
   public byteCodeHar: boolean;
+  public isHybrid: boolean;
 
   constructor(buildConfig: BuildConfig) {
     this.buildConfig = buildConfig;
@@ -128,6 +134,7 @@ export abstract class BaseMode {
     this.dependencyFileMap = null;
     this.isBuildConfigModified = buildConfig.isBuildConfigModified as boolean | undefined;
     this.byteCodeHar = buildConfig.byteCodeHar as boolean;
+    this.isHybrid = isHybrid(buildConfig);
   }
 
   public declgen(fileInfo: CompileFileInfo): void {
@@ -148,6 +155,18 @@ export abstract class BaseMode {
     const arkts: ArkTS = this.buildConfig.arkts;
     let errorStatus = false;
     try {
+      const staticRecordPath = path.join(
+        moduleInfo.declgenV1OutPath as string,
+        STATIC_RECORD_FILE
+      )
+      const declEtsOutputDir = path.dirname(declEtsOutputPath);
+      const staticRecordRelativePath = changeFileExtension(
+        path.relative(declEtsOutputDir, staticRecordPath).replaceAll(/\\/g, '\/'),
+        '',
+        DECL_TS_SUFFIX
+      );
+      createFileIfNotExists(staticRecordPath, STATIC_RECORD_FILE_CONTENT);
+
       arktsGlobal.filePath = fileInfo.filePath;
       arktsGlobal.config = arkts.Config.create([
         '_',
@@ -175,7 +194,8 @@ export abstract class BaseMode {
       arkts.generateTsDeclarationsFromContext(
         declEtsOutputPath,
         etsOutputPath,
-        false
+        false,
+        staticRecordRelativePath
       ); // Generate 1.0 declaration files & 1.0 glue code
       this.logger.printInfo('declaration files generated');
     } catch (error) {
@@ -637,6 +657,10 @@ export abstract class BaseMode {
   }
 
   protected collectCompileFiles(): void {
+    if (!this.isBuildConfigModified && this.isCacheFileExists && !this.enableDeclgenEts2Ts && !this.isHybrid) {
+      this.collectDependentCompileFiles();
+      return;
+    }
     this.entryFiles.forEach((file: string) => {
       for (const [_, moduleInfo] of this.moduleInfos) {
         const relativePath = path.relative(moduleInfo.moduleRootPath, file);
@@ -725,7 +749,7 @@ export abstract class BaseMode {
   };
 
   public generatedependencyFileMap(): void {
-    if (this.isBuildConfigModified || !this.isCacheFileExists || this.enableDeclgenEts2Ts) {
+    if (this.isBuildConfigModified || !this.isCacheFileExists || this.enableDeclgenEts2Ts || this.isHybrid) {
       return;
     }
     const dependencyInputFile: string = path.join(this.cacheDir, DEPENDENCY_INPUT_FILE);

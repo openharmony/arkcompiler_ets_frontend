@@ -37,13 +37,13 @@ KNativePointer impl_CreateContextFromString(KNativePointer configPtr, KStringPtr
 TS_INTEROP_3(CreateContextFromString, KNativePointer, KNativePointer, KStringPtr, KStringPtr)
 
 KInt impl_GenerateTsDeclarationsFromContext(KNativePointer contextPtr, KStringPtr &outputDeclEts, KStringPtr &outputEts,
-                                            KBoolean exportAll)
+                                            KBoolean exportAll, KStringPtr &recordFile)
 {
     auto context = reinterpret_cast<es2panda_Context *>(contextPtr);
-    return static_cast<KInt>(GetPublicImpl()->GenerateTsDeclarationsFromContext(context, outputDeclEts.data(),
-                                                                                outputEts.data(), exportAll != 0));
+    return static_cast<KInt>(GetPublicImpl()->GenerateTsDeclarationsFromContext(
+        context, outputDeclEts.data(), outputEts.data(), exportAll != 0, recordFile.data()));
 }
-TS_INTEROP_4(GenerateTsDeclarationsFromContext, KInt, KNativePointer, KStringPtr, KStringPtr, KBoolean)
+TS_INTEROP_5(GenerateTsDeclarationsFromContext, KInt, KNativePointer, KStringPtr, KStringPtr, KBoolean, KStringPtr)
 
 KNativePointer impl_CreateContextFromFile(KNativePointer configPtr, KStringPtr &filenamePtr)
 {

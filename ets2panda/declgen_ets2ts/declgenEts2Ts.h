@@ -30,11 +30,15 @@ struct DeclgenOptions {
     bool isIsolatedDeclgen = false;
     std::string outputDeclEts;
     std::string outputEts;
+    std::string recordFile;
 };
 
 // Consume program after checker stage and generate out_path typescript file with declarations
 bool GenerateTsDeclarations(checker::ETSChecker *checker, const ark::es2panda::parser::Program *program,
                             const DeclgenOptions &declgenOptions);
+bool ValidateDeclgenOptions(const DeclgenOptions &options, checker::ETSChecker *checker);
+bool WriteOutputFiles(const DeclgenOptions &options, const std::string &combinedEts, const std::string &combinedDEts,
+                      checker::ETSChecker *checker);
 
 class TSDeclGen {
 public:
@@ -62,6 +66,7 @@ public:
 
     bool Generate();
     void GenImportDeclarations();
+    void GenImportRecordDeclarations(const std::string &source);
 
     std::string GetDtsOutput() const
     {
@@ -199,13 +204,15 @@ private:
     void ProcessClassDependencies(const ir::ClassDeclaration *classDecl);
     void ProcessClassPropDependencies(const ir::ClassDefinition *classDef);
     void ProcessClassMethodDependencies(const ir::MethodDefinition *methodDef);
+    void ProcessInterfaceDependencies(const ir::TSInterfaceDeclaration *interfaceDecl);
+    void ProcessInterfacePropDependencies(const ir::TSInterfaceDeclaration *interfaceDecl);
+    void ProcessInterfaceMethodDependencies(const ir::MethodDefinition *methodDef);
     void ProcessETSTypeReferenceDependencies(const ir::ETSTypeReference *typeReference);
     void AddSuperType(const ir::Expression *super);
     void AddSuperType(const checker::Type *tsType);
     void ProcessInterfacesDependencies(const ArenaVector<checker::ETSObjectType *> &interfaces);
     void AddObjectDependencies(const util::StringView &typeName, const std::string &alias = "");
     void GenDeclarations();
-    void GenOtherDeclarations();
     void CloseClassBlock(const bool isDts);
 
     void EmitDeclarationPrefix(const ir::ClassDefinition *classDef, const std::string &typeName,
@@ -302,6 +309,9 @@ private:
         "Observed",  "ObjectLink", "Watch",        "Track",        "ObservedV2", "Trace",    "ComponentV2",
         "Local",     "Param",      "Once",         "Event",        "Provider",   "Consumer", "Monitor",
         "Computed",  "Type"};
+    const std::unordered_set<std::string_view> stdlibNamespaceList_ = {
+        "StdProcess", "taskpool", "functions",    "containers", "Intl",     "GC",
+        "jsonx",      "proxy",    "unsafeMemory", "reflect",    "StdDebug", "arktest"};
     const std::set<std::string> extensions_ = {".sts", ".ets", ".ts", ".js"};
 
     std::stringstream outputDts_;

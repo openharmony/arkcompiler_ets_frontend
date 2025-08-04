@@ -17,7 +17,8 @@ import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { DECL_ETS_SUFFIX } from './pre_define';
+import { DECL_ETS_SUFFIX, LANGUAGE_VERSION } from './pre_define';
+import { BuildConfig } from './types';
 
 const WINDOWS: string = 'Windows_NT';
 const LINUX: string = 'Linux';
@@ -87,4 +88,30 @@ export function isSubPathOf(targetPath: string, parentDir: string): boolean {
   const resolvedParent = toUnixPath(path.resolve(parentDir));
   const resolvedTarget = toUnixPath(path.resolve(targetPath));
   return resolvedTarget === resolvedParent || resolvedTarget.startsWith(resolvedParent + '/');
+}
+
+export function createFileIfNotExists(filePath: string, content: string): boolean {
+  try {
+    const normalizedPath = path.normalize(filePath);
+    if (fs.existsSync(normalizedPath)) {
+      return false;
+    }
+
+    const dir = path.dirname(normalizedPath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+
+    fs.writeFileSync(normalizedPath, content, { encoding: 'utf-8' });
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+export function isHybrid(buildConfig: BuildConfig): boolean {
+  return buildConfig.dependentModuleList.some(
+    module => module.language === LANGUAGE_VERSION.ARKTS_1_1 || 
+              module.language === LANGUAGE_VERSION.ARKTS_HYBRID
+  );
 }
