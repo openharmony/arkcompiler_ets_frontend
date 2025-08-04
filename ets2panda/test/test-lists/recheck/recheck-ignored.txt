@@ -86,6 +86,7 @@ runtime/ets/lambda_with_receiver/lambda_with_receiver_trailing_in_function.ets
 runtime/ets/lambda_with_receiver/lambda_with_receiver_trailing_in_function_with_receiver.ets
 runtime/ets/lambda_with_receiver/lambda_with_receiver_trailing_name_duplicated.ets
 runtime/ets/generic_lambda_6.ets
+runtime/ets/implement_interface.ets
 #Test that failed before CheckerPhase (on ConstantExpressionLowering)
 ast/parser/ets/InvalidLexer.ets
 #Test that failed with abort before plugins-after-check phase
