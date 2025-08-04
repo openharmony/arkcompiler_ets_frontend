@@ -14,11 +14,13 @@
  */
 
 #include "lambdaLowering.h"
+
 #include <sstream>
 
 #include "checker/ets/typeRelationContext.h"
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "compiler/lowering/util.h"
+#include "ir/astNode.h"
 #include "util/options.h"
 #include "util/nameMangler.h"
 
@@ -69,14 +71,18 @@ static std::pair<ir::ClassDeclaration *, ir::ScriptFunction *> FindEnclosingClas
     ES2PANDA_UNREACHABLE();
 }
 
-static bool CheckIfNeedThis(ir::ArrowFunctionExpression *lambda, checker::ETSChecker *checker)
+namespace {
+
+ir::AstNode const *FindIfNeedThis(ir::ArrowFunctionExpression const *lambda, checker::ETSChecker *checker)
 {
     auto *lambdaClass = ContainingClass(lambda);
-    return lambda->IsAnyChild([&checker, &lambdaClass](ir::AstNode *ast) {
+    return lambda->FindChild([&checker, &lambdaClass](ir::AstNode *ast) {
         return (ast->IsThisExpression() || ast->IsSuperExpression()) &&
                checker->Relation()->IsIdenticalTo(lambdaClass, ContainingClass(ast));
     });
 }
+
+}  // namespace
 
 static size_t g_calleeCount = 0;
 static std::mutex g_calleeCountMutex {};
@@ -554,6 +560,7 @@ static void CreateLambdaClassFields(public_lib::Context *ctx, ir::ClassDefinitio
     if (info->callReceiver != nullptr) {
         auto *outerThisDeclaration = parser->CreateFormattedClassFieldDefinition(
             "@@I1: @@T2", "$this", objectType->Substitute(checker->Relation(), substitution));
+        outerThisDeclaration->SetRange(info->callReceiver->Range());
         props.push_back(outerThisDeclaration);
     }
 
@@ -561,6 +568,7 @@ static void CreateLambdaClassFields(public_lib::Context *ctx, ir::ClassDefinitio
         auto *varDeclaration = parser->CreateFormattedClassFieldDefinition(
             "@@I1: @@T2", AvoidMandatoryThis(captured->Name()),
             captured->TsType()->Substitute(checker->Relation(), substitution));
+        varDeclaration->SetRange(captured->Declaration()->Node()->Range());
         props.push_back(varDeclaration);
     }
 
@@ -1209,6 +1217,7 @@ static ir::ETSNewClassInstanceExpression *CreateConstructorCall(public_lib::Cont
     }
     for (auto captured : *info->capturedVars) {
         auto *id = allocator->New<ir::Identifier>(captured->Name(), allocator);
+        id->SetRange(captured->Declaration()->Node()->Range());
         args.push_back(id);
     }
 
@@ -1296,7 +1305,10 @@ static ir::AstNode *ConvertLambda(public_lib::Context *ctx, ir::ArrowFunctionExp
 
     auto capturedVars = FindCaptured(allocator, lambda);
     info.capturedVars = &capturedVars;
-    info.callReceiver = CheckIfNeedThis(lambda, checker) ? allocator->New<ir::ThisExpression>() : nullptr;
+    if (auto *thisOrSuper = FindIfNeedThis(lambda, checker); thisOrSuper != nullptr) {
+        info.callReceiver = allocator->New<ir::ThisExpression>();
+        info.callReceiver->SetRange(thisOrSuper->Range());
+    }
     info.isFunctionReference = false;
 
     auto *callee = CreateCallee(ctx, lambda, &info);

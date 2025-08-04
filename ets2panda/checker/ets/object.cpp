@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 
-#include <mutex>
 #include <string_view>
 #include "checker/ETSchecker.h"
+#include "checker/checkerContext.h"
 #include "checker/ets/typeRelationContext.h"
 #include "checker/types/ets/etsObjectType.h"
 #include "checker/types/ets/etsTupleType.h"
@@ -33,6 +33,7 @@
 #include "ir/ets/etsTypeReference.h"
 #include "ir/ets/etsTypeReferencePart.h"
 #include "ir/ets/etsUnionType.h"
+#include "ir/expression.h"
 #include "ir/expressions/assignmentExpression.h"
 #include "ir/expressions/callExpression.h"
 #include "ir/expressions/functionExpression.h"
@@ -46,6 +47,7 @@
 #include "ir/ts/tsInterfaceHeritage.h"
 #include "ir/ts/tsTypeParameter.h"
 #include "ir/ts/tsTypeParameterDeclaration.h"
+#include "util/diagnostic.h"
 #include "varbinder/declaration.h"
 #include "varbinder/variableFlags.h"
 #include "generated/signatures.h"
@@ -1827,6 +1829,20 @@ bool ETSChecker::ValidateTupleIndexFromEtsObject(const ETSTupleType *const tuple
     return true;
 }
 
+namespace {
+
+bool IsExpressionInClassProperty(ir::Expression const *expr)
+{
+    for (ir::AstNode const *node = expr; node != nullptr && !node->IsClassDefinition(); node = node->Parent()) {
+        if (node->IsClassProperty()) {
+            return true;
+        }
+    }
+    return false;
+}
+
+}  // namespace
+
 ETSObjectType *ETSChecker::CheckThisOrSuperAccess(ir::Expression *node, ETSObjectType *classType, std::string_view msg)
 {
     if ((Context().Status() & CheckerStatus::IGNORE_VISIBILITY) != 0U) {
@@ -1843,7 +1859,7 @@ ETSObjectType *ETSChecker::CheckThisOrSuperAccess(ir::Expression *node, ETSObjec
         auto *sig = Context().ContainingSignature();
         ES2PANDA_ASSERT(sig->Function()->Body() && sig->Function()->Body()->IsBlockStatement());
 
-        if (!sig->HasSignatureFlag(checker::SignatureFlags::CONSTRUCT)) {
+        if (!sig->HasSignatureFlag(SignatureFlags::CONSTRUCT)) {
             LogError(diagnostic::CTOR_CLASS_NOT_FIRST, {msg}, node->Start());
             return classType;
         }
@@ -1854,9 +1870,13 @@ ETSObjectType *ETSChecker::CheckThisOrSuperAccess(ir::Expression *node, ETSObjec
         }
     }
 
-    if (HasStatus(checker::CheckerStatus::IN_STATIC_CONTEXT)) {
+    if (HasStatus(CheckerStatus::IN_STATIC_CONTEXT)) {
         LogError(diagnostic::CTOR_REF_IN_STATIC_CTX, {msg}, node->Start());
         return classType;
+    }
+
+    if (node->IsThisExpression() && IsExpressionInClassProperty(node)) {
+        LogDiagnostic(diagnostic::THIS_IN_FIELD_INITIALIZER, {}, node->Start());
     }
 
     if (classType == nullptr ||
