@@ -159,7 +159,7 @@ export class Lsp {
     return getSource.replace(/\r\n/g, '\n');
   }
 
-  private createContext(filename: String): [Config, KNativePointer] {
+  private createContext(filename: String, processToCheck: boolean = true): [Config, KNativePointer] {
     const filePath = path.resolve(filename.valueOf());
     const arktsconfig = this.moduleInfos[filePath]?.arktsConfigFile;
     if (!arktsconfig) {
@@ -182,7 +182,9 @@ export class Lsp {
       this.lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_PARSED);
       PluginDriver.getInstance().runPluginHook(PluginHook.PARSED);
 
-      this.lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_CHECKED);
+      if (processToCheck) {
+        this.lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_CHECKED);
+      }
       return [localCfg, localCtx];
     } catch (error) {
       this.lspDriverHelper.destroyContext(localCtx);
@@ -549,7 +551,7 @@ export class Lsp {
 
   getSyntacticDiagnostics(filename: String): LspDiagsNode {
     let ptr: KPointer;
-    const [cfg, ctx] = this.createContext(filename);
+    const [cfg, ctx] = this.createContext(filename, false);
     try {
       ptr = global.es2panda._getSyntacticDiagnostics(ctx);
     } finally {
