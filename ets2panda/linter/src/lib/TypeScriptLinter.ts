@@ -4269,7 +4269,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
       if (!this.isTypeSameOrWider(baseParamType, derivedParamType)) {
         this.incrementCounters(derivedParams[i], FaultID.MethodInheritRule);
-      }
+      }     
     }
   }
 
@@ -4379,7 +4379,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return true;
     }
 
-    if (derivedType.flags & ts.TypeFlags.Any) {
+    if (derivedType.flags & ts.TypeFlags.Any || baseType.flags & ts.TypeFlags.Never) {
       return true;
     }
 
@@ -4396,6 +4396,10 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         }
       }
       return true;
+    }
+
+    if (this.checkTypeInheritance(derivedType, baseType, false)) {
+        return true;
     }
 
     const baseTypeSet = new Set(this.flattenUnionTypes(baseType));
@@ -4431,6 +4435,10 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       }
     }
 
+    if(this.checkTypeInheritance(fromType, toType)) {
+      return true;
+    }
+
     const fromTypes = this.flattenUnionTypes(fromType);
     const toTypes = new Set(this.flattenUnionTypes(toType));
 
@@ -4440,6 +4448,52 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       }
       return TypeScriptLinter.areWrapperAndPrimitiveTypesEqual(typeStr, toTypes);
     });
+  }
+
+  private checkTypeInheritance(
+    sourceType: ts.Type, 
+    targetType: ts.Type, 
+    isSouceTotaqrget: boolean = true
+  ): boolean {
+    // Early return if either type lacks symbol information
+    if (!sourceType.symbol || !targetType.symbol) {
+      return false;
+    }
+
+    // Determine which type's inheritance chain to examine based on check direction
+    const typeToGetChain = isSouceTotaqrget ? sourceType : targetType;
+    const typeToCheck = isSouceTotaqrget ? targetType : sourceType;
+
+    // Get inheritance chain and check for relationship
+    const inheritanceChain = this.getTypeInheritanceChain(typeToGetChain);
+    return inheritanceChain.some(t => {
+      return t.symbol === typeToCheck.symbol;
+    });
+  }
+
+  private getTypeInheritanceChain(type: ts.Type): ts.Type[] {
+    const chain: ts.Type[] = [type];
+    const declarations = type.symbol?.getDeclarations() || [];
+
+    for (const declaration of declarations) {
+      if ((!ts.isClassDeclaration(declaration) && !ts.isInterfaceDeclaration(declaration)) || 
+        !declaration.heritageClauses) {
+        continue;
+      }
+
+      const heritageClauses = declaration.heritageClauses.filter(clause => {
+        return clause.token === ts.SyntaxKind.ExtendsKeyword || clause.token === ts.SyntaxKind.ImplementsKeyword;
+      });
+
+      for (const clause of heritageClauses) {
+        for (const typeExpr of clause.types) {
+          const baseType = this.tsTypeChecker.getTypeAtLocation(typeExpr.expression);
+          chain.push(baseType, ...this.getTypeInheritanceChain(baseType));
+        }
+      }
+    }
+
+    return chain;
   }
 
   // Check if a type string has an equivalent primitive/wrapper type in a set
