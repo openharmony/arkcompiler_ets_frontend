@@ -19,7 +19,13 @@ import { FaultID } from './Problems';
 import { TypeScriptLinterConfig } from './TypeScriptLinterConfig';
 import type { Autofix } from './autofixes/Autofixer';
 import { Autofixer } from './autofixes/Autofixer';
-import { PROMISE_METHODS, PROMISE_METHODS_WITH_NO_TUPLE_SUPPORT, SYMBOL, SYMBOL_CONSTRUCTOR, TsUtils } from './utils/TsUtils';
+import {
+  PROMISE_METHODS,
+  PROMISE_METHODS_WITH_NO_TUPLE_SUPPORT,
+  SYMBOL,
+  SYMBOL_CONSTRUCTOR,
+  TsUtils
+} from './utils/TsUtils';
 import { FUNCTION_HAS_NO_RETURN_ERROR_CODE } from './utils/consts/FunctionHasNoReturnErrorCode';
 import {
   LIMITED_STANDARD_UTILITY_TYPES,
@@ -5429,6 +5435,37 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleNoDeprecatedApi(tsCallExpr);
     this.handleFunctionReturnThisCall(tsCallExpr);
     this.handlePromiseTupleGeneric(tsCallExpr);
+    this.handleTupleGeneric(tsCallExpr);
+  }
+
+  private handleTupleGeneric(callExpr: ts.CallExpression): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    if (!ts.isPropertyAccessExpression(callExpr.expression)) {
+      return;
+    }
+    const accessedProperty = callExpr.expression;
+
+    if (!ts.isIdentifier(accessedProperty.expression)) {
+      return;
+    }
+
+    if (accessedProperty.expression.text !== TASKPOOL) {
+      return;
+    }
+
+    if (!callExpr.typeArguments) {
+      return;
+    }
+
+    if (callExpr.parent) {
+      callExpr.typeArguments.forEach((node) => {
+        if (ts.isTupleTypeNode(node)) {
+          this.incrementCounters(node, FaultID.NotSupportTupleGenericValidation);
+        }
+      });
+    }
   }
 
   private handleCallExpressionForUI(node: ts.CallExpression): void {

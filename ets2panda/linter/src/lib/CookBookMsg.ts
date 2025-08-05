@@ -318,8 +318,7 @@ cookBookTag[284] = '"prop" function is not supported (arkui-no-prop-function)';
 cookBookTag[285] = '"setAndProp" function is not supported (arkui-no-setandprop-function)';
 cookBookTag[286] =
   'Parameters decorated with "@Prop" need to call the specific method when receiving data to ensure deep copy of the data (arkui-prop-need-call-method-for-deep-copy)';
-cookBookTag[290] =
-  'Tuple type cannot be used in generic type parameters of Promise static methods (arkts-not-support-tuple-generic-validation)';
+cookBookTag[290] = 'Tuple type cannot be used in generic type parameters (arkts-not-support-tuple-generic-validation)';
 cookBookTag[300] = 'The function type should be explicit (arkts-no-ts-like-function-call)';
 cookBookTag[301] = 'Importing from "oh module" requires specifying full path (arkts-require-fullpath-name)';
 cookBookTag[302] =
