@@ -10476,12 +10476,12 @@
                 "start": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "enum_as_class_member_getValue_call.ets"
                 },
                 "end": {
                   "line": 1,
                   "column": 1,
-                  "program": null
+                  "program": "enum_as_class_member_getValue_call.ets"
                 }
               }
             },
@@ -10502,12 +10502,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "enum_as_class_member_getValue_call.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "enum_as_class_member_getValue_call.ets"
                     }
                   }
                 },

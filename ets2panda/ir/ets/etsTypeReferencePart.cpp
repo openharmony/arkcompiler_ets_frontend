@@ -286,6 +286,8 @@ ETSTypeReferencePart *ETSTypeReferencePart::Clone(ArenaAllocator *const allocato
         Previous() != nullptr ? Previous()->Clone(allocator, nullptr)->AsETSTypeReferencePart() : nullptr;
     auto *const clone = allocator->New<ETSTypeReferencePart>(nameClone, typeParamsClone, prevClone, allocator);
 
+    clone->SetRange(Range());
+
     if (nameClone != nullptr) {
         nameClone->SetParent(clone);
     }
@@ -303,7 +305,6 @@ ETSTypeReferencePart *ETSTypeReferencePart::Clone(ArenaAllocator *const allocato
         clone->SetParent(parent);
     }
 
-    clone->SetRange(Range());
     return clone;
 }
 

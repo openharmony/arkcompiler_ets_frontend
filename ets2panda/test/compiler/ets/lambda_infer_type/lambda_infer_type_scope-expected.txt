@@ -292,12 +292,12 @@
                                 "start": {
                                   "line": 1,
                                   "column": 1,
-                                  "program": null
+                                  "program": "lambda_infer_type_scope.ets"
                                 },
                                 "end": {
                                   "line": 1,
                                   "column": 1,
-                                  "program": null
+                                  "program": "lambda_infer_type_scope.ets"
                                 }
                               }
                             },
@@ -613,12 +613,12 @@
                     "start": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "lambda_infer_type_scope.ets"
                     },
                     "end": {
                       "line": 1,
                       "column": 1,
-                      "program": null
+                      "program": "lambda_infer_type_scope.ets"
                     }
                   }
                 },
@@ -626,12 +626,12 @@
                   "start": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "lambda_infer_type_scope.ets"
                   },
                   "end": {
                     "line": 1,
                     "column": 1,
-                    "program": null
+                    "program": "lambda_infer_type_scope.ets"
                   }
                 }
               },

@@ -131,11 +131,10 @@ ETSUnionType *ETSUnionType::Clone(ArenaAllocator *const allocator, AstNode *cons
         }
         clone->SetAnnotations(std::move(annotationUsages));
     }
+    clone->SetRange(Range());
     for (auto *it : clone->Types()) {
         it->SetParent(clone);
     }
-
-    clone->SetRange(Range());
     return clone;
 }
 }  // namespace ark::es2panda::ir
