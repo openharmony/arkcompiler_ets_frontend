@@ -496,7 +496,7 @@
             "loc": {
               "start": {
                 "line": 20,
-                "column": 5,
+                "column": 12,
                 "program": "declare_class.ets"
               },
               "end": {

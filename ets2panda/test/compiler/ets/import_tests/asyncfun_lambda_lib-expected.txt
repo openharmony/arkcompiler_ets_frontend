@@ -295,7 +295,7 @@
             "loc": {
               "start": {
                 "line": 16,
-                "column": 19,
+                "column": 25,
                 "program": "asyncfun_lambda_lib.ets"
               },
               "end": {

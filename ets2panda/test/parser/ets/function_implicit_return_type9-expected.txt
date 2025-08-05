@@ -199,7 +199,7 @@
             "loc": {
               "start": {
                 "line": 18,
-                "column": 3,
+                "column": 19,
                 "program": "function_implicit_return_type9.ets"
               },
               "end": {

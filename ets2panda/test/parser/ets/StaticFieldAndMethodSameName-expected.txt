@@ -238,7 +238,7 @@
             "loc": {
               "start": {
                 "line": 18,
-                "column": 2,
+                "column": 9,
                 "program": "StaticFieldAndMethodSameName.ets"
               },
               "end": {

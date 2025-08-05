@@ -2597,7 +2597,7 @@
             "loc": {
               "start": {
                 "line": 38,
-                "column": 6,
+                "column": 14,
                 "program": "AccessNBody.ets"
               },
               "end": {
@@ -9159,7 +9159,7 @@
             "loc": {
               "start": {
                 "line": 64,
-                "column": 6,
+                "column": 14,
                 "program": "AccessNBody.ets"
               },
               "end": {
@@ -12139,7 +12139,7 @@
             "loc": {
               "start": {
                 "line": 95,
-                "column": 6,
+                "column": 14,
                 "program": "AccessNBody.ets"
               },
               "end": {
@@ -12951,7 +12951,7 @@
             "loc": {
               "start": {
                 "line": 124,
-                "column": 5,
+                "column": 12,
                 "program": "AccessNBody.ets"
               },
               "end": {
@@ -13363,7 +13363,7 @@
             "loc": {
               "start": {
                 "line": 127,
-                "column": 5,
+                "column": 12,
                 "program": "AccessNBody.ets"
               },
               "end": {
@@ -13775,7 +13775,7 @@
             "loc": {
               "start": {
                 "line": 130,
-                "column": 5,
+                "column": 12,
                 "program": "AccessNBody.ets"
               },
               "end": {
@@ -14187,7 +14187,7 @@
             "loc": {
               "start": {
                 "line": 133,
-                "column": 5,
+                "column": 12,
                 "program": "AccessNBody.ets"
               },
               "end": {
@@ -14567,7 +14567,7 @@
             "loc": {
               "start": {
                 "line": 136,
-                "column": 5,
+                "column": 12,
                 "program": "AccessNBody.ets"
               },
               "end": {
@@ -16445,7 +16445,7 @@
             "loc": {
               "start": {
                 "line": 140,
-                "column": 5,
+                "column": 13,
                 "program": "AccessNBody.ets"
               },
               "end": {

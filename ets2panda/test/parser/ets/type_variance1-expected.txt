@@ -1405,7 +1405,7 @@
             "loc": {
               "start": {
                 "line": 30,
-                "column": 5,
+                "column": 14,
                 "program": "type_variance1.ets"
               },
               "end": {
@@ -1637,7 +1637,7 @@
             "loc": {
               "start": {
                 "line": 31,
-                "column": 5,
+                "column": 14,
                 "program": "type_variance1.ets"
               },
               "end": {

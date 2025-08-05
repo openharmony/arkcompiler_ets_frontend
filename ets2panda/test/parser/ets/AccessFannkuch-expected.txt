@@ -5627,7 +5627,7 @@
             "loc": {
               "start": {
                 "line": 24,
-                "column": 5,
+                "column": 12,
                 "program": "AccessFannkuch.ets"
               },
               "end": {
@@ -6083,7 +6083,7 @@
             "loc": {
               "start": {
                 "line": 84,
-                "column": 5,
+                "column": 12,
                 "program": "AccessFannkuch.ets"
               },
               "end": {

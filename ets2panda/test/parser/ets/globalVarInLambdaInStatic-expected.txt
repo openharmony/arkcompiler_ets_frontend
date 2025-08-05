@@ -792,7 +792,7 @@
             "loc": {
               "start": {
                 "line": 30,
-                "column": 5,
+                "column": 12,
                 "program": "globalVarInLambdaInStatic.ets"
               },
               "end": {

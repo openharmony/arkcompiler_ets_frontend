@@ -878,7 +878,7 @@
             "loc": {
               "start": {
                 "line": 29,
-                "column": 3,
+                "column": 22,
                 "program": "internalProtectedParsing.ets"
               },
               "end": {

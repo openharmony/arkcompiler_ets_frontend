@@ -364,7 +364,7 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 5,
+                "column": 19,
                 "program": "generic_deadlock.ets"
               },
               "end": {
@@ -714,7 +714,7 @@
             "loc": {
               "start": {
                 "line": 20,
-                "column": 5,
+                "column": 19,
                 "program": "generic_deadlock.ets"
               },
               "end": {

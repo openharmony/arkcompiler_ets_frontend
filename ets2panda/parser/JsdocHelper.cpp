@@ -169,10 +169,18 @@ util::StringView JsdocHelper::GetJsdocBackward()
 
 util::StringView JsdocHelper::GetLicenseStringFromStart()
 {
-    if (!sourceCode_.StartsWith(LICENSES_START) && !sourceCode_.StartsWith(JSDOC_START)) {
+    size_t startPos = START_POS;
+    auto sv = SourceView(startPos, sourceCode_.Length());
+    static constexpr std::string_view MANDATORY_PREFIX = "\'use static\'\n";
+    static constexpr std::string_view MANDATORY_PREFIX_DOUBLE_QUOTE = "\"use static\"\n";
+    if (sv.StartsWith(MANDATORY_PREFIX) || sv.StartsWith(MANDATORY_PREFIX_DOUBLE_QUOTE)) {
+        startPos += MANDATORY_PREFIX.length();
+        sv = SourceView(startPos, sourceCode_.Length());
+    }
+
+    if (!sv.StartsWith(LICENSES_START) && !sv.StartsWith(JSDOC_START)) {
         return EMPTY_LICENSE;
     }
-    Iterator().Reset(START_POS);
     Forward(LICENSES_START.length());
 
     do {
@@ -197,6 +205,6 @@ util::StringView JsdocHelper::GetLicenseStringFromStart()
         break;
     } while (true);
 
-    return SourceView(START_POS, Iterator().Index());
+    return SourceView(startPos, Iterator().Index());
 }
 }  // namespace ark::es2panda::parser

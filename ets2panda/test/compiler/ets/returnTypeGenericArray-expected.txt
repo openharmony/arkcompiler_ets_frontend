@@ -897,7 +897,7 @@
             "loc": {
               "start": {
                 "line": 21,
-                "column": 5,
+                "column": 14,
                 "program": "returnTypeGenericArray.ets"
               },
               "end": {

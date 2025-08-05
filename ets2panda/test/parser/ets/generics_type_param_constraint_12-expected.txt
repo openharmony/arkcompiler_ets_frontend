@@ -1015,7 +1015,7 @@
             "loc": {
               "start": {
                 "line": 27,
-                "column": 5,
+                "column": 12,
                 "program": "generics_type_param_constraint_12.ets"
               },
               "end": {

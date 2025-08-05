@@ -550,7 +550,7 @@
             "loc": {
               "start": {
                 "line": 19,
-                "column": 5,
+                "column": 12,
                 "program": "test-type-alias-call3.ets"
               },
               "end": {

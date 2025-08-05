@@ -655,7 +655,7 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 5,
+                "column": 12,
                 "program": "optional_union_paramter.ets"
               },
               "end": {

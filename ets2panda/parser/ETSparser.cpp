@@ -695,10 +695,10 @@ ir::AstNode *ETSParser::ParseInnerRest(const ArenaVector<ir::AstNode *> &propert
         return ParseClassGetterSetterMethod(properties, modifiers, memberModifiers, isDefault);
     }
 
-    auto parseClassMethod = [&memberModifiers, &startLoc, isDefault, this](ir::Identifier *methodName) {
+    auto parseClassMethod = [&memberModifiers, isDefault, this](ir::Identifier *methodName) {
         auto *classMethod = ParseClassMethodDefinition(methodName, memberModifiers, isDefault);
         ES2PANDA_ASSERT(classMethod != nullptr);
-        classMethod->SetStart(startLoc);
+        classMethod->SetStart(methodName->Start());
         return classMethod;
     };
 

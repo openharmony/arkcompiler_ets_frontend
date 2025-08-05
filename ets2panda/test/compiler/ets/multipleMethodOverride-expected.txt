@@ -135,7 +135,7 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 5,
+                "column": 13,
                 "program": "multipleMethodOverride.ets"
               },
               "end": {
@@ -457,7 +457,7 @@
             "loc": {
               "start": {
                 "line": 23,
-                "column": 5,
+                "column": 21,
                 "program": "multipleMethodOverride.ets"
               },
               "end": {
@@ -980,7 +980,7 @@
             "loc": {
               "start": {
                 "line": 34,
-                "column": 5,
+                "column": 21,
                 "program": "multipleMethodOverride.ets"
               },
               "end": {

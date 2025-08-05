@@ -717,7 +717,7 @@
             "loc": {
               "start": {
                 "line": 20,
-                "column": 3,
+                "column": 11,
                 "program": "launch_this_callee.ets"
               },
               "end": {
@@ -983,7 +983,7 @@
             "loc": {
               "start": {
                 "line": 24,
-                "column": 3,
+                "column": 11,
                 "program": "launch_this_callee.ets"
               },
               "end": {
@@ -1585,7 +1585,7 @@
             "loc": {
               "start": {
                 "line": 28,
-                "column": 3,
+                "column": 11,
                 "program": "launch_this_callee.ets"
               },
               "end": {
@@ -1898,7 +1898,7 @@
             "loc": {
               "start": {
                 "line": 32,
-                "column": 3,
+                "column": 11,
                 "program": "launch_this_callee.ets"
               },
               "end": {

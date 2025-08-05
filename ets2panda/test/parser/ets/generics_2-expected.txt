@@ -939,7 +939,7 @@
             "loc": {
               "start": {
                 "line": 22,
-                "column": 5,
+                "column": 14,
                 "program": "generics_2.ets"
               },
               "end": {
@@ -1313,7 +1313,7 @@
             "loc": {
               "start": {
                 "line": 25,
-                "column": 5,
+                "column": 14,
                 "program": "generics_2.ets"
               },
               "end": {

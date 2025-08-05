@@ -295,7 +295,7 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 5,
+                "column": 18,
                 "program": "async_function.ets"
               },
               "end": {

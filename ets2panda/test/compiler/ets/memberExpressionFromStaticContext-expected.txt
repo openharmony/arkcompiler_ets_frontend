@@ -256,7 +256,7 @@
             "loc": {
               "start": {
                 "line": 18,
-                "column": 5,
+                "column": 12,
                 "program": "memberExpressionFromStaticContext.ets"
               },
               "end": {
@@ -624,7 +624,7 @@
             "loc": {
               "start": {
                 "line": 20,
-                "column": 5,
+                "column": 12,
                 "program": "memberExpressionFromStaticContext.ets"
               },
               "end": {
@@ -1021,7 +1021,7 @@
             "loc": {
               "start": {
                 "line": 28,
-                "column": 5,
+                "column": 12,
                 "program": "memberExpressionFromStaticContext.ets"
               },
               "end": {
@@ -1668,7 +1668,7 @@
             "loc": {
               "start": {
                 "line": 30,
-                "column": 5,
+                "column": 12,
                 "program": "memberExpressionFromStaticContext.ets"
               },
               "end": {
@@ -2111,7 +2111,7 @@
             "loc": {
               "start": {
                 "line": 42,
-                "column": 5,
+                "column": 12,
                 "program": "memberExpressionFromStaticContext.ets"
               },
               "end": {
@@ -2841,7 +2841,7 @@
             "loc": {
               "start": {
                 "line": 44,
-                "column": 5,
+                "column": 12,
                 "program": "memberExpressionFromStaticContext.ets"
               },
               "end": {

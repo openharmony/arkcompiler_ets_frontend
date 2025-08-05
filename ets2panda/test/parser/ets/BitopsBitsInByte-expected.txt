@@ -687,7 +687,7 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 3,
+                "column": 18,
                 "program": "BitopsBitsInByte.ets"
               },
               "end": {
@@ -1828,7 +1828,7 @@
             "loc": {
               "start": {
                 "line": 33,
-                "column": 3,
+                "column": 10,
                 "program": "BitopsBitsInByte.ets"
               },
               "end": {

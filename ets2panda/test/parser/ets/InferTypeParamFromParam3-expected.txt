@@ -1886,7 +1886,7 @@
             "loc": {
               "start": {
                 "line": 21,
-                "column": 5,
+                "column": 19,
                 "program": "InferTypeParamFromParam3.ets"
               },
               "end": {

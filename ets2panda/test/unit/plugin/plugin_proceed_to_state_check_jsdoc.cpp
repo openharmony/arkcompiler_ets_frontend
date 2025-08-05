@@ -64,7 +64,8 @@ static es2panda_AstNode *exportSingleNamedDecl = nullptr;
 static es2panda_AstNode *reExportedDecl = nullptr;
 static es2panda_AstNode *importDecl = nullptr;
 
-static std::string g_source = R"(/*
+static std::string g_source = R"('use static'
+/*
  * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

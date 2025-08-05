@@ -1583,7 +1583,7 @@
             "loc": {
               "start": {
                 "line": 27,
-                "column": 3,
+                "column": 10,
                 "program": "AccessBinaryTrees.ets"
               },
               "end": {
@@ -2722,7 +2722,7 @@
             "loc": {
               "start": {
                 "line": 40,
-                "column": 3,
+                "column": 10,
                 "program": "AccessBinaryTrees.ets"
               },
               "end": {
@@ -5161,7 +5161,7 @@
             "loc": {
               "start": {
                 "line": 51,
-                "column": 3,
+                "column": 10,
                 "program": "AccessBinaryTrees.ets"
               },
               "end": {
