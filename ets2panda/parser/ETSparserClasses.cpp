@@ -549,7 +549,7 @@ ir::OverloadDeclaration *ETSParser::ParseClassOverloadDeclaration(ir::ModifierFl
         modifiers |= ir::ModifierFlags::CONSTRUCTOR;
         Lexer()->NextToken();
     } else {
-        overloadName = ExpectIdentifier(false, true, TypeAnnotationParsingOptions::REPORT_ERROR);
+        overloadName = ExpectIdentifier(false, false, TypeAnnotationParsingOptions::REPORT_ERROR);
     }
 
     auto *overloadDef = AllocNode<ir::OverloadDeclaration>(overloadName->Clone(Allocator(), nullptr)->AsExpression(),
@@ -1108,7 +1108,7 @@ static lexer::SourcePosition GetEndLoc(ir::BlockStatement *body, ir::ScriptFunct
 ir::OverloadDeclaration *ETSParser::ParseInterfaceOverload(ir::ModifierFlags modifiers)
 {
     ValidateOverloadDeclarationModifiers(modifiers);
-    auto *overloadName = ExpectIdentifier(false, true, TypeAnnotationParsingOptions::REPORT_ERROR);
+    auto *overloadName = ExpectIdentifier(false, false, TypeAnnotationParsingOptions::REPORT_ERROR);
     auto *overloadDef = AllocNode<ir::OverloadDeclaration>(overloadName->Clone(Allocator(), nullptr)->AsExpression(),
                                                            modifiers, Allocator());
     overloadDef->AddOverloadDeclFlag(ir::OverloadDeclFlags::INTERFACE_METHOD);
