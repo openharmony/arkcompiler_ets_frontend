@@ -821,6 +821,29 @@ void ETSParser::ValidateInstanceOfExpression(ir::Expression *expr)
     }
 }
 
+ir::Expression *ETSParser::ParseGenericLambdaOrTypeAssertion()
+{
+    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN);
+    const auto savedPosition = Lexer()->Save();
+    const auto start = Lexer()->GetToken().Start();
+    const auto arrowStart = DiagnosticEngine().Save();
+    if (ir::Expression *expr = ParseGenericArrowFunction(); expr != nullptr) {
+        LogError(diagnostic::GENERIC_LAMBDA_NOT_SUPPORTED, util::DiagnosticMessageParams {}, start);
+        return AllocBrokenExpression(expr->Range());
+    }
+    const auto afterArrow = DiagnosticEngine().Save();
+    Lexer()->Rewind(savedPosition);
+    if (const ir::Expression *typeAssertion = ParseTypeAssertion(); typeAssertion != nullptr) {
+        DiagnosticEngine().UndoRange(arrowStart, afterArrow);
+        LogError(diagnostic::TS_TYPE_ASSERTION, util::DiagnosticMessageParams {}, start);
+        ES2PANDA_ASSERT(DiagnosticEngine().IsAnyError());
+        return AllocBrokenExpression(typeAssertion->Range());
+    }
+    DiagnosticEngine().Rollback(afterArrow);
+    ES2PANDA_ASSERT(DiagnosticEngine().IsAnyError());
+    return AllocBrokenExpression(lexer::SourceRange {start, Lexer()->GetToken().End()});
+}
+
 // NOLINTNEXTLINE(google-default-arguments)
 ir::Expression *ETSParser::ParseExpression(ExpressionParseFlags flags)
 {
@@ -836,7 +859,6 @@ ir::Expression *ETSParser::ParseExpression(ExpressionParseFlags flags)
     if (Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_AT)) {
         annotations = ParseAnnotations(false);
     }
-    const auto savedPosition = Lexer()->Save();
     const auto start = Lexer()->GetToken().Start();
     if (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_YIELD &&
         (flags & ExpressionParseFlags::DISALLOW_YIELD) == 0U) {
@@ -845,21 +867,7 @@ ir::Expression *ETSParser::ParseExpression(ExpressionParseFlags flags)
         return ParsePotentialExpressionSequence(yieldExpr, flags);
     }
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
-        const auto arrowStart = DiagnosticEngine().Save();
-        if (ir::Expression *expr = ParseGenericArrowFunction(true); expr != nullptr && !expr->IsBrokenExpression()) {
-            return expr;
-        }
-        const auto afterArrow = DiagnosticEngine().Save();
-        Lexer()->Rewind(savedPosition);
-        if (const ir::Expression *typeAssertion = ParseTypeAssertion(); typeAssertion != nullptr) {
-            DiagnosticEngine().UndoRange(arrowStart, afterArrow);
-            LogError(diagnostic::TS_TYPE_ASSERTION, util::DiagnosticMessageParams {}, start);
-            ES2PANDA_ASSERT(DiagnosticEngine().IsAnyError());
-            return AllocBrokenExpression(typeAssertion->Range());
-        }
-        DiagnosticEngine().Rollback(afterArrow);
-        ES2PANDA_ASSERT(DiagnosticEngine().IsAnyError());
-        return AllocBrokenExpression(lexer::SourceRange {start, Lexer()->GetToken().End()});
+        return ParseGenericLambdaOrTypeAssertion();
     }
 
     ir::Expression *unaryExpressionNode = ParseUnaryOrPrefixUpdateExpression(flags);

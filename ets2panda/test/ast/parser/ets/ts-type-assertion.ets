@@ -24,4 +24,5 @@ const f = <t><t>foo;
 /* @@? 19:11 Error SyntaxError: Type cast syntax '<type>' is not supported, please use 'as' keyword instead */
 /* @@? 20:12 Error SyntaxError: Type cast syntax '<type>' is not supported, please use 'as' keyword instead */
 /* @@? 21:11 Error SyntaxError: Type cast syntax '<type>' is not supported, please use 'as' keyword instead */
-/* @@? 22:14 Error SyntaxError: Unexpected token, expected '('. */
+/* @@? 22:11 Error SyntaxError: Type cast syntax '<type>' is not supported, please use 'as' keyword instead */
+/* @@? 22:14 Error SyntaxError: Type cast syntax '<type>' is not supported, please use 'as' keyword instead */

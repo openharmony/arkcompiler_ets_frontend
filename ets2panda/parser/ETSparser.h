@@ -267,8 +267,7 @@ private:
     ir::TypeNode *ParseUnionType(ir::TypeNode *firstType);
     ir::TypeNode *GetTypeAnnotationOfPrimitiveType(lexer::TokenType tokenType, TypeAnnotationParsingOptions *options);
     ir::TypeNode *ParseWildcardType(TypeAnnotationParsingOptions *options);
-    ir::TypeNode *ParseFunctionType(TypeAnnotationParsingOptions *options,
-                                    ir::TSTypeParameterDeclaration *typeParamDecl = nullptr);
+    ir::TypeNode *ParseFunctionType(TypeAnnotationParsingOptions *options);
     ir::TypeNode *ParseETSTupleType(TypeAnnotationParsingOptions *options);
     ir::TypeNode *ParseTsArrayType(ir::TypeNode *typeNode, TypeAnnotationParsingOptions *options);
     bool ParseTriplePeriod(bool spreadTypePresent);
@@ -279,14 +278,11 @@ private:
     bool IsArrowFunctionExpressionStart();
     ir::ArrowFunctionExpression *ParseArrowFunctionExpression();
     void ReportIfVarDeclaration(VariableParsingFlags flags) override;
-    ir::TypeNode *ParsePotentialFunctionalType(TypeAnnotationParsingOptions *options,
-                                               ir::TSTypeParameterDeclaration *typeParamDecl = nullptr);
+    ir::TypeNode *ParsePotentialFunctionalType(TypeAnnotationParsingOptions *options);
     std::pair<ir::TypeNode *, bool> ParseNonNullableType(TypeAnnotationParsingOptions *options);
     void CheckForConditionalTypeError(TypeAnnotationParsingOptions options, lexer::TokenType tokenType);
     std::pair<ir::TypeNode *, bool> GetTypeAnnotationFromToken(TypeAnnotationParsingOptions *options);
-    std::pair<ir::TypeNode *, bool> GetTypeAnnotationFromArrowFunction(TypeAnnotationParsingOptions *options);
-    std::pair<ir::TypeNode *, bool> GetTypeAnnotationFromParentheses(
-        TypeAnnotationParsingOptions *options, ir::TSTypeParameterDeclaration *typeParamDecl = nullptr);
+    std::pair<ir::TypeNode *, bool> GetTypeAnnotationFromParentheses(TypeAnnotationParsingOptions *options);
     ir::TypeNode *ParseLiteralIdent(TypeAnnotationParsingOptions *options);
     void ParseRightParenthesis(TypeAnnotationParsingOptions *options, ir::TypeNode *&typeAnnotation,
                                lexer::LexerPosition savedPos);
@@ -443,6 +439,7 @@ private:
     ir::Expression *ParseExpression(ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS) override;
     ir::Expression *ParseExpressionOrTypeAnnotation(lexer::TokenType type, ExpressionParseFlags flags) override;
     ir::Expression *ParsePotentialExpressionSequence(ir::Expression *expr, ExpressionParseFlags flags) override;
+    ir::Expression *ParseGenericLambdaOrTypeAssertion();
     ir::ModifierFlags ParseTypeVarianceModifier(TypeAnnotationParsingOptions *const options);
     bool IsExportedDeclaration(ir::ModifierFlags memberModifiers);
     ir::Statement *ParseTopLevelDeclStatement(StatementParsingFlags flags);
