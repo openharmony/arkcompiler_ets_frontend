@@ -16,4 +16,3 @@
 let a: readonly int [""];
 
 /* @@? 16:21 Error SyntaxError: Indexed access types are not supported, use type name instead! */
-/* @@? 16:25 Error SyntaxError: 'readonly' type modifier is only permitted on resizable array and tuple types. */

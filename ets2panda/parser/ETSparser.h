@@ -328,6 +328,8 @@ private:
     ir::Expression *ResolveArgumentUnaryExpr(ExpressionParseFlags flags);
     ir::Expression *CreateUnaryExpressionFromArgument(ir::Expression *argument, lexer::TokenType operatorType,
                                                       char32_t beginningChar);
+
+    ir::Expression *HandleDeepNesting();
     // NOLINTNEXTLINE(google-default-arguments)
     ir::Expression *ParseUnaryOrPrefixUpdateExpression(
         ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS) override;

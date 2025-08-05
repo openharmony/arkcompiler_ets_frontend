@@ -151,16 +151,21 @@ static bool IsLeftHandSideExpression(lexer::TokenType &operatorType, lexer::Next
     }
 }
 
+ir::Expression *ETSParser::HandleDeepNesting()
+{
+    LogError(diagnostic::DEEP_NESTING);
+    while (Lexer()->GetToken().Type() != lexer::TokenType::EOS) {
+        Lexer()->NextToken();
+    }
+    return AllocBrokenExpression(Lexer()->GetToken().Start());
+}
+
 // NOLINTNEXTLINE(google-default-arguments)
 ir::Expression *ETSParser::ParseUnaryOrPrefixUpdateExpression(ExpressionParseFlags flags)
 {
     TrackRecursive trackRecursive(RecursiveCtx());
     if (!trackRecursive) {
-        LogError(diagnostic::DEEP_NESTING);
-        while (Lexer()->GetToken().Type() != lexer::TokenType::EOS) {
-            Lexer()->NextToken();
-        }
-        return AllocBrokenExpression(Lexer()->GetToken().Loc());
+        return HandleDeepNesting();
     }
     auto tokenFlags = lexer::NextTokenFlags::NONE;
     lexer::TokenType operatorType = Lexer()->GetToken().Type();
@@ -624,8 +629,9 @@ ir::Expression *ETSParser::ParsePostPrimaryExpression(ir::Expression *primaryExp
                                                       [[maybe_unused]] bool *isChainExpression)
 {
     ir::Expression *returnExpression = primaryExpr;
+    WhileLoopGuard guard;
 
-    while (true) {
+    while (guard.ShouldContinue()) {
         auto expr = GetPostPrimaryExpression(returnExpression, startLoc, ignoreCallExpression, isChainExpression);
         if (expr.has_value()) {
             returnExpression = expr.value();
@@ -633,6 +639,10 @@ ir::Expression *ETSParser::ParsePostPrimaryExpression(ir::Expression *primaryExp
         }
 
         break;
+    }
+
+    if (guard.IsLimitReached()) {
+        return HandleDeepNesting();
     }
 
     return returnExpression;
@@ -852,11 +862,7 @@ ir::Expression *ETSParser::ParseExpression(ExpressionParseFlags flags)
 {
     TrackRecursive trackRecursive(RecursiveCtx());
     if (!trackRecursive) {
-        LogError(diagnostic::DEEP_NESTING);
-        while (Lexer()->GetToken().Type() != lexer::TokenType::EOS) {
-            Lexer()->NextToken();
-        }
-        return AllocBrokenExpression(Lexer()->GetToken().Loc());
+        return HandleDeepNesting();
     }
     ArenaVector<ir::AnnotationUsage *> annotations {Allocator()->Adapter()};
     if (Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_AT)) {

@@ -20,7 +20,6 @@
 /* @@? 16:5 Error TypeError: 'M' type does not exist. */
 /* @@? 16:16 Error TypeError: Only abstract or native methods can't have body. */
 /* @@? 16:29 Error SyntaxError: Unexpected 'this' keyword in non-receiver context. */
-/* @@? 16:40 Error SyntaxError: Annotations are not allowed on this type of declaration. */
 /* @@? 16:44 Error SyntaxError: Unexpected token, expected ',' or ')'. */
 /* @@? 16:44 Error SyntaxError: Unexpected token, expected '=>'. */
 /* @@? 16:46 Error SyntaxError: Unexpected token ']'. */
