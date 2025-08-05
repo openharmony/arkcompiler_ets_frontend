@@ -13,11 +13,10 @@
  * limitations under the License.
  */
 
+enum Color1 {Red = 0, Green = 1, Blue = 0}
+enum Color2 {First = "red", Second = "green", Third = "red"}
 
 function main():void {
-    enum Color1 {Red = 0, Green = 1, Blue = 0}
-    enum Color2 {First = "red", Second = "green", Third = "red"}
-
     if (Color1.Red < Color1.Blue)
         arktest.assertTrue(false)
     if (Color1.Red > Color1.Blue)

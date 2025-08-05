@@ -392,4 +392,31 @@ ir::Statement *ETSParser::ParseStructStatement([[maybe_unused]] StatementParsing
     return AllocBrokenStatement(rangeStruct);
 }
 
+ir::Statement *ETSParser::ParseInterfaceStatement([[maybe_unused]] StatementParsingFlags flags)
+{
+    auto &rangeClass = Lexer()->GetToken().Loc();
+    LogError(diagnostic::ILLEGAL_START_STRUCT_CLASS, {"INTERFACE"}, Lexer()->GetToken().Start());
+    ParseInterfaceDeclaration(false);
+    return AllocBrokenStatement(rangeClass);
+}
+
+ir::Statement *ETSParser::ParseEnumStatement([[maybe_unused]] StatementParsingFlags flags)
+{
+    auto &rangeClass = Lexer()->GetToken().Loc();
+    LogError(diagnostic::ILLEGAL_START_STRUCT_CLASS, {"ENUM"}, Lexer()->GetToken().Start());
+    ParseEnumDeclaration();
+    return AllocBrokenStatement(rangeClass);
+}
+
+ir::Statement *ETSParser::ParseTypeAliasStatement()
+{
+    auto &rangeClass = Lexer()->GetToken().Loc();
+    lexer::SourcePosition start = rangeClass.start;
+    if (ParseTypeAliasDeclaration() == nullptr) {
+        return nullptr;
+    }
+    LogError(diagnostic::ILLEGAL_START_STRUCT_CLASS, {"Type Alias"}, start);
+    return AllocBrokenStatement(rangeClass);
+}
+
 }  // namespace ark::es2panda::parser

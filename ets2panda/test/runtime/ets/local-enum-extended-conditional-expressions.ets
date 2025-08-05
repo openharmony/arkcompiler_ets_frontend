@@ -13,10 +13,9 @@
  * limitations under the License.
  */
 
+enum Color { Red, Green, Blue = 0}
 
 function main(): void {
-
-    enum Color { Red, Green, Blue = 0}
     arktest.assertTrue(Color.Red ? false : true)
     arktest.assertTrue(Color.Green ? true : false)
     arktest.assertTrue(!Color.Green ? false : true)

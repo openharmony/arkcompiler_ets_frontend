@@ -39,6 +39,7 @@ function mdin() {    let a = new A();
 /* @@? 17:4 Error SyntaxError: Unexpected token '{'. */
 /* @@? 17:5 Error TypeError: Unresolved reference name */
 /* @@? 17:11 Error SyntaxError: Unexpected token ':'. */
+/* @@? 19:1 Error SyntaxError: Illegal start of INTERFACE expression. */
 /* @@? 20:5 Error SyntaxError: Identifier expected. */
 /* @@? 20:14 Error SyntaxError: Unexpected token, expected ','. */
 /* @@? 20:14 Error SyntaxError: Unexpected token, expected 'private' or identifier. */
@@ -52,7 +53,7 @@ function mdin() {    let a = new A();
 /* @@? 24:7 Error TypeError: Unresolved reference A */
 /* @@? 24:9 Error SyntaxError: Unexpected token 'implements'. */
 /* @@? 24:20 Error SyntaxError: Unexpected token 'I'. */
-/* @@? 24:20 Error TypeError: Interface name 'I' used in the wrong context */
+/* @@? 24:20 Error TypeError: Unresolved reference I */
 /* @@? 24:22 Error SyntaxError: Unexpected token '{'. */
 /* @@? 25:4 Error TypeError: Unresolved reference reanstructor */
 /* @@? 26:19 Error SyntaxError: Unexpected token, expected an identifier. */
@@ -66,4 +67,4 @@ function mdin() {    let a = new A();
 /* @@? 29:18 Error SyntaxError: Unexpected token, expected an identifier. */
 /* @@? 31:2 Error SyntaxError: Unexpected token '*'. */
 /* @@? 32:1 Error SyntaxError: Nested functions are not allowed. */
-/* @@? 70:1 Error SyntaxError: Expected '}', got 'end of stream'. */
+/* @@? 71:1 Error SyntaxError: Expected '}', got 'end of stream'. */

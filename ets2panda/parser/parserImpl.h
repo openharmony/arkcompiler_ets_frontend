@@ -317,6 +317,8 @@ protected:
     // NOLINTNEXTLINE(google-default-arguments)
     virtual ir::Statement *ParseStructStatement(StatementParsingFlags flags, ir::ClassDefinitionModifiers modifiers,
                                                 ir::ModifierFlags modFlags = ir::ModifierFlags::NONE);
+    virtual ir::Statement *ParseInterfaceStatement(StatementParsingFlags flags);
+    virtual ir::Statement *ParseEnumStatement(StatementParsingFlags flags);
     ir::Statement *ParseStatementBasedOnTokenType(StatementParsingFlags flags);
     ir::Statement *ParseVarStatement();
     ir::Statement *ParseLetStatement(StatementParsingFlags flags);

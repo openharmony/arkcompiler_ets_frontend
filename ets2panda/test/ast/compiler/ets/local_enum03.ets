@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,14 +13,14 @@
  * limitations under the License.
  */
 
-enum Foo {Bar, Baz}
-
 function main() {
+    const a : int = 1;
+    const b : int = 2 + a;
+    enum Foo {Baz = a, Bar = b}
+    arktest.assertEQ(Foo.Bar, 3)
 
-    {
-      enum Foo {Baz, Bar}
-      arktest.assertEQ(Foo.Bar as int, 1)
-    }
-
-    arktest.assertEQ(Foo.Bar as int, 0)
+    arktest.assertEQ(Foo.Baz, 1)
 }
+
+ /* @@? 19:5 Error SyntaxError: Illegal start of ENUM expression.  */
+ /* @@? 20:22 Error TypeError: Unresolved reference Foo  */
