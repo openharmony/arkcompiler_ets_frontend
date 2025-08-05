@@ -821,6 +821,9 @@ ir::AstNode *Helpers::DerefETSTypeReference(ir::AstNode *node)
         auto *name = node->AsETSTypeReference()->Part()->GetIdent();
 
         ES2PANDA_ASSERT(name->IsIdentifier());
+        if (varbinder::ETSBinder::IsSpecialName(name->Name())) {
+            return node;
+        }
         auto *var = name->AsIdentifier()->Variable();
         ES2PANDA_ASSERT(var != nullptr);
         auto *declNode = var->Declaration()->Node();

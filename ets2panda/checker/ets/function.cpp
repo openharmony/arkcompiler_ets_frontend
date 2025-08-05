@@ -1395,8 +1395,12 @@ Signature *ETSChecker::ResolveConstructExpression(ETSObjectType *type, const Are
 {
     auto *var = type->GetProperty(compiler::Signatures::CONSTRUCTOR_NAME, PropertySearchFlags::SEARCH_STATIC_METHOD);
     if (var != nullptr && var->TsType()->IsETSFunctionType()) {
-        return MatchOrderSignatures(var->TsType()->AsETSFunctionType()->CallSignatures(), nullptr, arguments, pos,
-                                    TypeRelationFlag::NONE);
+        auto sig = MatchOrderSignatures(var->TsType()->AsETSFunctionType()->CallSignatures(), nullptr, arguments, pos,
+                                        TypeRelationFlag::NONE);
+        if (sig == nullptr) {
+            ThrowOverloadMismatch(type->Name(), arguments, pos, "construct");
+        }
+        return sig;
     }
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     return ValidateSignatures(type->ConstructSignatures(), nullptr, arguments, pos, "construct");
