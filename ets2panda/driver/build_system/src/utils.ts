@@ -21,6 +21,7 @@ import * as path from 'path';
 import {
   ARKTS_MODULE_NAME,
   DECL_ETS_SUFFIX,
+  LANGUAGE_VERSION,
   NATIVE_MODULE,
   sdkConfigPrefix
 } from './pre_define';
@@ -30,7 +31,7 @@ import {
   LogDataFactory
 } from './logger';
 import { ErrorCode } from './error_code';
-import { ModuleInfo, OHOS_MODULE_TYPE } from './types';
+import { BuildConfig, ModuleInfo, OHOS_MODULE_TYPE } from './types';
 
 const WINDOWS: string = 'Windows_NT';
 const LINUX: string = 'Linux';
@@ -200,4 +201,16 @@ export function createFileIfNotExists(filePath: string, content: string): boolea
   } catch (error) {
     return false;
   }
+}
+
+export function isMixCompileProject(buildConfig: BuildConfig): boolean {
+  for (const moduleInfo of buildConfig.dependentModuleList) {
+    if (
+      moduleInfo.language === LANGUAGE_VERSION.ARKTS_1_1 ||
+      moduleInfo.language === LANGUAGE_VERSION.ARKTS_HYBRID
+    ) {
+      return true;
+    }
+  }
+  return false;
 }

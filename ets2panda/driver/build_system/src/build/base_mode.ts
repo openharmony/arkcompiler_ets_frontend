@@ -47,7 +47,8 @@ import {
   createFileIfNotExists,
   ensurePathExists,
   getFileHash,
-  isMac
+  isMac,
+  isMixCompileProject
 } from '../utils';
 import {
   PluginDriver,
@@ -151,7 +152,11 @@ export abstract class BaseMode {
     this.isBuildConfigModified = buildConfig.isBuildConfigModified as boolean | undefined;
     this.hasCleanWorker = false;
     this.byteCodeHar = buildConfig.byteCodeHar as boolean;
-    this.es2pandaMode = buildConfig?.es2pandaMode ?? ES2PANDA_MODE.RUN_PARALLEL;
+    this.es2pandaMode = buildConfig?.es2pandaMode ?? (
+      isMixCompileProject(buildConfig)
+        ? ES2PANDA_MODE.RUN_PARALLEL
+        : ES2PANDA_MODE.RUN
+    );
     this.skipDeclCheck = buildConfig?.skipDeclCheck as boolean ?? true;
   }
 
