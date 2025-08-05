@@ -88,7 +88,8 @@ cookBookTag[57] = '';
 cookBookTag[58] = '';
 cookBookTag[59] = '"delete" operator is not supported (arkts-no-delete)';
 cookBookTag[60] = '"typeof" operator is allowed only in expression contexts (arkts-no-type-query)';
-cookBookTag[61] = '';
+cookBookTag[61] =
+  'The bitwise inversion gives different result for "Infinity" (arkts-distinct-infinity-bitwise-inversion)';
 cookBookTag[62] = '';
 cookBookTag[63] = '';
 cookBookTag[64] = '';
@@ -105,7 +106,8 @@ cookBookTag[74] = 'Destructuring variable declarations are not supported (arkts-
 cookBookTag[75] = 'Use string-literal keys with Record (arkts-obj-literal-key-type)';
 cookBookTag[76] = 'Type of parameter must be defined explicitly (arkts-require-func-arg-type)';
 cookBookTag[77] = 'Template string type is not supported (arkts-no-template-string-type)';
-cookBookTag[78] = '';
+cookBookTag[78] =
+  'Numeric value literals outside of integer range require long representation (arkts-use-long-for-large-numeric-literal)';
 cookBookTag[79] = 'Type annotation in catch clause is not supported (arkts-no-types-in-catch)';
 cookBookTag[80] = '"for .. in" is not supported (arkts-no-for-in)';
 cookBookTag[81] = '';
@@ -257,6 +259,8 @@ cookBookTag[212] = 'The index expression must be zero or positive value.(arkts-a
 cookBookTag[213] = 'Class cannot have static codeblocks. (arkts-class-lazy-import)';
 cookBookTag[214] = 'Objects have no constructor property in ArkTS1.2 (arkts-obj-no-constructor)';
 cookBookTag[215] = 'Array bound not checked. (arkts-runtime-array-check)';
+cookBookTag[216] =
+  'The signature of a method in a class/interface cannot be different from the public interface in an object. (arkts-class-no-signature-distinct-with-object-public-api)';
 cookBookTag[222] = 'Import for side-effect only is prohibited.(arkts-no-side-effect-import)';
 cookBookTag[232] = 'Lazy import is not supported(arkts-no-lazy-import)';
 cookBookTag[233] = 'Dynamic import is not supported(arkts-no-dynamic-import)';
@@ -296,6 +300,8 @@ cookBookTag[269] =
 cookBookTag[270] = 'ArkTS1.2 cannot catch a non Error instance thrown from JS code (arkts-interop-js2s-js-exception)';
 cookBookTag[271] =
   'After a variable is declared, a value must be assigned before using it (arkts-var-assignment-before-use)';
+cookBookTag[272] =
+  'This API of process is obsolete in ArkTS 1.1. It\'s no longer supported in ArkTS 1.2 (arkts-concurrent-deprecated-apis)';
 cookBookTag[274] =
   'The subclass constructor must call the parent class\'s parametered constructor (arkts-subclass-must-call-super-constructor-with-args)';
 cookBookTag[275] =
@@ -310,6 +316,8 @@ cookBookTag[284] = '"prop" function is not supported (arkui-no-prop-function)';
 cookBookTag[285] = '"setAndProp" function is not supported (arkui-no-setandprop-function)';
 cookBookTag[286] =
   'Parameters decorated with "@Prop" need to call the specific method when receiving data to ensure deep copy of the data (arkui-prop-need-call-method-for-deep-copy)';
+cookBookTag[290] =
+  'Tuple type cannot be used in generic type parameters of Promise static methods (arkts-not-support-tuple-generic-validation)';
 cookBookTag[300] = 'The function type should be explicit (arkts-no-ts-like-function-call)';
 cookBookTag[301] = 'Importing from "oh module" requires specifying full path (arkts-require-fullpath-name)';
 cookBookTag[302] =

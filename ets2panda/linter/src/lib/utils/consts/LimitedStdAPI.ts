@@ -160,5 +160,25 @@ export const MODULE_IMPORTS: Record<string, string[]> = {
   '@arkts.collections': ['collections']
 };
 
-export const ARKTSUTILS_MODULES = ['@arkts.utils', '@kit.ArkTS'];
+export const ARKTSUTILS_MODULES = ['@arkts.utils', '@ohos.process', '@kit.ArkTS'];
 export const ARKTSUTILS_LOCKS_MEMBER = 'locks';
+
+export const OBJECT_PUBLIC_API_METHOD_SIGNATURES = new Map<string, string>([
+  ['toString', '(): string'],
+  ['toLocaleString', '(): string'],
+  ['valueOf', '(): Object'],
+  ['hasOwnProperty', '(v: PropertyKey): boolean'],
+  ['isPrototypeOf', '(v: Object): boolean'],
+  ['propertyIsEnumerable', '(v: PropertyKey): boolean']
+]);
+export const ARKTSUTILS_PROCESS_MEMBER = 'process';
+
+export const PROCESS_DEPRECATED_INTERFACES = [
+  'isAppUid',
+  'getUidForName',
+  'getThreadPriority',
+  'getSystemConfig',
+  'getEnvironmentVar',
+  'exit',
+  'kill'
+];

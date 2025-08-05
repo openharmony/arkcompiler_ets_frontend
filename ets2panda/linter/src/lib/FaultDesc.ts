@@ -71,6 +71,8 @@ faultDesc[FaultID.PropertyAccessByIndex] = 'property access by index';
 faultDesc[FaultID.NoStaticOnClass] = 'No static blocks on classes';
 faultDesc[FaultID.NoConstructorOnClass] = 'No constructor field on object';
 faultDesc[FaultID.RuntimeArrayCheck] = 'Array bound not checked';
+faultDesc[FaultID.NoSignatureDistinctWithObjectPublicApi] =
+  'Method’s signature in a class/interface must match the public interface of the object.';
 faultDesc[FaultID.JsxElement] = 'JSX Elements';
 faultDesc[FaultID.EnumMemberNonConstInit] = 'Enum members with non-constant initializer';
 faultDesc[FaultID.ImplementsClass] = 'Class type mentioned in "implements" clause';
@@ -82,10 +84,12 @@ faultDesc[FaultID.StructuralIdentity] = 'Use of type structural identity';
 faultDesc[FaultID.ExportAssignment] = 'Export assignments (export = ..)';
 faultDesc[FaultID.ImportAssignment] = 'Import assignments (import = ..)';
 faultDesc[FaultID.GenericCallNoTypeArgs] = 'Generic calls without type arguments';
+faultDesc[FaultID.PrefixUnaryInfinity] = 'Prefix unary infinity';
 faultDesc[FaultID.ParameterProperties] = 'Parameter properties in constructor';
 faultDesc[FaultID.InstanceofUnsupported] = 'Left-hand side of "instanceof" is wrong';
 faultDesc[FaultID.TemplateStringType] = 'Template string type';
 faultDesc[FaultID.ShorthandAmbientModuleDecl] = 'Shorthand ambient module declaration';
+faultDesc[FaultID.LongNumeric] = 'Use long for big numbers';
 faultDesc[FaultID.WildcardsInModuleName] = 'Wildcards in module name';
 faultDesc[FaultID.UMDModuleDefinition] = 'UMD module definition';
 faultDesc[FaultID.NewTarget] = '"new.target" meta-property';
@@ -170,6 +174,9 @@ faultDesc[FaultID.InteropJsObjectConditionJudgment] = 'Interop JS Object usage i
 faultDesc[FaultID.InteropJsObjectExpandStaticInstance] = 'Interop JS function usage';
 faultDesc[FaultID.InteropJSFunctionInvoke] = 'Interop JS function invoke';
 faultDesc[FaultID.VariableMissingInitializer] = 'Value must be assigned to variable';
+faultDesc[FaultID.NotSupportTupleGenericValidation] =
+  'Tuple type cannot be used in generic type parameters of Promise static methods';
+faultDesc[FaultID.DeprecatedProcessApi] = 'This process Api no longer supported in ArkTS 1.2';
 faultDesc[FaultID.ExplicitFunctionType] = 'Not explicit function type';
 faultDesc[FaultID.ClassstaticInitialization] = 'The static properties of a class need to have initial values';
 faultDesc[FaultID.AvoidUnionTypes] = 'Union types';

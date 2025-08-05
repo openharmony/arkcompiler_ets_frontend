@@ -47,13 +47,16 @@ import { STRINGLITERAL_NUMBER, STRINGLITERAL_NUMBER_ARRAY } from './consts/Strin
 import { ETS_MODULE, PATH_SEPARATOR, VALID_OHM_COMPONENTS_MODULE_PATH } from './consts/OhmUrl';
 import { EXTNAME_ETS, EXTNAME_JS, EXTNAME_D_ETS } from './consts/ExtensionName';
 import { CONCAT_ARRAY, STRING_ERROR_LITERAL } from './consts/Literals';
+import { INT_MIN, INT_MAX } from './consts/NumericalConstants';
 
 export const PROMISE_METHODS = new Set(['all', 'race', 'any', 'resolve', 'allSettled']);
+export const PROMISE_METHODS_WITH_NO_TUPLE_SUPPORT = new Set(['all', 'race', 'any', 'allSettled']);
 export const SYMBOL = 'Symbol';
 export const SYMBOL_CONSTRUCTOR = 'SymbolConstructor';
 const ITERATOR = 'iterator';
 
 export type CheckType = (this: TsUtils, t: ts.Type) => boolean;
+
 export class TsUtils {
   constructor(
     private readonly tsTypeChecker: ts.TypeChecker,
@@ -1667,6 +1670,21 @@ export class TsUtils {
     }
 
     return false;
+  }
+
+  isStdLongType(type: ts.Type | undefined): boolean {
+    if (!type) {
+      return false;
+    }
+    const sym = type.aliasSymbol;
+    return !!sym && sym.getName() === 'long' && this.isGlobalSymbol(sym);
+  }
+
+  static ifLargerThanInt(node: ts.NumericLiteral, isPrefix: boolean): boolean {
+    const raw = node.getText();
+    const value = isPrefix ? Number(raw) * -1 : Number(raw);
+
+    return value < INT_MIN || value > INT_MAX;
   }
 
   isStdErrorType(type: ts.Type): boolean {
@@ -3861,16 +3879,16 @@ export class TsUtils {
     }
   }
 
- isNumberArrayType(type: ts.Type): boolean {
-      if (!type.symbol || !this.isGenericArrayType(type)) {
-        return false;
-      }
-
-      const typeArguments = this.tsTypeChecker.getTypeArguments(type as ts.TypeReference);
-      if (!typeArguments || typeArguments.length === 0) {
-        return false;
-      }
-
-      return (typeArguments[0].flags & ts.TypeFlags.Number) !== 0;
+  isNumberArrayType(type: ts.Type): boolean {
+    if (!type.symbol || !this.isGenericArrayType(type)) {
+      return false;
     }
+
+    const typeArguments = this.tsTypeChecker.getTypeArguments(type);
+    if (!typeArguments || typeArguments.length === 0) {
+      return false;
+    }
+
+    return (typeArguments[0].flags & ts.TypeFlags.Number) !== 0;
+  }
 }
