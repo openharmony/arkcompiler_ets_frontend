@@ -42,15 +42,10 @@ interface Json5Object {
   };
 }
 
-function removeTrailingCommas(jsonString: string): string {
-  return jsonString.replace(/,\s*([}\]])/g, '$1');
-}
-
 function parseJson5(filePath: string): Json5Object {
   try {
     const rawContent = fs.readFileSync(filePath, 'utf8');
-    const cleanedContent = removeTrailingCommas(rawContent);
-    return JSON5.parse(cleanedContent) as Json5Object;
+    return JSON5.parse(rawContent) as Json5Object;
   } catch (error) {
     console.error(`Error parsing ${filePath}:`, error);
     return {} as Json5Object;
@@ -214,14 +209,16 @@ export function generateBuildConfigs(
     const pluginMap = createPluginMap(pathConfig.buildSdkPath);
 
     // Get recursive dependencies
+    const depModuleCompileFiles = new Set<string>();
     const dependencies = getModuleDependencies(modulePath);
     for (const depPath of dependencies) {
-      getEtsFiles(depPath).forEach((file) => compileFiles.add(file));
+      getEtsFiles(depPath).forEach((file) => depModuleCompileFiles.add(file));
     }
     let languageVersion = getModuleLanguageVersion(compileFiles);
     allBuildConfigs[module.name] = {
       plugins: pluginMap,
       compileFiles: Array.from(compileFiles),
+      depModuleCompileFiles: Array.from(depModuleCompileFiles),
       packageName: module.name,
       moduleType: module.moduleType,
       moduleRootPath: modulePath,

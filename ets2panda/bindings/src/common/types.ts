@@ -175,6 +175,7 @@ export interface DeclgenConfig {
 export interface BuildConfig extends DeclgenConfig, ModuleConfig, PathConfig {
   plugins: PluginsConfig;
   compileFiles: string[];
+  depModuleCompileFiles: string[];
 }
 // ProjectConfig ends
 
@@ -185,6 +186,7 @@ export interface ModuleInfo {
   entryFile: string;
   arktsConfigFile: string;
   compileFiles: string[];
+  depModuleCompileFiles: string[];
   declgenV1OutPath: string | undefined;
   declgenBridgeCodePath: string | undefined;
   staticDepModuleInfos: string[];
@@ -230,6 +232,7 @@ export interface TextDocumentChangeInfo {
 }
 
 export enum AstNodeType {
+  UNKNOWN,
   IDENTIFIER,
   CLASS_DEFINITION
 }

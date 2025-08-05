@@ -309,6 +309,10 @@ ets2panda_add_gtest(lsp_api_get_node_test CPP_SOURCES
     get_node_test.cpp
 )
 
+ets2panda_add_gtest(lsp_api_get_node_infos_test CPP_SOURCES
+    get_node_infos_test.cpp
+)
+
 ets2panda_add_gtest(lsp_api_get_definition_from_node_test CPP_SOURCES
     get_definition_from_node_test.cpp
 )

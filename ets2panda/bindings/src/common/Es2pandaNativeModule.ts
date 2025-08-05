@@ -998,6 +998,18 @@ export class Es2pandaNativeModule {
     throw new Error('Not implemented');
   }
 
+  _getNameByNodeInfo(nodeInfo: KPtr): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getKindByNodeInfo(nodeInfo: KPtr): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getNodeInfosByDefinitionData(context: KPtr, position: KInt): KPtr {
+    throw new Error('Not implemented');
+  }
+
   _getProgramAst(context: KPtr): KPtr {
     throw new Error('Not implemented');
   }

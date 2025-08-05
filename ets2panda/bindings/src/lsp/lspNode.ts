@@ -19,6 +19,7 @@ import { throwError } from '../common/utils';
 import { isNullPtr } from '../common/Wrapper';
 import { global } from '../common/global';
 import { NativePtrDecoder } from '../common/Platform';
+import { AstNodeType, NodeInfo } from '../common/types';
 
 enum HierarchyType {
   OTHERS,
@@ -183,6 +184,7 @@ export class LspDefinitionData extends LspNode {
   readonly fileName: String;
   readonly start: KInt;
   readonly length: KInt;
+  nodeInfos?: NodeInfo[];
 }
 
 export class LspReferenceData extends LspNode {
@@ -999,4 +1001,27 @@ export class LspRenameLocation extends LspNode {
   readonly line: number;
   readonly prefixText: string;
   readonly suffixText: string;
+}
+
+export function toAstNodeType(str: string) {
+  switch (str) {
+    case 'Identifier': {
+      return AstNodeType.IDENTIFIER;
+    }
+    case 'ClassDefinition': {
+      return AstNodeType.CLASS_DEFINITION;
+    }
+    default:
+      return AstNodeType.UNKNOWN;
+  }
+}
+
+export class LspNodeInfo extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.name = unpackString(global.es2panda._getNameByNodeInfo(peer));
+    this.kind = toAstNodeType(unpackString(global.es2panda._getKindByNodeInfo(peer)));
+  }
+  readonly name: string;
+  readonly kind: AstNodeType;
 }
