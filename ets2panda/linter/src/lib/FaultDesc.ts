@@ -91,6 +91,7 @@ faultDesc[FaultID.TemplateStringType] = 'Template string type';
 faultDesc[FaultID.ShorthandAmbientModuleDecl] = 'Shorthand ambient module declaration';
 faultDesc[FaultID.LongNumeric] = 'Use long for big numbers';
 faultDesc[FaultID.WildcardsInModuleName] = 'Wildcards in module name';
+faultDesc[FaultID.TupleIndex] = 'Non-negative integer index for tuples';
 faultDesc[FaultID.UMDModuleDefinition] = 'UMD module definition';
 faultDesc[FaultID.NewTarget] = '"new.target" meta-property';
 faultDesc[FaultID.DefiniteAssignment] = faultDesc[FaultID.DefiniteAssignmentError] = 'Definite assignment assertion';

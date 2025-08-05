@@ -23,6 +23,7 @@
     "arkts-optional-methods",
     "arkts-use-long-for-large-numeric-literal",
     "arkts-numeric-semantic",
+    "arkts-limited-tuple-index-type",
     "arkts-incompatible-function-types",
     "arkts-limited-void-type",
     "arkts-distinct-infinity-bitwise-inversion",

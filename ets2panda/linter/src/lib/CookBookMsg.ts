@@ -90,7 +90,7 @@ cookBookTag[59] = '"delete" operator is not supported (arkts-no-delete)';
 cookBookTag[60] = '"typeof" operator is allowed only in expression contexts (arkts-no-type-query)';
 cookBookTag[61] =
   'The bitwise inversion gives different result for "Infinity" (arkts-distinct-infinity-bitwise-inversion)';
-cookBookTag[62] = '';
+cookBookTag[62] = 'Index of tuple must be non-negative integer (arkts-limited-tuple-index-type)';
 cookBookTag[63] = '';
 cookBookTag[64] = '';
 cookBookTag[65] = '"instanceof" operator is partially supported (arkts-instanceof-ref-types)';

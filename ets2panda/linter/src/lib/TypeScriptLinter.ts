@@ -4998,6 +4998,10 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     );
     const tsElemAccessArgType = this.tsTypeChecker.getTypeAtLocation(tsElementAccessExpr.argumentExpression);
 
+    if (this.options.arkts2 && this.tsUtils.isOrDerivedFrom(tsElemAccessBaseExprType, TsUtils.isTuple)) {
+      this.handleTupleIndex(tsElementAccessExpr);
+    }
+
     if (this.tsUtils.hasEsObjectType(tsElementAccessExpr.expression)) {
       const faultId = this.options.arkts2 ? FaultID.EsValueTypeError : FaultID.EsValueType;
       this.incrementCounters(node, faultId);
@@ -5012,6 +5016,80 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.checkInterOpImportJsIndex(tsElementAccessExpr);
     this.checkEnumGetMemberValue(tsElementAccessExpr);
     this.handleNoDeprecatedApi(tsElementAccessExpr);
+  }
+
+  private handleTupleIndex(expr: ts.ElementAccessExpression): void {
+    const value = expr.argumentExpression;
+
+    if (this.isArgumentConstDotZero(value)) {
+      this.incrementCounters(expr as ts.Node, FaultID.TupleIndex);
+      return;
+    }
+
+    if (ts.isNumericLiteral(value)) {
+      const indexText = value.getText();
+      const indexValue = Number(indexText);
+      const isValid = Number.isInteger(indexValue) && indexValue >= 0;
+
+      if (!isValid) {
+        this.incrementCounters(expr as ts.Node, FaultID.TupleIndex);
+      }
+      return;
+    }
+
+    if (ts.isPrefixUnaryExpression(value)) {
+      const { operator, operand } = value;
+      const resolved = this.evaluateValueFromDeclaration(operand);
+
+      if (typeof resolved === 'number') {
+        const final = operator === ts.SyntaxKind.MinusToken ? -resolved : resolved;
+        const isValid = Number.isInteger(final) && final >= 0;
+        if (!isValid) {
+          this.incrementCounters(expr as ts.Node, FaultID.TupleIndex);
+        }
+        return;
+      }
+      this.incrementCounters(expr as ts.Node, FaultID.TupleIndex);
+      return;
+    }
+
+    const resolved = this.evaluateValueFromDeclaration(value);
+    if (typeof resolved === 'number') {
+      const isValid = Number.isInteger(resolved) && resolved >= 0;
+      if (!isValid) {
+        this.incrementCounters(expr as ts.Node, FaultID.TupleIndex);
+      }
+      return;
+    }
+
+    this.incrementCounters(expr as ts.Node, FaultID.TupleIndex);
+  }
+
+  private isArgumentConstDotZero(expr: ts.Expression): boolean {
+    if (ts.isNumericLiteral(expr)) {
+      return expr.getText().endsWith('.0');
+    }
+
+    if (ts.isPrefixUnaryExpression(expr) && ts.isNumericLiteral(expr.operand)) {
+      return expr.operand.getText().endsWith('.0');
+    }
+
+    if (ts.isIdentifier(expr)) {
+      const declaration = this.tsUtils.getDeclarationNode(expr);
+      if (declaration && ts.isVariableDeclaration(declaration) && declaration.initializer) {
+        const init = declaration.initializer;
+
+        if (ts.isNumericLiteral(init)) {
+          return init.getText().endsWith('.0');
+        }
+
+        if (ts.isPrefixUnaryExpression(init) && ts.isNumericLiteral(init.operand)) {
+          return init.operand.getText().endsWith('.0');
+        }
+      }
+    }
+
+    return false;
   }
 
   private checkPropertyAccessByIndex(
@@ -5200,14 +5278,17 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (!initializer) {
       return null;
     }
-
-    if (!ts.isNumericLiteral(initializer)) {
-      return null;
-    }
-
-    const numericValue = Number(initializer.text);
-    if (!Number.isInteger(numericValue)) {
-      return null;
+    let numericValue: number | null = null;
+    if (ts.isNumericLiteral(initializer)) {
+      numericValue = Number(initializer.text);
+    } else if (ts.isPrefixUnaryExpression(initializer) && ts.isNumericLiteral(initializer.operand)) {
+      const rawValue = Number(initializer.operand.text);
+      numericValue =
+        initializer.operator === ts.SyntaxKind.MinusToken ?
+          -rawValue :
+          initializer.operator === ts.SyntaxKind.PlusToken ?
+            rawValue :
+            null;
     }
 
     return numericValue;

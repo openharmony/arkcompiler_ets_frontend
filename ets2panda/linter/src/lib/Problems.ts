@@ -164,6 +164,7 @@ export enum FaultID {
   ArrayIndexExprType,
   AvoidUnionTypes,
   NoTuplesArrays,
+  TupleIndex,
   DoubleExclaBindingNotSupported,
   DoubleDollarBindingNotSupported,
   DollarBindingNotSupported,
