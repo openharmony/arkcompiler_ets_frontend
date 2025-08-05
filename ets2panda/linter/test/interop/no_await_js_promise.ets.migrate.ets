@@ -13,11 +13,7 @@
  * limitations under the License.
  */
 
-let p = ESValue.load('./no_await_js_promise_export').getProperty('p');
-let foo = ESValue.load('./no_await_js_promise_export').getProperty('foo');
-let pFuncCall = ESValue.load('./no_await_js_promise_export').getProperty('pFuncCall');
-let arrowFunc = ESValue.load('./no_await_js_promise_export').getProperty('arrowFunc');
-let pArrowCall = ESValue.load('./no_await_js_promise_export').getProperty('pArrowCall');
+import { p, foo, pFuncCall, arrowFunc, pArrowCall } from "./no_await_js_promise_export";
 
 async function awaitPromise() {
   return await p.toPromise();
@@ -60,7 +56,7 @@ const exampleObj = {
 };
 
 (async () => {
-    console.log("IIFE result:", await p);
+    console.log("IIFE result:", await p.toPromise());
 })();
 
 (async () => {

@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-
+import { collections } from './oh_modules/@arkts.collections';
 
 
 
@@ -25,9 +25,9 @@ function tesCollectionsUsage() {
 
   const collections1: Array<number> = new Array<number>();
 
-  const collections2: number[] = new Array<number>();
+  const collections2 = new Array<number>();
 
-  const collections3: number[] = new Array<number>();
+  const collections3 = new Array<number>();
 
   let collections4: Array<number>;
 
@@ -39,4 +39,8 @@ function tesCollectionsUsage() {
 
 function test(array: Array<string>) {
     const map = Map<string, string>();
+}
+
+function testBitVector(bv: collections.BitVector<string>) {
+    const bitVector = new collections.BitVector<string>();
 }

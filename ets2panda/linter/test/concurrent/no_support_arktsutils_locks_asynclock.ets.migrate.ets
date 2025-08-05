@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import { ArkTSUtils } from '../main/oh_modules/@kit.ArkTS';
+
 
 let lock1 = new AsyncLock();
 

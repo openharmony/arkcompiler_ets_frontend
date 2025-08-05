@@ -30,26 +30,6 @@
             "endLine": 17,
             "endColumn": 51,
             "problem": "InterOpImportJs",
-            "autofix": [
-                {
-                    "start": 619,
-                    "end": 669,
-                    "replacementText": "",
-                    "line": 17,
-                    "column": 1,
-                    "endLine": 17,
-                    "endColumn": 51
-                },
-                {
-                    "start": 669,
-                    "end": 669,
-                    "replacementText": "let foo = ESValue.load('./interop_import_js_rules_js').getProperty('foo');",
-                    "line": 17,
-                    "column": 1,
-                    "endLine": 17,
-                    "endColumn": 51
-                }
-            ],
             "suggest": "",
             "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
             "severity": "ERROR"
@@ -70,26 +50,6 @@
             "endLine": 18,
             "endColumn": 56,
             "problem": "InterOpImportJs",
-            "autofix": [
-                {
-                    "start": 670,
-                    "end": 725,
-                    "replacementText": "",
-                    "line": 18,
-                    "column": 1,
-                    "endLine": 18,
-                    "endColumn": 56
-                },
-                {
-                    "start": 725,
-                    "end": 725,
-                    "replacementText": "let ff1 = ESValue.load('./interop_import_js_rules_js').getProperty('ff1');\nlet ff2 = ESValue.load('./interop_import_js_rules_js').getProperty('ff2');",
-                    "line": 18,
-                    "column": 1,
-                    "endLine": 18,
-                    "endColumn": 56
-                }
-            ],
             "suggest": "",
             "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
             "severity": "ERROR"
@@ -110,26 +70,6 @@
             "endLine": 20,
             "endColumn": 49,
             "problem": "InterOpImportJs",
-            "autofix": [
-                {
-                    "start": 727,
-                    "end": 775,
-                    "replacementText": "",
-                    "line": 20,
-                    "column": 1,
-                    "endLine": 20,
-                    "endColumn": 49
-                },
-                {
-                    "start": 775,
-                    "end": 775,
-                    "replacementText": "let A = ESValue.load('./interop_import_js_rules_js').getProperty('A');",
-                    "line": 20,
-                    "column": 1,
-                    "endLine": 20,
-                    "endColumn": 49
-                }
-            ],
             "suggest": "",
             "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
             "severity": "ERROR"
@@ -150,26 +90,6 @@
             "endLine": 21,
             "endColumn": 49,
             "problem": "InterOpImportJs",
-            "autofix": [
-                {
-                    "start": 776,
-                    "end": 824,
-                    "replacementText": "",
-                    "line": 21,
-                    "column": 1,
-                    "endLine": 21,
-                    "endColumn": 49
-                },
-                {
-                    "start": 824,
-                    "end": 824,
-                    "replacementText": "let C = ESValue.load('./interop_import_js_rules_js').getProperty('C');",
-                    "line": 21,
-                    "column": 1,
-                    "endLine": 21,
-                    "endColumn": 49
-                }
-            ],
             "suggest": "",
             "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
             "severity": "ERROR"
@@ -190,26 +110,6 @@
             "endLine": 23,
             "endColumn": 51,
             "problem": "InterOpImportJs",
-            "autofix": [
-                {
-                    "start": 826,
-                    "end": 876,
-                    "replacementText": "",
-                    "line": 23,
-                    "column": 1,
-                    "endLine": 23,
-                    "endColumn": 51
-                },
-                {
-                    "start": 876,
-                    "end": 876,
-                    "replacementText": "let ff3 = ESValue.load('./interop_import_js_rules_js').getProperty('ff3');",
-                    "line": 23,
-                    "column": 1,
-                    "endLine": 23,
-                    "endColumn": 51
-                }
-            ],
             "suggest": "",
             "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
             "severity": "ERROR"
@@ -230,26 +130,6 @@
             "endLine": 25,
             "endColumn": 51,
             "problem": "InterOpImportJs",
-            "autofix": [
-                {
-                    "start": 878,
-                    "end": 928,
-                    "replacementText": "",
-                    "line": 25,
-                    "column": 1,
-                    "endLine": 25,
-                    "endColumn": 51
-                },
-                {
-                    "start": 928,
-                    "end": 928,
-                    "replacementText": "let ff4 = ESValue.load('./interop_import_js_rules_js').getProperty('ff4');",
-                    "line": 25,
-                    "column": 1,
-                    "endLine": 25,
-                    "endColumn": 51
-                }
-            ],
             "suggest": "",
             "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
             "severity": "ERROR"
@@ -270,26 +150,6 @@
             "endLine": 27,
             "endColumn": 54,
             "problem": "InterOpImportJs",
-            "autofix": [
-                {
-                    "start": 930,
-                    "end": 983,
-                    "replacementText": "",
-                    "line": 27,
-                    "column": 1,
-                    "endLine": 27,
-                    "endColumn": 54
-                },
-                {
-                    "start": 983,
-                    "end": 983,
-                    "replacementText": "let handle = ESValue.load('./interop_import_js_rules_js').getProperty('handle');",
-                    "line": 27,
-                    "column": 1,
-                    "endLine": 27,
-                    "endColumn": 54
-                }
-            ],
             "suggest": "",
             "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
             "severity": "ERROR"
@@ -310,26 +170,6 @@
             "endLine": 29,
             "endColumn": 54,
             "problem": "InterOpImportJs",
-            "autofix": [
-                {
-                    "start": 985,
-                    "end": 1038,
-                    "replacementText": "",
-                    "line": 29,
-                    "column": 1,
-                    "endLine": 29,
-                    "endColumn": 54
-                },
-                {
-                    "start": 1038,
-                    "end": 1038,
-                    "replacementText": "let expand = ESValue.load('./interop_import_js_rules_js').getProperty('expand');",
-                    "line": 29,
-                    "column": 1,
-                    "endLine": 29,
-                    "endColumn": 54
-                }
-            ],
             "suggest": "",
             "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
             "severity": "ERROR"
@@ -350,26 +190,6 @@
             "endLine": 30,
             "endColumn": 54,
             "problem": "InterOpImportJs",
-            "autofix": [
-                {
-                    "start": 1039,
-                    "end": 1092,
-                    "replacementText": "",
-                    "line": 30,
-                    "column": 1,
-                    "endLine": 30,
-                    "endColumn": 54
-                },
-                {
-                    "start": 1092,
-                    "end": 1092,
-                    "replacementText": "let orange = ESValue.load('./interop_import_js_rules_js').getProperty('orange');",
-                    "line": 30,
-                    "column": 1,
-                    "endLine": 30,
-                    "endColumn": 54
-                }
-            ],
             "suggest": "",
             "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
             "severity": "ERROR"
@@ -480,27 +300,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 34,
-            "column": 14,
-            "endLine": 34,
-            "endColumn": 16,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 1127,
-                    "end": 1129,
-                    "replacementText": "18.0",
-                    "line": 34,
-                    "column": 14,
-                    "endLine": 34,
-                    "endColumn": 16
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 38,
             "column": 1,
             "endLine": 38,
@@ -591,48 +390,6 @@
             ],
             "suggest": "",
             "rule": "Properties of interop objects can't be accessed directly (arkts-interop-js2s-access-js-prop)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 52,
-            "column": 10,
-            "endLine": 52,
-            "endColumn": 15,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 1393,
-                    "end": 1393,
-                    "replacementText": ": number",
-                    "line": 52,
-                    "column": 10,
-                    "endLine": 52,
-                    "endColumn": 15
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 52,
-            "column": 14,
-            "endLine": 52,
-            "endColumn": 15,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 1396,
-                    "end": 1397,
-                    "replacementText": "0.0",
-                    "line": 52,
-                    "column": 14,
-                    "endLine": 52,
-                    "endColumn": 15
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -740,27 +497,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 54,
-            "column": 12,
-            "endLine": 54,
-            "endColumn": 13,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 1443,
-                    "end": 1444,
-                    "replacementText": "0.0",
-                    "line": 54,
-                    "column": 12,
-                    "endLine": 54,
-                    "endColumn": 13
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 64,
             "column": 8,
             "endLine": 64,
@@ -820,132 +556,6 @@
             ],
             "suggest": "",
             "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-interop-js2s-call-js-func)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 67,
-            "column": 9,
-            "endLine": 67,
-            "endColumn": 15,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 1583,
-                    "end": 1583,
-                    "replacementText": ": number",
-                    "line": 67,
-                    "column": 9,
-                    "endLine": 67,
-                    "endColumn": 15
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 67,
-            "column": 13,
-            "endLine": 67,
-            "endColumn": 14,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 1586,
-                    "end": 1587,
-                    "replacementText": "1.0",
-                    "line": 67,
-                    "column": 13,
-                    "endLine": 67,
-                    "endColumn": 14
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 67,
-            "column": 16,
-            "endLine": 67,
-            "endColumn": 21,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 1590,
-                    "end": 1590,
-                    "replacementText": ": number",
-                    "line": 67,
-                    "column": 16,
-                    "endLine": 67,
-                    "endColumn": 21
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 67,
-            "column": 19,
-            "endLine": 67,
-            "endColumn": 20,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 1592,
-                    "end": 1593,
-                    "replacementText": "2.0",
-                    "line": 67,
-                    "column": 19,
-                    "endLine": 67,
-                    "endColumn": 20
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 67,
-            "column": 22,
-            "endLine": 67,
-            "endColumn": 26,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 1596,
-                    "end": 1596,
-                    "replacementText": ": number",
-                    "line": 67,
-                    "column": 22,
-                    "endLine": 67,
-                    "endColumn": 26
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 67,
-            "column": 25,
-            "endLine": 67,
-            "endColumn": 26,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 1598,
-                    "end": 1599,
-                    "replacementText": "3.0",
-                    "line": 67,
-                    "column": 25,
-                    "endLine": 67,
-                    "endColumn": 26
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -1084,27 +694,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 84,
-            "column": 29,
-            "endLine": 84,
-            "endColumn": 32,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 1855,
-                    "end": 1858,
-                    "replacementText": "123.0",
-                    "line": 84,
-                    "column": 29,
-                    "endLine": 84,
-                    "endColumn": 32
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 88,
             "column": 1,
             "endLine": 92,
@@ -1132,27 +721,6 @@
             ],
             "suggest": "",
             "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js2s-traverse-js-instance)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 89,
-            "column": 18,
-            "endLine": 89,
-            "endColumn": 19,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 1921,
-                    "end": 1922,
-                    "replacementText": "8.0",
-                    "line": 89,
-                    "column": 18,
-                    "endLine": 89,
-                    "endColumn": 19
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         }
     ]

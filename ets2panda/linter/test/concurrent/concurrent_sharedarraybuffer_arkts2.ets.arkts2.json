@@ -15,6 +15,16 @@
     ],
     "result": [
         {
+          "line": 16,
+          "column": 5,
+          "endLine": 16,
+          "endColumn": 13,
+          "problem": "VariableMissingInitializer",
+          "suggest": "",
+          "rule": "After a variable is declared, a value must be assigned before using it (arkts-var-assignment-before-use)",
+          "severity": "ERROR"
+        },
+        {
             "line": 16,
             "column": 15,
             "endLine": 16,
@@ -45,16 +55,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 17,
-            "column": 52,
-            "endLine": 17,
-            "endColumn": 53,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 19,
             "column": 20,
             "endLine": 19,
@@ -63,6 +63,16 @@
             "suggest": "",
             "rule": "SharedArrayBuffer is not supported (arkts-no-need-stdlib-sharedArrayBuffer)",
             "severity": "ERROR"
+        },
+        {
+          "line": 20,
+          "column": 5,
+          "endLine": 20,
+          "endColumn": 16,
+          "problem": "VariableMissingInitializer",
+          "suggest": "",
+          "rule": "After a variable is declared, a value must be assigned before using it (arkts-var-assignment-before-use)",
+          "severity": "ERROR"
         },
         {
             "line": 22,
@@ -75,16 +85,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 22,
-            "column": 46,
-            "endLine": 22,
-            "endColumn": 47,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 26,
             "column": 17,
             "endLine": 26,
@@ -92,16 +92,6 @@
             "problem": "SharedArrayBufferDeprecated",
             "suggest": "",
             "rule": "SharedArrayBuffer is not supported (arkts-no-need-stdlib-sharedArrayBuffer)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 28,
-            "column": 16,
-            "endLine": 28,
-            "endColumn": 17,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         }
     ]

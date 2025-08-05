@@ -89,6 +89,35 @@
             "endLine": 27,
             "endColumn": 8,
             "problem": "LiteralAsPropertyName",
+            "autofix": [
+                {
+                    "replacementText": "Two",
+                    "start": 849,
+                    "end": 854,
+                    "line": 38,
+                    "column": 13,
+                    "endLine": 38,
+                    "endColumn": 33
+                },
+                {
+                    "replacementText": "Two",
+                    "start": 940,
+                    "end": 945,
+                    "line": 38,
+                    "column": 13,
+                    "endLine": 38,
+                    "endColumn": 33
+                },
+                {
+                    "replacementText": "litAsPropName.Two",
+                    "start": 1032,
+                    "end": 1052,
+                    "line": 38,
+                    "column": 13,
+                    "endLine": 38,
+                    "endColumn": 33
+                }
+            ],
             "suggest": "",
             "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
             "severity": "ERROR"
@@ -138,29 +167,37 @@
             "endLine": 33,
             "endColumn": 8,
             "problem": "LiteralAsPropertyName",
-            "suggest": "",
-            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 33,
-            "column": 10,
-            "endLine": 33,
-            "endColumn": 11,
-            "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 947,
-                    "end": 948,
-                    "replacementText": "2.0",
-                    "line": 33,
-                    "column": 10,
-                    "endLine": 33,
-                    "endColumn": 11
+                    "replacementText": "Two",
+                    "start": 849,
+                    "end": 854,
+                    "line": 38,
+                    "column": 13,
+                    "endLine": 38,
+                    "endColumn": 33
+                },
+                {
+                    "replacementText": "Two",
+                    "start": 940,
+                    "end": 945,
+                    "line": 38,
+                    "column": 13,
+                    "endLine": 38,
+                    "endColumn": 33
+                },
+                {
+                    "replacementText": "litAsPropName.Two",
+                    "start": 1032,
+                    "end": 1052,
+                    "line": 38,
+                    "column": 13,
+                    "endLine": 38,
+                    "endColumn": 33
                 }
             ],
             "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
             "severity": "ERROR"
         },
         {
@@ -229,29 +266,37 @@
             "endLine": 38,
             "endColumn": 33,
             "problem": "PropertyAccessByIndex",
-            "suggest": "",
-            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 49,
-            "column": 8,
-            "endLine": 49,
-            "endColumn": 9,
-            "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1263,
-                    "end": 1264,
-                    "replacementText": "2.0",
-                    "line": 49,
-                    "column": 8,
-                    "endLine": 49,
-                    "endColumn": 9
+                    "replacementText": "Two",
+                    "start": 849,
+                    "end": 854,
+                    "line": 38,
+                    "column": 13,
+                    "endLine": 38,
+                    "endColumn": 33
+                },
+                {
+                    "replacementText": "Two",
+                    "start": 940,
+                    "end": 945,
+                    "line": 38,
+                    "column": 13,
+                    "endLine": 38,
+                    "endColumn": 33
+                },
+                {
+                    "replacementText": "litAsPropName.Two",
+                    "start": 1032,
+                    "end": 1052,
+                    "line": 38,
+                    "column": 13,
+                    "endLine": 38,
+                    "endColumn": 33
                 }
             ],
             "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)",
             "severity": "ERROR"
         },
         {
@@ -276,54 +321,12 @@
         },
         {
             "line": 57,
-            "column": 18,
-            "endLine": 57,
-            "endColumn": 20,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 1433,
-                    "end": 1435,
-                    "replacementText": "20.0",
-                    "line": 57,
-                    "column": 18,
-                    "endLine": 57,
-                    "endColumn": 20
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 57,
             "column": 22,
             "endLine": 57,
             "endColumn": 23,
             "problem": "LiteralAsPropertyName",
             "suggest": "",
             "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 57,
-            "column": 25,
-            "endLine": 57,
-            "endColumn": 27,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 1440,
-                    "end": 1442,
-                    "replacementText": "30.0",
-                    "line": 57,
-                    "column": 25,
-                    "endLine": 57,
-                    "endColumn": 27
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -377,48 +380,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 67,
-            "column": 20,
-            "endLine": 67,
-            "endColumn": 22,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 1575,
-                    "end": 1577,
-                    "replacementText": "20.0",
-                    "line": 67,
-                    "column": 20,
-                    "endLine": 67,
-                    "endColumn": 22
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 67,
-            "column": 28,
-            "endLine": 67,
-            "endColumn": 30,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 1583,
-                    "end": 1585,
-                    "replacementText": "20.0",
-                    "line": 67,
-                    "column": 28,
-                    "endLine": 67,
-                    "endColumn": 30
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 75,
             "column": 3,
             "endLine": 75,
@@ -454,6 +415,26 @@
             "endLine": 76,
             "endColumn": 8,
             "problem": "LiteralAsPropertyName",
+            "autofix": [
+                {
+                    "replacementText": "__2",
+                    "start": 1739,
+                    "end": 1744,
+                    "line": 81,
+                    "column": 3,
+                    "endLine": 81,
+                    "endColumn": 8
+                },
+                {
+                    "replacementText": "__2",
+                    "start": 1824,
+                    "end": 1829,
+                    "line": 81,
+                    "column": 3,
+                    "endLine": 81,
+                    "endColumn": 8
+                }
+            ],
             "suggest": "",
             "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
             "severity": "ERROR"
@@ -504,29 +485,28 @@
             "endLine": 81,
             "endColumn": 8,
             "problem": "LiteralAsPropertyName",
-            "suggest": "",
-            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 81,
-            "column": 10,
-            "endLine": 81,
-            "endColumn": 13,
-            "problem": "NumericSemantics",
             "autofix": [
                 {
-                    "start": 1831,
-                    "end": 1834,
-                    "replacementText": "123.0",
+                    "replacementText": "__2",
+                    "start": 1739,
+                    "end": 1744,
                     "line": 81,
-                    "column": 10,
+                    "column": 3,
                     "endLine": 81,
-                    "endColumn": 13
+                    "endColumn": 8
+                },
+                {
+                    "replacementText": "__2",
+                    "start": 1824,
+                    "end": 1829,
+                    "line": 81,
+                    "column": 3,
+                    "endLine": 81,
+                    "endColumn": 8
                 }
             ],
             "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
             "severity": "ERROR"
         },
         {
@@ -537,27 +517,6 @@
             "problem": "LiteralAsPropertyName",
             "suggest": "",
             "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 84,
-            "column": 39,
-            "endLine": 84,
-            "endColumn": 42,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 1877,
-                    "end": 1880,
-                    "replacementText": "234.0",
-                    "line": 84,
-                    "column": 39,
-                    "endLine": 84,
-                    "endColumn": 42
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -602,16 +561,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 92,
-            "column": 9,
-            "endLine": 92,
-            "endColumn": 10,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 97,
             "column": 3,
             "endLine": 97,
@@ -633,16 +582,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 97,
-            "column": 10,
-            "endLine": 97,
-            "endColumn": 11,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 98,
             "column": 3,
             "endLine": 98,
@@ -661,16 +600,6 @@
             ],
             "suggest": "",
             "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 98,
-            "column": 13,
-            "endLine": 98,
-            "endColumn": 14,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -704,16 +633,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 102,
-            "column": 10,
-            "endLine": 102,
-            "endColumn": 11,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 103,
             "column": 3,
             "endLine": 103,
@@ -744,37 +663,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 103,
-            "column": 13,
-            "endLine": 103,
-            "endColumn": 14,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 105,
-            "column": 5,
-            "endLine": 105,
-            "endColumn": 31,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 2125,
-                    "end": 2125,
-                    "replacementText": ": number",
-                    "line": 105,
-                    "column": 5,
-                    "endLine": 105,
-                    "endColumn": 31
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 105,
             "column": 14,
             "endLine": 105,
@@ -782,27 +670,6 @@
             "problem": "UnsupportPropNameFromValue",
             "suggest": "",
             "rule": "Enum cannot get member name by member value (arkts-enum-no-props-by-index)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 106,
-            "column": 5,
-            "endLine": 106,
-            "endColumn": 35,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 2157,
-                    "end": 2157,
-                    "replacementText": ": number",
-                    "line": 106,
-                    "column": 5,
-                    "endLine": 106,
-                    "endColumn": 35
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -846,16 +713,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 109,
-            "column": 8,
-            "endLine": 109,
-            "endColumn": 9,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 112,
             "column": 1,
             "endLine": 112,
@@ -877,16 +734,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 112,
-            "column": 9,
-            "endLine": 112,
-            "endColumn": 10,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 118,
             "column": 18,
             "endLine": 118,
@@ -894,27 +741,6 @@
             "problem": "UnsupportPropNameFromValue",
             "suggest": "",
             "rule": "Enum cannot get member name by member value (arkts-enum-no-props-by-index)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 125,
-            "column": 22,
-            "endLine": 125,
-            "endColumn": 23,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 2413,
-                    "end": 2414,
-                    "replacementText": "1.0",
-                    "line": 125,
-                    "column": 22,
-                    "endLine": 125,
-                    "endColumn": 23
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -939,55 +765,34 @@
             "severity": "ERROR"
         },
         {
-            "line": 128,
-            "column": 20,
-            "endLine": 128,
-            "endColumn": 22,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 2439,
-                    "end": 2441,
-                    "replacementText": "30.0",
-                    "line": 128,
-                    "column": 20,
-                    "endLine": 128,
-                    "endColumn": 22
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 132,
             "column": 10,
             "endLine": 132,
             "endColumn": 15,
             "problem": "LiteralAsPropertyName",
+            "autofix": [
+                {
+                    "replacementText": "age",
+                    "start": 2466,
+                    "end": 2471,
+                    "line": 132,
+                    "column": 10,
+                    "endLine": 132,
+                    "endColumn": 15
+                }
+            ],
             "suggest": "",
             "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
             "severity": "ERROR"
         },
         {
-            "line": 132,
-            "column": 26,
-            "endLine": 132,
-            "endColumn": 27,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 2482,
-                    "end": 2483,
-                    "replacementText": "1.0",
-                    "line": 132,
-                    "column": 26,
-                    "endLine": 132,
-                    "endColumn": 27
-                }
-            ],
+            "line": 136,
+            "column": 3,
+            "endLine": 136,
+            "endColumn": 15,
+            "problem": "ObjectLiteralKeyType",
             "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "rule": "Use string-literal keys with Record (arkts-obj-literal-key-type)",
             "severity": "ERROR"
         },
         {
@@ -1011,48 +816,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 136,
-            "column": 14,
-            "endLine": 136,
-            "endColumn": 15,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 2557,
-                    "end": 2558,
-                    "replacementText": "1.0",
-                    "line": 136,
-                    "column": 14,
-                    "endLine": 136,
-                    "endColumn": 15
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 137,
-            "column": 13,
-            "endLine": 137,
-            "endColumn": 14,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 2594,
-                    "end": 2595,
-                    "replacementText": "1.0",
-                    "line": 137,
-                    "column": 13,
-                    "endLine": 137,
-                    "endColumn": 14
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 141,
             "column": 3,
             "endLine": 141,
@@ -1060,27 +823,6 @@
             "problem": "ComputedPropertyName",
             "suggest": "",
             "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 141,
-            "column": 18,
-            "endLine": 141,
-            "endColumn": 19,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 2644,
-                    "end": 2645,
-                    "replacementText": "1.0",
-                    "line": 141,
-                    "column": 18,
-                    "endLine": 141,
-                    "endColumn": 19
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -1094,27 +836,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 142,
-            "column": 4,
-            "endLine": 142,
-            "endColumn": 5,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 2672,
-                    "end": 2673,
-                    "replacementText": "2.0",
-                    "line": 142,
-                    "column": 4,
-                    "endLine": 142,
-                    "endColumn": 5
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 143,
             "column": 3,
             "endLine": 143,
@@ -1122,27 +843,6 @@
             "problem": "ComputedPropertyName",
             "suggest": "",
             "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 143,
-            "column": 37,
-            "endLine": 143,
-            "endColumn": 38,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 2748,
-                    "end": 2749,
-                    "replacementText": "3.0",
-                    "line": 143,
-                    "column": 37,
-                    "endLine": 143,
-                    "endColumn": 38
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -1166,27 +866,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 147,
-            "column": 17,
-            "endLine": 147,
-            "endColumn": 18,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 2812,
-                    "end": 2813,
-                    "replacementText": "1.0",
-                    "line": 147,
-                    "column": 17,
-                    "endLine": 147,
-                    "endColumn": 18
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 148,
             "column": 3,
             "endLine": 148,
@@ -1197,27 +876,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 148,
-            "column": 4,
-            "endLine": 148,
-            "endColumn": 5,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 2840,
-                    "end": 2841,
-                    "replacementText": "2.0",
-                    "line": 148,
-                    "column": 4,
-                    "endLine": 148,
-                    "endColumn": 5
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 149,
             "column": 3,
             "endLine": 149,
@@ -1225,27 +883,6 @@
             "problem": "ComputedPropertyName",
             "suggest": "",
             "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 149,
-            "column": 36,
-            "endLine": 149,
-            "endColumn": 37,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 2914,
-                    "end": 2915,
-                    "replacementText": "3.0",
-                    "line": 149,
-                    "column": 36,
-                    "endLine": 149,
-                    "endColumn": 37
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -1263,6 +900,46 @@
             "column": 11,
             "endLine": 164,
             "endColumn": 32,
+            "problem": "UnsupportPropNameFromValue",
+            "suggest": "",
+            "rule": "Enum cannot get member name by member value (arkts-enum-no-props-by-index)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 170,
+            "column": 3,
+            "endLine": 170,
+            "endColumn": 18,
+            "problem": "LiteralAsPropertyName",
+            "autofix": [
+                {
+                    "replacementText": "__2IN1",
+                    "start": 3173,
+                    "end": 3179,
+                    "line": 170,
+                    "column": 3,
+                    "endLine": 170,
+                    "endColumn": 18
+                },
+                {
+                    "replacementText": "DeviceTypes12.__2IN1",
+                    "start": 3228,
+                    "end": 3249,
+                    "line": 170,
+                    "column": 3,
+                    "endLine": 170,
+                    "endColumn": 18
+                }
+            ],
+            "suggest": "",
+            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 174,
+            "column": 20,
+            "endLine": 174,
+            "endColumn": 41,
             "problem": "UnsupportPropNameFromValue",
             "suggest": "",
             "rule": "Enum cannot get member name by member value (arkts-enum-no-props-by-index)",

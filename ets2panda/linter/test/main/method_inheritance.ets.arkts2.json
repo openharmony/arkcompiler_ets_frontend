@@ -55,26 +55,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 52,
-            "column": 31,
-            "endLine": 52,
-            "endColumn": 32,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 52,
-            "column": 43,
-            "endLine": 52,
-            "endColumn": 44,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 61,
             "column": 15,
             "endLine": 61,
@@ -112,56 +92,6 @@
             "problem": "MethodInheritRule",
             "suggest": "",
             "rule": "Overridden method parameters and return types must respect type inheritance principles (arkts-method-inherit-rule)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 72,
-            "column": 23,
-            "endLine": 72,
-            "endColumn": 25,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 83,
-            "column": 41,
-            "endLine": 83,
-            "endColumn": 42,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 101,
-            "column": 15,
-            "endLine": 101,
-            "endColumn": 16,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 104,
-            "column": 15,
-            "endLine": 104,
-            "endColumn": 16,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 107,
-            "column": 15,
-            "endLine": 107,
-            "endColumn": 16,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -395,6 +325,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 319,
+            "column": 9,
+            "endLine": 319,
+            "endColumn": 11,
+            "problem": "VariableMissingInitializer",
+            "suggest": "",
+            "rule": "After a variable is declared, a value must be assigned before using it (arkts-var-assignment-before-use)",
+            "severity": "ERROR"
+        },
+        {
             "line": 324,
             "column": 3,
             "endLine": 324,
@@ -405,6 +345,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 325,
+            "column": 9,
+            "endLine": 325,
+            "endColumn": 11,
+            "problem": "VariableMissingInitializer",
+            "suggest": "",
+            "rule": "After a variable is declared, a value must be assigned before using it (arkts-var-assignment-before-use)",
+            "severity": "ERROR"
+        },
+        {
             "line": 330,
             "column": 3,
             "endLine": 330,
@@ -412,6 +362,16 @@
             "problem": "MethodInheritRule",
             "suggest": "",
             "rule": "Overridden method parameters and return types must respect type inheritance principles (arkts-method-inherit-rule)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 331,
+            "column": 9,
+            "endLine": 331,
+            "endColumn": 11,
+            "problem": "VariableMissingInitializer",
+            "suggest": "",
+            "rule": "After a variable is declared, a value must be assigned before using it (arkts-var-assignment-before-use)",
             "severity": "ERROR"
         },
         {

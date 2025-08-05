@@ -102,9 +102,9 @@ cookBookTag[71] = 'The comma operator "," is supported only in "for" loops (arkt
 cookBookTag[72] = '';
 cookBookTag[73] = '';
 cookBookTag[74] = 'Destructuring variable declarations are not supported (arkts-no-destruct-decls)';
-cookBookTag[75] = '';
-cookBookTag[76] = '';
-cookBookTag[77] = '';
+cookBookTag[75] = 'Use string-literal keys with Record (arkts-obj-literal-key-type)';
+cookBookTag[76] = 'Type of parameter must be defined explicitly (arkts-require-func-arg-type)';
+cookBookTag[77] = 'Template string type is not supported (arkts-no-template-string-type)';
 cookBookTag[78] = '';
 cookBookTag[79] = 'Type annotation in catch clause is not supported (arkts-no-types-in-catch)';
 cookBookTag[80] = '"for .. in" is not supported (arkts-no-for-in)';
@@ -178,7 +178,8 @@ cookBookTag[144] = 'Usage of standard library is restricted (arkts-limited-stdli
 cookBookTag[145] = 'Strict type checking is enforced (arkts-strict-typing)';
 cookBookTag[146] = 'Switching off type checks with in-place comments is not allowed (arkts-strict-typing-required)';
 cookBookTag[147] = 'No dependencies on TypeScript code are currently allowed (arkts-no-ts-deps)';
-cookBookTag[148] = '';
+cookBookTag[148] =
+  'Overriding with "readonly" field is not allowed when base field is not "readonly" (arkts-no-class-add-super-prop-with-readonly)';
 cookBookTag[149] = 'Classes cannot be used as objects (arkts-no-classes-as-obj)';
 cookBookTag[150] = '"import" statements after other statements are not allowed (arkts-no-misplaced-imports)';
 cookBookTag[151] = 'Usage of \'ESValue\' type is restricted (arkts-limited-esobj)';
@@ -250,8 +251,7 @@ cookBookTag[206] = '"debugger" is not supported (arkts-no-debugger)';
 cookBookTag[207] = 'Special arguments object inside functions are not supported (arkts-no-arguments-obj)';
 cookBookTag[208] = 'Tagged templates are not supported (arkts-no-tagged-templates)';
 cookBookTag[209] = 'The index expression must be of a numeric type (arkts-array-index-expr-type)';
-cookBookTag[210] =
-  'The switch expression type must be of type char, byte, short, int, long, string or enum (arkts-switch-expr)';
+cookBookTag[210] = 'The switch expression type must be of type number, string or enum (arkts-switch-expr)';
 cookBookTag[211] = 'No two case constant expressions have identical values.(arkts-case-expr)';
 cookBookTag[212] = 'The index expression must be zero or positive value.(arkts-array-index-negative)';
 cookBookTag[213] = 'Class cannot have static codeblocks. (arkts-class-lazy-import)';
@@ -267,6 +267,8 @@ cookBookTag[237] = 'Array and tuple are different type(arkts-no-tuples-arrays)';
 cookBookTag[238] = 'The static property has no initializer (arkts-class-static-initialization)';
 cookBookTag[239] = 'This keyword cannot be used as identifiers (arkts-invalid-identifier)';
 cookBookTag[245] = 'JSON files cannot be imported (arkts-no-import-json-file)';
+cookBookTag[249] =
+  'The namespace imported by import * as cannot be used as a variable (arkts-no-import-namespace-with-star-as-var)';
 cookBookTag[251] = '"!!" for bidirectional data binding is not supported (arkui-no-!!-bidirectional-data-binding)';
 cookBookTag[252] = '"$$" for bidirectional data binding is not supported (arkui-no-$$-bidirectional-data-binding)';
 cookBookTag[253] = '"${variable}" for decorator binding is not supported (arkui-link-decorator-passing)';
@@ -292,10 +294,15 @@ cookBookTag[268] = 'Direct usage of interop JS objects is not supported (arkts-i
 cookBookTag[269] =
   'Direct usage of interop JS functions is not supported (arkts-interop-js2s-js-expand-static-instance)';
 cookBookTag[270] = 'ArkTS1.2 cannot catch a non Error instance thrown from JS code (arkts-interop-js2s-js-exception)';
+cookBookTag[271] =
+  'After a variable is declared, a value must be assigned before using it (arkts-var-assignment-before-use)';
 cookBookTag[274] =
   'The subclass constructor must call the parent class\'s parametered constructor (arkts-subclass-must-call-super-constructor-with-args)';
 cookBookTag[275] =
   'The Custom component with custom layout capability needs to add the "@CustomLayout" decorator (arkui-custom-layout-need-add-decorator)';
+cookBookTag[276] =
+  'ArkTS 1.2 should implement all fields in the interface in the class (arkts-no-class-omit-interface-optional-prop)';
+cookBookTag[277] = 'Creating local classes is not supported (arkts-no-local-class)';
 cookBookTag[281] = '"@Prop" decorator is not supported (arkui-no-prop-decorator)';
 cookBookTag[282] = '"@StorageProp" decorator is not supported (arkui-no-storageprop-decorator)';
 cookBookTag[283] = '"@LocalStorageProp" decorator is not supported (arkui-no-localstorageprop-decorator)';
@@ -377,7 +384,14 @@ cookBookTag[359] = '"@LocalBuilder" Decorator is not supported (arkui-no-localbu
 cookBookTag[360] =
   '"Repeat" natively supports virtual scrolling capability in ArkTS1.2, so the default virtual scrolling should be disabled (arkui-repeat-disable-default-virtualscroll)';
 cookBookTag[361] =
-  'When using "WrappedBuilder" and "wrapBuilder", generics are required and must be declared as arrow function (arkui-wrapbuilder-require-arrow-func-generic)';
+  'When using "WrappedBuilder", generics are required and must be declared as arrow function (arkui-wrappedbuilder-require-arrow-func-generic)';
+cookBookTag[362] =
+  'When using "wrapBuilder", generics must be declared as arrow function (arkui-wrapbuilder-require-arrow-func-generic)';
+cookBookTag[363] = 'The generic of "BuilderNode" does not accept tuple (arkui-buildernode-generic-no-tuple)';
+cookBookTag[364] =
+  'The "update" interface of "BuilderNode" does not accept an object literal. Please replace it with an instance of the class specified in the generic when creating a new "BuilderNode", and ensure that the instance has the same field values as the literal (arkui-buildernode-update-no-literal)';
+cookBookTag[365] = 'Property "nestingBuilderSupported" is not supported (arkui-buildernode-no-nestingbuildersupported)';
+cookBookTag[366] = 'ESObject type cannot be used (arkts-no-esobject-support)';
 cookBookTag[370] = 'Sparse array is not supported in ArkTS1.2 (arkts-no-sparse-array)';
 cookBookTag[371] = 'Enum elements cannot be types in ArkTS1.2 (arkts-no-enum-prop-as-type)';
 cookBookTag[372] = 'Smart type differences (arkts-no-ts-like-smart-type)';

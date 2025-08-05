@@ -20,26 +20,6 @@
             "endLine": 15,
             "endColumn": 43,
             "problem": "InterOpImportJs",
-            "autofix": [
-                {
-                    "start": 604,
-                    "end": 646,
-                    "replacementText": "",
-                    "line": 15,
-                    "column": 1,
-                    "endLine": 15,
-                    "endColumn": 43
-                },
-                {
-                    "start": 646,
-                    "end": 646,
-                    "replacementText": "let foo = ESValue.load('./call_function_js').getProperty('foo');\nlet bar = ESValue.load('./call_function_js').getProperty('bar');",
-                    "line": 15,
-                    "column": 1,
-                    "endLine": 15,
-                    "endColumn": 43
-                }
-            ],
             "suggest": "",
             "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
             "severity": "ERROR"
@@ -50,26 +30,6 @@
             "endLine": 16,
             "endColumn": 39,
             "problem": "InterOpImportJs",
-            "autofix": [
-                {
-                    "start": 647,
-                    "end": 685,
-                    "replacementText": "",
-                    "line": 16,
-                    "column": 1,
-                    "endLine": 16,
-                    "endColumn": 39
-                },
-                {
-                    "start": 685,
-                    "end": 685,
-                    "replacementText": "let a = ESValue.load('./call_function_js').getProperty('a');\nlet b = ESValue.load('./call_function_js').getProperty('b');",
-                    "line": 16,
-                    "column": 1,
-                    "endLine": 16,
-                    "endColumn": 39
-                }
-            ],
             "suggest": "",
             "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
             "severity": "ERROR"
@@ -114,27 +74,6 @@
             ],
             "suggest": "",
             "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-interop-js2s-call-js-func)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 19,
-            "column": 5,
-            "endLine": 19,
-            "endColumn": 8,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 697,
-                    "end": 700,
-                    "replacementText": "123.0",
-                    "line": 19,
-                    "column": 5,
-                    "endLine": 19,
-                    "endColumn": 8
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {

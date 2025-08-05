@@ -83,3 +83,42 @@ class EpicBar extends Error {
         super("foo")
     }
 }
+
+export enum EEE {
+  E1,
+  E2,
+}
+
+export class A {
+  protected _e:EEE
+  constructor(e: EEE) {
+    this._e = e;
+  }
+}
+
+class B extends A {
+  constructor() {
+    super(EEE.E1)
+  }
+}
+
+class A2 {
+  constructor() {
+    console.log("Parent constructor")
+  }
+}
+
+class C2 extends A2 {
+  // ok 不用报
+}
+
+class A3 {}
+
+class C3 extends A3 {
+  constructor() {
+    super()
+  }
+}
+
+class C4 extends A3 {
+}

@@ -65,16 +65,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 41,
-            "column": 46,
-            "endLine": 41,
-            "endColumn": 48,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 42,
             "column": 15,
             "endLine": 42,
@@ -185,16 +175,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 56,
-            "column": 58,
-            "endLine": 56,
-            "endColumn": 60,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 59,
             "column": 24,
             "endLine": 59,
@@ -255,16 +235,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 70,
-            "column": 37,
-            "endLine": 70,
-            "endColumn": 38,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 71,
             "column": 18,
             "endLine": 71,
@@ -275,36 +245,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 71,
-            "column": 39,
-            "endLine": 71,
-            "endColumn": 41,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 71,
-            "column": 46,
-            "endLine": 71,
-            "endColumn": 48,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 75,
-            "column": 11,
-            "endLine": 75,
-            "endColumn": 41,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 75,
             "column": 23,
             "endLine": 75,
@@ -312,26 +252,6 @@
             "problem": "InteropDirectAccessToTSTypes",
             "suggest": "",
             "rule": "Cannot access typescript types directly (arkts-interop-ts2s-static-access-ts-type)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 75,
-            "column": 32,
-            "endLine": 75,
-            "endColumn": 35,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 75,
-            "column": 37,
-            "endLine": 75,
-            "endColumn": 40,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -422,16 +342,6 @@
             "problem": "LimitedReturnTypeInference",
             "suggest": "",
             "rule": "Function return type inference is limited (arkts-no-implicit-return-types)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 116,
-            "column": 43,
-            "endLine": 116,
-            "endColumn": 46,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {

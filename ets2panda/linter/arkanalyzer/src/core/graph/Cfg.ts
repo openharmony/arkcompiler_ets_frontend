@@ -22,7 +22,7 @@ import { BasicBlock } from './BasicBlock';
 import Logger, { LOG_MODULE_TYPE } from '../../utils/logger';
 import { ArkStaticInvokeExpr } from '../base/Expr';
 import { Value } from '../base/Value';
-import { AbstractFieldRef } from '../base/Ref';
+import { AbstractFieldRef, GlobalRef } from '../base/Ref';
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.ARKANALYZER, 'BasicBlock');
 
@@ -154,16 +154,22 @@ export class Cfg {
         return 'cfg';
     }
 
-    public buildDefUseStmt(locals: Set<Local>): void {
-        for (const block of this.blocks) {
-            for (const stmt of block.getStmts()) {
-                const defValue = stmt.getDef();
-                if (defValue && defValue instanceof Local && defValue.getDeclaringStmt() === null) {
-                    defValue.setDeclaringStmt(stmt);
-                }
-                for (const value of stmt.getUses()) {
-                    this.buildUseStmt(value, locals, stmt);
-                }
+    // 若提供globals列表，则需要将locals中实际为global的部分排除，否则会在该method中将为global赋值的语句识别成global的赋值语句，出现错误
+    public buildDefUseStmt(locals: Set<Local>, globals?: Map<string, GlobalRef>): void {
+        for (const stmt of this.getStmts()) {
+            for (const value of stmt.getUses()) {
+                this.buildUseStmt(value, locals, stmt);
+            }
+            const defValue = stmt.getDef();
+            if (!(defValue instanceof Local)) {
+                continue;
+            }
+            if (globals !== undefined && globals.has(defValue.getName())) {
+                // local实际为global，其实际定义语句在最外层default方法中，此处不存在定义语句
+                continue;
+            }
+            if (defValue.getDeclaringStmt() === null) {
+                defValue.setDeclaringStmt(stmt);
             }
         }
     }

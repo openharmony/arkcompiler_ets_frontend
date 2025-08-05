@@ -20,26 +20,6 @@
             "endLine": 16,
             "endColumn": 69,
             "problem": "InterOpImportJs",
-            "autofix": [
-                {
-                    "start": 606,
-                    "end": 674,
-                    "replacementText": "",
-                    "line": 16,
-                    "column": 1,
-                    "endLine": 16,
-                    "endColumn": 69
-                },
-                {
-                    "start": 674,
-                    "end": 674,
-                    "replacementText": "let myAaa = ESValue.load('./interop_import_js_js').getProperty('aaa');\nlet ClassA = ESValue.load('./interop_import_js_js').getProperty('ClassA');\nlet Dog = ESValue.load('./interop_import_js_js').getProperty('Dog');\nlet Person = ESValue.load('./interop_import_js_js').getProperty('Person');\nlet Wiki = ESValue.load('./interop_import_js_js').getProperty('Wiki');",
-                    "line": 16,
-                    "column": 1,
-                    "endLine": 16,
-                    "endColumn": 69
-                }
-            ],
             "suggest": "",
             "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
             "severity": "ERROR"
@@ -50,26 +30,6 @@
             "endLine": 17,
             "endColumn": 54,
             "problem": "InterOpImportJs",
-            "autofix": [
-                {
-                    "start": 675,
-                    "end": 728,
-                    "replacementText": "",
-                    "line": 17,
-                    "column": 1,
-                    "endLine": 17,
-                    "endColumn": 54
-                },
-                {
-                    "start": 728,
-                    "end": 728,
-                    "replacementText": "let Doge = ESValue.load('./interop_import_js_js').getProperty('Dog');",
-                    "line": 17,
-                    "column": 1,
-                    "endLine": 17,
-                    "endColumn": 54
-                }
-            ],
             "suggest": "",
             "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
             "severity": "ERROR"
@@ -80,26 +40,6 @@
             "endLine": 18,
             "endColumn": 55,
             "problem": "InterOpImportJs",
-            "autofix": [
-                {
-                    "start": 729,
-                    "end": 783,
-                    "replacementText": "",
-                    "line": 18,
-                    "column": 1,
-                    "endLine": 18,
-                    "endColumn": 55
-                },
-                {
-                    "start": 783,
-                    "end": 783,
-                    "replacementText": "let wiki = ESValue.load('./interop_import_js_js').getProperty('Wiki');",
-                    "line": 18,
-                    "column": 1,
-                    "endLine": 18,
-                    "endColumn": 55
-                }
-            ],
             "suggest": "",
             "rule": "Importing directly from \"JS\" module is not supported (arkts-interop-js2s-import-js)",
             "severity": "ERROR"
@@ -471,27 +411,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 42,
-            "column": 24,
-            "endLine": 42,
-            "endColumn": 27,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 1300,
-                    "end": 1303,
-                    "replacementText": "111.0",
-                    "line": 42,
-                    "column": 24,
-                    "endLine": 42,
-                    "endColumn": 27
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 44,
             "column": 3,
             "endLine": 44,
@@ -541,27 +460,6 @@
             "problem": "LimitedVoidType",
             "suggest": "",
             "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 47,
-            "column": 35,
-            "endLine": 47,
-            "endColumn": 38,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 1391,
-                    "end": 1394,
-                    "replacementText": "111.0",
-                    "line": 47,
-                    "column": 35,
-                    "endLine": 47,
-                    "endColumn": 38
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -834,27 +732,6 @@
             ],
             "suggest": "",
             "rule": "ArkTS directly instantiated JS objects is not supported (arkts-interop-js2s-create-js-instance)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 72,
-            "column": 28,
-            "endLine": 72,
-            "endColumn": 30,
-            "problem": "NumericSemantics",
-            "autofix": [
-                {
-                    "start": 1967,
-                    "end": 1969,
-                    "replacementText": "22.0",
-                    "line": 72,
-                    "column": 28,
-                    "endLine": 72,
-                    "endColumn": 30
-                }
-            ],
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         }
     ]

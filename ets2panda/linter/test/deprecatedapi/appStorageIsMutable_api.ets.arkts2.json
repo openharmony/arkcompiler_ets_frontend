@@ -15,16 +15,6 @@
     ],
     "result": [
         {
-            "line": 17,
-            "column": 33,
-            "endLine": 17,
-            "endColumn": 35,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 18,
             "column": 31,
             "endLine": 18,
@@ -32,6 +22,16 @@
             "problem": "NoDeprecatedApi",
             "suggest": "",
             "rule": "ArkUI deprecated api check (arkui-no-deprecated-api)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 21,
+            "endLine": 20,
+            "endColumn": 44,
+            "problem": "GenericCallNoTypeArgs",
+            "suggest": "",
+            "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
             "severity": "ERROR"
         },
         {
@@ -44,7 +44,7 @@
             "rule": "ArkUI deprecated api check (arkui-no-deprecated-api)",
             "severity": "ERROR"
         },
-                {
+        {
             "line": 22,
             "column": 31,
             "endLine": 22,

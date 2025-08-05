@@ -25,16 +25,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 96,
-            "column": 17,
-            "endLine": 96,
-            "endColumn": 29,
-            "problem": "MethodInheritRule",
-            "suggest": "",
-            "rule": "Overridden method parameters and return types must respect type inheritance principles (arkts-method-inherit-rule)",
-            "severity": "ERROR"
-        },
-        {
             "line": 118,
             "column": 16,
             "endLine": 118,
@@ -78,7 +68,7 @@
             "line": 128,
             "column": 31,
             "endLine": 128,
-            "endColumn": 34,
+            "endColumn": 32,
             "problem": "LimitedLiteralType",
             "suggest": "",
             "rule": "Literal types are restricted(arkts-limited-literal-types)",
@@ -86,9 +76,9 @@
         },
         {
             "line": 128,
-            "column": 35,
+            "column": 33,
             "endLine": 128,
-            "endColumn": 39,
+            "endColumn": 37,
             "problem": "LimitedLiteralType",
             "suggest": "",
             "rule": "Literal types are restricted(arkts-limited-literal-types)",
@@ -96,9 +86,9 @@
         },
         {
             "line": 128,
-            "column": 41,
+            "column": 39,
             "endLine": 128,
-            "endColumn": 46,
+            "endColumn": 44,
             "problem": "LimitedLiteralType",
             "suggest": "",
             "rule": "Literal types are restricted(arkts-limited-literal-types)",
@@ -112,16 +102,6 @@
             "problem": "InvalidIdentifier",
             "suggest": "",
             "rule": "This keyword cannot be used as identifiers (arkts-invalid-identifier)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 133,
-            "column": 10,
-            "endLine": 133,
-            "endColumn": 11,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {

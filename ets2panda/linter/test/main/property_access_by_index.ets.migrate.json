@@ -88,7 +88,7 @@
             "line": 57,
             "column": 5,
             "endLine": 57,
-            "endColumn": 29,
+            "endColumn": 27,
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
@@ -98,7 +98,7 @@
             "line": 57,
             "column": 14,
             "endLine": 57,
-            "endColumn": 29,
+            "endColumn": 27,
             "problem": "GenericCallNoTypeArgs",
             "suggest": "",
             "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
@@ -406,18 +406,18 @@
         },
         {
             "line": 181,
-            "column": 7,
+            "column": 1,
             "endLine": 181,
-            "endColumn": 14,
-            "problem": "PropertyAccessByIndex",
+            "endColumn": 10,
+            "problem": "LimitedStdLibNoSendableDecorator",
             "suggest": "",
-            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)",
+            "rule": "Usage of standard library is restricted(arkts-limited-stdlib-no-sendable-decorator)",
             "severity": "ERROR"
         },
         {
-            "line": 192,
+            "line": 197,
             "column": 1,
-            "endLine": 192,
+            "endLine": 197,
             "endColumn": 5,
             "problem": "PropertyAccessByIndex",
             "suggest": "",
@@ -425,9 +425,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 193,
+            "line": 198,
             "column": 1,
-            "endLine": 193,
+            "endLine": 198,
             "endColumn": 7,
             "problem": "PropertyAccessByIndex",
             "suggest": "",
@@ -435,9 +435,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 196,
+            "line": 201,
             "column": 1,
-            "endLine": 196,
+            "endLine": 201,
             "endColumn": 23,
             "problem": "PropertyAccessByIndex",
             "suggest": "",
@@ -445,9 +445,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 208,
+            "line": 213,
             "column": 1,
-            "endLine": 208,
+            "endLine": 213,
             "endColumn": 20,
             "problem": "PropertyAccessByIndex",
             "suggest": "",

@@ -2914,13 +2914,6 @@ export class TsUtils {
       if (TsUtils.hasModifier(ts.getModifiers(propDecl.parent), ts.SyntaxKind.ExportKeyword)) {
         return false;
       }
-
-      if (
-        ts.isStringLiteral(propDecl.name) &&
-        (ts.isClassDeclaration(propDecl.parent) || ts.isInterfaceDeclaration(propDecl.parent))
-      ) {
-        return false;
-      }
     }
 
     return true;
@@ -3816,4 +3809,68 @@ export class TsUtils {
 
     return false;
   }
+
+  collectPropertiesFromClass(
+    classDecl: ts.ClassDeclaration,
+    result: {
+      staticProps: Map<string, ts.Type>;
+      instanceProps: Map<string, ts.Type>;
+    },
+    isBase: boolean = false
+  ): void {
+    classDecl.members.forEach((member) => {
+      if (!ts.isPropertyDeclaration(member) || !member.name || !ts.isIdentifier(member.name)) {
+        return;
+      }
+
+      const propName = member.name.text;
+
+      const isPrivate = member.modifiers?.some((m) => {
+        return m.kind === ts.SyntaxKind.PrivateKeyword;
+      });
+      if (isBase && isPrivate) {
+        return;
+      }
+
+      const propType = this.tsTypeChecker.getTypeAtLocation(member);
+      const isStatic = member.modifiers?.some((m) => {
+        return m.kind === ts.SyntaxKind.StaticKeyword;
+      });
+
+      if (isStatic) {
+        result.staticProps.set(propName, propType);
+      } else {
+        result.instanceProps.set(propName, propType);
+      }
+    });
+
+    const heritage = classDecl.heritageClauses?.find((h) => {
+      return h.token === ts.SyntaxKind.ExtendsKeyword;
+    });
+    if (heritage) {
+      const baseTypeNode = heritage?.types[0];
+      if (baseTypeNode) {
+        const baseType = this.tsTypeChecker.getTypeAtLocation(baseTypeNode);
+        const baseSymbol = baseType.getSymbol();
+        const declarations = baseSymbol?.getDeclarations();
+        const baseClassDecl = declarations?.find(ts.isClassDeclaration);
+        if (baseClassDecl) {
+          this.collectPropertiesFromClass(baseClassDecl, result, true);
+        }
+      }
+    }
+  }
+
+ isNumberArrayType(type: ts.Type): boolean {
+      if (!type.symbol || !this.isGenericArrayType(type)) {
+        return false;
+      }
+
+      const typeArguments = this.tsTypeChecker.getTypeArguments(type as ts.TypeReference);
+      if (!typeArguments || typeArguments.length === 0) {
+        return false;
+      }
+
+      return (typeArguments[0].flags & ts.TypeFlags.Number) !== 0;
+    }
 }

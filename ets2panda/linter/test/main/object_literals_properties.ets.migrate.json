@@ -108,7 +108,7 @@
             "line": 173,
             "column": 3,
             "endLine": 173,
-            "endColumn": 28,
+            "endColumn": 26,
             "problem": "ObjectLiteralProperty",
             "suggest": "",
             "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
@@ -148,7 +148,7 @@
             "line": 190,
             "column": 3,
             "endLine": 190,
-            "endColumn": 28,
+            "endColumn": 26,
             "problem": "ObjectLiteralProperty",
             "suggest": "",
             "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
@@ -195,6 +195,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 207,
+            "column": 3,
+            "endLine": 210,
+            "endColumn": 2,
+            "problem": "NoLocalClass",
+            "suggest": "",
+            "rule": "Creating local classes is not supported (arkts-no-local-class)",
+            "severity": "ERROR"
+        },
+        {
             "line": 212,
             "column": 26,
             "endLine": 212,
@@ -232,6 +242,16 @@
             "problem": "ObjectLiteralProperty",
             "suggest": "",
             "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 223,
+            "column": 3,
+            "endLine": 223,
+            "endColumn": 37,
+            "problem": "NoLocalClass",
+            "suggest": "",
+            "rule": "Creating local classes is not supported (arkts-no-local-class)",
             "severity": "ERROR"
         },
         {
@@ -285,16 +305,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 272,
-            "column": 1,
-            "endLine": 274,
-            "endColumn": 2,
-            "problem": "MissingSuperCall",
-            "suggest": "",
-            "rule": "The subclass constructor must call the parent class's parametered constructor (arkts-subclass-must-call-super-constructor-with-args)",
-            "severity": "ERROR"
-        },
-        {
             "line": 284,
             "column": 1,
             "endLine": 286,
@@ -318,20 +328,10 @@
             "line": 288,
             "column": 3,
             "endLine": 288,
-            "endColumn": 28,
+            "endColumn": 26,
             "problem": "ObjectLiteralProperty",
             "suggest": "",
             "rule": "Object literal properties can only contain name-value pairs (arkts-obj-literal-props)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 301,
-            "column": 1,
-            "endLine": 303,
-            "endColumn": 2,
-            "problem": "MissingSuperCall",
-            "suggest": "",
-            "rule": "The subclass constructor must call the parent class's parametered constructor (arkts-subclass-must-call-super-constructor-with-args)",
             "severity": "ERROR"
         },
         {

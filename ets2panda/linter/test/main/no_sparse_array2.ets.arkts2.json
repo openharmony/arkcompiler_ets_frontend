@@ -35,26 +35,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 20,
-            "column": 10,
-            "endLine": 20,
-            "endColumn": 11,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 20,
-            "column": 17,
-            "endLine": 20,
-            "endColumn": 18,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 21,
             "column": 9,
             "endLine": 21,

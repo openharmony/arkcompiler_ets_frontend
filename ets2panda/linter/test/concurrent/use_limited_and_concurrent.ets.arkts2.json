@@ -53,16 +53,6 @@
             "suggest": "",
             "rule": "\"use concurrent\" is not supported (arkts-limited-stdlib-no-use-concurrent)",
             "severity": "ERROR"
-        },
-        {
-            "line": 47,
-            "column": 38,
-            "endLine": 47,
-            "endColumn": 39,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
         }
     ]
 }

@@ -14,8 +14,9 @@
  */
 import Logger, { LOG_LEVEL, LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
 import { Command, OptionValues } from 'commander';
-import {SceneConfig, Sdk} from "arkanalyzer/lib/Config";
-import {Scene} from "arkanalyzer";
+import { SceneConfig, Sdk } from 'arkanalyzer/lib/Config';
+import { NullType, NumberType, Scene, Type, UndefinedType } from 'arkanalyzer';
+import { PrimitiveType, UnionType } from 'arkanalyzer/lib';
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'Utils');
 
@@ -96,12 +97,71 @@ export class Utils {
         scene.buildSceneFromProjectDir(sceneConfig);
         return scene;
     }
+
+    static isUnionTypeContainsType(unionType: UnionType, targetType: Type): boolean {
+        for (const t of unionType.getTypes()) {
+            if (t === targetType) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 检查给出的类型是否是NumberType，或numberType与null、undefined的联合类型
+     */
+    static isNearlyNumberType(checkType: Type): boolean {
+        if (checkType instanceof NumberType) {
+            return true;
+        }
+        if (checkType instanceof UnionType) {
+            for (const t of checkType.getTypes()) {
+                if (t instanceof NumberType || t instanceof UndefinedType || t instanceof NullType) {
+                    continue;
+                }
+                if (t instanceof UnionType) {
+                    if (!this.isNearlyNumberType(t)) {
+                        return false;
+                    }
+                    continue;
+                }
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 检查给出的类型是否是内置类型，或内置类型与null、undefined的联合类型
+     */
+    static isNearlyPrimitiveType(checkType: Type): boolean {
+        if (checkType instanceof PrimitiveType) {
+            return true;
+        }
+        if (checkType instanceof UnionType) {
+            for (const t of checkType.getTypes()) {
+                if (t instanceof PrimitiveType || t instanceof UndefinedType || t instanceof NullType) {
+                    continue;
+                }
+                if (t instanceof UnionType) {
+                    if (!this.isNearlyPrimitiveType(t)) {
+                        return false;
+                    }
+                    continue;
+                }
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
 }
 
 export type WarnInfo = {
-    line: number,
-    startCol: number,
-    endLine?: number,
-    endCol: number,
-    filePath: string,
+    line: number;
+    startCol: number;
+    endLine?: number;
+    endCol: number;
+    filePath: string;
 };

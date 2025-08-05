@@ -20,11 +20,9 @@ export const INSTANCE_IDENTIFIER = 'instance';
 export const COMMON_METHOD_IDENTIFIER = 'CommonMethod';
 export const APPLY_STYLES_IDENTIFIER = 'applyStyles';
 export const STATE_STYLES = 'stateStyles';
-export const ARKUI_PACKAGE_NAME = '@kit.ArkUI';
 export const VALUE_IDENTIFIER = 'value';
 export const INDENT_STEP = 2;
 export const MAKE_OBSERVED = 'makeObserved';
-export const ARKUI_STATE_MANAGEMENT = '@ohos.arkui.StateManagement';
 export const NEW_PROP_DECORATOR_SUFFIX = 'Ref';
 
 export enum CustomInterfaceName {
@@ -38,7 +36,8 @@ export enum CustomInterfaceName {
   CustomStyles = 'CustomStyles',
   Repeat = 'Repeat',
   WrappedBuilder = 'WrappedBuilder',
-  wrapBuilder = 'wrapBuilder'
+  wrapBuilder = 'wrapBuilder',
+  BuilderNode = 'BuilderNode'
 }
 
 export enum StorageTypeName {
@@ -55,6 +54,11 @@ export enum PropDecoratorName {
 export enum PropFunctionName {
   Prop = 'prop',
   SetAndProp = 'setAndProp'
+}
+
+export enum BuilderNodeFunctionName {
+  Build = 'build',
+  Update = 'update'
 }
 
 export const observedDecoratorName: Set<string> = new Set([
@@ -94,3 +98,9 @@ export const PROVIDE_ALLOW_OVERRIDE_PROPERTY_NAME = 'allowOverride';
 
 export const VIRTUAL_SCROLL_IDENTIFIER = 'virtualScroll';
 export const DISABLE_VIRTUAL_SCROLL_IDENTIFIER = 'disableVirtualScroll';
+
+export const ARKUI_MODULE = '@kit.ArkUI';
+export const STATE_MANAGEMENT_MODULE = '@ohos.arkui.StateManagement';
+
+export const BUILDERNODE_D_TS = 'BuilderNode.d.ts';
+export const NESTING_BUILDER_SUPPORTED = 'nestingBuilderSupported';
