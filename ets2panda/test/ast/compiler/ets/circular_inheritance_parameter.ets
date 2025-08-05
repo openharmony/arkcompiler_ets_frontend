@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 
-//Not support non-declare function has same assembly code
-export class A<T> {}
-export declare function foo(a:A<number>):void
-export function foo(a:A<string>):number {}
+class D{
+  f7(x: string, y: D.f7){}
+}
 
-/* @@? 19:8 Error TypeError: Method declaration `foo` must all ambient or non-ambient */
+/* @@? 16:8 Error TypeError: Cyclic inheritance involving D.   */
+/* @@? 17:22 Error TypeError: 'f7' type does not exist.   */

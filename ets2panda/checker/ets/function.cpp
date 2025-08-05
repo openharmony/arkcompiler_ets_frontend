@@ -1435,7 +1435,11 @@ static bool CollectOverload(checker::ETSChecker *checker, ir::MethodDefinition *
     ArenaVector<ETSFunctionType *> overloads(checker->ProgramAllocator()->Adapter());
 
     for (ir::MethodDefinition *const currentFunc : method->Overloads()) {
-        ldInfo.isDeclare &= currentFunc->IsDeclare();
+        if (currentFunc->IsDeclare() != ldInfo.isDeclare) {
+            checker->LogError(diagnostic::AMBIGUOUS_AMBIENT, {currentFunc->Id()->Name()}, currentFunc->Start());
+            method->Id()->Variable()->SetTsType(checker->GlobalTypeError());
+            return false;
+        }
         ES2PANDA_ASSERT(currentFunc->Function() != nullptr);
         ES2PANDA_ASSERT(currentFunc->Id() != nullptr);
         currentFunc->Function()->Id()->SetVariable(currentFunc->Id()->Variable());
@@ -1491,6 +1495,9 @@ checker::Type *ETSChecker::BuildMethodSignature(ir::MethodDefinition *method)
     auto *methodId = method->Id();
     ES2PANDA_ASSERT(methodId != nullptr);
     ES2PANDA_ASSERT(method->Function() != nullptr);
+    if (methodId->AsIdentifier()->IsErrorPlaceHolder()) {
+        return methodId->Variable()->SetTsType(GlobalTypeError());
+    }
     method->Function()->Id()->SetVariable(methodId->Variable());
     BuildFunctionSignature(method->Function(), method->IsConstructor());
     if (method->Function()->Signature() == nullptr) {

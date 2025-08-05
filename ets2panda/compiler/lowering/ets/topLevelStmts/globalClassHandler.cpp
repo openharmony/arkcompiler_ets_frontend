@@ -620,7 +620,10 @@ GlobalDeclTransformer::ResultT GlobalClassHandler::CollectProgramGlobalStatement
     auto globalDecl = GlobalDeclTransformer(allocator_, stmt, parser_);
     auto statements = globalDecl.TransformStatements(stmts);
     if (globalDecl.IsMultiInitializer() && stmt->IsETSModule() && stmt->AsETSModule()->IsNamespace()) {
-        parser_->LogError(diagnostic::MULTIPLE_STATIC_BLOCK, {}, statements.initializerBlocks[0][0]->Start());
+        auto fristStaticBlock =
+            std::find_if(stmts.cbegin(), stmts.cend(), [](auto *prop) { return prop->IsClassStaticBlock(); });
+        ES2PANDA_ASSERT(fristStaticBlock != stmts.cend());
+        parser_->LogError(diagnostic::MULTIPLE_STATIC_BLOCK, {}, (*fristStaticBlock)->Start());
     }
 
     if (stmt->IsETSModule() && !stmt->AsETSModule()->IsNamespace() && stmt->AsETSModule()->Program()->IsPackage()) {

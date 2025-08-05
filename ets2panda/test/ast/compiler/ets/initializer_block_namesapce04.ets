@@ -13,9 +13,18 @@
  * limitations under the License.
  */
 
-//Not support non-declare function has same assembly code
-export class A<T> {}
-export declare function foo(a:A<number>):void
-export function foo(a:A<string>):number {}
+export namespace xml {
+  static a: number = 1;
 
-/* @@? 19:8 Error TypeError: Method declaration `foo` must all ambient or non-ambient */
+  static {
+  }
+
+  static {
+  }
+}
+
+/* @@? 17:3 Error SyntaxError: Unexpected token 'static'. */
+/* @@? 17:10 Error SyntaxError: Unexpected token 'a'. */
+/* @@? 17:13 Error SyntaxError: Label must be followed by a loop statement. */
+/* @@? 17:13 Error TypeError: Type name 'number' used in the wrong context */
+/* @@? 20:3 Error SyntaxError: Only one static block is allowed in one namespace or class. */

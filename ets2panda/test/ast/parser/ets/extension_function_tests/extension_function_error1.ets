@@ -13,9 +13,13 @@
  * limitations under the License.
  */
 
-//Not support non-declare function has same assembly code
-export class A<T> {}
-export declare function foo(a:A<number>):void
-export function foo(a:A<string>):number {}
+@AnimatableExtend
+function animatableWidth(this: TextAttribute, this { this.width(width); return this;
+}
 
-/* @@? 19:8 Error TypeError: Method declaration `foo` must all ambient or non-ambient */
+/* @@? 16:2 Error TypeError: Cannot find type 'AnimatableExtend'. */
+/* @@? 17:32 Error TypeError: Cannot find type 'TextAttribute'. */
+/* @@? 17:52 Error SyntaxError: The function parameter 'this' must explicitly specify the typeAnnotation. */
+/* @@? 17:52 Error SyntaxError: Unexpected token, expected ',' or ')'. */
+/* @@? 17:54 Error TypeError: Cannot reference 'this' in this context. */
+/* @@? 17:59 Error TypeError: Property 'width' does not exist on type 'Error' */

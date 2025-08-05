@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 
-//Not support non-declare function has same assembly code
-export class A<T> {}
-export declare function foo(a:A<number>):void
-export function foo(a:A<string>):number {}
+enum CCCCCCCCC {}
 
-/* @@? 19:8 Error TypeError: Method declaration `foo` must all ambient or non-ambient */
+CCCCCCCCC[foo()].foo();
+
+/* @@? 18:11 Error TypeError: Unresolved reference foo */
+/* @@? 18:18 Error TypeError: Property 'foo' does not exist on type 'String' */
