@@ -2164,7 +2164,7 @@ ir::TSTypeParameter *ETSParser::ParseTypeParameter([[maybe_unused]] TypeAnnotati
         }
     }
     auto saveLoc = Lexer()->GetToken().Start();
-    auto *paramIdent = ExpectIdentifier(false, false, *options);
+    auto *paramIdent = ExpectIdentifier(false, false, *options | TypeAnnotationParsingOptions::REPORT_ERROR);
 
     ir::TypeNode *constraint = nullptr;
     if (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_EXTENDS) {
