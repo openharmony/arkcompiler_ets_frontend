@@ -13,8 +13,6 @@
  * limitations under the License.
  */
 
-import assert = require('assert');
-
 type T00 = Exclude<'a' | 'b' | 'c' | 'd', 'a' | 'c' | 'f'>; // 'b' | 'd'
 type T01 = Extract<'a' | 'b' | 'c' | 'd', 'a' | 'c' | 'f'>; // 'a' | 'c'
 
@@ -33,13 +31,13 @@ class C {
   y = 0;
 }
 
-type T10 = ReturnType<() => string>; // string
-type T11 = ReturnType<(s: string) => void>; // void
-type T12 = ReturnType<(<T>() => T)>; // {}
-type T13 = ReturnType<(<T extends U, U extends number[]>() => T)>; // number[]
-type T14 = ReturnType<typeof f1>; // { a: number, b: string }
-type T15 = ReturnType<any>; // any
-type T16 = ReturnType<never>; // any
+type ResultString = ReturnType<() => string>; // string
+type ResultVoid = ReturnType<(s: string) => void>; // void
+type ResultGeneric = ReturnType<(<T>() => T)>; // {}
+type ResultConstrained = ReturnType<(<T extends U, U extends number[]>() => T)>; // number[]
+type ResultInstance = ReturnType<typeof f1>; // { a: number, b: string }
+type ResultAny = ReturnType<any>; // any
+type ResultNever = ReturnType<never>; // any
 
 type T20 = InstanceType<typeof C>; // C
 type T21 = InstanceType<any>; // any
