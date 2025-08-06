@@ -78,6 +78,10 @@ bool ETSChecker::CheckNonNullish(ir::Expression const *expr)
         return true;
     }
 
+    if (expr->TsType()->IsETSPartialTypeParameter()) {
+        return true;
+    }
+
     if (HasStatus(checker::CheckerStatus::IN_EXTENSION_ACCESSOR_CHECK)) {
         return false;
     }
@@ -121,6 +125,10 @@ Type *ETSChecker::GetNonNullishType(Type *type)
 Type *ETSChecker::RemoveNullType(Type *const type)
 {
     if (type->IsETSAnyType() || type->DefinitelyNotETSNullish() || type->IsETSUndefinedType()) {
+        return type;
+    }
+
+    if (type->IsETSPartialTypeParameter()) {
         return type;
     }
 
@@ -186,6 +194,11 @@ std::pair<Type *, Type *> ETSChecker::RemoveNullishTypes(Type *type)
 
     if (type->IsETSAnyType()) {
         return {type, type};
+    }
+
+    if (type->IsETSPartialTypeParameter()) {
+        return {GetGlobalTypesHolder()->GlobalETSNeverType(),
+                ProgramAllocator()->New<ETSNonNullishType>(type->AsETSPartialTypeParameter()->GetUnderlying())};
     }
 
     if (type->IsETSTypeParameter()) {
