@@ -526,6 +526,9 @@ bool ETSChecker::IsValidRestArgument(ir::Expression *const argument, Signature *
                                      const TypeRelationFlag flags, const std::size_t index)
 {
     auto *restParamType = substitutedSig->RestVar()->TsType();
+    if (restParamType->IsETSTupleType()) {
+        return false;
+    }
     if (argument->IsObjectExpression()) {
         argument->SetPreferredType(GetElementTypeOfArray(restParamType));
         // Object literals should be checked separately afterwards after call resolution
@@ -540,9 +543,6 @@ bool ETSChecker::IsValidRestArgument(ir::Expression *const argument, Signature *
     }
 
     const auto argumentType = argument->Check(this);
-    if (restParamType->IsETSTupleType()) {
-        return false;
-    }
     if (argument->HasAstNodeFlags(ir::AstNodeFlags::RESIZABLE_REST)) {
         return true;
     }
