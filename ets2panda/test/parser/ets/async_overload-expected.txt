@@ -737,7 +737,7 @@
                 "loc": {
                   "start": {
                     "line": 21,
-                    "column": 5,
+                    "column": 11,
                     "program": "async_overload.ets"
                   },
                   "end": {
@@ -752,7 +752,7 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 5,
+                "column": 11,
                 "program": "async_overload.ets"
               },
               "end": {

@@ -410,7 +410,7 @@
             "loc": {
               "start": {
                 "line": 20,
-                "column": 5,
+                "column": 19,
                 "program": "launch.ets"
               },
               "end": {
@@ -642,7 +642,7 @@
             "loc": {
               "start": {
                 "line": 24,
-                "column": 5,
+                "column": 19,
                 "program": "launch.ets"
               },
               "end": {

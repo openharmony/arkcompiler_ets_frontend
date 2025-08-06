@@ -151,7 +151,7 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 5,
+                "column": 14,
                 "program": "infer_overriding_method_return_type.ets"
               },
               "end": {

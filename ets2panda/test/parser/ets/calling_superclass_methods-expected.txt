@@ -135,7 +135,7 @@
             "loc": {
               "start": {
                 "line": 19,
-                "column": 5,
+                "column": 13,
                 "program": "calling_superclass_methods.ets"
               },
               "end": {
@@ -524,7 +524,7 @@
             "loc": {
               "start": {
                 "line": 23,
-                "column": 5,
+                "column": 21,
                 "program": "calling_superclass_methods.ets"
               },
               "end": {

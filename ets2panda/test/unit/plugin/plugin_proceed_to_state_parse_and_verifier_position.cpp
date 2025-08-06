@@ -90,6 +90,24 @@ export declare function fooDecl(
   options: number,
   myop: string
 ): void
+
+export declare abstract class ABClass<T> {
+  @exportAnno
+  static $_instantiate(
+    factory: () => T,
+    initializers?: number,
+    reuseId?: string,
+    @exportAnno content?: () => void
+  ): T
+}
+
+export declare interface InterfaceTest {
+    @exportAnno
+    private interfaceFoo5(
+    initializers?: number,
+    reuseId?: string,
+    ):number | string[]
+}
 )";
 
 constexpr size_t NS_START_LINE = 11;
@@ -108,6 +126,7 @@ constexpr size_t CLASS_PROP3_START_LINE = 51;
 constexpr size_t CLASS_FOO1_START_LINE = 24;
 constexpr size_t CLASS_FOO2_START_LINE = 45;
 constexpr size_t CLASS_FOO3_START_LINE = 47;
+constexpr size_t CLASS_INSTANTIATE_START_LINE = 73;
 constexpr size_t INTERFACE_PROP1_START_LINE = 18;
 constexpr size_t INTERFACE_PROP2_START_LINE = 20;
 constexpr size_t INTERFACE_PROP3_START_LINE = 35;
@@ -116,6 +135,7 @@ constexpr size_t INTERFACE_FOO1_START_LINE = 14;
 constexpr size_t INTERFACE_FOO2_START_LINE = 16;
 constexpr size_t INTERFACE_FOO3_START_LINE = 33;
 constexpr size_t INTERFACE_FOO4_START_LINE = 37;
+constexpr size_t INTERFACE_FOO5_START_LINE = 83;
 constexpr size_t FUNCTION_PARAM1_START_LINE = 55;
 constexpr size_t FUNCTION_PARAM2_START_LINE = 56;
 constexpr size_t FUNCTION_PARAM3_START_LINE = 43;
@@ -137,6 +157,7 @@ constexpr size_t CLASS_PROP3_END_LINE = 51;
 constexpr size_t CLASS_FOO1_END_LINE = 24;
 constexpr size_t CLASS_FOO2_END_LINE = 45;
 constexpr size_t CLASS_FOO3_END_LINE = 47;
+constexpr size_t CLASS_INSTANTIATE_END_LINE = 78;
 constexpr size_t INTERFACE_PROP1_END_LINE = 18;
 constexpr size_t INTERFACE_PROP2_END_LINE = 20;
 constexpr size_t INTERFACE_PROP3_END_LINE = 35;
@@ -145,6 +166,7 @@ constexpr size_t INTERFACE_FOO1_END_LINE = 14;
 constexpr size_t INTERFACE_FOO2_END_LINE = 16;
 constexpr size_t INTERFACE_FOO3_END_LINE = 33;
 constexpr size_t INTERFACE_FOO4_END_LINE = 37;
+constexpr size_t INTERFACE_FOO5_END_LINE = 86;
 constexpr size_t FUNCTION_PARAM1_END_LINE = 55;
 constexpr size_t FUNCTION_PARAM2_END_LINE = 56;
 constexpr size_t FUNCTION_PARAM3_END_LINE = 43;
@@ -166,6 +188,7 @@ constexpr size_t CLASS_PROP3_START_COL = 5;
 constexpr size_t CLASS_FOO1_START_COL = 5;
 constexpr size_t CLASS_FOO2_START_COL = 5;
 constexpr size_t CLASS_FOO3_START_COL = 5;
+constexpr size_t CLASS_INSTANTIATE_START_COL = 10;
 constexpr size_t INTERFACE_PROP1_START_COL = 13;
 constexpr size_t INTERFACE_PROP2_START_COL = 5;
 constexpr size_t INTERFACE_PROP3_START_COL = 5;
@@ -174,6 +197,7 @@ constexpr size_t INTERFACE_FOO1_START_COL = 5;
 constexpr size_t INTERFACE_FOO2_START_COL = 5;
 constexpr size_t INTERFACE_FOO3_START_COL = 13;
 constexpr size_t INTERFACE_FOO4_START_COL = 5;
+constexpr size_t INTERFACE_FOO5_START_COL = 13;
 constexpr size_t FUNCTION_PARAM1_START_COL = 3;
 constexpr size_t FUNCTION_PARAM2_START_COL = 3;
 constexpr size_t FUNCTION_PARAM3_START_COL = 11;
@@ -195,6 +219,7 @@ constexpr size_t CLASS_PROP3_END_COL = 26;
 constexpr size_t CLASS_FOO1_END_COL = 24;
 constexpr size_t CLASS_FOO2_END_COL = 24;
 constexpr size_t CLASS_FOO3_END_COL = 24;
+constexpr size_t CLASS_INSTANTIATE_END_COL = 7;
 constexpr size_t INTERFACE_PROP1_END_COL = 34;
 constexpr size_t INTERFACE_PROP2_END_COL = 37;
 constexpr size_t INTERFACE_PROP3_END_COL = 26;
@@ -203,6 +228,7 @@ constexpr size_t INTERFACE_FOO1_END_COL = 43;
 constexpr size_t INTERFACE_FOO2_END_COL = 25;
 constexpr size_t INTERFACE_FOO3_END_COL = 46;
 constexpr size_t INTERFACE_FOO4_END_COL = 25;
+constexpr size_t INTERFACE_FOO5_END_COL = 24;
 constexpr size_t FUNCTION_PARAM1_END_COL = 16;
 constexpr size_t FUNCTION_PARAM2_END_COL = 16;
 constexpr size_t FUNCTION_PARAM3_END_COL = 21;
@@ -232,10 +258,12 @@ static std::map<std::string, size_t> startLineMap = {{"exportNamedDecl", EXPORT_
                                                      {"interfaceFoo2", INTERFACE_FOO2_START_LINE},
                                                      {"interfaceFoo3", INTERFACE_FOO3_START_LINE},
                                                      {"interfaceFoo4", INTERFACE_FOO4_START_LINE},
+                                                     {"interfaceFoo5", INTERFACE_FOO5_START_LINE},
                                                      {"fooP1", FUNCTION_PARAM1_START_LINE},
                                                      {"fooP2", FUNCTION_PARAM2_START_LINE},
                                                      {"p3", FUNCTION_PARAM3_START_LINE},
-                                                     {"fooDecl", FUNCTION_DECL_START_LINE}};
+                                                     {"fooDecl", FUNCTION_DECL_START_LINE},
+                                                     {"$_instantiate", CLASS_INSTANTIATE_START_LINE}};
 
 static std::map<std::string, size_t> startColMap = {{"exportNamedDecl", EXPORT_NAMED_DECL_START_COL},
                                                     {"exportSingleNamedDecl", EXPORT_SINGLE_NAMED_DECL_START_COL},
@@ -261,10 +289,12 @@ static std::map<std::string, size_t> startColMap = {{"exportNamedDecl", EXPORT_N
                                                     {"interfaceFoo2", INTERFACE_FOO2_START_COL},
                                                     {"interfaceFoo3", INTERFACE_FOO3_START_COL},
                                                     {"interfaceFoo4", INTERFACE_FOO4_START_COL},
+                                                    {"interfaceFoo5", INTERFACE_FOO5_START_COL},
                                                     {"fooP1", FUNCTION_PARAM1_START_COL},
                                                     {"fooP2", FUNCTION_PARAM2_START_COL},
                                                     {"p3", FUNCTION_PARAM3_START_COL},
-                                                    {"fooDecl", FUNCTION_DECL_START_COL}};
+                                                    {"fooDecl", FUNCTION_DECL_START_COL},
+                                                    {"$_instantiate", CLASS_INSTANTIATE_START_COL}};
 
 static std::map<std::string, size_t> endLineMap = {{"exportNamedDecl", EXPORT_NAMED_DECL_END_LINE},
                                                    {"exportSingleNamedDecl", EXPORT_SINGLE_NAMED_DECL_END_LINE},
@@ -290,10 +320,12 @@ static std::map<std::string, size_t> endLineMap = {{"exportNamedDecl", EXPORT_NA
                                                    {"interfaceFoo2", INTERFACE_FOO2_END_LINE},
                                                    {"interfaceFoo3", INTERFACE_FOO3_END_LINE},
                                                    {"interfaceFoo4", INTERFACE_FOO4_END_LINE},
+                                                   {"interfaceFoo5", INTERFACE_FOO5_END_LINE},
                                                    {"fooP1", FUNCTION_PARAM1_END_LINE},
                                                    {"fooP2", FUNCTION_PARAM2_END_LINE},
                                                    {"p3", FUNCTION_PARAM3_END_LINE},
-                                                   {"fooDecl", FUNCTION_DECL_END_LINE}};
+                                                   {"fooDecl", FUNCTION_DECL_END_LINE},
+                                                   {"$_instantiate", CLASS_INSTANTIATE_END_LINE}};
 
 static std::map<std::string, size_t> endColMap = {{"exportNamedDecl", EXPORT_NAMED_DECL_END_COL},
                                                   {"exportSingleNamedDecl", EXPORT_SINGLE_NAMED_DECL_END_COL},
@@ -319,10 +351,12 @@ static std::map<std::string, size_t> endColMap = {{"exportNamedDecl", EXPORT_NAM
                                                   {"interfaceFoo2", INTERFACE_FOO2_END_COL},
                                                   {"interfaceFoo3", INTERFACE_FOO3_END_COL},
                                                   {"interfaceFoo4", INTERFACE_FOO4_END_COL},
+                                                  {"interfaceFoo5", INTERFACE_FOO5_END_COL},
                                                   {"fooP1", FUNCTION_PARAM1_END_COL},
                                                   {"fooP2", FUNCTION_PARAM2_END_COL},
                                                   {"p3", FUNCTION_PARAM3_END_COL},
-                                                  {"fooDecl", FUNCTION_DECL_END_COL}};
+                                                  {"fooDecl", FUNCTION_DECL_END_COL},
+                                                  {"$_instantiate", CLASS_INSTANTIATE_END_COL}};
 
 static es2panda_Impl *impl = nullptr;
 es2panda_Context *context = nullptr;
@@ -456,8 +490,9 @@ static void FindEnumMember(es2panda_AstNode *ast, [[maybe_unused]] void *ctx)
 }
 
 static std::map<std::string, es2panda_AstNode *> methodMap = {
-    {"interfaceFoo1", nullptr}, {"interfaceFoo2", nullptr}, {"interfaceFoo3", nullptr}, {"interfaceFoo4", nullptr},
-    {"classFoo1", nullptr},     {"classFoo2", nullptr},     {"classFoo3", nullptr}};
+    {"interfaceFoo1", nullptr}, {"interfaceFoo2", nullptr}, {"interfaceFoo3", nullptr},
+    {"interfaceFoo4", nullptr}, {"interfaceFoo5", nullptr}, {"classFoo1", nullptr},
+    {"classFoo2", nullptr},     {"classFoo3", nullptr},     {"$_instantiate", nullptr}};
 static void FindMethodDef(es2panda_AstNode *ast, [[maybe_unused]] void *ctx)
 {
     if (!impl->IsMethodDefinition(ast)) {
@@ -512,11 +547,6 @@ static bool CheckLineAndCol(es2panda_AstNode *ast, std::string name)
 {
     auto start = impl->AstNodeStartConst(context, ast);
     auto end = impl->AstNodeEndConst(context, ast);
-    [[maybe_unused]] auto a = impl->SourcePositionLine(context, start);
-    [[maybe_unused]] auto b = impl->SourcePositionCol(context, start);
-    [[maybe_unused]] auto c = impl->SourcePositionLine(context, end);
-    [[maybe_unused]] auto d = impl->SourcePositionCol(context, end);
-
     auto res = startLineMap[name] == impl->SourcePositionLine(context, start);
     ASSERT(startLineMap[name] == impl->SourcePositionLine(context, start));
 

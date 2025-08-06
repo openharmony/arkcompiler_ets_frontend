@@ -457,7 +457,7 @@
             "loc": {
               "start": {
                 "line": 21,
-                "column": 5,
+                "column": 12,
                 "program": "static_function_override_2.ets"
               },
               "end": {

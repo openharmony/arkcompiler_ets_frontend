@@ -1651,7 +1651,7 @@
                 "loc": {
                   "start": {
                     "line": 25,
-                    "column": 5,
+                    "column": 19,
                     "program": "InferTypeParamFromParam1.ets"
                   },
                   "end": {
@@ -1666,7 +1666,7 @@
             "loc": {
               "start": {
                 "line": 21,
-                "column": 5,
+                "column": 19,
                 "program": "InferTypeParamFromParam1.ets"
               },
               "end": {

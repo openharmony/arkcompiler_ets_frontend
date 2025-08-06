@@ -876,7 +876,7 @@
             "loc": {
               "start": {
                 "line": 19,
-                "column": 5,
+                "column": 12,
                 "program": "tuple_types_19.ets"
               },
               "end": {
@@ -1756,7 +1756,7 @@
             "loc": {
               "start": {
                 "line": 25,
-                "column": 5,
+                "column": 12,
                 "program": "tuple_types_19.ets"
               },
               "end": {

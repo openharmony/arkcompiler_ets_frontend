@@ -849,7 +849,7 @@
             "loc": {
               "start": {
                 "line": 23,
-                "column": 5,
+                "column": 12,
                 "program": "test-type-alias-call6.ets"
               },
               "end": {

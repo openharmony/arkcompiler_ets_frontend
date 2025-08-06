@@ -472,7 +472,7 @@
             "loc": {
               "start": {
                 "line": 26,
-                "column": 5,
+                "column": 12,
                 "program": "global_const_vars3.ets"
               },
               "end": {

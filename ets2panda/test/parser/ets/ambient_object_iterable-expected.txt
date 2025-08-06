@@ -656,7 +656,7 @@
             "loc": {
               "start": {
                 "line": 23,
-                "column": 3,
+                "column": 12,
                 "program": "ambient_object_iterable.ets"
               },
               "end": {
@@ -995,7 +995,7 @@
             "loc": {
               "start": {
                 "line": 29,
-                "column": 3,
+                "column": 19,
                 "program": "ambient_object_iterable.ets"
               },
               "end": {

@@ -541,7 +541,7 @@
             "loc": {
               "start": {
                 "line": 22,
-                "column": 5,
+                "column": 12,
                 "program": "generics_implicit_lambda1.ets"
               },
               "end": {
@@ -1068,7 +1068,7 @@
             "loc": {
               "start": {
                 "line": 28,
-                "column": 5,
+                "column": 12,
                 "program": "generics_implicit_lambda1.ets"
               },
               "end": {

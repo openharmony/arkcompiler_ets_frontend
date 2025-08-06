@@ -611,7 +611,7 @@
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 5,
+                    "column": 19,
                     "program": "overload_with_generics.ets"
                   },
                   "end": {
@@ -626,7 +626,7 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 5,
+                "column": 19,
                 "program": "overload_with_generics.ets"
               },
               "end": {

@@ -1306,7 +1306,7 @@
             "loc": {
               "start": {
                 "line": 29,
-                "column": 5,
+                "column": 20,
                 "program": "generic_resolve.ets"
               },
               "end": {

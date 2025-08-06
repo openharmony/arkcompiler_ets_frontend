@@ -647,7 +647,7 @@
             "loc": {
               "start": {
                 "line": 20,
-                "column": 5,
+                "column": 14,
                 "program": "abstractMethodDeclaredInParentClass.ets"
               },
               "end": {
@@ -816,7 +816,7 @@
             "loc": {
               "start": {
                 "line": 24,
-                "column": 5,
+                "column": 14,
                 "program": "abstractMethodDeclaredInParentClass.ets"
               },
               "end": {
@@ -1577,7 +1577,7 @@
             "loc": {
               "start": {
                 "line": 38,
-                "column": 5,
+                "column": 14,
                 "program": "abstractMethodDeclaredInParentClass.ets"
               },
               "end": {
@@ -2861,7 +2861,7 @@
             "loc": {
               "start": {
                 "line": 55,
-                "column": 5,
+                "column": 14,
                 "program": "abstractMethodDeclaredInParentClass.ets"
               },
               "end": {

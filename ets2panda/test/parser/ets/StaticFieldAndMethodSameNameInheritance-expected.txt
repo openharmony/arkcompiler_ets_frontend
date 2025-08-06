@@ -135,7 +135,7 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 2,
+                "column": 9,
                 "program": "StaticFieldAndMethodSameNameInheritance.ets"
               },
               "end": {

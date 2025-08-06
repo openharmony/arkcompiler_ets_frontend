@@ -706,7 +706,7 @@
             "loc": {
               "start": {
                 "line": 21,
-                "column": 5,
+                "column": 12,
                 "program": "test-type-alias-call2.ets"
               },
               "end": {

@@ -931,7 +931,7 @@
             "loc": {
               "start": {
                 "line": 18,
-                "column": 5,
+                "column": 12,
                 "program": "class_def_varargs_1.ets"
               },
               "end": {
