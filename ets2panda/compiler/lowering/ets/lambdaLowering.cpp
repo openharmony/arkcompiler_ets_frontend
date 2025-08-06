@@ -1452,6 +1452,13 @@ static bool IsFunctionOrMethodCall(checker::ETSChecker *checker, ir::CallExpress
     return var != nullptr && !IsVariableOriginalAccessor(var) && (var->Flags() & varbinder::VariableFlags::METHOD) != 0;
 }
 
+static bool IsTypeErrorCall(ir::CallExpression const *node)
+{
+    auto const *callee = node->Callee();
+    ES2PANDA_ASSERT(callee->TsType() != nullptr);
+    return callee->TsType()->IsTypeError();
+}
+
 // CC-OFFNXT(G.FUN.01, huge_method, huge_method[C++]) solid logic
 static ir::AstNode *InsertInvokeCall(public_lib::Context *ctx, ir::CallExpression *call)
 {
@@ -1628,7 +1635,7 @@ bool LambdaConversionPhase::PerformForModule(public_lib::Context *ctx, parser::P
     auto insertInvokeIfNeeded = [ctx](ir::AstNode *node) {
         if (node->IsCallExpression() &&
             !IsFunctionOrMethodCall(ctx->GetChecker()->AsETSChecker(), node->AsCallExpression()) &&
-            !IsRedirectingConstructorCall(node->AsCallExpression())) {
+            !IsRedirectingConstructorCall(node->AsCallExpression()) && !IsTypeErrorCall(node->AsCallExpression())) {
             return InsertInvokeCall(ctx, node->AsCallExpression());
         }
         return node;
