@@ -261,6 +261,10 @@ checker::Type *ETSAnalyzer::Check(ir::MethodDefinition *node) const
         checker->AddStatus(CheckerStatus::IN_STATIC_BLOCK);
     }
 
+    if (node->TsType() != nullptr && node->TsType()->IsTypeError()) {
+        return node->TsType();
+    }
+
     this->CheckMethodModifiers(node);
     HandleNativeAndAsyncMethods(checker, node);
     DoBodyTypeChecking(checker, node, scriptFunc);

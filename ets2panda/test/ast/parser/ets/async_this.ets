@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,11 +13,10 @@
  * limitations under the License.
  */
 
-@AnimatableExtend
-function animatableWidth(this: TextAttribute, this { this.width(width); return this;
+class A{
+    async foo(this:A){
+        return new Promise<number>((resolve)=>{})
+    }
 }
 
-/* @@? 16:2 Error TypeError: Cannot find type 'AnimatableExtend'.  */
-/* @@? 17:32 Error TypeError: Cannot find type 'TextAttribute'.  */
-/* @@? 17:52 Error SyntaxError: The function parameter 'this' must explicitly specify the typeAnnotation.  */
-/* @@? 17:52 Error SyntaxError: Unexpected token, expected ',' or ')'.  */
+/* @@? 17:15 Error SyntaxError: Unexpected 'this' keyword in non-receiver context.  */
