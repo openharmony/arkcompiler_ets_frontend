@@ -80,4 +80,6 @@ checker::VerifiedType OpaqueTypeNode::Check([[maybe_unused]] checker::ETSChecker
 
 void OpaqueTypeNode::CleanCheckInformation() {}
 
+void OpaqueTypeNode::CleanUp() {}
+
 }  // namespace ark::es2panda::ir
