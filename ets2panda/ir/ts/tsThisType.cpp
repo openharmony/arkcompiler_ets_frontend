@@ -70,7 +70,11 @@ checker::VerifiedType TSThisType::Check([[maybe_unused]] checker::ETSChecker *ch
 
 checker::Type *TSThisType::GetType([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->Context().ContainingClass();
+    auto *containingClass = checker->Context().ContainingClass();
+    if (containingClass == nullptr) {
+        return checker->GlobalTypeError();
+    }
+    return containingClass;
 }
 
 TSThisType *TSThisType::Clone(ArenaAllocator *const allocator, AstNode *const parent)
