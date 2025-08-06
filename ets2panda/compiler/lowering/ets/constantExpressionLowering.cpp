@@ -1169,6 +1169,7 @@ static varbinder::Variable *ResolveIdentifier(const ir::Identifier *ident)
         varbinder::ResolveBindingOptions::ALL_DECLARATION | varbinder::ResolveBindingOptions::ALL_VARIABLES;
 
     varbinder::Scope *scope = NearestScope(ident);
+    ES2PANDA_ASSERT(scope != nullptr);
     auto *resolved = scope->Find(ident->Name(), option).variable;
     return resolved;
 }
