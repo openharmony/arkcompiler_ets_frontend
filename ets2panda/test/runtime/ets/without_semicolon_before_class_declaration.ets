@@ -13,12 +13,14 @@
  * limitations under the License.
  */
 
-declaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaare struct MainProg2 {
-    @@Stave
+let x: number = 1;
+const y: number = x
+class C {
+    foo(a: Int): Int {
+        return a;
+    }
 }
 
-/* @@? 16:1 Error TypeError: Unresolved reference declaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaare */
-/* @@? 16:39 Error SyntaxError: Unexpected token 'struct'. */
-/* @@? 16:39 Error TypeError: Structs are only used to define UI components, it should be translated at 'plugin after parser' phase. */
-/* @@? 17:5 Error SyntaxError: There is no any node to insert at the placeholder position. */
-/* @@? 17:12 Error SyntaxError: Field type annotation expected. */
+function main(): void {
+    arktest.assertEQ(new C().foo(1), 1)
+}
