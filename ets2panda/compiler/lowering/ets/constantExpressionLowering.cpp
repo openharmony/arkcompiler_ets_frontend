@@ -1272,10 +1272,11 @@ static bool IsInTSEnumMemberInit(const ir::AstNode *n)
 
 ir::AstNode *ConstantExpressionLowering::UnfoldResolvedReference(ir::AstNode *resolved, ir::AstNode *node)
 {
-    if (unfoldingSet_.count(resolved) > 0) {
+    checker::RecursionPreserver<const ir::AstNode> rPreserver(unfoldingSet_, resolved);
+    if (*rPreserver) {
+        isSelfDependence_ = true;
         return node;
     }
-    unfoldingSet_.insert(resolved);
 
     ir::AstNode *resNode = nullptr;
     if (resolved->IsClassProperty()) {
@@ -1300,7 +1301,11 @@ ir::AstNode *ConstantExpressionLowering::UnfoldResolvedReference(ir::AstNode *re
 
     if (resNode != nullptr) {
         auto res = MaybeUnfold(resNode);
-        unfoldingSet_.erase(resolved);
+        if (isSelfDependence_) {
+            isSelfDependence_ = false;
+            return node;
+        }
+
         return res;
     }
 
