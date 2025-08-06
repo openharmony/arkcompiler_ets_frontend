@@ -1418,6 +1418,11 @@ ir::AstNode *ConstantExpressionLowering::Fold(ir::AstNode *constantNode)
                 return FoldTernaryConstant(condExp);
             }
         }
+        if (node->IsTSNonNullExpression() && IsSupportedLiteral(node->AsTSNonNullExpression()->Expr())) {
+            auto expr = node->AsTSNonNullExpression()->Expr()->Clone(context_->allocator, node->Parent());
+            expr->SetRange(node->Range());
+            return expr;
+        }
         return node;
     };
     constantNode->TransformChildrenRecursivelyPostorder(handleFoldConstant, Name());
