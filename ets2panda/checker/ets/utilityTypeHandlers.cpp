@@ -491,8 +491,12 @@ void ETSChecker::CreatePartialClassDeclaration(ir::ClassDefinition *const newCla
              prop->AsMethodDefinition()->Function()->IsSetter())) {
             auto *method = prop->AsMethodDefinition();
             ES2PANDA_ASSERT(method->Id() != nullptr);
+            auto isBrokenSetter = method->Function()->IsSetter() && method->Function()->Params().size() != 1;
+            auto isBrokenGetter = method->Function()->IsGetter() && !method->Function()->Params().empty();
             if (newClassDefinition->Scope()->FindLocal(method->Id()->Name(),
-                                                       varbinder::ResolveBindingOptions::VARIABLES) != nullptr) {
+                                                       varbinder::ResolveBindingOptions::VARIABLES) != nullptr ||
+                isBrokenSetter || isBrokenGetter) {
+                ES2PANDA_ASSERT(IsAnyError());
                 continue;
             }
             // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
