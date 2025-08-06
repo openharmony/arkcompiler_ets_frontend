@@ -4971,6 +4971,7 @@ export class Autofixer {
       }
       return `<${typeArg.
         map((arg) => {
+          ts.setEmitFlags(arg, ts.EmitFlags.SingleLine);
           return this.nonCommentPrinter.printNode(ts.EmitHint.Unspecified, arg, sourceFile);
         }).
         join(', ')}>`;
@@ -4978,7 +4979,7 @@ export class Autofixer {
     if (!typeArg || !this.isTypeArgumentAccessible(sourceFile, typeArg as ts.TypeNode)) {
       return undefined;
     }
-
+    ts.setEmitFlags(typeArg as ts.TypeNode, ts.EmitFlags.SingleLine);
     return `<${this.nonCommentPrinter.printNode(ts.EmitHint.Unspecified, typeArg as ts.TypeNode, sourceFile)}>`;
   }
 

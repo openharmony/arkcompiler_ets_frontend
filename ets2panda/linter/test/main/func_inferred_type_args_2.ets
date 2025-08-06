@@ -118,3 +118,7 @@ class SubWeakMap extends WeakMap{}
 let subWeakMap = new SubWeakMap();
 class SubWeakSet extends WeakSet{}
 let subWeakSet = new SubWeakSet();
+
+class C {}
+class D<T> {}
+let a: D<[C]> = new D();
