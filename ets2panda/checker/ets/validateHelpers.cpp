@@ -196,7 +196,9 @@ void ETSChecker::ValidateResolvedIdentifier(ir::Identifier *const ident)
     auto *smartType = Context().GetSmartCast(resolved);
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *const resolvedType = GetApparentType(smartType != nullptr ? smartType : GetTypeOfVariable(resolved));
-
+    bool isValidResolved =
+        resolved != nullptr && !resolved->Declaration()->PossibleTDZ() &&
+        !(resolvedType->IsETSFunctionType() && !resolved->Declaration()->Node()->IsTSTypeAliasDeclaration());
     switch (ident->Parent()->Type()) {
         case ir::AstNodeType::CALL_EXPRESSION:
             // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
@@ -212,7 +214,7 @@ void ETSChecker::ValidateResolvedIdentifier(ir::Identifier *const ident)
             if (ValidateBinaryExpressionIdentifier(ident, resolvedType)) {
                 return;
             }
-            if (resolved != nullptr && !resolved->Declaration()->PossibleTDZ() && !resolvedType->IsETSFunctionType()) {
+            if (isValidResolved) {
                 WrongContextErrorClassifyByType(ident);
             }
             break;
@@ -226,7 +228,7 @@ void ETSChecker::ValidateResolvedIdentifier(ir::Identifier *const ident)
             ValidateAssignmentIdentifier(ident, resolvedType);
             break;
         default:
-            if (resolved != nullptr && !resolved->Declaration()->PossibleTDZ() && !resolvedType->IsETSFunctionType()) {
+            if (isValidResolved) {
                 WrongContextErrorClassifyByType(ident);
             }
     }
