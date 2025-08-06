@@ -1854,7 +1854,8 @@ Type *ETSChecker::ResolveReferencedType(varbinder::LocalVariable *refVar, const 
         case ir::AstNodeType::CLASS_DECLARATION:
         case ir::AstNodeType::STRUCT_DECLARATION:
         case ir::AstNodeType::CLASS_DEFINITION:
-            if (refVar->Declaration()->Node()->AsClassDefinition()->IsNamespaceTransformed()) {
+            if (refVar->Declaration()->Node()->IsClassDefinition() &&
+                refVar->Declaration()->Node()->AsClassDefinition()->IsNamespaceTransformed()) {
                 LogError(diagnostic::NAMESPACE_AS_TYPE, {refVar->Name()}, name->Start());
                 return GlobalTypeError();
             }

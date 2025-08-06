@@ -27,6 +27,7 @@
 #include "checker/types/ets/etsObjectType.h"
 #include "checker/types/ets/etsPartialTypeParameter.h"
 #include "checker/types/gradualType.h"
+#include "checker/types/typeError.h"
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "ir/base/catchClause.h"
 #include "ir/base/classDefinition.h"
@@ -528,6 +529,7 @@ bool ETSChecker::ValidateSignatureRequiredParams(Signature *substitutedSig,
             // Note: If the signatures are from lambdas, then they have no `Function`.
             ir::ScriptFunction *const lambda = argument->AsArrowFunctionExpression()->Function();
             auto targetParm = substitutedSig->GetSignatureInfo()->params[index]->Declaration()->Node();
+            ERROR_SANITY_CHECK(this, targetParm->IsETSParameterExpression(), return false);
             if (CheckLambdaAssignable(targetParm->AsETSParameterExpression(), lambda)) {
                 continue;
             }
