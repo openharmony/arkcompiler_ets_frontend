@@ -96,21 +96,16 @@ bool ETSChecker::EnhanceSubstitutionForType(const ArenaVector<Type *> &typeParam
         argumentType = MaybeBoxInRelation(argumentType);
     }
     if (paramType->IsETSTypeParameter()) {
-        auto *const tparam = paramType->AsETSTypeParameter();
-        auto *const originalTparam = tparam->GetOriginal();
+        auto *const originalTparam = paramType->AsETSTypeParameter()->GetOriginal();
         if (std::find(typeParams.begin(), typeParams.end(), originalTparam) != typeParams.end() &&
             substitution->count(originalTparam) == 0) {
-            if (!IsReferenceType(argumentType)) {
-                LogError(diagnostic::INFERENCE_TYPE_INCOMPAT, {tparam, argumentType}, tparam->GetDeclNode()->Start());
-                return false;
-            }
-
-            // #23068 substitution happens before the constraint check, should be restored
-            EmplaceSubstituted(substitution, originalTparam, argumentType);
-            return IsCompatibleTypeArgument(tparam, argumentType, substitution);
+            return EnhanceSubstitutionTypeParameter(paramType->AsETSTypeParameter(), argumentType, substitution);
         }
     }
-
+    if (paramType->IsETSNonNullishType()) {
+        return EnhanceSubstitutionForNonNullish(typeParams, paramType->AsETSNonNullishType(), argumentType,
+                                                substitution);
+    }
     if (paramType->IsETSFunctionType()) {
         return EnhanceSubstitutionForFunction(typeParams, paramType->AsETSFunctionType(), argumentType, substitution);
     }
@@ -253,6 +248,31 @@ static void ResetInferredNode(ETSChecker *checker)
     RemoveInvalidTypeMarkers(arrowFunc);
     resetFuncState(arrowFunc);
     arrowFunc->Check(checker);
+}
+
+bool ETSChecker::EnhanceSubstitutionForNonNullish(const ArenaVector<Type *> &typeParams, ETSNonNullishType *paramType,
+                                                  Type *argumentType, Substitution *substitution)
+{
+    if (argumentType->IsETSNonNullishType()) {
+        ES2PANDA_ASSERT(argumentType->AsETSNonNullishType()->GetUnderlying() != nullptr);
+        return EnhanceSubstitutionForType(typeParams, paramType->GetUnderlying(),
+                                          argumentType->AsETSNonNullishType()->GetUnderlying(), substitution);
+    }
+    return EnhanceSubstitutionForType(typeParams, paramType->GetUnderlying(), argumentType, substitution);
+}
+
+bool ETSChecker::EnhanceSubstitutionTypeParameter(ETSTypeParameter *paramType, Type *argumentType,
+                                                  Substitution *substitution)
+{
+    auto *const originalTparam = paramType->GetOriginal();
+    if (!IsReferenceType(argumentType)) {
+        LogError(diagnostic::INFERENCE_TYPE_INCOMPAT, {paramType, argumentType}, paramType->GetDeclNode()->Start());
+        return false;
+    }
+
+    // #23068 substitution happens before the constraint check, should be restored
+    EmplaceSubstituted(substitution, originalTparam, argumentType);
+    return IsCompatibleTypeArgument(paramType, argumentType, substitution);
 }
 
 bool ETSChecker::EnhanceSubstitutionForFunction(const ArenaVector<Type *> &typeParams, ETSFunctionType *paramType,
