@@ -61,6 +61,7 @@
     "arkts-limited-stdlib-no-setTransferList",
     "arkts-builtin-object-getOwnPropertyNames",
     "arkts-no-class-omit-interface-optional-prop",
+    "arkts-distinct-abstract-method-default-return-type",
     "arkts-class-no-signature-distinct-with-object-public-api",
     "arkts-no-sparse-array",
     "arkts-no-enum-prop-as-type",

@@ -147,6 +147,7 @@ faultDesc[FaultID.OptionalMethod] = 'Optional method';
 faultDesc[FaultID.ImportType] = 'Import type syntax';
 faultDesc[FaultID.DynamicCtorCall] = 'Dynamic constructor call';
 faultDesc[FaultID.MathPow] = 'Exponent call';
+faultDesc[FaultID.InvalidAbstractOverrideReturnType] = 'Missing return type on abstract method';
 faultDesc[FaultID.IncompationbleFunctionType] = 'Incompationble function type';
 faultDesc[FaultID.VoidOperator] = 'Void operator';
 faultDesc[FaultID.ExponentOp] = 'Exponent operation';

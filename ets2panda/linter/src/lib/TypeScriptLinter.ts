@@ -3924,6 +3924,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleLimitedVoidFunction(tsMethodDecl);
     this.checkVoidLifecycleReturn(tsMethodDecl);
     this.handleNoDeprecatedApi(tsMethodDecl);
+    this.checkAbstractOverrideReturnType(tsMethodDecl);
   }
 
   private checkObjectPublicApiMethods(node: ts.ClassDeclaration | ts.InterfaceDeclaration): void {
@@ -10605,6 +10606,110 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       current = decl;
     }
     return undefined;
+  }
+
+  /**
+   * If a class method overrides a base-class abstract method that had no explicit return type,
+   * then any explicit return type other than `void` is an error.
+   * Also flags async overrides with no explicit annotation.
+   */
+  private checkAbstractOverrideReturnType(method: ts.MethodDeclaration): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    const baseClass = this.getDirectBaseClassOfGivenMethodDecl(method);
+    if (!baseClass) {
+      return;
+    }
+
+    // Locate the abstract method in the inheritance chain
+    const methodName = method.name.getText();
+    const baseMethod = this.findAbstractMethodInBaseChain(baseClass, methodName);
+    if (!baseMethod) {
+      return;
+    }
+
+    // Only if base had no explicit return type
+    if (baseMethod.type) {
+      return;
+    }
+
+    // If override declares a return type, and it isn't void → error
+    if (method.type && method.type.kind !== ts.SyntaxKind.VoidKeyword) {
+      const target = ts.isIdentifier(method.name) ? method.name : method;
+      this.incrementCounters(target, FaultID.InvalidAbstractOverrideReturnType);
+
+      // Also catch async overrides with no explicit annotation (defaulting to Promise<void>)
+    } else if (TsUtils.hasModifier(method.modifiers, ts.SyntaxKind.AsyncKeyword)) {
+      const target = ts.isIdentifier(method.name) ? method.name : method;
+      this.incrementCounters(target, FaultID.InvalidAbstractOverrideReturnType);
+    }
+  }
+
+  /**
+   * Finds the direct superclass declaration for the given method's containing class.
+   * Returns undefined if the class has no extends clause or cannot resolve the base class.
+   */
+  private getDirectBaseClassOfGivenMethodDecl(method: ts.MethodDeclaration): ts.ClassDeclaration | undefined {
+    // Must live in a class with an extends clause
+    const classDecl = method.parent;
+    if (!ts.isClassDeclaration(classDecl) || !classDecl.heritageClauses) {
+      return undefined;
+    }
+
+    return this.getBaseClassDeclFromHeritageClause(classDecl.heritageClauses);
+  }
+
+  /**
+   * Walks up the inheritance chain starting from `startClass` to find an abstract method
+   * named `methodName`. Returns the MethodDeclaration if found, otherwise `undefined`.
+   */
+  private findAbstractMethodInBaseChain(
+    startClass: ts.ClassDeclaration,
+    methodName: string
+  ): ts.MethodDeclaration | undefined {
+    // Prevent infinite loops from circular extends
+    const visited = new Set<ts.ClassDeclaration>();
+    let current: ts.ClassDeclaration | undefined = startClass;
+    while (current && !visited.has(current)) {
+      visited.add(current);
+      const found = current.members.find((m) => {
+        return (
+          ts.isMethodDeclaration(m) &&
+          ts.isIdentifier(m.name) &&
+          m.name.text === methodName &&
+          TsUtils.hasModifier(m.modifiers, ts.SyntaxKind.AbstractKeyword)
+        );
+      }) as ts.MethodDeclaration | undefined;
+      if (found) {
+        return found;
+      }
+      current = this.getBaseClassDeclFromHeritageClause(current.heritageClauses);
+    }
+    return undefined;
+  }
+
+  getBaseClassDeclFromHeritageClause(clauses?: ts.NodeArray<ts.HeritageClause>): ts.ClassDeclaration | undefined {
+    if (!clauses) {
+      return undefined;
+    }
+
+    const ext = clauses.find((h) => {
+      return h.token === ts.SyntaxKind.ExtendsKeyword;
+    });
+    if (!ext || ext.types.length === 0) {
+      return undefined;
+    }
+
+    // Resolve the base-class declaration
+    const expr = ext.types[0].expression;
+    if (!ts.isIdentifier(expr)) {
+      return undefined;
+    }
+
+    const sym = this.tsUtils.trueSymbolAtLocation(expr);
+    return sym?.declarations?.find(ts.isClassDeclaration);
   }
 
   /**

@@ -240,6 +240,8 @@ cookBookTag[185] = 'syntax for import type is disabled (arkts-import-types)';
 cookBookTag[186] = '"new" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)';
 cookBookTag[187] =
   'function "Math.pow()" behavior for ArkTS differs from Typescript version (arkts-math-pow-standard-diff)';
+cookBookTag[188] =
+  'In 1.1, the default type obtained for the abstract method without the annotation type is any. In 1.2, the default type for the abstract method without the annotation type is void. (arkts-distinct-abstract-method-default-return-type)';
 cookBookTag[189] = 'Numeric semantics is different for integer values (arkts-numeric-semantic)';
 cookBookTag[190] = 'Stricter assignments into variables of function type (arkts-incompatible-function-types)';
 cookBookTag[191] = 'ASON is not supported. (arkts-no-need-stdlib-ason)';

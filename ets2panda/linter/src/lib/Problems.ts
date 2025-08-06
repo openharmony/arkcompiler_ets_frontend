@@ -145,6 +145,7 @@ export enum FaultID {
   ImportType,
   DynamicCtorCall,
   MathPow,
+  InvalidAbstractOverrideReturnType,
   VoidOperator,
   ExponentOp,
   RegularExpressionLiteral,

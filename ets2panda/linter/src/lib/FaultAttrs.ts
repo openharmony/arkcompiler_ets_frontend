@@ -153,6 +153,7 @@ faultsAttrs[FaultID.OptionalMethod] = new FaultAttributes(184);
 faultsAttrs[FaultID.ImportType] = new FaultAttributes(185);
 faultsAttrs[FaultID.DynamicCtorCall] = new FaultAttributes(186);
 faultsAttrs[FaultID.MathPow] = new FaultAttributes(187);
+faultsAttrs[FaultID.InvalidAbstractOverrideReturnType] = new FaultAttributes(188);
 faultsAttrs[FaultID.NumericSemantics] = new FaultAttributes(189);
 faultsAttrs[FaultID.IncompationbleFunctionType] = new FaultAttributes(190);
 faultsAttrs[FaultID.LimitedStdLibNoASON] = new FaultAttributes(191);
