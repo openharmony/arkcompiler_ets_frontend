@@ -207,6 +207,7 @@ public:
     ~LineIndex() = default;
 
     SourceLocation GetLocation(SourcePosition pos) const noexcept;
+    std::pair<size_t, size_t> GetLocation(size_t offset) const noexcept;
     size_t GetOffset(SourceLocation loc) const noexcept;
 
 private:

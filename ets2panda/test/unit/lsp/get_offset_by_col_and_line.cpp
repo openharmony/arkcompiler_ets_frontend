@@ -22,7 +22,7 @@ namespace {
 
 class LSPOffsetTests : public LSPAPITests {};
 
-TEST_F(LSPAPITests, getOffsetComment)
+TEST_F(LSPOffsetTests, getOffsetComment)
 {
     LSPAPI const *lspApi = GetImpl();
     const size_t line = 4;
@@ -35,6 +35,22 @@ let aaa = 'default string';
                                              line, col);
     const size_t expectedOffset = 39;
     ASSERT_EQ(res, expectedOffset);
+}
+
+TEST_F(LSPOffsetTests, getLineAndColByOffset)
+{
+    LSPAPI const *lspApi = GetImpl();
+    const size_t offset = 28;
+    auto res = lspApi->getColAndLineByOffset(R"delimiter(
+// comment of line 2
+
+let aaa = 'default string';
+)delimiter",
+                                             offset);
+    const size_t expectedLine = 4;
+    const size_t expectedCol = 6;
+    ASSERT_EQ(res.first, expectedLine);
+    ASSERT_EQ(res.second, expectedCol);
 }
 
 }  // namespace

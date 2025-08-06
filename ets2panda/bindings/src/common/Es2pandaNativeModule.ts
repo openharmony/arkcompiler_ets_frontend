@@ -630,6 +630,14 @@ export class Es2pandaNativeModule {
     throw new Error('Not implemented');
   }
 
+  _getSourceLocationLine(ptr: KNativePointer): KInt {
+    throw new Error('Not implemented');
+  }
+
+  _getSourceLocationColumn(ptr: KNativePointer): KInt {
+    throw new Error('Not implemented');
+  }
+
   _getHighlightTextSpan(ptr: KNativePointer): KPtr {
     throw new Error('Not implemented');
   }
@@ -945,6 +953,10 @@ export class Es2pandaNativeModule {
   }
 
   _getOffsetByColAndLine(sourceCode: String, line: KInt, column: KInt): KInt {
+    throw new Error('Not implemented');
+  }
+
+  _getColAndLineByOffset(sourceCode: String, offset: KInt): KInt {
     throw new Error('Not implemented');
   }
 

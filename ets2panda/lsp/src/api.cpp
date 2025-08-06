@@ -437,6 +437,12 @@ size_t GetOffsetByColAndLine(const std::string &sourceCode, size_t line, size_t 
     return index.GetOffset(lexer::SourceLocation(line, column, nullptr));
 }
 
+std::pair<size_t, size_t> GetColAndLineByOffset(const std::string &sourceCode, size_t offset)
+{
+    auto index = lexer::LineIndex(util::StringView(sourceCode));
+    return index.GetLocation(offset);
+}
+
 std::vector<CodeFixActionInfo> GetCodeFixesAtPosition(es2panda_Context *context, size_t startPosition,
                                                       size_t endPosition, std::vector<int> &errorCodes,
                                                       CodeFixOptions &codeFixOptions)
@@ -543,6 +549,7 @@ LSPAPI g_lspImpl = {GetDefinitionAtPosition,
                     ProvideInlayHints,
                     GetSignatureHelpItems,
                     GetOffsetByColAndLine,
+                    GetColAndLineByOffset,
                     GetCodeFixesAtPosition,
                     GetCombinedCodeFix,
                     GetNameOrDottedNameSpan,

@@ -1839,3 +1839,24 @@ KNativePointer impl_getDefinitionDataFromNode(KNativePointer astNodePtr, KString
     return new DefinitionInfo(impl->getDefinitionDataFromNode(ast, nodeNamePtr.data()));
 }
 TS_INTEROP_2(getDefinitionDataFromNode, KNativePointer, KNativePointer, KStringPtr)
+
+KInt impl_getSourceLocationLine(KNativePointer locationPtr)
+{
+    auto *location = reinterpret_cast<std::pair<size_t, size_t> *>(locationPtr);
+    return location->first;
+}
+TS_INTEROP_1(getSourceLocationLine, KInt, KNativePointer)
+
+KInt impl_getSourceLocationColumn(KNativePointer locationPtr)
+{
+    auto *location = reinterpret_cast<std::pair<size_t, size_t> *>(locationPtr);
+    return location->second;
+}
+TS_INTEROP_1(getSourceLocationColumn, KInt, KNativePointer)
+
+KNativePointer impl_getColAndLineByOffset(KStringPtr &sourceCodePtr, KInt offset)
+{
+    LSPAPI const *impl = GetImpl();
+    return new std::pair<size_t, size_t>(impl->getColAndLineByOffset(sourceCodePtr.data(), offset));
+}
+TS_INTEROP_2(getColAndLineByOffset, KNativePointer, KStringPtr, KInt)
