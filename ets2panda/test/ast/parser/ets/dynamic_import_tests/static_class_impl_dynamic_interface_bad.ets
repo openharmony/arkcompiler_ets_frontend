@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,12 +13,20 @@
  * limitations under the License.
  */
 
-import type * /* @@ label1 */from './export_type.ets'
+/*---
+flags: [dynamic-ast]
+---*/
 
-let a = new A();
-class C implements B {};
-let c = new C()
+import { I } from "dynamic_import_tests/modules/module"
 
-/* @@@ label1 Error SyntaxError: Unexpected token, expected 'as'.  */
-/* @@? 16:35 Error TypeError: Class 'C' is already defined. */
-/* @@? export_type.ets:1:1 Error TypeError: Function main is already declared. */
+class A implements I /* @@ label */{
+    s:string = "aaa"
+    f1(p: string): double { 
+        return 0.1;
+    }
+    f2(p: double): string { 
+        return "foo";
+    }
+}
+
+/* @@@ label Error TypeError: class A can not implements interface I which is from dynamic declaration file.  */

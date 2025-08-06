@@ -3792,7 +3792,7 @@ checker::Type *ETSAnalyzer::Check(ir::TSInterfaceDeclaration *st) const
     checker->CheckInvokeMethodsLegitimacy(interfaceType);
 
     st->SetTsType(stmtType);
-
+    checker->CheckDynamicInheritanceAndImplement(interfaceType->AsETSObjectType());
     checker::ScopeContext scopeCtx(checker, st->Scope());
     auto savedContext = checker::SavedCheckerContext(checker, checker::CheckerStatus::IN_INTERFACE, interfaceType);
 

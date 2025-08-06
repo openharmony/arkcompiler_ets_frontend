@@ -46,6 +46,11 @@ runtime/ets/too_many_await.ets
 runtime/ets/too_many_left_brace.ets
 runtime/ets/too_many_left_square_brackets.ets
 runtime/ets/too_many_new_expr.ets
+runtime/ets/too_many_minus.ets
+runtime/ets/too_many_plus.ets
+runtime/ets/too_many_plus_1.ets
+runtime/ets/too_many_tilde.ets
+runtime/ets/too_many_exclamation_mark.ets
 ast/compiler/ets/DeclareIndexerTest.ets
 ast/parser/ets/import_tests/import_class_with_static_field/import_class_with_static_field.ets
 

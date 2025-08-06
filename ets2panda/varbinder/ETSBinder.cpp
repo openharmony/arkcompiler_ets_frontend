@@ -903,10 +903,10 @@ std::pair<ir::ETSImportDeclaration *, ir::AstNode *> ETSBinder::FindImportDeclIn
     return std::make_pair(implDecl, specifier);
 }
 
-void ETSBinder::ValidateImportVariable(const ir::AstNode *node, const util::StringView &imported,
-                                       const ir::StringLiteral *const importPath)
+void ETSBinder::ValidateImportVariable(const ir::AstNode *node, const ir::AstNode *declNode,
+                                       const util::StringView &imported, const ir::StringLiteral *const importPath)
 {
-    if (node->IsDefaultExported()) {
+    if (node->IsDefaultExported() && !declNode->IsExported()) {
         ThrowError(importPath->Start(), diagnostic::DEFAULT_EXPORT_DIRECT_IMPORTED);
     } else if (!node->IsExported() && !node->IsDefaultExported() && !node->HasExportAlias()) {
         ThrowError(importPath->Start(), diagnostic::IMPORTED_NOT_EXPORTED, {imported});
@@ -1011,7 +1011,8 @@ bool ETSBinder::AddImportSpecifiersToTopBindings(Span<parser::Program *const> re
 
     auto *node = FindNodeInAliasMap(import->ResolvedSource(), imported);
 
-    ValidateImportVariable(node != nullptr ? node : var->Declaration()->Node(), imported, importPath);
+    ValidateImportVariable(node != nullptr ? node : var->Declaration()->Node(), var->Declaration()->Node(), imported,
+                           importPath);
 
     const auto localName = importSpecifier->Local()->Name();
     auto varInGlobalClassScope = Program()->GlobalClassScope()->FindLocal(localName, ResolveBindingOptions::ALL);
