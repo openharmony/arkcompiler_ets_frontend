@@ -225,16 +225,17 @@ util::StringView ETSBinder::FindNameInAliasMap(const util::StringView &pathAsKey
     return "";
 }
 
-const ir::AstNode *ETSBinder::FindNodeInAliasMap(const util::StringView &pathAsKey, const util::StringView &aliasName)
+std::pair<util::StringView, const ir::AstNode *> ETSBinder::FindNameAndNodeInAliasMap(const util::StringView &pathAsKey,
+                                                                                      const util::StringView &aliasName)
 {
     if (auto relatedMap = selectiveExportAliasMultimap_.find(pathAsKey);
         relatedMap != selectiveExportAliasMultimap_.end()) {
         if (auto item = relatedMap->second.find(aliasName); item != relatedMap->second.end()) {
-            return item->second.second;
+            return item->second;
         }
     }
 
-    return nullptr;
+    return std::pair<util::StringView, const ir::AstNode *>("", nullptr);
 }
 
 void ETSBinder::LookupIdentReference(ir::Identifier *ident)
@@ -993,7 +994,7 @@ bool ETSBinder::AddImportSpecifiersToTopBindings(Span<parser::Program *const> re
         }
     }
 
-    util::StringView nameToSearchFor = FindNameInAliasMap(import->ResolvedSource(), imported);
+    auto [nameToSearchFor, exportNode] = FindNameAndNodeInAliasMap(import->ResolvedSource(), imported);
     if (nameToSearchFor.Empty()) {
         nameToSearchFor = imported;
     }
@@ -1002,17 +1003,17 @@ bool ETSBinder::AddImportSpecifiersToTopBindings(Span<parser::Program *const> re
     importSpecifier->Imported()->SetVariable(var);
     importSpecifier->Local()->SetVariable(var);
 
+    bool varFoundThroughReExport = false;
     if (var == nullptr) {
         var = AddImportSpecifierFromReExport(importSpecifier, import, imported, importPath);
+        varFoundThroughReExport = var != nullptr;
     }
     if (var == nullptr) {
         return false;
     }
 
-    auto *node = FindNodeInAliasMap(import->ResolvedSource(), imported);
-
-    ValidateImportVariable(node != nullptr ? node : var->Declaration()->Node(), var->Declaration()->Node(), imported,
-                           importPath);
+    ValidateImportVariable(exportNode != nullptr ? exportNode : var->Declaration()->Node(), var->Declaration()->Node(),
+                           imported, importPath);
 
     const auto localName = importSpecifier->Local()->Name();
     auto varInGlobalClassScope = Program()->GlobalClassScope()->FindLocal(localName, ResolveBindingOptions::ALL);
@@ -1030,12 +1031,11 @@ bool ETSBinder::AddImportSpecifiersToTopBindings(Span<parser::Program *const> re
 
     // The first part of the condition will be true, if something was given an alias when exported, but we try
     // to import it using its original name and if original name is not exported.
-    if (nameToSearchFor == imported && var->Declaration()->Node()->HasExportAlias() &&
+    if ((exportNode == nullptr && !varFoundThroughReExport) && var->Declaration()->Node()->HasExportAlias() &&
         !var->Declaration()->Node()->IsExported()) {
         ThrowError(importSpecifier->Start(), diagnostic::IMPORT_NOT_FOUND, {imported});
         return false;
     }
-
     InsertOrAssignForeignBinding(localName, var);
     return true;
 }
@@ -1436,6 +1436,9 @@ Variable *ETSBinder::ValidateImportSpecifier(const ir::ImportSpecifier *const sp
         if (item->IsImportSpecifier() && item->AsImportSpecifier()->Local()->Name().Is(imported.Mutf8()) &&
             !item->AsImportSpecifier()->Local()->Name().Is(item->AsImportSpecifier()->Imported()->Name().Mutf8())) {
             imported = item->AsImportSpecifier()->Imported()->Name();
+        }
+        if (auto foundAlias = FindNameInAliasMap(importProgram->AbsoluteName(), imported); !foundAlias.Is("")) {
+            imported = foundAlias;
         }
     }
 
