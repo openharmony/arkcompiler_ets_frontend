@@ -302,6 +302,8 @@ cookBookTag[271] =
   'After a variable is declared, a value must be assigned before using it (arkts-var-assignment-before-use)';
 cookBookTag[272] =
   'This API of process is obsolete in ArkTS 1.1. It\'s no longer supported in ArkTS 1.2 (arkts-concurrent-deprecated-apis)';
+cookBookTag[273] =
+  'Unsigned right shift on negative number yields different results in ArkTS versions. (arkts-distinct-unsigned-right-shift-negative-number)';
 cookBookTag[274] =
   'The subclass constructor must call the parent class\'s parametered constructor (arkts-subclass-must-call-super-constructor-with-args)';
 cookBookTag[275] =

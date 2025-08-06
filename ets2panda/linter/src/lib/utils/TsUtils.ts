@@ -3879,6 +3879,14 @@ export class TsUtils {
     }
   }
 
+  static isNegativeNumericLiteral(expr: ts.Expression): boolean {
+    return (
+      ts.isPrefixUnaryExpression(expr) &&
+      expr.operator === ts.SyntaxKind.MinusToken &&
+      ts.isNumericLiteral(expr.operand)
+    );
+  }
+
   isNumberArrayType(type: ts.Type): boolean {
     if (!type.symbol || !this.isGenericArrayType(type)) {
       return false;

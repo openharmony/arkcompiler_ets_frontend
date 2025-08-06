@@ -206,6 +206,7 @@ faultsAttrs[FaultID.InteropJsObjectExpandStaticInstance] = new FaultAttributes(2
 faultsAttrs[FaultID.InteropJSFunctionInvoke] = new FaultAttributes(270);
 faultsAttrs[FaultID.VariableMissingInitializer] = new FaultAttributes(271);
 faultsAttrs[FaultID.DeprecatedProcessApi] = new FaultAttributes(272);
+faultsAttrs[FaultID.NumericUnsignedShiftBehaviorChange] = new FaultAttributes(273);
 faultsAttrs[FaultID.MissingSuperCall] = new FaultAttributes(274);
 faultsAttrs[FaultID.CustomLayoutNeedAddDecorator] = new FaultAttributes(275);
 faultsAttrs[FaultID.InterfaceFieldNotImplemented] = new FaultAttributes(276);

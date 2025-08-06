@@ -266,6 +266,7 @@ faultDesc[FaultID.UnsupportOperator] = 'Unsupport operator';
 faultDesc[FaultID.CustomLayoutNeedAddDecorator] = 'Custom layout need add decorator';
 faultDesc[FaultID.InterfaceFieldNotImplemented] = 'All fields must be implemented';
 faultDesc[FaultID.NoLocalClass] = 'No local classes';
+faultDesc[FaultID.NumericUnsignedShiftBehaviorChange] = 'No right shift on negative numbers';
 faultDesc[FaultID.PropDecoratorNotSupported] = '"@Prop" decorator is not supported';
 faultDesc[FaultID.StoragePropDecoratorNotSupported] = '"@StorageProp" decorator is not supported';
 faultDesc[FaultID.LocalStoragePropDecoratorNotSupported] = '"@LocalStorageProp" decorator is not supported';

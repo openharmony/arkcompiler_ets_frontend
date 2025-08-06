@@ -2448,6 +2448,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         }
         break;
       default:
+        this.handleUnsignedShiftOnNegative(tsBinaryExpr);
     }
     this.checkInterOpImportJsDataCompare(tsBinaryExpr);
     this.checkInteropEqualityJudgment(tsBinaryExpr);
@@ -14300,5 +14301,40 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       }
     }
     return res;
+  }
+
+  private handleUnsignedShiftOnNegative(node: ts.BinaryExpression): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    if (!TypeScriptLinter.isUnsignedShiftByZero(node)) {
+      return;
+    }
+
+    if (TsUtils.isNegativeNumericLiteral(node.left)) {
+      this.incrementCounters(node, FaultID.NumericUnsignedShiftBehaviorChange);
+    }
+
+    if (ts.isIdentifier(node.left)) {
+      const symbol = this.tsTypeChecker.getSymbolAtLocation(node.left);
+      const decl = symbol?.valueDeclaration;
+      if (!decl || !ts.isVariableDeclaration(decl)) {
+        return;
+      }
+
+      const init = decl.initializer;
+      if (init && TsUtils.isNegativeNumericLiteral(init)) {
+        this.incrementCounters(node, FaultID.NumericUnsignedShiftBehaviorChange);
+      }
+    }
+  }
+
+  private static isUnsignedShiftByZero(node: ts.BinaryExpression): boolean {
+    return (
+      node.operatorToken.kind === ts.SyntaxKind.GreaterThanGreaterThanGreaterThanToken &&
+      ts.isNumericLiteral(node.right) &&
+      node.right.text === '0'
+    );
   }
 }
