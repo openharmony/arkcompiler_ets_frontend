@@ -141,7 +141,7 @@ std::vector<Phase *> GetETSPhaseList()
         new ArrayLiteralLowering,
         new BigIntLowering,
         new OpAssignmentLowering,
-        new SetterLowering,
+        new SetterLowering,  // must be put before ObjectIndexLowering
         new LateInitializationConvert,
         new ExtensionAccessorPhase,
         new BoxingForLocals,
