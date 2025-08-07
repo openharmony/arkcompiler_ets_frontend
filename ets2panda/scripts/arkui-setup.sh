@@ -24,13 +24,13 @@ function about() {
         --openlab-token   Token to access to openlab
         (you can ask this information from Titova Tatiana)
     Please use this file to set up your .npmrc
-        https://gitee.com/openharmony-sig/arkcompiler_ets_frontend/wikis/npmrc
+        BZ - https://gitee.com/rri_opensource/koala_projects/wikis/Environment%20Setup/%20npmrc%20(blue%20zone)
+        GZ - https://gitee.com/rri_opensource/koala_projects/wikis/Environment%20Setup/npmrc%20(yellow%20and%20green%20zone)
     Use these instructions to manually prepare ArkUI Hello app
-        https://gitee.com/openharmony-sig/arkcompiler_ets_frontend/wikis/How%20to%20Build%20the%20Shopping%20Application%20(for%20host)
-        https://gitee.com/openharmony-sig/arkcompiler_ets_frontend/wikis/How%20to%20Build%20the%20Shopping%20Application%20(for%20Board%20and%20Mobile%20Devices)
+        HOST - https://gitee.com/titovatatiana/arkcompiler_ets_frontend/wikis/Guide:%20How%20to%20Download%20and%20Build%20ArkUI%20Project
+        DEVICE - https://gitee.com/rri_opensource/koala_projects/wikis/Setup%20Guide/Trivial%20Build%20%2526%20Setup%20Guide
     Use these instructions to install custom compiler
-        https://gitee.com/openharmony-sig/arkcompiler_ets_frontend/wikis/Setup%20custom%20SDK%20to%20run%20apps
-        https://gitee.com/openharmony-sig/arkcompiler_ets_frontend/wikis/How%20to%20build%20es2panda
+        https://gitee.com/titovatatiana/arkcompiler_ets_frontend/wikis/How%20to%20manage%20the%20integration%20process%20with%20ArkUI%20jobs
 ENDHELP
 }
 
