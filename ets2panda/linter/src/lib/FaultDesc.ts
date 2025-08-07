@@ -175,7 +175,6 @@ faultDesc[FaultID.MethodOverridingField] = '"Method overriding field" to keep st
 faultDesc[FaultID.InteropJsObjectConditionJudgment] = 'Interop JS Object usage in a condition';
 faultDesc[FaultID.InteropJsObjectExpandStaticInstance] = 'Interop JS function usage';
 faultDesc[FaultID.InteropJSFunctionInvoke] = 'Interop JS function invoke';
-faultDesc[FaultID.VariableMissingInitializer] = 'Value must be assigned to variable';
 faultDesc[FaultID.NotSupportTupleGenericValidation] = 'No Tuple type in Generic';
 faultDesc[FaultID.DeprecatedProcessApi] = 'This process Api no longer supported in ArkTS 1.2';
 faultDesc[FaultID.ExplicitFunctionType] = 'Not explicit function type';
