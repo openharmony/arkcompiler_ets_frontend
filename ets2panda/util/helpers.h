@@ -197,6 +197,7 @@ public:
                                                                checker::Type *const type);
 
     [[nodiscard]] static util::UString EscapeHTMLString(ArenaAllocator *allocator, const std::string &str);
+    [[nodiscard]] static ir::AstNode *DerefETSTypeReference(ir::AstNode *node);
 };
 
 template <typename T>

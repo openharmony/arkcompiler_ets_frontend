@@ -16,8 +16,11 @@
 #include "helpers.h"
 #include <iomanip>
 
+#include "checker/ETSchecker.h"
+
 #include "parser/program/program.h"
 #include "varbinder/privateBinding.h"
+#include "varbinder/ETSBinder.h"
 #include "lexer/token/letters.h"
 
 #include "ir/base/classDefinition.h"
@@ -758,6 +761,27 @@ util::UString Helpers::EscapeHTMLString(ArenaAllocator *allocator, const std::st
         }
     }
     return replaced;
+}
+
+ir::AstNode *Helpers::DerefETSTypeReference(ir::AstNode *node)
+{
+    ES2PANDA_ASSERT(node->IsETSTypeReference());
+    do {
+        auto *name = node->AsETSTypeReference()->Part()->GetIdent();
+
+        ES2PANDA_ASSERT(name->IsIdentifier());
+        if (varbinder::ETSBinder::IsSpecialName(name->Name())) {
+            return node;
+        }
+        auto *var = name->AsIdentifier()->Variable();
+        ES2PANDA_ASSERT(var != nullptr);
+        auto *declNode = var->Declaration()->Node();
+        if (!declNode->IsTSTypeAliasDeclaration()) {
+            return declNode;
+        }
+        node = declNode->AsTSTypeAliasDeclaration()->TypeAnnotation();
+    } while (node->IsETSTypeReference());
+    return node;
 }
 
 bool Helpers::IsAsyncMethod(ir::AstNode const *node)

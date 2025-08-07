@@ -133,6 +133,7 @@ public:
     void AddCompilableFunction(ir::ScriptFunction *func) override;
 
     [[nodiscard]] bool HandleDynamicVariables(ir::Identifier *ident, Variable *variable, bool allowDynamicNamespaces);
+    static bool IsSpecialName(const util::StringView &name);
     [[nodiscard]] bool LookupInDebugInfoPlugin(ir::Identifier *ident);
     void LookupTypeReference(ir::Identifier *ident, bool allowDynamicNamespaces);
     void LookupTypeArgumentReferences(ir::ETSTypeReference *typeRef);
