@@ -488,8 +488,9 @@ public:
     bool SetPreferredTypeForArrayArgument(ir::ArrayExpression *arrayExpr, Signature *substitutedSig);
     bool ValidateSignatureRestParams(Signature *substitutedSig, const ArenaVector<ir::Expression *> &arguments,
                                      TypeRelationFlag flags, bool reportError, bool unique);
-    void ThrowSignatureMismatch(ArenaVector<Signature *> &signatures, const ArenaVector<ir::Expression *> &arguments,
-                                const lexer::SourcePosition &pos, std::string_view signatureKind);
+    void ThrowSignatureMismatch(ArenaVector<Signature *> const &signatures,
+                                const ArenaVector<ir::Expression *> &arguments, const lexer::SourcePosition &pos,
+                                std::string_view signatureKind);
     Signature *FirstMatchSignatures(ir::CallExpression *expr, checker::Type *calleeType);
     Signature *MatchOrderSignatures(ArenaVector<Signature *> &signatures,
                                     const ir::TSTypeParameterInstantiation *typeArguments,

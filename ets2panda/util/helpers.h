@@ -145,7 +145,7 @@ public:
     static const ir::MethodDefinition *GetContainingClassMethodDefinition(const ir::AstNode *node);
     static const ir::ClassStaticBlock *GetContainingClassStaticBlock(const ir::AstNode *node);
     static const ir::ScriptFunction *GetContainingFunction(const ir::AstNode *node);
-    static const ir::ClassDefinition *GetClassDefiniton(const ir::ScriptFunction *node);
+    static const ir::ClassDefinition *GetClassDefinition(const ir::ScriptFunction *node);
     static bool IsSpecialPropertyKey(const ir::Expression *expr);
     static bool IsConstantPropertyKey(const ir::Expression *expr, bool isComputed);
     static compiler::Literal ToConstantLiteral(const ir::Expression *expr);

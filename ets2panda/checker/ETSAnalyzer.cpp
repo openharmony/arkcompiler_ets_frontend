@@ -25,10 +25,8 @@
 #include "types/signature.h"
 #include "compiler/lowering/ets/setJumpTarget.h"
 #include "checker/types/ets/etsAsyncFuncReturnType.h"
-#include "types/ts/nullType.h"
 #include "types/type.h"
 #include "checker/types/typeError.h"
-#include "util/es2pandaMacros.h"
 
 #include <unordered_set>
 
@@ -1170,30 +1168,50 @@ checker::Type *ETSAnalyzer::GetSmartType(ir::AssignmentExpression *expr, checker
     return smartType;
 }
 
-static bool IsMethodDefinition(const ir::Expression *const expression)
+static ir::MethodDefinition const *ResolveMethodDefinition(const ir::Expression *const expression, ETSChecker *checker)
 {
-    return expression->IsMemberExpression() && expression->AsMemberExpression()->Property() != nullptr &&
-           expression->AsMemberExpression()->Property()->Variable() != nullptr &&
-           expression->AsMemberExpression()->Property()->Variable()->Declaration() != nullptr &&
-           expression->AsMemberExpression()->Property()->Variable()->Declaration()->Node()->IsMethodDefinition();
+    if (!expression->IsMemberExpression()) {
+        return nullptr;
+    }
+
+    auto const *memberExpression = expression->AsMemberExpression();
+    if (memberExpression->Kind() != ir::MemberExpressionKind::PROPERTY_ACCESS ||
+        memberExpression->Property() == nullptr || !memberExpression->Property()->IsIdentifier()) {
+        return nullptr;
+    }
+
+    auto const *variable = memberExpression->Property()->Variable();
+    if (variable == nullptr) {
+        if (auto const *objectType = memberExpression->Object()->TsType();
+            objectType != nullptr && objectType->IsETSObjectType()) {
+            // Process possible case of the same name method with receiver defined
+            auto resolved = checker->ResolveMemberReference(memberExpression, objectType->AsETSObjectType());
+            if (resolved.size() == 2U && resolved[1]->Kind() == checker::ResolvedKind::PROPERTY) {
+                variable = resolved[1U]->Variable()->AsLocalVariable();
+            }
+        }
+    }
+
+    if (variable != nullptr) {
+        if (variable->Declaration() != nullptr && variable->Declaration()->Node()->IsMethodDefinition()) {
+            return variable->Declaration()->Node()->AsMethodDefinition();
+        }
+    }
+
+    return nullptr;
 }
 
 static bool IsInvalidMethodAssignment(const ir::AssignmentExpression *const expr, ETSChecker *checker)
 {
     auto left = expr->Left();
-    if (IsMethodDefinition(left)) {
-        {
-            auto methodDefinition =
-                left->AsMemberExpression()->Property()->Variable()->Declaration()->Node()->AsMethodDefinition();
-            if (!methodDefinition->IsSetter() &&
-                std::none_of(methodDefinition->Overloads().cbegin(), methodDefinition->Overloads().cend(),
-                             [](const auto *overload) { return overload->IsSetter(); })) {
-                checker->LogError(diagnostic::METHOD_ASSIGNMENT, expr->Left()->Start());
-                return true;
-            }
+    if (auto const *methodDefinition = ResolveMethodDefinition(left, checker); methodDefinition != nullptr) {
+        if (!methodDefinition->IsSetter() &&
+            std::none_of(methodDefinition->Overloads().cbegin(), methodDefinition->Overloads().cend(),
+                         [](const auto *overload) { return overload->IsSetter(); })) {
+            checker->LogError(diagnostic::METHOD_ASSIGNMENT, left->Start());
+            return true;
         }
     }
-
     return false;
 }
 

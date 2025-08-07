@@ -404,18 +404,19 @@ checker::Signature *GetMostSpecificSigFromExtensionFuncAndClassMethod(checker::E
     // For allCallSignatures in ClassMethodType, temporarily insert the dummyReceiver into their signatureInfo,
     // otherwise we can't get the most suitable classMethod signature if all the extensionFunction signature mismatched.
     ArenaVector<Signature *> signatures(checker->ProgramAllocator()->Adapter());
-    signatures.insert(signatures.end(), type->ClassMethodType()->CallSignatures().begin(),
-                      type->ClassMethodType()->CallSignatures().end());
-    signatures.insert(signatures.end(), type->ExtensionMethodType()->CallSignatures().begin(),
-                      type->ExtensionMethodType()->CallSignatures().end());
+    auto const &classMethodSignatures = type->ClassMethodType()->CallSignatures();
+    auto const &extensionMethodSignatures = type->ExtensionMethodType()->CallSignaturesOfMethodOrArrow();
+
+    signatures.insert(signatures.end(), classMethodSignatures.cbegin(), classMethodSignatures.cend());
+    signatures.insert(signatures.end(), extensionMethodSignatures.cbegin(), extensionMethodSignatures.cend());
 
     auto *memberExpr = expr->Callee()->AsMemberExpression();
     auto *dummyReceiver = memberExpr->Object();
-    auto *dummyReceiverVar = type->ExtensionMethodType()->CallSignatures()[0]->Params()[0];
+    auto *dummyReceiverVar = extensionMethodSignatures[0]->Params()[0];
     expr->Arguments().insert(expr->Arguments().begin(), dummyReceiver);
     const bool typeParamsNeeded = dummyReceiverVar->TsType()->IsETSObjectType();
 
-    for (auto *methodCallSig : type->ClassMethodType()->CallSignatures()) {
+    for (auto *methodCallSig : classMethodSignatures) {
         methodCallSig->GetSignatureInfo()->minArgCount++;
         auto &paramsVar = methodCallSig->Params();
         paramsVar.insert(paramsVar.begin(), dummyReceiverVar);
@@ -431,7 +432,7 @@ checker::Signature *GetMostSpecificSigFromExtensionFuncAndClassMethod(checker::E
     auto *signature = checker->ResolveCallExpressionAndTrailingLambda(signatures, expr, expr->Start(),
                                                                       checker::TypeRelationFlag::NO_THROW);
 
-    for (auto *methodCallSig : type->ClassMethodType()->CallSignatures()) {
+    for (auto *methodCallSig : classMethodSignatures) {
         methodCallSig->GetSignatureInfo()->minArgCount--;
         auto &paramsVar = methodCallSig->Params();
         paramsVar.erase(paramsVar.begin());
@@ -479,8 +480,8 @@ checker::Signature *ResolveCallForETSExtensionFuncHelperType(checker::ETSExtensi
 
     signature = GetMostSpecificSigFromExtensionFuncAndClassMethod(type, checker, expr);
     if (signature == nullptr) {
-        checker->ThrowSignatureMismatch(type->ExtensionMethodType()->CallSignatures(), expr->Arguments(), expr->Start(),
-                                        "call");
+        checker->ThrowSignatureMismatch(type->ExtensionMethodType()->CallSignaturesOfMethodOrArrow(), expr->Arguments(),
+                                        expr->Start(), "call");
     }
 
     return signature;

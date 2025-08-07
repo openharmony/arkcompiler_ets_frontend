@@ -325,7 +325,7 @@ const ir::ScriptFunction *Helpers::GetContainingFunction(const ir::AstNode *node
     return nullptr;
 }
 
-const ir::ClassDefinition *Helpers::GetClassDefiniton(const ir::ScriptFunction *node)
+const ir::ClassDefinition *Helpers::GetClassDefinition(const ir::ScriptFunction *node)
 {
     ES2PANDA_ASSERT(node->IsConstructor());
     ES2PANDA_ASSERT(node->Parent()->IsFunctionExpression());
