@@ -270,9 +270,15 @@ ets2panda_add_gtest(lsp_api_test_fix_return_type_in_async_func CPP_SOURCES
 ets2panda_add_gtest(lsp_api_test_fix_abstract_member CPP_SOURCES
     fix_class_doesnt_implement_inherited_abstract_member_test.cpp
 )
+
+ets2panda_add_gtest(lsp_api_test_fix_class_incorrectly_implements_interface CPP_SOURCES
+    fix_class_incorrectly_implements_interface_test.cpp
+)
+
 ets2panda_add_gtest(lsp_api_test_fix_add_function_return_statement_test CPP_SOURCES
     fix_add_function_return_statement_test.cpp
 )
+
 ets2panda_add_gtest(lsp_api_test_get_name_or_dotted_name_span CPP_SOURCES
     get_name_or_dotted_name_span_test.cpp
 )
