@@ -1139,7 +1139,7 @@ config("libes2panda_config") {
     "-Werror=shadow",
   ]
 
-  if (!is_debug) {
+  if (!is_debug && !is_mac) {
     cflags_cc += [
       "-flto=thin",
       "-O3",
