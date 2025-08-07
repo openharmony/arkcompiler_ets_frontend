@@ -174,8 +174,7 @@ faultDesc[FaultID.InteropJsObjectConditionJudgment] = 'Interop JS Object usage i
 faultDesc[FaultID.InteropJsObjectExpandStaticInstance] = 'Interop JS function usage';
 faultDesc[FaultID.InteropJSFunctionInvoke] = 'Interop JS function invoke';
 faultDesc[FaultID.VariableMissingInitializer] = 'Value must be assigned to variable';
-faultDesc[FaultID.NotSupportTupleGenericValidation] =
-  'Tuple type cannot be used in generic type parameters of Promise static methods';
+faultDesc[FaultID.NotSupportTupleGenericValidation] = 'No Tuple type in Generic';
 faultDesc[FaultID.DeprecatedProcessApi] = 'This process Api no longer supported in ArkTS 1.2';
 faultDesc[FaultID.ExplicitFunctionType] = 'Not explicit function type';
 faultDesc[FaultID.ClassstaticInitialization] = 'The static properties of a class need to have initial values';
@@ -266,6 +265,7 @@ faultDesc[FaultID.UnsupportOperator] = 'Unsupport operator';
 faultDesc[FaultID.CustomLayoutNeedAddDecorator] = 'Custom layout need add decorator';
 faultDesc[FaultID.InterfaceFieldNotImplemented] = 'All fields must be implemented';
 faultDesc[FaultID.NoLocalClass] = 'No local classes';
+faultDesc[FaultID.NumericUnsignedShiftBehaviorChange] = 'No right shift on negative numbers';
 faultDesc[FaultID.PropDecoratorNotSupported] = '"@Prop" decorator is not supported';
 faultDesc[FaultID.StoragePropDecoratorNotSupported] = '"@StorageProp" decorator is not supported';
 faultDesc[FaultID.LocalStoragePropDecoratorNotSupported] = '"@LocalStorageProp" decorator is not supported';

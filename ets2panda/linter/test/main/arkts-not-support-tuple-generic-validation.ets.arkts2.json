@@ -41,7 +41,7 @@
             "endColumn": 47,
             "problem": "NotSupportTupleGenericValidation",
             "suggest": "",
-            "rule": "Tuple type cannot be used in generic type parameters of Promise static methods (arkts-not-support-tuple-generic-validation)",
+            "rule": "Tuple type cannot be used in generic type parameters (arkts-not-support-tuple-generic-validation)",
             "severity": "ERROR"
         },
         {
@@ -51,7 +51,7 @@
             "endColumn": 47,
             "problem": "NotSupportTupleGenericValidation",
             "suggest": "",
-            "rule": "Tuple type cannot be used in generic type parameters of Promise static methods (arkts-not-support-tuple-generic-validation)",
+            "rule": "Tuple type cannot be used in generic type parameters (arkts-not-support-tuple-generic-validation)",
             "severity": "ERROR"
         },
         {
@@ -61,7 +61,7 @@
             "endColumn": 48,
             "problem": "NotSupportTupleGenericValidation",
             "suggest": "",
-            "rule": "Tuple type cannot be used in generic type parameters of Promise static methods (arkts-not-support-tuple-generic-validation)",
+            "rule": "Tuple type cannot be used in generic type parameters (arkts-not-support-tuple-generic-validation)",
             "severity": "ERROR"
         },
         {
@@ -71,7 +71,7 @@
             "endColumn": 54,
             "problem": "NotSupportTupleGenericValidation",
             "suggest": "",
-            "rule": "Tuple type cannot be used in generic type parameters of Promise static methods (arkts-not-support-tuple-generic-validation)",
+            "rule": "Tuple type cannot be used in generic type parameters (arkts-not-support-tuple-generic-validation)",
             "severity": "ERROR"
         }
     ]

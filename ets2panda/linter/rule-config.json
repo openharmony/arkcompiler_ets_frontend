@@ -65,6 +65,7 @@
     "arkts-no-sparse-array",
     "arkts-no-enum-prop-as-type",
     "arkts-no-ts-like-smart-type",
+    "arkts-distinct-unsigned-right-shift-negative-number",
     "arkts-array-type-immutable",
     "arkts-primitive-type-normalization",
     "arkts-no-ts-like-catch-type",
