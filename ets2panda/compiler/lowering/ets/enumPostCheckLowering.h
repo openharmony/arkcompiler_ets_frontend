@@ -40,6 +40,7 @@ public:
 
 private:
     ir::Statement *CreateStatement(const std::string &src, ir::Expression *ident, ir::Expression *init);
+    ir::AstNode *BuildEnumCasting(ir::AstNode *const node);
     void CreateStatementForUnionConstituentType(EnumCastType castType, ir::Identifier *ident, checker::Type *type,
                                                 ir::TSAsExpression *tsAsExpr, ArenaVector<ir::Statement *> &statements);
     ir::SwitchStatement *GenerateGetOrdinalCallForSwitch(ir::SwitchStatement *const node);
