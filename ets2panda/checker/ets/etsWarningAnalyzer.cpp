@@ -44,7 +44,7 @@ void ETSWarningAnalyzer::AnalyzeClassDefForFinalModifier(const ir::ClassDefiniti
     ES2PANDA_ASSERT(classDef != nullptr);
 
     if (program_ == nullptr || classDef->IsFinal() || classDef->IsAbstract() || classDef->IsStatic() ||
-        classDef->IsGlobal() || classDef->IsExported()) {
+        classDef->IsGlobal() || classDef->IsExported() || classDef->HasExportAlias()) {
         return;
     }
 

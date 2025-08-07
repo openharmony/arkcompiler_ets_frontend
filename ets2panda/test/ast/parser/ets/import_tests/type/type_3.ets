@@ -19,5 +19,4 @@ class TestClass {}
 export {foo}
 export type {TestClass as foo}
 
-/* @@? 20:14 Error SyntaxError: The given name 'foo' is already used in another export. */
-/* @@? 20:27 Error SyntaxError: The given name 'foo' is already used in another export. */
+/* @@? 20:14 Error TypeError: Ambiguous export 'foo' */

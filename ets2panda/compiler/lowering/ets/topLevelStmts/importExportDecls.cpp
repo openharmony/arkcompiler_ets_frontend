@@ -14,6 +14,7 @@
  */
 
 #include "compiler/lowering/ets/topLevelStmts/importExportDecls.h"
+#include "generated/diagnostic.h"
 
 namespace ark::es2panda::compiler {
 
@@ -69,36 +70,29 @@ GlobalClassHandler::ModuleDependencies ImportExportDecls::HandleGlobalStmts(Aren
 void ImportExportDecls::PopulateAliasMap(const ir::ExportNamedDeclaration *decl, const util::StringView &path)
 {
     for (auto spec : decl->Specifiers()) {
-        if (!varbinder_->AddSelectiveExportAlias(path, spec->Local()->Name(), spec->Exported()->Name(), decl)) {
-            parser_->LogError(diagnostic::DUPLICATE_EXPORT_NAME, {spec->Local()->Name().Mutf8()},
-                              spec->Exported()->Start());
+        if (!varbinder_->AddSelectiveExportAlias(parser_, path, spec->Local()->Name(), spec->Exported()->Name(),
+                                                 decl)) {
+            parser_->LogError(diagnostic::AMBIGUOUS_EXPORT, {spec->Local()->Name().Mutf8()}, spec->Exported()->Start());
             lastExportErrorPos_ = lexer::SourcePosition();
         }
     }
 }
 
-void ImportExportDecls::AddExportFlags(ir::AstNode *node, util::StringView originalFieldName,
-                                       lexer::SourcePosition startLoc, bool exportedWithAlias)
+void ImportExportDecls::AddExportFlags(ir::AstNode *node, util::StringView originalFieldName, bool exportedWithAlias)
 {
-    if ((node->Modifiers() & ir::ModifierFlags::EXPORTED) != 0) {
-        // Note (oeotvos) Needs to be discussed, whether we would like to allow exporting the same program
-        // element using its original name and also an alias, like: export {test_func, test_func as foo}.
-        parser_->LogError(diagnostic::ALREADY_EXPORTED, {originalFieldName.Mutf8()}, startLoc);
-    }
-    if (originalFieldName == exportDefaultName_) {
+    if (exportedWithAlias) {
+        node->AddAstNodeFlags(ir::AstNodeFlags::HAS_EXPORT_ALIAS);
+    } else if (originalFieldName == exportDefaultName_) {
         node->AddModifier(ir::ModifierFlags::DEFAULT_EXPORT);
     } else {
         node->AddModifier(ir::ModifierFlags::EXPORT);
     }
-    if (exportedWithAlias) {
-        node->AddAstNodeFlags(ir::AstNodeFlags::HAS_EXPORT_ALIAS);
-    }
 }
 void ImportExportDecls::PopulateAliasMap(const ir::TSTypeAliasDeclaration *decl, const util::StringView &path)
 {
-    if (!varbinder_->AddSelectiveExportAlias(path, decl->Id()->AsIdentifier()->Name(),
+    if (!varbinder_->AddSelectiveExportAlias(parser_, path, decl->Id()->AsIdentifier()->Name(),
                                              decl->Id()->AsIdentifier()->Name(), decl)) {
-        parser_->LogError(diagnostic::DUPLICATE_EXPORT_NAME, {decl->Id()->AsIdentifier()->Name().Mutf8()},
+        parser_->LogError(diagnostic::AMBIGUOUS_EXPORT, {decl->Id()->AsIdentifier()->Name().Mutf8()},
                           lastExportErrorPos_);
         lastExportErrorPos_ = lexer::SourcePosition();
     }
@@ -119,9 +113,9 @@ void ImportExportDecls::HandleSelectiveExportWithAlias(util::StringView original
         }
 
         if (variableDeclarator != nullptr) {
-            AddExportFlags(variableDeclarator, originalFieldName, startLoc, exportedWithAlias);
+            AddExportFlags(variableDeclarator, originalFieldName, exportedWithAlias);
         } else {
-            AddExportFlags(field, originalFieldName, startLoc, exportedWithAlias);
+            AddExportFlags(field, originalFieldName, exportedWithAlias);
         }
     }
 
@@ -201,11 +195,7 @@ void ImportExportDecls::VisitExportNamedDeclaration(ir::ExportNamedDeclaration *
             }
             exportDefaultName_ = local->Name();
         }
-
-        if (!exportNameMap_.emplace(local->Name(), local->Start()).second) {
-            lastExportErrorPos_ = local->Start();
-            parser_->LogError(diagnostic::DUPLICATE_EXPORT_NAME, {local->Name().Mutf8()}, lastExportErrorPos_);
-        }
+        exportNameMap_.emplace(local->Name(), local->Start());
     }
 }
 

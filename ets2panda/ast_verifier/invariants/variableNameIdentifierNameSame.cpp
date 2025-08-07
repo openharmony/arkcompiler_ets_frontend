@@ -32,8 +32,8 @@ namespace ark::es2panda::compiler::ast_verifier {
     }
     const auto variableNode = variable->Declaration()->Node();
     // NOTE(psaykerone): skip because, this exceptions need to be fixed in checker and lowering
-    if (variableNode->IsExported() || variableNode->IsDefaultExported() || id->Name().Utf8().find("field") == 0 ||
-        variable->Name().Utf8().find("field") == 0) {
+    if (variableNode->IsExported() || variableNode->IsDefaultExported() || variableNode->HasExportAlias() ||
+        id->Name().Utf8().find("field") == 0 || variable->Name().Utf8().find("field") == 0) {
         return {CheckDecision::CORRECT, CheckAction::CONTINUE};
     }
     if (id->Name() == variable->Name()) {

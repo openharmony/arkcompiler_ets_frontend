@@ -74,7 +74,12 @@ void FunctionDeclaration::Dump(ir::SrcDumper *dumper) const
     if (func_->IsNative()) {
         dumper->Add("native ");
     }
-    if (func_->IsDeclare()) {
+    if (IsExported()) {
+        dumper->Add("export ");
+    } else if (IsDefaultExported()) {
+        dumper->Add("export default ");
+    }
+    if (func_->IsDeclare() && !(parent_ != nullptr && parent_->IsDeclare())) {
         dumper->Add("declare ");
     }
     if (func_->IsAsyncFunc()) {

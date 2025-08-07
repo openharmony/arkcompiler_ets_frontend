@@ -106,3 +106,8 @@ ast/compiler/ets/lambda_infer_type/lambda_param_type_cannot_be_determined.ets
 
 # Issue: #24605 incorrect column
 ast/parser/ets/named_types_2.ets
+
+# Issue: #27365 Cannot add correct comment to astchecker to see warning with 0:0 position (duplicate export warning)
+ast/compiler/ets/export_type_class_multiple_times.ets
+ast/compiler/ets/export_type_interface_multiple_times.ets
+ast/compiler/ets/import_tests/export_multi_error.ets
