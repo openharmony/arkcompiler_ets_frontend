@@ -280,6 +280,9 @@ export enum FaultID {
   BuilderNodeGenericNoTuple,
   BuilderNodeUpdateNoLiteral,
   BuilderNodeNoNestingBuilderSupported,
+  SdkCommonApiDeprecated,
+  SdkCommonApiWhiteList,
+  SdkCommonApiBehaviorChange,
   // this should always be last enum
   LAST_ID
 }

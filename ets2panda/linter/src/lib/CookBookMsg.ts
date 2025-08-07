@@ -415,6 +415,9 @@ cookBookTag[381] =
 cookBookTag[382] =
   'Promise<void>constructor only supports using resolve (undefined) (arkts-promise-with-void-type-need-undefined-as-resolve-arg)';
 cookBookTag[399] = 'ArkUI deprecated api check (arkui-no-deprecated-api)';
+cookBookTag[400] = 'ArkUI sdk common deprecated api check (arkui-sdk-common-deprecated-api)';
+cookBookTag[401] = 'ArkUI sdk common whitelist api check (arkui-sdk-common-whitelist-api)';
+cookBookTag[402] = 'ArkUI sdk common behavior change api check (arkui-sdk-common-behaviorchange-api)';
 
 for (let i = 0; i <= cookBookTag.length; i++) {
   cookBookMsg[i] = '';
