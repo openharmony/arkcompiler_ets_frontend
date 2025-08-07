@@ -154,6 +154,8 @@ defines:
     ref: READONLY_TYPE_NAME
   - name: 'Partial'
     ref: PARTIAL_TYPE_NAME
+  - name: 'Awaited'
+    ref: AWAITED_TYPE_NAME
   - name: 'FixedArray'
     ref: FIXED_ARRAY_TYPE_NAME
   - name: 'Required'

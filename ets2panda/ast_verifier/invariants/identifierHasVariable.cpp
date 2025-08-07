@@ -75,7 +75,7 @@ private:
         // NOTE(mmartin): find a better solution to handle utility type resolution
         return name.Is(Signatures::PARTIAL_TYPE_NAME) || name.Is(Signatures::REQUIRED_TYPE_NAME) ||
                name.Is(Signatures::READONLY_TYPE_NAME) || name.Is(Signatures::FIXED_ARRAY_TYPE_NAME) ||
-               name.Is(compiler::Signatures::ANY_TYPE_NAME);
+               name.Is(compiler::Signatures::ANY_TYPE_NAME) || name.Is(compiler::Signatures::AWAITED_TYPE_NAME);
     }
 
     bool IsUnionMemberAccess()

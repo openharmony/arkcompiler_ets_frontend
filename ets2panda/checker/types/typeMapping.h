@@ -64,6 +64,7 @@
     _(TypeFlag::ETS_TYPE_PARAMETER, ETSTypeParameter)                  \
     _(TypeFlag::ETS_NONNULLISH, ETSNonNullishType)                     \
     _(TypeFlag::ETS_READONLY, ETSReadonlyType)                         \
+    _(TypeFlag::ETS_AWAITED, ETSAwaitedType)                           \
     _(TypeFlag::ETS_INT_ENUM, ETSIntEnumType)                          \
     _(TypeFlag::ETS_STRING_ENUM, ETSStringEnumType)                    \
     _(TypeFlag::ETS_ENUM, ETSEnumType)                                 \

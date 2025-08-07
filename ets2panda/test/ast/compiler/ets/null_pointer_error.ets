@@ -25,4 +25,4 @@ export class AbstractDaoSession{
 /* @@? 1:3 Error TypeError: 'ValueType' type does not exist. */
 /* @@? 17:62 Error SyntaxError: Rest parameter should be either array or tuple type. */
 /* @@? 19:17 Error TypeError: Cannot find type 'AbstractDao'. */
-/* @@? 20:22 Error TypeError: 'await' expressions require Promise object as argument. */
+/* @@? 20:16 Error TypeError: Type '*ERROR_TYPE*' can not be awaited, it is not a Promise. */

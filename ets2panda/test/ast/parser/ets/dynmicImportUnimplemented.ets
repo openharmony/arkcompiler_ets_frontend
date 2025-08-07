@@ -28,4 +28,4 @@ function main() {
 }
 
 /* @@? 18:15 Error SyntaxError: Unexpected token 'import'. */
-/* @@? 18:15 Error TypeError: 'await' expressions require Promise object as argument. */
+/* @@? 18:9 Error TypeError: Type '*ERROR_TYPE*' can not be awaited, it is not a Promise. */

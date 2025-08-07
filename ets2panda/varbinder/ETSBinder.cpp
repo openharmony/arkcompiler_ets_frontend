@@ -60,7 +60,7 @@ bool ETSBinder::IsSpecialName(const util::StringView &name)
     return name == compiler::Signatures::ANY_TYPE_NAME || name == compiler::Signatures::UNDEFINED ||
            name == compiler::Signatures::NULL_LITERAL || name == compiler::Signatures::READONLY_TYPE_NAME ||
            name == compiler::Signatures::PARTIAL_TYPE_NAME || name == compiler::Signatures::REQUIRED_TYPE_NAME ||
-           name == compiler::Signatures::FIXED_ARRAY_TYPE_NAME;
+           name == compiler::Signatures::FIXED_ARRAY_TYPE_NAME || name == compiler::Signatures::AWAITED_TYPE_NAME;
 }
 
 bool ETSBinder::LookupInDebugInfoPlugin(ir::Identifier *ident)

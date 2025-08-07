@@ -48,7 +48,7 @@ enum class TypeFlag : uint64_t {
     INTERSECTION = 1ULL << 19ULL,        // x: a & b
     INDEX = 1ULL << 20ULL,               // keyof x
     INDEX_ACCESS = 1ULL << 21ULL,        // x[a]
-    TEMPLATE_LITERAL = 1ULL << 23ULL,    // x: `hello ${World}`
+    ETS_AWAITED = 1ULL << 23ULL,         // ETS Awaited type
     ANY = 1ULL << 24ULL,                 // x: any
     ARRAY = 1ULL << 25ULL,               // x: number[]
     FUNCTION = 1ULL << 26ULL,            // x: (a) => b

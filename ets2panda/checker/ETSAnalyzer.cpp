@@ -1373,12 +1373,6 @@ std::tuple<Type *, ir::Expression *> ETSAnalyzer::CheckAssignmentExprOperatorTyp
     return {sourceType, relationNode};
 }
 
-static bool IsPromiseType(checker::Type *type, ETSChecker *checker)
-{
-    return type->IsETSObjectType() &&
-           type->AsETSObjectType()->GetOriginalBaseType() == checker->GlobalBuiltinPromiseType();
-}
-
 checker::Type *ETSAnalyzer::Check(ir::AwaitExpression *expr) const
 {
     ETSChecker *checker = GetETSChecker();
@@ -1386,58 +1380,8 @@ checker::Type *ETSAnalyzer::Check(ir::AwaitExpression *expr) const
         return expr->TsType();
     }
 
-    checker::Type *argType = checker->GetApparentType(expr->argument_->Check(checker));
-    ArenaVector<Type *> awaitedTypes(checker->ProgramAllocator()->Adapter());
-
-    if (argType->IsETSUnionType()) {
-        for (Type *type : argType->AsETSUnionType()->ConstituentTypes()) {
-            if (!IsPromiseType(type, checker)) {
-                return checker->TypeError(expr, diagnostic::AWAITED_NOT_PROMISE, expr->Argument()->Start());
-            }
-
-            Type *typeArg = type->AsETSObjectType()->TypeArguments().at(0);
-            awaitedTypes.push_back(UnwrapPromiseType(typeArg));
-        }
-    } else {
-        if (!IsPromiseType(argType, checker)) {
-            return checker->TypeError(expr, diagnostic::AWAITED_NOT_PROMISE, expr->Argument()->Start());
-        }
-
-        Type *typeArg = argType->AsETSObjectType()->TypeArguments().at(0);
-        awaitedTypes.push_back(UnwrapPromiseType(typeArg));
-    }
-
-    expr->SetTsType(argType->IsETSUnionType() ? checker->CreateETSUnionType(std::move(awaitedTypes)) : awaitedTypes[0]);
+    expr->SetTsType(checker->HandleAwaitExpression(expr->argument_->Check(checker), expr));
     return expr->TsType();
-}
-
-checker::Type *ETSAnalyzer::UnwrapPromiseType(checker::Type *type) const
-{
-    ETSChecker *checker = GetETSChecker();
-    checker::Type *promiseType = checker->GlobalBuiltinPromiseType();
-    while (type->IsETSObjectType() && type->AsETSObjectType()->GetOriginalBaseType() == promiseType) {
-        type = type->AsETSObjectType()->TypeArguments().at(0);
-    }
-    if (!type->IsETSUnionType()) {
-        return type;
-    }
-    const auto &ctypes = type->AsETSUnionType()->ConstituentTypes();
-    auto it = std::find_if(ctypes.begin(), ctypes.end(), [promiseType](checker::Type *t) {
-        return t == promiseType || (t->IsETSObjectType() && t->AsETSObjectType()->GetBaseType() == promiseType);
-    });
-    if (it == ctypes.end()) {
-        return type;
-    }
-    ArenaVector<Type *> newCTypes(ctypes);
-    do {
-        size_t index = it - ctypes.begin();
-        newCTypes[index] = UnwrapPromiseType(ctypes[index]);
-        ++it;
-        it = std::find_if(it, ctypes.end(), [promiseType](checker::Type *t) {
-            return t == promiseType || t->AsETSObjectType()->GetBaseType() == promiseType;
-        });
-    } while (it != ctypes.end());
-    return checker->CreateETSUnionType(std::move(newCTypes));
 }
 
 checker::Type *ETSAnalyzer::Check(ir::BinaryExpression *expr) const

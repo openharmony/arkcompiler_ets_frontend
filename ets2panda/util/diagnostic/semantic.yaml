@@ -187,9 +187,9 @@ semantic:
   message: "Return type of async function must be 'Promise'."
   code_fix_ids: [FixReturnTypeInAsyncFunction]
 
-- name: AWAITED_NOT_PROMISE
+- name: AWAITED_TYPE_NOT_PROMISE
   id: 303
-  message: "'await' expressions require Promise object as argument."
+  message: "Type '{}' can not be awaited, it is not a Promise."
 
 - name: BINOP_INCOMPARABLE
   id: 114
