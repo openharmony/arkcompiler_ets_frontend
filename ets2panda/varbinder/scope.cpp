@@ -238,8 +238,13 @@ Variable *Scope::AddLocalVar(ArenaAllocator *allocator, Decl *newDecl)
 
 Variable *Scope::AddLocalInterfaceVariable(ArenaAllocator *allocator, Decl *newDecl)
 {
-    auto *var = bindings_.insert({newDecl->Name(), allocator->New<LocalVariable>(newDecl, VariableFlags::INTERFACE)})
-                    .first->second;
+    auto [iter, inserted] =
+        bindings_.try_emplace(newDecl->Name(), allocator->New<LocalVariable>(newDecl, VariableFlags::INTERFACE));
+    if (!inserted) {
+        return nullptr;
+    }
+
+    auto *var = iter->second;
     if (newDecl->Node() != nullptr) {
         newDecl->Node()->AsTSInterfaceDeclaration()->Id()->SetVariable(var);
     }
@@ -261,7 +266,12 @@ Variable *Scope::AddLocalClassVariable(ArenaAllocator *allocator, Decl *newDecl)
     VariableFlags flag = isNamespaceTransformed ? VariableFlags::NAMESPACE
                          : isEnumTransformed    ? VariableFlags::ENUM_LITERAL
                                                 : VariableFlags::CLASS;
-    auto *var = bindings_.insert({newDecl->Name(), allocator->New<LocalVariable>(newDecl, flag)}).first->second;
+    auto [iter, inserted] = bindings_.try_emplace(newDecl->Name(), allocator->New<LocalVariable>(newDecl, flag));
+    if (!inserted) {
+        return nullptr;
+    }
+
+    auto *var = iter->second;
     newDecl->Node()->AsClassDefinition()->Ident()->SetVariable(var);
     return var;
 }

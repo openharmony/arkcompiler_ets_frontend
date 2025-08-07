@@ -55,6 +55,7 @@ private:
     public_lib::Context *context_ {nullptr};
     parser::Program *program_ {nullptr};
     varbinder::ETSBinder *varbinder_ {nullptr};
+    bool isSelfDependence_ = {false};
     std::unordered_set<const ir::AstNode *> unfoldingSet_;
 };
 

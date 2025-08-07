@@ -2573,17 +2573,26 @@ void ETSChecker::InferTypesForLambda(ir::ScriptFunction *lambda, ir::ETSFunction
             continue;
         }
         auto *const lambdaParam = lambda->Params().at(i)->AsETSParameterExpression()->Ident();
-        if (lambdaParam->TypeAnnotation() == nullptr) {
-            // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-            Type *inferredType = calleeType->Params()[i]->AsETSParameterExpression()->TypeAnnotation()->Check(this);
-            bool isPrimitive = inferredType != nullptr && inferredType->IsETSPrimitiveType();
-            if (!isPrimitive && maybeSubstitutedFunctionSig != nullptr) {
-                ES2PANDA_ASSERT(maybeSubstitutedFunctionSig->Params().size() == calleeType->Params().size());
-                inferredType = maybeSubstitutedFunctionSig->Params()[i]->TsType();
-            }
-            lambdaParam->Variable()->SetTsType(inferredType);
-            lambdaParam->SetTsType(inferredType);
+        if (lambdaParam->TypeAnnotation() != nullptr) {
+            continue;
         }
+
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+        Type *inferredType = calleeType->Params()[i]->AsETSParameterExpression()->TypeAnnotation()->Check(this);
+        bool isPrimitive = inferredType != nullptr && inferredType->IsETSPrimitiveType();
+        if (!isPrimitive && maybeSubstitutedFunctionSig != nullptr) {
+            auto sigParamSize = maybeSubstitutedFunctionSig->Params().size();
+            ES2PANDA_ASSERT(
+                sigParamSize == calleeType->Params().size() ||
+                (maybeSubstitutedFunctionSig->HasRestParameter() && sigParamSize <= calleeType->Params().size()));
+            if (i < sigParamSize) {
+                inferredType = maybeSubstitutedFunctionSig->Params()[i]->TsType();
+            } else if (!maybeSubstitutedFunctionSig->RestVar()->TsType()->IsETSTupleType()) {
+                inferredType = GetElementTypeOfArray(maybeSubstitutedFunctionSig->RestVar()->TsType());
+            }
+        }
+        lambdaParam->Variable()->SetTsType(inferredType);
+        lambdaParam->SetTsType(inferredType);
     }
 
     if (lambda->ReturnTypeAnnotation() == nullptr) {

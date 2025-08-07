@@ -238,6 +238,15 @@ void ScopesInitPhase::VisitVariableDeclarator(ir::VariableDeclarator *varDecl)
     auto init = varDecl->Id();
     std::vector<ir::Identifier *> bindings = util::Helpers::CollectBindingNames(VarBinder(), init);
     for (auto *binding : bindings) {
+        auto name = binding->Name();
+        if (binding->Variable() == nullptr && !name.Is(ERROR_LITERAL) && VarBinder()->IsETSBinder()) {
+            auto var = VarBinder()->GetScope()->FindLocal(name, varbinder::ResolveBindingOptions::ALL_VARIABLES);
+            if (var != nullptr) {
+                VarBinder()->ThrowRedeclaration(binding->Start(), name, var->Declaration()->Type());
+                continue;
+            }
+        }
+
         auto [decl, var] = AddOrGetVarDecl(varDecl->Flag(), binding);
         BindVarDecl(binding, init, decl, var);
     }
@@ -498,7 +507,7 @@ std::tuple<varbinder::Decl *, varbinder::Variable *> ScopesInitPhase::AddOrGetVa
         name = compiler::GenName(Allocator()).View();
     } else if (VarBinder()->IsETSBinder()) {
         if (auto var = scope->FindLocal(name, varbinder::ResolveBindingOptions::ALL_VARIABLES); var != nullptr) {
-            VarBinder()->ThrowRedeclaration(id->Start(), name, var->Declaration()->Type());
+            ES2PANDA_ASSERT(ctx_->diagnosticEngine->IsAnyError());
             return {var->Declaration(), var};
         }
     }
