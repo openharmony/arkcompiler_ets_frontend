@@ -2299,7 +2299,7 @@ ir::OverloadDeclaration *ETSParser::ParseOverloadDeclaration(ir::ModifierFlags m
 {
     ValidateOverloadDeclarationModifiers(modifiers);
     Lexer()->TryEatTokenKeyword(lexer::TokenType::KEYW_OVERLOAD);
-    auto *overloadName = ExpectIdentifier(false, true, TypeAnnotationParsingOptions::REPORT_ERROR);
+    auto *overloadName = ExpectIdentifier(false, false, TypeAnnotationParsingOptions::REPORT_ERROR);
     auto *overloadDef = AllocNode<ir::OverloadDeclaration>(overloadName->Clone(Allocator(), nullptr)->AsExpression(),
                                                            modifiers, Allocator());
     overloadDef->AddOverloadDeclFlag(ir::OverloadDeclFlags::FUNCTION);
