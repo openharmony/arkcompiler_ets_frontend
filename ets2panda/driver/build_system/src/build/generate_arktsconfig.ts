@@ -31,9 +31,10 @@ import {
   getOhmurlByApi,
   hasEntry,
   isSubPathOf,
+  readFirstLineSync,
   safeRealpath,
   toUnixPath
-} from '../utils';
+} from '../util/utils';
 import {
   AliasConfig,
   ArkTSConfigObject,
@@ -237,11 +238,21 @@ export class ArkTSConfigGenerator {
     if (!hasEntry(moduleInfo)) {
       return;
     }
-  
+
     if (moduleInfo.language === LANGUAGE_VERSION.ARKTS_1_1) {
       return;
     }
-  
+
+    if (!moduleInfo.entryFile || !fs.existsSync(moduleInfo.entryFile)) {
+      return;
+    }
+    if (moduleInfo.language === LANGUAGE_VERSION.ARKTS_HYBRID) {
+      const firstLine = readFirstLineSync(moduleInfo.entryFile);
+      if (!firstLine?.includes('use static')) {
+        return;
+      }
+    }
+
     arktsconfig.addPathMappings({
       [moduleInfo.packageName]: [moduleInfo.moduleRootPath]
     });
