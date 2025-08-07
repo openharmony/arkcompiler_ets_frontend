@@ -151,6 +151,7 @@ void ETSChecker::WrongContextErrorClassifyByType(ir::Identifier *ident)
             LogError(diagnostic::ID_WRONG_CTX, {ident->Name()}, ident->Start());
             return;
     }
+    ident->SetTsType(GlobalTypeError());
     LogError(diagnostic::ID_IN_WRONG_CTX, {identCategoryName.c_str(), ident->Name()}, ident->Start());
 }
 
