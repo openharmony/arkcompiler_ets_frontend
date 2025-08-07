@@ -2084,6 +2084,9 @@ static void SetTypeforRecordProperties(const ir::ObjectExpression *expr, checker
             recordPropertyExpr = recordProperty->AsProperty()->Value();
         } else if (recordProperty->IsSpreadElement()) {
             recordPropertyExpr = recordProperty->AsSpreadElement()->Argument();
+        } else if (recordProperty->IsIdentifier() && recordProperty->AsIdentifier()->IsErrorPlaceHolder()) {
+            ES2PANDA_ASSERT(checker->IsAnyError());
+            continue;
         } else {
             ES2PANDA_UNREACHABLE();
         }
