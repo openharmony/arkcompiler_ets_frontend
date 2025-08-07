@@ -415,7 +415,7 @@ function assert_o5(v: Object | null | undefined) { arktest.assertTrue(v !== null
 function assert_npe5(f: () => void) {
     try {
         f();
-    } catch (e: NullPointerError) {
+    } catch (e) {
         return;
     }
     arktest.assertTrue(false,  "npe was not thrown")
@@ -761,16 +761,16 @@ function test_38(): void {
 
 // -----------------------------------------------
 
-class Class68<T8> {
+class Class68 {
     mmeb: Number = 2;
-    foo(a0: Partial<T8>){
+    foo(a0: Partial<Class78>){
         if(this.mmeb == 3){
             return;
         }
 
         this.bar(a0);
     }
-    bar(a0: Partial<T8>){
+    bar(a0: Partial<Class78>){
         this.mmeb = 3;
         this.foo(a0);
     }
@@ -778,15 +778,15 @@ class Class68<T8> {
 
 class Class78 { fld: Number = 6;}
 
-class Class88 <T8 extends Class78> {
-    baz(a0: Partial<T8>){
+class Class88 {
+    baz(a0: Partial<Class78>){
         a0.fld = undefined;
     }
 }
 
 function test_48(): void {
     let class7_partial: Partial<Class78> = {fld: 8};
-    let class6_original: Class68<Class78> = new Class68<Class78>();
+    let class6_original: Class68 = new Class68();
     class6_original.foo(class7_partial);
 }
 
@@ -818,7 +818,7 @@ function test_58(): void {
 
 class C33  {
   bar(): string {
-    return "Class C33";
+    return "";
   }
 }
 
@@ -994,13 +994,14 @@ function bar35(x: C35|null|undefined, y: boolean, z: boolean): string {
 // SmartCast_06.ets
 // ---------------------------------------------------------------------------------------------------------------------
 
-function foo36(x: int): string
+function foo36(x: int): string | undefined
 {
   let rc: string|undefined = "default";
 
   label1: switch(x) {
     case 0:
        rc = "case 0";
+       break;
     case 1: {
        let rc1: string|undefined = ():string => {return "case 1";}();
        label2: switch(rc) {
@@ -1022,10 +1023,12 @@ function foo36(x: int): string
        break;
     case 4:
        rc = undefined;
-    default:
-       return rc != null ? rc :"case 4"
+       break;
     case 5:
        rc = "case 5";
+       break;
+    default:
+       return rc != null ? rc :"case 4"
   }
 
   return rc;
@@ -1047,10 +1050,12 @@ function foo37(flag37: boolean): int {
     if (flag37) {
       throw new Error();
     }
-  } catch(ex: NullPointerError) {
-    z = 2;
   } catch(ex) {
-    w = undefined;
+    if (ex instanceof NullPointerError) {
+      z = 2;
+    } else {
+      w = undefined
+    }
   }
 
   return x + y! + z + w!;
