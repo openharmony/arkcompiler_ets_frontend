@@ -1137,17 +1137,6 @@ config("libes2panda_config") {
     "-fexceptions",
     "-Werror=shadow",
   ]
-
-  if (!is_debug) {
-    cflags_cc += [
-      "-flto=thin",
-      "-O3",
-    ]
-    ldflags = [
-      "-flto=thin",
-      "-O3",
-    ]
-  }
 }
 
 if ((defined(ark_standalone_build) && ark_standalone_build) ||
@@ -1248,7 +1237,6 @@ ohos_source_set("libes2panda_frontend_static") {
 }
 
 ohos_shared_library("libes2panda_public") {
-  configs = [ ":libes2panda_config" ]
   deps = [ ":libes2panda_public_frontend_static" ]
   if (is_mingw || is_win) {
     output_extension = "dll"
