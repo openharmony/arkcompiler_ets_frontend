@@ -2898,12 +2898,13 @@ ir::ClassProperty *GetImplementationClassProp(ETSChecker *checker, ir::ClassProp
         return classProp;
     }
 
-    auto *const classProp = classType
-                                ->GetProperty(interfaceProp->Key()->AsIdentifier()->Name(),
-                                              PropertySearchFlags::SEARCH_ALL | PropertySearchFlags::SEARCH_IN_BASE)
-                                ->Declaration()
-                                ->Node()
-                                ->AsClassProperty();
+    auto *const classProp =
+        classType
+            ->GetProperty(interfaceProp->Key()->AsIdentifier()->Name(),
+                          PropertySearchFlags::SEARCH_INSTANCE_FIELD | PropertySearchFlags::SEARCH_IN_BASE)
+            ->Declaration()
+            ->Node()
+            ->AsClassProperty();
     classProp->AddModifier(ir::ModifierFlags::SUPER_OWNER);
     return classProp;
 }
