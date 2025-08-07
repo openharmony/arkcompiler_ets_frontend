@@ -84,8 +84,7 @@ static ETSObjectType *FunctionTypeToFunctionalInterfaceType(ETSChecker *checker,
         }
 
         auto substitution = Substitution {};
-        ES2PANDA_ASSERT(functionN != nullptr);
-        ES2PANDA_ASSERT(nPosParams <= functionN->TypeArguments().size());
+        ES2PANDA_ASSERT(functionN != nullptr && nPosParams <= functionN->TypeArguments().size());
         for (size_t i = 0; i < nPosParams; i++) {
             substitution.emplace(functionN->TypeArguments()[i]->AsETSTypeParameter(),
                                  checker->MaybeBoxType(signature->Params()[i]->TsType()));
