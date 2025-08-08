@@ -767,6 +767,27 @@
             "severity": "ERROR"
         },
         {
+            "line": 124,
+            "column": 17,
+            "endLine": 124,
+            "endColumn": 24,
+            "problem": "GenericCallNoTypeArgs",
+            "autofix": [
+                {
+                    "start": 3313,
+                    "end": 3313,
+                    "replacementText": "<[C]>",
+                    "line": 124,
+                    "column": 17,
+                    "endLine": 124,
+                    "endColumn": 24
+                }
+            ],
+            "suggest": "",
+            "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
+            "severity": "ERROR"
+        },
+        {
             "line": 84,
             "column": 2,
             "endLine": 84,

@@ -225,6 +225,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 224,
+            "column": 3,
+            "endLine": 226,
+            "endColumn": 4,
+            "problem": "NoSignatureDistinctWithObjectPublicApi",
+            "suggest": "",
+            "rule": "The signature of a method in a class/interface cannot be different from the public interface in an object. (arkts-class-no-signature-distinct-with-object-public-api)",
+            "severity": "ERROR"
+        },
+        {
             "line": 266,
             "column": 9,
             "endLine": 266,

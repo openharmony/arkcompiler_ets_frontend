@@ -15,14 +15,17 @@
     "arkts-limited-stdlib",
     "arkts-no-class-add-super-prop-with-readonly",
     "arkts-var-assignment-before-use",
+    "arkts-concurrent-deprecated-apis",
     "arkts-no-classes-as-obj",
     "arkts-obj-literal-props",
     "arkts-no-template-string-type",
     "arkts-obj-literal-key-type",
     "arkts-optional-methods",
+    "arkts-use-long-for-large-numeric-literal",
     "arkts-numeric-semantic",
     "arkts-incompatible-function-types",
     "arkts-limited-void-type",
+    "arkts-distinct-infinity-bitwise-inversion",
     "arkts-no-void-operator",
     "arkts-no-local-class",
     "arkts-no-ts-overload",
@@ -58,9 +61,11 @@
     "arkts-limited-stdlib-no-setTransferList",
     "arkts-builtin-object-getOwnPropertyNames",
     "arkts-no-class-omit-interface-optional-prop",
+    "arkts-class-no-signature-distinct-with-object-public-api",
     "arkts-no-sparse-array",
     "arkts-no-enum-prop-as-type",
     "arkts-no-ts-like-smart-type",
+    "arkts-distinct-unsigned-right-shift-negative-number",
     "arkts-array-type-immutable",
     "arkts-primitive-type-normalization",
     "arkts-no-ts-like-catch-type",
@@ -70,7 +75,8 @@
 	"arkts-no-duplicate-function-name",
     "arkts-require-func-arg-type",
 	"arkts-subclass-must-call-super-constructor-with-args",
-    "arkts-no-esobject-support"
+    "arkts-no-esobject-support",
+    "arkts-not-support-tuple-generic-validation"
   ],
   "interop": [
     "arkts-interop-js2s-inherit-js-class",
@@ -133,7 +139,10 @@
     "arkui-no-deprecated-api",
     "arkui-buildernode-generic-no-tuple",
     "arkui-buildernode-update-no-literal",
-    "arkui-buildernode-no-nestingbuildersupported"
+    "arkui-buildernode-no-nestingbuildersupported",
+    "arkui-sdk-common-deprecated-api",
+    "arkui-sdk-common-whitelist-api",
+    "arkui-sdk-common-behaviorchange-api"
   ],
   "builtin": [
     "arkts-builtin-thisArgs",

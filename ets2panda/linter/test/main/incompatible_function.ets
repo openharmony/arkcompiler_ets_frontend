@@ -113,3 +113,25 @@ for (let i = 0; i < totalPromises; i++) {
     )
   );
 }
+
+class D {
+  fun(a: ArrayBufferLike): ArrayBuffer {
+    return a;
+  }
+}
+
+class X {
+  n: number = 0
+  s: string = ''
+}
+
+class Y {
+  n: number = 0
+  s: string = ''
+}
+
+class E {
+  Dfun(a: X|Y): X {
+    return a;
+  }
+}
