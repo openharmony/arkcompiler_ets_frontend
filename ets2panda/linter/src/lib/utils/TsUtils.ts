@@ -481,14 +481,24 @@ export class TsUtils {
   }
 
   static isNullableUnionType(type: ts.Type): boolean {
-    if (type.isUnion()) {
-      for (const t of type.types) {
-        if (!!(t.flags & ts.TypeFlags.Undefined) || !!(t.flags & ts.TypeFlags.Null)) {
-          return true;
-        }
+    if (!type.isUnion()) {
+      return false;
+    }
+
+    for (const t of type.types) {
+      if (TsUtils.isNullishType(t)) {
+        return true;
       }
     }
+
     return false;
+  }
+
+  /**
+   * Returns true if the given type is `null` or `undefined`.
+   */
+  static isNullishType(t: ts.Type): boolean {
+    return !!(t.flags & ts.TypeFlags.Undefined) || !!(t.flags & ts.TypeFlags.Null);
   }
 
   static isMethodAssignment(tsSymbol: ts.Symbol | undefined): boolean {

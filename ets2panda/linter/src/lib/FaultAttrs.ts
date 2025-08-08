@@ -269,6 +269,7 @@ faultsAttrs[FaultID.SharedArrayBufferDeprecated] = new FaultAttributes(349);
 faultsAttrs[FaultID.SetCloneListDeprecated] = new FaultAttributes(350);
 faultsAttrs[FaultID.SetTransferListDeprecated] = new FaultAttributes(351);
 faultsAttrs[FaultID.SdkAbilityAsynchronousLifecycle] = new FaultAttributes(352);
+faultsAttrs[FaultID.ObjectLiteralUnionNeedsCast] = new FaultAttributes(353);
 faultsAttrs[FaultID.LimitedStdLibNoSendableDecorator] = new FaultAttributes(355);
 faultsAttrs[FaultID.LimitedStdLibNoDoncurrentDecorator] = new FaultAttributes(356);
 faultsAttrs[FaultID.NoNeedStdlibWorker] = new FaultAttributes(357);

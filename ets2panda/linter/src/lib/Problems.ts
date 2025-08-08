@@ -246,6 +246,7 @@ export enum FaultID {
   SetCloneListDeprecated,
   SetTransferListDeprecated,
   SdkAbilityAsynchronousLifecycle,
+  ObjectLiteralUnionNeedsCast,
   LimitedStdLibNoSendableDecorator,
   LimitedStdLibNoDoncurrentDecorator,
   NoNeedStdlibWorker,

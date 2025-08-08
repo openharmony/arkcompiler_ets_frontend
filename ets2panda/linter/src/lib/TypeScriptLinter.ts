@@ -7463,6 +7463,8 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
    * 'arkts-no-structural-typing' check was missing in some scenarios,
    * in order not to cause incompatibility,
    * only need to strictly match the type of filling the check again
+   *
+   * Also delegates the object-literal → union rule to `handleObjectLiteralUnionArg`.
    */
   private checkAssignmentMatching(
     contextNode: ts.Node,
@@ -7471,6 +7473,10 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     isNewStructuralCheck: boolean = false
   ): void {
     const rhsType = this.tsTypeChecker.getTypeAtLocation(rhsExpr);
+
+    // Object-literal to union rule (non-call contexts)
+    this.handleObjectLiteralUnionArg(lhsType, rhsExpr);
+
     this.handleNoTuplesArrays(contextNode, lhsType, rhsType);
     this.handleArrayTypeImmutable(contextNode, lhsType, rhsType, rhsExpr);
     // check that 'sendable typeAlias' is assigned correctly
@@ -7484,6 +7490,59 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
     this.handleStructuralTyping(contextNode, lhsType, rhsType, rhsExpr, isStrict);
     this.checkFunctionalTypeCompatibility(lhsType, rhsType, rhsExpr);
+  }
+
+  /**
+   * Flags `{ ... }` used where the LHS type is a union with
+   * more than one non-nullish member and the object literal
+   * is not already asserted (e.g., `{...} as A`).
+   * Applies to variable initializers, assignments, call expressions and returns
+   * that route through `checkAssignmentMatching`.
+   */
+  private handleObjectLiteralUnionArg(lhsType: ts.Type, rhsExpr: ts.Expression): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    if (!ts.isObjectLiteralExpression(rhsExpr) || !lhsType?.isUnion()) {
+      return;
+    }
+
+    // Already asserted/cast? Allowed.
+    const parent = rhsExpr.parent;
+    if (ts.isAsExpression(parent) || ts.isTypeAssertionExpression(parent)) {
+      return;
+    }
+
+    // Allow nullish unions like 'T | null | undefined'
+    const nonNullishMembers = lhsType.types.filter((t) => {
+      return !TsUtils.isNullishType(t);
+    });
+    if (nonNullishMembers.length <= 1) {
+      return;
+    }
+
+    // Skip any types that are from standard lib
+    const nonStdlibMembers = nonNullishMembers.filter((t) => {
+      return !(t.getSymbol() && isStdLibrarySymbol(t.getSymbol()));
+    });
+
+    const hasClassOrInterfaceMember = nonStdlibMembers.some((t) => {
+      const sym = t.aliasSymbol ?? t.getSymbol();
+      if (!sym) {
+        return false;
+      }
+      const decls = sym.getDeclarations() ?? [];
+
+      return decls.some((d) => {
+        return ts.isClassDeclaration(d) || ts.isInterfaceDeclaration(d);
+      });
+    });
+    if (!hasClassOrInterfaceMember) {
+      return;
+    }
+
+    this.incrementCounters(rhsExpr, FaultID.ObjectLiteralUnionNeedsCast);
   }
 
   private handleStructuralTyping(

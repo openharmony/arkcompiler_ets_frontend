@@ -247,6 +247,7 @@ faultDesc[FaultID.SharedArrayBufferDeprecated] = 'SharedArrayBuffer is not suppo
 faultDesc[FaultID.SetCloneListDeprecated] = 'setCloneList is not supported';
 faultDesc[FaultID.SetTransferListDeprecated] = 'setTransferList is not supported';
 faultDesc[FaultID.SdkAbilityAsynchronousLifecycle] = '1.2 Void cannot be combined';
+faultDesc[FaultID.ObjectLiteralUnionNeedsCast] = 'Object literals require union member assertion';
 faultDesc[FaultID.LimitedStdLibNoSendableDecorator] = 'Limited stdlib no sendable decorator';
 faultDesc[FaultID.LimitedStdLibNoDoncurrentDecorator] = 'Limited stdlib no concurrent decorator';
 faultDesc[FaultID.NoNeedStdlibWorker] = 'No need stdlib worker';
