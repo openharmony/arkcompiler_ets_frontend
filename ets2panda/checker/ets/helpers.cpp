@@ -18,6 +18,7 @@
 #include "checker/ETSchecker.h"
 
 #include "checker/types/globalTypesHolder.h"
+#include "checker/types/gradualType.h"
 #include "checker/checkerContext.h"
 #include "checker/ETSAnalyzerHelpers.h"
 #include "checker/types/ets/etsEnumType.h"
@@ -1701,6 +1702,26 @@ std::pair<bool, util::StringView> FindSpecifierForModuleObject(ir::ETSImportDecl
     return std::make_pair(false, util::StringView());
 }
 
+static void BuildExportedFunctionSignature(ETSChecker *checker, varbinder::Variable *var)
+{
+    auto method = var->AsLocalVariable()->Declaration()->Node()->AsMethodDefinition();
+    ES2PANDA_ASSERT(method->Parent()->IsClassDefinition() &&
+                    method->Parent()->AsClassDefinition()->Ident()->Name().Is(compiler::Signatures::ETS_GLOBAL));
+    auto classDef = method->Parent()->AsClassDefinition();
+    if (classDef->TsType() == nullptr) {
+        checker->BuildBasicClassProperties(classDef);
+    }
+
+    auto containingClass = classDef->TsType()->IsGradualType()
+                               ? classDef->TsType()->AsGradualType()->GetBaseType()->AsETSObjectType()
+                               : classDef->TsType()->AsETSObjectType();
+    SavedCheckerContext scc(checker, checker->Context().Status(), containingClass);
+    auto funcType = checker->BuildMethodSignature(method);
+    funcType->SetVariable(var);
+    var->SetTsType(funcType);
+    method->SetTsType(funcType);
+}
+
 template <checker::PropertyType TYPE>
 void ETSChecker::BindingsModuleObjectAddProperty(checker::ETSObjectType *moduleObjType,
                                                  ir::ETSImportDeclaration *importDecl,
@@ -1716,6 +1737,10 @@ void ETSChecker::BindingsModuleObjectAddProperty(checker::ETSObjectType *moduleO
         if ((var->AsLocalVariable()->Declaration()->Node()->IsExported() ||
              var->AsLocalVariable()->Declaration()->Node()->HasExportAlias()) &&
             found) {
+            if (var->AsLocalVariable()->Declaration()->Node()->IsMethodDefinition()) {
+                BuildExportedFunctionSignature(this, var);
+            }
+
             if (!aliasedName.Empty()) {
                 moduleObjType->AddReExportAlias(var->Declaration()->Name(), aliasedName);
             }
