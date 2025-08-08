@@ -562,6 +562,7 @@ bool ETSChecker::ValidateSignatureRequiredParams(Signature *substitutedSig,
             // Note: If the signatures are from lambdas, then they have no `Function`.
             ir::ScriptFunction *const lambda = argument->AsArrowFunctionExpression()->Function();
             auto targetParm = substitutedSig->GetSignatureInfo()->params[index]->Declaration()->Node();
+            ERROR_SANITY_CHECK(this, targetParm->IsETSParameterExpression(), return false);
             if (CheckLambdaAssignable(targetParm->AsETSParameterExpression(), lambda)) {
                 continue;
             }
