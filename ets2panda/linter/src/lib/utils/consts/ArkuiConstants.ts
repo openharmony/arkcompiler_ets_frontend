@@ -183,3 +183,5 @@ export const PERSIST_PROP_FUNC_NAME = 'persistProp';
 export const PERSIST_PROPS_FUNC_NAME = 'persistProps';
 export const GLOBAL_CONNECT_FUNC_NAME = 'globalConnect';
 export const CONNECT_FUNC_NAME = 'connect';
+
+export const USE_STATIC_STATEMENT = 'use static';
