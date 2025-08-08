@@ -3653,7 +3653,8 @@ checker::Type *ETSAnalyzer::Check(ir::TryStatement *st) const
 
 checker::Type *ETSAnalyzer::Check(ir::VariableDeclarator *st) const
 {
-    if (st->TsType() != nullptr) {
+    bool initChecked = st->Init() != nullptr ? st->Init()->TsType() != nullptr : true;
+    if (st->TsType() != nullptr && initChecked) {
         return st->TsType();
     }
 
