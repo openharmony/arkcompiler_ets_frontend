@@ -67,7 +67,6 @@ set(NAPI_BINDINGS_LIB "ts_bindings")
 set(BINDINGS_NAPI_SRC
   ./src/common-interop.cpp
   ./src/convertors-napi.cpp
-  ./src/callback-resource.cpp
   ./src/lsp.cpp
 )
 
