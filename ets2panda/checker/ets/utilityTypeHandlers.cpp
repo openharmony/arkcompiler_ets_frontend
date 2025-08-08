@@ -39,6 +39,13 @@ std::optional<ir::TypeNode *> ETSChecker::GetUtilityTypeTypeParamNode(
     return typeParams->Params().front();
 }
 
+static bool ValidBaseTypeOfRequiredAndPartial(Type *baseType)
+{
+    Type *type = baseType->MaybeBaseTypeOfGradualType();
+    return type->IsETSObjectType() && (type->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::INTERFACE) ||
+                                       type->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::CLASS));
+}
+
 Type *ETSChecker::HandleUtilityTypeParameterNode(const ir::TSTypeParameterInstantiation *const typeParams,
                                                  const ir::Identifier *const ident)
 {
@@ -65,6 +72,13 @@ Type *ETSChecker::HandleUtilityTypeParameterNode(const ir::TSTypeParameterInstan
 
     if (baseType->IsETSAnyType()) {
         return baseType;
+    }
+
+    if ((utilityType == compiler::Signatures::PARTIAL_TYPE_NAME ||
+         utilityType == compiler::Signatures::REQUIRED_TYPE_NAME) &&
+        !ValidBaseTypeOfRequiredAndPartial(baseType)) {
+        LogError(diagnostic::MUST_BE_CLASS_INTERFACE_TYPE, {utilityType}, typeParams->Start());
+        return GlobalTypeError();
     }
 
     if (utilityType == compiler::Signatures::PARTIAL_TYPE_NAME) {
