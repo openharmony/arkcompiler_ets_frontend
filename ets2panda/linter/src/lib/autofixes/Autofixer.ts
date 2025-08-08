@@ -4739,7 +4739,7 @@ export class Autofixer {
       return undefined;
     }
 
-    const typeArgs = Autofixer.getTypeArgumentsFromType(contextualType);
+    const typeArgs = this.getTypeArgumentsFromType(contextualType);
     if (typeArgs.length === 0) {
       return undefined;
     }
@@ -5044,8 +5044,8 @@ export class Autofixer {
     return [{ start: identifier.getEnd(), end: identifier.getEnd(), replacementText: typeArgsText }];
   }
 
-  static getTypeArgumentsFromType(type: ts.Type): ts.Type[] {
-    const typeReference = type as ts.TypeReference;
+  private getTypeArgumentsFromType(type: ts.Type): ts.Type[] {
+    const typeReference = this.utils.getNonNullableType(type) as ts.TypeReference;
     if (typeReference.typeArguments) {
       return [...typeReference.typeArguments];
     }
