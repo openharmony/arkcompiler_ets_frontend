@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import { ensurePathExists } from '../../../src/utils';
+import { ensurePathExists } from '../../../src/util/utils';
 import * as fs from 'fs';
 import * as path from 'path';
 import {
@@ -23,7 +23,7 @@ import {
   isWindows, isLinux, isMac,
   changeFileExtension, changeDeclgenFileExtension,
   toUnixPath, safeRealpath
-} from '../../../src/utils';
+} from '../../../src/util/utils';
 import { DECL_ETS_SUFFIX } from '../../../src/pre_define';
 
 describe('Check if the path exists. If not, create it and ensure it exists', () => {
@@ -123,7 +123,7 @@ describe('test if get interop files\' path by Api', () => {
     };
     jest.mock('fs', () => mockFs);
     jest.resetModules();
-    const utils = require('../../../src/utils');
+    const utils = require('../../../src/util/utils');
     (global as any).getInteropFilePathByApi = utils.getInteropFilePathByApi;
   });
 
@@ -146,7 +146,7 @@ describe('test if get interop files\' path by Api', () => {
 describe('test if get OhmurlByApi works correctly', () => {
   beforeEach(() => {
     jest.resetModules();
-    const utils = require('../../../src/utils');
+    const utils = require('../../../src/util/utils');
     (global as any).getOhmurlByApi = utils.getOhmurlByApi;
     (global as any).NATIVE_MODULE = require('../../../src/pre_define').NATIVE_MODULE;
     (global as any).ARKTS_MODULE_NAME = require('../../../src/pre_define').ARKTS_MODULE_NAME;

@@ -15,7 +15,7 @@
 
 import * as path from 'path';
 import * as fs from 'fs';
-import { safeRealpath } from '../../src/utils';
+import { safeRealpath } from '../../src/util/utils';
 import { ErrorCode } from '../../src/error_code';
 import { Logger } from '../../src/logger';
 

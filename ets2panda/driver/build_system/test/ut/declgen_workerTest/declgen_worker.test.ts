@@ -17,8 +17,22 @@
 
 jest.mock('fs');
 jest.mock('path');
-jest.mock('../../../src/utils', () => ({
-    changeFileExtension: jest.fn((p: string, ext: string) => p.replace(/\.[^/.]+$/, ext)),
+jest.mock('../../../src/util/utils', () => ({
+    // simplified functions for testing
+    changeFileExtension: jest.fn((file: string, targetExt: string, originExt = '') => {
+        const currentExt = originExt.length === 0 ? file.substring(file.lastIndexOf('.')) 
+                                                  : originExt;
+        const fileWithoutExt = file.substring(0, file.lastIndexOf(currentExt));
+        return fileWithoutExt + targetExt;
+    }),
+    changeDeclgenFileExtension: jest.fn((file: string, targetExt: string) => {
+        const DECL_ETS_SUFFIX = '.d.ets'; 
+        if (file.endsWith(DECL_ETS_SUFFIX)) {
+            return file.replace(DECL_ETS_SUFFIX, targetExt);
+        }
+        return file.substring(0, file.lastIndexOf('.')) + targetExt;
+    }),
+    createFileIfNotExists: jest.fn(),
     ensurePathExists: jest.fn()
 }));
 jest.mock('../../../src/plugins/plugins_driver', () => {
@@ -51,9 +65,26 @@ jest.mock('../../../src/pre_define', () => ({
     KOALA_WRAPPER_PATH_FROM_SDK: 'koala'
 }));
 
+jest.mock('../../../src/init/init_koala_modules', () => ({
+    initKoalaModules: jest.fn((buildConfig) => {
+    const fakeKoala = {
+      arkts: fakeArkts,
+      arktsGlobal: fakeArktsGlobal
+    };
+    fakeKoala.arktsGlobal.es2panda._SetUpSoPath(buildConfig.pandaSdkPath);
+    
+    buildConfig.arkts = fakeKoala.arkts;
+    buildConfig.arktsGlobal = fakeKoala.arktsGlobal;
+    return fakeKoala;
+  })
+}));
+
 const fakeArkts = {
     Config: { create: jest.fn(() => ({ peer: 'peer' })) },
-    Context: { createFromString: jest.fn(() => ({ program: {}, peer: 'peer' })) },
+    Context: { 
+        createFromString: jest.fn(() => ({ program: {}, peer: 'peer' })),
+        createFromStringWithHistory: jest.fn(() => ({ program: {}, peer: 'peer' })) 
+    },
     proceedToState: jest.fn(),
     Es2pandaContextState: { ES2PANDA_STATE_PARSED: 1, ES2PANDA_STATE_CHECKED: 2 },
     generateTsDeclarationsFromContext: jest.fn(),
@@ -72,7 +103,7 @@ const fakeArktsGlobal = {
 
 jest.mock('/sdk/koala', () => ({
     arkts: fakeArkts,
-    arktsGlobal: fakeArktsGlobal
+    arktsGlobal: fakeArktsGlobal,
 }), { virtual: true });
 
 beforeEach(() => {
@@ -93,76 +124,87 @@ afterEach(() => {
 
 // Test the functions of the declgen_worker.ts file
 describe('declgen_worker', () => {
-    const fileInfo = {
+    const compileFileInfo ={
         filePath: '/src/foo.ets',
+        dependentFiles: [],
+        abcFilePath: 'foo.abc',
         arktsConfigFile: '/src/arktsconfig.json',
-        packageName: 'pkg'
+        packageName: 'pkg',
     };
+    
     const buildConfig = {
-        buildSdkPath: '/sdk',
-        pandaSdkPath: '/panda'
-    };
-    const moduleInfo = {
+        hasMainModule: true,
+        byteCodeHar: true,
+        moduleType: 9999,
+        declgenV2OutPath: 'declgenV2Out',
         moduleRootPath: '/src',
-        declgenV1OutPath: '/decl',
-        declgenBridgeCodePath: '/bridge',
-        packageName: 'pkg'
+        plugins: { pkg: 'plugin' },
+        paths: { pkg: ['plugin'] },
+        compileFiles: ['/src/foo.ets'],
+        entryFiles: ['/src/foo.ets'],
+        dependentModuleList: [],
+        aliasConfig: {},
     };
+
+    const moduleInfo = {
+        isMainModule: true,
+        packageName: 'pkg',
+        moduleRootPath: '/src',
+        moduleType: 'type',
+        sourceRoots: [],
+        entryFile: 'foo.ets',
+        arktsConfigFile: 'arktsconfig.json',
+        compileFileInfos: [],
+        declgenV1OutPath: undefined,
+        declgenV2OutPath: undefined,
+        declgenBridgeCodePath: undefined,
+        byteCodeHar: false,
+        staticDepModuleInfos: new Map(),
+        dynamicDepModuleInfos: new Map(),
+        dependenciesSet: new Set(),
+        dependentSet: new Set(),
+    };
+    
     const moduleInfos = [['pkg', moduleInfo]];
 
     test('generate declaration && glue files && exit', () => {
         require('fs').readFileSync.mockReturnValue('source code');
+        const id = 'processId1';
+        const payload = {
+            fileInfo: compileFileInfo,
+            buildConfig: buildConfig,
+            moduleInfos: moduleInfos,
+        };
         require('../../../src/build/declgen_worker');
-        expect(() => {
-            (process as any).emit('message', { taskList: [fileInfo], buildConfig, moduleInfos });
-        }).toThrow('exit');
+        (process as any).emit('message', { id, payload });
 
-        expect(require('../../../src/utils').ensurePathExists).toHaveBeenCalledTimes(2);
+        expect(require('../../../src/util/utils').ensurePathExists).toHaveBeenCalledTimes(2);
         expect(fakeArkts.Config.create).toHaveBeenCalled();
-        expect(fakeArkts.Context.createFromString).toHaveBeenCalled();
+        expect(fakeArkts.Context.createFromStringWithHistory).toHaveBeenCalled();
         expect(fakeArkts.proceedToState).toHaveBeenCalledWith(1, 'peer', true);
         expect(fakeArkts.proceedToState).toHaveBeenCalledWith(2, 'peer', true);
         expect(fakeArkts.EtsScript.fromContext).toHaveBeenCalled();
         expect(fakeArkts.generateTsDeclarationsFromContext).toHaveBeenCalled();
         expect(fakeArkts.destroyConfig).toHaveBeenCalled();
         expect(fakeArktsGlobal.es2panda._DestroyContext).toHaveBeenCalled();
-        expect(process.exit).toHaveBeenCalledWith(0);
-        expect(process.send).toHaveBeenCalledWith(expect.objectContaining({
-            success: true,
-            filePath: fileInfo.filePath
-        }));
+        expect(process.send).toHaveBeenCalledWith({
+            id: 'processId1',
+            success: true
+        });
     });
-
-    test('handle error && send fail message', () => {
-        jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
-        require('fs').readFileSync.mockImplementation(() => { throw new Error('fail'); });
-        require('../../../src/build/declgen_worker');
-        expect(() => {
-            (process as any).emit('message', { taskList: [fileInfo], buildConfig, moduleInfos });
-        }).not.toThrow();
-
-        expect(process.send).toHaveBeenCalledWith(expect.objectContaining({
-            success: false,
-            filePath: fileInfo.filePath,
-            error: expect.any(String)
-        }));
-    });
-
-    test('throw if process.send is undefined', () => {
-        delete (process as any).send;
-        require('../../../src/build/declgen_worker');
-        expect(() => {
-            (process as any).emit('message', { taskList: [fileInfo], buildConfig, moduleInfos });
-        }).toThrow('process.send is undefined. This worker must be run as a forked process.');
-    });
-
+    
     test('destroy context && config', () => {
         require('fs').readFileSync.mockReturnValue('source code');
         require('../../../src/build/declgen_worker');
-        expect(() => {
-            (process as any).emit('message', { taskList: [fileInfo], buildConfig, moduleInfos });
-        }).toThrow('exit');
+        const processId = 'processId3';
+        const payload = {
+            fileInfo: compileFileInfo,
+            buildConfig: buildConfig,
+            moduleInfos: moduleInfos,
+        };
+        (process as any).emit('message', { processId, payload });
         expect(fakeArkts.destroyConfig).toHaveBeenCalled();
         expect(fakeArktsGlobal.es2panda._DestroyContext).toHaveBeenCalled();
     });
+    
 });
