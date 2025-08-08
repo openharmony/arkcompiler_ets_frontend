@@ -28,6 +28,7 @@
 #include "checker/types/ets/etsObjectType.h"
 #include "checker/types/ets/etsPartialTypeParameter.h"
 #include "checker/types/gradualType.h"
+#include "checker/types/typeError.h"
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "ir/base/catchClause.h"
 #include "ir/base/classDefinition.h"
@@ -1707,8 +1708,11 @@ static bool AppendSignatureInfoParam(ETSChecker *checker, SignatureInfo *sigInfo
     if (!param->IsOptional()) {
         ++sigInfo->minArgCount;
     }
-    ES2PANDA_ASSERT(!param->IsOptional() || param->Ident()->TsType()->IsTypeError() ||
-                    checker->Relation()->IsSupertypeOf(param->Ident()->TsType(), checker->GlobalETSUndefinedType()));
+    ERROR_SANITY_CHECK(
+        checker,
+        !param->IsOptional() || param->Ident()->TsType()->IsTypeError() ||
+            checker->Relation()->IsSupertypeOf(param->Ident()->TsType(), checker->GlobalETSUndefinedType()),
+        return false);
     return true;
 }
 
