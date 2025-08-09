@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,8 +14,9 @@
  */
 
 class C {
-  constructor</* @@ label */in T2>() {}
+  constructor(x: int) {}
 }
 
-/* @@@ label Error SyntaxError: Variance modifier is not allowed here.  */
-/* @@? 17:35 Error SyntaxError: Constructor should not have type parameters. */
+class D<T> {
+  constructor(x: T) {}
+} 
