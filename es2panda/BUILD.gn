@@ -352,14 +352,20 @@ action_foreach("gen_keywords_headers") {
 
 # generate headers for es2panda compiler
 isa_gen = "${ark_root}/isa/gen.rb"
-if (defined(ohos_indep_compiler_enable) && ohos_indep_compiler_enable) {
-  isa_gen_data = "$root_build_dir/gen/isa/isa.yaml"
-} else {
+if (defined(ark_standalone_build) && ark_standalone_build) {
   isa_gen_data = "$root_gen_dir/isa/isa.yaml"
+} else {
+  isa_combine_etc_out_dir =
+      get_label_info("runtime_core:isa_combine_etc", "target_out_dir")
+  isa_gen_data = "$isa_combine_etc_out_dir/$root_gen_dir/isa/isa.yaml"
 }
 isa_gen_require = "${ark_root}/isa/isapi.rb"
 action_foreach("gen_isa_headers") {
-  deps = [ "//arkcompiler/runtime_core/isa:isa_combine" ]
+  if (defined(ark_standalone_build) && ark_standalone_build) {
+    deps = [ "//arkcompiler/runtime_core/isa:isa_combine" ]
+  } else {
+    external_deps = [ "runtime_core:isa_combine_etc" ]
+  }
 
   template_files = [
     "isa.h.erb",
