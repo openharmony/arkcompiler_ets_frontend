@@ -174,18 +174,7 @@ popd >/dev/null 2>&1 || exit 1
 # run_script "all --prefix ui2abc"
 run_script "build:all --prefix ui2abc"
 
-# Compile arkui implementations
-run_script "build:arkui-common:inc:ui2abc --prefix arkoala-arkts/arkui-common"
-
-run_script "build:m3:recheck --prefix arkoala-arkts/arkui"
-# rm -rf arkoala-arkts/arkui/build*
-# run_script "build:m3:restart --prefix arkoala-arkts/arkui"
-
-# Compile UI plugin
-run_script "compile --prefix ui2abc/ui-plugins"
-
-# Compile and executable tests for UI DSL
-run_script "build:deps:m3 --prefix ets-tests"
+run_script "build:deps --prefix ets-tests"
 
 if [ -z "${DEMO}" ] ; then
     echo "Just compiled ArkUI, but no demo specified."
