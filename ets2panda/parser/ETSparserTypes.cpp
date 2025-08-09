@@ -318,7 +318,7 @@ std::pair<ir::TypeNode *, bool> ETSParser::ParseNonNullableType(TypeAnnotationPa
     Lexer()->NextToken();  // eat NonNullable
 
     ExpectToken(lexer::TokenType::PUNCTUATOR_LESS_THAN, true);
-    auto *const typeAnnotation = ParseTypeAnnotationNoPreferParam(options);
+    auto *const typeAnnotation = ParseTypeAnnotation(options);
     ParsePunctuatorGreaterThan();
     return std::make_pair(AllocNode<ir::ETSNonNullishTypeNode>(typeAnnotation, Allocator()), true);
 }
