@@ -13,7 +13,12 @@
 
 import("//arkcompiler/ets_frontend/es2panda/es2abc_config.gni")
 import("//arkcompiler/ets_frontend/ets_frontend_config.gni")
-import("//arkcompiler/runtime_core/ark_config.gni")
+
+if ((defined(ark_standalone_build) && ark_standalone_build) || (defined(is_arkui_x) && is_arkui_x)) {
+  import("//arkcompiler/runtime_core/ark_config.gni")
+} else {
+  import("//arkcompiler/ets_frontend/ark_config.gni")
+}
 
 es2panda_src = [
   "es2panda.cpp",
