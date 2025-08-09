@@ -494,7 +494,8 @@ void CheckerContext::AddBreakSmartCasts(ir::Statement const *targetStatement, Sm
 
 void CheckerContext::CombineBreakSmartCasts(ir::Statement const *targetStatement)
 {
-    ES2PANDA_ASSERT(smartCasts_.empty());
+    ES2PANDA_ASSERT((targetStatement->IsSwitchStatement() && targetStatement->AsSwitchStatement()->Cases().empty()) ||
+                    smartCasts_.empty());
 
     if (!breakSmartCasts_.empty()) {
         bool firstCase = true;
