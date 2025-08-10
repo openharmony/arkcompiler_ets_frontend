@@ -473,6 +473,36 @@ es2panda_AstNode *GetProgramAst(es2panda_Context *context)
     return GetProgramAstImpl(context);
 }
 
+std::vector<NodeInfo> GetNodeInfosByDefinitionData(es2panda_Context *context, size_t position)
+{
+    if (context == nullptr) {
+        return {};
+    }
+
+    auto node = GetTouchingToken(context, position, false);
+    if (node == nullptr) {
+        return {};
+    }
+
+    std::vector<NodeInfo> result;
+    while (node != nullptr) {
+        switch (node->Type()) {
+            case ir::AstNodeType::IDENTIFIER:
+                result.emplace_back(std::string(node->AsIdentifier()->Name()), ir::AstNodeType::IDENTIFIER);
+                break;
+            case ir::AstNodeType::CLASS_DEFINITION:
+                if (auto ident = node->AsClassDefinition()->Ident()) {
+                    result.emplace_back(std::string(ident->Name()), ir::AstNodeType::CLASS_DEFINITION);
+                }
+                break;
+            default:
+                break;
+        }
+        node = node->Parent();
+    }
+    return std::vector<NodeInfo>(result.rbegin(), result.rend());
+}
+
 es2panda_AstNode *GetClassDefinition(es2panda_AstNode *astNode, const std::string &nodeName)
 {
     return GetClassDefinitionImpl(astNode, nodeName);
@@ -554,6 +584,7 @@ LSPAPI g_lspImpl = {GetDefinitionAtPosition,
                     GetCombinedCodeFix,
                     GetNameOrDottedNameSpan,
                     GetProgramAst,
+                    GetNodeInfosByDefinitionData,
                     GetClassDefinition,
                     GetIdentifier,
                     GetDefinitionDataFromNode};

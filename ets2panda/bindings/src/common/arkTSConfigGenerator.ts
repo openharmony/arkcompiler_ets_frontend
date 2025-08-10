@@ -120,16 +120,15 @@ export class ArkTSConfigGenerator {
     });
   }
 
-  private getAlias(fullPath: string, entryRoot: string): string {
+  private getAlias(fullPath: string, entryRoot: string, packageName: string): string {
     const normalizedFull = path.normalize(fullPath);
     const normalizedEntry = path.normalize(entryRoot);
     const entryDir = normalizedEntry.endsWith(path.sep) ? normalizedEntry : normalizedEntry + path.sep;
     if (!normalizedFull.startsWith(entryDir)) {
       throw new Error(`Path ${fullPath} is not under entry root ${entryRoot}`);
     }
-    const entryName = path.basename(normalizedEntry);
     const relativePath = normalizedFull.substring(entryDir.length);
-    const formatPath = path.join(entryName, relativePath).replace(/\\/g, '/');
+    const formatPath = path.join(packageName, relativePath).replace(/\\/g, '/');
     const alias = formatPath;
     return changeFileExtension(alias, '');
   }
@@ -152,7 +151,9 @@ export class ArkTSConfigGenerator {
         depModuleInfo.compileFiles.forEach((file) => {
           const firstLine = fs.readFileSync(file, 'utf-8').split('\n')[0];
           if (firstLine.includes('use static')) {
-            this.pathSection[this.getAlias(file, depModuleInfo.moduleRootPath)] = [path.resolve(file)];
+            this.pathSection[this.getAlias(file, depModuleInfo.moduleRootPath, depModuleInfo.packageName)] = [
+              path.resolve(file)
+            ];
           }
         });
       }
@@ -162,7 +163,9 @@ export class ArkTSConfigGenerator {
       moduleInfo.compileFiles.forEach((file) => {
         const firstLine = fs.readFileSync(file, 'utf-8').split('\n')[0];
         if (getFileLanguageVersion(firstLine) === LANGUAGE_VERSION.ARKTS_1_2) {
-          this.pathSection[this.getAlias(file, moduleInfo.moduleRootPath)] = [path.resolve(file)];
+          this.pathSection[this.getAlias(file, moduleInfo.moduleRootPath, moduleInfo.packageName)] = [
+            path.resolve(file)
+          ];
         }
       });
     }

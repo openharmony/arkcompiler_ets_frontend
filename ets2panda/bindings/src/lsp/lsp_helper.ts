@@ -48,7 +48,8 @@ import {
   LspRenameInfoType,
   LspRenameInfoSuccess,
   LspRenameInfoFailure,
-  LspSourceLocation
+  LspSourceLocation,
+  LspNodeInfo
 } from './lspNode';
 import { passStringArray, unpackString } from '../common/private';
 import { Es2pandaContextState } from '../generated/Es2pandaEnums';
@@ -101,7 +102,8 @@ export class Lsp {
   private globalContextPtr?: KNativePointer;
   private globalConfig?: Config;
   private globalLspDriverHelper?: LspDriverHelper;
-  private entryArkTsConfig: string;
+  private defaultArkTsConfig: string;
+  private defaultBuildConfig: BuildConfig;
   private fileDependencies: string;
   private buildConfigs: Record<string, BuildConfig>; // Map<moduleName, build_config.json>
   private moduleInfos: Record<string, ModuleInfo>; // Map<fileName, ModuleInfo>
@@ -114,7 +116,6 @@ export class Lsp {
     this.cacheDir =
       pathConfig.cacheDir !== undefined ? pathConfig.cacheDir : path.join(pathConfig.projectPath, DEFAULT_CACHE_DIR);
     this.fileDependencies = path.join(this.cacheDir, 'file_dependencies.json');
-    this.entryArkTsConfig = path.join(this.cacheDir, 'entry', 'arktsconfig.json');
     this.pandaLibPath = process.env.PANDA_LIB_PATH
       ? process.env.PANDA_LIB_PATH
       : path.resolve(__dirname, '../../../ets2panda/lib');
@@ -126,7 +127,9 @@ export class Lsp {
     this.buildConfigs = generateBuildConfigs(pathConfig, modules);
     this.moduleInfos = generateArkTsConfigs(this.buildConfigs);
     this.pathConfig = pathConfig;
-    PluginDriver.getInstance().initPlugins(Object.values(this.buildConfigs)[0]);
+    this.defaultArkTsConfig = Object.values(this.moduleInfos)[0].arktsConfigFile;
+    this.defaultBuildConfig = Object.values(this.buildConfigs)[0];
+    PluginDriver.getInstance().initPlugins(this.defaultBuildConfig);
     this.initDeclFile();
   }
 
@@ -162,7 +165,9 @@ export class Lsp {
 
   private createContext(filename: String, processToCheck: boolean = true): [Config, KNativePointer] {
     const filePath = path.resolve(filename.valueOf());
-    const arktsconfig = this.moduleInfos[filePath]?.arktsConfigFile;
+    const arktsconfig = Object.prototype.hasOwnProperty.call(this.moduleInfos, filePath)
+      ? this.moduleInfos[filePath].arktsConfigFile
+      : this.defaultArkTsConfig;
     if (!arktsconfig) {
       throw new Error(`Missing arktsconfig for ${filePath}`);
     }
@@ -173,8 +178,10 @@ export class Lsp {
 
     const localCtx = this.lspDriverHelper.createCtx(source, filePath, localCfg, this.globalContextPtr);
     try {
-      const packageName = this.moduleInfos[filePath].packageName;
-      const buildConfig = this.buildConfigs[packageName];
+      const packageName = Object.prototype.hasOwnProperty.call(this.moduleInfos, filePath)
+        ? this.moduleInfos[filePath].packageName
+        : undefined;
+      const buildConfig = packageName ? this.buildConfigs[packageName] : this.defaultBuildConfig;
       const pluginContext = PluginDriver.getInstance().getPluginContext();
       pluginContext.setCodingFilePath(filePath);
       pluginContext.setProjectConfig(buildConfig);
@@ -235,7 +242,7 @@ export class Lsp {
   }
 
   updateDeclFile(filePath: string): void {
-    if (!this.moduleInfos.hasOwnProperty(filePath)) {
+    if (!Object.prototype.hasOwnProperty.call(this.moduleInfos, filePath)) {
       return;
     }
     this.generateDeclFile(filePath);
@@ -262,13 +269,28 @@ export class Lsp {
     } finally {
       this.destroyContext(cfg, ctx);
     }
-    return new LspDefinitionData(ptr);
+    const result = new LspDefinitionData(ptr);
+    const moduleName = this.moduleInfos[filename.valueOf()].packageName;
+    const declgenOutDir = this.buildConfigs[moduleName].declgenOutDir;
+    if (result.fileName.endsWith(DECL_ETS_SUFFIX) && result.fileName.startsWith(declgenOutDir)) {
+      let ptr: KPointer;
+      const [declFileCfg, declFileCtx] = this.createContext(result.fileName, false);
+      try {
+        ptr = global.es2panda._getNodeInfosByDefinitionData(declFileCtx, result.start);
+        result.nodeInfos = new NativePtrDecoder().decode(ptr).map((elPeer: KNativePointer) => {
+          return new LspNodeInfo(elPeer);
+        });
+      } finally {
+        this.destroyContext(declFileCfg, declFileCtx);
+      }
+    }
+    return result;
   }
 
   private getDefinitionAtPositionByNodeInfos(declFilePath: String, nodeInfos: NodeInfo[]): LspDefinitionData {
     let ptr: KPointer;
     const sourceFilePath = this.declFileMap[declFilePath.valueOf()];
-    const [cfg, ctx] = this.createContext(sourceFilePath);
+    const [cfg, ctx] = this.createContext(sourceFilePath, false);
     let astNode = global.es2panda._getProgramAst(ctx);
     let currentNodeName: string = '';
     try {
@@ -285,6 +307,11 @@ export class Lsp {
       this.destroyContext(cfg, ctx);
     }
     return new LspDefinitionData(ptr);
+  }
+
+  private getMergedCompileFiles(filename: String): string[] {
+    const moduleInfo = this.moduleInfos[path.resolve(filename.valueOf())];
+    return moduleInfo ? [...moduleInfo.compileFiles, ...moduleInfo.depModuleCompileFiles] : [];
   }
 
   getSemanticDiagnostics(filename: String): LspDiagsNode {
@@ -329,7 +356,7 @@ export class Lsp {
       this.destroyContext(cfg, searchCtx);
     }
     let result: LspReferenceData[] = [];
-    let compileFiles = this.moduleInfos[path.resolve(filename.valueOf())].compileFiles;
+    let compileFiles = this.getMergedCompileFiles(filename);
     for (let i = 0; i < compileFiles.length; i++) {
       let ptr: KPointer;
       const [cfg, ctx] = this.createContext(compileFiles[i]);
@@ -357,7 +384,7 @@ export class Lsp {
       this.destroyContext(cfg, searchCtx);
     }
     let result: LspReferenceData[] = [];
-    let compileFiles = this.moduleInfos[path.resolve(filename.valueOf())].compileFiles;
+    let compileFiles = this.getMergedCompileFiles(filename);
     for (let i = 0; i < compileFiles.length; i++) {
       let ptr: KPointer;
       const [cfg, ctx] = this.createContext(compileFiles[i]);
@@ -382,7 +409,7 @@ export class Lsp {
       return null;
     }
     let result: LspTypeHierarchiesInfo[] = [];
-    let compileFiles = this.moduleInfos[path.resolve(filename.valueOf())].compileFiles;
+    let compileFiles = this.getMergedCompileFiles(filename);
     for (let i = 0; i < compileFiles.length; i++) {
       let searchPtr: KPointer;
       const [cfg, searchCtx] = this.createContext(compileFiles[i]);
@@ -444,7 +471,7 @@ export class Lsp {
     const [cfg, ctx] = this.createContext(filename);
     contextList.push({ ctx: ctx, cfg: cfg });
     let nativeContextList = global.es2panda._pushBackToNativeContextVector(ctx, ctx, 1);
-    let compileFiles = this.moduleInfos[path.resolve(filename.valueOf())].compileFiles;
+    let compileFiles = this.getMergedCompileFiles(filename);
     for (let i = 0; i < compileFiles.length; i++) {
       let filePath = path.resolve(compileFiles[i]);
       if (path.resolve(filename.valueOf()) === filePath) {
@@ -498,7 +525,7 @@ export class Lsp {
       this.destroyContext(cfg, ctx);
     }
     let result: LspSafeDeleteLocationInfo[] = [];
-    let compileFiles = this.moduleInfos[path.resolve(filename.valueOf())].compileFiles;
+    let compileFiles = this.getMergedCompileFiles(filename);
     for (let i = 0; i < compileFiles.length; i++) {
       let ptr: KPointer;
       const [searchCfg, searchCtx] = this.createContext(compileFiles[i]);
@@ -649,7 +676,7 @@ export class Lsp {
   }
 
   findRenameLocations(filename: String, offset: number): LspRenameLocation[] {
-    let compileFiles = this.moduleInfos[path.resolve(filename.valueOf())].compileFiles;
+    let compileFiles = this.getMergedCompileFiles(filename);
     const fileContexts: KPointer[] = [];
     const fileConfigs: Config[] = [];
     for (let i = 0; i < compileFiles.length; i++) {
@@ -751,7 +778,7 @@ export class Lsp {
     ensurePathExists(outputFile);
     const result = child_process.spawnSync(
       depAnalyzerPath,
-      [`@${depInputFile}`, `--output=${output}`, `--arktsconfig=${this.entryArkTsConfig}`],
+      [`@${depInputFile}`, `--output=${output}`, `--arktsconfig=${this.defaultArkTsConfig}`],
       {
         encoding: 'utf-8',
         windowsHide: true
@@ -1000,7 +1027,7 @@ export class Lsp {
       '--extension',
       'ets',
       '--arktsconfig',
-      this.entryArkTsConfig,
+      this.defaultArkTsConfig,
       Object.keys(this.moduleInfos)[0]
     ];
 
@@ -1140,7 +1167,9 @@ export class Lsp {
       jobInfo = {
         id: job.id,
         filePath: job.fileList[0],
-        arktsConfigFile: this.entryArkTsConfig,
+        arktsConfigFile: Object.prototype.hasOwnProperty.call(this.moduleInfos, job.fileList[0])
+          ? this.moduleInfos[job.fileList[0]].arktsConfigFile
+          : this.defaultArkTsConfig,
         globalContextPtr: this.globalContextPtr!,
         buildConfig: Object.values(this.buildConfigs)[0],
         isValid: job.isValid
@@ -1188,7 +1217,9 @@ export class Lsp {
     let jobInfo = {
       id: filename.valueOf(),
       filePath: filename.valueOf(),
-      arktsConfigFile: this.entryArkTsConfig,
+      arktsConfigFile: Object.prototype.hasOwnProperty.call(this.moduleInfos, filename.valueOf())
+        ? this.moduleInfos[filename.valueOf()].arktsConfigFile
+        : this.defaultArkTsConfig,
       globalContextPtr: this.globalContextPtr!,
       buildConfig: Object.values(this.buildConfigs)[0],
       isValid: true

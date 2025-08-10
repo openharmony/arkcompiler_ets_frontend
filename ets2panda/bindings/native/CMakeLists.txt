@@ -73,8 +73,6 @@ set(BINDINGS_NAPI_SRC
 # PUBLIC arkbase es2panda-lib es2panda-public
 # PRIVATE arkbytecodeopt
 set(ES2PANDA_LIBS
-  es2panda-lib
-  es2panda-public
   es2panda_lsp
 )
 

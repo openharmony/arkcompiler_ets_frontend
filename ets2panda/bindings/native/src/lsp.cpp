@@ -14,6 +14,7 @@
  */
 
 #include "convertors-napi.h"
+#include "ir/astNode.h"
 #include "lsp/include/api.h"
 #include "common.h"
 #include "panda_types.h"
@@ -1831,6 +1832,32 @@ KNativePointer impl_getProgramAst(KNativePointer contextPtr)
     return impl->getProgramAst(context);
 }
 TS_INTEROP_1(getProgramAst, KNativePointer, KNativePointer)
+
+KNativePointer impl_getNodeInfosByDefinitionData(KNativePointer context, KInt position)
+{
+    auto ctx = reinterpret_cast<es2panda_Context *>(context);
+    LSPAPI const *impl = GetImpl();
+    std::vector<void *> ptrs;
+    for (auto &item : impl->getNodeInfosByDefinitionData(ctx, position)) {
+        ptrs.push_back(new NodeInfo(item));
+    }
+    return new std::vector<void *>(ptrs);
+}
+TS_INTEROP_2(getNodeInfosByDefinitionData, KNativePointer, KNativePointer, KInt)
+
+KNativePointer impl_getNameByNodeInfo(KNativePointer nodeInfo)
+{
+    auto *info = reinterpret_cast<NodeInfo *>(nodeInfo);
+    return new std::string(info->name);
+}
+TS_INTEROP_1(getNameByNodeInfo, KNativePointer, KNativePointer)
+
+KNativePointer impl_getKindByNodeInfo(KNativePointer nodeInfo)
+{
+    auto *info = reinterpret_cast<NodeInfo *>(nodeInfo);
+    return new std::string(ark::es2panda::ir::ToString(info->kind));
+}
+TS_INTEROP_1(getKindByNodeInfo, KNativePointer, KNativePointer)
 
 KNativePointer impl_getDefinitionDataFromNode(KNativePointer astNodePtr, KStringPtr &nodeNamePtr)
 {

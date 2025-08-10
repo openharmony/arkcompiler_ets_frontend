@@ -25,6 +25,7 @@
 #include <string>
 #include <variant>
 #include <vector>
+#include "ir/astNode.h"
 #include "line_column_offset.h"
 #include "public/es2panda_lib.h"
 #include "cancellation_token.h"
@@ -491,6 +492,12 @@ struct CodeFixOptions {
     ark::es2panda::lsp::UserPreferences preferences;
 };
 
+struct NodeInfo {
+    NodeInfo(std::string n, ark::es2panda::ir::AstNodeType k) : name(n), kind(k) {}
+    std::string name;
+    ark::es2panda::ir::AstNodeType kind;
+};
+
 typedef struct LSPAPI {
     DefinitionInfo (*getDefinitionAtPosition)(es2panda_Context *context, size_t position);
     std::vector<ark::es2panda::lsp::ApplicableRefactorInfo> (*getApplicableRefactors)(es2panda_Context *context,
@@ -554,6 +561,7 @@ typedef struct LSPAPI {
                                                   CodeFixOptions &codeFixOptions);
     TextSpan *(*GetNameOrDottedNameSpan)(es2panda_Context *context, int startPos);
     es2panda_AstNode *(*getProgramAst)(es2panda_Context *context);
+    std::vector<NodeInfo> (*getNodeInfosByDefinitionData)(es2panda_Context *context, size_t position);
     es2panda_AstNode *(*getClassDefinition)(es2panda_AstNode *astNode, const std::string &nodeName);
     es2panda_AstNode *(*getIdentifier)(es2panda_AstNode *astNode, const std::string &nodeName);
     DefinitionInfo (*getDefinitionDataFromNode)(es2panda_AstNode *astNode, const std::string &nodeName);
