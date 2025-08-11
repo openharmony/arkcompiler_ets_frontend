@@ -520,6 +520,7 @@ semantic:
 - name: GETTER_MISSING_IMPL
   id: 188
   message: "{} is not abstract and does not implement getter for {} property in {}"
+  code_fix_ids: [FixClassIncorrectlyImplementsInterfaceForSetter]
 
 - name: GETTER_VOID
   id: 86
@@ -1186,6 +1187,7 @@ semantic:
 - name: SETTER_MISSING_IMPL
   id: 189
   message: "{} is not abstract and does not implement setter for {} property in {}"
+  code_fix_ids: [FixClassIncorrectlyImplementsInterfaceForGetter]
 
 - name: SIG_INVISIBLE
   id: 139

@@ -126,6 +126,7 @@ set(ES2PANDA_LSP_SRC
   ./src/register_code_fix/remove_accidental_call_parentheses.cpp
   ./src/register_code_fix/fix_add_function_return_statement.cpp
   ./src/register_code_fix/ui_plugin_suggest.cpp
+  ./src/register_code_fix/fix_class_incorrectly_implements_interface.cpp
   ./src/get_signature.cpp
   ./src/get_name_or_dotted_name_span.cpp
   ./src/get_node.cpp
