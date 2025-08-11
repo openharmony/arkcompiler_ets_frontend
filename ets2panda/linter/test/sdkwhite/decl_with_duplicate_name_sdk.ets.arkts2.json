@@ -155,16 +155,6 @@
             "severity": "ERROR"
         },
         {
-          "line": 52,
-          "column": 5,
-          "endLine": 52,
-          "endColumn": 19,
-          "problem": "VariableMissingInitializer",
-          "suggest": "",
-          "rule": "After a variable is declared, a value must be assigned before using it (arkts-var-assignment-before-use)",
-          "severity": "ERROR"
-        },
-        {
             "line": 53,
             "column": 18,
             "endLine": 53,

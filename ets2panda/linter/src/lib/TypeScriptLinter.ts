@@ -2754,43 +2754,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handlePropertyDescriptorInScenarios(tsVarDecl);
     this.handleSdkGlobalApi(tsVarDecl);
     this.handleNoDeprecatedApi(tsVarDecl);
-    this.handleMissingInitializer(tsVarDecl);
     this.checkNumericSemanticsForVariable(tsVarDecl);
-  }
-
-  /**
-   * Reports an error if a `let`/`const` declaration lacks an initializer.
-   */
-  private handleMissingInitializer(decl: ts.VariableDeclaration): void {
-    if (!this.options.arkts2) {
-      return;
-    }
-
-    const list = decl.parent as ts.VariableDeclarationList;
-    if (!(list.flags & (ts.NodeFlags.Let | ts.NodeFlags.Const))) {
-      return;
-    }
-
-    // Skip for‐of/for‐in loop bindings
-    const parentStmt = list.parent;
-    if (ts.isForOfStatement(parentStmt) || ts.isForInStatement(parentStmt)) {
-      return;
-    }
-
-    // Skip explicit function‐type declarations (they are more like methods)
-    if (decl.type && ts.isFunctionTypeNode(decl.type)) {
-      return;
-    }
-
-    // Skip variables declared as void—voids are handled by a different rule
-    if (decl.type && decl.type.kind === ts.SyntaxKind.VoidKeyword) {
-      return;
-    }
-
-    // If no initializer, report
-    if (!decl.initializer) {
-      this.incrementCounters(decl.name, FaultID.VariableMissingInitializer);
-    }
   }
 
   private checkNumericSemanticsForBinaryExpression(node: ts.BinaryExpression): void {
@@ -3924,6 +3888,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleLimitedVoidFunction(tsMethodDecl);
     this.checkVoidLifecycleReturn(tsMethodDecl);
     this.handleNoDeprecatedApi(tsMethodDecl);
+    this.checkAbstractOverrideReturnType(tsMethodDecl);
   }
 
   private checkObjectPublicApiMethods(node: ts.ClassDeclaration | ts.InterfaceDeclaration): void {
@@ -4997,6 +4962,10 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     );
     const tsElemAccessArgType = this.tsTypeChecker.getTypeAtLocation(tsElementAccessExpr.argumentExpression);
 
+    if (this.options.arkts2 && this.tsUtils.isOrDerivedFrom(tsElemAccessBaseExprType, TsUtils.isTuple)) {
+      this.handleTupleIndex(tsElementAccessExpr);
+    }
+
     if (this.tsUtils.hasEsObjectType(tsElementAccessExpr.expression)) {
       const faultId = this.options.arkts2 ? FaultID.EsValueTypeError : FaultID.EsValueType;
       this.incrementCounters(node, faultId);
@@ -5011,6 +4980,80 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.checkInterOpImportJsIndex(tsElementAccessExpr);
     this.checkEnumGetMemberValue(tsElementAccessExpr);
     this.handleNoDeprecatedApi(tsElementAccessExpr);
+  }
+
+  private handleTupleIndex(expr: ts.ElementAccessExpression): void {
+    const value = expr.argumentExpression;
+
+    if (this.isArgumentConstDotZero(value)) {
+      this.incrementCounters(expr as ts.Node, FaultID.TupleIndex);
+      return;
+    }
+
+    if (ts.isNumericLiteral(value)) {
+      const indexText = value.getText();
+      const indexValue = Number(indexText);
+      const isValid = Number.isInteger(indexValue) && indexValue >= 0;
+
+      if (!isValid) {
+        this.incrementCounters(expr as ts.Node, FaultID.TupleIndex);
+      }
+      return;
+    }
+
+    if (ts.isPrefixUnaryExpression(value)) {
+      const { operator, operand } = value;
+      const resolved = this.evaluateValueFromDeclaration(operand);
+
+      if (typeof resolved === 'number') {
+        const final = operator === ts.SyntaxKind.MinusToken ? -resolved : resolved;
+        const isValid = Number.isInteger(final) && final >= 0;
+        if (!isValid) {
+          this.incrementCounters(expr as ts.Node, FaultID.TupleIndex);
+        }
+        return;
+      }
+      this.incrementCounters(expr as ts.Node, FaultID.TupleIndex);
+      return;
+    }
+
+    const resolved = this.evaluateValueFromDeclaration(value);
+    if (typeof resolved === 'number') {
+      const isValid = Number.isInteger(resolved) && resolved >= 0;
+      if (!isValid) {
+        this.incrementCounters(expr as ts.Node, FaultID.TupleIndex);
+      }
+      return;
+    }
+
+    this.incrementCounters(expr as ts.Node, FaultID.TupleIndex);
+  }
+
+  private isArgumentConstDotZero(expr: ts.Expression): boolean {
+    if (ts.isNumericLiteral(expr)) {
+      return expr.getText().endsWith('.0');
+    }
+
+    if (ts.isPrefixUnaryExpression(expr) && ts.isNumericLiteral(expr.operand)) {
+      return expr.operand.getText().endsWith('.0');
+    }
+
+    if (ts.isIdentifier(expr)) {
+      const declaration = this.tsUtils.getDeclarationNode(expr);
+      if (declaration && ts.isVariableDeclaration(declaration) && declaration.initializer) {
+        const init = declaration.initializer;
+
+        if (ts.isNumericLiteral(init)) {
+          return init.getText().endsWith('.0');
+        }
+
+        if (ts.isPrefixUnaryExpression(init) && ts.isNumericLiteral(init.operand)) {
+          return init.operand.getText().endsWith('.0');
+        }
+      }
+    }
+
+    return false;
   }
 
   private checkPropertyAccessByIndex(
@@ -5199,14 +5242,17 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (!initializer) {
       return null;
     }
-
-    if (!ts.isNumericLiteral(initializer)) {
-      return null;
-    }
-
-    const numericValue = Number(initializer.text);
-    if (!Number.isInteger(numericValue)) {
-      return null;
+    let numericValue: number | null = null;
+    if (ts.isNumericLiteral(initializer)) {
+      numericValue = Number(initializer.text);
+    } else if (ts.isPrefixUnaryExpression(initializer) && ts.isNumericLiteral(initializer.operand)) {
+      const rawValue = Number(initializer.operand.text);
+      numericValue =
+        initializer.operator === ts.SyntaxKind.MinusToken ?
+          -rawValue :
+          initializer.operator === ts.SyntaxKind.PlusToken ?
+            rawValue :
+            null;
     }
 
     return numericValue;
@@ -10605,6 +10651,110 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       current = decl;
     }
     return undefined;
+  }
+
+  /**
+   * If a class method overrides a base-class abstract method that had no explicit return type,
+   * then any explicit return type other than `void` is an error.
+   * Also flags async overrides with no explicit annotation.
+   */
+  private checkAbstractOverrideReturnType(method: ts.MethodDeclaration): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    const baseClass = this.getDirectBaseClassOfGivenMethodDecl(method);
+    if (!baseClass) {
+      return;
+    }
+
+    // Locate the abstract method in the inheritance chain
+    const methodName = method.name.getText();
+    const baseMethod = this.findAbstractMethodInBaseChain(baseClass, methodName);
+    if (!baseMethod) {
+      return;
+    }
+
+    // Only if base had no explicit return type
+    if (baseMethod.type) {
+      return;
+    }
+
+    // If override declares a return type, and it isn't void → error
+    if (method.type && method.type.kind !== ts.SyntaxKind.VoidKeyword) {
+      const target = ts.isIdentifier(method.name) ? method.name : method;
+      this.incrementCounters(target, FaultID.InvalidAbstractOverrideReturnType);
+
+      // Also catch async overrides with no explicit annotation (defaulting to Promise<void>)
+    } else if (TsUtils.hasModifier(method.modifiers, ts.SyntaxKind.AsyncKeyword)) {
+      const target = ts.isIdentifier(method.name) ? method.name : method;
+      this.incrementCounters(target, FaultID.InvalidAbstractOverrideReturnType);
+    }
+  }
+
+  /**
+   * Finds the direct superclass declaration for the given method's containing class.
+   * Returns undefined if the class has no extends clause or cannot resolve the base class.
+   */
+  private getDirectBaseClassOfGivenMethodDecl(method: ts.MethodDeclaration): ts.ClassDeclaration | undefined {
+    // Must live in a class with an extends clause
+    const classDecl = method.parent;
+    if (!ts.isClassDeclaration(classDecl) || !classDecl.heritageClauses) {
+      return undefined;
+    }
+
+    return this.getBaseClassDeclFromHeritageClause(classDecl.heritageClauses);
+  }
+
+  /**
+   * Walks up the inheritance chain starting from `startClass` to find an abstract method
+   * named `methodName`. Returns the MethodDeclaration if found, otherwise `undefined`.
+   */
+  private findAbstractMethodInBaseChain(
+    startClass: ts.ClassDeclaration,
+    methodName: string
+  ): ts.MethodDeclaration | undefined {
+    // Prevent infinite loops from circular extends
+    const visited = new Set<ts.ClassDeclaration>();
+    let current: ts.ClassDeclaration | undefined = startClass;
+    while (current && !visited.has(current)) {
+      visited.add(current);
+      const found = current.members.find((m) => {
+        return (
+          ts.isMethodDeclaration(m) &&
+          ts.isIdentifier(m.name) &&
+          m.name.text === methodName &&
+          TsUtils.hasModifier(m.modifiers, ts.SyntaxKind.AbstractKeyword)
+        );
+      }) as ts.MethodDeclaration | undefined;
+      if (found) {
+        return found;
+      }
+      current = this.getBaseClassDeclFromHeritageClause(current.heritageClauses);
+    }
+    return undefined;
+  }
+
+  getBaseClassDeclFromHeritageClause(clauses?: ts.NodeArray<ts.HeritageClause>): ts.ClassDeclaration | undefined {
+    if (!clauses) {
+      return undefined;
+    }
+
+    const ext = clauses.find((h) => {
+      return h.token === ts.SyntaxKind.ExtendsKeyword;
+    });
+    if (!ext || ext.types.length === 0) {
+      return undefined;
+    }
+
+    // Resolve the base-class declaration
+    const expr = ext.types[0].expression;
+    if (!ts.isIdentifier(expr)) {
+      return undefined;
+    }
+
+    const sym = this.tsUtils.trueSymbolAtLocation(expr);
+    return sym?.declarations?.find(ts.isClassDeclaration);
   }
 
   /**
