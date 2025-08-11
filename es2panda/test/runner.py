@@ -1253,7 +1253,10 @@ class FilesInfoRunner(Runner):
         projects_path = path.join(self.test_root, directory)
         test_projects = ["base", "mod"]
         for project in test_projects:
-            filesinfo_path = path.join(projects_path, project, "filesInfo.txt")
+            project_dir = path.join(projects_path, project)
+            if not path.isdir(project_dir):
+                continue
+            filesinfo_path = path.join(project_dir, "filesInfo.txt")
             self.tests.append(FilesInfoTest(projects_path, project, filesinfo_path, flags))
 
     def test_path(self, src):
@@ -1261,6 +1264,8 @@ class FilesInfoRunner(Runner):
 
 
 class FilesInfoTest(Test):
+    LONG_PATH_MARKER = "long_path_filesinfo"
+
     def __init__(self, projects_path, project, filesinfo_path, flags):
         Test.__init__(self, "", flags)
         self.projects_path = projects_path
@@ -1272,6 +1277,7 @@ class FilesInfoTest(Test):
         self.symbol_table_file = os.path.join(self.output_path, 'base.map')
         self.output_abc_name = path.join(self.output_path, self.project + ".abc")
         self.output_abc_name_of_input_abc = path.join(self.output_path, self.project + "_input.abc")
+        self.is_long_path_case = self.LONG_PATH_MARKER in self.path
 
         if not path.exists(self.output_path):
             os.makedirs(self.output_path)
@@ -1306,7 +1312,19 @@ class FilesInfoTest(Test):
         es2abc_cmd.append(input_file)
         return es2abc_cmd
 
+    def get_long_path_filesinfo_path(self):
+        long_dir = "a" * 4096
+        return path.join(self.projects_path, self.project, long_dir, "filesInfo.txt")
+
+    def replace_expected_file_root(self, expected):
+        full_root_path = os.path.abspath(path.join(self.projects_path, self.project))
+        return expected.replace("{{EXPECTED_FILE_ROOT}}", full_root_path)
+
     def gen_merged_abc(self, runner):
+        # Generate long path filesinfo if it is path contains long path
+        if self.is_long_path_case:
+            self.files_info_path = self.get_long_path_filesinfo_path()
+
         # Generate the abc to be tested
         es2abc_cmd = self.gen_es2abc_cmd(runner, '@' + self.files_info_path, self.output_abc_name)
         process = run_subprocess_with_beta3(self, es2abc_cmd)
@@ -1319,6 +1337,8 @@ class FilesInfoTest(Test):
         try:
             with open(pa_expected_path, 'r') as fp:
                 expected = fp.read()
+            if self.is_long_path_case:
+                expected = self.replace_expected_file_root(expected)
             self.passed = expected == self.output and process.returncode in [0, 1]
         except Exception:
             self.passed = False
@@ -3044,6 +3064,8 @@ def add_directory_for_compiler(runners, args):
     filesinfo_runner = FilesInfoRunner(args)
     filesinfo_compiler_infos.append(CompilerTestInfo("compiler/filesInfoTest/sourceLang", "txt",
                                                 ["--module", "--merge-abc", "--dump-assembly"]))
+    filesinfo_compiler_infos.append(CompilerTestInfo("compiler/filesInfoTest/long_path_filesinfo", "txt",
+                                                ["--module", "--merge-abc"]))
 
     for info in filesinfo_compiler_infos:
         filesinfo_runner.add_directory(info.directory, info.extension, info.flags)
