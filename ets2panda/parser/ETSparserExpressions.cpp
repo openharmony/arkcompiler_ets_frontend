@@ -314,7 +314,8 @@ ir::Expression *ETSParser::ParseDefaultPrimaryExpression(ExpressionParseFlags fl
             Lexer()->NextToken();  // eat '.'
         }
 
-        if (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_CLASS || IsStructKeyword()) {
+        if ((Lexer()->GetToken().Type() == lexer::TokenType::KEYW_CLASS || IsStructKeyword()) &&
+            potentialType->IsBrokenTypeNode()) {
             Lexer()->NextToken();  // eat 'class' and 'struct'
             auto *classLiteral = AllocNode<ir::ETSClassLiteral>(potentialType);
             ES2PANDA_ASSERT(classLiteral != nullptr);
