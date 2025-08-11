@@ -45,6 +45,10 @@ protobuf_snapshot_generator_sources = [
 
 config("panda_assembly_proto_public_config") {
   include_dirs = [
+    "$ark_root/assembler",
+    "$ark_root/libpandabase",
+    "$ark_root/libpandabase/mem",
+    "$ark_root",
     "src",
     "$proto_out_dir",
     "../es2panda",
@@ -201,11 +205,6 @@ ohos_source_set("assembly_proto_static") {
     ]
   }
 
-  external_deps += [
-    "runtime_core:libarkbase_static",
-    "runtime_core:libarkassembler_static",
-    "runtime_core:libarkfile_static",
-  ]
   sources = proto_generated_header + proto_generated_source +
             protobuf_snapshot_generator_sources
   public_configs = assembly_proto_configs
@@ -270,9 +269,6 @@ ohos_executable("merge_abc") {
   ]
   external_deps += [
     "icu:static_icuuc",
-    "runtime_core:libarkbase_static",
-    "runtime_core:libarkassembler_static",
-    "runtime_core:libarkfile_static",
     sdk_libc_secshared_dep,
   ]
   if (!is_arkui_x) {
