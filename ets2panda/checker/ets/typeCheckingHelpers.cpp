@@ -1750,7 +1750,7 @@ void ETSChecker::CheckFunctionOverloadDeclaration(ETSChecker *checker, ir::Overl
 
             PropertySearchFlags searchFlags = PropertySearchFlags::SEARCH_METHOD | PropertySearchFlags::SEARCH_IN_BASE |
                                               PropertySearchFlags::SEARCH_IN_INTERFACES |
-                                              PropertySearchFlags::IS_GETTER;
+                                              PropertySearchFlags::IS_GETTER | PropertySearchFlags::IGNORE_OVERLOAD;
             auto *variable =
                 checker->ResolveOverloadReference(ident->AsIdentifier(), classType->AsETSObjectType(), searchFlags);
             if (variable == nullptr) {

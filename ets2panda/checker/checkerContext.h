@@ -165,6 +165,11 @@ public:
         return status_;
     }
 
+    [[nodiscard]] varbinder::Variable *ContainingOverloadDeclaration() noexcept
+    {
+        return containingOverloadDeclaration_;
+    }
+
     void SetContainingSignature(Signature *containingSignature) noexcept
     {
         containingSignature_ = containingSignature;
@@ -173,6 +178,11 @@ public:
     void SetContainingClass(ETSObjectType *containingClass) noexcept
     {
         containingClass_ = containingClass;
+    }
+
+    void SetContainingOverloadDeclaration(varbinder::Variable *containingOverloadDeclaration) noexcept
+    {
+        containingOverloadDeclaration_ = containingOverloadDeclaration;
     }
 
     void AddCapturedVar(varbinder::Variable *var, const lexer::SourcePosition &pos)
@@ -275,6 +285,7 @@ private:
     const ETSObjectType *containingClass_ {nullptr};
     ir::ArrowFunctionExpression *containingLambda_ {nullptr};
     Signature *containingSignature_ {nullptr};
+    varbinder::Variable *containingOverloadDeclaration_ {nullptr};
 
     lexer::TokenType operatorType_ = lexer::TokenType::EOS;
     SmartCastCondition testCondition_ {};

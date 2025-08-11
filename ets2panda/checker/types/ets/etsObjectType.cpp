@@ -252,8 +252,9 @@ varbinder::LocalVariable *ETSObjectType::CreateSyntheticVarFromEverySignature(co
     // Since both "first match" and "best match" exist at present, overloadDeclarationCall is temporarily used. After
     // "best match" removed, this marking needs to be removed.
     auto *overloadDeclaration = SearchFieldsDecls(name, UpdateOverloadDeclarationSearchFlags(flags));
-    bool overloadDeclarationCall = overloadDeclaration != nullptr;
-    PropertySearchFlags syntheticFlags = overloadDeclarationCall ? UpdateOverloadDeclarationSearchFlags(flags) : flags;
+    SignatureCollectContext sigCtx {GetRelation()->GetChecker()->AsETSChecker(), overloadDeclaration, true};
+    PropertySearchFlags syntheticFlags =
+        sigCtx.IsOverloadDeclarationCall() ? UpdateOverloadDeclarationSearchFlags(flags) : flags;
 
     varbinder::LocalVariable *functionalInterface = CollectSignaturesForSyntheticType(signatures, name, syntheticFlags);
     // #22952: the called function *always* returns nullptr
@@ -264,11 +265,7 @@ varbinder::LocalVariable *ETSObjectType::CreateSyntheticVarFromEverySignature(co
         return nullptr;
     }
 
-    varbinder::VariableFlags varianceFlag =
-        overloadDeclarationCall ? varbinder::VariableFlags::SYNTHETIC | varbinder::VariableFlags::METHOD |
-                                      varbinder::VariableFlags::OVERLOAD
-                                : varbinder::VariableFlags::SYNTHETIC | varbinder::VariableFlags::METHOD;
-    varbinder::LocalVariable *res = allocator_->New<varbinder::LocalVariable>(varianceFlag);
+    varbinder::LocalVariable *res = sigCtx.CreateSyntheticVar(allocator_);
 
     ETSFunctionType *funcType = CreateMethodTypeForProp(name);
     ES2PANDA_ASSERT(funcType != nullptr);
@@ -278,10 +275,6 @@ varbinder::LocalVariable *ETSObjectType::CreateSyntheticVarFromEverySignature(co
     ES2PANDA_ASSERT(res != nullptr);
     res->SetTsType(funcType);
     funcType->SetVariable(res);
-
-    if (overloadDeclarationCall) {
-        res->Reset(overloadDeclaration->Declaration(), res->Flags());
-    }
 
     UpdateDeclarationForGetterSetter(res, funcType, flags);
 
@@ -350,6 +343,8 @@ void ETSObjectType::AddSignatureFromOverload(std::vector<Signature *> &signature
     if (overloadDeclaration->Id()->IsErrorPlaceHolder()) {
         return;
     }
+
+    SignatureCollectContext sigCtx {GetRelation()->GetChecker()->AsETSChecker(), found};
 
     if (overloadDeclaration->IsConstructorOverloadDeclaration()) {
         return AddSignatureFromConstructor(signatures, found);
