@@ -23,4 +23,3 @@ function main()
 }
 
 /* @@@ label Error TypeError: Function name 'a' used in the wrong context */
-/* @@@ label1 Error TypeError: Type 'Int' cannot be assigned to type '() => void' */
