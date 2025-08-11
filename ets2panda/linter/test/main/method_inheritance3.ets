@@ -61,3 +61,83 @@ class EntryAbility extends UIAbility {
     }
   }
 }
+
+class TestA {
+  a: number = 0
+}
+
+class TestD extends TestA{
+  a: number = 0;
+  b: number = 1;
+}
+
+class TestE implements TestI{
+
+}
+
+class TestF extends TestE{
+
+}
+interface TestI{
+
+}
+
+interface TestI2 extends TestI{
+
+}
+class TestBase {
+  foo3(obj: TestD): void {
+    console.log("Derived:" + obj.b)
+  }
+
+  foo4(obj: TestD): TestA {
+    console.log("base" );
+    return new TestA()
+  }
+
+  foo5():TestI{
+    return {}
+  }
+
+  foo12(obj:never){
+
+  }
+}
+
+class TestDerived extends TestBase {
+  override foo3(obj: TestA): void {  // no error
+    console.log("base" );
+  }
+
+  override foo4(obj: TestA): TestD {  // no error
+    return new TestD();
+  }
+
+  override foo5(): TestI2 {  // no error
+    return {}
+  }
+
+  override foo12(obj:TestA){   // no error
+
+  }
+}
+
+class CC1 {}
+class CC2 extends CC1 {
+  public static toString(result: number): string { // no error
+    return '';
+  }
+}
+
+class AA<T>{
+  getData(a:T):T{
+
+    return a;
+  }
+}
+
+class BB extends AA<number>{
+  getData(a: number): number {  // no error
+    return 123;
+  }
+}
