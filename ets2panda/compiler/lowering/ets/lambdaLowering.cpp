@@ -1259,6 +1259,9 @@ static ir::AstNode *ConvertLambda(public_lib::Context *ctx, ir::ArrowFunctionExp
         info.originalFuncName = lambda->Parent()->AsVariableDeclarator()->Id()->AsIdentifier()->Name();
     } else if ((lambda->Parent() != nullptr) && lambda->Parent()->IsClassProperty()) {
         info.originalFuncName = lambda->Parent()->AsClassProperty()->Id()->Name();
+    } else if ((lambda->Parent() != nullptr) && lambda->Parent()->IsAssignmentExpression() &&
+               lambda->Parent()->AsAssignmentExpression()->Left()->IsIdentifier()) {
+        info.originalFuncName = lambda->Parent()->AsAssignmentExpression()->Left()->AsIdentifier()->Name();
     }
 
     auto capturedVars = FindCaptured(allocator, lambda);
