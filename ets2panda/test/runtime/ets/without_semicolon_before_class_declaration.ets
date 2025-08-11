@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,10 +13,14 @@
  * limitations under the License.
  */
 
-import * as Src from "./annotation_export"
+let x: number = 1;
+const y: number = x
+class C {
+    foo(a: Int): Int {
+        return a;
+    }
+}
 
-
-Src.MyAnno
-class /* @@ label */A/* @@ label1 */{}
-
-/* @@? 19:5 Error TypeError: Property 'MyAnno' does not exist on type 'annotation_export' */
+function main(): void {
+    arktest.assertEQ(new C().foo(1), 1)
+}
