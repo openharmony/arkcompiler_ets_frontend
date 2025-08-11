@@ -271,6 +271,9 @@ void ETSChecker::InitializeBuiltins(varbinder::ETSBinder *varbinder)
     }
 
     const auto varMap = varbinder->TopScope()->Bindings();
+    if (varMap.find(compiler::Signatures::BUILTIN_OBJECT_CLASS) == varMap.end()) {
+        return;
+    }
 
     auto const objectName = InitBuiltin(this, compiler::Signatures::BUILTIN_OBJECT_CLASS);
 

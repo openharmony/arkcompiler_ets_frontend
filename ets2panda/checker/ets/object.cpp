@@ -555,7 +555,7 @@ void ETSChecker::CheckDynamicInheritanceAndImplement(ETSObjectType *const interf
                      interfaceOrClassType->GetDeclNode()->Start());
         }
     }
-    if (isFromDynamicDecl(interfaceOrClassType->SuperType())) {
+    if (interfaceOrClassType->SuperType() != nullptr && isFromDynamicDecl(interfaceOrClassType->SuperType())) {
         LogError(diagnostic::INTERFACE_OR_CLASS_CANNOT_IMPL_OR_EXTEND_DYNAMIC,
                  {getTypeString(interfaceOrClassType), interfaceOrClassType->Name(), "extends",
                   getTypeString(interfaceOrClassType->SuperType()), interfaceOrClassType->SuperType()->Name()},
