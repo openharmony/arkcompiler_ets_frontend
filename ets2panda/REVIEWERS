@@ -22,7 +22,7 @@
 /ets2panda/bindings ^igelhaus ^Prof1983 @dreamdoomwalker @Ascnbio ^muhammet-fevzi-bayiroglu @utkugursel
 /ets2panda/lexer @robertsipka ^chernykhsergey ^csabaosztrogonac @igelhaus ^zelentsovdmitry @Prof1983
 /ets2panda/lsp ^igelhaus ^Prof1983 @dreamdoomwalker @Ascnbio ^muhammet-fevzi-bayiroglu @utkugursel
-/ets2panda/public @mbolshov @zhelypovaleksey ^igelhaus ^Prof1983
+/ets2panda/public @mbolshov @zhelyapovaleksey ^igelhaus ^Prof1983
 /ets2panda/test ^akmaevaleksey ^igelhaus ^Prof1983
 /legacy_bin/ @ctw-ian
 /merge_abc/ @gavin1012_hw
@@ -55,7 +55,7 @@
 /ets2panda/util/arktsconfig* @dreamdoomwalker @trubachevilya ^igelhaus ^Prof1983
 /ets2panda/util/diagnostic* @peterpronai ^chernykhsergey @shimenkovmikhail ^igelhaus ^Prof1983
 /ets2panda/util/importPathManager* @dreamdoomwalker @trubachevilya ^igelhaus ^Prof1983
-/ets2panda/util/plugin.* @zhelypovaleksey @mbolshov ^igelhaus ^Prof1983
+/ets2panda/util/plugin.* @zhelyapovaleksey @mbolshov ^igelhaus ^Prof1983
 /ets2panda/varbinder/ @lirismankarina @akmaevaleksey ^Ekkoruse ^zelentsovdmitry ^igelhaus ^Prof1983
 /ets2panda/varbinder/ETSBinder.* @torokg ^zelentsovdmitry ^igelhaus ^Prof1983
 /ets2panda/varbinder/TypedBinder.* @torokg ^zelentsovdmitry ^igelhaus ^Prof1983
@@ -87,8 +87,8 @@
 /ets2panda/test/test-lists/parser @chernykhsergey ^igelhaus ^Prof1983
 /ets2panda/test/unit/arktsconfig-parser @trubachevilya @dreamdoomwalker ^igelhaus ^Prof1983
 /ets2panda/test/unit/lsp @dreamdoomwalker @utkugursel ^igelhaus ^Prof1983
-/ets2panda/test/unit/plugin* @zhelypovaleksey ^mbolshov ^igelhaus ^Prof1983
-/ets2panda/test/unit/public @zhelypovaleksey ^mbolshov ^igelhaus ^Prof1983
+/ets2panda/test/unit/plugin* @zhelyapovaleksey ^mbolshov ^igelhaus ^Prof1983
+/ets2panda/test/unit/public @zhelyapovaleksey ^mbolshov ^igelhaus ^Prof1983
 /ets2panda/checker/types/ets/Nullish.* ^vpukhov @gogabr ^igelhaus ^Prof1983
 /ets2panda/checker/types/ets/etsA* @xuxjeeee ^gogabr ^igelhaus ^Prof1983
 /ets2panda/checker/types/ets/etsE* @ziziziiziziz ^zelentsovdmitry ^igelhaus ^Prof1983
