@@ -28,5 +28,5 @@ function foo(...^number: FixedArray<int>): int {
 /* @@? 16:48 Error SyntaxError: Unexpected token '{'. */
 /* @@? 17:5 Error SyntaxError: return keyword should be used in function body. */
 /* @@? 17:12 Error TypeError: Type name 'number' used in the wrong context */
-/* @@? 17:12 Error TypeError: Object type doesn't have proper index access method. */
+/* @@? 17:12 Error TypeError: Indexed access is not supported for such expression type. */
 /* @@? 17:12 Error TypeError: All return statements in the function should be empty or have a value. */

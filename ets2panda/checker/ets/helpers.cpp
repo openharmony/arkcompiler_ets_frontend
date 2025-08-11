@@ -152,6 +152,7 @@ void ETSChecker::WrongContextErrorClassifyByType(ir::Identifier *ident)
             LogError(diagnostic::ID_WRONG_CTX, {ident->Name()}, ident->Start());
             return;
     }
+    ident->SetTsType(GlobalTypeError());
     LogError(diagnostic::ID_IN_WRONG_CTX, {identCategoryName.c_str(), ident->Name()}, ident->Start());
 }
 
@@ -1874,7 +1875,8 @@ Type *ETSChecker::ResolveReferencedType(varbinder::LocalVariable *refVar, const 
         case ir::AstNodeType::CLASS_DECLARATION:
         case ir::AstNodeType::STRUCT_DECLARATION:
         case ir::AstNodeType::CLASS_DEFINITION:
-            if (refVar->Declaration()->Node()->AsClassDefinition()->IsNamespaceTransformed()) {
+            if (refVar->Declaration()->Node()->IsClassDefinition() &&
+                refVar->Declaration()->Node()->AsClassDefinition()->IsNamespaceTransformed()) {
                 LogError(diagnostic::NAMESPACE_AS_TYPE, {refVar->Name()}, name->Start());
                 return GlobalTypeError();
             }
