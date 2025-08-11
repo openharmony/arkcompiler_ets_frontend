@@ -1046,6 +1046,7 @@ semantic:
 - name: OVERRIDE_DOESNT_OVERRIDE
   id: 136
   message: "Method {}{} in {} not overriding any method"
+  code_fix_ids: [RemoveOverrideModifier]
 
 - name: PARAM_COUNT_MISMATCH
   id: 124

@@ -124,6 +124,7 @@ set(ES2PANDA_LSP_SRC
   ./src/register_code_fix/forgotten_this_property_access.cpp
   ./src/register_code_fix/import_fixes.cpp
   ./src/register_code_fix/remove_accidental_call_parentheses.cpp
+  ./src/register_code_fix/fix_remove_override_modifier.cpp
   ./src/register_code_fix/fix_add_function_return_statement.cpp
   ./src/register_code_fix/ui_plugin_suggest.cpp
   ./src/register_code_fix/fix_class_incorrectly_implements_interface.cpp

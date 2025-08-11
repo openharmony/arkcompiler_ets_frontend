@@ -299,6 +299,10 @@ ets2panda_add_gtest(lsp_api_test_remove_accidental_call_parentheses CPP_SOURCES
     remove_accidental_call_parentheses_test.cpp
 )
 
+ets2panda_add_gtest(lsp_api_test_fix_remove_override_modifier_test CPP_SOURCES
+    fix_remove_override_modifier_test.cpp
+)
+
 ets2panda_add_gtest(lsp_api_add_missing_new_operator CPP_SOURCES
     add_missing_new_operator_test.cpp
 )
