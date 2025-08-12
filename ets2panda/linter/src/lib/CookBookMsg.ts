@@ -432,6 +432,7 @@ cookBookTag[405] = 'API is not support use class in this API (arkts-builtin-fina
 cookBookTag[406] = 'Using narrowing of types is not allowed in this API (arkts-builtin-narrow-types)';
 cookBookTag[407] = 'API has been disabled (arkts-builtin-disable-api)';
 cookBookTag[408] = 'The property of IteratorResult is not supported (arkts-builtin-iterator-result-value)';
+cookBookTag[409] = 'No optional tuple type (arkts-no-optional-tuple-type)';
 
 for (let i = 0; i <= cookBookTag.length; i++) {
   cookBookMsg[i] = '';

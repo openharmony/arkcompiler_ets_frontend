@@ -3840,9 +3840,19 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
 
+    this.checkOptionalTupleType(node);
+
     node.elements.forEach((elementType) => {
       if (elementType.kind === ts.SyntaxKind.VoidKeyword) {
         this.incrementCounters(elementType, FaultID.LimitedVoidType);
+      }
+    });
+  }
+
+  private checkOptionalTupleType(node: ts.TupleTypeNode): void {
+    node.elements.forEach((elementType) => {
+      if (elementType.kind === ts.SyntaxKind.OptionalType) {
+        this.incrementCounters(elementType, FaultID.OptionalTupleType);
       }
     });
   }

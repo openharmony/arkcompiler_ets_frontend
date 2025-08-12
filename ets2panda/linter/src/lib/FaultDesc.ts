@@ -295,3 +295,4 @@ faultDesc[FaultID.BuiltinFinalClass] = 'Not support use class in this APIe';
 faultDesc[FaultID.BuiltinNarrowTypes] = 'Using narrowing of types is not allowed';
 faultDesc[FaultID.BuiltinDisableApi] = 'Disable Api';
 faultDesc[FaultID.BuiltinIteratorResultValue] = 'IteratorResult.value is not supported';
+faultDesc[FaultID.OptionalTupleType] = 'No optional tuple type';
