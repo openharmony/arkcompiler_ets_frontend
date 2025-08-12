@@ -2747,6 +2747,7 @@ ir::ClassProperty *ETSChecker::ClassPropToImplementationProp(ir::ClassProperty *
     auto classCtx = varbinder::LexicalScope<varbinder::ClassScope>::Enter(VarBinder(), scope);
     ReInitScopesForTypeAnnotation(this, classProp->TypeAnnotation(), scope);
     compiler::InitScopesPhaseETS::RunExternalNode(classProp->Value(), VarBinder());
+    VarBinder()->AsETSBinder()->ResolveReferencesForScopeWithContext(classProp, scope);
 
     return classProp;
 }
