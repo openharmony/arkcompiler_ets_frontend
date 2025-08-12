@@ -1121,20 +1121,16 @@ ir::MethodDefinition *ETSEmitter::FindAsyncImpl(ir::ScriptFunction *asyncFunc)
         return nullptr;
     }
 
-    auto *checker = static_cast<checker::ETSChecker *>(Context()->GetChecker());
-    checker::TypeRelation *typeRel = checker->Relation();
-    checker::SavedTypeRelationFlagsContext savedFlagsCtx(typeRel, checker::TypeRelationFlag::NO_RETURN_TYPE_CHECK);
-    ES2PANDA_ASSERT(method->Function() != nullptr);
-    method->Function()->Signature()->IsSubtypeOf(typeRel, asyncFunc->Signature());
-    if (typeRel->IsTrue()) {
+    if (asyncFunc->AsyncPairMethod() == method->Function()) {
         return method;
     }
+
     for (auto overload : method->Overloads()) {
-        overload->Function()->Signature()->IsSubtypeOf(typeRel, asyncFunc->Signature());
-        if (typeRel->IsTrue()) {
+        if (asyncFunc->AsyncPairMethod() == overload->Function()) {
             return overload;
         }
     }
+
     return nullptr;
 }
 

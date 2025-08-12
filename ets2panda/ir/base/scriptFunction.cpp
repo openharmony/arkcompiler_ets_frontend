@@ -115,7 +115,8 @@ ScriptFunction::ScriptFunction(ArenaAllocator *allocator, ScriptFunctionData &&d
       body_(data.body),
       funcFlags_(data.funcFlags),
       lang_(data.lang),
-      returnStatements_(allocator->Adapter())
+      returnStatements_(allocator->Adapter()),
+      asyncPairFunction_(nullptr)
 {
     for (auto *param : irSignature_.Params()) {
         param->SetParent(this);
@@ -137,7 +138,8 @@ ScriptFunction::ScriptFunction(ArenaAllocator *allocator, ScriptFunctionData &&d
       body_(data.body),
       funcFlags_(data.funcFlags),
       lang_(data.lang),
-      returnStatements_(allocator->Adapter())
+      returnStatements_(allocator->Adapter()),
+      asyncPairFunction_(nullptr)
 {
     for (auto *param : irSignature_.Params()) {
         param->SetParent(this);
