@@ -122,7 +122,15 @@ import {
   VIRTUAL_SCROLL_IDENTIFIER,
   BUILDERNODE_D_TS,
   BuilderNodeFunctionName,
-  NESTING_BUILDER_SUPPORTED
+  NESTING_BUILDER_SUPPORTED,
+  COMMON_TS_ETS_API_D_TS,
+  UI_STATE_MANAGEMENT_D_TS,
+  PERSIST_PROP_FUNC_NAME,
+  PERSIST_PROPS_FUNC_NAME,
+  GLOBAL_CONNECT_FUNC_NAME,
+  CONNECT_FUNC_NAME,
+  serializationTypeFlags,
+  serializationTypeName
 } from './utils/consts/ArkuiConstants';
 import { arkuiImportList } from './utils/consts/ArkuiImportList';
 import type { IdentifierAndArguments, ForbidenAPICheckResult } from './utils/consts/InteropAPI';
@@ -4237,7 +4245,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
       if (!this.isTypeSameOrWider(baseParamType, derivedParamType)) {
         this.incrementCounters(derivedParams[i], FaultID.MethodInheritRule);
-      }     
+      }
     }
   }
 
@@ -4367,7 +4375,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
 
     if (this.checkTypeInheritance(derivedType, baseType, false)) {
-        return true;
+      return true;
     }
 
     const baseTypeSet = new Set(this.flattenUnionTypes(baseType));
@@ -4403,7 +4411,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       }
     }
 
-    if(this.checkTypeInheritance(fromType, toType)) {
+    if (this.checkTypeInheritance(fromType, toType)) {
       return true;
     }
 
@@ -4418,11 +4426,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     });
   }
 
-  private checkTypeInheritance(
-    sourceType: ts.Type, 
-    targetType: ts.Type, 
-    isSouceTotaqrget: boolean = true
-  ): boolean {
+  private checkTypeInheritance(sourceType: ts.Type, targetType: ts.Type, isSouceTotaqrget: boolean = true): boolean {
     // Early return if either type lacks symbol information
     if (!sourceType.symbol || !targetType.symbol) {
       return false;
@@ -4434,7 +4438,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
     // Get inheritance chain and check for relationship
     const inheritanceChain = this.getTypeInheritanceChain(typeToGetChain);
-    return inheritanceChain.some(t => {
+    return inheritanceChain.some((t) => {
       return t.symbol === typeToCheck.symbol;
     });
   }
@@ -4444,12 +4448,14 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     const declarations = type.symbol?.getDeclarations() || [];
 
     for (const declaration of declarations) {
-      if ((!ts.isClassDeclaration(declaration) && !ts.isInterfaceDeclaration(declaration)) || 
-        !declaration.heritageClauses) {
+      if (
+        !ts.isClassDeclaration(declaration) && !ts.isInterfaceDeclaration(declaration) ||
+        !declaration.heritageClauses
+      ) {
         continue;
       }
 
-      const heritageClauses = declaration.heritageClauses.filter(clause => {
+      const heritageClauses = declaration.heritageClauses.filter((clause) => {
         return clause.token === ts.SyntaxKind.ExtendsKeyword || clause.token === ts.SyntaxKind.ImplementsKeyword;
       });
 
@@ -5493,52 +5499,146 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
   }
 
-  private handleCallExpression(node: ts.Node): void {
-    const tsCallExpr = node as ts.CallExpression;
-    this.checkSdkAbilityLifecycleMonitor(tsCallExpr);
-    this.handleCallExpressionForUI(tsCallExpr);
-    this.handleBuiltinCtorCallSignature(tsCallExpr);
-    this.handleSdkConstructorIfaceForCallExpression(tsCallExpr);
-    if (this.options.arkts2 && tsCallExpr.typeArguments !== undefined) {
-      this.handleSdkPropertyAccessByIndex(tsCallExpr);
+  private handleCallExpression(callExpr: ts.CallExpression): void {
+    this.checkSdkAbilityLifecycleMonitor(callExpr);
+    this.handleCallExpressionForUI(callExpr);
+    this.handleBuiltinCtorCallSignature(callExpr);
+    this.handleSdkConstructorIfaceForCallExpression(callExpr);
+    if (this.options.arkts2 && callExpr.typeArguments !== undefined) {
+      this.handleSdkPropertyAccessByIndex(callExpr);
     }
-    const calleeSym = this.tsUtils.trueSymbolAtLocation(tsCallExpr.expression);
-    const callSignature = this.tsTypeChecker.getResolvedSignature(tsCallExpr);
-    this.handleImportCall(tsCallExpr);
-    this.handleRequireCall(tsCallExpr);
+    const calleeSym = this.tsUtils.trueSymbolAtLocation(callExpr.expression);
+    const callSignature = this.tsTypeChecker.getResolvedSignature(callExpr);
+    this.handleImportCall(callExpr);
+    this.handleRequireCall(callExpr);
     if (calleeSym !== undefined) {
-      this.processCalleeSym(calleeSym, tsCallExpr);
+      this.processCalleeSym(calleeSym, callExpr);
     }
     if (callSignature !== undefined) {
       if (!this.tsUtils.isLibrarySymbol(calleeSym)) {
-        this.handleStructIdentAndUndefinedInArgs(tsCallExpr, callSignature);
-        this.handleGenericCallWithNoTypeArgs(tsCallExpr, callSignature);
+        this.handleStructIdentAndUndefinedInArgs(callExpr, callSignature);
+        this.handleGenericCallWithNoTypeArgs(callExpr, callSignature);
       } else if (this.options.arkts2) {
-        this.handleGenericCallWithNoTypeArgs(tsCallExpr, callSignature);
+        this.handleGenericCallWithNoTypeArgs(callExpr, callSignature);
       }
-      this.handleNotsLikeSmartTypeOnCallExpression(tsCallExpr, callSignature);
+      this.handleNotsLikeSmartTypeOnCallExpression(callExpr, callSignature);
     }
-    this.handleInteropForCallExpression(tsCallExpr);
-    this.handleLibraryTypeCall(tsCallExpr);
+    this.handleInteropForCallExpression(callExpr);
+    this.handleLibraryTypeCall(callExpr);
     if (
-      ts.isPropertyAccessExpression(tsCallExpr.expression) &&
-      this.tsUtils.hasEsObjectType(tsCallExpr.expression.expression)
+      ts.isPropertyAccessExpression(callExpr.expression) &&
+      this.tsUtils.hasEsObjectType(callExpr.expression.expression)
     ) {
       const faultId = this.options.arkts2 ? FaultID.EsValueTypeError : FaultID.EsValueType;
-      this.incrementCounters(node, faultId);
+      this.incrementCounters(callExpr, faultId);
     }
-    this.handleLimitedVoidWithCall(tsCallExpr);
-    this.fixJsImportCallExpression(tsCallExpr);
-    this.handleInteropForCallJSExpression(tsCallExpr, calleeSym, callSignature);
-    this.handleNoTsLikeFunctionCall(tsCallExpr);
-    this.handleObjectLiteralInFunctionArgs(tsCallExpr);
-    this.handleSdkGlobalApi(tsCallExpr);
-    this.handleObjectLiteralAssignmentToClass(tsCallExpr);
-    this.checkRestrictedAPICall(tsCallExpr);
-    this.handleNoDeprecatedApi(tsCallExpr);
-    this.handleFunctionReturnThisCall(tsCallExpr);
-    this.handlePromiseTupleGeneric(tsCallExpr);
-    this.handleTupleGeneric(tsCallExpr);
+    this.handleLimitedVoidWithCall(callExpr);
+    this.fixJsImportCallExpression(callExpr);
+    this.handleInteropForCallJSExpression(callExpr, calleeSym, callSignature);
+    this.handleNoTsLikeFunctionCall(callExpr);
+    this.handleObjectLiteralInFunctionArgs(callExpr);
+    this.handleSdkGlobalApi(callExpr);
+    this.handleObjectLiteralAssignmentToClass(callExpr);
+    this.checkRestrictedAPICall(callExpr);
+    this.handleNoDeprecatedApi(callExpr);
+    this.handleFunctionReturnThisCall(callExpr);
+    this.handlePromiseTupleGeneric(callExpr);
+    this.checkArgumentTypeOfCallExpr(callExpr, callSignature);
+    this.handleTupleGeneric(callExpr);
+  }
+
+  private checkArgumentTypeOfCallExpr(callExpr: ts.CallExpression, signature: ts.Signature | undefined): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    if (!signature) {
+      return;
+    }
+
+    const args = callExpr.arguments;
+    if (args.length === 0) {
+      return;
+    }
+
+    for (const [idx, arg] of args.entries()) {
+      this.isArgumentAndParameterMatch(signature, arg, idx);
+    }
+  }
+
+  private isArgumentAndParameterMatch(signature: ts.Signature, arg: ts.Expression, idx: number): void {
+    if (!ts.isPropertyAccessExpression(arg)) {
+      return;
+    }
+
+    let rootObject = arg.expression;
+
+    while (ts.isPropertyAccessExpression(rootObject)) {
+      rootObject = rootObject.expression;
+    }
+
+    if (rootObject.kind !== ts.SyntaxKind.ThisKeyword) {
+      return;
+    }
+
+    const param = signature.parameters.at(idx);
+    if (!param) {
+      return;
+    }
+    const paramDecl = param.getDeclarations();
+    if (!paramDecl || paramDecl.length === 0) {
+      return;
+    }
+
+    const paramFirstDecl = paramDecl[0];
+    if (!ts.isParameter(paramFirstDecl)) {
+      return;
+    }
+
+    const paramTypeNode = paramFirstDecl.type;
+    const argumentType = this.tsTypeChecker.getTypeAtLocation(arg);
+    if (!paramTypeNode) {
+      return;
+    }
+
+    if (!paramTypeNode) {
+      return;
+    }
+
+    const argumentTypeString = this.tsTypeChecker.typeToString(argumentType);
+    if (ts.isUnionTypeNode(paramTypeNode)) {
+      this.checkUnionTypesMatching(arg, paramTypeNode, argumentTypeString);
+    } else {
+      this.checkSingleTypeMatching(paramTypeNode, arg, argumentTypeString);
+    }
+  }
+
+  private checkSingleTypeMatching(paramTypeNode: ts.TypeNode, arg: ts.Node, argumentTypeString: string): void {
+    const paramType = this.tsTypeChecker.getTypeFromTypeNode(paramTypeNode);
+    const paramTypeString = this.tsTypeChecker.typeToString(paramType);
+    if (TsUtils.isIgnoredTypeForParameterType(paramTypeString, paramType)) {
+      return;
+    }
+
+    if (argumentTypeString !== paramTypeString) {
+      this.incrementCounters(arg, FaultID.StructuralIdentity);
+    }
+  }
+
+  private checkUnionTypesMatching(arg: ts.Node, paramTypeNode: ts.UnionTypeNode, argumentTypeString: string): void {
+    let notMatching = true;
+    for (const type of paramTypeNode.types) {
+      const paramType = this.tsTypeChecker.getTypeFromTypeNode(type);
+      const paramTypeString = this.tsTypeChecker.typeToString(paramType);
+      notMatching = !TsUtils.isIgnoredTypeForParameterType(paramTypeString, paramType);
+
+      if (argumentTypeString === paramTypeString) {
+        notMatching = false;
+      }
+    }
+
+    if (notMatching) {
+      this.incrementCounters(arg, FaultID.StructuralIdentity);
+    }
   }
 
   private handleTupleGeneric(callExpr: ts.CallExpression): void {
@@ -5575,6 +5675,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleStateStyles(node);
     this.handleCallExpressionForRepeat(node);
     this.handleNodeForWrappedBuilder(node);
+    this.handleCallExpressionForSerialization(node);
   }
 
   handleNoTsLikeFunctionCall(callExpr: ts.CallExpression): void {
@@ -14580,5 +14681,123 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       ts.isNumericLiteral(node.right) &&
       node.right.text === '0'
     );
+  }
+
+  private handleCallExpressionForSerialization(node: ts.CallExpression): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    const propertyAccess = node.expression;
+    if (!ts.isPropertyAccessExpression(propertyAccess)) {
+      return;
+    }
+
+    const persistentClass = propertyAccess.expression;
+    if (!ts.isIdentifier(persistentClass)) {
+      return;
+    }
+
+    switch (persistentClass.getText()) {
+      case StorageTypeName.PersistentStorage:
+        if (this.isDeclInTargetFile(persistentClass, COMMON_TS_ETS_API_D_TS)) {
+          this.handleCallExpressionForPersistentStorage(node, propertyAccess);
+        }
+        break;
+      case StorageTypeName.PersistenceV2:
+        if (this.isDeclInTargetFile(persistentClass, UI_STATE_MANAGEMENT_D_TS)) {
+          this.handleCallExpressionForPersistenceV2(node, propertyAccess);
+        }
+        break;
+      default:
+    }
+  }
+
+  private handleCallExpressionForPersistentStorage(
+    callExpr: ts.CallExpression,
+    propertyAccess: ts.PropertyAccessExpression
+  ): void {
+    const funcName = propertyAccess.name.getText();
+
+    switch (funcName) {
+      case PERSIST_PROP_FUNC_NAME:
+        if (!this.checkPersistPropForSerialization(callExpr)) {
+          this.incrementCounters(callExpr, FaultID.PersistentPropNeedImplementMethod);
+        }
+        break;
+      case PERSIST_PROPS_FUNC_NAME:
+        if (!this.checkPersistPropsForSerialization(callExpr)) {
+          this.incrementCounters(callExpr, FaultID.PersistentPropsNeedImplementMethod);
+        }
+        break;
+      default:
+    }
+  }
+
+  private checkPersistPropForSerialization(callExpr: ts.CallExpression): boolean {
+    const arg = callExpr.arguments?.[1];
+    return !arg || this.checkArgumentForSerialization(arg);
+  }
+
+  private checkPersistPropsForSerialization(callExpr: ts.CallExpression): boolean {
+    const arg = callExpr.arguments?.[0];
+    if (!arg || !ts.isArrayLiteralExpression(arg)) {
+      return true;
+    }
+
+    const literals = arg.elements;
+    let serializable: boolean = true;
+    for (const literal of literals) {
+      if (!ts.isObjectLiteralExpression(literal)) {
+        continue;
+      }
+      const property = literal.properties?.[1];
+      if (!property || !ts.isPropertyAssignment(property)) {
+        continue;
+      }
+      if (!this.checkArgumentForSerialization(property.initializer)) {
+        serializable = false;
+        break;
+      }
+    }
+
+    return serializable;
+  }
+
+  private checkArgumentForSerialization(arg: ts.Node): boolean {
+    const type = this.tsTypeChecker.getTypeAtLocation(arg);
+
+    if (type.isUnion()) {
+      if (
+        type.types.some((type) => {
+          return !this.isSpecificTypeOfSerialization(type);
+        })
+      ) {
+        return false;
+      }
+      return true;
+    }
+
+    return this.isSpecificTypeOfSerialization(type);
+  }
+
+  private isSpecificTypeOfSerialization(type: ts.Type): boolean {
+    const typeName = this.tsTypeChecker.typeToString(type);
+    return serializationTypeFlags.has(type.flags) || serializationTypeName.has(typeName);
+  }
+
+  private handleCallExpressionForPersistenceV2(
+    callExpr: ts.CallExpression,
+    propertyAccess: ts.PropertyAccessExpression
+  ): void {
+    const funcName = propertyAccess.name.getText();
+    if (funcName !== GLOBAL_CONNECT_FUNC_NAME && funcName !== CONNECT_FUNC_NAME) {
+      return;
+    }
+
+    const errorMsg =
+      `When calling the "${funcName}" method, the parameter list of the methods needs to include ` +
+      '"toJson" and "fromJson" (arkui-persistencev2-connect-serialization)';
+    this.incrementCounters(callExpr, FaultID.PersistenceV2ConnectNeedAddParam, undefined, errorMsg);
   }
 }

@@ -285,6 +285,9 @@ export enum FaultID {
   SdkCommonApiDeprecated,
   SdkCommonApiWhiteList,
   SdkCommonApiBehaviorChange,
+  PersistentPropNeedImplementMethod,
+  PersistentPropsNeedImplementMethod,
+  PersistenceV2ConnectNeedAddParam,
   // this should always be last enum
   LAST_ID
 }

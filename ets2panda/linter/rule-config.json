@@ -34,7 +34,6 @@
     "arkts-no-debugger",
     "arkts-no-arguments-obj",
     "arkts-no-tagged-templates",
-    "arkts-array-index-expr-type",
     "arkts-switch-expr",
     "arkts-case-expr",
     "arkts-array-index-negative",
@@ -143,7 +142,10 @@
     "arkui-buildernode-no-nestingbuildersupported",
     "arkui-sdk-common-deprecated-api",
     "arkui-sdk-common-whitelist-api",
-    "arkui-sdk-common-behaviorchange-api"
+    "arkui-sdk-common-behaviorchange-api",
+    "arkui-persistent-prop-serialization",
+    "arkui-persistent-props-serialization",
+    "arkui-persistencev2-connect-serialization"
   ],
   "builtin": [
     "arkts-builtin-thisArgs",
