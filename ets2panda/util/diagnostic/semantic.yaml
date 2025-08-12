@@ -979,6 +979,14 @@ semantic:
   id: 74
   message: "Class or interface methods cannot be initialized within an object literal."
 
+- name: OBJECT_LITERAL_NON_OPTIONAL_PROP_LOST
+  id: 400
+  message: "Non-optional property '{}' in type '{}' is missing in object literal."
+
+- name: OBJECT_LITERAL_NON_OPTIONAL_PROP_OF_SUPER_LOST
+  id: 401
+  message: "Non-optional property '{}' in super type '{}' of type '{}' is missing in object literal."
+
 - name: OBJECT_LITERAL_NOT_KV
   id: 64
   message: "The object literal properties must be key-value pairs"

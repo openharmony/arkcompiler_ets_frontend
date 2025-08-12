@@ -39,6 +39,11 @@ public:
     checker::Type *CheckDynamic(ir::ObjectExpression *expr) const;
     checker::Type *GetPreferredType(ir::ArrayExpression *expr) const;
     void GetUnionPreferredType(ir::Expression *expr, Type *originalType) const;
+    void CollectNonOptionalProperty(const ETSObjectType *objType,
+                                    std::unordered_map<util::StringView, ETSObjectType *> &props) const;
+    void CheckObjectExprPropsHelper(const ir::ObjectExpression *expr, checker::ETSObjectType *objType,
+                                    checker::PropertySearchFlags searchFlags,
+                                    std::unordered_map<util::StringView, ETSObjectType *> &properties) const;
     void CheckObjectExprProps(const ir::ObjectExpression *expr, checker::ETSObjectType *objectTypeForProperties,
                               checker::PropertySearchFlags searchFlags) const;
     std::tuple<Type *, ir::Expression *> CheckAssignmentExprOperatorType(ir::AssignmentExpression *expr,

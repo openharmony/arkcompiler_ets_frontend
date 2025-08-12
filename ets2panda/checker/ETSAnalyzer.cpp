@@ -2500,17 +2500,40 @@ checker::Type *ETSAnalyzer::Check(ir::ObjectExpression *expr) const
     return objType;
 }
 
-void ETSAnalyzer::CheckObjectExprProps(const ir::ObjectExpression *expr,
-                                       checker::ETSObjectType *objectTypeForProperties,
-                                       checker::PropertySearchFlags searchFlags) const
+void ETSAnalyzer::CollectNonOptionalProperty(const ETSObjectType *objType,
+                                             std::unordered_map<util::StringView, ETSObjectType *> &props) const
 {
     ETSChecker *checker = GetETSChecker();
-    checker::ETSObjectType *objType = objectTypeForProperties;
+    // Note: all the properties of an interface will be lowered as accessor before checker.
+    auto const &methodMap = objType->InstanceMethods();
+    for (const auto &[propName, var] : methodMap) {
+        if (!checker->IsVariableGetterSetter(var)) {
+            continue;
+        }
 
-    if (objType->IsGlobalETSObjectType() && !expr->Properties().empty()) {
-        checker->LogError(diagnostic::ERROR_ARKTS_NO_UNTYPED_OBJ_LITERALS, expr->Start());
+        auto propertyType = checker->GetTypeOfVariable(var);
+        if (propertyType->IsTypeError()) {
+            // Note: error handle later.
+            continue;
+        }
+
+        if (checker->Relation()->IsSupertypeOf(propertyType, checker->GlobalETSUndefinedType())) {
+            // non-optional properties
+            continue;
+        }
+        props.insert({propName, const_cast<ETSObjectType *>(objType)});
     }
 
+    for (auto const *superInterface : objType->Interfaces()) {
+        CollectNonOptionalProperty(superInterface, props);
+    }
+}
+
+void ETSAnalyzer::CheckObjectExprPropsHelper(const ir::ObjectExpression *expr, checker::ETSObjectType *objType,
+                                             checker::PropertySearchFlags searchFlags,
+                                             std::unordered_map<util::StringView, ETSObjectType *> &properties) const
+{
+    ETSChecker *checker = GetETSChecker();
     for (ir::Expression *propExpr : expr->Properties()) {
         if (!propExpr->IsProperty()) {
             checker->LogError(diagnostic::OBJECT_LITERAL_NOT_KV, {}, expr->Start());
@@ -2556,6 +2579,36 @@ void ETSAnalyzer::CheckObjectExprProps(const ir::ObjectExpression *expr,
 
         checker::AssignmentContext(checker->Relation(), value, value->TsType(), propType, value->Start(),
                                    {{diagnostic::PROP_INCOMPAT, {value->TsType(), propType, pname}}});
+        if (properties.find(pname) != properties.end()) {
+            properties.erase(pname);
+        }
+    }
+}
+
+void ETSAnalyzer::CheckObjectExprProps(const ir::ObjectExpression *expr,
+                                       checker::ETSObjectType *objectTypeForProperties,
+                                       checker::PropertySearchFlags searchFlags) const
+{
+    ETSChecker *checker = GetETSChecker();
+    checker::ETSObjectType *objType = objectTypeForProperties;
+    if (objType->IsGlobalETSObjectType() && !expr->Properties().empty()) {
+        checker->LogError(diagnostic::ERROR_ARKTS_NO_UNTYPED_OBJ_LITERALS, expr->Start());
+    }
+
+    std::unordered_map<util::StringView, ETSObjectType *> propertyWithNonOptionalType;
+    if (objType->HasObjectFlag(ETSObjectFlags::INTERFACE)) {
+        CollectNonOptionalProperty(objType, propertyWithNonOptionalType);
+    }
+
+    CheckObjectExprPropsHelper(expr, objType, searchFlags, propertyWithNonOptionalType);
+
+    for (const auto &[propName, ownerType] : propertyWithNonOptionalType) {
+        if (objType == ownerType) {
+            checker->LogError(diagnostic::OBJECT_LITERAL_NON_OPTIONAL_PROP_LOST, {propName, objType}, expr->Start());
+        } else {
+            checker->LogError(diagnostic::OBJECT_LITERAL_NON_OPTIONAL_PROP_OF_SUPER_LOST,
+                              {propName, ownerType, objType}, expr->Start());
+        }
     }
 
     if (objType->HasObjectFlag(ETSObjectFlags::REQUIRED)) {

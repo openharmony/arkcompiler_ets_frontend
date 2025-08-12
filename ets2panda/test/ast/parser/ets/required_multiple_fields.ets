@@ -35,6 +35,9 @@ function main() {
 /* @@@ label1 Error TypeError: Class property 'k' needs to be initialized for Required<A>.  */
 /* @@@ label2 Error TypeError: Class property 'j' needs to be initialized for Required<A>.  */
 /* @@@ label2 Error TypeError: Class property 'k' needs to be initialized for Required<A>.  */
+/* @@@ label3 Error TypeError: Non-optional property 'k' in type 'Required<I>' is missing in object literal.  */
 /* @@@ label3 Error TypeError: Class property 'k' needs to be initialized for Required<I>.  */
+/* @@@ label4 Error TypeError: Non-optional property 'j' in type 'Required<I>' is missing in object literal.  */
+/* @@@ label4 Error TypeError: Non-optional property 'k' in type 'Required<I>' is missing in object literal.  */
 /* @@@ label4 Error TypeError: Class property 'j' needs to be initialized for Required<I>.  */
 /* @@@ label4 Error TypeError: Class property 'k' needs to be initialized for Required<I>.  */

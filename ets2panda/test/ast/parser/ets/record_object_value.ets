@@ -48,8 +48,8 @@ function main(){
     };
 
     let errormap2:Record<string, PersonInfoInterface> = {
-        "john":{/* @@ label2 */agee:10, salary:10},
-        "Mary":{age:21, salary:10, /* @@ label3 */other:10}
+        "john":/* @@ label2 */{/* @@ label3 */agee:10, salary:10},
+        "Mary":{age:21, salary:10, /* @@ label4 */other:10}
     };
 
     let stringarraymap:Record<string, string[]> = {
@@ -59,5 +59,7 @@ function main(){
 }
 /* @@@ label Error TypeError: Type '"10"' is not compatible with type 'Double' at property 'age' */
 /* @@@ label1 Error TypeError: Type '"100"' is not compatible with type 'Double' at property 'salary' */
-/* @@@ label2 Error TypeError: type PersonInfoInterface has no property named agee */
-/* @@@ label3 Error TypeError: type PersonInfoInterface has no property named other */
+/* @@@ label2 Error TypeError: Non-optional property 'salary' in type 'PersonInfoInterface' is missing in object literal. */
+/* @@@ label2 Error TypeError: Non-optional property 'age' in type 'PersonInfoInterface' is missing in object literal. */
+/* @@@ label3 Error TypeError: type PersonInfoInterface has no property named agee */
+/* @@@ label4 Error TypeError: type PersonInfoInterface has no property named other */
