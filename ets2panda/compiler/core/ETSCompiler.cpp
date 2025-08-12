@@ -795,6 +795,7 @@ void ETSCompiler::Compile(const ir::ConditionalExpression *expr) const
     auto *falseLabel = etsg->AllocLabel();
     auto *endLabel = etsg->AllocLabel();
 
+    compiler::RegScope rs(etsg);
     compiler::Condition::Compile(etsg, expr->Test(), falseLabel);
 
     auto ttctx = compiler::TargetTypeContext(etsg, expr->TsType());
