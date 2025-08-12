@@ -528,6 +528,9 @@ typedef struct LSPAPI {
     DocumentHighlightsReferences (*getDocumentHighlights)(es2panda_Context *context, size_t position);
     std::vector<ark::es2panda::lsp::RenameLocation> (*findRenameLocations)(
         const std::vector<es2panda_Context *> &fileContexts, es2panda_Context *context, size_t position);
+    std::set<ark::es2panda::lsp::RenameLocation> (*findRenameLocationsInCurrentFile)(es2panda_Context *context,
+                                                                                     size_t position);
+    bool (*needsCrossFileRename)(es2panda_Context *context, size_t position);
     std::vector<ark::es2panda::lsp::RenameLocation> (*findRenameLocationsWithCancellationToken)(
         ark::es2panda::lsp::CancellationToken *tkn, const std::vector<es2panda_Context *> &fileContexts,
         es2panda_Context *context, size_t position);

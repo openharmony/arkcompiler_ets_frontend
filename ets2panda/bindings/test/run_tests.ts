@@ -351,13 +351,6 @@ function compareResults(
     const actualData = normalizeData(actual, normalizeOption);
     return [compareResultsHelper(caseName, actualData, expected), actualData];
   }
-  if (testName === 'findRenameLocations') {
-    const normalizeOption: NormalizeOptions = {
-      fieldsToDelete: ['prefixText', 'suffixText']
-    };
-    const actualData = normalizeData(actual, normalizeOption);
-    return [compareResultsHelper(caseName, actualData, expected), actualData];
-  }
 
   const actualData = normalizeData(actual);
   return [compareResultsHelper(caseName, actualData, expected), actualData];

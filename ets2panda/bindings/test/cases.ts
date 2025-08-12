@@ -176,7 +176,11 @@ export const basicCases: TestCases = {
     '1': [resolveTestPath('test/testcases/findRenameLocations/findRenameLocations2.ets'), 632],
     '2': [resolveTestPath('test/testcases/findRenameLocations/findRenameLocations1.ets'), 627],
     '3': [resolveTestPath('test/testcases/findRenameLocations/findRenameLocations1.ets'), 670],
-    '4': [resolveTestPath('test/testcases/findRenameLocations/findRenameLocations1.ets'), 721]
+    '4': [resolveTestPath('test/testcases/findRenameLocations/findRenameLocations1.ets'), 721],
+    '5': [resolveTestPath('test/testcases/findRenameLocations/findRenameLocations2.ets'), 676],
+    '6': [resolveTestPath('test/testcases/findRenameLocations/findRenameLocations2.ets'), 868],
+    '7': [resolveTestPath('test/testcases/findRenameLocations/findRenameLocations1.ets'), 720],
+    '8': [resolveTestPath('test/testcases/findRenameLocations/findRenameLocations3.ets'), 627]
   },
   getRenameInfo: {
     expectedFilePath: resolveTestPath('test/expected/getRenameInfo.json'),

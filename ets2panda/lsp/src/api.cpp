@@ -330,6 +330,16 @@ std::vector<ark::es2panda::lsp::RenameLocation> FindRenameLocationsWrapper(
     return std::vector<ark::es2panda::lsp::RenameLocation> {locations.begin(), locations.end()};
 }
 
+std::set<RenameLocation> FindRenameLocationsInCurrentFileWrapper(es2panda_Context *context, size_t position)
+{
+    return FindRenameLocationsInCurrentFile(context, position);
+}
+
+bool NeedsCrossFileRenameWrapper(es2panda_Context *context, size_t position)
+{
+    return NeedsCrossFileRename(context, position);
+}
+
 std::vector<ark::es2panda::lsp::RenameLocation> FindRenameLocationsWithCancellationWrapper(
     ark::es2panda::lsp::CancellationToken *tkn, const std::vector<es2panda_Context *> &fileContexts,
     es2panda_Context *context, size_t position)
@@ -563,6 +573,8 @@ LSPAPI g_lspImpl = {GetDefinitionAtPosition,
                     GetTypeHierarchies,
                     GetDocumentHighlights,
                     FindRenameLocationsWrapper,
+                    FindRenameLocationsInCurrentFileWrapper,
+                    NeedsCrossFileRenameWrapper,
                     FindRenameLocationsWithCancellationWrapper,
                     FindSafeDeleteLocation,
                     FindReferencesWrapper,
