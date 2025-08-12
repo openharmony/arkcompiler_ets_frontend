@@ -494,7 +494,7 @@ ir::TypeNode *ETSParser::ParseTsArrayType(ir::TypeNode *typeNode, TypeAnnotation
                 LogExpectedToken(lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET);
                 return AllocBrokenType({Lexer()->GetToken().Start(), Lexer()->GetToken().End()});
             }
-            return nullptr;
+            return AllocBrokenType(startPos);
         }
 
         typeNode = AllocNode<ir::TSArrayType>(typeNode, Allocator());
@@ -518,12 +518,11 @@ ir::TypeNode *ETSParser::ParseTypeAnnotationNoPreferParam(TypeAnnotationParsingO
     if (typeAnnotation == nullptr) {
         if (reportError) {
             LogError(diagnostic::INVALID_TYPE);
-            return AllocBrokenType({Lexer()->GetToken().Start(), Lexer()->GetToken().End()});
         }
-        return nullptr;
+        return AllocBrokenType({Lexer()->GetToken().Start(), Lexer()->GetToken().End()});
     }
 
-    if (!needFurtherProcessing) {
+    if (!needFurtherProcessing || typeAnnotation->IsBrokenTypeNode()) {
         return typeAnnotation;
     }
 
@@ -566,13 +565,9 @@ ir::TypeNode *ETSParser::ParseTypeAnnotation(TypeAnnotationParsingOptions *optio
 
     bool hasReadonly = Lexer()->TryEatTokenFromKeywordType(lexer::TokenType::KEYW_READONLY);
 
-    const auto beforeTypeAnnotation = Lexer()->GetToken().Loc();
     auto typeAnnotation = ParseTypeAnnotationNoPreferParam(options);
-    if (typeAnnotation == nullptr) {
-        if ((*options & TypeAnnotationParsingOptions::REPORT_ERROR) != 0) {
-            LogError(diagnostic::INVALID_TYPE);
-        }
-        return AllocBrokenType(beforeTypeAnnotation);
+    if (typeAnnotation->IsBrokenTypeNode()) {
+        return typeAnnotation;
     }
 
     if (hasReadonly) {

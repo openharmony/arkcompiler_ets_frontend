@@ -13,7 +13,10 @@
  * limitations under the License.
  */
 
-function foo(param1: readonly/* @@ foo_param1 */, param2: readonly /* @@ foo_param2 */true) {}
+class A {
+    bit1: int =< 2
+}
 
-/* @@@ foo_param1 Error SyntaxError: Invalid Type. */
-/* @@@ foo_param2 Error SyntaxError: Invalid Type. */
+/* @@? 17:18 Error SyntaxError: Number, string or computed value property name '2' is not allowed, use classes to access data by property names that are identifiers */
+/* @@? 17:18 Error SyntaxError: Identifier expected, got 'number literal'. */
+/* @@? 17:18 Error SyntaxError: Unexpected token '2'. */
