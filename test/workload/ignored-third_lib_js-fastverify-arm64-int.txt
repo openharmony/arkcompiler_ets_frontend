@@ -14,3 +14,6 @@ Easyrelpace_test
 
 #26623
 rxjs_test
+
+#27789
+mathjs_test
