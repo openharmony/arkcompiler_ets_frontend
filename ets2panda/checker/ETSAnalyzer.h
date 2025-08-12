@@ -57,6 +57,7 @@ private:
     checker::Type *UnwrapPromiseType(checker::Type *type) const;
     checker::Type *GetSmartType(ir::AssignmentExpression *expr, checker::Type *leftType,
                                 checker::Type *rightType) const;
+    bool SetAssignmentExpressionTarget(ir::AssignmentExpression *const expr, ETSChecker *checker) const;
     bool CheckInferredFunctionReturnType(ir::ReturnStatement *st, ir::ScriptFunction *containingFunc,
                                          checker::Type *&funcReturnType, ir::TypeNode *returnTypeAnnotation,
                                          ETSChecker *checker) const;

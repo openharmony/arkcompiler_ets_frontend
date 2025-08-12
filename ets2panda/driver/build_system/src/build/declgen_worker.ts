@@ -27,12 +27,12 @@ import {
 import {
   DECL_ETS_SUFFIX,
   DECL_TS_SUFFIX,
-  KOALA_WRAPPER_PATH_FROM_SDK,
   STATIC_RECORD_FILE,
   STATIC_RECORD_FILE_CONTENT,
   TS_SUFFIX
 } from '../pre_define';
 import { PluginDriver, PluginHook } from '../plugins/plugins_driver';
+import { initKoalaModules } from '../init/init_koala_modules';
 
 process.on('message', (message: {
   taskList: CompileFileInfo[];
@@ -49,9 +49,7 @@ process.on('message', (message: {
   const pluginDriver = PluginDriver.getInstance();
   pluginDriver.initPlugins(buildConfig);
 
-  const koalaWrapperPath = path.resolve(buildConfig.buildSdkPath, KOALA_WRAPPER_PATH_FROM_SDK);
-  let { arkts, arktsGlobal } = require(koalaWrapperPath);
-  arktsGlobal.es2panda._SetUpSoPath(buildConfig.pandaSdkPath);
+  let { arkts, arktsGlobal } = initKoalaModules(buildConfig)
 
   for (const fileInfo of taskList) {
     let errorStatus = false;
