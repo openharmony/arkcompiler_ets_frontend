@@ -216,5 +216,44 @@
       "kind": 2,
       "data": null
     }
+  ],
+  "16": [
+    {
+      "name": "Entry",
+      "sortText": "15",
+      "insertText": "",
+      "kind": 27,
+      "data": null
+    },
+    {
+      "name": "Entry2",
+      "sortText": "15",
+      "insertText": "",
+      "kind": 27,
+      "data": null
+    }
+  ],
+  "17": [
+    {
+      "name": "Entry",
+      "sortText": "15",
+      "insertText": "",
+      "kind": 27,
+      "data": null
+    },
+    {
+      "name": "Entry2",
+      "sortText": "15",
+      "insertText": "",
+      "kind": 27,
+      "data": null
+    },
+    {
+      "name": "TestAnnotation",
+      "sortText": "15",
+      "insertText": "",
+      "kind": 27,
+      "data": null
+    }
   ]
 }
