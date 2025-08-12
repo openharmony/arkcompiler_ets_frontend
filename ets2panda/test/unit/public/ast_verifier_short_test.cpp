@@ -241,7 +241,7 @@ TEST_F(ASTVerifierTest, VariableNameIdentifierNameSameNegative)
             ->AsClassDeclaration()
             ->Definition()
             ->AsClassDefinition()
-            ->Body()[1]
+            ->Body()[0]
             ->AsClassElement()
             ->Value()
             ->AsFunctionExpression()

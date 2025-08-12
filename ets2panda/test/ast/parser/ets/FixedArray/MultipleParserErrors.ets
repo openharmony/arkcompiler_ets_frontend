@@ -189,7 +189,7 @@ function main(): void {
 /* @@? 43:11 Error SyntaxError: Invalid left-hand side in assignment expression. */
 /* @@? 43:13 Error SyntaxError: Unexpected token 'byte'. */
 /* @@? 45:6 Error SyntaxError: Unexpected token 'this'. */
-/* @@? 45:6 Error TypeError: Cannot reference 'this' in this context. */
+/* @@? 45:6 Error TypeError: 'this' cannot be referenced from a static context */
 /* @@? 45:6 Error TypeError: Invalid left-hand side of assignment expression */
 /* @@? 45:11 Error SyntaxError: Invalid left-hand side in assignment expression. */
 /* @@? 47:8 Error SyntaxError: Variable must be initialized or it's type must be declared. */
@@ -261,14 +261,15 @@ function main(): void {
 /* @@? 123:5 Error SyntaxError: Identifier expected, got ','. */
 /* @@? 123:6 Error SyntaxError: Variable must be initialized or it's type must be declared. */
 /* @@? 123:6 Error SyntaxError: Unexpected token 'abc'. */
+/* @@? 123:6 Error SyntaxError: Variable must be initialized or it's type must be declared. */
 /* @@? 123:6 Error TypeError: Unresolved reference abc */
 /* @@? 125:1 Error TypeError: Method declaration `foo` must all ambient or non-ambient */
 /* @@? 127:1 Error SyntaxError: The modifier async cannot be used in an ambient context. */
 /* @@? 132:14 Error SyntaxError: Unexpected token, expected an identifier. */
-/* @@? 137:16 Error SyntaxError: Unexpected token '='. */
-/* @@? 137:16 Error SyntaxError: Expected '{', got '='. */
-/* @@? 137:16 Error SyntaxError: Expected ')', got '='. */
 /* @@? 137:16 Error SyntaxError: Catch clause variable cannot have an initializer. */
+/* @@? 137:16 Error SyntaxError: Expected ')', got '='. */
+/* @@? 137:16 Error SyntaxError: Expected '{', got '='. */
+/* @@? 137:16 Error SyntaxError: Unexpected token '='. */
 /* @@? 137:18 Error SyntaxError: Unexpected token '0'. */
 /* @@? 137:19 Error SyntaxError: Unexpected token ')'. */
 /* @@? 137:21 Error SyntaxError: Unexpected token '{'. */
@@ -281,14 +282,14 @@ function main(): void {
 /* @@? 151:29 Error TypeError: Cannot find type 'D0'. */
 /* @@? 157:16 Error TypeError: A is abstract therefore cannot be instantiated. */
 /* @@? 158:26 Error TypeError: Property 'getInner' does not exist on type 'A' */
-/* @@? 161:9 Error SyntaxError: Identifier expected, got 'let'. */
 /* @@? 161:9 Error SyntaxError: Hard keyword 'let' cannot be used as identifier */
-/* @@? 162:9 Error SyntaxError: Hard keyword 'const' cannot be used as identifier */
+/* @@? 161:9 Error SyntaxError: Identifier expected, got 'let'. */
 /* @@? 162:9 Error SyntaxError: Identifier expected, got 'const'. */
-/* @@? 163:9 Error SyntaxError: Hard keyword 'new' cannot be used as identifier */
+/* @@? 162:9 Error SyntaxError: Hard keyword 'const' cannot be used as identifier */
 /* @@? 163:9 Error SyntaxError: Identifier expected, got 'new'. */
+/* @@? 163:9 Error SyntaxError: Hard keyword 'new' cannot be used as identifier */
 /* @@? 164:5 Error TypeError: This expression is not callable. */
 /* @@? 165:5 Error TypeError: This expression is not callable. */
-/* @@? 166:5 Error TypeError: Expected 1 arguments, got 0. */
 /* @@? 166:5 Error TypeError: No matching call signature */
-/* @@? 295:1 Error SyntaxError: Expected '}', got 'end of stream'. */
+/* @@? 166:5 Error TypeError: Expected 1 arguments, got 0. */
+/* @@? 296:1 Error SyntaxError: Expected '}', got 'end of stream'. */

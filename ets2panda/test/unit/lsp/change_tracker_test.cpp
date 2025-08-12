@@ -245,7 +245,8 @@ let obj = {
     auto *ast = context->parserProgram->Ast();
     ASSERT_NE(ast, nullptr);
     auto *propertyNode = ast->FindChild([](const ark::es2panda::ir::AstNode *node) {
-        return node->IsProperty() && node->AsProperty()->Key()->AsIdentifier()->Name() == "foo";
+        return node->IsProperty() && node->AsProperty()->Key()->AsIdentifier()->Name() == "foo" &&
+               node->Parent()->IsObjectExpression() && node->Parent()->Parent()->IsAssignmentExpression();
     });
     ASSERT_NE(propertyNode, nullptr);
     ark::es2panda::ir::AstNode *newProperty = propertyNode->Clone(context->allocator, nullptr);
@@ -258,7 +259,7 @@ let obj = {
     const auto &changes = tracker.GetChangeList();
     const size_t c1 = 1;
     const auto bar = "bar";
-    const auto newLine = ",\n";
+    const auto newLine = "";
     ASSERT_EQ(changes.size(), c1);
     const auto &change = changes[0];
     const auto *replace = std::get_if<ark::es2panda::lsp::ReplaceWithSingleNode>(&change);

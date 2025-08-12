@@ -472,6 +472,7 @@ semantic:
 - name: FIELD_REASSIGNMENT
   id: 297
   message: "Cannot reassign {} {}"
+  code_fix_ids: [FixConvertConstToLet]
 
 - name: FINAL_METHOD_INVALID_MODIFIER
   id: 48
