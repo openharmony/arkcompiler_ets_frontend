@@ -227,6 +227,12 @@ checker::Type *MemberExpression::TraverseUnionMember(checker::ETSChecker *checke
             return;
         }
 
+        if (!commonPropType->IsETSFunctionType() || !memberType->IsETSFunctionType()) {
+            checker->LogError(diagnostic::MEMBER_TYPE_MISMATCH_ACROSS_UNION, {}, Start());
+            commonPropType = checker->GlobalTypeError();
+            return;
+        }
+
         auto newType =
             checker->IntersectSignatureSets(commonPropType->AsETSFunctionType(), memberType->AsETSFunctionType());
         if (newType->AsETSFunctionType()->CallSignatures().empty()) {
