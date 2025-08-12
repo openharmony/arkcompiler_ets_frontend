@@ -1454,7 +1454,7 @@ static void CompileImpl(const ir::SwitchStatement *self, ETSGen *etsg)
     compiler::VReg tag = etsg->AllocReg();
 
     builder.CompileTagOfSwitch(tag);
-    uint32_t defaultIndex = 0;
+    int32_t defaultIndex = -1;
 
     for (size_t i = 0; i < self->Cases().size(); i++) {
         const auto *clause = self->Cases()[i];
@@ -1467,7 +1467,7 @@ static void CompileImpl(const ir::SwitchStatement *self, ETSGen *etsg)
         builder.JumpIfCase(tag, i);
     }
 
-    if (defaultIndex > 0) {
+    if (defaultIndex >= 0) {
         builder.JumpToDefault(defaultIndex);
     } else {
         builder.Break();
