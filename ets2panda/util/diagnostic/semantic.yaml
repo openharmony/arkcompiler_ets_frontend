@@ -554,6 +554,7 @@ semantic:
 - name: IMPORTED_NOT_EXPORTED
   id: 355
   message: "Imported element not exported '{}'"
+  code_fix_ids: [FixImportNonExportedMember]
 
 - name: IMPORT_NOT_FOUND
   id: 356

@@ -319,6 +319,9 @@ ets2panda_add_gtest(lsp_get_signature_test CPP_SOURCES
     get_signature_test.cpp
 )
 
+ets2panda_add_gtest(lsp_api_test_fix_import_non_exported_member CPP_SOURCES
+    fix_import_non_exported_member_test.cpp
+)
 ets2panda_add_gtest(lsp_api_get_node_test CPP_SOURCES
     get_node_test.cpp
 )
