@@ -295,6 +295,7 @@ export enum FaultID {
   BuiltinDisableApi,
   BuiltinIteratorResultValue,
   OptionalTupleType,
+  LargeNumericLiteral,
   // this should always be last enum
   LAST_ID
 }
