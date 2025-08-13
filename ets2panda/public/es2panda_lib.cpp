@@ -1285,7 +1285,48 @@ extern "C" __attribute__((unused)) int GenerateTsDeclarationsFromContext(es2pand
                                                                                                                   : 1;
 }
 
-// Will be removed after binary import support is fully implemented.
+// #28937 Will be removed after binary import support is fully implemented.
+__attribute__((unused)) static std::string GetFileNameByPath(const std::string &path)
+{
+    auto lastSlash = path.find_last_of("/\\");
+    std::string filename = (lastSlash == std::string::npos) ? path : path.substr(lastSlash + 1);
+
+    auto lastDot = filename.find_last_of('.');
+    if (lastDot != std::string::npos) {
+        filename = filename.substr(0, lastDot);
+    }
+
+    lastDot = filename.find_last_of('.');
+    if (lastDot != std::string::npos) {
+        filename = filename.substr(0, lastDot);
+    }
+
+    return filename;
+}
+
+// #28937 Will be removed after binary import support is fully implemented.
+__attribute__((unused)) static bool HandleMultiFileMode(Context *ctxImpl, const std::string &outputPath)
+{
+    std::string outputStem = GetFileNameByPath(outputPath);
+    auto &externalSources = ctxImpl->parserProgram->DirectExternalSources();
+
+    for (const auto &entry : externalSources) {
+        for (auto *prog : entry.second) {
+            if (prog == nullptr || !prog->IsGenAbcForExternal()) {
+                continue;
+            }
+
+            if (prog->FileName().Mutf8() == outputStem) {
+                compiler::HandleGenerateDecl(*prog, *ctxImpl->diagnosticEngine, outputPath);
+                return !ctxImpl->diagnosticEngine->IsAnyError();
+            }
+        }
+    }
+
+    return false;
+}
+
+// #28937 Will be removed after binary import support is fully implemented.
 extern "C" __attribute__((unused)) int GenerateStaticDeclarationsFromContext(es2panda_Context *ctx,
                                                                              const char *outputPath)
 {
@@ -1293,8 +1334,15 @@ extern "C" __attribute__((unused)) int GenerateStaticDeclarationsFromContext(es2
     if (ctxImpl->state != ES2PANDA_STATE_CHECKED) {
         return 1;
     }
-    compiler::HandleGenerateDecl(*ctxImpl->parserProgram, *ctxImpl->diagnosticEngine, outputPath);
 
+    // Multiple file mode
+    if (ctxImpl->config->options->IsSimultaneous()) {
+        bool success = HandleMultiFileMode(ctxImpl, outputPath);
+        return success ? 0 : 1;
+    }
+
+    // Single file mode
+    compiler::HandleGenerateDecl(*ctxImpl->parserProgram, *ctxImpl->diagnosticEngine, outputPath);
     return ctxImpl->diagnosticEngine->IsAnyError() ? 1 : 0;
 }
 
