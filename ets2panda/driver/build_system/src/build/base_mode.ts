@@ -75,6 +75,13 @@ import {
   ArkTSConfigGenerator
 } from './generate_arktsconfig';
 import { KitImportTransformer } from '../plugins/KitImportTransformer';
+import { 
+  BS_PERF_FILE_NAME,
+  CompileSingleData,
+  RECORDE_COMPILE_NODE,
+  RECORDE_MODULE_NODE,
+  RECORDE_RUN_NODE
+} from '../utils/record_time_mem';
 import { TaskManager } from '../util/TaskManager';
 import { handleCompileWorkerExit } from '../util/worker_exit_handler';
 
@@ -331,7 +338,10 @@ export abstract class BaseMode {
     }
   }
 
-  public compileMultiFiles(filePaths: string[], moduleInfo: ModuleInfo): void {
+  public compileMultiFiles(moduleInfo: ModuleInfo): void {
+    let compileSingleData = new CompileSingleData(path.join(path.resolve(), BS_PERF_FILE_NAME));
+    compileSingleData.record(RECORDE_COMPILE_NODE.PROCEED_PARSE);
+
     const intermediateFilePath = path.resolve(this.cacheDir, MERGED_INTERMEDIATE_FILE);
     this.abcFiles.clear();
     this.abcFiles.add(intermediateFilePath);
@@ -365,6 +375,8 @@ export abstract class BaseMode {
 
       arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_PARSED, arktsGlobal.compilerContext.peer);
       this.logger.printInfo('es2panda proceedToState parsed');
+      compileSingleData.record(RECORDE_COMPILE_NODE.PLUGIN_PARSE, RECORDE_COMPILE_NODE.PROCEED_PARSE);
+
       let ast = arkts.EtsScript.fromContext();
 
       if (this.buildConfig.aliasConfig && Object.keys(this.buildConfig.aliasConfig).length > 0) {
@@ -384,17 +396,21 @@ export abstract class BaseMode {
       PluginDriver.getInstance().getPluginContext().setArkTSAst(ast);
       PluginDriver.getInstance().runPluginHook(PluginHook.PARSED);
       this.logger.printInfo('plugin parsed finished');
+      compileSingleData.record(RECORDE_COMPILE_NODE.PROCEED_CHECK, RECORDE_COMPILE_NODE.PLUGIN_PARSE);
 
       arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_CHECKED, arktsGlobal.compilerContext.peer);
       this.logger.printInfo('es2panda proceedToState checked');
+      compileSingleData.record(RECORDE_COMPILE_NODE.PLUGIN_CHECK, RECORDE_COMPILE_NODE.PROCEED_CHECK);
 
       ast = arkts.EtsScript.fromContext();
       PluginDriver.getInstance().getPluginContext().setArkTSAst(ast);
       PluginDriver.getInstance().runPluginHook(PluginHook.CHECKED);
       this.logger.printInfo('plugin checked finished');
+      compileSingleData.record(RECORDE_COMPILE_NODE.BIN_GENERATE, RECORDE_COMPILE_NODE.PLUGIN_CHECK);
 
       arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_BIN_GENERATED, arktsGlobal.compilerContext.peer);
       this.logger.printInfo('es2panda bin generated');
+      compileSingleData.record(RECORDE_COMPILE_NODE.CFG_DESTROY, RECORDE_COMPILE_NODE.BIN_GENERATE);
     } catch (error) {
       errorStatus = true;
       throw error;
@@ -405,6 +421,8 @@ export abstract class BaseMode {
       }
       PluginDriver.getInstance().runPluginHook(PluginHook.CLEAN);
       arkts.destroyConfig(arktsGlobal.config);
+      compileSingleData.record(RECORDE_COMPILE_NODE.END, RECORDE_COMPILE_NODE.CFG_DESTROY);
+      compileSingleData.writeSumSingle(path.resolve());
     }
   }
 
@@ -831,10 +849,17 @@ export abstract class BaseMode {
   }
 
   protected generateModuleInfos(): void {
+    let compileSingleData = new CompileSingleData(path.join(path.resolve(), BS_PERF_FILE_NAME));
+    compileSingleData.record(RECORDE_MODULE_NODE.COLLECT_INFO);
     this.collectModuleInfos();
+    compileSingleData.record(RECORDE_MODULE_NODE.GEN_CONFIG, RECORDE_MODULE_NODE.COLLECT_INFO);
     this.generateArkTSConfigForModules();
+    compileSingleData.record(RECORDE_MODULE_NODE.CLT_FILES, RECORDE_MODULE_NODE.GEN_CONFIG);
     this.collectCompileFiles();
+    compileSingleData.record(RECORDE_MODULE_NODE.SAVE_CACHE, RECORDE_MODULE_NODE.CLT_FILES);
     this.saveHashCache();
+    compileSingleData.record(RECORDE_MODULE_NODE.END, RECORDE_MODULE_NODE.SAVE_CACHE);
+    compileSingleData.writeSumSingle(path.resolve());
   }
 
   public async generateDeclaration(): Promise<void> {
@@ -851,6 +876,8 @@ export abstract class BaseMode {
   }
 
   public async run(): Promise<void> {
+    let compileSingleData = new CompileSingleData(path.join(path.resolve(), BS_PERF_FILE_NAME));
+    compileSingleData.record(RECORDE_RUN_NODE.GEN_MODULE);
     this.generateModuleInfos();
 
     const compilePromises: Promise<void>[] = [];
@@ -861,9 +888,11 @@ export abstract class BaseMode {
       }
       moduleToFile.get(fileInfo.packageName)?.push(fileInfo.filePath);
     });
+    compileSingleData.record(RECORDE_RUN_NODE.COMPILE_FILES, RECORDE_RUN_NODE.GEN_MODULE);
     try {
       //@ts-ignore
-      this.compileMultiFiles([], this.moduleInfos.get(this.packageName));
+      this.compileMultiFiles(this.moduleInfos.get(this.packageName));
+      compileSingleData.record(RECORDE_RUN_NODE.END, RECORDE_RUN_NODE.COMPILE_FILES);
     } catch (error) {
       if (error instanceof Error) {
         const logData: LogData = LogDataFactory.newInstance(
@@ -876,6 +905,7 @@ export abstract class BaseMode {
     }
 
     this.mergeAbcFiles();
+    compileSingleData.writeSumSingle(path.resolve());
   }
 
   // -- runParallell code begins --
