@@ -17,7 +17,12 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as JSON5 from 'json5';
 import { BuildConfig, PathConfig } from '../common/types';
-import { DEFAULT_CACHE_DIR, EXTERNAL_API_PATH_FROM_SDK, LANGUAGE_VERSION } from '../common/preDefine';
+import {
+  DEFAULT_CACHE_DIR,
+  EXTERNAL_API_PATH_FROM_SDK,
+  INTEROP_API_PATH_FROM_SDK,
+  LANGUAGE_VERSION
+} from '../common/preDefine';
 import { getFileLanguageVersion } from '../common/utils';
 
 export interface ModuleDescriptor {
@@ -232,6 +237,9 @@ export function generateBuildConfigs(
       externalApiPath: pathConfig.externalApiPath
         ? pathConfig.externalApiPath
         : path.resolve(pathConfig.buildSdkPath, EXTERNAL_API_PATH_FROM_SDK),
+      interopApiPath: pathConfig.interopApiPath
+        ? pathConfig.interopApiPath
+        : path.resolve(pathConfig.buildSdkPath, INTEROP_API_PATH_FROM_SDK),
       cacheDir:
         pathConfig.cacheDir !== undefined ? pathConfig.cacheDir : path.join(pathConfig.projectPath, DEFAULT_CACHE_DIR),
       declFilesPath:
