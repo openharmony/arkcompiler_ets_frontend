@@ -426,8 +426,8 @@ bool ETSUnionType::ExtractType(checker::ETSChecker *checker, checker::Type *sour
             rc = true;
             if (!(*it)->IsETSTypeParameter()) {
                 it = unionTypes.erase(it);
+                continue;
             }
-            continue;
         }
 
         if (checker->Relation()->IsSupertypeOf(constituentType, source)) {
