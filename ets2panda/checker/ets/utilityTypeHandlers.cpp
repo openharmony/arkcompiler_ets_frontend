@@ -339,6 +339,7 @@ ir::ClassProperty *ETSChecker::CreateNullishProperty(ir::ClassProperty *const pr
     prop->SetValue(nullptr);
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *const propClone = prop->Clone(ProgramAllocator(), newClassDefinition)->AsClassProperty();
+    propClone->CleanCheckInformation();
 
     // Revert original property value
     prop->SetValue(propSavedValue);
