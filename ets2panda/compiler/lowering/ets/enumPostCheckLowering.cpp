@@ -382,6 +382,27 @@ ir::SwitchStatement *EnumPostCheckLoweringPhase::GenerateGetOrdinalCallForSwitch
     return node;
 }
 
+static void RecheckNode(ir::AstNode *node, checker::ETSChecker *checker)
+{
+    // No parent class means that this node is not in the inheritance of the class
+    auto *parentClass = util::Helpers::FindAncestorGivenByType(node, ir::AstNodeType::CLASS_DEFINITION);
+    if (parentClass == nullptr) {
+        return;
+    }
+    if (node->IsExpression()) {
+        node->AsExpression()->SetTsType(nullptr);  // force recheck
+    }
+    checker::SavedCheckerContext savedContext(checker, checker->Context().Status(),
+                                              parentClass->AsClassDefinition()->TsType()->AsETSObjectType());
+    node->RemoveAstNodeFlags(ir::AstNodeFlags::RECHECK);
+    node->Check(checker);
+
+    if (node->IsExpression() && node->AsExpression()->TsType() != nullptr &&
+        !node->AsExpression()->TsType()->IsETSIntEnumType()) {
+        node->RemoveAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF);
+    }
+}
+
 bool EnumPostCheckLoweringPhase::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
     if (program->Extension() != ScriptExtension::ETS) {
@@ -397,18 +418,7 @@ bool EnumPostCheckLoweringPhase::PerformForModule(public_lib::Context *ctx, pars
         // clang-format off
         [this](ir::AstNode *const node) -> ir::AstNode* {
             if (node->HasAstNodeFlags(ir::AstNodeFlags::RECHECK)) {
-                if (node->IsExpression()) {
-                    node->AsExpression()->SetTsType(nullptr);  // force recheck
-                }
-                auto *parentClass = util::Helpers::FindAncestorGivenByType(node, ir::AstNodeType::CLASS_DEFINITION);
-                checker::SavedCheckerContext savedContext(checker_, checker_->Context().Status(),
-                                              parentClass->AsClassDefinition()->TsType()->AsETSObjectType());
-                node->RemoveAstNodeFlags(ir::AstNodeFlags::RECHECK);
-                node->Check(checker_);
-                if (node->IsExpression() && node->AsExpression()->TsType() != nullptr &&
-                    !node->AsExpression()->TsType()->IsETSIntEnumType()) {
-                    node->RemoveAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF);
-                }
+                RecheckNode(node, checker_);
             }
             if (node->HasAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF)) {
                 return GenerateValueOfCall(node);
