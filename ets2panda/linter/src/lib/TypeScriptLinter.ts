@@ -65,7 +65,20 @@ import {
 } from './utils/consts/SendableAPI';
 import { DEFAULT_COMPATIBLE_SDK_VERSION, DEFAULT_COMPATIBLE_SDK_VERSION_STAGE } from './utils/consts/VersionInfo';
 import { TYPED_ARRAYS } from './utils/consts/TypedArrays';
-import { BUILTIN_CONSTRUCTORS, COLLECTION_METHODS, COLLECTION_TYPES } from './utils/consts/BuiltinWhiteList';
+import {
+  BuiltinProblem,
+  BuiltinProblemInfos,
+  SYMBOL_ITERATOR,
+  BUILTIN_CONSTRUCTORS,
+  COLLECTION_METHODS,
+  COLLECTION_TYPES,
+  BUILTIN_TYPE,
+  BUILTIN_DISABLE_CALLSIGNATURE,
+  GET_OWN_PROPERTY_NAMES_TEXT,
+  BUILTIN_CONSTRUCTOR_API_TYPE,
+  BUILTIN_CONSTRUCTOR_API_NAME,
+  BUILTIN_CALLSIGNATURE_NEWCTOR
+} from './utils/consts/BuiltinWhiteList';
 import { forEachNodeInSubtree } from './utils/functions/ForEachNodeInSubtree';
 import { hasPredecessor } from './utils/functions/HasPredecessor';
 import { isStdLibrarySymbol, isStdLibraryType } from './utils/functions/IsStdLibrary';
@@ -163,15 +176,15 @@ import {
   SDK_COMMON_FUNCTIONLIKE,
   SDK_COMMON_PROPERTYLIKE,
   SDK_COMMON_CONSTRUCTORLIKE,
-  SDK_COMMON_TYPEKEY
+  SDK_COMMON_TYPEKEY,
+  SDK_COMMON_TYPE
 } from './utils/consts/SdkCommonDeprecateWhiteList';
-import { DeprecateProblem, DEPRECATE_CHECK_KEY, DEPRECATE_UNNAMED } from './utils/consts/DeprecateWhiteList';
 import {
-  BuiltinProblem,
-  SYMBOL_ITERATOR,
-  BUILTIN_DISABLE_CALLSIGNATURE,
-  GET_OWN_PROPERTY_NAMES_TEXT
-} from './utils/consts/BuiltinWhiteList';
+  DeprecateProblem,
+  DEPRECATE_CHECK_KEY,
+  DEPRECATE_UNNAMED,
+  DEPRECATE_TYPE
+} from './utils/consts/DeprecateWhiteList';
 import {
   USE_SHARED,
   USE_CONCURRENT,
@@ -231,6 +244,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   static pathMap: Map<string, Set<ApiInfo>>;
   static indexedTypeSet: Set<ApiListItem>;
   static globalApiInfo: Map<string, Set<ApiListItem>>;
+  static builtApiInfo: Set<ApiListItem>;
+  static builtinNewCtorSet: Set<ApiListItem>;
+  static builtinFinalClassSet: Set<ApiListItem>;
   static deprecatedApiInfo: Set<ApiListItem>;
   static sdkCommonApiInfo: Set<ApiListItem>;
   static sdkCommonSymbotIterSet: Set<ApiListItem>;
@@ -248,6 +264,9 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     TypeScriptLinter.nameSpaceFunctionCache = new Map<string, Set<string>>();
     TypeScriptLinter.pathMap = new Map<string, Set<ApiInfo>>();
     TypeScriptLinter.globalApiInfo = new Map<string, Set<ApiListItem>>();
+    TypeScriptLinter.builtApiInfo = new Set<ApiListItem>();
+    TypeScriptLinter.builtinNewCtorSet = new Set<ApiListItem>();
+    TypeScriptLinter.builtinFinalClassSet = new Set<ApiListItem>();
     TypeScriptLinter.deprecatedApiInfo = new Set<ApiListItem>();
     TypeScriptLinter.sdkCommonApiInfo = new Set<ApiListItem>();
     TypeScriptLinter.funcMap = new Map<string, Map<string, Set<ApiInfo>>>();
@@ -281,6 +300,12 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
             break;
           case BuiltinProblem.LimitedThisArg:
             TypeScriptLinter.initSdkBuiltinThisArgsWhitelist(item);
+            break;
+          case BuiltinProblem.BuiltinNewCtor:
+            TypeScriptLinter.builtinNewCtorSet.add(item);
+            break;
+          case BuiltinProblem.BuiltinFinalClass:
+            TypeScriptLinter.builtinFinalClassSet.add(item);
             break;
           default:
         }
@@ -376,6 +401,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     const list: ApiList = new ApiList(builtinWhiteList);
     if (list?.api_list?.length > 0) {
       for (const item of list.api_list) {
+        this.builtApiInfo.add(item);
         TypeScriptLinter.addGlobalApiInfosCollocetionData(item);
       }
     }
@@ -1453,6 +1479,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.checkFunctionProperty(propertyAccessNode, baseExprSym, baseExprType);
     this.handleSdkForConstructorFuncs(propertyAccessNode);
     this.fixJsImportPropertyAccessExpression(node);
+    this.handleBuiltinIteratorResult(propertyAccessNode);
   }
 
   private handlePropertyAccessExpressionForUI(node: ts.PropertyAccessExpression): void {
@@ -6458,6 +6485,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleInstantiatedJsObject(tsNewExpr, sym);
     this.handlePromiseNeedVoidResolve(tsNewExpr);
     this.handleFunctionReturnThisCall(tsNewExpr);
+    this.checkArrayInitialization(tsNewExpr);
   }
 
   handlePromiseNeedVoidResolve(newExpr: ts.NewExpression): void {
@@ -7549,6 +7577,16 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       }
     }
     this.handleNotSupportCustomDecorators(decorator);
+    switch (decorator.parent.kind) {
+      case ts.SyntaxKind.PropertyDeclaration:
+      case ts.SyntaxKind.ClassDeclaration:
+      case ts.SyntaxKind.MethodDeclaration:
+      case ts.SyntaxKind.Parameter:
+        this.handleBuiltinDisableDecorator(decorator);
+        break;
+      default:
+        break;
+    }
   }
 
   private handleProvideDecorator(node: ts.Node): void {
@@ -8399,6 +8437,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (!this.options.arkts2) {
       return;
     }
+    this.handleNoDeprecatedApi(node as ts.TaggedTemplateExpression);
     this.incrementCounters(node, FaultID.TaggedTemplates);
   }
 
@@ -10944,7 +10983,8 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       ) {
         continue;
       }
-      this.handleExtendCustomClassForSdkCommonApiDeprecated(extendedClassName, superCall);
+      this.handleExtendCustomClassForSdkApiDeprecated(extendedClassName, superCall, SDK_COMMON_TYPE);
+      this.handleExtendCustomClassForSdkApiDeprecated(extendedClassName, superCall, BUILTIN_TYPE);
       return;
     }
 
@@ -10996,20 +11036,26 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     );
   }
 
-  private handleExtendCustomClassForSdkCommonApiDeprecated(
+  private handleExtendCustomClassForSdkApiDeprecated(
     extendedClassName: string,
-    superCall: ts.CallExpression
+    superCall: ts.CallExpression,
+    apiType: string
   ): void {
-    const problemStr = TypeScriptLinter.getFaultIdSdkCommonApiInfoWithConstructorDecl(extendedClassName);
+    const problemStr = TypeScriptLinter.getFaultIdSdkApiInfoWithConstructorDecl(extendedClassName, apiType);
     if (problemStr) {
       const faultID = sdkCommonAllDeprecatedTypeName.has(extendedClassName) ?
         FaultID.SdkCommonApiDeprecated :
-        TypeScriptLinter.getFinalSdkFaultIdByProblem(problemStr);
+        TypeScriptLinter.getFinalSdkFaultIdByProblem(problemStr, apiType);
+      if (!faultID) {
+        return;
+      }
       this.incrementCounters(
         superCall,
         faultID,
         undefined,
-        TypeScriptLinter.getErrorMsgForSdkCommonApi(extendedClassName, faultID)
+        apiType === SDK_COMMON_TYPE ?
+          TypeScriptLinter.getErrorMsgForSdkCommonApi(extendedClassName, faultID) :
+          undefined
       );
     }
   }
@@ -13521,6 +13567,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       | ts.PropertyAccessExpression
       | ts.ElementAccessExpression
       | ts.HeritageClause
+      | ts.TaggedTemplateExpression
   ): void {
     if (!this.options.arkts2) {
       return;
@@ -13543,8 +13590,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         this.checkMethodDeclarationForDeprecatedApi(node);
         break;
       case ts.SyntaxKind.PropertyAssignment:
-        this.checkPropertyAssignmentForDeprecatedApi(node);
-        break;
+      case ts.SyntaxKind.TaggedTemplateExpression:
       case ts.SyntaxKind.NewExpression:
       case ts.SyntaxKind.CallExpression:
       case ts.SyntaxKind.BinaryExpression:
@@ -13563,6 +13609,8 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       | ts.BinaryExpression
       | ts.PropertyAccessExpression
       | ts.ElementAccessExpression
+      | ts.TaggedTemplateExpression
+      | ts.PropertyAssignment
   ): void {
     switch (node.kind) {
       case ts.SyntaxKind.NewExpression:
@@ -13579,6 +13627,12 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         break;
       case ts.SyntaxKind.ElementAccessExpression:
         this.checkSdkCommonOnElementAccess(node);
+        break;
+      case ts.SyntaxKind.TaggedTemplateExpression:
+        this.checkTaggedTemplateExpressionForBuiltinApi(node);
+        break;
+      case ts.SyntaxKind.PropertyAssignment:
+        this.checkPropertyAssignmentForDeprecatedApi(node);
         break;
       default:
     }
@@ -13648,24 +13702,27 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     if (sym) {
       this.hanldeSdkCommonTypeName(node, sym, sym.name, decl);
     }
-    if (decl && (ts.isInterfaceDeclaration(decl) || ts.isClassDeclaration(decl))) {
+    if (decl && (ts.isInterfaceDeclaration(decl) || ts.isClassDeclaration(decl) || ts.isTypeAliasDeclaration(decl))) {
       let parentName = decl.name ? decl.name.text : 'unnamed';
       if (ts.isQualifiedName(node.typeName)) {
         parentName = node.typeName.getText();
+      } else if (ts.isTypeAliasDeclaration(decl)) {
+        parentName = '';
       }
       const deprecatedApiCheckMap = TypeScriptLinter.updateDeprecatedApiCheckMap(
         parentName,
         undefined,
-        undefined,
+        ts.isTypeAliasDeclaration(decl) ? decl.type.getText() : undefined,
         path.basename(decl.getSourceFile().fileName + '')
       );
       this.processApiNodeDeprecatedApi(typeName.getText(), typeName, deprecatedApiCheckMap);
+      this.processApiNodeDeprecatedApi(typeName.getText(), typeName, deprecatedApiCheckMap, undefined, BUILTIN_TYPE);
     }
   }
 
   private checkNewExpressionForDeprecatedApi(node: ts.NewExpression): void {
     const expression = node.expression;
-    this.checkNewExpressionForSdkCommonApi(node);
+    this.checkNewExpressionForSdkApi(node);
     if (ts.isIdentifier(expression)) {
       const decl = this.tsUtils.getDeclarationNode(expression);
       if (decl && ts.isClassDeclaration(decl)) {
@@ -13680,7 +13737,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
   }
 
-  private checkNewExpressionForSdkCommonApi(newExpr: ts.NewExpression): void {
+  private checkNewExpressionForSdkApi(newExpr: ts.NewExpression): void {
     const type = this.tsTypeChecker.getTypeAtLocation(newExpr.expression);
     const resolvedSignature = this.tsTypeChecker.getResolvedSignature(newExpr);
     if (!resolvedSignature) {
@@ -13702,9 +13759,46 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         newExpr.expression,
         deprecatedApiCheckMap,
         undefined,
-        true
+        SDK_COMMON_TYPE
       );
+      if (BUILTIN_CALLSIGNATURE_NEWCTOR.includes(newExpr.expression.getText())) {
+        this.handleNewExpressionForBuiltNewCtor(newExpr.expression, deprecatedApiCheckMap);
+      } else {
+        this.processApiNodeDeprecatedApi(
+          BUILTIN_CONSTRUCTOR_API_NAME,
+          newExpr.expression,
+          deprecatedApiCheckMap,
+          undefined,
+          BUILTIN_TYPE
+        );
+      }
     }
+  }
+
+  private handleNewExpressionForBuiltNewCtor(
+    errorNode: ts.Node,
+    deprecatedApiCheckMap?: Map<string, string | ts.NodeArray<ts.ParameterDeclaration>>
+  ): void {
+    if (TypeScriptLinter.builtinNewCtorSet.size === 0 || !deprecatedApiCheckMap) {
+      return;
+    }
+    [...TypeScriptLinter.builtinNewCtorSet].some((item) => {
+      if (item.api_info.parent_api?.length <= 0) {
+        return false;
+      }
+      const isBuiltinNewConstruct =
+        BUILTIN_CONSTRUCTOR_API_TYPE.includes(item.api_info.api_type) &&
+        item.api_info.parent_api[0].api_name === deprecatedApiCheckMap?.get(DEPRECATE_CHECK_KEY.PARENT_NAME) + '' &&
+        path.basename(item.file_path) === deprecatedApiCheckMap?.get(DEPRECATE_CHECK_KEY.FILE_NAME) + '';
+      if (isBuiltinNewConstruct) {
+        const problemStr = item.api_info.problem;
+        if (problemStr.length > 0) {
+          this.incrementCounters(errorNode, FaultID.BuiltinNewCtor);
+        }
+        return true;
+      }
+      return false;
+    });
   }
 
   private checkHeritageClauseForDeprecatedApi(node: ts.HeritageClause): void {
@@ -13717,11 +13811,16 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         expr = type.expression.name;
       }
       const decl = this.tsUtils.getDeclarationNode(expr);
-      this.checkHeritageClauseForSdkCommonApiDeprecated(node, decl);
+      this.checkHeritageClauseForSdkApiDeprecated(node, decl, SDK_COMMON_TYPE);
+      this.checkHeritageClauseForSdkApiDeprecated(node, decl, BUILTIN_TYPE);
     });
   }
 
-  private checkHeritageClauseForSdkCommonApiDeprecated(node: ts.HeritageClause, decl: ts.Node | undefined): void {
+  private checkHeritageClauseForSdkApiDeprecated(
+    node: ts.HeritageClause,
+    decl: ts.Node | undefined,
+    apiType: string
+  ): void {
     if (
       decl &&
       (ts.isClassDeclaration(decl) || ts.isInterfaceDeclaration(decl)) &&
@@ -13729,35 +13828,45 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       decl.name
     ) {
       const extendClassName = decl.name.text;
-      if (TypeScriptLinter.checkIsSameAsParenName(extendClassName)) {
+      const newSet = TypeScriptLinter.refactorSetWhitSameAsParenName(extendClassName, apiType);
+      if (newSet && newSet.size > 0) {
         const sourceFunlikeArrs = node.parent.members.filter(ts.isFunctionLike);
         const sourceProDeclArrs = node.parent.members.filter(ts.isPropertyDeclaration);
-        this.checkSdkCommonApiInfoWithClassMember(sourceFunlikeArrs, extendClassName, SDK_COMMON_TYPEKEY[0]);
-        this.checkSdkCommonApiInfoWithClassMember(sourceProDeclArrs, extendClassName, SDK_COMMON_TYPEKEY[1]);
+        this.checkSdkApiInfoWithClassMember(sourceFunlikeArrs, decl, SDK_COMMON_TYPEKEY[0], apiType, newSet);
+        this.checkSdkApiInfoWithClassMember(sourceProDeclArrs, decl, SDK_COMMON_TYPEKEY[1], apiType, newSet);
       }
     }
   }
 
-  private checkSdkCommonApiInfoWithClassMember(
+  private checkSdkApiInfoWithClassMember(
     sourceMembers: ts.ClassElement[] | ts.PropertyDeclaration[],
-    extendClassName: string,
-    typeKey: string
+    decl: ts.ClassDeclaration | ts.InterfaceDeclaration,
+    typeKey: string,
+    apiType: string,
+    mergedSet: Set<ApiListItem>
   ): void {
     sourceMembers.some((func) => {
-      const funcName = func.name?.getText();
-      if (!funcName) {
+      if (!func.name || !decl.name) {
         return;
       }
-      const problemStr = TypeScriptLinter.getFaultIdSdkCommonApiInfoWithClassMember(extendClassName, funcName, typeKey);
+      const funcName = func.name.getText();
+      const extendClassName = decl.name.text;
+      const problemStr = TypeScriptLinter.getFaultIdSdkApiInfoWithClassMember(decl, funcName, typeKey, mergedSet);
       if (problemStr) {
-        const faultID = sdkCommonAllDeprecatedTypeName.has(extendClassName) ?
-          FaultID.SdkCommonApiDeprecated :
-          TypeScriptLinter.getFinalSdkFaultIdByProblem(problemStr);
+        let faultID = TypeScriptLinter.getFinalSdkFaultIdByProblem(problemStr, apiType);
+        if (apiType === SDK_COMMON_TYPE) {
+          faultID = sdkCommonAllDeprecatedTypeName.has(extendClassName) ? FaultID.SdkCommonApiDeprecated : faultID;
+        }
+        if (!faultID) {
+          return;
+        }
         this.incrementCounters(
           func,
           faultID,
           undefined,
-          TypeScriptLinter.getErrorMsgForSdkCommonApi(extendClassName, faultID)
+          apiType === SDK_COMMON_TYPE ?
+            TypeScriptLinter.getErrorMsgForSdkCommonApi(extendClassName, faultID) :
+            undefined
         );
       }
     });
@@ -13767,14 +13876,27 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     const sym = this.tsUtils.trueSymbolAtLocation(node);
     const decl = this.tsUtils.getDeclarationNode(node);
     if (decl && (ts.isInterfaceDeclaration(decl) || ts.isClassDeclaration(decl))) {
+      const fileName = path.basename(decl.getSourceFile().fileName + '');
       const deprecatedApiCheckMap = TypeScriptLinter.updateDeprecatedApiCheckMap(
         decl.name?.getText() + '',
         undefined,
         undefined,
-        path.basename(decl.getSourceFile().fileName + '')
+        fileName
       );
       this.processApiNodeDeprecatedApi(node.getText(), node, deprecatedApiCheckMap);
       this.hanldeSdkCommonTypeName(node, sym, decl.name?.getText() + '', decl);
+      this.hanldeBuiltinFinalClassOnHeritageClause(node, fileName);
+    }
+  }
+
+  private hanldeBuiltinFinalClassOnHeritageClause(node: ts.Node, fileName: string): void {
+    let isMatch = false;
+    for (const item of TypeScriptLinter.builtinFinalClassSet) {
+      isMatch = item.api_info.api_name === node.getText() && path.basename(item.file_path) === fileName;
+      if (isMatch) {
+        this.incrementCounters(node, FaultID.BuiltinFinalClass);
+        break;
+      }
     }
   }
 
@@ -13833,7 +13955,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     this.handleCallExpressionBufferIndexOf(node, name, parName + '', funSymbol, decl);
     const deprecatedApiCheckMap = TypeScriptLinter.getDeprecatedApiCheckMapForCallExpression(decl, parName);
     this.reportDeprecatedApi(node, name, deprecatedApiCheckMap);
-    this.checkCallExpressionForSdkCommonApi(node, name, parName, !!isNeedGetResolvedSignature, deprecatedApiCheckMap);
+    this.checkCallExpressionForSdkApi(node, name, parName, !!isNeedGetResolvedSignature, deprecatedApiCheckMap);
     this.checkSpecialApiForDeprecatedApi(node, name, decl);
   }
 
@@ -13853,7 +13975,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     return undefined;
   }
 
-  private checkCallExpressionForSdkCommonApi(
+  private checkCallExpressionForSdkApi(
     node: ts.CallExpression,
     name: ts.Identifier,
     parName: string | undefined,
@@ -13861,13 +13983,14 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     deprecatedApiCheckMap: Map<string, string | ts.NodeArray<ts.ParameterDeclaration>> | undefined
   ): void {
     if (isNeedGetResolvedSignature) {
-      this.checkCallExpressionForSdkCommonApiWithSignature(node, name, parName);
+      this.checkCallExpressionForSdkApiWithSignature(node, name, parName);
     } else {
-      this.reportDeprecatedApi(node, name, deprecatedApiCheckMap, true);
+      this.reportDeprecatedApi(node, name, deprecatedApiCheckMap, SDK_COMMON_TYPE);
+      this.reportDeprecatedApi(node, name, deprecatedApiCheckMap, BUILTIN_TYPE);
     }
   }
 
-  private checkCallExpressionForSdkCommonApiWithSignature(
+  private checkCallExpressionForSdkApiWithSignature(
     node: ts.CallExpression,
     name: ts.Identifier,
     parName: string | undefined
@@ -13878,44 +14001,76 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     }
     const functionSymbol = this.getFunctionSymbol(signature.declaration);
     const functionDeclaration = functionSymbol?.valueDeclaration;
+    let returnType = this.tsTypeChecker.typeToString(signature.getReturnType());
+    let isSpecialTypeForBuiltIn = false;
     if (!functionDeclaration) {
-      return;
+      const signatureDecl = signature.getDeclaration();
+      if (signatureDecl && ts.isFunctionLike(signatureDecl) && signatureDecl.type) {
+        returnType = signatureDecl.type.getText();
+        if (!parName && BUILTIN_CALLSIGNATURE_NEWCTOR.includes(name.text)) {
+          const type = this.tsTypeChecker.getTypeAtLocation(name);
+          parName = this.tsTypeChecker.typeToString(type);
+          isSpecialTypeForBuiltIn = !!parName;
+        }
+      }
     }
-    const returnType = this.tsTypeChecker.typeToString(signature.getReturnType());
+    const fileName = signature.getDeclaration().getSourceFile().fileName;
     const deprecatedApiCheckMap = TypeScriptLinter.updateDeprecatedApiCheckMap(
       parName === undefined ? '' : parName + '',
       TypeScriptLinter.getParameterDeclarationsBySignature(signature),
       returnType,
-      path.basename(functionDeclaration.getSourceFile().fileName)
+      path.basename(fileName)
     );
-    this.reportDeprecatedApi(node, name, deprecatedApiCheckMap, true);
+    this.reportDeprecatedApi(node, name, deprecatedApiCheckMap, SDK_COMMON_TYPE);
+    if (isSpecialTypeForBuiltIn) {
+      this.processApiNodeDeprecatedApi(
+        BUILTIN_CONSTRUCTOR_API_NAME,
+        name,
+        deprecatedApiCheckMap,
+        undefined,
+        BUILTIN_TYPE
+      );
+    } else {
+      this.reportDeprecatedApi(node, name, deprecatedApiCheckMap, BUILTIN_TYPE);
+    }
   }
 
   private reportDeprecatedApi(
     node: ts.CallExpression,
     name: ts.Identifier,
     deprecatedApiCheckMap?: Map<string, string | ts.NodeArray<ts.ParameterDeclaration>>,
-    isSdkCommon?: boolean
+    apiType?: string
   ): void {
-    const problemStr = this.getFaultIdWithMatchedDeprecatedApi(name.text, deprecatedApiCheckMap, isSdkCommon);
+    const problemStr = this.getFaultIdWithMatchedDeprecatedApi(name.text, deprecatedApiCheckMap, apiType);
     if (problemStr.length > 0) {
       const autofix = this.autofixer?.fixDeprecatedApiForCallExpression(node);
       if (autofix) {
         this.interfacesNeedToImport.add('getUIContext');
       }
-      const faultID = isSdkCommon ? TypeScriptLinter.getFinalSdkFaultIdByProblem(problemStr) : FaultID.NoDeprecatedApi;
+      const isSdkCommon = apiType === SDK_COMMON_TYPE;
+      const faultID = TypeScriptLinter.getFinalSdkFaultIdByProblem(problemStr, apiType);
+      if (!faultID) {
+        return;
+      }
       this.incrementCounters(
         name,
         faultID,
-        isSdkCommon ? undefined : autofix,
+        isSdkCommon || apiType === BUILTIN_TYPE ? undefined : autofix,
         isSdkCommon ? TypeScriptLinter.getErrorMsgForSdkCommonApi(name.text, faultID) : undefined
       );
     }
   }
 
-  private static getFinalSdkFaultIdByProblem(problem: string): number {
-    const sdkFaultId = SdkCommonApiProblemInfos.get(problem);
-    return sdkFaultId ? sdkFaultId : FaultID.SdkCommonApiWhiteList;
+  private static getFinalSdkFaultIdByProblem(problem: string, apiType: string | undefined): number | undefined {
+    let sdkFaultId: number | undefined = FaultID.NoDeprecatedApi;
+    if (apiType === SDK_COMMON_TYPE) {
+      sdkFaultId = SdkCommonApiProblemInfos.get(problem);
+      return sdkFaultId ? sdkFaultId : FaultID.SdkCommonApiWhiteList;
+    } else if (apiType === BUILTIN_TYPE) {
+      sdkFaultId = BuiltinProblemInfos.get(problem);
+      return sdkFaultId ? sdkFaultId : undefined;
+    }
+    return sdkFaultId;
   }
 
   private checkSpecialApiForDeprecatedApi(
@@ -14014,7 +14169,14 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         expression,
         this.getPropertyTypeForPropertyAssignment(node, contextualType, true),
         undefined,
-        true
+        SDK_COMMON_TYPE
+      );
+      this.processApiNodeDeprecatedApi(
+        expression.getText(),
+        expression,
+        this.getPropertyTypeForPropertyAssignment(node, contextualType),
+        undefined,
+        BUILTIN_TYPE
       );
     }
   }
@@ -14048,7 +14210,14 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
           path.basename(decl.getSourceFile().fileName)
         );
         this.processApiNodeDeprecatedApi(expression.text, expression, deprecatedApiCheckMap);
-        this.processApiNodeDeprecatedApi(expression.text, expression, deprecatedApiCheckMap, undefined, true);
+        this.processApiNodeDeprecatedApi(
+          expression.text,
+          expression,
+          deprecatedApiCheckMap,
+          undefined,
+          SDK_COMMON_TYPE
+        );
+        this.processApiNodeDeprecatedApi(expression.text, expression, deprecatedApiCheckMap, undefined, BUILTIN_TYPE);
       }
     });
   }
@@ -14191,6 +14360,33 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     return isFileMatch;
   }
 
+  private checkTaggedTemplateExpressionForBuiltinApi(node: ts.TaggedTemplateExpression): void {
+    const expression = node.tag;
+    if (ts.isPropertyAccessExpression(expression)) {
+      const funSymbol = this.tsUtils.trueSymbolAtLocation(expression.name);
+      const decl = TsUtils.getDeclaration(funSymbol);
+      const parName = this.tsUtils.getParentSymbolName(funSymbol);
+      if (decl) {
+        const returnType: string | undefined = this.tsTypeChecker.typeToString(
+          this.tsTypeChecker.getTypeAtLocation(decl)
+        );
+        const deprecatedApiCheckMap = TypeScriptLinter.updateDeprecatedApiCheckMap(
+          parName === undefined ? DEPRECATE_UNNAMED : parName + '',
+          undefined,
+          expression.name.text === 'raw' ? 'string' : returnType,
+          path.basename(decl.getSourceFile().fileName)
+        );
+        this.processApiNodeDeprecatedApi(
+          expression.name.text,
+          expression.name,
+          deprecatedApiCheckMap,
+          undefined,
+          BUILTIN_TYPE
+        );
+      }
+    }
+  }
+
   private checkPropertyDeclarationForDeprecatedApi(node: ts.PropertyDeclaration): void {
     const expression = node.name;
     if (ts.isIdentifier(expression)) {
@@ -14203,15 +14399,19 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     errorNode: ts.Node,
     deprecatedApiCheckMap?: Map<string, string | ts.NodeArray<ts.ParameterDeclaration>>,
     autofix?: Autofix[],
-    isSdkCommon?: boolean
+    apiType?: string
   ): void {
-    const problemStr = this.getFaultIdWithMatchedDeprecatedApi(apiName, deprecatedApiCheckMap, isSdkCommon);
+    const problemStr = this.getFaultIdWithMatchedDeprecatedApi(apiName, deprecatedApiCheckMap, apiType);
     if (problemStr.length > 0) {
-      const faultID = isSdkCommon ? TypeScriptLinter.getFinalSdkFaultIdByProblem(problemStr) : FaultID.NoDeprecatedApi;
+      const isSdkCommon = apiType === SDK_COMMON_TYPE;
+      const faultID = TypeScriptLinter.getFinalSdkFaultIdByProblem(problemStr, apiType);
+      if (!faultID) {
+        return;
+      }
       this.incrementCounters(
         errorNode,
         faultID,
-        isSdkCommon ? undefined : autofix,
+        isSdkCommon || apiType === BUILTIN_TYPE ? undefined : autofix,
         isSdkCommon ? TypeScriptLinter.getErrorMsgForSdkCommonApi(apiName, faultID) : undefined
       );
     }
@@ -14220,57 +14420,87 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   private getFaultIdWithMatchedDeprecatedApi(
     apiName: string,
     deprecatedApiCheckMap?: Map<string, string | ts.NodeArray<ts.ParameterDeclaration>>,
-    isSdkCommon?: boolean
+    apiType?: string
   ): string {
     void this;
-    let setApiListItem = TypeScriptLinter.deprecatedApiInfo;
-    if (isSdkCommon) {
-      setApiListItem = TypeScriptLinter.sdkCommonApiInfo;
+    if (!apiType) {
+      apiType = DEPRECATE_TYPE;
     }
+    const setApiListItem = apiType && TypeScriptLinter.getApiListItemSetFromAllWhiteList(apiType);
     if (!setApiListItem || !deprecatedApiCheckMap) {
       return '';
     }
     const apiNamesArr = [...setApiListItem];
+    const isSpecial = apiType === SDK_COMMON_TYPE || apiType === BUILTIN_TYPE;
     let problem = '';
     apiNamesArr.some((apiInfoItem) => {
-      if (apiInfoItem.api_info.parent_api?.length <= 0) {
-        return false;
-      }
-      let isSameApi = apiInfoItem.api_info.api_name === apiName;
-      isSameApi &&= TypeScriptLinter.checkParentNameUnderSdkList(
-        apiInfoItem,
-        deprecatedApiCheckMap?.get(DEPRECATE_CHECK_KEY.PARENT_NAME) + '',
-        isSdkCommon
-      );
-      const return_type = this.getReturnTypeByApiInfoItem(apiInfoItem, isSdkCommon);
-      const actual_return_type = this.normalizeTypeString(deprecatedApiCheckMap?.get(DEPRECATE_CHECK_KEY.RETURN_TYPE));
-      isSameApi &&= return_type === actual_return_type;
-      const api_func_args = apiInfoItem.api_info.api_func_args;
-      const params = deprecatedApiCheckMap?.get(DEPRECATE_CHECK_KEY.PARAM_SET);
-      if (api_func_args && params) {
-        const isParametersEqual = TypeScriptLinter.areParametersEqualForDeprecated(
-          api_func_args,
-          params as ts.NodeArray<ts.ParameterDeclaration>
+      if (!apiInfoItem.api_info.api_name && !apiName || BUILTIN_CONSTRUCTOR_API_NAME === apiName) {
+        problem = TypeScriptLinter.getFaultIdWithMatchedBuiltinConstructApi(
+          apiInfoItem,
+          deprecatedApiCheckMap?.get(DEPRECATE_CHECK_KEY.PARENT_NAME) + ''
         );
-        isSameApi &&= isParametersEqual;
+        if (problem) {
+          return true;
+        }
       }
+      const isSameApi = this.checkIsSameApiWithSdkList(apiInfoItem, apiName, deprecatedApiCheckMap, apiType);
       const fileName = deprecatedApiCheckMap?.get(DEPRECATE_CHECK_KEY.FILE_NAME) + '';
       const isSameFile = fileName.endsWith(path.basename(apiInfoItem.file_path));
       const res = isSameApi && isSameFile;
       if (res) {
-        problem = isSdkCommon ? apiInfoItem.api_info.problem : DeprecateProblem.NoDeprecatedApi;
+        problem = isSpecial ? apiInfoItem.api_info.problem : DeprecateProblem.NoDeprecatedApi;
       }
       return res;
     });
     return problem;
   }
 
+  private checkIsSameApiWithSdkList(
+    apiInfoItem: ApiListItem,
+    apiName: string,
+    deprecatedApiCheckMap: Map<string, string | ts.NodeArray<ts.ParameterDeclaration>>,
+    apiType?: string
+  ): boolean {
+    let isSameApi = apiInfoItem.api_info.api_name === apiName;
+    isSameApi &&= TypeScriptLinter.checkParentNameUnderSdkList(
+      apiInfoItem,
+      deprecatedApiCheckMap.get(DEPRECATE_CHECK_KEY.PARENT_NAME) + '',
+      apiType === SDK_COMMON_TYPE || apiType === BUILTIN_TYPE
+    );
+    const return_type = this.getReturnTypeByApiInfoItem(
+      apiInfoItem,
+      apiType === SDK_COMMON_TYPE || apiType === BUILTIN_TYPE
+    );
+    const actual_return_type = this.normalizeTypeString(deprecatedApiCheckMap.get(DEPRECATE_CHECK_KEY.RETURN_TYPE));
+    isSameApi &&= return_type === actual_return_type;
+    const api_func_args = apiInfoItem.api_info.api_func_args;
+    const params = deprecatedApiCheckMap.get(DEPRECATE_CHECK_KEY.PARAM_SET);
+    if (api_func_args && params) {
+      const isParametersEqual = TypeScriptLinter.areParametersEqualForDeprecated(
+        api_func_args,
+        params as ts.NodeArray<ts.ParameterDeclaration>
+      );
+      isSameApi &&= isParametersEqual;
+    }
+    return isSameApi;
+  }
+
+  private static getFaultIdWithMatchedBuiltinConstructApi(apiInfoItem: ApiListItem, parentName: string): string {
+    if (apiInfoItem.api_info.parent_api?.length <= 0) {
+      return '';
+    }
+    const isBuiltinConstruct =
+      BUILTIN_CONSTRUCTOR_API_TYPE.includes(apiInfoItem.api_info.api_type) &&
+      apiInfoItem.api_info.parent_api[0].api_name === parentName;
+    return isBuiltinConstruct ? apiInfoItem.api_info.problem : '';
+  }
+
   private getReturnTypeByApiInfoItem(
     apiInfoItem: ApiListItem,
-    isSdkCommon: boolean | undefined
+    isSpecial: boolean | undefined
   ): string | ts.NodeArray<ts.ParameterDeclaration> | undefined {
     let return_type = this.normalizeTypeString(apiInfoItem.api_info.method_return_type);
-    if (isSdkCommon) {
+    if (isSpecial) {
       return_type = apiInfoItem.api_info.method_return_type ?
         this.normalizeTypeString(apiInfoItem.api_info.method_return_type) :
         this.normalizeTypeString(apiInfoItem.api_info.api_property_type);
@@ -14281,7 +14511,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
   private static checkParentNameUnderSdkList(
     apiInfoItem: ApiListItem,
     sourceParentName: string,
-    isSdkCommon?: boolean
+    isSpecial?: boolean
   ): boolean {
     const parentApis = apiInfoItem.api_info.parent_api;
     const possibleNames: string[] = [];
@@ -14289,18 +14519,18 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
 
     if (primaryParentName) {
       possibleNames.push(primaryParentName);
-      if (!!isSdkCommon && parentApis.length > 1) {
+      if (!!isSpecial && parentApis.length > 1) {
         const secondaryParentName = parentApis[1]?.api_name || '';
         possibleNames.push(`${secondaryParentName}.${primaryParentName}`);
       }
     }
-    return possibleNames.includes(sourceParentName);
+    return possibleNames.includes(sourceParentName) || parentApis.length === 0 && !sourceParentName;
   }
 
   private getPropertyTypeForPropertyAssignment(
     propertyAssignment: ts.PropertyAssignment,
     contextualType: ts.Type,
-    isSdkCommon?: boolean
+    isSpecial?: boolean
   ): Map<string, string | ts.NodeArray<ts.ParameterDeclaration>> | undefined {
     const propertyName = propertyAssignment.name.getText();
     if (contextualType.isUnion()) {
@@ -14309,21 +14539,21 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
           type,
           propertyName,
           propertyAssignment,
-          isSdkCommon
+          isSpecial
         );
         if (deprecatedApiCheckMap) {
           return deprecatedApiCheckMap;
         }
       }
     }
-    return this.getPropertyInfoByContextualType(contextualType, propertyName, propertyAssignment, isSdkCommon);
+    return this.getPropertyInfoByContextualType(contextualType, propertyName, propertyAssignment, isSpecial);
   }
 
   private getPropertyInfoByContextualType(
     type: ts.Type,
     propertyName: string,
     node: ts.Node,
-    isSdkCommon?: boolean
+    isSpecial?: boolean
   ): Map<string, string | ts.NodeArray<ts.ParameterDeclaration>> | undefined {
     const propertySymbol = type.getProperty(propertyName);
     if (!propertySymbol) {
@@ -14338,7 +14568,7 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
         propertyDecl.type.getText(),
         path.basename(propertyDecl.getSourceFile().fileName + '')
       );
-      if (isSdkCommon) {
+      if (isSpecial) {
         this.hanldeSdkCommonTypeName(node, type.getSymbol(), type.getSymbol()?.name + '', propertyDecl);
       }
     }
@@ -14601,13 +14831,27 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     ]);
   }
 
-  private static getFaultIdSdkCommonApiInfoWithConstructorDecl(extendClassName: string): string {
-    const mergedSet = TypeScriptLinter.mergeSdkCommonApiListInfo();
+  private static getFaultIdSdkApiInfoWithConstructorDecl(extendClassName: string, apiType: string): string {
+    const mergedSet = TypeScriptLinter.getApiListItemSetFromAllWhiteList(
+      apiType,
+      apiType === SDK_COMMON_TYPE ? true : undefined
+    );
+    if (!mergedSet) {
+      return '';
+    }
+    let api_types = [''];
+    if (apiType === SDK_COMMON_TYPE) {
+      api_types = SDK_COMMON_CONSTRUCTORLIKE;
+    } else if (apiType === BUILTIN_TYPE) {
+      api_types = BUILTIN_CONSTRUCTOR_API_TYPE;
+    }
     let problem = '';
     for (const item of mergedSet) {
+      if (item.api_info.parent_api?.length <= 0) {
+        continue;
+      }
       const isCompare =
-        item.api_info.parent_api[0].api_name === extendClassName &&
-        SDK_COMMON_CONSTRUCTORLIKE.includes(item.api_info.api_type);
+        item.api_info.parent_api[0].api_name === extendClassName && api_types.includes(item.api_info.api_type);
       if (isCompare) {
         problem = item.api_info.problem;
         break;
@@ -14616,19 +14860,29 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     return problem;
   }
 
-  private static getFaultIdSdkCommonApiInfoWithClassMember(
-    extendClassName: string,
+  private static getFaultIdSdkApiInfoWithClassMember(
+    decl: ts.ClassDeclaration | ts.InterfaceDeclaration,
     targetName: string,
-    typeKey: string
+    typeKey: string,
+    mergedSet: Set<ApiListItem>
   ): string {
-    const mergedSet = TypeScriptLinter.mergeSdkCommonApiListInfo();
+    const extendClassName = decl.name?.text;
+    const fileName = path.basename(decl.getSourceFile().fileName);
+    if (!extendClassName || !fileName) {
+      return '';
+    }
     const memberLike = typeKey === SDK_COMMON_TYPEKEY[0] ? SDK_COMMON_FUNCTIONLIKE : SDK_COMMON_PROPERTYLIKE;
     let problem = '';
+    const apiFilePath = this.getApiFilePathsFromSdkList(mergedSet);
     for (const item of mergedSet) {
+      if (item.api_info.parent_api?.length <= 0) {
+        continue;
+      }
       const isFunLikeCompare =
         item.api_info.parent_api[0].api_name === extendClassName &&
         memberLike.includes(item.api_info.api_type) &&
-        item.api_info.api_name === targetName;
+        item.api_info.api_name === targetName &&
+        apiFilePath.includes(fileName);
       if (isFunLikeCompare) {
         problem = item.api_info.problem;
         break;
@@ -14637,15 +14891,107 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     return problem;
   }
 
-  private static checkIsSameAsParenName(targetName: string): boolean {
-    let res = false;
-    const mergedSet = TypeScriptLinter.mergeSdkCommonApiListInfo();
+  private static getApiFilePathsFromSdkList(mergedSet: Set<ApiListItem>): string[] {
+    const apiFilePath: string[] = [];
+    mergedSet.forEach((mem) => {
+      apiFilePath.push(path.basename(mem.file_path));
+    });
+    return apiFilePath;
+  }
+
+  private static refactorSetWhitSameAsParenName(targetName: string, apiType: string): Set<ApiListItem> | undefined {
+    const mergedSet = TypeScriptLinter.getApiListItemSetFromAllWhiteList(
+      apiType,
+      apiType === SDK_COMMON_TYPE ? true : undefined
+    );
+    if (!mergedSet) {
+      return undefined;
+    }
+    const newMergedSet = new Set<ApiListItem>();
     for (const item of mergedSet) {
+      if (item.api_info.parent_api?.length <= 0) {
+        continue;
+      }
       if (item.api_info.parent_api[0].api_name === targetName) {
-        res = true;
+        newMergedSet.add(item);
       }
     }
-    return res;
+    return newMergedSet;
+  }
+
+  private static getApiListItemSetFromAllWhiteList(
+    type: string,
+    isMergeSdkCommonApi?: boolean
+  ): Set<ApiListItem> | undefined {
+    if (type === DEPRECATE_TYPE) {
+      return TypeScriptLinter.deprecatedApiInfo;
+    } else if (type === SDK_COMMON_TYPE) {
+      return isMergeSdkCommonApi ? TypeScriptLinter.mergeSdkCommonApiListInfo() : TypeScriptLinter.sdkCommonApiInfo;
+    } else if (type === BUILTIN_TYPE) {
+      return TypeScriptLinter.builtApiInfo;
+    }
+    return undefined;
+  }
+
+  private checkArrayInitialization(tsNewExpr: ts.NewExpression): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    if (!tsNewExpr.arguments || tsNewExpr.arguments.length !== 1) {
+      return;
+    }
+    const newExprType = this.tsTypeChecker.getTypeAtLocation(tsNewExpr);
+    const argType = this.tsTypeChecker.getTypeAtLocation(tsNewExpr.arguments[0]);
+    if (this.tsUtils.isGenericArrayType(newExprType) && this.tsUtils.isNumberLikeType(argType)) {
+      this.incrementCounters(tsNewExpr, FaultID.UninitializedArrayElements);
+    }
+  }
+
+  private handleBuiltinIteratorResult(propAccessExpr: ts.PropertyAccessExpression): void {
+    if (!this.options.arkts2 || !TypeScriptLinter.builtApiInfo || propAccessExpr.name.getText() !== 'value') {
+      return;
+    }
+
+    const type = this.tsTypeChecker.getTypeAtLocation(propAccessExpr.expression);
+    const aliasSymbol = type.aliasSymbol;
+    const declaration = aliasSymbol?.declarations?.[0];
+    if (!declaration || !ts.isTypeAliasDeclaration(declaration)) {
+      return;
+    }
+
+    const name = declaration.name.getText();
+    const typeStr = declaration.type.getText();
+    const fileName = declaration.getSourceFile().fileName;
+    this.processApiNodeDeprecatedApi(
+      name,
+      propAccessExpr,
+      TypeScriptLinter.updateDeprecatedApiCheckMap('', undefined, typeStr, path.basename(fileName)),
+      undefined,
+      BUILTIN_TYPE
+    );
+  }
+
+  private handleBuiltinDisableDecorator(decorator: ts.Decorator): void {
+    if (!this.options.arkts2 || !TypeScriptLinter.builtApiInfo) {
+      return;
+    }
+    const type = this.tsTypeChecker.getTypeAtLocation(decorator.expression);
+    const aliasSymbol = type.aliasSymbol;
+    const declaration = aliasSymbol?.declarations?.[0];
+    if (!declaration || !ts.isTypeAliasDeclaration(declaration) || !ts.isFunctionLike(declaration.type)) {
+      return;
+    }
+    const name = declaration.name.getText();
+    const params = declaration.type.parameters;
+    const typeStr = declaration.type.type?.getText();
+    const fileName = declaration.getSourceFile().fileName;
+    this.processApiNodeDeprecatedApi(
+      name,
+      decorator,
+      TypeScriptLinter.updateDeprecatedApiCheckMap('', params, typeStr, path.basename(fileName)),
+      undefined,
+      BUILTIN_TYPE
+    );
   }
 
   private handleUnsignedShiftOnNegative(node: ts.BinaryExpression): void {

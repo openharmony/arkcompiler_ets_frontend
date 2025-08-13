@@ -425,6 +425,13 @@ cookBookTag[399] = 'ArkUI deprecated api check (arkui-no-deprecated-api)';
 cookBookTag[400] = 'ArkUI sdk common deprecated api check (arkui-sdk-common-deprecated-api)';
 cookBookTag[401] = 'ArkUI sdk common whitelist api check (arkui-sdk-common-whitelist-api)';
 cookBookTag[402] = 'ArkUI sdk common behavior change api check (arkui-sdk-common-behaviorchange-api)';
+cookBookTag[403] = 'API is not support initial ctor signature (arkts-builtin-new-cotr)';
+cookBookTag[404] =
+  'Please init elements of array before read elements. If not, there will be a runtime error. We recommend you to use Array.create<T>(len, T) (arkts-builtin-uninitialized-element)';
+cookBookTag[405] = 'API is not support use class in this API (arkts-builtin-final-class)';
+cookBookTag[406] = 'Using narrowing of types is not allowed in this API (arkts-builtin-narrow-types)';
+cookBookTag[407] = 'API has been disabled (arkts-builtin-disable-api)';
+cookBookTag[408] = 'The property of IteratorResult is not supported (arkts-builtin-iterator-result-value)';
 
 for (let i = 0; i <= cookBookTag.length; i++) {
   cookBookMsg[i] = '';

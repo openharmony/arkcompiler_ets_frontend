@@ -485,6 +485,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 91,
+            "column": 15,
+            "endLine": 91,
+            "endColumn": 37,
+            "problem": "BuiltinIteratorResultValue",
+            "suggest": "",
+            "rule": "The property of IteratorResult is not supported (arkts-builtin-iterator-result-value)",
+            "severity": "ERROR"
+        },
+        {
             "line": 94,
             "column": 8,
             "endLine": 94,
