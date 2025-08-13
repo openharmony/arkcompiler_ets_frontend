@@ -520,6 +520,52 @@ private:
     bool isLogError_;
 };
 
+class SignatureCollectContext {
+public:
+    explicit SignatureCollectContext(Checker *checker, varbinder::LocalVariable *overloadDeclaration,
+                                     bool isCreateSyntheticVar = false)
+        : checker_(checker), isCreateSyntheticVar_(isCreateSyntheticVar)
+    {
+        preOverloadDeclaration_ = checker_->Context().ContainingOverloadDeclaration() != nullptr
+                                      ? checker_->Context().ContainingOverloadDeclaration()->AsLocalVariable()
+                                      : nullptr;
+        checker_->Context().SetContainingOverloadDeclaration(overloadDeclaration);
+    }
+
+    bool IsOverloadDeclarationCall()
+    {
+        return checker_->Context().ContainingOverloadDeclaration() != nullptr;
+    }
+
+    varbinder::LocalVariable *CreateSyntheticVar(ThreadSafeArenaAllocator *const allocator)
+    {
+        varbinder::VariableFlags variableFlags =
+            IsOverloadDeclarationCall() ? varbinder::VariableFlags::SYNTHETIC | varbinder::VariableFlags::METHOD |
+                                              varbinder::VariableFlags::OVERLOAD
+                                        : varbinder::VariableFlags::SYNTHETIC | varbinder::VariableFlags::METHOD;
+        varbinder::LocalVariable *syntheticVar = allocator->New<varbinder::LocalVariable>(variableFlags);
+        return syntheticVar;
+    }
+
+    ~SignatureCollectContext()
+    {
+        if (isCreateSyntheticVar_ && syntheticVar_ != nullptr) {
+            syntheticVar_->Reset(checker_->Context().ContainingOverloadDeclaration()->Declaration(),
+                                 syntheticVar_->Flags());
+            checker_->Context().SetContainingOverloadDeclaration(preOverloadDeclaration_);
+        }
+    }
+
+    NO_COPY_SEMANTIC(SignatureCollectContext);
+    NO_MOVE_SEMANTIC(SignatureCollectContext);
+
+private:
+    Checker *checker_;
+    bool isCreateSyntheticVar_;
+    varbinder::LocalVariable *preOverloadDeclaration_;
+    varbinder::LocalVariable *syntheticVar_ = nullptr;
+};
+
 }  // namespace ark::es2panda::checker
 
 #endif /* CHECKER_H */

@@ -43,9 +43,7 @@ function main() {
 }
 
 /* @@@ label Error TypeError: Signature fooPrivate(x: String): void is not visible here. */
-/* @@@ label Error TypeError: No matching call signature for fooPrivate("abc") */
-/* @@@ label1 Error TypeError: Type '"abc"' is not compatible with type 'Double' at index 1 */
-/* @@@ label1 Error TypeError: Type '"abc"' is not compatible with type 'Boolean' at index 1 */
+/* @@@ label Error TypeError: No matching call signature for foo("abc") */
 /* @@@ label2 Error TypeError: Signature fooPrivate(x: String): void is not visible here. */
 /* @@@ label2 Error TypeError: No matching call signature for foo("abc") */
 /* @@@ label3 Error TypeError: Signature fooProtected(x: Double): void is not visible here. */
