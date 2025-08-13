@@ -859,6 +859,21 @@ ir::Expression *ETSParser::ParseGenericLambdaOrTypeAssertion()
     return AllocBrokenExpression(lexer::SourceRange {start, Lexer()->GetToken().End()});
 }
 
+void ETSParser::ValidateKeywordIn()
+{
+    if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_IN) {
+        LogError(diagnostic::ERROR_ARKTS_NO_IN_OPERATOR);
+        Lexer()->NextToken();  // eat 'in'
+        if (auto const tokenType = Lexer()->GetToken().Type(); tokenType == lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
+            ParseObjectExpression();
+        } else if (tokenType == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET) {
+            ParseArrayExpression(ExpressionParseFlags::NO_OPTS);
+        } else {
+            Lexer()->NextToken();
+        }
+    }
+}
+
 // NOLINTNEXTLINE(google-default-arguments)
 ir::Expression *ETSParser::ParseExpression(ExpressionParseFlags flags)
 {
@@ -882,6 +897,7 @@ ir::Expression *ETSParser::ParseExpression(ExpressionParseFlags flags)
     }
 
     ir::Expression *unaryExpressionNode = ParseUnaryOrPrefixUpdateExpression(flags);
+    ValidateKeywordIn();
     if ((flags & ExpressionParseFlags::INSTANCEOF) != 0) {
         ValidateInstanceOfExpression(unaryExpressionNode);
     }
@@ -889,12 +905,9 @@ ir::Expression *ETSParser::ParseExpression(ExpressionParseFlags flags)
     ir::Expression *assignmentExpression = ParseAssignmentExpression(unaryExpressionNode, flags);
     ApplyAnnotationsToNode(assignmentExpression, std::move(annotations), start);
 
-    if (Lexer()->GetToken().NewLine()) {
-        return assignmentExpression;
-    }
-
-    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA &&
-        (flags & ExpressionParseFlags::ACCEPT_COMMA) != 0U && (flags & ExpressionParseFlags::IN_FOR) != 0U) {
+    if (!Lexer()->GetToken().NewLine() &&
+        (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA &&
+         (flags & ExpressionParseFlags::ACCEPT_COMMA) != 0U && (flags & ExpressionParseFlags::IN_FOR) != 0U)) {
         return ParseSequenceExpression(assignmentExpression, (flags & ExpressionParseFlags::ACCEPT_REST) != 0U);
     }
 

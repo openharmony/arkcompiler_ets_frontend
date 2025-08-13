@@ -57,5 +57,6 @@ for (let i = 1 in [0, 1, 2]) {}
 /* @@? 38:5 Error SyntaxError: Unexpected token 'private'. */
 /* @@? 38:13 Error SyntaxError: Unexpected token '@'. */
 /* @@? 38:14 Error TypeError: Cannot find type 'annotate'. */
-/* @@? 42:16 Error SyntaxError: for-in loop variable declaration may not have an initializer. */
-/* @@? 42:16 Error SyntaxError: 'for ... in' loop is not supported, please use regular 'for' or 'for ... of ...' loop to iterate through arrays and iterable objects. */
+/* @@? 42:16 Error SyntaxError: 'in' operator is not supported. Use 'instanceof' operator to check whether an object is the instance of a class that contains the necessary class member. */
+/* @@? 42:28 Error SyntaxError: Expected ';', got ')'. */
+/* @@? 42:28 Error SyntaxError: Invalid left-hand side in 'For[In/Of]Statement'. */
