@@ -836,7 +836,15 @@ export class Es2pandaNativeModule {
     throw new Error('Not implemented');
   }
 
+  _renameLocationHasPrefixText(ptr: KPtr): KBoolean {
+    throw new Error('Not implemented');
+  }
+
   _getRenameLocationPrefixText(ptr: KPtr): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _renameLocationHasSuffixText(ptr: KPtr): KBoolean {
     throw new Error('Not implemented');
   }
 
@@ -845,6 +853,14 @@ export class Es2pandaNativeModule {
   }
 
   _findRenameLocations(argc: KInt, fileContexts: Uint8Array, context: KNativePointer, position: KInt): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _findRenameLocationsInCurrentFile(context: KNativePointer, position: KInt): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _needsCrossFileRename(context: KNativePointer, position: KInt): KBoolean {
     throw new Error('Not implemented');
   }
 

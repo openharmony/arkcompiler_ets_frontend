@@ -676,24 +676,43 @@ export class Lsp {
   }
 
   findRenameLocations(filename: String, offset: number): LspRenameLocation[] {
-    let compileFiles = this.getMergedCompileFiles(filename);
-    const fileContexts: KPointer[] = [];
-    const fileConfigs: Config[] = [];
-    for (let i = 0; i < compileFiles.length; i++) {
-      const [compileFileCfg, compileFileCtx] = this.createContext(compileFiles[i]);
-      fileContexts.push(compileFileCtx);
-      fileConfigs.push(compileFileCfg);
-    }
     const [cfg, ctx] = this.createContext(filename);
-    const ptr = global.es2panda._findRenameLocations(fileContexts.length, passPointerArray(fileContexts), ctx, offset);
-    const result: LspRenameLocation[] = new NativePtrDecoder().decode(ptr).map((elPeer: KPointer) => {
-      return new LspRenameLocation(elPeer);
-    });
-    for (let i = 0; i < fileContexts.length; i++) {
-      this.destroyContext(fileConfigs[i], fileContexts[i]);
+    const needsCrossFileRename = global.es2panda._needsCrossFileRename(ctx, offset);
+    if (!needsCrossFileRename) {
+      let ptr: KPointer;
+      try {
+        ptr = global.es2panda._findRenameLocationsInCurrentFile(ctx, offset);
+      } finally {
+        this.destroyContext(cfg, ctx);
+      }
+      const result = new NativePtrDecoder().decode(ptr).map((elPeer: KPointer) => {
+        return new LspRenameLocation(elPeer);
+      });
+      return Array.from(new Set(result));
+    } else {
+      let compileFiles = this.getMergedCompileFiles(filename);
+      const fileContexts: KPointer[] = [];
+      const fileConfigs: Config[] = [];
+      for (let i = 0; i < compileFiles.length; i++) {
+        const [compileFileCfg, compileFileCtx] = this.createContext(compileFiles[i]);
+        fileContexts.push(compileFileCtx);
+        fileConfigs.push(compileFileCfg);
+      }
+      const ptr = global.es2panda._findRenameLocations(
+        fileContexts.length,
+        passPointerArray(fileContexts),
+        ctx,
+        offset
+      );
+      const result: LspRenameLocation[] = new NativePtrDecoder().decode(ptr).map((elPeer: KPointer) => {
+        return new LspRenameLocation(elPeer);
+      });
+      for (let i = 0; i < fileContexts.length; i++) {
+        this.destroyContext(fileConfigs[i], fileContexts[i]);
+      }
+      this.destroyContext(cfg, ctx);
+      return Array.from(new Set(result));
     }
-    this.destroyContext(cfg, ctx);
-    return Array.from(new Set(result));
   }
 
   getRenameInfo(filename: String, offset: number): LspRenameInfoType {

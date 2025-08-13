@@ -992,15 +992,19 @@ export class LspRenameLocation extends LspNode {
     this.start = global.es2panda._getRenameLocationStart(peer);
     this.end = global.es2panda._getRenameLocationEnd(peer);
     this.line = global.es2panda._getRenameLocationLine(peer);
-    this.prefixText = unpackString(global.es2panda._getRenameLocationPrefixText(peer));
-    this.suffixText = unpackString(global.es2panda._getRenameLocationSuffixText(peer));
+    this.prefixText = global.es2panda._renameLocationHasPrefixText(peer)
+      ? unpackString(global.es2panda._getRenameLocationPrefixText(peer))
+      : undefined;
+    this.suffixText = global.es2panda._renameLocationHasSuffixText(peer)
+      ? unpackString(global.es2panda._getRenameLocationSuffixText(peer))
+      : undefined;
   }
   readonly fileName: string;
   readonly start: number;
   readonly end: number;
   readonly line: number;
-  readonly prefixText: string;
-  readonly suffixText: string;
+  readonly prefixText?: string;
+  readonly suffixText?: string;
 }
 
 export function toAstNodeType(str: string) {

@@ -1,16 +1,11 @@
 {
   "1": [
     {
-      "fileName": "findRenameLocations1.ets",
-      "start": 708,
-      "end": 711,
-      "line": 21
-    },
-    {
       "fileName": "findRenameLocations2.ets",
       "start": 630,
       "end": 633,
-      "line": 15
+      "line": 15,
+      "prefixText": "Foo as "
     },
     {
       "fileName": "findRenameLocations2.ets",
@@ -131,6 +126,99 @@
       "start": 866,
       "end": 870,
       "line": 28
+    },
+    {
+      "fileName": "findRenameLocations3.ets",
+      "start": 728,
+      "end": 732,
+      "line": 18
+    }
+  ],
+  "5": [
+    {
+      "fileName": "findRenameLocations2.ets",
+      "start": 618,
+      "end": 623,
+      "line": 15,
+      "prefixText": "dummy as "
+    },
+    {
+      "fileName": "findRenameLocations2.ets",
+      "start": 673,
+      "end": 678,
+      "line": 17
+    },
+    {
+      "fileName": "findRenameLocations2.ets",
+      "start": 683,
+      "end": 688,
+      "line": 18
+    }
+  ],
+  "6": [
+    {
+      "fileName": "findRenameLocations1.ets",
+      "start": 718,
+      "end": 722,
+      "line": 22
+    },
+    {
+      "fileName": "findRenameLocations1.ets",
+      "start": 882,
+      "end": 886,
+      "line": 27
+    },
+    {
+      "fileName": "findRenameLocations2.ets",
+      "start": 866,
+      "end": 870,
+      "line": 28
+    },
+    {
+      "fileName": "findRenameLocations3.ets",
+      "start": 728,
+      "end": 732,
+      "line": 18
+    }
+  ],
+  "7": [
+    {
+      "fileName": "findRenameLocations1.ets",
+      "start": 718,
+      "end": 722,
+      "line": 22
+    },
+    {
+      "fileName": "findRenameLocations1.ets",
+      "start": 882,
+      "end": 886,
+      "line": 27
+    },
+    {
+      "fileName": "findRenameLocations2.ets",
+      "start": 866,
+      "end": 870,
+      "line": 28
+    },
+    {
+      "fileName": "findRenameLocations3.ets",
+      "start": 728,
+      "end": 732,
+      "line": 18
+    }
+  ],
+  "8": [
+    {
+      "fileName": "findRenameLocations3.ets",
+      "start": 625,
+      "end": 629,
+      "line": 15
+    },
+    {
+      "fileName": "findRenameLocations3.ets",
+      "start": 685,
+      "end": 689,
+      "line": 17
     }
   ]
 }

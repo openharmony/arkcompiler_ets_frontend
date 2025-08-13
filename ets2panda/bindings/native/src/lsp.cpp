@@ -70,17 +70,31 @@ KNativePointer impl_getRenameLocationFileName(KNativePointer renameLocationPtr)
 }
 TS_INTEROP_1(getRenameLocationFileName, KNativePointer, KNativePointer)
 
+KBoolean impl_renameLocationHasPrefixText(KNativePointer renameLocationPtr)
+{
+    auto *renameLocationRef = reinterpret_cast<ark::es2panda::lsp::RenameLocation *>(renameLocationPtr);
+    return renameLocationRef->prefixText.has_value() ? 1 : 0;
+}
+TS_INTEROP_1(renameLocationHasPrefixText, KBoolean, KNativePointer)
+
 KNativePointer impl_getRenameLocationPrefixText(KNativePointer renameLocationPtr)
 {
     auto *renameLocationRef = reinterpret_cast<ark::es2panda::lsp::RenameLocation *>(renameLocationPtr);
-    return new std::string(renameLocationRef->prefixText);
+    return new std::string(renameLocationRef->prefixText.has_value() ? renameLocationRef->prefixText.value() : "");
 }
 TS_INTEROP_1(getRenameLocationPrefixText, KNativePointer, KNativePointer)
+
+KBoolean impl_renameLocationHasSuffixText(KNativePointer renameLocationPtr)
+{
+    auto *renameLocationRef = reinterpret_cast<ark::es2panda::lsp::RenameLocation *>(renameLocationPtr);
+    return renameLocationRef->suffixText.has_value() ? 1 : 0;
+}
+TS_INTEROP_1(renameLocationHasSuffixText, KBoolean, KNativePointer)
 
 KNativePointer impl_getRenameLocationSuffixText(KNativePointer renameLocationPtr)
 {
     auto *renameLocationRef = reinterpret_cast<ark::es2panda::lsp::RenameLocation *>(renameLocationPtr);
-    return new std::string(renameLocationRef->suffixText);
+    return new std::string(renameLocationRef->suffixText.has_value() ? renameLocationRef->suffixText.value() : "");
 }
 TS_INTEROP_1(getRenameLocationSuffixText, KNativePointer, KNativePointer)
 
@@ -168,6 +182,28 @@ KNativePointer impl_findRenameLocations(KInt argc, KStringArray pointerArrayPtr,
     return ptrs.release();
 }
 TS_INTEROP_4(findRenameLocations, KNativePointer, KInt, KStringArray, KNativePointer, KInt)
+
+KNativePointer impl_findRenameLocationsInCurrentFile(KNativePointer context, KInt position)
+{
+    LSPAPI const *ctx = GetImpl();
+    auto result = ctx->findRenameLocationsInCurrentFile(reinterpret_cast<es2panda_Context *>(context),
+                                                        static_cast<std::size_t>(position));
+    auto ptrs = std::make_unique<std::vector<void *>>();
+    ptrs->reserve(result.size());
+    for (auto &el : result) {
+        ptrs->push_back(new ark::es2panda::lsp::RenameLocation(el));
+    }
+    return ptrs.release();
+}
+TS_INTEROP_2(findRenameLocationsInCurrentFile, KNativePointer, KNativePointer, KInt)
+
+KBoolean impl_needsCrossFileRename(KNativePointer context, KInt position)
+{
+    LSPAPI const *ctx = GetImpl();
+    auto res = ctx->needsCrossFileRename(reinterpret_cast<es2panda_Context *>(context), position);
+    return res ? 1 : 0;
+}
+TS_INTEROP_2(needsCrossFileRename, KBoolean, KNativePointer, KInt)
 
 KNativePointer impl_getRenameSuccessFileName(KNativePointer successPtr)
 {
