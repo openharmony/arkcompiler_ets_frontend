@@ -1427,6 +1427,9 @@ void ETSCompiler::Compile(const ir::ReturnStatement *st) const
         return;
     }
 
+    // NOTE (smartin): This case needs to be deleted, and asserted, that we won't return with a call to a void function.
+    // Some taihe generated code couldn't be modified accordingly, so until solution this stays here, but eventually
+    // this needs to be removed.
     if (argument->IsCallExpression() && argument->AsCallExpression()->Signature()->ReturnType()->IsETSVoidType()) {
         argument->Compile(etsg);
 
@@ -1441,6 +1444,7 @@ void ETSCompiler::Compile(const ir::ReturnStatement *st) const
             etsg->LoadDefaultValue(st, etsg->ReturnType());
             etsg->ReturnAcc(st);
         }
+
         return;
     }
 

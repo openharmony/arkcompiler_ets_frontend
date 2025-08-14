@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,7 +13,12 @@
  * limitations under the License.
  */
 
-function test<T>(){}
-async function foo(){
-    test<void>();
+type Fn<T> = (e: T) => void;
+
+function test(arg: Fn<void>) {}
+
+function main() : void {
+    test((/* @@ label */e) => {    })
 }
+
+/* @@@ label Error TypeError: Cannot use type 'void' as value.  */

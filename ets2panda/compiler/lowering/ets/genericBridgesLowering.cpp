@@ -67,7 +67,10 @@ std::string GenericBridgesPhase::CreateMethodDefinitionString(ir::ClassDefinitio
 
     typeNodes.emplace_back(context_->AllocNode<ir::OpaqueTypeNode>(
         const_cast<checker::Type *>(classDefinition->TsType()), context_->Allocator()));
-    str2 = "{ return (this as @@T" + std::to_string(typeNodes.size()) + str2 + "); }";
+
+    const bool isDerivedFunctionReturnVoid = derivedFunction->Signature()->ReturnType()->IsETSVoidType();
+    const std::string possibleReturnStatement = isDerivedFunctionReturnVoid ? "" : "return ";
+    str2 = "{ " + possibleReturnStatement + "(this as @@T" + std::to_string(typeNodes.size()) + str2 + "); }";
 
     str1 += str2;
     return str1;

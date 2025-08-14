@@ -73,10 +73,7 @@ bool ETSChecker::IsCompatibleTypeArgument(ETSTypeParameter *typeParam, Type *typ
     if (typeArgument->IsTypeError()) {
         return true;
     }
-    // NOTE(vpukhov): #19701 void refactoring
-    if (typeArgument->IsETSVoidType()) {
-        typeArgument = GlobalETSUndefinedType();
-    }
+
     ES2PANDA_ASSERT(IsReferenceType(typeArgument));
     auto constraint = typeParam->GetConstraintType()->Substitute(Relation(), substitution);
     return Relation()->IsSupertypeOf(constraint, typeArgument);
@@ -1917,6 +1914,8 @@ bool ETSChecker::IsMethodOverridesOther(Signature *base, Signature *derived)
 
 OverrideErrorCode ETSChecker::CheckOverride(Signature *signature, Signature *other)
 {
+    SavedTypeRelationFlagsContext savedFlagsCtx(Relation(), TypeRelationFlag::OVERRIDING_CONTEXT);
+
     if (other->HasSignatureFlag(SignatureFlags::STATIC)) {
         ES2PANDA_ASSERT(signature->HasSignatureFlag(SignatureFlags::STATIC));
         return OverrideErrorCode::NO_ERROR;
@@ -2269,18 +2268,6 @@ bool ETSChecker::IsReturnTypeSubstitutable(Signature *const s1, Signature *const
 
     // A method declaration d1 with return type R1 is return-type-substitutable for another method d2 with return
     // type R2 if any of the following is true:
-
-    // NOTE(vpukhov): void type leaks into type arguments, so we have to check the original signature if the return type
-    // is parametrized or not to use a proper subtyping check. To be replaced with IsETSPrimitiveType after #19701.
-    auto const hasPrimitiveReturnType = [](Signature *s) {
-        bool origIsRef = s->Function()->Signature()->ReturnType()->IsETSReferenceType();
-        ES2PANDA_ASSERT_POS(origIsRef == s->ReturnType()->IsETSReferenceType(), s->Function()->Start());
-        return !origIsRef;
-    };
-    // - If R1 is a primitive type then R2 is identical to R1.
-    if (hasPrimitiveReturnType(s1) || hasPrimitiveReturnType(s2)) {
-        return Relation()->IsIdenticalTo(r2, r1);
-    }
 
     auto const hasThisReturnType = [](Signature *s) {
         auto *retAnn = s->Function()->ReturnTypeAnnotation();

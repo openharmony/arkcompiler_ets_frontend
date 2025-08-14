@@ -26,45 +26,6 @@ using ark::es2panda::ir::ETSParameterExpression;
 using ark::es2panda::ir::Identifier;
 using ark::es2panda::util::DiagnosticEngine;
 namespace {
-TEST_F(ASTVerifierTest, ValidateGetterReturnTypeAnnotation)
-{
-    DiagnosticEngine de {};
-    ETSChecker checker {Allocator(), de};
-
-    char const *text =
-        R"(
-        class A {
-            private _value: number = 0;
-            get value(): number {
-                return this._value
-            }
-
-            set value(v: number) {
-                this._value = v
-            }
-        }
-    )";
-
-    auto cb = [&checker](ark::es2panda::ir::AstNode *child) {
-        if (child->IsMethodDefinition()) {
-            auto *const method = child->AsMethodDefinition();
-            if (method->IsGetter() && method->Value()->IsFunctionExpression()) {
-                auto *const function = method->Value()->AsFunctionExpression()->Function();
-                ASSERT_NE(function->ReturnTypeAnnotation(), nullptr);
-                function->ReturnTypeAnnotation()->SetTsType(checker.GlobalVoidType());
-            }
-        }
-    };
-
-    CONTEXT(ES2PANDA_STATE_CHECKED, text)
-    {
-        // Change annotation return type to void
-        GetAst()->IterateRecursively(cb);
-        EXPECT_TRUE(Verify<GetterSetterValidation>(
-            ExpectVerifierMessage {"GETTER METHOD HAS VOID RETURN TYPE IN RETURN TYPE ANNOTATION"}));
-    }
-}
-
 TEST_F(ASTVerifierTest, ValidateGetterHasReturnStatement)
 {
     // Program with no type annotation for getter
@@ -98,44 +59,6 @@ TEST_F(ASTVerifierTest, ValidateGetterHasReturnStatement)
         GetAst()->IterateRecursively(cb);
         EXPECT_TRUE(Verify<GetterSetterValidation>(
             ExpectVerifierMessage {"MISSING RETURN TYPE ANNOTATION AND RETURN STATEMENT IN GETTER METHOD"}));
-    }
-}
-
-TEST_F(ASTVerifierTest, ValidateGetterVoidReturnStatement)
-{
-    DiagnosticEngine de {};
-    ETSChecker checker {Allocator(), de};
-
-    char const *text =
-        R"(
-        class A {
-            private _value: number = 0;
-            get value() {
-                return this._value
-            }
-
-            set value(v: number) {
-                this._value = v
-            }
-        }
-    )";
-    auto cb = [&checker](ark::es2panda::ir::AstNode *child) {
-        if (child->IsMethodDefinition()) {
-            auto *const method = child->AsMethodDefinition();
-            if (method->IsGetter() && method->Value()->IsFunctionExpression()) {
-                auto *const function = method->Value()->AsFunctionExpression()->Function();
-                auto &returns = function->ReturnStatements();
-                ASSERT_EQ(returns.size(), 1);
-                returns[0]->SetArgument(nullptr);
-                returns[0]->SetReturnType(&checker, checker.GlobalVoidType());
-            }
-        }
-    };
-    CONTEXT(ES2PANDA_STATE_CHECKED, text)
-    {
-        // Change return statement type to void
-        GetAst()->IterateRecursively(cb);
-        EXPECT_TRUE(Verify<GetterSetterValidation>(ExpectVerifierMessage {"GETTER METHOD HAS VOID RETURN TYPE"}));
     }
 }
 

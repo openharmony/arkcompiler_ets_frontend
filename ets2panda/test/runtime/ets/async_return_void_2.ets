@@ -15,5 +15,5 @@
 
 function test(){}
 async function foo(){
-    return test();
+    test();
 }

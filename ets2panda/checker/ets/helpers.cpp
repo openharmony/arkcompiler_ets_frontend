@@ -450,16 +450,14 @@ Type *ETSChecker::ApplyUnaryOperatorPromotion(ir::Expression *expr, Type *type, 
     return type;
 }
 
-bool ETSChecker::IsNullLikeOrVoidExpression(const ir::Expression *expr) const
+bool ETSChecker::IsNullLikeExpression(const ir::Expression *expr) const
 {
-    // NOTE(vpukhov): #19701 void refactoring
-    return expr->TsType()->DefinitelyETSNullish() || expr->TsType()->IsETSVoidType();
+    return expr->TsType()->DefinitelyETSNullish();
 }
 
 std::tuple<bool, bool> ETSChecker::IsResolvedAndValue(const ir::Expression *expr, Type *type) const
 {
-    auto [isResolve, isValue] =
-        IsNullLikeOrVoidExpression(expr) ? std::make_tuple(true, false) : IsConstantTestValue(expr);
+    auto [isResolve, isValue] = IsNullLikeExpression(expr) ? std::make_tuple(true, false) : IsConstantTestValue(expr);
 
     const Type *tsType = expr->TsType();
     if (tsType->DefinitelyNotETSNullish() && !type->IsETSPrimitiveOrEnumType()) {
@@ -2682,8 +2680,10 @@ void ETSChecker::InferTypesForLambda(ir::ScriptFunction *lambda, ir::ETSFunction
                 inferredType = GetElementTypeOfArray(maybeSubstitutedFunctionSig->RestVar()->TsType());
             }
         }
+
         lambdaParam->Variable()->SetTsType(inferredType);
         lambdaParam->SetTsType(inferredType);
+        CheckVoidTypeExpression(lambdaParam);
     }
 
     if (lambda->ReturnTypeAnnotation() == nullptr) {

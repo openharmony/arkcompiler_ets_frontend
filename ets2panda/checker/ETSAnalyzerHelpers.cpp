@@ -273,10 +273,6 @@ void CheckPredefinedMethodReturnType(ETSChecker *checker, ir::ScriptFunction *sc
 
     auto const &position = scriptFunc->Start();
 
-    if (scriptFunc->IsGetter() && (scriptFunc->Signature()->ReturnType() == checker->GlobalVoidType())) {
-        checker->LogError(diagnostic::GETTER_VOID, {}, position);
-    }
-
     auto const name = scriptFunc->Id()->Name();
     auto const methodName = std::string {ir::PREDEFINED_METHOD} + std::string {name.Utf8()};
 
@@ -609,14 +605,6 @@ bool CheckArgumentVoidType(checker::Type *funcReturnType, ETSChecker *checker, c
 bool CheckReturnType(ETSChecker *checker, checker::Type *funcReturnType, checker::Type *argumentType,
                      ir::Expression *stArgument, ir::ScriptFunction *containingFunc)
 {
-    if (funcReturnType->IsETSVoidType() || funcReturnType == checker->GlobalVoidType()) {
-        if (argumentType != checker->GlobalVoidType()) {
-            checker->LogError(diagnostic::UNEXPECTED_VALUE_RETURN, {}, stArgument->Start());
-            return false;
-        }
-        return true;
-    }
-
     if (containingFunc->IsAsyncFunc() && funcReturnType->IsETSObjectType() &&
         funcReturnType->AsETSObjectType()->GetOriginalBaseType() == checker->GlobalBuiltinPromiseType()) {
         auto promiseArg = funcReturnType->AsETSObjectType()->TypeArguments()[0];
@@ -718,11 +706,6 @@ checker::Type *ProcessReturnStatements(ETSChecker *checker, ir::ScriptFunction *
 
         //  previous return statement(s) don't have any value
         ES2PANDA_ASSERT(argumentType != nullptr);
-        if (funcReturnType->IsETSVoidType() && !argumentType->IsETSVoidType()) {
-            checker->LogError(diagnostic::MIXED_VOID_NONVOID, {}, stArgument->Start());
-            return funcReturnType;
-        }
-
         const auto name = containingFunc->Scope()->InternalName().Mutf8();
         if (!CheckArgumentVoidType(funcReturnType, checker, name, st)) {
             return funcReturnType;

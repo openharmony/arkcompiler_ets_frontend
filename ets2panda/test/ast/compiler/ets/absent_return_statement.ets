@@ -27,19 +27,21 @@ class C{}
 
 function main(): void {
   foo1(() => { return /* @@ label1 */new C(); });
-  foo1(() => { console.println("TEST"); });
-  foo1(() => /* @@ label2 */new C());
-  foo1(() => console.println("TEST"));
+  foo1(() => /* @@ label2 */{ console.println("TEST"); });
+  foo1(() => /* @@ label3 */new C());
+  foo1(() => /* @@ label4 */console.println("TEST"));
 
-  foo2(() => { return /* @@ label3 */new C(); });
-  foo2(() => /* @@ label4 */{ console.println("TEST"); });
-  foo2(() => /* @@ label5 */new C());
-  foo2(() => /* @@ label6 */console.println("TEST"));
+  foo2(() => { return /* @@ label5 */new C(); });
+  foo2(() => /* @@ label6 */{ console.println("TEST"); });
+  foo2(() => /* @@ label7 */new C());
+  foo2(() => /* @@ label8 */console.println("TEST"));
 }
 
 /* @@@ label1 Error TypeError: Type 'C' is not compatible with the enclosing method's return type 'Int|String|undefined' */
-/* @@@ label2 Error TypeError: Type 'C' is not compatible with the enclosing method's return type 'Int|String|undefined' */
-/* @@@ label3 Error TypeError: Type 'C' is not compatible with the enclosing method's return type 'Int|String' */
-/* @@@ label4 Error TypeError: Type 'void' is not compatible with the enclosing method's return type 'Int|String' */
+/* @@@ label2 Error TypeError: Type 'void' is not compatible with the enclosing method's return type 'Int|String|undefined' */
+/* @@@ label3 Error TypeError: Type 'C' is not compatible with the enclosing method's return type 'Int|String|undefined' */
+/* @@@ label4 Error TypeError: Type 'void' is not compatible with the enclosing method's return type 'Int|String|undefined' */
 /* @@@ label5 Error TypeError: Type 'C' is not compatible with the enclosing method's return type 'Int|String' */
 /* @@@ label6 Error TypeError: Type 'void' is not compatible with the enclosing method's return type 'Int|String' */
+/* @@@ label7 Error TypeError: Type 'C' is not compatible with the enclosing method's return type 'Int|String' */
+/* @@@ label8 Error TypeError: Type 'void' is not compatible with the enclosing method's return type 'Int|String' */

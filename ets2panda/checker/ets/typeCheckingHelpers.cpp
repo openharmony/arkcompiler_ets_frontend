@@ -385,12 +385,9 @@ bool Type::IsETSMethodType() const
         TypeFlag::ETS_TYPE_PARAMETER | TypeFlag::WILDCARD | TypeFlag::ETS_NONNULLISH |
         TypeFlag::ETS_REQUIRED_TYPE_PARAMETER | TypeFlag::ETS_ANY | TypeFlag::ETS_NEVER | TypeFlag::ETS_UNION |
         TypeFlag::ETS_ARRAY | TypeFlag::FUNCTION | TypeFlag::ETS_PARTIAL_TYPE_PARAMETER | TypeFlag::ETS_TUPLE |
-        TypeFlag::ETS_ENUM | TypeFlag::ETS_READONLY | TypeFlag::GRADUAL_TYPE | TypeFlag::ETS_AWAITED;
+        TypeFlag::ETS_ENUM | TypeFlag::ETS_READONLY | TypeFlag::GRADUAL_TYPE | TypeFlag::ETS_VOID |
+        TypeFlag::ETS_AWAITED;
 
-    // Issues
-    if (type->IsETSVoidType()) {  // NOTE(vpukhov): #19701 void refactoring
-        return true;
-    }
     if (type->IsETSTypeAliasType()) {  // NOTE(vpukhov): #20561
         return true;
     }
@@ -1849,6 +1846,39 @@ void ETSChecker::CheckInterfaceMethodOverloadDeclaration(ETSChecker *checker, ir
         if (!CheckOverloadedName(checker, node, overloadedName)) {
             continue;
         }
+    }
+}
+
+bool ETSChecker::IsTypeVoidOrUnionContainsVoid(const Type *const possibleVoidType)
+{
+    return possibleVoidType->IsETSVoidType() ||
+           (possibleVoidType->IsETSUnionType() &&
+            possibleVoidType->AsETSUnionType()->AnyOfConstituentTypes(
+                [](const checker::Type *consType) { return consType->IsETSVoidType(); }));
+}
+
+void ETSChecker::CheckVoidTypeExpression(const ir::Expression *expr)
+{
+    // Existing void expression inconsistency,refer to #17762
+    const bool isExpressionNotVoidType =
+        expr->TsType() == nullptr || expr->Parent() == nullptr || !IsTypeVoidOrUnionContainsVoid(expr->TsType());
+    if (isExpressionNotVoidType) {
+        return;
+    }
+
+    const auto *parent = expr->Parent();
+    while (parent->IsConditionalExpression()) {
+        parent = parent->Parent();
+        if (parent == nullptr) {
+            return;
+        }
+    }
+
+    // NOTE (smartin): The case for return statement will need to be removed. Currently some generated code uses it,
+    // that can't be modified. Codegen will load an 'undefined' value instead.
+    const bool acceptVoid = parent->IsExpressionStatement() || parent->IsReturnStatement();
+    if (!acceptVoid) {
+        LogError(diagnostic::VOID_VALUE, {}, expr->Start());
     }
 }
 

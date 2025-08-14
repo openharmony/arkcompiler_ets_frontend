@@ -20,6 +20,6 @@ function main(): void {
   arktest.assertTrue(false || check())
 }
 
-/* @@? 20:3 Error TypeError: No matching call signature for assertTrue(Boolean|void)   */
-/* @@? 20:22 Error TypeError: Type 'Boolean|void' is not compatible with type 'Boolean' at index 1   */
-/* @@? 20:31 Error TypeError: Cannot use type 'void' as value.   */
+/* @@? 20:3 Error TypeError: No matching call signature for assertTrue(Boolean|void) */
+/* @@? 20:22 Error TypeError: Type 'Boolean|void' is not compatible with type 'Boolean' at index 1 */
+/* @@? 20:31 Error TypeError: Cannot use type 'void' as value.  */
