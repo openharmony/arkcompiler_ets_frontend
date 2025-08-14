@@ -23,7 +23,8 @@ import { LANGUAGE_VERSION, PANDA_SDK_PATH_FROM_SDK, SYSTEM_SDK_PATH_FROM_SDK } f
 interface DependencyItem {
   language: string;
   path: string;
-  ohmUrl: string;
+  ohmUrl?: string;
+  alias?: string[];
 }
 
 interface ArkTSConfigObject {
@@ -42,6 +43,7 @@ export class ArkTSConfigGenerator {
   private stdlibEscompatPath: string;
   private systemSdkPath: string;
   private externalApiPath: string;
+  private interopApiPath: string;
 
   private moduleInfos: Record<string, ModuleInfo>;
   private pathSection: Record<string, string[]>;
@@ -53,6 +55,7 @@ export class ArkTSConfigGenerator {
     this.stdlibEscompatPath = path.resolve(pandaStdlibPath, 'escompat');
     this.systemSdkPath = path.resolve(buildConfig.buildSdkPath, SYSTEM_SDK_PATH_FROM_SDK);
     this.externalApiPath = buildConfig.externalApiPath !== undefined ? buildConfig.externalApiPath : '';
+    this.interopApiPath = buildConfig.interopApiPath !== undefined ? buildConfig.interopApiPath : '';
 
     this.moduleInfos = moduleInfos;
     this.pathSection = {};
@@ -76,46 +79,66 @@ export class ArkTSConfigGenerator {
     ArkTSConfigGenerator.instance = undefined;
   }
 
-  private generateSystemSdkPathSection(pathSection: Record<string, string[]>): void {
-    function traverse(
-      currentDir: string,
-      relativePath: string = '',
-      isExcludedDir: boolean = false,
-      allowedExtensions: string[] = ['.d.ets']
-    ): void {
-      const items = fs.readdirSync(currentDir);
-      for (const item of items) {
-        const itemPath = path.join(currentDir, item);
-        const stat = fs.statSync(itemPath);
-        const isAllowedFile = allowedExtensions.some((ext) => item.endsWith(ext));
-        if (stat.isFile() && !isAllowedFile) {
-          continue;
-        }
+  private traverse(
+    pathSection: Record<string, string[] | DependencyItem>,
+    currentDir: string,
+    prefix: string = '',
+    isInteropSdk: boolean = false,
+    relativePath: string = '',
+    isExcludedDir: boolean = false,
+    allowedExtensions: string[] = ['.d.ets']
+  ): void {
+    const items = fs.readdirSync(currentDir);
+    for (const item of items) {
+      const itemPath = path.join(currentDir, item);
+      const stat = fs.statSync(itemPath);
+      const isAllowedFile = allowedExtensions.some((ext) => item.endsWith(ext));
+      const separator = isInteropSdk ? '/' : '.';
+      if (stat.isFile() && !isAllowedFile) {
+        continue;
+      }
 
-        if (stat.isFile()) {
-          const basename = path.basename(item, '.d.ets');
-          const key = isExcludedDir ? basename : relativePath ? `${relativePath}.${basename}` : basename;
-          pathSection[key] = [changeFileExtension(itemPath, '', '.d.ets')];
-        }
-        if (stat.isDirectory()) {
-          // For files under api dir excluding arkui/runtime-api dir,
-          // fill path section with `"pathFromApi.subdir.fileName" = [${absolute_path_to_file}]`;
-          // For @koalaui files under arkui/runtime-api dir,
-          // fill path section with `"fileName" = [${absolute_path_to_file}]`.
-          const isCurrentDirExcluded = path.basename(currentDir) === 'arkui' && item === 'runtime-api';
-          const newRelativePath = isCurrentDirExcluded ? '' : relativePath ? `${relativePath}.${item}` : item;
-          traverse(path.resolve(currentDir, item), newRelativePath, isCurrentDirExcluded || isExcludedDir);
-        }
+      if (stat.isFile()) {
+        const basename = path.basename(item, '.d.ets');
+        const key = isExcludedDir ? basename : relativePath ? `${relativePath}${separator}${basename}` : basename;
+        pathSection[prefix + key] = isInteropSdk
+          ? {
+              language: 'js',
+              path: itemPath,
+              ohmUrl: '',
+              alias: [key]
+            }
+          : [changeFileExtension(itemPath, '', '.d.ets')];
+      }
+      if (stat.isDirectory()) {
+        // For files under api dir excluding arkui/runtime-api dir,
+        // fill path section with `"pathFromApi.subdir.fileName" = [${absolute_path_to_file}]`;
+        // For @koalaui files under arkui/runtime-api dir,
+        // fill path section with `"fileName" = [${absolute_path_to_file}]`.
+        const isCurrentDirExcluded = path.basename(currentDir) === 'arkui' && item === 'runtime-api';
+        const newRelativePath = isCurrentDirExcluded ? '' : relativePath ? `${relativePath}${separator}${item}` : item;
+        this.traverse(
+          pathSection,
+          path.resolve(currentDir, item),
+          prefix,
+          isInteropSdk,
+          newRelativePath,
+          isCurrentDirExcluded || isExcludedDir
+        );
       }
     }
+  }
 
+  private generateSystemSdkPathSection(pathSection: Record<string, string[]>): void {
     let directoryNames: string[] = ['api', 'arkts', 'kits'];
     directoryNames.forEach((dir) => {
       let systemSdkPath = path.resolve(this.systemSdkPath, dir);
       let externalApiPath = path.resolve(this.externalApiPath, dir);
-      fs.existsSync(systemSdkPath) ? traverse(systemSdkPath) : console.warn(`sdk path ${systemSdkPath} not exist.`);
+      fs.existsSync(systemSdkPath)
+        ? this.traverse(pathSection, systemSdkPath)
+        : console.warn(`sdk path ${systemSdkPath} not exist.`);
       fs.existsSync(externalApiPath)
-        ? traverse(externalApiPath)
+        ? this.traverse(pathSection, externalApiPath)
         : console.warn(`sdk path ${externalApiPath} not exist.`);
     });
   }
@@ -202,7 +225,24 @@ export class ArkTSConfigGenerator {
     });
   }
 
+  private generateSystemSdkDependenciesSection(dependencySection: Record<string, DependencyItem>): void {
+    let directoryNames: string[] = ['api', 'arkts', 'kits', 'component'];
+    directoryNames.forEach((dirName) => {
+      const basePath = path.resolve(this.interopApiPath, dirName);
+      if (!fs.existsSync(basePath)) {
+        console.warn(`interop sdk path ${basePath} not exist.`);
+        return;
+      }
+      if (dirName === 'component') {
+        this.traverse(dependencySection, basePath, 'component/', true);
+      } else {
+        this.traverse(dependencySection, basePath, 'dynamic/', true);
+      }
+    });
+  }
+
   private getDependenciesSection(moduleInfo: ModuleInfo, dependencySection: Record<string, DependencyItem>): void {
+    this.generateSystemSdkDependenciesSection(dependencySection);
     let depModules: string[] = moduleInfo.dynamicDepModuleInfos;
     depModules.forEach((depModuleName: string) => {
       let depModuleInfo = this.moduleInfos[depModuleName];
