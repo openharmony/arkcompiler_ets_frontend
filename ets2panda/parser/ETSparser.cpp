@@ -1718,6 +1718,10 @@ ir::Expression *ETSParser::ParseFunctionReceiver()
         return AllocBrokenExpression(thisLoc);
     }
 
+    if (typeAnnotation->IsBrokenTypeNode()) {
+        return AllocBrokenExpression(thisLoc);
+    }
+
     return CreateParameterThis(typeAnnotation);
 }
 
