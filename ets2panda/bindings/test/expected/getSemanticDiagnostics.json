@@ -5,20 +5,20 @@
   "2": {
     "diagnostics": [
       {
-        "message": "Type '\"1\"' is not compatible with type 'Double' at index 1",
+        "message": "Type '\"hello\"' cannot be assigned to type 'Double'",
         "range": {
           "start": {
-            "line": 20,
-            "character": 5
+            "line": 16,
+            "character": 19
           },
           "end": {
-            "line": 20,
-            "character": 8
+            "line": 16,
+            "character": 26
           }
         },
         "tags": [],
         "relatedInfo": [],
-        "code": 2046,
+        "code": 2318,
         "data": 0,
         "severity": 1,
         "codeDescription": {
@@ -47,40 +47,15 @@
         }
       },
       {
-        "message": "Type '\"hello\"' cannot be assigned to type 'Double'",
+        "message": "Type '\"1\"' is not compatible with type 'Double' at index 1",
         "range": {
           "start": {
-            "line": 16,
-            "character": 19
+            "line": 20,
+            "character": 5
           },
           "end": {
-            "line": 16,
-            "character": 26
-          }
-        },
-        "tags": [],
-        "relatedInfo": [],
-        "code": 2318,
-        "data": 0,
-        "severity": 1,
-        "codeDescription": {
-          "href": "test code description"
-        }
-      }
-    ]
-  },
-  "3": {
-    "diagnostics": [
-      {
-        "message": "Type '\"123\"' is not compatible with type 'Double' at index 1",
-        "range": {
-          "start": {
-            "line": 19,
-            "character": 10
-          },
-          "end": {
-            "line": 19,
-            "character": 15
+            "line": 20,
+            "character": 8
           }
         },
         "tags": [],
@@ -91,7 +66,11 @@
         "codeDescription": {
           "href": "test code description"
         }
-      },
+      }
+    ]
+  },
+  "3": {
+    "diagnostics": [
       {
         "message": "No matching call signature for push(\"123\")",
         "range": {
@@ -107,6 +86,27 @@
         "tags": [],
         "relatedInfo": [],
         "code": 2127,
+        "data": 0,
+        "severity": 1,
+        "codeDescription": {
+          "href": "test code description"
+        }
+      },
+      {
+        "message": "Type '\"123\"' is not compatible with type 'Double' at index 1",
+        "range": {
+          "start": {
+            "line": 19,
+            "character": 10
+          },
+          "end": {
+            "line": 19,
+            "character": 15
+          }
+        },
+        "tags": [],
+        "relatedInfo": [],
+        "code": 2046,
         "data": 0,
         "severity": 1,
         "codeDescription": {

@@ -59,6 +59,7 @@ enum class ClassDefinitionModifiers : uint32_t {
     FROM_STRUCT = 1U << 16U,
     FUNCTIONAL_REFERENCE = 1U << 17U,
     LAZY_IMPORT_OBJECT_CLASS = 1U << 18U,
+    INIT_IN_CCTOR = 1U << 19U,
     DECLARATION_ID_REQUIRED = DECLARATION | ID_REQUIRED,
     ETS_MODULE = NAMESPACE_TRANSFORMED | GLOBAL
 };
@@ -281,6 +282,11 @@ public:
         return (Modifiers() & ClassDefinitionModifiers::FROM_STRUCT) != 0;
     }
 
+    [[nodiscard]] bool IsInitInCctor() const noexcept
+    {
+        return (Modifiers() & ClassDefinitionModifiers::INIT_IN_CCTOR) != 0;
+    }
+
     [[nodiscard]] bool IsModule() const noexcept
     {
         return IsGlobal() || IsNamespaceTransformed();
@@ -324,6 +330,11 @@ public:
     void SetFromStructModifier() noexcept
     {
         AddClassModifiers(ClassDefinitionModifiers::FROM_STRUCT);
+    }
+
+    void SetInitInCctor()
+    {
+        AddClassModifiers(ClassDefinitionModifiers::INIT_IN_CCTOR);
     }
 
     [[nodiscard]] ClassDefinitionModifiers Modifiers() const noexcept

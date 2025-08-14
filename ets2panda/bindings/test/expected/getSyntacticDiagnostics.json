@@ -68,27 +68,6 @@
         }
       },
       {
-        "message": "Unexpected token ':'.",
-        "range": {
-          "start": {
-            "line": 16,
-            "character": 14
-          },
-          "end": {
-            "line": 16,
-            "character": 15
-          }
-        },
-        "tags": [],
-        "relatedInfo": [],
-        "code": 1227,
-        "data": 0,
-        "severity": 1,
-        "codeDescription": {
-          "href": "test code description"
-        }
-      },
-      {
         "message": "Unexpected token 'number'.",
         "range": {
           "start": {
@@ -98,27 +77,6 @@
           "end": {
             "line": 16,
             "character": 22
-          }
-        },
-        "tags": [],
-        "relatedInfo": [],
-        "code": 1227,
-        "data": 0,
-        "severity": 1,
-        "codeDescription": {
-          "href": "test code description"
-        }
-      },
-      {
-        "message": "Unexpected token ','.",
-        "range": {
-          "start": {
-            "line": 16,
-            "character": 22
-          },
-          "end": {
-            "line": 16,
-            "character": 23
           }
         },
         "tags": [],
@@ -187,27 +145,6 @@
         "tags": [],
         "relatedInfo": [],
         "code": 1038,
-        "data": 0,
-        "severity": 1,
-        "codeDescription": {
-          "href": "test code description"
-        }
-      },
-      {
-        "message": "Unexpected token ')'.",
-        "range": {
-          "start": {
-            "line": 16,
-            "character": 33
-          },
-          "end": {
-            "line": 16,
-            "character": 34
-          }
-        },
-        "tags": [],
-        "relatedInfo": [],
-        "code": 1227,
         "data": 0,
         "severity": 1,
         "codeDescription": {

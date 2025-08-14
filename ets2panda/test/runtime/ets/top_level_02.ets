@@ -54,13 +54,6 @@ function main(): void {
   arktest.assertEQ(q, 30)
   arktest.assertEQ(ETSGLOBAL.q, 1)
 
-  arktest.assertEQ(s, "abccba")
   s = "def";
   arktest.assertEQ(s, "def")
-
-  _$init$_();
-   
-  arktest.assertEQ(s, "abccba")
-  arktest.assertEQ(q, 30)
-  arktest.assertEQ(ETSGLOBAL.q, 8)
 }
