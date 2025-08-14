@@ -711,6 +711,58 @@ CompletionEntry InitEntry(const ir::AstNode *decl)
     return CompletionEntry(name, kind, std::string(sortText));
 }
 
+bool IsAnnotationBeginning(std::string sourceCode, size_t pos)
+{
+    return sourceCode.at(pos - 1) == '@';
+}
+
+std::vector<CompletionEntry> GetAnnotationCompletions(es2panda_Context *context, size_t pos,
+                                                      ir::AstNode *node = nullptr)
+{
+    std::vector<CompletionEntry> completions;
+    auto ctx = reinterpret_cast<public_lib::Context *>(context);
+    auto ast = ctx->parserProgram->Ast();
+    auto importStatements = std::vector<ir::AstNode *>();
+    auto annotationDeclarations = std::vector<ir::AstNode *>();
+    for (auto &statement : ast->Statements()) {
+        if (statement != nullptr && statement->IsETSImportDeclaration()) {
+            importStatements.push_back(statement);
+        }
+        if (statement != nullptr && statement->Range().end.index < pos && statement->IsAnnotationDeclaration()) {
+            annotationDeclarations.push_back(statement);
+        }
+    }
+    auto addAnnotationCompletion = [&completions, &node](const std::string &name) {
+        if (node == nullptr ||
+            (node->IsIdentifier() && name.find(node->AsIdentifier()->Name().Utf8()) != std::string::npos)) {
+            completions.emplace_back(name, CompletionEntryKind::ANNOTATION,
+                                     std::string(sort_text::GLOBALS_OR_KEYWORDS));
+        }
+    };
+    for (auto &import : importStatements) {
+        auto specifiers = import->AsETSImportDeclaration()->Specifiers();
+        for (auto &specifier : specifiers) {
+            std::string localName;
+            ir::AstNode *decl = nullptr;
+            if (specifier->IsImportSpecifier()) {
+                localName = std::string(specifier->AsImportSpecifier()->Local()->AsIdentifier()->Name());
+                decl = compiler::DeclarationFromIdentifier(specifier->AsImportSpecifier()->Imported());
+            } else if (specifier->IsImportDefaultSpecifier()) {
+                localName = std::string(specifier->AsImportDefaultSpecifier()->Local()->AsIdentifier()->Name());
+                decl = compiler::DeclarationFromIdentifier(specifier->AsImportDefaultSpecifier()->Local());
+            }
+            if (decl != nullptr && decl->IsAnnotationDeclaration()) {
+                addAnnotationCompletion(localName);
+            }
+        }
+    }
+    for (auto &annotation : annotationDeclarations) {
+        auto annotationName = std::string(annotation->AsAnnotationDeclaration()->GetBaseName()->Name());
+        addAnnotationCompletion(annotationName);
+    }
+    return completions;
+}
+
 void GetIdentifiersInScope(const varbinder::Scope *scope, size_t position, ArenaVector<ir::AstNode *> &results)
 {
     if (scope->Node() == nullptr) {
@@ -822,10 +874,16 @@ std::vector<CompletionEntry> GetCompletionsAtPositionImpl(es2panda_Context *cont
     }
     auto allocator = ctx->allocator;
     std::string sourceCode(ctx->parserProgram->SourceCode());
+    if (IsAnnotationBeginning(sourceCode, pos)) {
+        return GetAnnotationCompletions(context, pos);  // need to filter annotation
+    }
     // Current GetPrecedingPosition cannot get token of "obj." with position.
     auto precedingToken = FindPrecedingToken(pos, ctx->parserProgram->Ast(), allocator);
     if (precedingToken == nullptr) {
         return {};
+    }
+    if (IsAnnotationBeginning(sourceCode, precedingToken->Start().index)) {
+        return GetAnnotationCompletions(context, pos, precedingToken);  // need to filter annotation
     }
     auto triggerValue = GetCurrentTokenValueImpl(context, pos);
     // Unsupported yet because of ast parsing problem

@@ -389,4 +389,57 @@ let myColor: Color = Color.R)delimiter"};
     initializer.DestroyContext(ctx);
     ASSERT_EQ(entry1, entries[0]);
 }
+
+TEST_F(LSPCompletionsTests, getCompletionsAtPositionAnnotation1)
+{
+    std::vector<std::string> files = {"CompletionAnnotation1.ets", "CompletionAnnotation2.ets"};
+    std::vector<std::string> texts = {R"(
+export @interface Entry {
+    routeName: string = "";
+    storage: string = "";
+}
+export @interface TestAnnotation {
+    routeName: string = "";
+    storage: string = "";
+}
+)",
+                                      R"(
+import { Entry, TestAnnotation } from './CompletionAnnotation1';
+export @interface Entry2 {
+    routeName: string = "";
+    storage: string = "";
+}
+@E
+struct Index {}
+@
+struct Index1 {}
+)"};
+    auto filePaths = CreateTempFile(files, texts);
+
+    int const expectedFileCount = 2;
+    ASSERT_EQ(filePaths.size(), expectedFileCount);
+
+    LSPAPI const *lspApi = GetImpl();
+    size_t const offset1 = 151;
+    size_t const offset2 = 169;
+    Initializer initializer = Initializer();
+    auto ctx = initializer.CreateContext(filePaths[1].c_str(), ES2PANDA_STATE_CHECKED);
+    auto res1 = lspApi->getCompletionsAtPosition(ctx, offset1);
+    auto res2 = lspApi->getCompletionsAtPosition(ctx, offset2);
+    auto firstExpectedEntries = std::vector<CompletionEntry> {
+        CompletionEntry("Entry", ark::es2panda::lsp::CompletionEntryKind::ANNOTATION, std::string(GLOBALS_OR_KEYWORDS)),
+        CompletionEntry("Entry2", ark::es2panda::lsp::CompletionEntryKind::ANNOTATION,
+                        std::string(GLOBALS_OR_KEYWORDS))};
+    auto firstUnexpectedEntries = std::vector<CompletionEntry> {CompletionEntry(
+        "TestAnnotation", ark::es2panda::lsp::CompletionEntryKind::ANNOTATION, std::string(GLOBALS_OR_KEYWORDS))};
+    auto secondExpectedEntries = std::vector<CompletionEntry> {
+        CompletionEntry("Entry", ark::es2panda::lsp::CompletionEntryKind::ANNOTATION, std::string(GLOBALS_OR_KEYWORDS)),
+        CompletionEntry("Entry2", ark::es2panda::lsp::CompletionEntryKind::ANNOTATION,
+                        std::string(GLOBALS_OR_KEYWORDS)),
+        CompletionEntry("TestAnnotation", ark::es2panda::lsp::CompletionEntryKind::ANNOTATION,
+                        std::string(GLOBALS_OR_KEYWORDS))};
+    AssertCompletionsContainAndNotContainEntries(res1.GetEntries(), firstExpectedEntries, firstUnexpectedEntries);
+    AssertCompletionsContainAndNotContainEntries(res2.GetEntries(), secondExpectedEntries, {});
+    initializer.DestroyContext(ctx);
+}
 }  // namespace
