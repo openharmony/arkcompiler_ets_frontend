@@ -334,6 +334,9 @@ ets2panda_add_gtest(lsp_api_get_definition_from_node_test CPP_SOURCES
     get_definition_from_node_test.cpp
 )
 
+ets2panda_add_gtest(lsp_api_spelling_test CPP_SOURCES
+    fix_spelling_test.cpp
+)
 
 ets2panda_add_gtest(lsp_api_test_constructor_for_derived_need_super_call CPP_SOURCES
     constructor_for_derived_need_super_call_test.cpp

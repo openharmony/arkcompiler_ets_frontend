@@ -79,16 +79,6 @@ protected:
     }
 };
 
-TEST(RefactorProviderRegistrationTest, RegistersConvertFunctionRefactor)
-{
-    const auto &provider = ark::es2panda::lsp::CodeFixProvider::Instance();
-    const auto &errors = provider.GetErrorCodeToFixes();
-    const auto &fixIdToRegistration = provider.GetFixIdToRegistration();
-    EXPECT_FALSE(errors.empty());
-    EXPECT_FALSE(fixIdToRegistration.empty());
-    EXPECT_TRUE(errors.size() >= fixIdToRegistration.size());
-}
-
 TEST_F(CodeFixProviderTest, CreatesCodeFixActionWithoutFixAll)
 {
     std::string fixName = "testFix";

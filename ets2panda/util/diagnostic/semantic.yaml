@@ -555,6 +555,7 @@ semantic:
 - name: IMPORT_NOT_FOUND
   id: 356
   message: "Cannot find imported element '{}'"
+  code_fix_ids: [FixSpelling]
 
 - name: IMPORT_NOT_FOUND_2
   id: 360
@@ -1395,6 +1396,7 @@ semantic:
 - name: UNRESOLVED_REF
   id: 143
   message: "Unresolved reference {}"
+  code_fix_ids: [FixSpelling]
 
 - name: UNSUPPORTED_CLASS_LITERAL
   id: 20
