@@ -384,6 +384,8 @@ cookBookTag[351] =
   'The taskpool setTransferList interface is deleted from ArkTS1.2 (arkts-limited-stdlib-no-setTransferList)';
 cookBookTag[352] =
   '1.2 Void cannot be combined. OnDestroy/onDisconnect (The return type of the method is now void | Promise) needs to be split into two interfaces. (sdk-ability-asynchronous-lifecycle)';
+cookBookTag[353] =
+  'Object literal used with a union type. The intended union member (e.g. { … } as A) must be explicitly asserted (arkts-union-assignment-with-obj-literal-ambiguity)';
 cookBookTag[355] = 'Usage of standard library is restricted(arkts-limited-stdlib-no-sendable-decorator)';
 cookBookTag[356] = 'Usage of standard library is restricted(arkts-limited-stdlib-no-concurrent-decorator)';
 cookBookTag[357] = 'Worker are not supported(arkts-no-need-stdlib-worker)';
