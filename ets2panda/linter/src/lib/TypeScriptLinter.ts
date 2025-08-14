@@ -3840,9 +3840,19 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
       return;
     }
 
+    this.checkOptionalTupleType(node);
+
     node.elements.forEach((elementType) => {
       if (elementType.kind === ts.SyntaxKind.VoidKeyword) {
         this.incrementCounters(elementType, FaultID.LimitedVoidType);
+      }
+    });
+  }
+
+  private checkOptionalTupleType(node: ts.TupleTypeNode): void {
+    node.elements.forEach((elementType) => {
+      if (elementType.kind === ts.SyntaxKind.OptionalType) {
+        this.incrementCounters(elementType, FaultID.OptionalTupleType);
       }
     });
   }
@@ -12499,6 +12509,12 @@ export class TypeScriptLinter extends BaseTypeScriptLinter {
     const parent = node.parent;
     const isPrefix = ts.isPrefixUnaryExpression(parent) && parent.operator === ts.SyntaxKind.MinusToken;
 
+    if (TsUtils.isLargeNumericLiteral(node, isPrefix)) {
+      this.incrementCounters(node, FaultID.LargeNumericLiteral);
+      return;
+    }
+
+    // Check for int overflow (existing logic)
     const type = isPrefix ? this.tsTypeChecker.getContextualType(parent) : this.tsTypeChecker.getContextualType(node);
     const isLarge = TsUtils.ifLargerThanInt(node, isPrefix);
     if (!isLarge) {
