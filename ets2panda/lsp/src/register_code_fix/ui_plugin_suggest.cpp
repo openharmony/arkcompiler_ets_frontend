@@ -30,28 +30,38 @@ UIPluginSuggest::UIPluginSuggest()
 }
 
 std::vector<TextChange> GetTextChangesFromSuggestions(const ark::es2panda::util::Diagnostic *diag, size_t pos,
-                                                      bool isAll)
+                                                      bool isAll, es2panda_Context *context)
 {
     std::vector<TextChange> textChanges;
     if (!diag->HasSuggestions()) {
         return textChanges;
     }
+    auto ctx = reinterpret_cast<public_lib::Context *>(context);
+    auto index = lexer::LineIndex(ctx->parserProgram->SourceCode());
+    auto offset = index.GetOffset(lexer::SourceLocation(diag->Line(), diag->Offset(), ctx->parserProgram));
+    auto touchingToken = GetTouchingToken(context, offset, false);
+    if (touchingToken == nullptr) {
+        return textChanges;
+    }
+    auto start = touchingToken->Start().index;
+    auto end = touchingToken->End().index;
     for (auto suggestion : diag->Suggestion()) {
         auto sourceStart = suggestion->SourceRange()->start.index;
         auto sourceEnd = suggestion->SourceRange()->end.index;
         auto span = TextSpan(sourceStart, sourceEnd - sourceStart);
-        if (isAll) {
-            textChanges.emplace_back(TextChange(span, suggestion->SubstitutionCode()));
-        } else if (pos >= sourceStart && pos <= sourceEnd) {
+        if (isAll || (pos >= start && pos <= end)) {
+            // compare diag range instead of suggestion range
+            // to support rules of different ranges of diag and suggestion
             textChanges.emplace_back(TextChange(span, suggestion->SubstitutionCode()));
         }
     }
     return textChanges;
 }
 
-std::vector<FileTextChanges> GetUIPluginCodeFixesByDiagType(public_lib::Context *ctx, size_t pos,
+std::vector<FileTextChanges> GetUIPluginCodeFixesByDiagType(es2panda_Context *context, size_t pos,
                                                             util::DiagnosticType type, bool isAll)
 {
+    auto ctx = reinterpret_cast<public_lib::Context *>(context);
     auto filename = ctx->sourceFileName;
     std::vector<FileTextChanges> res;
     const auto &diagnostics = ctx->diagnosticEngine->GetDiagnosticStorage(type);
@@ -59,7 +69,7 @@ std::vector<FileTextChanges> GetUIPluginCodeFixesByDiagType(public_lib::Context 
     // NOLINTNEXTLINE(modernize-loop-convert,-warnings-as-errors)
     for (size_t i = 0; i < diagnosticStorage->size(); ++i) {
         auto diag = reinterpret_cast<const ark::es2panda::util::Diagnostic *>(&(*(*diagnosticStorage)[i]));
-        auto textChanges = GetTextChangesFromSuggestions(diag, pos, isAll);
+        auto textChanges = GetTextChangesFromSuggestions(diag, pos, isAll, context);
         FileTextChanges fileTextChanges(filename, textChanges);
         res.emplace_back(fileTextChanges);
     }
@@ -71,11 +81,10 @@ std::vector<FileTextChanges> UIPluginSuggest::GetUIPluginCodeFixes(es2panda_Cont
     if (context == nullptr) {
         return {};
     }
-    auto ctx = reinterpret_cast<public_lib::Context *>(context);
     std::vector<FileTextChanges> res;
-    auto errorFixes = GetUIPluginCodeFixesByDiagType(ctx, pos, util::DiagnosticType::PLUGIN_ERROR, isAll);
+    auto errorFixes = GetUIPluginCodeFixesByDiagType(context, pos, util::DiagnosticType::PLUGIN_ERROR, isAll);
     res.insert(res.end(), errorFixes.begin(), errorFixes.end());
-    auto warningFixes = GetUIPluginCodeFixesByDiagType(ctx, pos, util::DiagnosticType::PLUGIN_WARNING, isAll);
+    auto warningFixes = GetUIPluginCodeFixesByDiagType(context, pos, util::DiagnosticType::PLUGIN_WARNING, isAll);
     res.insert(res.end(), warningFixes.begin(), warningFixes.end());
     return res;
 }
