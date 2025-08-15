@@ -2636,14 +2636,14 @@ bool ETSChecker::CheckLambdaAssignableUnion(ir::AstNode *typeAnn, ir::ScriptFunc
     bool assignable = false;
     for (auto *type : typeAnn->AsETSUnionType()->Types()) {
         if (type->IsETSFunctionType()) {
-            assignable |= lambda->Params().size() == type->AsETSFunctionType()->Params().size();
+            assignable |= lambda->Params().size() <= type->AsETSFunctionType()->Params().size();
             continue;
         }
 
         if (type->IsETSTypeReference()) {
             auto aliasType = util::Helpers::DerefETSTypeReference(type);
             assignable |= aliasType->IsETSFunctionType() &&
-                          lambda->Params().size() == aliasType->AsETSFunctionType()->Params().size();
+                          lambda->Params().size() <= aliasType->AsETSFunctionType()->Params().size();
         }
     }
 
