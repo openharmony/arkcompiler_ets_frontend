@@ -2618,7 +2618,6 @@ void ETSGen::NewArray(const ir::AstNode *const node, const VReg arr, const VReg 
 void ETSGen::LoadResizableArrayLength(const ir::AstNode *node)
 {
     Ra().Emit<CallAccShort, 0>(node, Signatures::BUILTIN_ARRAY_LENGTH, dummyReg_, 0);
-    Sa().Emit<F64toi32>(node);
     SetAccumulatorType(Checker()->GlobalIntType());
 }
 
