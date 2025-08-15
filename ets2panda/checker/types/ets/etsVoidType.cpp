@@ -25,31 +25,29 @@ void ETSVoidType::Identical(TypeRelation *relation, Type *other)
 
 void ETSVoidType::IsSupertypeOf(TypeRelation *const relation, Type *source)
 {
-    if (relation->IsOverridingCheck()) {
-        relation->Result(false);
-        return;
-    }
-
-    relation->Result(source->IsETSUndefinedType() || source->IsETSNeverType());
+    relation->Result(source->IsETSUndefinedType());
 }
 
 bool ETSVoidType::AssignmentSource(TypeRelation *relation, Type *target)
 {
-    if (relation->IsOverridingCheck()) {
-        return relation->Result(false);
+    // NOTE(vpukhov): #19701 void refactoring
+    if (!target->IsETSUndefinedType()) {
+        Identical(relation, target);
+    } else {
+        relation->Result(true);
     }
 
-    return relation->Result(target->IsETSAnyType());
+    return relation->IsTrue();
 }
 
 void ETSVoidType::AssignmentTarget([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] Type *source)
 {
-    if (relation->IsOverridingCheck()) {
-        relation->Result(false);
-        return;
+    // NOTE(vpukhov): #19701 void refactoring
+    if (!source->IsETSUndefinedType()) {
+        Identical(relation, source);
+    } else {
+        relation->Result(true);
     }
-
-    relation->Result(source->IsETSUndefinedType() || source->IsETSNeverType());
 }
 
 Type *ETSVoidType::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[maybe_unused]] TypeRelation *relation,

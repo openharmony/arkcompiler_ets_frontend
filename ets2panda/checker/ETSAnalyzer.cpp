@@ -1388,7 +1388,6 @@ checker::Type *ETSAnalyzer::Check(ir::AwaitExpression *expr) const
     }
 
     expr->SetTsType(checker->HandleAwaitExpression(expr->argument_->Check(checker), expr));
-    checker->CheckVoidTypeExpression(expr);
     return expr->TsType();
 }
 
@@ -1727,7 +1726,7 @@ checker::Type *ETSAnalyzer::Check(ir::CallExpression *expr) const
     }
 
     CheckOverloadCall(checker, expr);
-    checker->CheckVoidTypeExpression(expr);
+    CheckVoidTypeExpression(checker, expr);
     CheckAbstractCall(checker, expr);
     return expr->TsType();
 }

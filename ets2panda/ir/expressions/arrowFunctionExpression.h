@@ -61,16 +61,6 @@ public:
         return preferredType_;
     }
 
-    void SetConvertedLambdaMayNeedFix() noexcept
-    {
-        convertedLambdaMayNeedFix_ = true;
-    }
-
-    [[nodiscard]] bool DoesConvertedLambdaMayNeedFix() const noexcept
-    {
-        return convertedLambdaMayNeedFix_;
-    }
-
     [[nodiscard]] ArrowFunctionExpression *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
     void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;
@@ -93,7 +83,6 @@ public:
 private:
     ScriptFunction *func_;
     checker::Type *preferredType_ {};
-    bool convertedLambdaMayNeedFix_ = false;
 };
 }  // namespace ark::es2panda::ir
 

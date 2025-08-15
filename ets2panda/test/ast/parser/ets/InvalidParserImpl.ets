@@ -22,6 +22,7 @@ function fun(this: A) {}
 
 class int {}
 
+/* @@? 17:12 Error TypeError: Getter must return a value */
 /* @@? 18:5 Error SyntaxError: Getter must not have formal parameters. */
 /* @@? 19:1 Error SyntaxError: Setter must have exactly one formal parameter. */
 /* @@? 23:7 Error SyntaxError: int is a predefined type, cannot be used as an identifier */

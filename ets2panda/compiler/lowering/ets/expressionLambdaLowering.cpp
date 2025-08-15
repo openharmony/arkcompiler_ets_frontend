@@ -31,9 +31,7 @@ static ir::AstNode *ConvertExpression(public_lib::Context *ctx, ir::ArrowFunctio
          function->ReturnTypeAnnotation()->AsETSPrimitiveType()->GetPrimitiveType() == ir::PrimitiveType::VOID)) {
         statements.emplace_back(ctx->AllocNode<ir::ExpressionStatement>(expr));
     } else {
-        auto *const newReturnNode = ctx->AllocNode<ir::ReturnStatement>(expr);
-        arrow->SetConvertedLambdaMayNeedFix();
-        statements.emplace_back(newReturnNode);
+        statements.emplace_back(ctx->AllocNode<ir::ReturnStatement>(expr));
         function->AddFlag(ir::ScriptFunctionFlags::HAS_RETURN);
     }
 
