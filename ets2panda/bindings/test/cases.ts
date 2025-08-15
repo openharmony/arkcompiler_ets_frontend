@@ -79,7 +79,8 @@ export const basicCases: TestCases = {
     expectedFilePath: resolveTestPath('test/expected/getSyntacticDiagnostics.json'),
     '1': [resolveTestPath('test/testcases/getSyntacticDiagnostics/getSyntacticDiagnostics1.ets')],
     '2': [resolveTestPath('test/testcases/getSyntacticDiagnostics/getSyntacticDiagnostics2.ets')],
-    '3': [resolveTestPath('test/testcases/getSyntacticDiagnostics/getSyntacticDiagnostics3.ets')]
+    '3': [resolveTestPath('test/testcases/getSyntacticDiagnostics/getSyntacticDiagnostics3.ets')],
+    '4': [resolveTestPath('test/testcases/getSyntacticDiagnostics/getSyntacticDiagnostics4.ets')]
   },
   getSuggestionDiagnostics: {
     expectedFilePath: resolveTestPath('test/expected/getSuggestionDiagnostics.json'),
