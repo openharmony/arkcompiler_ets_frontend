@@ -110,6 +110,7 @@ set(ES2PANDA_LSP_SRC
   ./src/types.cpp
   ./src/navigate_to.cpp
   ./src/code_fix_provider.cpp
+  ./src/register_code_fix/add_local_variable.cpp
   ./src/register_code_fix/add_missing_new_operator.cpp
   ./src/register_code_fix/fix_class_doesnt_implement_inherited_abstract_member.cpp
   ./src/register_code_fix/fix_expected_comma.cpp

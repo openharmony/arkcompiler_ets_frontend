@@ -1090,6 +1090,7 @@ semantic:
 - name: PROPERTY_NONEXISTENT
   id: 87
   message: "Property '{}' does not exist on type '{}'"
+  code_fix_ids: [AddLocalVariableForClass]
 
 - name: PROP_ACCESS_WITHOUT_THIS
   id: 145
@@ -1396,7 +1397,7 @@ semantic:
 - name: UNRESOLVED_REF
   id: 143
   message: "Unresolved reference {}"
-  code_fix_ids: [FixSpelling]
+  code_fix_ids: [FixSpelling,AddLocalVariable]
 
 - name: UNSUPPORTED_CLASS_LITERAL
   id: 20
