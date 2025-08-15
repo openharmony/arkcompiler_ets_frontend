@@ -24,9 +24,9 @@ class FixSpellingTests : public LSPAPITests {};
 
 TEST_F(FixSpellingTests, FixSpelling1)
 {
-    std::vector<std::string> files = {"getDefinitionAtPosition1.ets", "getDefinitionAtPosition2.ets"};
+    std::vector<std::string> files = {"Fix_Spelling1.ets", "Fix_Spelling2.ets"};
     std::vector<std::string> texts = {R"(export const spelling = 42;)",
-                                      R"(import { speling } from './getDefinitionAtPosition1';)"};
+                                      R"(import { speling } from './Fix_Spelling1';)"};
     auto filePaths = CreateTempFile(files, texts);
     size_t const expectedFileCount = 2;
     ASSERT_EQ(filePaths.size(), expectedFileCount);
