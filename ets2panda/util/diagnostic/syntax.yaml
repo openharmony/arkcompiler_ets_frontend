@@ -315,6 +315,7 @@ syntax:
 - name: EXPLICIT_PARAM_TYPE
   id: 194
   message: "Parameter declaration should have an explicit type annotation."
+  code_fix_ids: [AddNameToNamelessParameter]
 
 - name: EXPORT_DEFAULT_NO_REEXPORT
   id: 244
