@@ -51,6 +51,10 @@ Signature *Signature::Substitute(TypeRelation *relation, const Substitution *sub
         if (newParamType != param->TsType()) {
             anyChange = true;
             newParam = param->Copy(allocator, param->Declaration());
+            if (newParamType->IsETSVoidType()) {
+                // since `void` is not allowed to be used as param type
+                newParamType = checker->GlobalETSUndefinedType();
+            }
             newParam->SetTsType(newParamType);
         }
         newSigInfo->params.push_back(newParam);

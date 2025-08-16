@@ -15,5 +15,5 @@
 
 function test<T>(){}
 async function foo(){
-    test<void>();
+    return test<void>();
 }

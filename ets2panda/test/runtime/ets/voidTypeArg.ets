@@ -26,4 +26,8 @@ function main() : void {
     let bfoo = foo<undefined>(undefined);
 
     arktest.assertEQ(bfoo, undefined)
+
+    test((e) => {
+        arktest.assertEQ(e, undefined)
+    })
 }

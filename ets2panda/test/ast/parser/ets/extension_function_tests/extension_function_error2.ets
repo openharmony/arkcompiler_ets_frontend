@@ -28,3 +28,4 @@ let a = (this: TextAttribute, this { this.width(width); return this;
 /* @@? 16:43 Error TypeError: Property 'width' does not exist on type 'ETSGLOBAL' */
 /* @@? 16:57 Error SyntaxError: return keyword should be used in function body. */
 /* @@? 16:64 Error TypeError: 'this' cannot be referenced from a static context */
+/* @@? 16:64 Error TypeError: All return statements in the function should be empty or have a value. */

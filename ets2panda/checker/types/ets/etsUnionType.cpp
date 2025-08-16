@@ -250,10 +250,10 @@ static std::optional<Type *> TryMergeTypes(TypeRelation *relation, Type *const t
     auto *const checker = relation->GetChecker()->AsETSChecker();
     auto *const never = checker->GetGlobalTypesHolder()->GlobalETSNeverType();
 
-    if (relation->IsSupertypeOf(t1, t2) || relation->IsIdenticalTo(t2, never)) {
+    if (relation->IsSupertypeOf(t1, t2) || t2 == never) {
         return t1;
     }
-    if (relation->IsSupertypeOf(t2, t1) || relation->IsIdenticalTo(t1, never)) {
+    if (relation->IsSupertypeOf(t2, t1) || t1 == never) {
         return t2;
     }
     return std::nullopt;

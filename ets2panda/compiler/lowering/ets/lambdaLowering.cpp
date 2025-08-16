@@ -881,7 +881,7 @@ static ir::BlockStatement *CreateLambdaClassInvokeBody(public_lib::Context *ctx,
     auto *call = CreateCallForLambdaClassInvoke(ctx, info, lciInfo, wrapToObject, false);
     auto bodyStmts = CreateRestArgumentsArrayReallocation(ctx, lciInfo, 0);
 
-    if (checker::ETSChecker::IsTypeVoidOrUnionContainsVoid(lciInfo->lambdaSignature->ReturnType())) {
+    if (lciInfo->lambdaSignature->ReturnType() == checker->GlobalVoidType()) {
         auto *callStmt = util::NodeAllocator::ForceSetParent<ir::ExpressionStatement>(allocator, call);
         bodyStmts.push_back(callStmt);
         if (wrapToObject) {
@@ -975,7 +975,7 @@ static ir::BlockStatement *CreateLambdaClassInvokeNBody(public_lib::Context *ctx
     lciInfo->argNames = tempVarNames;
     auto *call = CreateCallForLambdaClassInvoke(ctx, info, lciInfo, false, true);
 
-    if (lciInfo->lambdaSignature->ReturnType()->IsETSVoidType()) {
+    if (lciInfo->lambdaSignature->ReturnType() == checker->GlobalVoidType()) {
         auto *callStmt = util::NodeAllocator::ForceSetParent<ir::ExpressionStatement>(allocator, call);
         bodyStmts.push_back(callStmt);
         auto *returnStmt =
@@ -1243,32 +1243,6 @@ static ir::ETSNewClassInstanceExpression *CreateConstructorCall(public_lib::Cont
     return newExpr;
 }
 
-static void FixConvertedLambdaBody(public_lib::Context *ctx, ir::ArrowFunctionExpression *lambda)
-{
-    // After the 'expressionLambdaLowering', the last statement should be the newly generated return statement. Other
-    // statements can appear before it, eg. because of optional/default params.
-    auto *const convertedReturnStatement =
-        lambda->Function()->Body()->AsBlockStatement()->Statements().back()->AsReturnStatement();
-
-    const auto *const lambdaReturnType = lambda->TsType()->AsETSFunctionType()->ArrowSignature()->ReturnType();
-    const bool lambdaHasVoidReturn = checker::ETSChecker::IsTypeVoidOrUnionContainsVoid(lambdaReturnType);
-    const auto *const convertedArgumentType = convertedReturnStatement->Argument()->TsType();
-    const bool convertedArgumentIsVoid = checker::ETSChecker::IsTypeVoidOrUnionContainsVoid(convertedArgumentType);
-    if (!lambdaHasVoidReturn || !convertedArgumentIsVoid) {
-        return;
-    }
-
-    auto *allocator = ctx->allocator;
-
-    ArenaVector<ir::Statement *> newStatementList(allocator->Adapter());
-    const auto &originalStatements = lambda->Function()->Body()->AsBlockStatement()->Statements();
-    newStatementList.insert(end(newStatementList), begin(originalStatements), end(originalStatements));
-    newStatementList.pop_back();  // Remove the return statement with argument
-    auto *const newCall = ctx->AllocNode<ir::ExpressionStatement>(convertedReturnStatement->Argument());
-    newStatementList.emplace_back(newCall);
-    lambda->Function()->Body()->AsBlockStatement()->SetStatements(std::move(newStatementList));
-}
-
 static ir::AstNode *ConvertLambda(public_lib::Context *ctx, ir::ArrowFunctionExpression *lambda)
 {
     auto *allocator = ctx->allocator;
@@ -1276,10 +1250,6 @@ static ir::AstNode *ConvertLambda(public_lib::Context *ctx, ir::ArrowFunctionExp
 
     lambda->Check(checker);
     ES2PANDA_ASSERT(lambda->TsType()->IsETSFunctionType());
-
-    if (lambda->DoesConvertedLambdaMayNeedFix()) {
-        FixConvertedLambdaBody(ctx, lambda);
-    }
 
     LambdaInfo info;
     std::tie(info.calleeClass, info.enclosingFunction) = FindEnclosingClassAndFunction(lambda);
@@ -1340,7 +1310,7 @@ static ir::ScriptFunction *GetWrappingLambdaParentFunction(public_lib::Context *
     auto *callExpr = util::NodeAllocator::ForceSetParent<ir::CallExpression>(allocator, funcRef, std::move(callArgs),
                                                                              nullptr, false);
     ir::Statement *stmt;
-    if (signature->ReturnType()->IsETSVoidType()) {
+    if (signature->ReturnType() == ctx->GetChecker()->AsETSChecker()->GlobalVoidType()) {
         stmt = util::NodeAllocator::ForceSetParent<ir::ExpressionStatement>(allocator, callExpr);
     } else {
         stmt = util::NodeAllocator::ForceSetParent<ir::ReturnStatement>(allocator, callExpr);
