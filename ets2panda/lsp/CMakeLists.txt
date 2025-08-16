@@ -116,6 +116,7 @@ set(ES2PANDA_LSP_SRC
   ./src/register_code_fix/fix_extends_interface_becomes_implements.cpp
   ./src/register_code_fix/fix_class_super_must_precede_this_access.cpp
   ./src/register_code_fix/fix_return_type_in_async_function.cpp
+  ./src/register_code_fix/add_name_to_nameless_parameter.cpp
   ./src/register_code_fix/add_missing_declare_property.cpp
   ./src/register_code_fix/convert_const_to_let.cpp
   ./src/register_code_fix/constructor_for_derived_need_super_call
