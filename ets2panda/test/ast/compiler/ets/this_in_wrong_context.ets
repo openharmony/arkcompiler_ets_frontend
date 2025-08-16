@@ -21,4 +21,5 @@ export declare @interface ClassAuthor {
 /* @@? 17:5 Error TypeError: Invalid annotation field type. Only numeric, boolean, string, enum, or arrays of these types are permitted for annotation fields. */
 /* @@? 17:22 Error TypeError: Invalid value for annotation field, expected a constant literal. */
 /* @@? 17:23 Error TypeError: Cannot reference 'this' in this context. */
+/* @@? 17:23 Warning Warning: The instance field initializer expression cannot use the this. */
 /* @@? 17:28 Error TypeError: Property 'listener' does not exist on type 'Error' */

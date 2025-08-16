@@ -19,7 +19,10 @@ class A {
 
   }
 
-  private cb: (a: int) => void = this.foo;
+  private cb: (a: int) => void;
+  constructor () {
+    this.cb = this.foo;
+  }
 }
 
 function main(): void {

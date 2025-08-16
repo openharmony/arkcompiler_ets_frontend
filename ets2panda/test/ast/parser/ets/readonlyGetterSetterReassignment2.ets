@@ -19,7 +19,7 @@ interface I {
 
 class A implements I {
     readonly a: boolean
-    b: boolean = this.a = true;
+    b: boolean = /* @@ warn */this.a = true;
     constructor() {
         this./* @@ label */a = false
     }
@@ -30,4 +30,5 @@ function main() {
     arktest.assertEQ(a.a, false);
 }
 
-/* @@@ label Error TypeError: Readonly field already initialized at declaration.  */
+/* @@@ warn Warning Warning: The instance field initializer expression cannot use the this. */
+/* @@@ label Error TypeError: Readonly field already initialized at declaration. */

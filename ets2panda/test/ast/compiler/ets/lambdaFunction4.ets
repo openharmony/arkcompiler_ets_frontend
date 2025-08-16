@@ -16,9 +16,13 @@
 class A {
     b: String = "foo";
 
-    a: () => void = (): void => {
-        /* @@ label */this.b++;
+    a: () => void;
+
+    constructor() {
+        this.a = (): void => {
+            /* @@ label */this.b++;
+        }
     }
 }
 
-/* @@@ label Error TypeError: Bad operand type, the type of the operand must be numeric type.  */
+/* @@@ label Error TypeError: Bad operand type, the type of the operand must be numeric type. */
