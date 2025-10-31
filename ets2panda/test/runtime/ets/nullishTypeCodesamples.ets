@@ -117,7 +117,7 @@ function main() {
         new DTree<string | number>().up();
         arktest.assertTrue(false)
     } catch (e) {
-        if (!(e instanceof NullPointerError)) {
+        if (e not instanceof NullPointerError) {
             throw e;
         }
      }
