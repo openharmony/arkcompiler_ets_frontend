@@ -665,7 +665,7 @@ export class C {
 ```
 leads to generation of
 ```
-class %%partial-C {
+class C$partial {
   public n: int | undefined = undefined;
   public s: string | undefined = undefined;
 }
