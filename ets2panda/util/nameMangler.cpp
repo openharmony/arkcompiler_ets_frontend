@@ -29,19 +29,18 @@ std::string NameMangler::CreateMangledNameByTypeAndName(LangFeatureType type, co
             break;
         }
         case GET: {
-            mangledName += "%%get-";
+            mangledName += "<get>";
             break;
         }
         case PARTIAL: {
-            mangledName += "%%partial-";
-            break;
+            return nodeName.Mutf8() + "$partial";
         }
         case PROPERTY: {
-            mangledName += "%%property-";
+            mangledName += "<property>";
             break;
         }
         case SET: {
-            mangledName += "%%set-";
+            mangledName += "<set>";
             break;
         }
         default:
@@ -102,22 +101,22 @@ std::string NameMangler::AppendToAnnotationName(const std::string &annotationNam
 
 std::string NameMangler::GetOriginalClassNameFromPartial(const std::string &partialName)
 {
-    const std::string partialPrefix = "%%partial-";
-    const size_t prefixLength = partialPrefix.length();
-    if (partialName.length() <= prefixLength) {
+    const std::string partialSuffix = "$partial";
+
+    if (partialName.length() <= partialSuffix.length()) {
         return "";
     }
 
-    size_t prefixPos = partialName.find(partialPrefix);
-    if (prefixPos == std::string::npos) {
+    size_t suffixPos = partialName.rfind(partialSuffix);
+    if (suffixPos == std::string::npos) {
         return "";
     }
 
-    // Check if the prefix is at the start of the string
-    if (prefixPos != 0) {
+    // Check if the suffix is at the end of the string
+    if (suffixPos + partialSuffix.length() != partialName.length()) {
         return "";
     }
 
-    return partialName.substr(prefixLength);
+    return partialName.substr(0, suffixPos);
 }
 }  // namespace ark::es2panda::util

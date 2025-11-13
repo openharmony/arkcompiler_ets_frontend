@@ -18,6 +18,7 @@
 
 #include <string>
 #include "ustring.h"
+#include <mutex>
 
 namespace ark::es2panda::util {
 

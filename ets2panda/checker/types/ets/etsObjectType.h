@@ -33,7 +33,7 @@
 namespace ark::es2panda::checker {
 using PropertyProcesser = std::function<varbinder::LocalVariable *(varbinder::LocalVariable *, Type *)>;
 
-inline constexpr auto *PARTIAL_CLASS_PREFIX = "%%partial-";
+inline constexpr auto *PARTIAL_CLASS_SUFFIX = "$partial";
 
 class ETSObjectType : public Type {
 public:
@@ -363,7 +363,7 @@ public:
 
     [[nodiscard]] bool IsPartial() const noexcept
     {
-        return name_.StartsWith(PARTIAL_CLASS_PREFIX);
+        return name_.EndsWith(PARTIAL_CLASS_SUFFIX);
     }
 
     std::vector<const varbinder::LocalVariable *> ForeignProperties() const;
