@@ -19,7 +19,7 @@ import { LogDataFactory, LogData } from '../logger';
 import { ProcessCompileTask, ProcessDeclgenV1Task, JobInfo } from '../types';
 import { Task, WorkerInfo } from './TaskManager';
 
-function getDeclgenErrorMessage<PayloadT extends JobInfo>(
+function getErrorMessage<PayloadT extends JobInfo>(
     workerInfo: WorkerInfo,
     task: Task<PayloadT>,
     code: number | null,
@@ -28,43 +28,19 @@ function getDeclgenErrorMessage<PayloadT extends JobInfo>(
     if (signal) {
         switch (signal) {
             case 'SIGSEGV':
-                return `Declgen Worker caught SIGSEGV signal. Processed file is ${task.payload.fileInfo.input}.`;
+                return `Worker [ID:${workerInfo.id}] caught SIGSEGV signal`;
             case 'SIGKILL':
-                return `Declgen Worker was killed by signal ${signal}`;
+                return `Worker [ID:${workerInfo.id}] was killed by signal ${signal}`;
             default:
-                return `Signal ${signal} was sent to the declgen worker. Processed file is ${task.payload.fileInfo.input}.`;
+                return `Signal ${signal} was sent to the worker [${workerInfo.id}]`;
         }
     }
 
     if (code && code !== 0) {
-        return `Declgen worker crashed when process file ${task.payload.fileInfo.input}. Exit code ${code}(0x${code.toString(16)})`;
+        return `Failed to compile ${task.payload.fileList[0]}. Exit code ${code}`;
     }
 
-    return `Worker [ID:${workerInfo.id}] exited unexpectedly`;
-}
-
-function getCompileErrorMessage<PayloadT extends JobInfo>(
-    workerInfo: WorkerInfo,
-    task: Task<PayloadT>,
-    code: number | null,
-    signal: NodeJS.Signals | null
-): string {
-    if (signal) {
-        switch (signal) {
-            case 'SIGSEGV':
-                return `Failed to compile file ${task.payload.fileInfo.input}. Compiler worker caught SIGSEGV signal.`;
-            case 'SIGKILL':
-                return `Failed to compile file ${task.payload.fileInfo.input}. Compiler worker was killed by signal ${signal}`;
-            default:
-                return `Signal ${signal} was sent to the compiler worker. Processed file is ${task.payload.fileInfo.input}.`;
-        }
-    }
-
-    if (code && code !== 0) {
-        return `Failed to compile file ${task.payload.fileInfo.input}. Exit code ${code}(0x${code.toString(16)})`;
-    }
-
-    return `Worker [ID:${workerInfo.id}] exited unexpectedly`;
+    return 'Worker exited unexpectedly';
 }
 
 export function handleCompileProcessWorkerExit(
@@ -83,7 +59,7 @@ export function handleCompileProcessWorkerExit(
 
     return LogDataFactory.newInstance(
         ErrorCode.BUILDSYSTEM_COMPILE_FAILED_IN_WORKER,
-        getCompileErrorMessage(workerInfo, task, code, signal),
+        getErrorMessage(workerInfo, task, code, signal),
         'This error is likely caused internally from compiler.',
         task.payload.fileList[0],
         [`Run locally: ${cmd.join(' ')}`]
@@ -98,7 +74,7 @@ export function handleDeclgenWorkerExit(
 ): LogData {
     return LogDataFactory.newInstance(
         ErrorCode.BUILDSYSTEM_DECLGEN_FAILED_IN_WORKER,
-        getDeclgenErrorMessage(workerInfo, task, code, signal),
+        getErrorMessage(workerInfo, task, code, signal),
         'This error is likely caused internally from compiler.',
     )
 }
