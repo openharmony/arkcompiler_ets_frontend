@@ -1,4 +1,4 @@
-# Copyright (c) 2025-2026 Huawei Device Co., Ltd.
+# Copyright (c) 2025 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -15,7 +15,7 @@ add_custom_target(es2panda-unit-test-fatal-error-unsupported_file_name1
     COMMENT "Testing test-fatal-error for: unsupported_file_name1"
     DEPENDS es2panda
     WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
-    COMMAND python3 ${CMAKE_CURRENT_LIST_DIR}/../test_fatal_script.py
+    COMMAND python3 test_fatal_script.py
         --es2panda '${PANDA_RUN_PREFIX} $<TARGET_FILE:es2panda>'
         --config arktsconfig.json
         --filepath test.ets
@@ -26,7 +26,7 @@ add_custom_target(es2panda-unit-test-fatal-error-unsupported_file_name2
     COMMENT "Testing test-fatal-error for: unsupported_file_name2"
     DEPENDS es2panda
     WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
-    COMMAND python3 ${CMAKE_CURRENT_LIST_DIR}/../test_fatal_script.py
+    COMMAND python3 test_fatal_script.py
         --es2panda '${PANDA_RUN_PREFIX} $<TARGET_FILE:es2panda>'
         --config arktsconfig.json
         --filepath test.ets
