@@ -26,7 +26,8 @@
                 "icu",
                 "abseil-cpp",
                 "hilog",
-                "typescript"
+                "typescript",
+                "flatbuffers"
             ],
             "third_party": [
                 "typescript"

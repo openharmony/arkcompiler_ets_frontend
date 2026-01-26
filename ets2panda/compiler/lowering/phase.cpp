@@ -77,6 +77,7 @@
 #include "compiler/lowering/resolveIdentifiers.h"
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "compiler/lowering/ets/fixedarrayLowering.h"
+#include "compiler/metadata/metadataEmitter.h"
 #include "generated/diagnostic.h"
 #include "lexer/token/sourceLocation.h"
 #include "public/es2panda_lib.h"
@@ -128,7 +129,8 @@ std::vector<Phase *> GetETSPhaseList()
         new AnnotationCopyLowering,
         // please DO NOT change order of these two phases: checkerPhase and pluginsAfterCheck
         new CheckerPhase,
-        // Dump declaration right after checker
+        // Metadata emitting and declarations dumping are right after the checker
+        new MetadataEmittingPhase,
         new DeclGenPhase,
         // pluginsAfterCheck has to go right after checkerPhase
         new PluginPhase {g_pluginsAfterCheck, ES2PANDA_STATE_CHECKED, &util::Plugin::AfterCheck},

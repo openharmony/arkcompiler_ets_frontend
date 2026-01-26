@@ -281,6 +281,7 @@ libes2panda_sources = [
   "compiler/lowering/scopesInit/savedBindingsCtx.cpp",
   "compiler/lowering/scopesInit/scopesInitPhase.cpp",
   "compiler/lowering/util.cpp",
+  "compiler/metadata/metadataEmitter.cpp",
   "es2panda.cpp",
   "evaluate/debugInfoDeserialization/classBuilder.cpp",
   "evaluate/debugInfoDeserialization/debugInfoDeserializer.cpp",
@@ -1239,6 +1240,7 @@ ohos_source_set("libes2panda_frontend_static") {
     deps += [
       "$ark_third_party_root/icu/icu4c:static_icui18n",
       "$ark_third_party_root/icu/icu4c:static_icuuc",
+      "$ark_third_party_root/flatbuffers:libflatbuffers_static",
     ]
   } else {
     external_deps += [
@@ -1248,6 +1250,7 @@ ohos_source_set("libes2panda_frontend_static") {
       "runtime_core:libpandabase_headers",
       "runtime_core:libpandafile_headers",
       "runtime_core:runtime_gen_headers",
+      "flatbuffers:libflatbuffers_static",
     ]
   }
   part_name = "ets_frontend"

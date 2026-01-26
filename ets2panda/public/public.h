@@ -138,6 +138,7 @@ struct Context {
     bool compiledByCapi = false;
     bool lazyCheck = true;
     std::vector<std::string> sourceFileNames;
+    std::vector<uint8_t> metadata;
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 
 private:
