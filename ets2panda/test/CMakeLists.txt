@@ -66,6 +66,7 @@ function(ets2panda_add_gtest TARGET)
                 es2panda-lib
                 arkassembler
                 arkbytecodeopt
+                abc2program
                 ${LSP_LIB}
             INCLUDE_DIRS
                 ${ES2PANDA_PATH}
