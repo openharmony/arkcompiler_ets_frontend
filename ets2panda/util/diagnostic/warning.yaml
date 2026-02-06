@@ -164,14 +164,16 @@ warning:
   code_fix_ids: [FixUnreachableCode]
 
 - name: USED_TYPE_IS_NOT_EXPORTED
-  id: 11567
+  id: 1236581
   message: "Type '{}' used in export declaration(s) is not exported."
+  strict: true
 
 graveyard:
 - 18
 - 19
 - 27
 - 28
+- 11567
 - 49710
 - 122948
 # See ets_frontend/ets2panda/util/diagnostic/README.md before contributing.
