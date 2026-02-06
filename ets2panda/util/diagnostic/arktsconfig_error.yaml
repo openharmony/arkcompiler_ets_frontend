@@ -79,7 +79,7 @@ arkts_config_error:
 
 - name: NO_MAIN_FILE
   id: 20
-  message: Entry file for binary dependency {} is not specified 
+  message: Entry file for binary dependency {} is not specified
 
 - name: UNRESOLVABLE_CONFIG_PATH
   id: 1
