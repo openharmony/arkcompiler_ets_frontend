@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,7 +17,6 @@
 
 #include <compiler/base/lreference.h>
 #include <compiler/core/pandagen.h>
-#include <typescript/core/destructuringContext.h>
 #include <ir/astDump.h>
 #include <ir/base/spreadElement.h>
 #include <ir/expressions/arrayExpression.h>
@@ -163,74 +162,6 @@ void AssignmentExpression::CompilePattern(compiler::PandaGen *pg) const
     lref.SetValue();
 }
 
-checker::Type *AssignmentExpression::Check(checker::Checker *checker) const
-{
-    if (left_->IsArrayPattern()) {
-        auto savedContext = checker::SavedCheckerContext(checker, checker::CheckerStatus::FORCE_TUPLE);
-        auto destructuringContext = checker::ArrayDestructuringContext(checker, left_, true, true, nullptr, right_);
-        destructuringContext.Start();
-        return destructuringContext.InferedType();
-    }
-
-    if (left_->IsObjectPattern()) {
-        auto savedContext = checker::SavedCheckerContext(checker, checker::CheckerStatus::FORCE_TUPLE);
-        auto destructuringContext = checker::ObjectDestructuringContext(checker, left_, true, true, nullptr, right_);
-        destructuringContext.Start();
-        return destructuringContext.InferedType();
-    }
-
-    if (left_->IsIdentifier() && left_->AsIdentifier()->Variable() &&
-        left_->AsIdentifier()->Variable()->Declaration()->IsConstDecl()) {
-        checker->ThrowTypeError({"Cannot assign to ", left_->AsIdentifier()->Name(), " because it is a constant."},
-                                left_->Start());
-    }
-
-    auto *leftType = left_->Check(checker);
-
-    if (leftType->HasTypeFlag(checker::TypeFlag::READONLY)) {
-        checker->ThrowTypeError("Cannot assign to this property because it is readonly.", left_->Start());
-    }
-
-    if (operator_ == lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
-        checker->ElaborateElementwise(leftType, right_, left_->Start());
-        return checker->CheckTypeCached(right_);
-    }
-
-    auto *rightType = right_->Check(checker);
-
-    switch (operator_) {
-        case lexer::TokenType::PUNCTUATOR_MULTIPLY_EQUAL:
-        case lexer::TokenType::PUNCTUATOR_EXPONENTIATION_EQUAL:
-        case lexer::TokenType::PUNCTUATOR_DIVIDE_EQUAL:
-        case lexer::TokenType::PUNCTUATOR_MOD_EQUAL:
-        case lexer::TokenType::PUNCTUATOR_MINUS_EQUAL:
-        case lexer::TokenType::PUNCTUATOR_LEFT_SHIFT_EQUAL:
-        case lexer::TokenType::PUNCTUATOR_RIGHT_SHIFT_EQUAL:
-        case lexer::TokenType::PUNCTUATOR_UNSIGNED_RIGHT_SHIFT_EQUAL:
-        case lexer::TokenType::PUNCTUATOR_BITWISE_AND_EQUAL:
-        case lexer::TokenType::PUNCTUATOR_BITWISE_XOR_EQUAL:
-        case lexer::TokenType::PUNCTUATOR_BITWISE_OR_EQUAL: {
-            return checker->CheckBinaryOperator(leftType, rightType, left_, right_, this, operator_);
-        }
-        case lexer::TokenType::PUNCTUATOR_PLUS_EQUAL: {
-            return checker->CheckPlusOperator(leftType, rightType, left_, right_, this, operator_);
-        }
-        case lexer::TokenType::PUNCTUATOR_LESS_THAN_EQUAL:
-        case lexer::TokenType::PUNCTUATOR_GREATER_THAN_EQUAL: {
-            return checker->CheckCompareOperator(leftType, rightType, left_, right_, this, operator_);
-        }
-        case lexer::TokenType::PUNCTUATOR_SUBSTITUTION: {
-            checker->CheckAssignmentOperator(operator_, left_, leftType, rightType);
-            return rightType;
-        }
-        default: {
-            UNREACHABLE();
-            break;
-        }
-    }
-
-    return nullptr;
-}
 
 void AssignmentExpression::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
 {

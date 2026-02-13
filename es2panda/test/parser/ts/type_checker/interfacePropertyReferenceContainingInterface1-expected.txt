@@ -583,4 +583,3 @@
     }
   }
 }
-TypeError: Property r does not exist on this type. [interfacePropertyReferenceContainingInterface1.ts:28:15]

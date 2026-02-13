@@ -467,4 +467,3 @@
     }
   }
 }
-TypeError: Type '[a: number, b: string, c: number, d: number]' is not assignable to type '[a: number, b: string, c?: number]'. [tupleAssignability12.ts:19:1]

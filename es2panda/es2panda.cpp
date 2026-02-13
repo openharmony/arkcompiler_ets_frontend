@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,7 +24,6 @@
 #include <os/stackGuard.h>
 #include <parser/parserImpl.h>
 #include <parser/transformer/transformer.h>
-#include <typescript/checker.h>
 
 namespace panda::es2panda {
 // Compiler
@@ -310,11 +309,6 @@ void Compiler::ProcessAstForTS(parser::Program *ast, const es2panda::CompilerOpt
 {
     if (ast->Extension() != ScriptExtension::TS) {
         return;
-    }
-    if (options.enableTypeCheck) {
-        ArenaAllocator localAllocator(SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
-        auto checker = std::make_unique<checker::Checker>(&localAllocator, ast->Binder());
-        checker->StartChecker();
     }
 
     transformer_->Transform(ast);

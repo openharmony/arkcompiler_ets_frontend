@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -60,15 +60,6 @@ void VariableDeclaration::Compile(compiler::PandaGen *pg) const
     for (const auto *it : declarators_) {
         it->Compile(pg);
     }
-}
-
-checker::Type *VariableDeclaration::Check(checker::Checker *checker) const
-{
-    for (auto *it : declarators_) {
-        it->Check(checker);
-    }
-
-    return nullptr;
 }
 
 void VariableDeclaration::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)

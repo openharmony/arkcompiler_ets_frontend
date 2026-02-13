@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,11 +23,6 @@
 namespace panda::es2panda::compiler {
 class PandaGen;
 }  // namespace panda::es2panda::compiler
-
-namespace panda::es2panda::checker {
-class Checker;
-class Type;
-}  // namespace panda::es2panda::checker
 
 namespace panda::es2panda::ir {
 
@@ -92,7 +87,6 @@ public:
     void Compile(compiler::PandaGen *pg, compiler::VReg objReg) const;
     void CompileObject(compiler::PandaGen *pg, compiler::VReg dest) const;
     compiler::Operand CompileKey(compiler::PandaGen *pg) const;
-    checker::Type *Check(checker::Checker *checker) const override;
     void UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder) override;
 
 private:

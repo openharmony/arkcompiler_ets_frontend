@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,7 +15,6 @@
 
 #include "tsConstructorType.h"
 
-#include <typescript/checker.h>
 #include <ir/astDump.h>
 #include <ir/ts/tsTypeParameterDeclaration.h>
 
@@ -44,24 +43,6 @@ void TSConstructorType::Dump(ir::AstDumper *dumper) const
 }
 
 void TSConstructorType::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
-
-checker::Type *TSConstructorType::Check(checker::Checker *checker) const
-{
-    checker::ScopeContext scopeCtx(checker, scope_);
-
-    auto *signatureInfo = checker->Allocator()->New<checker::SignatureInfo>(checker->Allocator());
-    checker->CheckFunctionParameterDeclarations(params_, signatureInfo);
-    returnType_->Check(checker);
-    auto *constructSignature =
-        checker->Allocator()->New<checker::Signature>(signatureInfo, returnType_->AsTypeNode()->GetType(checker));
-
-    return checker->CreateConstructorTypeWithSignature(constructSignature);
-}
-
-checker::Type *TSConstructorType::GetType(checker::Checker *checker) const
-{
-    return checker->CheckTypeCached(this);
-}
 
 void TSConstructorType::UpdateSelf(const NodeUpdater &cb, binder::Binder *binder)
 {

@@ -796,4 +796,3 @@
     }
   }
 }
-TypeError: Type '{ a: number[]; b: boolean; }' is not assignable to type '{ a: string[]; b: boolean; }'. [objectLiteralAssignability18.ts:21:5]

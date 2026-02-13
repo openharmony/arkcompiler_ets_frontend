@@ -279,4 +279,3 @@
     }
   }
 }
-TypeError: Type '4' is not assignable to type '5'. [as_expression_4.ts:18:8]

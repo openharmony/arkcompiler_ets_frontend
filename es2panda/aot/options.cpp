@@ -487,7 +487,6 @@ bool Options::Parse(int argc, const char **argv)
     panda::PandArg<bool> opModule("module", false, "Parse the input as module");
     panda::PandArg<bool> opCommonjs("commonjs", false, "Parse the input as commonjs");
     panda::PandArg<bool> opParseOnly("parse-only", false, "Parse the input only");
-    panda::PandArg<bool> opEnableTypeCheck("enable-type-check", false, "Check the type in ts after parse");
     panda::PandArg<bool> opDumpAst("dump-ast", false, "Dump the parsed AST");
     panda::PandArg<bool> opDumpTransformedAst("dump-transformed-ast", false, "Dump the parsed AST after transform");
     panda::PandArg<bool> opCheckTransformedAstStructure("check-transformed-ast-structure", false,
@@ -620,7 +619,6 @@ bool Options::Parse(int argc, const char **argv)
     argparser_->Add(&opCheckTransformedAstStructure);
     argparser_->Add(&opRecordDebugSource);
     argparser_->Add(&opParseOnly);
-    argparser_->Add(&opEnableTypeCheck);
     argparser_->Add(&opEnableAbcInput);
     argparser_->Add(&opDumpAsmProgram);
     argparser_->Add(&opDumpNormalizedAsmProgram);
@@ -859,7 +857,6 @@ bool Options::Parse(int argc, const char **argv)
     compilerOptions_.dumpDebugInfo = opDumpDebugInfo.GetValue();
     compilerOptions_.isDebug = opDebugInfo.GetValue();
     compilerOptions_.parseOnly = opParseOnly.GetValue();
-    compilerOptions_.enableTypeCheck = opEnableTypeCheck.GetValue();
     compilerOptions_.dumpLiteralBuffer = opDumpLiteralBuffer.GetValue();
     compilerOptions_.isDebuggerEvaluateExpressionMode = debuggerEvaluateExpression.GetValue();
     compilerOptions_.enableColumn = compilerOptions_.isDebug ? true : opEnableReleaseColumn.GetValue();

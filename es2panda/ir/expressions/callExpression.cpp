@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,7 +16,6 @@
 #include "callExpression.h"
 
 #include <compiler/core/pandagen.h>
-#include <typescript/checker.h>
 #include <ir/base/classDefinition.h>
 #include <ir/base/scriptFunction.h>
 #include <ir/base/spreadElement.h>
@@ -223,19 +222,6 @@ void CallExpression::Compile(compiler::PandaGen *pg) const
     pg->Call(this, callee, arguments_.size());
 }
 
-checker::Type *CallExpression::Check(checker::Checker *checker) const
-{
-    checker::Type *calleeType = callee_->Check(checker);
-
-    // TODO(aszilagyi): handle optional chain
-    if (calleeType->IsObjectType()) {
-        checker::ObjectType *calleeObj = calleeType->AsObjectType();
-        return checker->resolveCallOrNewExpression(calleeObj->CallSignatures(), arguments_, Start());
-    }
-
-    checker->ThrowTypeError("This expression is not callable.", Start());
-    return nullptr;
-}
 
 void CallExpression::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
 {

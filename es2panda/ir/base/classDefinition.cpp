@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,7 +18,6 @@
 #include "compiler/base/literals.h"
 #include "compiler/base/lreference.h"
 #include "compiler/core/pandagen.h"
-#include "typescript/checker.h"
 #include "ir/astDump.h"
 #include "ir/base/scriptFunction.h"
 #include "ir/expressions/assignmentExpression.h"
@@ -424,11 +423,6 @@ void ClassDefinition::Compile(compiler::PandaGen *pg) const
     }
 }
 
-checker::Type *ClassDefinition::Check(checker::Checker *checker) const
-{
-    return checker->GlobalAnyType();
-}
-
 void ClassDefinition::UpdateSelf(const NodeUpdater &cb, binder::Binder *binder)
 {
     auto scopeCtx = binder::LexicalScope<binder::ClassScope>::Enter(binder, scope_);
@@ -463,7 +457,6 @@ void ClassDefinition::UpdateSelf(const NodeUpdater &cb, binder::Binder *binder)
         *iter = std::get<ir::AstNode *>(cb(*iter))->AsTSIndexSignature();
     }
 }
-
 
 void ClassDefinition::BuildClassEnvironment(bool useDefineSemantic)
 {
@@ -616,7 +609,7 @@ const ir::AstNode *ClassDefinition::GetDeclNodeFromIdentifier(const ir::Identifi
         identifier->Variable()->Declaration()->Node()) {
         return identifier->Variable()->Declaration()->Node()->Original();
     }
-    
+
     return nullptr;
 }
 

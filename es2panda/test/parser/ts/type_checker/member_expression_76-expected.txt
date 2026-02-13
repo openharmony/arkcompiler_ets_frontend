@@ -328,4 +328,3 @@
     }
   }
 }
-TypeError: Cannot assign to this property because it is readonly. [member_expression_76.ts:22:1]

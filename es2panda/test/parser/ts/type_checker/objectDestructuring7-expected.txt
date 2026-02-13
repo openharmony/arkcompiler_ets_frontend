@@ -471,4 +471,3 @@
     }
   }
 }
-TypeError: Object literal may only specify known properties, and "c" does not exist in type 'bigint | { a: number; b: boolean; }'. [objectDestructuring7.ts:18:23]

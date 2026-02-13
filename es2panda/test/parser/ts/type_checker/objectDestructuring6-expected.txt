@@ -399,4 +399,3 @@
     }
   }
 }
-TypeError: Type 'string' is not assignable to type 'number'. [objectDestructuring6.ts:18:9]

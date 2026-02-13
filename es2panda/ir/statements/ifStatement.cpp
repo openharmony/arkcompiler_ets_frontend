@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,7 +19,6 @@
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
 #include "ir/statements/blockStatement.h"
-#include "typescript/checker.h"
 
 namespace panda::es2panda::ir {
 
@@ -58,21 +57,6 @@ void IfStatement::Compile(compiler::PandaGen *pg) const
     }
 
     pg->SetLabel(this, statementEnd);
-}
-
-checker::Type *IfStatement::Check(checker::Checker *checker) const
-{
-    checker::Type *testType = test_->Check(checker);
-    checker->CheckTruthinessOfType(testType, Start());
-    checker->CheckTestingKnownTruthyCallableOrAwaitableType(test_, testType, consequent_);
-
-    consequent_->Check(checker);
-
-    if (alternate_) {
-        alternate_->Check(checker);
-    }
-
-    return nullptr;
 }
 
 void IfStatement::UpdateSelf(const NodeUpdater &cb, binder::Binder *binder)

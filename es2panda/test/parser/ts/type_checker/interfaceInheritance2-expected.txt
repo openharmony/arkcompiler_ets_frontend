@@ -226,4 +226,3 @@
     }
   }
 }
-TypeError: Interface 'B' incorrectly extends interface 'A' [interfaceInheritance2.ts:21:11]

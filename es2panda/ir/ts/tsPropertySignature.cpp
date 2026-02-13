@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,7 +15,6 @@
 
 #include "tsPropertySignature.h"
 
-#include <typescript/checker.h>
 #include <ir/astDump.h>
 #include <ir/typeNode.h>
 
@@ -42,24 +41,6 @@ void TSPropertySignature::Dump(ir::AstDumper *dumper) const
 
 void TSPropertySignature::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
 
-checker::Type *TSPropertySignature::Check(checker::Checker *checker) const
-{
-    if (typeAnnotation_) {
-        typeAnnotation_->Check(checker);
-    }
-
-    if (computed_) {
-        checker->CheckComputedPropertyName(key_);
-    }
-
-    if (typeAnnotation_) {
-        Variable()->SetTsType(typeAnnotation_->AsTypeNode()->GetType(checker));
-        return nullptr;
-    }
-
-    checker->ThrowTypeError("Property implicitly has an 'any' type.", Start());
-    return nullptr;
-}
 
 void TSPropertySignature::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
 {

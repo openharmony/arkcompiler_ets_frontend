@@ -827,4 +827,3 @@
     }
   }
 }
-TypeError: Type '{ a: 5; b: "foo"; c: true; }' is not assignable to type 'd'. [objectLiteralAssignability16.ts:36:5]

@@ -210,4 +210,3 @@
     }
   }
 }
-TypeError: Type 'void' is not assignable to type '{ }'. [objectDestructuring14.ts:19:1]

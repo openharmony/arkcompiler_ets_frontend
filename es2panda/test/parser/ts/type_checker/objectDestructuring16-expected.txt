@@ -363,4 +363,3 @@
     }
   }
 }
-TypeError: Type '{ a: 12; }' is not assignable to type '{ a: number | string; b: number; }'. [objectDestructuring16.ts:17:5]

@@ -167,4 +167,3 @@
     }
   }
 }
-TypeError: Type 'string' is not assignable to type 'number'. [arrayDestructuring31.ts:18:2]

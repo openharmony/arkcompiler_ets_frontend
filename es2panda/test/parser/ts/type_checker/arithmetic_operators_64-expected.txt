@@ -167,4 +167,3 @@
     }
   }
 }
-TypeError: An arithmetic operand must be of type 'any', 'number', 'bigint' or an enum type. [arithmetic_operators_64.ts:19:1]

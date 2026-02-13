@@ -254,4 +254,3 @@
     }
   }
 }
-TypeError: Type 'boolean' is not assignable to type 'number'. [new_expression_34.ts:18:19]

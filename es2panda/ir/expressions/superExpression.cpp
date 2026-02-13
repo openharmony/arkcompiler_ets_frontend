@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,7 +16,6 @@
 #include "superExpression.h"
 
 #include <compiler/core/pandagen.h>
-#include <typescript/checker.h>
 #include <ir/astDump.h>
 
 namespace panda::es2panda::ir {
@@ -37,12 +36,6 @@ void SuperExpression::Compile(compiler::PandaGen *pg) const
     if (func) {
         pg->ThrowIfSuperNotCorrectCall(this, 0);
     }
-}
-
-checker::Type *SuperExpression::Check(checker::Checker *checker) const
-{
-    // TODO(aszilagyi)
-    return checker->GlobalAnyType();
 }
 
 void SuperExpression::UpdateSelf([[maybe_unused]] const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder) {}

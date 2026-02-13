@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,7 +16,6 @@
 #include "tsTypeLiteral.h"
 
 #include <ir/astDump.h>
-#include <typescript/checker.h>
 
 namespace panda::es2panda::ir {
 
@@ -33,35 +32,6 @@ void TSTypeLiteral::Dump(ir::AstDumper *dumper) const
 }
 
 void TSTypeLiteral::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
-
-checker::Type *TSTypeLiteral::Check(checker::Checker *checker) const
-{
-    for (auto *it : members_) {
-        it->Check(checker);
-    }
-
-    checker::Type *type = GetType(checker);
-    checker->CheckIndexConstraints(type);
-
-    return nullptr;
-}
-
-checker::Type *TSTypeLiteral::GetType(checker::Checker *checker) const
-{
-    auto found = checker->NodeCache().find(this);
-    if (found != checker->NodeCache().end()) {
-        return found->second;
-    }
-
-    checker::ObjectDescriptor *desc = checker->Allocator()->New<checker::ObjectDescriptor>(checker->Allocator());
-    checker::Type *type = checker->Allocator()->New<checker::ObjectLiteralType>(desc);
-    CHECK_NOT_NULL(type);
-    type->SetVariable(Variable());
-
-    checker->NodeCache().insert({this, type});
-
-    return type;
-}
 
 void TSTypeLiteral::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
 {

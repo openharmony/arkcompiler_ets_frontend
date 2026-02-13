@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,7 +15,6 @@
 
 #include "tsMethodSignature.h"
 
-#include <typescript/checker.h>
 #include <ir/astDump.h>
 #include <ir/typeNode.h>
 #include <ir/ts/tsTypeParameterDeclaration.h>
@@ -54,31 +53,6 @@ void TSMethodSignature::Dump(ir::AstDumper *dumper) const
 
 void TSMethodSignature::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
 
-checker::Type *TSMethodSignature::Check(checker::Checker *checker) const
-{
-    if (computed_) {
-        checker->CheckComputedPropertyName(key_);
-    }
-
-    checker::ScopeContext scopeCtx(checker, scope_);
-
-    auto *signatureInfo = checker->Allocator()->New<checker::SignatureInfo>(checker->Allocator());
-    checker->CheckFunctionParameterDeclarations(params_, signatureInfo);
-
-    auto *callSignature = checker->Allocator()->New<checker::Signature>(signatureInfo, checker->GlobalAnyType());
-    Variable()->SetTsType(checker->CreateFunctionTypeWithSignature(callSignature));
-
-    if (!returnTypeAnnotation_) {
-        checker->ThrowTypeError(
-            "Method signature, which lacks return-type annotation, implicitly has an 'any' return type.", Start());
-    }
-
-    returnTypeAnnotation_->Check(checker);
-    CHECK_NOT_NULL(callSignature);
-    callSignature->SetReturnType(returnTypeAnnotation_->AsTypeNode()->GetType(checker));
-
-    return nullptr;
-}
 
 void TSMethodSignature::UpdateSelf(const NodeUpdater &cb, binder::Binder *binder)
 {

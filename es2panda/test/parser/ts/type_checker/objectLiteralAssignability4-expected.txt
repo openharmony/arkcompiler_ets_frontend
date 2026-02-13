@@ -246,4 +246,3 @@
     }
   }
 }
-TypeError: Type '() => string' is not assignable to type 'number'. [objectLiteralAssignability4.ts:17:26]

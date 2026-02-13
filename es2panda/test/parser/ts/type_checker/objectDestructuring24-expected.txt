@@ -550,4 +550,3 @@
     }
   }
 }
-TypeError: Type '{ }' is not assignable to type 'string | number'. [objectDestructuring24.ts:19:1]

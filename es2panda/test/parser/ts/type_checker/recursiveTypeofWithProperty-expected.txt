@@ -721,4 +721,3 @@
     }
   }
 }
-TypeError: 'c' is referenced directly or indirectly in its own initializer ot type annotation. [recursiveTypeofWithProperty.ts:23:9]

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,11 +21,6 @@
 namespace panda::es2panda::compiler {
 class PandaGen;
 }  // namespace panda::es2panda::compiler
-
-namespace panda::es2panda::checker {
-class Checker;
-class Type;
-}  // namespace panda::es2panda::checker
 
 namespace panda::es2panda::binder {
 class LoopScope;
@@ -75,7 +70,6 @@ public:
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Compile(compiler::PandaGen *pg) const override;
-    checker::Type *Check([[maybe_unused]] checker::Checker *checker) const override;
     void UpdateSelf(const NodeUpdater &cb, binder::Binder *binder) override;
 
 private:

@@ -238,4 +238,3 @@
     }
   }
 }
-TypeError: Type '[string, number]' is not assignable to type '[number, string]'. [tupleAssignability4.ts:19:1]

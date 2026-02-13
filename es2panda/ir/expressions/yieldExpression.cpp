@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,7 +17,6 @@
 
 #include <compiler/core/pandagen.h>
 #include <compiler/function/generatorFunctionBuilder.h>
-#include <typescript/checker.h>
 #include <ir/astDump.h>
 
 namespace panda::es2panda::ir {
@@ -50,12 +49,6 @@ void YieldExpression::Compile(compiler::PandaGen *pg) const
     } else {
         pg->FuncBuilder()->Yield(this);
     }
-}
-
-checker::Type *YieldExpression::Check(checker::Checker *checker) const
-{
-    // TODO(aszilagyi)
-    return checker->GlobalAnyType();
 }
 
 void YieldExpression::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)

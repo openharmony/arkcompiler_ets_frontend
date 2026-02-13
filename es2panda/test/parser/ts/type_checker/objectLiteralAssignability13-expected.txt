@@ -597,4 +597,3 @@
     }
   }
 }
-TypeError: Type 'boolean' is not assignable to type 'number'. [objectLiteralAssignability13.ts:17:104]

@@ -366,4 +366,3 @@
     }
   }
 }
-TypeError: Subsequent variable declaration must have the same type. Variable 'a' must be of type '{ b: { c: [number, number]; }; }', but here has type 'number'. [objectDestructuring23.ts:18:16]

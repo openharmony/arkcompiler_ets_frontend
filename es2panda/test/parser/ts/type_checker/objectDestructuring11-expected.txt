@@ -372,4 +372,3 @@
     }
   }
 }
-TypeError: Property a does not exist on type { b: boolean; } | { b: string; }. [objectDestructuring11.ts:17:10]

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,7 +17,6 @@
 
 #include <compiler/base/condition.h>
 #include <compiler/core/pandagen.h>
-#include <typescript/checker.h>
 #include <ir/astDump.h>
 
 namespace panda::es2panda::ir {
@@ -49,17 +48,6 @@ void WhileStatement::Compile(compiler::PandaGen *pg) const
     pg->SetLabel(this, labelTarget.BreakTarget());
 }
 
-checker::Type *WhileStatement::Check(checker::Checker *checker) const
-{
-    checker::ScopeContext scopeCtx(checker, scope_);
-
-    checker::Type *testType = test_->Check(checker);
-    checker->CheckTruthinessOfType(testType, Start());
-
-    body_->Check(checker);
-
-    return nullptr;
-}
 
 void WhileStatement::UpdateSelf(const NodeUpdater &cb, binder::Binder *binder)
 {

@@ -534,4 +534,3 @@
     }
   }
 }
-TypeError: Object literal may only specify known properties, and property 'c' does not exist in the pattern. [objectDestructuring8.ts:17:10]

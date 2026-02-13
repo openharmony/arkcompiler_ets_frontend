@@ -253,4 +253,3 @@
     }
   }
 }
-TypeError: Expected 2 arguments, but got 3. [new_expression_157.ts:18:25]

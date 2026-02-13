@@ -755,4 +755,3 @@
     }
   }
 }
-TypeError: Object literal may only specify known properties, and property 'k' does not exist in the pattern. [objectDestructuring26.ts:17:5]

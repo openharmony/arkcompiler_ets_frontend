@@ -282,4 +282,3 @@
     }
   }
 }
-TypeError: Expected 2 arguments, but got 4. [new_expression_92.ts:18:25]
