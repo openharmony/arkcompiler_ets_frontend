@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+/**
+ * Copyright (c) 2022-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -30,24 +30,6 @@ void TSRestType::Dump(ir::AstDumper *dumper) const
 }
 
 void TSRestType::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
-
-checker::Type *TSRestType::Check([[maybe_unused]] checker::Checker *checker) const
-{
-    // TODO(xucheng): Implement checker for ts rest type
-    return nullptr;
-}
-
-checker::Type *TSRestType::GetType(checker::Checker *checker) const
-{
-    auto found = checker->NodeCache().find(this);
-    if (found != checker->NodeCache().end()) {
-        return found->second;
-    }
-
-    checker::Type *type = type_->AsTypeNode()->GetType(checker);
-    checker->NodeCache().insert({this, type});
-    return type;
-}
 
 void TSRestType::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
 {

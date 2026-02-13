@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,7 +15,6 @@
 
 #include "tsFunctionType.h"
 
-#include <typescript/checker.h>
 #include <ir/astDump.h>
 #include <ir/ts/tsTypeParameterDeclaration.h>
 
@@ -43,24 +42,6 @@ void TSFunctionType::Dump(ir::AstDumper *dumper) const
 }
 
 void TSFunctionType::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
-
-checker::Type *TSFunctionType::Check(checker::Checker *checker) const
-{
-    checker::ScopeContext scopeCtx(checker, scope_);
-
-    auto *signatureInfo = checker->Allocator()->New<checker::SignatureInfo>(checker->Allocator());
-    checker->CheckFunctionParameterDeclarations(params_, signatureInfo);
-    returnType_->Check(checker);
-    auto *callSignature =
-        checker->Allocator()->New<checker::Signature>(signatureInfo, returnType_->AsTypeNode()->GetType(checker));
-
-    return checker->CreateFunctionTypeWithSignature(callSignature);
-}
-
-checker::Type *TSFunctionType::GetType(checker::Checker *checker) const
-{
-    return checker->CheckTypeCached(this);
-}
 
 void TSFunctionType::UpdateSelf(const NodeUpdater &cb, binder::Binder *binder)
 {

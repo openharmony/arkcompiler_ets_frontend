@@ -591,4 +591,3 @@
     }
   }
 }
-TypeError: Type 'number' is not assignable to type 'string'. [functionOverload4.ts:23:5]

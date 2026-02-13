@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,7 +15,6 @@
 
 #include "functionDeclaration.h"
 
-#include <typescript/checker.h>
 #include <ir/astDump.h>
 #include <ir/base/scriptFunction.h>
 
@@ -33,26 +32,6 @@ void FunctionDeclaration::Dump(ir::AstDumper *dumper) const
 
 void FunctionDeclaration::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
 
-checker::Type *FunctionDeclaration::Check(checker::Checker *checker) const
-{
-    if (func_->IsOverload()) {
-        return nullptr;
-    }
-
-    const util::StringView &funcName = func_->Id()->Name();
-    binder::ScopeFindResult result = checker->Scope()->Find(funcName);
-    ASSERT(result.variable);
-
-    checker::ScopeContext scopeCtx(checker, func_->Scope());
-
-    if (!result.variable->TsType()) {
-        checker->InferFunctionDeclarationType(result.variable->Declaration()->AsFunctionDecl(), result.variable);
-    }
-
-    func_->Body()->Check(checker);
-
-    return nullptr;
-}
 
 void FunctionDeclaration::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
 {

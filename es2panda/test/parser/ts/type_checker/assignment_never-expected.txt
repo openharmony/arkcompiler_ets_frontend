@@ -83,4 +83,3 @@
     }
   }
 }
-TypeError: Type 'null' is not assignable to type 'never'. [assignment_never.ts:17:5]

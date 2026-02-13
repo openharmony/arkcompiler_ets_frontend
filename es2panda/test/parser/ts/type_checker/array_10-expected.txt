@@ -167,4 +167,3 @@
     }
   }
 }
-TypeError: Type 'boolean' is not assignable to type 'number'. [array_10.ts:18:6]

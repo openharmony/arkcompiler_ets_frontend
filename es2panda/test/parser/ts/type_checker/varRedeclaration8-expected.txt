@@ -40,4 +40,3 @@
     }
   }
 }
-TypeError: Cannot find name a [varRedeclaration8.ts:24:1]

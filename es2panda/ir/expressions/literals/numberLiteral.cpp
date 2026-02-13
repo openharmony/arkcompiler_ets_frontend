@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,7 +16,6 @@
 #include "numberLiteral.h"
 
 #include <compiler/core/pandagen.h>
-#include <typescript/checker.h>
 #include <ir/astDump.h>
 
 namespace panda::es2panda::ir {
@@ -44,18 +43,6 @@ void NumberLiteral::Compile(compiler::PandaGen *pg) const
     } else {
         pg->LoadAccumulatorFloat(this, number_);
     }
-}
-
-checker::Type *NumberLiteral::Check(checker::Checker *checker) const
-{
-    auto search = checker->NumberLiteralMap().find(number_);
-    if (search != checker->NumberLiteralMap().end()) {
-        return search->second;
-    }
-
-    auto *newNumLiteralType = checker->Allocator()->New<checker::NumberLiteralType>(number_);
-    checker->NumberLiteralMap().insert({number_, newNumLiteralType});
-    return newNumLiteralType;
 }
 
 void NumberLiteral::UpdateSelf([[maybe_unused]] const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder) {}

@@ -649,4 +649,3 @@
     }
   }
 }
-TypeError: No overload matches this call. [functionOverload1.ts:23:1]

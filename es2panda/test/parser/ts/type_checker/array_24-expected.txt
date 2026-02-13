@@ -167,4 +167,3 @@
     }
   }
 }
-TypeError: Type 'bigint' is not assignable to type 'boolean'. [array_24.ts:18:6]

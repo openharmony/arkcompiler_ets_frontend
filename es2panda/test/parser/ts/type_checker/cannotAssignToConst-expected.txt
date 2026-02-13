@@ -125,4 +125,3 @@
     }
   }
 }
-TypeError: Cannot assign to a because it is a constant. [cannotAssignToConst.ts:18:1]

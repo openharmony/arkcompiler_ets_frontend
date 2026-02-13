@@ -251,4 +251,3 @@
     }
   }
 }
-TypeError: Type '"foo"' is not assignable to type '5'. [as_expression_9.ts:18:6]

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -152,21 +152,6 @@ void TryStatement::Compile(compiler::PandaGen *pg) const
     } else {
         CompileTryCatch(pg);
     }
-}
-
-checker::Type *TryStatement::Check(checker::Checker *checker) const
-{
-    block_->Check(checker);
-
-    if (catchClause_) {
-        catchClause_->Check(checker);
-    }
-
-    if (finalizer_) {
-        finalizer_->Check(checker);
-    }
-
-    return nullptr;
 }
 
 void TryStatement::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)

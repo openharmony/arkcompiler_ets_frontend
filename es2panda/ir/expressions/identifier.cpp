@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,7 +16,6 @@
 #include "identifier.h"
 
 #include <compiler/core/pandagen.h>
-#include <typescript/checker.h>
 #include <ir/astDump.h>
 
 namespace panda::es2panda::ir {
@@ -65,25 +64,6 @@ void Identifier::Compile(compiler::PandaGen *pg) const
     }
 
     pg->TryLoadGlobalByName(this, name_);
-}
-
-checker::Type *Identifier::Check(checker::Checker *checker) const
-{
-    if (!Variable()) {
-        if (name_.Is("undefined")) {
-            return checker->GlobalUndefinedType();
-        }
-
-        checker->ThrowTypeError({"Cannot find name ", name_}, Start());
-    }
-
-    const binder::Decl *decl = Variable()->Declaration();
-
-    if (decl->IsTypeAliasDecl() || decl->IsInterfaceDecl()) {
-        checker->ThrowTypeError({name_, " only refers to a type, but is being used as a value here."}, Start());
-    }
-
-    return checker->GetTypeOfVariable(Variable());
 }
 
 void Identifier::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)

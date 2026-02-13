@@ -714,4 +714,3 @@
     }
   }
 }
-TypeError: Type 'boolean' is not assignable to type 'string | number'. [memberExpTest_3.ts:27:1]

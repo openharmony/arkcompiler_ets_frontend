@@ -538,4 +538,3 @@
     }
   }
 }
-TypeError: Property foobar does not exist on this type. [memberExpTest_2.ts:28:10]

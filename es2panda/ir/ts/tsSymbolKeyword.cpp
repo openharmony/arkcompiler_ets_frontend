@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+/**
+ * Copyright (c) 2022-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -27,17 +27,6 @@ void TSSymbolKeyword::Dump(ir::AstDumper *dumper) const
 }
 
 void TSSymbolKeyword::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
-
-checker::Type *TSSymbolKeyword::Check([[maybe_unused]] checker::Checker *checker) const
-{
-    // TODO(xucheng): Implement checker for ts symbol keyword
-    return nullptr;
-}
-
-checker::Type *TSSymbolKeyword::GetType(checker::Checker *checker) const
-{
-    return checker->GlobalSymbolType();
-}
 
 void TSSymbolKeyword::UpdateSelf([[maybe_unused]] const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder) {}
 

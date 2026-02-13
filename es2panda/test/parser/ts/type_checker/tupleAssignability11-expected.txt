@@ -199,4 +199,3 @@
     }
   }
 }
-TypeError: Type '[[]]' is not assignable to type '[]'. [tupleAssignability11.ts:19:1]

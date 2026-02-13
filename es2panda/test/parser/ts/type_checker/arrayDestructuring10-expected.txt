@@ -264,4 +264,3 @@
     }
   }
 }
-TypeError: Type '{ }' is not assignable to type '[boolean, { }]'. [arrayDestructuring10.ts:18:1]

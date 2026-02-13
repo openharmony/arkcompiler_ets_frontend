@@ -156,4 +156,3 @@
     }
   }
 }
-TypeError: Type 'boolean' is not assignable to type 'number | string'. [tupleAssignability19.ts:17:31]

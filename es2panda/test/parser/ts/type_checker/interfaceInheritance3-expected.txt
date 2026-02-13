@@ -238,4 +238,3 @@
     }
   }
 }
-TypeError: Property '5' of type 'boolean' is not assignable to numeric index type 'number'. [interfaceInheritance3.ts:22:5]

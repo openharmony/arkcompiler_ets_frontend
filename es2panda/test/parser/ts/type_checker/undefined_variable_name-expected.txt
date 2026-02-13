@@ -209,4 +209,3 @@
     }
   }
 }
-TypeError: Type 'string' is not assignable to type 'number'. [undefined_variable_name.ts:18:5]

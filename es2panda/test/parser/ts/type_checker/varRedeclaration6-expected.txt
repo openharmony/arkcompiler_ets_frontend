@@ -291,4 +291,3 @@
     }
   }
 }
-TypeError: Subsequent variable declaration must have the same type. Variable 'a' must be of type '[number, string, number]', but here has type '[a: number, b: string, c?: number]'. [varRedeclaration6.ts:18:5]

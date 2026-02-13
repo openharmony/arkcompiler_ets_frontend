@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,7 +16,6 @@
 #include "stringLiteral.h"
 
 #include <compiler/core/pandagen.h>
-#include <typescript/checker.h>
 #include <ir/astDump.h>
 
 namespace panda::es2panda::ir {
@@ -31,19 +30,6 @@ void StringLiteral::Dump(ir::AstDumper *dumper) const
 void StringLiteral::Compile(compiler::PandaGen *pg) const
 {
     pg->LoadAccumulatorString(this, str_);
-}
-
-checker::Type *StringLiteral::Check(checker::Checker *checker) const
-{
-    auto search = checker->StringLiteralMap().find(str_);
-    if (search != checker->StringLiteralMap().end()) {
-        return search->second;
-    }
-
-    auto *newStrLiteralType = checker->Allocator()->New<checker::StringLiteralType>(str_);
-    checker->StringLiteralMap().insert({str_, newStrLiteralType});
-
-    return newStrLiteralType;
 }
 
 void StringLiteral::UpdateSelf([[maybe_unused]] const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder) {}

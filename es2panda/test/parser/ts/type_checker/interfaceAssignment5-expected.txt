@@ -688,4 +688,3 @@
     }
   }
 }
-TypeError: Type '{ a: 2; c: "foo"; }' is not assignable to type 'C'. [interfaceAssignment5.ts:29:5]

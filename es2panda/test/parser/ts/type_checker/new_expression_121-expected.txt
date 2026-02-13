@@ -239,4 +239,3 @@
     }
   }
 }
-TypeError: Type 'string' is not assignable to type 'number'. [new_expression_121.ts:18:17]

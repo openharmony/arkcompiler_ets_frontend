@@ -224,4 +224,3 @@
     }
   }
 }
-TypeError: Expected 2-3 arguments, but got 1 [functionCall_9.ts:21:1]

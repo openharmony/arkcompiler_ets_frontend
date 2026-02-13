@@ -1,4 +1,4 @@
-# Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+# Copyright (c) 2021-2026 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -245,50 +245,6 @@ set(ES2PANDA_LIB_SRC
   parser/program/program.cpp
   parser/statementParser.cpp
   parser/transformer/transformer.cpp
-  typescript/checker.cpp
-  typescript/core/binaryLikeExpression.cpp
-  typescript/core/destructuringContext.cpp
-  typescript/core/function.cpp
-  typescript/core/helpers.cpp
-  typescript/core/object.cpp
-  typescript/core/typeCreation.cpp
-  typescript/core/typeElaborationContext.cpp
-  typescript/core/typeRelation.cpp
-  typescript/core/util.cpp
-  typescript/types/anyType.cpp
-  typescript/types/arrayType.cpp
-  typescript/types/bigintLiteralType.cpp
-  typescript/types/bigintType.cpp
-  typescript/types/booleanLiteralType.cpp
-  typescript/types/booleanType.cpp
-  typescript/types/constructorType.cpp
-  typescript/types/enumLiteralType.cpp
-  typescript/types/enumType.cpp
-  typescript/types/functionType.cpp
-  typescript/types/globalTypesHolder.cpp
-  typescript/types/indexInfo.cpp
-  typescript/types/interfaceType.cpp
-  typescript/types/neverType.cpp
-  typescript/types/nonPrimitiveType.cpp
-  typescript/types/nullType.cpp
-  typescript/types/numberLiteralType.cpp
-  typescript/types/numberType.cpp
-  typescript/types/objectDescriptor.cpp
-  typescript/types/objectLiteralType.cpp
-  typescript/types/objectType.cpp
-  typescript/types/signature.cpp
-  typescript/types/stringLiteralType.cpp
-  typescript/types/stringType.cpp
-  typescript/types/symbolType.cpp
-  typescript/types/tupleType.cpp
-  typescript/types/type.cpp
-  typescript/types/typeParameter.cpp
-  typescript/types/typeReference.cpp
-  typescript/types/typeRelation.cpp
-  typescript/types/undefinedType.cpp
-  typescript/types/unionType.cpp
-  typescript/types/unknownType.cpp
-  typescript/types/voidType.cpp
   util/bitset.cpp
   util/helpers.cpp
   util/ustring.cpp

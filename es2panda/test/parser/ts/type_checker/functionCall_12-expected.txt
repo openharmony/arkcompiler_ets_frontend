@@ -351,4 +351,3 @@
     }
   }
 }
-TypeError: Type 'number' is not assignable to type 'string'. [functionCall_12.ts:18:5]

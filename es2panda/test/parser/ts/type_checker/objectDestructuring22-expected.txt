@@ -425,4 +425,3 @@
     }
   }
 }
-TypeError: Property a does not exist on type { a: { b: string; c: number; }; } | number. [objectDestructuring22.ts:18:5]

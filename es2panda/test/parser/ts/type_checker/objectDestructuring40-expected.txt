@@ -319,4 +319,3 @@
     }
   }
 }
-TypeError: Property b does not exist on type { a: number; }. [objectDestructuring40.ts:18:2]

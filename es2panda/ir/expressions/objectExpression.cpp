@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,7 +17,6 @@
 
 #include <compiler/base/literals.h>
 #include <compiler/core/pandagen.h>
-#include <typescript/core/destructuringContext.h>
 #include <ir/astDump.h>
 #include <ir/base/classDefinition.h>
 #include <ir/base/property.h>
@@ -73,7 +72,6 @@ static bool IsLegalNameFormat(const ir::Expression *expr)
     }
     return name.Find(".") != std::string::npos && name.Find("\\") != std::string::npos;
 }
-
 
 ValidationInfo ObjectExpression::ValidateExpression()
 {
@@ -454,143 +452,6 @@ void ObjectExpression::Compile(compiler::PandaGen *pg) const
     CompileRemainingProperties(pg, &compiled, objReg);
 }
 
-checker::Type *ObjectExpression::CheckPattern(checker::Checker *checker) const
-{
-    checker::ObjectDescriptor *desc = checker->Allocator()->New<checker::ObjectDescriptor>(checker->Allocator());
-    CHECK_NOT_NULL(desc);
-    bool isOptional = false;
-
-    for (auto it = properties_.rbegin(); it != properties_.rend(); it++) {
-        if ((*it)->IsRestElement()) {
-            ASSERT((*it)->AsRestElement()->Argument()->IsIdentifier());
-            util::StringView indexInfoName("x");
-            auto *newIndexInfo =
-                checker->Allocator()->New<checker::IndexInfo>(checker->GlobalAnyType(), indexInfoName, false);
-            desc->stringIndexInfo = newIndexInfo;
-            continue;
-        }
-
-        ASSERT((*it)->IsProperty());
-        const ir::Property *prop = (*it)->AsProperty();
-
-        if (prop->IsComputed()) {
-            // TODO(aszilagyi)
-            continue;
-        }
-
-        binder::LocalVariable *foundVar = desc->FindProperty(prop->Key()->AsIdentifier()->Name());
-        checker::Type *patternParamType = checker->GlobalAnyType();
-        binder::Variable *bindingVar = nullptr;
-
-        if (prop->IsShorthand()) {
-            switch (prop->Value()->Type()) {
-                case ir::AstNodeType::IDENTIFIER: {
-                    const ir::Identifier *ident = prop->Value()->AsIdentifier();
-                    ASSERT(ident->Variable());
-                    bindingVar = ident->Variable();
-                    break;
-                }
-                case ir::AstNodeType::ASSIGNMENT_PATTERN: {
-                    const ir::AssignmentExpression *assignmentPattern = prop->Value()->AsAssignmentPattern();
-                    patternParamType = assignmentPattern->Right()->Check(checker);
-                    ASSERT(assignmentPattern->Left()->AsIdentifier()->Variable());
-                    bindingVar = assignmentPattern->Left()->AsIdentifier()->Variable();
-                    isOptional = true;
-                    break;
-                }
-                default: {
-                    UNREACHABLE();
-                }
-            }
-        } else {
-            switch (prop->Value()->Type()) {
-                case ir::AstNodeType::IDENTIFIER: {
-                    bindingVar = prop->Value()->AsIdentifier()->Variable();
-                    break;
-                }
-                case ir::AstNodeType::ARRAY_PATTERN: {
-                    patternParamType = prop->Value()->AsArrayPattern()->CheckPattern(checker);
-                    break;
-                }
-                case ir::AstNodeType::OBJECT_PATTERN: {
-                    patternParamType = prop->Value()->AsObjectPattern()->CheckPattern(checker);
-                    break;
-                }
-                case ir::AstNodeType::ASSIGNMENT_PATTERN: {
-                    const ir::AssignmentExpression *assignmentPattern = prop->Value()->AsAssignmentPattern();
-
-                    if (assignmentPattern->Left()->IsIdentifier()) {
-                        bindingVar = assignmentPattern->Left()->AsIdentifier()->Variable();
-                        patternParamType =
-                            checker->GetBaseTypeOfLiteralType(assignmentPattern->Right()->Check(checker));
-                        isOptional = true;
-                        break;
-                    }
-
-                    if (assignmentPattern->Left()->IsArrayPattern()) {
-                        auto savedContext = checker::SavedCheckerContext(checker, checker::CheckerStatus::FORCE_TUPLE);
-                        auto destructuringContext =
-                            checker::ArrayDestructuringContext(checker, assignmentPattern->Left()->AsArrayPattern(),
-                                                               false, true, nullptr, assignmentPattern->Right());
-
-                        if (foundVar) {
-                            destructuringContext.SetInferedType(
-                                checker->CreateUnionType({foundVar->TsType(), destructuringContext.InferedType()}));
-                        }
-
-                        destructuringContext.Start();
-                        patternParamType = destructuringContext.InferedType();
-                        isOptional = true;
-                        break;
-                    }
-
-                    ASSERT(assignmentPattern->Left()->IsObjectPattern());
-                    auto savedContext = checker::SavedCheckerContext(checker, checker::CheckerStatus::FORCE_TUPLE);
-                    auto destructuringContext =
-                        checker::ObjectDestructuringContext(checker, assignmentPattern->Left()->AsObjectPattern(),
-                                                            false, true, nullptr, assignmentPattern->Right());
-
-                    if (foundVar) {
-                        destructuringContext.SetInferedType(
-                            checker->CreateUnionType({foundVar->TsType(), destructuringContext.InferedType()}));
-                    }
-
-                    destructuringContext.Start();
-                    patternParamType = destructuringContext.InferedType();
-                    isOptional = true;
-                    break;
-                }
-                default: {
-                    UNREACHABLE();
-                }
-            }
-        }
-
-        if (bindingVar) {
-            bindingVar->SetTsType(patternParamType);
-        }
-
-        if (foundVar) {
-            continue;
-        }
-
-        binder::LocalVariable *patternVar = binder::Scope::CreateVar(
-            checker->Allocator(), prop->Key()->AsIdentifier()->Name(), binder::VariableFlags::PROPERTY, *it);
-        patternVar->SetTsType(patternParamType);
-
-        if (isOptional) {
-            patternVar->AddFlag(binder::VariableFlags::OPTIONAL);
-        }
-
-        desc->properties.insert(desc->properties.begin(), patternVar);
-    }
-
-    checker::Type *returnType = checker->Allocator()->New<checker::ObjectLiteralType>(desc);
-    CHECK_NOT_NULL(returnType);
-    returnType->AsObjectType()->AddObjectFlag(checker::ObjectFlags::RESOLVED_MEMBERS);
-    return returnType;
-}
-
 const util::StringView &GetPropertyName(const ir::Expression *key)
 {
     if (key->IsIdentifier()) {
@@ -618,143 +479,6 @@ binder::VariableFlags GetFlagsForProperty(const ir::Property *prop)
     }
 
     return propFlags;
-}
-
-checker::Type *GetTypeForProperty(const ir::Property *prop, checker::Checker *checker)
-{
-    if (prop->IsAccessor()) {
-        checker::Type *funcType = prop->Value()->Check(checker);
-
-        if (prop->Kind() == PropertyKind::SET) {
-            return checker->GlobalAnyType();
-        }
-
-        ASSERT(funcType->IsObjectType() && funcType->AsObjectType()->IsFunctionType());
-        return funcType->AsObjectType()->CallSignatures()[0]->ReturnType();
-    }
-
-    if (prop->IsShorthand()) {
-        return prop->Key()->Check(checker);
-    }
-
-    return prop->Value()->Check(checker);
-}
-
-checker::Type *ObjectExpression::Check(checker::Checker *checker) const
-{
-    checker::ObjectDescriptor *desc = checker->Allocator()->New<checker::ObjectDescriptor>(checker->Allocator());
-    CHECK_NOT_NULL(desc);
-    std::unordered_map<util::StringView, lexer::SourcePosition> allPropertiesMap;
-    bool inConstContext = checker->HasStatus(checker::CheckerStatus::IN_CONST_CONTEXT);
-    ArenaVector<checker::Type *> computedNumberPropTypes(checker->Allocator()->Adapter());
-    ArenaVector<checker::Type *> computedStringPropTypes(checker->Allocator()->Adapter());
-    bool hasComputedNumberProperty = false;
-    bool hasComputedStringProperty = false;
-    bool seenSpread = false;
-
-    for (const auto *it : properties_) {
-        if (it->IsProperty()) {
-            const ir::Property *prop = it->AsProperty();
-
-            if (prop->IsComputed()) {
-                checker::Type *computedNameType = checker->CheckComputedPropertyName(prop->Key());
-
-                if (computedNameType->IsNumberType()) {
-                    hasComputedNumberProperty = true;
-                    computedNumberPropTypes.push_back(prop->Value()->Check(checker));
-                    continue;
-                }
-
-                if (computedNameType->IsStringType()) {
-                    hasComputedStringProperty = true;
-                    computedStringPropTypes.push_back(prop->Value()->Check(checker));
-                    continue;
-                }
-            }
-
-            checker::Type *propType = GetTypeForProperty(prop, checker);
-            binder::VariableFlags flags = GetFlagsForProperty(prop);
-            const util::StringView &propName = GetPropertyName(prop->Key());
-
-            auto *memberVar = binder::Scope::CreateVar(checker->Allocator(), propName, flags, it);
-            CHECK_NOT_NULL(memberVar);
-            if (inConstContext) {
-                memberVar->AddFlag(binder::VariableFlags::READONLY);
-            } else {
-                propType = checker->GetBaseTypeOfLiteralType(propType);
-            }
-
-            memberVar->SetTsType(propType);
-
-            if (prop->Key()->IsNumberLiteral()) {
-                memberVar->AddFlag(binder::VariableFlags::NUMERIC_NAME);
-            }
-
-            binder::LocalVariable *foundMember = desc->FindProperty(propName);
-            allPropertiesMap.insert({propName, it->Start()});
-
-            if (foundMember) {
-                foundMember->SetTsType(propType);
-                continue;
-            }
-
-            desc->properties.push_back(memberVar);
-            continue;
-        }
-
-        ASSERT(it->IsSpreadElement());
-
-        checker::Type *spreadType = it->AsSpreadElement()->Argument()->Check(checker);
-        seenSpread = true;
-
-        // TODO(aszilagyi): handle union of object types
-        if (!spreadType->IsObjectType()) {
-            checker->ThrowTypeError("Spread types may only be created from object types.", it->Start());
-        }
-
-        for (auto *spreadProp : spreadType->AsObjectType()->Properties()) {
-            auto found = allPropertiesMap.find(spreadProp->Name());
-            if (found != allPropertiesMap.end()) {
-                checker->ThrowTypeError(
-                    {found->first, " is specified more than once, so this usage will be overwritten."}, found->second);
-            }
-
-            binder::LocalVariable *foundMember = desc->FindProperty(spreadProp->Name());
-
-            if (foundMember) {
-                foundMember->SetTsType(spreadProp->TsType());
-                continue;
-            }
-
-            desc->properties.push_back(spreadProp);
-        }
-    }
-
-    if (!seenSpread && (hasComputedNumberProperty || hasComputedStringProperty)) {
-        for (auto *it : desc->properties) {
-            computedStringPropTypes.push_back(it->TsType());
-
-            if (hasComputedNumberProperty && it->HasFlag(binder::VariableFlags::NUMERIC_NAME)) {
-                computedNumberPropTypes.push_back(it->TsType());
-            }
-        }
-
-        if (hasComputedNumberProperty) {
-            desc->numberIndexInfo = checker->Allocator()->New<checker::IndexInfo>(
-                checker->CreateUnionType(std::move(computedNumberPropTypes)), "x", inConstContext);
-        }
-
-        if (hasComputedStringProperty) {
-            desc->stringIndexInfo = checker->Allocator()->New<checker::IndexInfo>(
-                checker->CreateUnionType(std::move(computedStringPropTypes)), "x", inConstContext);
-        }
-    }
-
-    checker::Type *returnType = checker->Allocator()->New<checker::ObjectLiteralType>(desc);
-    CHECK_NOT_NULL(returnType);
-    returnType->AsObjectType()->AddObjectFlag(checker::ObjectFlags::RESOLVED_MEMBERS |
-                                              checker::ObjectFlags::CHECK_EXCESS_PROPS);
-    return returnType;
 }
 
 void ObjectExpression::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)

@@ -196,4 +196,3 @@
     }
   }
 }
-TypeError: Type '{ }' is not assignable to type '[number, string, boolean]'. [arrayDestructuring11.ts:18:1]

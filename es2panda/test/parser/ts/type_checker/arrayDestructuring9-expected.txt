@@ -197,4 +197,3 @@
     }
   }
 }
-TypeError: Type '[1]' is not assignable to type '[]'. [arrayDestructuring9.ts:18:1]

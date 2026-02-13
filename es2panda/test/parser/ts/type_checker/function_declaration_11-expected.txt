@@ -84,4 +84,3 @@
     }
   }
 }
-TypeError: A function returning 'never' cannot have a reachable end point. [function_declaration_11.ts:17:17]

@@ -84,4 +84,3 @@
     }
   }
 }
-TypeError: A function whose declared type is neither 'void' nor 'any' must return a value. [function_declaration_6.ts:17:17]

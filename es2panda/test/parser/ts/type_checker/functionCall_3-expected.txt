@@ -183,4 +183,3 @@
     }
   }
 }
-TypeError: Expected 1 arguments, but got 2. [functionCall_3.ts:18:9]

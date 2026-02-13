@@ -499,4 +499,3 @@
     }
   }
 }
-TypeError: Type '{ }' is not assignable to type 'number | bigint'. [objectDestructuring12.ts:18:1]

@@ -425,4 +425,3 @@
     }
   }
 }
-TypeError: Type '{ }' is not assignable to type '{ b: bigint; c: { a: { }; b: boolean; }; }'. [objectDestructuring13.ts:18:1]

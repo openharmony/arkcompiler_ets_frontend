@@ -239,4 +239,3 @@
     }
   }
 }
-TypeError: Type 'string' is not assignable to type 'boolean'. [new_expression_142.ts:18:17]

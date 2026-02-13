@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,7 +17,6 @@
 
 #include <compiler/base/literals.h>
 #include <compiler/core/pandagen.h>
-#include <typescript/checker.h>
 #include <ir/astDump.h>
 #include <ir/expressions/memberExpression.h>
 #include <ir/expressions/templateLiteral.h>
@@ -79,12 +78,6 @@ void TaggedTemplateExpression::Compile(compiler::PandaGen *pg) const
 
     constexpr auto extraParams = 1;
     pg->Call(this, callee, quasi_->Expressions().size() + extraParams);
-}
-
-checker::Type *TaggedTemplateExpression::Check(checker::Checker *checker) const
-{
-    // TODO(aszilagyi)
-    return checker->GlobalAnyType();
 }
 
 void TaggedTemplateExpression::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)

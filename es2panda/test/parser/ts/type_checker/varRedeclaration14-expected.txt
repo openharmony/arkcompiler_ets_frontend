@@ -482,4 +482,3 @@
     }
   }
 }
-TypeError: Subsequent variable declaration must have the same type. Variable 'a' must be of type 'c', but here has type 'b'. [varRedeclaration14.ts:30:5]

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,7 +16,6 @@
 #include "regExpLiteral.h"
 
 #include <compiler/core/pandagen.h>
-#include <typescript/checker.h>
 #include <ir/astDump.h>
 
 namespace panda::es2panda::ir {
@@ -50,11 +49,6 @@ void RegExpLiteral::Compile(compiler::PandaGen *pg) const
     }
 
     pg->NewObject(this, ctor, argCount);
-}
-
-checker::Type *RegExpLiteral::Check(checker::Checker *checker) const
-{
-    return checker->GlobalAnyType();
 }
 
 void RegExpLiteral::UpdateSelf([[maybe_unused]] const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder) {}

@@ -664,4 +664,3 @@
     }
   }
 }
-TypeError: operator + cannot be applied to types ({ a, b: { t }, d: [e, f] }?: { a: boolean; b?: { t: number; }; d?: [number, [string, string]]; }) => void and number [functionWithPattern4.ts:21:1]

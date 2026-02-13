@@ -167,4 +167,3 @@
     }
   }
 }
-TypeError: Type 'bigint' is not assignable to type 'number'. [array_11.ts:18:8]

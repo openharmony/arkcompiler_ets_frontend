@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,7 +18,6 @@
 #include <compiler/core/pandagen.h>
 #include <ir/astDump.h>
 #include <ir/base/classDefinition.h>
-#include <typescript/checker.h>
 
 namespace panda::es2panda::ir {
 
@@ -44,12 +43,6 @@ void ThisExpression::Compile(compiler::PandaGen *pg) const
     if (func && util::Helpers::GetClassDefiniton(func)->Super()) {
         pg->ThrowIfSuperNotCorrectCall(this, 0);
     }
-}
-
-checker::Type *ThisExpression::Check(checker::Checker *checker) const
-{
-    // TODO(aszilagyi)
-    return checker->GlobalAnyType();
 }
 
 void ThisExpression::UpdateSelf([[maybe_unused]] const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder) {}

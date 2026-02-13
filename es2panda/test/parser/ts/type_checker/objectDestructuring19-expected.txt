@@ -480,4 +480,3 @@
     }
   }
 }
-TypeError: Property a does not exist on type { a: number; } | { a: number; b: string; c: { a: number; b: boolean; }; } | number. [objectDestructuring19.ts:17:5]

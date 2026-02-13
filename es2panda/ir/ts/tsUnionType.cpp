@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,7 +15,6 @@
 
 #include "tsUnionType.h"
 
-#include <typescript/checker.h>
 #include <ir/astDump.h>
 
 namespace panda::es2panda::ir {
@@ -33,36 +32,6 @@ void TSUnionType::Dump(ir::AstDumper *dumper) const
 }
 
 void TSUnionType::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
-
-checker::Type *TSUnionType::Check(checker::Checker *checker) const
-{
-    for (auto *it : types_) {
-        it->Check(checker);
-    }
-
-    GetType(checker);
-    return nullptr;
-}
-
-checker::Type *TSUnionType::GetType(checker::Checker *checker) const
-{
-    auto found = checker->NodeCache().find(this);
-    if (found != checker->NodeCache().end()) {
-        return found->second;
-    }
-
-    ArenaVector<checker::Type *> types(checker->Allocator()->Adapter());
-
-    for (auto *it : types_) {
-        types.push_back(it->AsTypeNode()->GetType(checker));
-    }
-
-    checker::Type *type = checker->CreateUnionType(std::move(types));
-
-    checker->NodeCache().insert({this, type});
-
-    return type;
-}
 
 void TSUnionType::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
 {

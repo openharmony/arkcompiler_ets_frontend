@@ -319,4 +319,3 @@
     }
   }
 }
-TypeError: Object literal may only specify known properties, and property 'b' does not exist in the pattern. [objectDestructuring39.ts:18:2]

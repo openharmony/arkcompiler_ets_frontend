@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,7 +16,6 @@
 #include "booleanLiteral.h"
 
 #include <compiler/core/pandagen.h>
-#include <typescript/checker.h>
 #include <ir/astDump.h>
 
 namespace panda::es2panda::ir {
@@ -31,11 +30,6 @@ void BooleanLiteral::Dump(ir::AstDumper *dumper) const
 void BooleanLiteral::Compile(compiler::PandaGen *pg) const
 {
     pg->LoadConst(this, boolean_ ? compiler::Constant::JS_TRUE : compiler::Constant::JS_FALSE);
-}
-
-checker::Type *BooleanLiteral::Check(checker::Checker *checker) const
-{
-    return boolean_ ? checker->GlobalTrueType() : checker->GlobalFalseType();
 }
 
 void BooleanLiteral::UpdateSelf([[maybe_unused]] const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder) {}

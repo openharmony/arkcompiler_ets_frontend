@@ -400,4 +400,3 @@
     }
   }
 }
-TypeError: operator + cannot be applied to types ([{ x }, y, z]?: [{ x: string; }, number, number]) => void and number [functionWithPattern1.ts:21:1]

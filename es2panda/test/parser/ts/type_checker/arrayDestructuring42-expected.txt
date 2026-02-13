@@ -197,4 +197,3 @@
     }
   }
 }
-TypeError: Type '(string | number)[]' is not assignable to type 'string[]'. [arrayDestructuring42.ts:19:2]

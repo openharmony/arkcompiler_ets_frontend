@@ -316,4 +316,3 @@
     }
   }
 }
-TypeError: Type '{ }' is not assignable to type 'string'. [objectDestructuring21.ts:19:1]

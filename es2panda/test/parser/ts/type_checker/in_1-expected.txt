@@ -182,4 +182,3 @@
     }
   }
 }
-TypeError: Object is possibly 'null'. [in_1.ts:19:1]

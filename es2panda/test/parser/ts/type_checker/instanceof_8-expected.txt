@@ -237,4 +237,3 @@
     }
   }
 }
-TypeError: The left-hand side of an 'instanceof' expression must be of type 'any', an object type or a type parameter. [instanceof_8.ts:20:1]

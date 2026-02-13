@@ -141,4 +141,3 @@
     }
   }
 }
-TypeError: Type '[1]' is not assignable to type '[number, string]'. [arrayDestructuring4.ts:17:5]

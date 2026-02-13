@@ -368,4 +368,3 @@
     }
   }
 }
-TypeError: Tuple type [number, string] of length 2 has no element at index 2. [arrayDestructuring17.ts:21:5]

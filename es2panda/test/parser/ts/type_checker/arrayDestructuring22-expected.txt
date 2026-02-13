@@ -228,4 +228,3 @@
     }
   }
 }
-TypeError: Subsequent variable declaration must have the same type. Variable 'a' must be of type 'number', but here has type 'string | number'. [arrayDestructuring22.ts:17:10]

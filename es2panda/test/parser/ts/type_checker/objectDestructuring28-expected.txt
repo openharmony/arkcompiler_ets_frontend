@@ -785,4 +785,3 @@
     }
   }
 }
-TypeError: Type 'void' is not assignable to type 'string | bigint | number | { a: number; b: string; }'. [objectDestructuring28.ts:19:1]

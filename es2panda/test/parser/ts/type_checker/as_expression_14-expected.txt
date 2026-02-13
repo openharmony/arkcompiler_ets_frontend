@@ -251,4 +251,3 @@
     }
   }
 }
-TypeError: Cannot assign to this property because it is readonly. [as_expression_14.ts:18:1]

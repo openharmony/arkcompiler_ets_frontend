@@ -169,4 +169,3 @@
     }
   }
 }
-TypeError: Type 'string' is not assignable to type 'number'. [tupleAssignability10.ts:18:20]

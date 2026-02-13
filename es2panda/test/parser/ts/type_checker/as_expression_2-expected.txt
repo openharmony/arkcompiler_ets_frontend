@@ -137,4 +137,3 @@
     }
   }
 }
-TypeError: A 'const' assertions can only be applied to references to enum members, or string, number, boolean, array, or object literals. [as_expression_2.ts:18:1]

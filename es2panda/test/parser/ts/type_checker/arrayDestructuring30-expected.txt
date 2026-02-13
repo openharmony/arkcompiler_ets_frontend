@@ -238,4 +238,3 @@
     }
   }
 }
-TypeError: Tuple type [] of length 0 has no element at index 1. [arrayDestructuring30.ts:19:1]

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -43,16 +43,6 @@ void TSImportType::Dump(ir::AstDumper *dumper) const
 }
 
 void TSImportType::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
-
-checker::Type *TSImportType::Check([[maybe_unused]] checker::Checker *checker) const
-{
-    return nullptr;
-}
-
-checker::Type *TSImportType::GetType([[maybe_unused]] checker::Checker *checker) const
-{
-    return nullptr;
-}
 
 void TSImportType::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
 {

@@ -116,4 +116,3 @@
     }
   }
 }
-TypeError: Property a does not exist on type { }. [objectDestructuring1.ts:17:5]
