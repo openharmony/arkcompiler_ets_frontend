@@ -1408,7 +1408,7 @@ static void TraverseAST(ETSBinder *binder, ArenaVector<ir::ETSImportDeclaration 
 
 void ETSBinder::BuildProgram()
 {
-    // NOTE(dkofanov): remove from varbinder state:
+    // NOTE(dkofanov): #32418 remove from varbinder state:
     Program()->SetRecordTable(&globalRecordTable_);
     // A tmp solution caused by #23877, needs to check stdlib first to avoid a bug in std/math/math.ets
     // After the bug fixed, we can merge these 2 loop.
