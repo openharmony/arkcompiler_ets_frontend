@@ -1,4 +1,6 @@
-# Util Component
+# Util Agent Guide
+
+Use this file for work under `util/` together with the repository-level `AGENTS.md`.
 
 ## Core Metadata
 
@@ -42,3 +44,8 @@ util/
 - **New diagnostic**: Add an entry in the appropriate YAML under diagnostic/, run the generator to update diagnostic.h/.cpp.
 - **New option**: Define in options.yaml, parse and expose in options.cpp.
 - **New AST builder**: Add *Builder.h under ast-builders/ following existing naming and style.
+
+## Cross-Repo Guardrails
+
+- If util changes affect frontend behavior or diagnostics, keep them spec-aligned and avoid introducing ad-hoc diagnostics outside spec-defined behavior.
+- Do not weaken review gates via util changes (tests required for behavior changes; no assertion-removal workarounds).

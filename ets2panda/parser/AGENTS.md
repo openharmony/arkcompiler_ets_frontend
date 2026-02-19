@@ -1,4 +1,6 @@
-# Parser Component
+# Parser Agent Guide
+
+Use this file for work under `parser/` together with the repository-level `AGENTS.md`.
 
 ## Core Metadata
 
@@ -51,6 +53,16 @@ parser/
 - **Grammar**: ETSParser parses ETS declarations, expressions, statements, and type annotations into AST nodes matching `ir`; other language parsers are rarely changed.
 - **Context and scope**: `context/` holds parse state and private-member context; `program/` holds the root Program and declaration cache.
 - **Errors and recovery**: ThrowingTypedParser and related types unify error handling and recovery.
+
+## Spec and AST Coupling Rules
+
+- **Spec-first grammar**: Parser behavior must match formal grammar from the latest technical preview spec.
+- **Grammar/AST parity**:
+  - If grammar for a feature exists but no corresponding AST node exists, re-check the design with frontend owners.
+  - If a new AST node is introduced without grammar basis in spec, re-check the design with frontend owners.
+- **AST verifier follow-up**: If a parser bug allowed an invalid AST to pass verification, update `ast_verifier/` in the same patch.
+- **Node allocation**: Prefer `AllocNode<T>()` when creating parser-owned AST nodes.
+- **Type annotations**: Parse type annotations through parser type-annotation entry points (for ETS this typically flows through `ParseTypeAnnotation(...)`).
 
 ## Dependencies
 

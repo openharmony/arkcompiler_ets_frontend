@@ -25,7 +25,7 @@ For complete and up-to-date options, run `es2panda --help`.
 
 ```sh
 # Run verifier after each phase
-es2panda --ast-verifier:each
+es2panda --ast-verifier:phases=each
 ```
 Note:
 - `before` runs only after parsing
@@ -34,7 +34,12 @@ Note:
 
 ```sh
 # Customize warning/error behavior
-es2panda --ast-verifier:warnings=NodeHasParent:errors=ArithmeticOperationsValid,NodeHasType,NoPrimitiveTypes
+es2panda --ast-verifier:warnings=NodeHasParent --ast-verifier:errors=ArithmeticOperationsValid,NodeHasType,NoPrimitiveTypes
+```
+
+```sh
+# Check dependencies as well as main program
+es2panda --ast-verifier:full-program
 ```
 
 ## Adding a New Invariant
