@@ -1,6 +1,19 @@
-# ets2panda LSP Module
+# LSP Agent Guide
 
-This file provides guidance for working with the Language Server Protocol implementation in the ets2panda compiler.
+Use this file for work under `lsp/` (and related `bindings/` LSP glue) together with the repository-level `AGENTS.md`.
+
+## Core Metadata
+
+| Attribute | Value |
+|-----------|--------|
+| **Name** | LSP |
+| **Purpose** | Language Server Protocol services for ArkTS/ETS/TypeScript, including navigation, diagnostics, and refactors. |
+| **Primary Language** | C++ (`lsp/`) and TypeScript (`bindings/`) |
+
+## Cross-Component Rules
+
+- When LSP changes require frontend semantic/compiler changes, follow root `AGENTS.md` hard gates (spec-first, tests required, no assertion removal).
+- Keep parser/checker/lowering updates out of LSP unless the change genuinely belongs to compiler semantics.
 
 ## Overview
 

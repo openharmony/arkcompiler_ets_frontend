@@ -1,4 +1,6 @@
-# VarBinder Component
+# VarBinder Agent Guide
+
+Use this file for work under `varbinder/` together with the repository-level `AGENTS.md`.
 
 ## Core Metadata
 
@@ -31,6 +33,12 @@ varbinder/
 - **Name resolution**: Walk the AST, look up declarations in the appropriate Scope, bind identifiers to Variable/Decl, and write back to nodes.
 - **Scope construction**: Create Scopes for blocks, functions, classes, modules; maintain parent-child relationships and variable/declaration registration.
 - **ETS-specific**: RecordTable, package/module imports, dynamic import; **ResolveReferencesForScopeWithContext** is used by lowering to bind newly created nodes locally.
+
+## Hard Constraints
+
+- **No AST shape mutation**: binder must not rewrite AST structure or perform tree transformations.
+- **No ad-hoc workaround flags**: avoid introducing new state flags when existing scope/binding flow can express the behavior.
+- **Lowering handoff**: structural fixes belong to lowering; binder should resolve declarations/references for the produced nodes.
 
 ## Dependencies
 

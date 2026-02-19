@@ -1,8 +1,20 @@
-# CLAUDE.md
+# Linter Agent Guide
 
-**Name**: easytrans(tslinter)
-**Purpose**: a static analysis tool specifically designed for migrating ArkTS-dynamic code to ArkTS-static. The tool identifies deprecated ArkTS-dynamic constructs and provides autofix capabilities to assist in migrating code to be compatible with ArkTS-static.ArkTS-dynamic is a language developed based on TypeScript, with most features aligning closely with TypeScript. However, it introduces certain static constraints to the TypeScript syntax.
-**Primary Language** TypeScript
+Use this file for work under `linter/` together with the repository-level `AGENTS.md`.
+
+## Core Metadata
+
+| Attribute | Value |
+|-----------|--------|
+| **Name** | easytrans (tslinter) |
+| **Purpose** | Static analysis and autofix tooling for migrating ArkTS-dynamic code to ArkTS-static constraints. |
+| **Primary Language** | TypeScript |
+
+ArkTS-dynamic is based on TypeScript with additional static restrictions required by ArkTS-static mode.
+
+## Cross-Component Rules
+
+- For compiler/frontend semantic changes triggered by linter work, follow root `AGENTS.md` rules (spec-first behavior, tests for behavior changes, no assertion-removal shortcuts).
 
 ## Directory Structure
 
@@ -106,7 +118,7 @@ npm run prettier-fix    # Format code with prettier
 npm run pack:linter     # Create distributable .tgz package in bundle/
 ```
 
-## Test suite
+## Test Suite
 
 This command will use tslinter to scan the target file and generate a series of JSON files to compare with the expected JSON files. If they are consistent, pass the test.
 The a-positive.ets file will include a positive example: an example that conforms to ArkTS-static syntax 'a', and will not report an error for rule 'a'.

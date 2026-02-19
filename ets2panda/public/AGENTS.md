@@ -1,4 +1,6 @@
-# Public Component
+# Public API Agent Guide
+
+Use this file for work under `public/` together with the repository-level `AGENTS.md`.
 
 ## Core Metadata
 
@@ -34,3 +36,8 @@ public/
 | Change codegen logic | Edit **.erb** / **es2panda_lib.rb** / **cppToCTypes.yaml**, then `ninja gen_api`. |
 
 Tests: `test/unit/public` (e2p_test_plugin*); run `ninja es2panda-plugin-test`.
+
+## Plugin API Guardrails
+
+- Keep Plugin API growth minimal; prefer existing API if it already expresses required behavior.
+- Every change in `public/es2panda_lib.h` must be reflected in `public/es2panda_lib.idl.erb` in the same patch.
