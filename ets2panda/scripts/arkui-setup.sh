@@ -17,7 +17,7 @@ set -o pipefail
 
 function about() {
     cat <<-ENDHELP
-    Script to dowload and prepare the ArkUI environment
+    Script to download and prepare the ArkUI environment
     where
         --help            Show this help and exit
         --nexus-repo      Nexus repo, like nexus.example.com:1234
@@ -142,18 +142,20 @@ retry 5 npm install || {
     exit 1
 }
 
-pushd incremental/tools/panda/ || exit 1
 if [ -z "${PANDA_SDK_HOST_TARBALL}" ] ; then
-    npm run panda:sdk:install
+    npm run panda:sdk:install -C incremental/tools/panda || exit 1
 else
-    npm install "${PANDA_SDK_HOST_TARBALL}"
+    for dir in incremental/tools/panda fast-arkrtsc libarkrtsc smart-arkrtsc; do
+        npm install "${PANDA_SDK_HOST_TARBALL}" -C $dir || exit 1
+    done
     if [ -n "${PANDA_SDK_DEV_TARBALL}" ] ; then
-        npm install "${PANDA_SDK_DEV_TARBALL}"
+        for dir in incremental/tools/panda fast-arkrtsc libarkrtsc smart-arkrtsc; do
+            npm install "${PANDA_SDK_DEV_TARBALL}" -C $dir || exit 1
+        done
     else
         echo "PANDA_SDK_DEV_TARBALL is not set, skipping!"
     fi
 fi
-popd >/dev/null 2>&1 || exit 1
 
 function run_script() {
     npm run $1 | tee out.txt
@@ -179,20 +181,7 @@ retry 5 run_script "sdk:all" || {
     exit 1
 }
 
-# Compile libarkts
-pushd libarkts || exit 1
-run_script "regenerate" || exit 1
-run_script "compile --prefix ../fast-arktsc" || exit 1
-run_script "run" || exit 1
-popd >/dev/null 2>&1 || exit 1
-
-# Compile memo-plugin, ui-plugins
-
-# need to fix ui2abc tests
-# run_script "all --prefix ui2abc"
-run_script "build:all --prefix ui2abc" || exit 1
-
-run_script "build:deps --prefix ui2abc/ets-tests" || exit 1
+run_script "compile"
 
 if [ -z "${DEMO}" ] ; then
     echo "Just compiled ArkUI, but no demo specified."
