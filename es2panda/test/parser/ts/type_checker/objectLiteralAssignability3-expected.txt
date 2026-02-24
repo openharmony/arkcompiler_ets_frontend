@@ -247,4 +247,3 @@
     }
   }
 }
-TypeError: Object literal may only specify known properties, and "c" does not exist in type '{ a: number; } | { b: string; }'. [objectLiteralAssignability3.ts:17:42]

@@ -249,4 +249,3 @@
     }
   }
 }
-TypeError: The left-hand side of an 'in' expression must be of type 'any', 'string', 'number', or 'symbol'. [in_7.ts:19:1]

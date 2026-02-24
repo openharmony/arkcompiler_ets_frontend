@@ -112,4 +112,3 @@
     }
   }
 }
-TypeError: Type 'boolean' is not assignable to type 'string'. [function_declaration_3.ts:18:1]

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,7 +17,6 @@
 
 #include <compiler/base/condition.h>
 #include <compiler/core/pandagen.h>
-#include <typescript/checker.h>
 #include <ir/astDump.h>
 
 namespace panda::es2panda::ir {
@@ -46,19 +45,6 @@ void ConditionalExpression::Compile(compiler::PandaGen *pg) const
     pg->SetLabel(this, falseLabel);
     alternate_->Compile(pg);
     pg->SetLabel(this, endLabel);
-}
-
-checker::Type *ConditionalExpression::Check(checker::Checker *checker) const
-{
-    checker::Type *testType = test_->Check(checker);
-
-    checker->CheckTruthinessOfType(testType, test_->Start());
-    checker->CheckTestingKnownTruthyCallableOrAwaitableType(test_, testType, consequent_);
-
-    checker::Type *consequentType = consequent_->Check(checker);
-    checker::Type *alternateType = alternate_->Check(checker);
-
-    return checker->CreateUnionType({consequentType, alternateType});
 }
 
 void ConditionalExpression::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)

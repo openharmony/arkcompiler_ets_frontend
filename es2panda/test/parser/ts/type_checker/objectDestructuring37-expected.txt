@@ -366,4 +366,3 @@
     }
   }
 }
-TypeError: Cannot find name b [objectDestructuring37.ts:18:24]

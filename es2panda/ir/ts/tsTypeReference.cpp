@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,7 +15,6 @@
 
 #include "tsTypeReference.h"
 
-#include <typescript/checker.h>
 #include <ir/astDump.h>
 #include <ir/expressions/identifier.h>
 #include <ir/ts/tsTypeParameterInstantiation.h>
@@ -38,37 +37,6 @@ void TSTypeReference::Dump(ir::AstDumper *dumper) const
 }
 
 void TSTypeReference::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
-
-checker::Type *TSTypeReference::Check(checker::Checker *checker) const
-{
-    GetType(checker);
-    return nullptr;
-}
-
-checker::Type *TSTypeReference::GetType(checker::Checker *checker) const
-{
-    auto found = checker->NodeCache().find(this);
-    if (found != checker->NodeCache().end()) {
-        return found->second;
-    }
-
-    // TODO(aszilagyi): handle cases where type type_name_ is a QualifiedName
-    if (typeName_->IsTSQualifiedName()) {
-        return checker->GlobalAnyType();
-    }
-
-    ASSERT(typeName_->IsIdentifier());
-    binder::Variable *var = typeName_->AsIdentifier()->Variable();
-
-    if (!var) {
-        checker->ThrowTypeError({"Cannot find name ", typeName_->AsIdentifier()->Name()}, Start());
-    }
-
-    checker::Type *type = checker->GetTypeReferenceType(this, var);
-
-    checker->NodeCache().insert({this, type});
-    return type;
-}
 
 void TSTypeReference::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
 {

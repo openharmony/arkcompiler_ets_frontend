@@ -127,4 +127,3 @@
     }
   }
 }
-TypeError: Subsequent variable declaration must have the same type. Variable 'a' must be of type 'any', but here has type 'number'. [varRedeclaration1.ts:18:5]

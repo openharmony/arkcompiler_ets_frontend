@@ -987,4 +987,3 @@
     }
   }
 }
-TypeError: Type '[]' is not assignable to type '[boolean, (bigint | string)[]]'. [functionWithPattern9.ts:21:11]

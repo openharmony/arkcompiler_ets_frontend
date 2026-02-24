@@ -160,4 +160,3 @@
     }
   }
 }
-TypeError: Cannot find name 'a'. [objectDestructuring32.ts:16:3]

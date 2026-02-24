@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,7 +16,6 @@
 #include "awaitExpression.h"
 
 #include <compiler/core/pandagen.h>
-#include <typescript/checker.h>
 #include <ir/astDump.h>
 
 namespace panda::es2panda::ir {
@@ -44,11 +43,6 @@ void AwaitExpression::Compile(compiler::PandaGen *pg) const
     }
 
     pg->EmitAwait(this);
-}
-
-checker::Type *AwaitExpression::Check(checker::Checker *checker) const
-{
-    return checker->GlobalAnyType();
 }
 
 void AwaitExpression::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)

@@ -279,4 +279,3 @@
     }
   }
 }
-TypeError: Type '"bar"' is not assignable to type '5'. [as_expression_3.ts:18:15]

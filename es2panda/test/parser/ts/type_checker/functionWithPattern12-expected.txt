@@ -1087,4 +1087,3 @@
     }
   }
 }
-TypeError: Type 'string' is not assignable to type 'number'. [functionWithPattern12.ts:21:29]

@@ -491,4 +491,3 @@
     }
   }
 }
-TypeError: This overload signature is not compatible with its implementation signature [functionOverload3.ts:17:10]

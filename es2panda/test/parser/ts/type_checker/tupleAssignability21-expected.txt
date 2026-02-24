@@ -195,4 +195,3 @@
     }
   }
 }
-TypeError: Type '[1]' is not assignable to type '[number, number] | [number, number, number]'. [tupleAssignability21.ts:17:5]

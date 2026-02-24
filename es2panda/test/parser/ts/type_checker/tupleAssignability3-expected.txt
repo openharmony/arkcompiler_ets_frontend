@@ -153,4 +153,3 @@
     }
   }
 }
-TypeError: Type '[1, 2]' is not assignable to type '[number, number, number]'. [tupleAssignability3.ts:17:5]

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -33,11 +33,6 @@ void ClassExpression::Dump(ir::AstDumper *dumper) const
 void ClassExpression::Compile(compiler::PandaGen *pg) const
 {
     def_->Compile(pg);
-}
-
-checker::Type *ClassExpression::Check([[maybe_unused]] checker::Checker *checker) const
-{
-    return nullptr;
 }
 
 void ClassExpression::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)

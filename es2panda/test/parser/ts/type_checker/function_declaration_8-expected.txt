@@ -112,4 +112,3 @@
     }
   }
 }
-TypeError: Type 'boolean' is not assignable to type 'bigint'. [function_declaration_8.ts:18:1]

@@ -171,4 +171,3 @@
     }
   }
 }
-TypeError: Property a does not exist on type "foo". [objectDestructuring29.ts:17:2]

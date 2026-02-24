@@ -333,4 +333,3 @@
     }
   }
 }
-TypeError: Type '{ }' is not assignable to type '(string | boolean | void | { })[]'. [arrayDestructuring19.ts:18:1]

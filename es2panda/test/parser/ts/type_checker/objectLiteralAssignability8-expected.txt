@@ -479,4 +479,3 @@
     }
   }
 }
-TypeError: Type 'bigint' is not assignable to type 'string'. [objectLiteralAssignability8.ts:17:103]

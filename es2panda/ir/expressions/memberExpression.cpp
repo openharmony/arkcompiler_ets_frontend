@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,7 +16,6 @@
 #include "memberExpression.h"
 
 #include <compiler/core/pandagen.h>
-#include <typescript/checker.h>
 #include <ir/astDump.h>
 #include <ir/expressions/identifier.h>
 #include <ir/expressions/privateIdentifier.h>
@@ -97,83 +96,6 @@ void MemberExpression::Compile(compiler::PandaGen *pg, compiler::VReg objReg) co
     } else {
         pg->LoadObjProperty(property_, objReg, prop);
     }
-}
-
-checker::Type *MemberExpression::Check(checker::Checker *checker) const
-{
-    checker::Type *baseType = checker->CheckNonNullType(object_->Check(checker), object_->Start());
-
-    if (computed_) {
-        checker::Type *indexType = property_->Check(checker);
-        checker::Type *indexedAccessType = checker->GetPropertyTypeForIndexType(baseType, indexType);
-
-        if (indexedAccessType) {
-            return indexedAccessType;
-        }
-
-        if (!indexType->HasTypeFlag(checker::TypeFlag::STRING_LIKE | checker::TypeFlag::NUMBER_LIKE)) {
-            checker->ThrowTypeError({"Type ", indexType, " cannot be used as index type"}, property_->Start());
-        }
-
-        if (indexType->IsNumberType()) {
-            checker->ThrowTypeError("No index signature with a parameter of type 'string' was found on type this type",
-                                    Start());
-        }
-
-        if (indexType->IsStringType()) {
-            checker->ThrowTypeError("No index signature with a parameter of type 'number' was found on type this type",
-                                    Start());
-        }
-
-        switch (property_->Type()) {
-            case ir::AstNodeType::IDENTIFIER: {
-                checker->ThrowTypeError(
-                    {"Property ", property_->AsIdentifier()->Name(), " does not exist on this type."},
-                    property_->Start());
-            }
-            case ir::AstNodeType::NUMBER_LITERAL: {
-                checker->ThrowTypeError(
-                    {"Property ", property_->AsNumberLiteral()->Str(), " does not exist on this type."},
-                    property_->Start());
-            }
-            case ir::AstNodeType::STRING_LITERAL: {
-                checker->ThrowTypeError(
-                    {"Property ", property_->AsStringLiteral()->Str(), " does not exist on this type."},
-                    property_->Start());
-            }
-            default: {
-                UNREACHABLE();
-            }
-        }
-    }
-
-    binder::Variable *prop = checker->GetPropertyOfType(baseType, property_->AsIdentifier()->Name());
-
-    if (prop) {
-        checker::Type *propType = checker->GetTypeOfVariable(prop);
-        if (prop->HasFlag(binder::VariableFlags::READONLY)) {
-            propType->AddTypeFlag(checker::TypeFlag::READONLY);
-        }
-
-        return propType;
-    }
-
-    if (baseType->IsObjectType()) {
-        checker::ObjectType *objType = baseType->AsObjectType();
-
-        if (objType->StringIndexInfo()) {
-            checker::Type *indexType = objType->StringIndexInfo()->GetType();
-            if (objType->StringIndexInfo()->Readonly()) {
-                indexType->AddTypeFlag(checker::TypeFlag::READONLY);
-            }
-
-            return indexType;
-        }
-    }
-
-    checker->ThrowTypeError({"Property ", property_->AsIdentifier()->Name(), " does not exist on this type."},
-                            property_->Start());
-    return nullptr;
 }
 
 void MemberExpression::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)

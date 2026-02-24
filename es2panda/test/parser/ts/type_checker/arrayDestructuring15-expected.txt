@@ -171,4 +171,3 @@
     }
   }
 }
-TypeError: Tuple type [number] of length 1 has no element at index 1. [arrayDestructuring15.ts:18:5]

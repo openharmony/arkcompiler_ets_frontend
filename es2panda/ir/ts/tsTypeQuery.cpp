@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,7 +15,6 @@
 
 #include "tsTypeQuery.h"
 
-#include <typescript/checker.h>
 #include <ir/astDump.h>
 
 namespace panda::es2panda::ir {
@@ -31,26 +30,6 @@ void TSTypeQuery::Dump(ir::AstDumper *dumper) const
 }
 
 void TSTypeQuery::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
-
-checker::Type *TSTypeQuery::Check(checker::Checker *checker) const
-{
-    GetType(checker);
-    return nullptr;
-}
-
-checker::Type *TSTypeQuery::GetType(checker::Checker *checker) const
-{
-    auto found = checker->NodeCache().find(this);
-    if (found != checker->NodeCache().end()) {
-        return found->second;
-    }
-
-    checker::Type *type = exprName_->Check(checker);
-
-    checker->NodeCache().insert({this, type});
-
-    return type;
-}
 
 void TSTypeQuery::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
 {

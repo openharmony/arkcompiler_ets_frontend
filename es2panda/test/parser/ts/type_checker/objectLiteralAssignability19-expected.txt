@@ -912,4 +912,3 @@
     }
   }
 }
-TypeError: Type '{ a: number | string; b: { a: number; b: number; }; c: { a: { a: number; b: string; }; d: boolean; }; }' is not assignable to type '{ a: number; b: { a: number; b: string; }; c: { b: boolean; a: null; }; }'. [objectLiteralAssignability19.ts:19:1]

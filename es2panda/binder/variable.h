@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,10 +24,6 @@
 #include <util/ustring.h>
 
 #include <limits>
-
-namespace panda::es2panda::checker {
-class Type;
-}  // namespace panda::es2panda::checker
 
 namespace panda::es2panda::binder {
 
@@ -79,16 +75,6 @@ public:
         return flags_;
     }
 
-    checker::Type *TsType() const
-    {
-        return tsType_;
-    }
-
-    void SetTsType(checker::Type *tsType)
-    {
-        tsType_ = tsType;
-    }
-
     void AddFlag(VariableFlags flag)
     {
         flags_ |= flag;
@@ -128,7 +114,6 @@ protected:
 
     Decl *decl_;
     VariableFlags flags_ {};
-    checker::Type *tsType_ {};
 };
 
 class LocalVariable : public Variable {

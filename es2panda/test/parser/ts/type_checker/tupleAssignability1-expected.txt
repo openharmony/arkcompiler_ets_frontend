@@ -99,4 +99,3 @@
     }
   }
 }
-TypeError: Type '[1]' is not assignable to type '[]'. [tupleAssignability1.ts:17:5]

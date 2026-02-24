@@ -372,4 +372,3 @@
     }
   }
 }
-TypeError: Type '{ a: { a: number; b: string; }; b: string; }' is not assignable to type '{ a: number; b: string; }'. [objectLiteralAssignability17.ts:19:1]

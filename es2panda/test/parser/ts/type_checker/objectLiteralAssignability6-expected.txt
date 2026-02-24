@@ -333,4 +333,3 @@
     }
   }
 }
-TypeError: Type 'boolean' is not assignable to type 'number | string'. [objectLiteralAssignability6.ts:17:64]

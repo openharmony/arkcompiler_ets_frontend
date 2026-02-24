@@ -882,4 +882,3 @@
     }
   }
 }
-TypeError: operator + cannot be applied to types ([a, { b: [c, d], t }]: [number, { b?: [boolean, (bigint | string)[]]; t?: { a: number; b: { a: number; b: bigint; }; }; }], { r: [[r, z]] }: { r?: [[number, string]]; }) => void and number [functionWithPattern8.ts:21:1]

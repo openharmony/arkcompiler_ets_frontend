@@ -1050,7 +1050,7 @@ class CompilerProjectTest(Test):
 
         new_flags = self.flags
         if "--cache-file" in new_flags and len(self.test_paths) == 1:
-            # Generate cache-file test case in single thread 
+            # Generate cache-file test case in single thread
             new_flags.remove("--cache-file")
             protobin_path = f"{self.test_paths[0].rsplit('.', 1)[0]}.protobin"
             self.protoBin_file_path = protobin_path
@@ -1151,7 +1151,7 @@ class CompilerProjectTest(Test):
                 print("Generating the abc file timed out.")
         else:
             out, err = process.communicate()
-        
+
         if "non-merged-abc"  in self.path and "--merge-abc" in es2abc_cmd:
             es2abc_cmd.remove("--merge-abc")
 
@@ -1334,7 +1334,7 @@ class FilesInfoTest(Test):
         elif self.REPLACE_RECORDS in self.projects_path:
             if path.exists(self.compile_context_info_path):
                 es2abc_cmd.extend(["--compile-context-info", self.compile_context_info_path, "--enable-abc-input"])
-        
+
         es2abc_cmd.append(input_file)
         return es2abc_cmd
 
@@ -2366,7 +2366,7 @@ class TestEs2abcVersionControl(TestAbcVersionControl):
     def __init__(self, test_path, flags, abc_mode, is_discard, es2abc_versions=None):
         super().__init__(test_path, flags, abc_mode, is_discard)
         self.es2abc_versions = es2abc_versions or list(ES2ABC_API_SUPPORT.keys())
-    
+
     @staticmethod
     def version_str_to_tuple(version: str):
         if isinstance(version, list):
@@ -2964,7 +2964,7 @@ def add_directory_for_regression(runners, args):
     runner.add_directory("parser/ts", "ts",
                          ["--parse-only", "--module", "--dump-ast"])
     runner.add_directory("parser/ts/type_checker", "ts",
-                         ["--parse-only", "--enable-type-check", "--module", "--dump-ast"])
+                         ["--parse-only", "--module", "--dump-ast"])
     runner.add_directory("parser/ts/cases/declaration", "d.ts",
                          ["--parse-only", "--module", "--dump-ast"], TSDeclarationTest)
     runner.add_directory("parser/commonjs", "js", ["--commonjs", "--parse-only", "--dump-ast"])
@@ -3032,7 +3032,7 @@ def add_directory_for_asm(runners, args, mode=""):
     runner.add_directory("parser/js", "js", [])
     runner.add_directory("parser/script", "ts", [])
     runner.add_directory("parser/ts", "ts", ["--module"])
-    runner.add_directory("parser/ts/type_checker", "ts", ["--enable-type-check", "--module"])
+    runner.add_directory("parser/ts/type_checker", "ts", ["--module"])
     runner.add_directory("parser/commonjs", "js", ["--commonjs"])
     runner.add_directory("parser/binder", "js", ["--dump-assembly", "--dump-literal-buffer", "--module"])
     runner.add_directory("parser/binder", "ts", ["--dump-assembly", "--dump-literal-buffer", "--module"])
@@ -3119,7 +3119,7 @@ def add_directory_for_compiler(runners, args):
         runner.add_directory(info.directory, info.extension, info.flags)
 
     runners.append(runner)
-    
+
     add_directory_for_filesinfo(runners, args)
 
 

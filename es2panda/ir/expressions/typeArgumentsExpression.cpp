@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -35,11 +35,6 @@ void TypeArgumentsExpression::Dump(ir::AstDumper *dumper) const
 void TypeArgumentsExpression::Compile(compiler::PandaGen *pg) const
 {
     leftHandExpression_->Compile(pg);
-}
-
-checker::Type *TypeArgumentsExpression::Check(checker::Checker *checker) const
-{
-    return nullptr;
 }
 
 void TypeArgumentsExpression::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)

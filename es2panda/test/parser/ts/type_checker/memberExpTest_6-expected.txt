@@ -550,4 +550,3 @@
     }
   }
 }
-TypeError: Property d does not exist on this type. [memberExpTest_6.ts:29:3]

@@ -468,4 +468,3 @@
     }
   }
 }
-TypeError: Type 'B' is not assignable to type 'A'. [interfaceAssignment2.ts:30:1]

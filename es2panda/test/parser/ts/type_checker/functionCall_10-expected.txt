@@ -279,4 +279,3 @@
     }
   }
 }
-TypeError: Expected 1-2 arguments, but got 0 [functionCall_10.ts:18:1]

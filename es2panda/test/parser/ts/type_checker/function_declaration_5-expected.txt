@@ -112,4 +112,3 @@
     }
   }
 }
-TypeError: Type 'boolean' is not assignable to type 'number'. [function_declaration_5.ts:18:1]

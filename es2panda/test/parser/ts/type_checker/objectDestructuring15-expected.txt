@@ -292,4 +292,3 @@
     }
   }
 }
-TypeError: Type 'string' is not assignable to type 'number'. [objectDestructuring15.ts:17:7]

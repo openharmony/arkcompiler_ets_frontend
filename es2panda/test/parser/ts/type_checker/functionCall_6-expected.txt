@@ -140,4 +140,3 @@
     }
   }
 }
-TypeError: A rest parameter must be of an array type [functionCall_6.ts:17:15]

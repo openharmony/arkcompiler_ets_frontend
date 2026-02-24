@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,7 +16,6 @@
 #include "newExpression.h"
 
 #include <compiler/core/pandagen.h>
-#include <typescript/checker.h>
 #include <ir/astDump.h>
 #include <ir/ts/tsTypeParameterInstantiation.h>
 
@@ -65,19 +64,6 @@ void NewExpression::Compile(compiler::PandaGen *pg) const
     }
 }
 
-checker::Type *NewExpression::Check(checker::Checker *checker) const
-{
-    checker::Type *calleeType = callee_->Check(checker);
-
-    // TODO(aszilagyi): handle optional chain
-    if (calleeType->IsObjectType()) {
-        checker::ObjectType *calleeObj = calleeType->AsObjectType();
-        return checker->resolveCallOrNewExpression(calleeObj->ConstructSignatures(), arguments_, Start());
-    }
-
-    checker->ThrowTypeError("This expression is not callable.", Start());
-    return nullptr;
-}
 
 void NewExpression::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
 {

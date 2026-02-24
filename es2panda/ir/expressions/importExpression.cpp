@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -40,11 +40,6 @@ void ImportExpression::Compile(compiler::PandaGen *pg) const
 {
     source_->Compile(pg);
     pg->DynamicImportCall(this);
-}
-
-checker::Type *ImportExpression::Check([[maybe_unused]] checker::Checker *checker) const
-{
-    return nullptr;
 }
 
 void ImportExpression::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)

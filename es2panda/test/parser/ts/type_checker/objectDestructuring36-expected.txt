@@ -377,4 +377,3 @@
     }
   }
 }
-TypeError: Property c does not exist on type string. [objectDestructuring36.ts:19:7]

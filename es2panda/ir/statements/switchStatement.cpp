@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,7 +17,6 @@
 
 #include <compiler/core/switchBuilder.h>
 #include <compiler/core/pandagen.h>
-#include <typescript/checker.h>
 #include <ir/astDump.h>
 #include <ir/statements/switchCaseStatement.h>
 
@@ -74,38 +73,6 @@ void SwitchStatement::Compile(compiler::PandaGen *pg) const
     }
 }
 
-checker::Type *SwitchStatement::Check(checker::Checker *checker) const
-{
-    checker::ScopeContext scopeCtx(checker, scope_);
-
-    checker::Type *exprType = discriminant_->Check(checker);
-    bool exprIsLiteral = checker::Checker::IsLiteralType(exprType);
-
-    for (auto *it : cases_) {
-        if (it->Test()) {
-            checker::Type *caseType = it->Test()->Check(checker);
-            bool caseIsLiteral = checker::Checker::IsLiteralType(caseType);
-            checker::Type *comparedExprType = exprType;
-
-            if (!caseIsLiteral || !exprIsLiteral) {
-                caseType = caseIsLiteral ? checker->GetBaseTypeOfLiteralType(caseType) : caseType;
-                comparedExprType = checker->GetBaseTypeOfLiteralType(exprType);
-            }
-
-            if (!checker->IsTypeEqualityComparableTo(comparedExprType, caseType) &&
-                !checker->IsTypeComparableTo(caseType, comparedExprType)) {
-                checker->ThrowTypeError({"Type ", caseType, " is not comparable to type ", comparedExprType},
-                                        it->Test()->Start());
-            }
-        }
-
-        for (auto *caseStmt : it->Consequent()) {
-            caseStmt->Check(checker);
-        }
-    }
-
-    return nullptr;
-}
 
 void SwitchStatement::UpdateSelf(const NodeUpdater &cb, binder::Binder *binder)
 {

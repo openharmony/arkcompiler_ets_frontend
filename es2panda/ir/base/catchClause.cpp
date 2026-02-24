@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,7 +17,6 @@
 
 #include <compiler/core/pandagen.h>
 #include <compiler/base/lreference.h>
-#include <typescript/checker.h>
 #include <ir/astDump.h>
 #include <ir/expressions/arrayExpression.h>
 #include <ir/expressions/identifier.h>
@@ -53,32 +52,6 @@ void CatchClause::Compile(compiler::PandaGen *pg) const
     body_->Compile(pg);
 }
 
-checker::Type *CatchClause::Check(checker::Checker *checker) const
-{
-    const ir::Expression *typeAnnotation = nullptr;
-
-    if (param_->IsIdentifier()) {
-        typeAnnotation = param_->AsIdentifier()->TypeAnnotation();
-    } else if (param_->IsArrayPattern()) {
-        typeAnnotation = param_->AsArrayPattern()->TypeAnnotation();
-    } else {
-        ASSERT(param_->IsObjectPattern());
-        typeAnnotation = param_->AsObjectPattern()->TypeAnnotation();
-    }
-
-    if (typeAnnotation) {
-        checker::Type *catchParamType = typeAnnotation->Check(checker);
-
-        if (!catchParamType->HasTypeFlag(checker::TypeFlag::ANY_OR_UNKNOWN)) {
-            checker->ThrowTypeError("Catch clause variable type annotation must be 'any' or 'unknown' if specified",
-                                    Start());
-        }
-    }
-
-    body_->Check(checker);
-
-    return nullptr;
-}
 
 void CatchClause::UpdateSelf(const NodeUpdater &cb, binder::Binder *binder)
 {

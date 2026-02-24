@@ -291,4 +291,3 @@
     }
   }
 }
-TypeError: Property c does not exist on type { b: number; }. [arrayDestructuring26.ts:17:13]

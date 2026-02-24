@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,7 +15,6 @@
 
 #include "tsNeverKeyword.h"
 
-#include <typescript/checker.h>
 #include <ir/astDump.h>
 
 namespace panda::es2panda::ir {
@@ -28,16 +27,6 @@ void TSNeverKeyword::Dump(ir::AstDumper *dumper) const
 }
 
 void TSNeverKeyword::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
-
-checker::Type *TSNeverKeyword::Check([[maybe_unused]] checker::Checker *checker) const
-{
-    return nullptr;
-}
-
-checker::Type *TSNeverKeyword::GetType(checker::Checker *checker) const
-{
-    return checker->GlobalNeverType();
-}
 
 void TSNeverKeyword::UpdateSelf([[maybe_unused]] const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder) {}
 

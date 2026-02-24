@@ -324,4 +324,3 @@
     }
   }
 }
-TypeError: Type 'string' is not assignable to type 'number'. [interfaceAssignment6.ts:22:14]

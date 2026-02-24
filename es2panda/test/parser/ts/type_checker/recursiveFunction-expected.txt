@@ -497,4 +497,3 @@
     }
   }
 }
-TypeError: foo implicitly has return type 'any' because it does not have a return type annotation and is referenced directly or indirectly in one of its return expressions. [recursiveFunction.ts:17:10]

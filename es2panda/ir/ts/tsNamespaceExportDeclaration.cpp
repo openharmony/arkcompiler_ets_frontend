@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+/**
+ * Copyright (c) 2022-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -31,11 +31,6 @@ void TSNamespaceExportDeclaration::Dump(ir::AstDumper *dumper) const
 }
 
 void TSNamespaceExportDeclaration::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
-
-checker::Type *TSNamespaceExportDeclaration::Check([[maybe_unused]] checker::Checker *checker) const
-{
-    return nullptr;
-}
 
 void TSNamespaceExportDeclaration::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
 {
