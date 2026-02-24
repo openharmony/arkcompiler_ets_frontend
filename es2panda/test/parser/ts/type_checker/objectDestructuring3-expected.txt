@@ -234,4 +234,3 @@
     }
   }
 }
-TypeError: Object literal may only specify known properties, and property 'foo' does not exist in the pattern. [objectDestructuring3.ts:17:5]

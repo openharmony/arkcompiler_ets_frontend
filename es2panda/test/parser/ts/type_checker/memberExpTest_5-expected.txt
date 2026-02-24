@@ -467,4 +467,3 @@
     }
   }
 }
-TypeError: Type 'string' is not assignable to type 'number'. [memberExpTest_5.ts:27:1]

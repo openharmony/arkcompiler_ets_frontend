@@ -227,4 +227,3 @@
     }
   }
 }
-TypeError: Type number must have a '[Symbol.iterator]()' method that returns an iterator. [arrayDestructuring41.ts:19:2]

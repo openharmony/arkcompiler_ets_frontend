@@ -249,4 +249,3 @@
     }
   }
 }
-TypeError: The right-hand side of an 'in' expression must not be a primitive. [in_15.ts:19:6]

@@ -253,4 +253,3 @@
     }
   }
 }
-TypeError: Type '{ }' is not assignable to type 'string'. [arrayDestructuring16.ts:19:1]

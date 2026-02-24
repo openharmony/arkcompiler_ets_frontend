@@ -297,4 +297,3 @@
     }
   }
 }
-TypeError: Type '{ }' is not assignable to type 'boolean[] | (number | string)[]'. [arrayDestructuring8.ts:18:1]

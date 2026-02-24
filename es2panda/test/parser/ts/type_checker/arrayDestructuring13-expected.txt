@@ -252,4 +252,3 @@
     }
   }
 }
-TypeError: Type '{ }' is not assignable to type 'number'. [arrayDestructuring13.ts:19:1]

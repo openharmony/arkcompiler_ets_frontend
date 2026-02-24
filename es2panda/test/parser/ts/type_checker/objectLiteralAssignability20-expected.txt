@@ -514,4 +514,3 @@
     }
   }
 }
-TypeError: Type '{ (a: string, b: string): string; new (a: number, b: string): number; }' is not assignable to type '{ (a: number, b: string): string; new (a: number, b: string): number; }'. [objectLiteralAssignability20.ts:19:1]

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,7 +16,6 @@
 #include "functionExpression.h"
 
 #include <compiler/core/pandagen.h>
-#include <typescript/checker.h>
 #include <ir/astDump.h>
 #include <ir/base/scriptFunction.h>
 #include <ir/statements/variableDeclarator.h>
@@ -38,35 +37,6 @@ void FunctionExpression::Compile(compiler::PandaGen *pg) const
     pg->DefineFunction(func_, func_, func_->Scope()->InternalName());
 }
 
-checker::Type *FunctionExpression::Check(checker::Checker *checker) const
-{
-    binder::Variable *funcVar = nullptr;
-
-    if (func_->Parent()->Parent() && func_->Parent()->Parent()->IsVariableDeclarator() &&
-        func_->Parent()->Parent()->AsVariableDeclarator()->Id()->IsIdentifier()) {
-        funcVar = func_->Parent()->Parent()->AsVariableDeclarator()->Id()->AsIdentifier()->Variable();
-    }
-
-    checker::ScopeContext scopeCtx(checker, func_->Scope());
-
-    auto *signatureInfo = checker->Allocator()->New<checker::SignatureInfo>(checker->Allocator());
-    checker->CheckFunctionParameterDeclarations(func_->Params(), signatureInfo);
-
-    auto *signature =
-        checker->Allocator()->New<checker::Signature>(signatureInfo, checker->GlobalResolvingReturnType());
-    checker::Type *funcType = checker->CreateFunctionTypeWithSignature(signature);
-
-    if (funcVar && !funcVar->TsType()) {
-        funcVar->SetTsType(funcType);
-    }
-
-    CHECK_NOT_NULL(signature);
-    signature->SetReturnType(checker->HandleFunctionReturn(func_));
-
-    func_->Body()->Check(checker);
-
-    return funcType;
-}
 
 void FunctionExpression::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
 {

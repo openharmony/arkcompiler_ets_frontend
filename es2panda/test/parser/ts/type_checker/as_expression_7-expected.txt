@@ -293,4 +293,3 @@
     }
   }
 }
-TypeError: Type '[5, 5, 5, 5, 5]' is not assignable to type 'readonly [5, 5, 5, 5]'. [as_expression_7.ts:18:1]

@@ -336,4 +336,3 @@
     }
   }
 }
-TypeError: Type '[string, boolean]' is not assignable to type 'string[]'. [arrayDestructuring44.ts:20:6]

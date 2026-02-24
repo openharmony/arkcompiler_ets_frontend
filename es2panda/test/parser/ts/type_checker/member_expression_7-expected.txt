@@ -407,4 +407,3 @@
     }
   }
 }
-TypeError: Property bad does not exist on this type. [member_expression_7.ts:19:15]

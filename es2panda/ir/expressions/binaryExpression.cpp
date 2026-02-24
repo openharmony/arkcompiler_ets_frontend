@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,7 +16,6 @@
 #include "binaryExpression.h"
 
 #include <compiler/core/pandagen.h>
-#include <typescript/checker.h>
 #include <ir/astDump.h>
 #include <ir/expressions/privateIdentifier.h>
 
@@ -122,71 +121,6 @@ void BinaryExpression::Compile(compiler::PandaGen *pg) const
     pg->Binary(right_, operator_, lhs);
 }
 
-checker::Type *BinaryExpression::Check(checker::Checker *checker) const
-{
-    auto *leftType = left_->Check(checker);
-    auto *rightType = right_->Check(checker);
-
-    switch (operator_) {
-        case lexer::TokenType::PUNCTUATOR_MULTIPLY:
-        case lexer::TokenType::PUNCTUATOR_EXPONENTIATION:
-        case lexer::TokenType::PUNCTUATOR_DIVIDE:
-        case lexer::TokenType::PUNCTUATOR_MOD:
-        case lexer::TokenType::PUNCTUATOR_MINUS:
-        case lexer::TokenType::PUNCTUATOR_LEFT_SHIFT:
-        case lexer::TokenType::PUNCTUATOR_RIGHT_SHIFT:
-        case lexer::TokenType::PUNCTUATOR_UNSIGNED_RIGHT_SHIFT:
-        case lexer::TokenType::PUNCTUATOR_BITWISE_AND:
-        case lexer::TokenType::PUNCTUATOR_BITWISE_XOR:
-        case lexer::TokenType::PUNCTUATOR_BITWISE_OR: {
-            return checker->CheckBinaryOperator(leftType, rightType, left_, right_, this, operator_);
-        }
-        case lexer::TokenType::PUNCTUATOR_PLUS: {
-            return checker->CheckPlusOperator(leftType, rightType, left_, right_, this, operator_);
-        }
-        case lexer::TokenType::PUNCTUATOR_LESS_THAN:
-        case lexer::TokenType::PUNCTUATOR_GREATER_THAN: {
-            return checker->CheckCompareOperator(leftType, rightType, left_, right_, this, operator_);
-        }
-        case lexer::TokenType::PUNCTUATOR_EQUAL:
-        case lexer::TokenType::PUNCTUATOR_NOT_EQUAL:
-        case lexer::TokenType::PUNCTUATOR_STRICT_EQUAL:
-        case lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL: {
-            if (checker->IsTypeEqualityComparableTo(leftType, rightType) ||
-                checker->IsTypeEqualityComparableTo(rightType, leftType)) {
-                return checker->GlobalBooleanType();
-            }
-
-            checker->ThrowBinaryLikeError(operator_, leftType, rightType, Start());
-        }
-        case lexer::TokenType::KEYW_INSTANCEOF: {
-            return checker->CheckInstanceofExpression(leftType, rightType, right_, this);
-        }
-        case lexer::TokenType::KEYW_IN: {
-            return checker->CheckInExpression(leftType, rightType, left_, right_, this);
-        }
-        case lexer::TokenType::PUNCTUATOR_LOGICAL_AND: {
-            return checker->CheckAndOperator(leftType, rightType, left_);
-        }
-        case lexer::TokenType::PUNCTUATOR_LOGICAL_OR: {
-            return checker->CheckOrOperator(leftType, rightType, left_);
-        }
-        case lexer::TokenType::PUNCTUATOR_NULLISH_COALESCING: {
-            // TODO(Csaba Repasi): Implement checker for nullish coalescing
-            return checker->GlobalAnyType();
-        }
-        case lexer::TokenType::PUNCTUATOR_SUBSTITUTION: {
-            checker->CheckAssignmentOperator(operator_, left_, leftType, rightType);
-            return rightType;
-        }
-        default: {
-            UNREACHABLE();
-            break;
-        }
-    }
-
-    return nullptr;
-}
 
 void BinaryExpression::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
 {

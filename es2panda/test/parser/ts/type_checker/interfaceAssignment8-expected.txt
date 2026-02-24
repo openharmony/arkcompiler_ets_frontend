@@ -406,4 +406,3 @@
     }
   }
 }
-TypeError: Type 'B' is not assignable to type 'A'. [interfaceAssignment8.ts:28:1]

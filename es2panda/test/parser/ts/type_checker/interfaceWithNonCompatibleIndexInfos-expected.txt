@@ -166,4 +166,3 @@
     }
   }
 }
-TypeError: Number index info type string is not assignable to string index info type number. [interfaceWithNonCompatibleIndexInfos.ts:18:5]

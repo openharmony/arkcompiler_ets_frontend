@@ -219,4 +219,3 @@
     }
   }
 }
-TypeError: Object literal may only specify known properties, and "b" does not exist in type '{ a: number; }'. [objectLiteralAssignability2.ts:17:32]

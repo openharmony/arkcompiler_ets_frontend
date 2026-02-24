@@ -251,4 +251,3 @@
     }
   }
 }
-TypeError: Property 4 does not exist on this type. [as_expression_15.ts:18:3]

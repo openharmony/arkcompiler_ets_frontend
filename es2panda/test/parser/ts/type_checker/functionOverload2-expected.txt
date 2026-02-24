@@ -768,4 +768,3 @@
     }
   }
 }
-TypeError: operator + cannot be applied to types { (a: number, b: string): [number, string], (a: string, b: boolean): [number, string], (a: bigint, b: boolean): [number, string] } and number [functionOverload2.ts:24:1]

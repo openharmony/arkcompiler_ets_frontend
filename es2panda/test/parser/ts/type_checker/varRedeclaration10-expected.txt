@@ -40,4 +40,3 @@
     }
   }
 }
-TypeError: Cannot find name a [varRedeclaration10.ts:22:1]

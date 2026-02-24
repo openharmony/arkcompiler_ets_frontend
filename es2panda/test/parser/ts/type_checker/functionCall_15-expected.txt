@@ -426,4 +426,3 @@
     }
   }
 }
-TypeError: Expected at least 1 arguments, but got 0. [functionCall_15.ts:18:1]

@@ -1152,4 +1152,3 @@
     }
   }
 }
-TypeError: Object literal may only specify known properties, and "z" does not exist in type '{ a: number; b: { a: number; b: bigint; }; }'. [functionWithPattern11.ts:21:37]

@@ -644,4 +644,3 @@
     }
   }
 }
-TypeError: Object literal may only specify known properties, and property 't' does not exist in the pattern. [objectDestructuring27.ts:18:5]

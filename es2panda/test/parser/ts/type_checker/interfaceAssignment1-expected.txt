@@ -315,4 +315,3 @@
     }
   }
 }
-TypeError: Type '{ a: 5; }' is not assignable to type 'A'. [interfaceAssignment1.ts:21:5]

@@ -349,4 +349,3 @@
     }
   }
 }
-TypeError: a only refers to a type, but is being used as a value here. [typeAliasUsedAsValue.ts:20:1]

@@ -125,4 +125,3 @@
     }
   }
 }
-TypeError: Block-scoped variable 'a' used before its declaration [letUsedBeforeDeclaration.ts:18:5]

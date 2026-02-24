@@ -154,4 +154,3 @@
     }
   }
 }
-TypeError: Type '[5, "foo", 6]' is not assignable to type '[number, string]'. [tupleAssignability2.ts:17:5]

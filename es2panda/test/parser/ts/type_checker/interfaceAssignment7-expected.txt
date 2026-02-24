@@ -399,4 +399,3 @@
     }
   }
 }
-TypeError: Type '{ a: 5; b: "foo"; }' is not assignable to type 'A'. [interfaceAssignment7.ts:23:5]

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,7 +18,6 @@
 #include <ir/base/methodDefinition.h>
 #include <ir/base/scriptFunction.h>
 #include <compiler/core/pandagen.h>
-#include <typescript/checker.h>
 
 #include <ir/astDump.h>
 #include <ir/typeNode.h>
@@ -60,37 +59,6 @@ void ReturnStatement::Compile(compiler::PandaGen *pg) const
     } else {
         pg->ImplicitReturn(this);
     }
-}
-
-checker::Type *ReturnStatement::Check(checker::Checker *checker) const
-{
-    const ir::AstNode *ancestor = checker::Checker::FindAncestorGivenByType(this, ir::AstNodeType::SCRIPT_FUNCTION);
-    CHECK_NOT_NULL(ancestor);
-    ASSERT(ancestor && ancestor->IsScriptFunction());
-    const ir::ScriptFunction *containingFunc = ancestor->AsScriptFunction();
-
-    if (containingFunc->Parent()->Parent()->IsMethodDefinition()) {
-        const ir::MethodDefinition *containingClassMethod = containingFunc->Parent()->Parent()->AsMethodDefinition();
-        if (containingClassMethod->Kind() == ir::MethodDefinitionKind::SET) {
-            checker->ThrowTypeError("Setters cannot return a value", Start());
-        }
-    }
-
-    if (containingFunc->ReturnTypeAnnotation()) {
-        checker::Type *returnType = checker->GlobalUndefinedType();
-        checker::Type *funcReturnType = containingFunc->ReturnTypeAnnotation()->AsTypeNode()->GetType(checker);
-
-        if (argument_) {
-            checker->ElaborateElementwise(funcReturnType, argument_, Start());
-            returnType = checker->CheckTypeCached(argument_);
-        }
-
-        checker->IsTypeAssignableTo(returnType, funcReturnType,
-                                    {"Type '", returnType, "' is not assignable to type '", funcReturnType, "'."},
-                                    Start());
-    }
-
-    return nullptr;
 }
 
 void ReturnStatement::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)

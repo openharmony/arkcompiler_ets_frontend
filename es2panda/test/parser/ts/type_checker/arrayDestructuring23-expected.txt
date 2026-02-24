@@ -214,4 +214,3 @@
     }
   }
 }
-TypeError: Property 1 does not exist on type [string] | [number]. [arrayDestructuring23.ts:17:9]

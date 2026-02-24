@@ -228,4 +228,3 @@
     }
   }
 }
-TypeError: Property a does not exist on type string. [objectDestructuring34.ts:18:2]

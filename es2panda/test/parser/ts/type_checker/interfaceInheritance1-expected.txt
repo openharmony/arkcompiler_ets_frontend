@@ -262,4 +262,3 @@
     }
   }
 }
-TypeError: Type A recursively references itself as a base type. [interfaceInheritance1.ts:17:11]

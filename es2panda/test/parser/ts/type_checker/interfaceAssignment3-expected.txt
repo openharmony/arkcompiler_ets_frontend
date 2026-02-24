@@ -800,4 +800,3 @@
     }
   }
 }
-TypeError: Type 'A' is not assignable to type 'D'. [interfaceAssignment3.ts:37:1]

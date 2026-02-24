@@ -306,4 +306,3 @@
     }
   }
 }
-TypeError: Cannot find name foo [identifierWithoutDeclaration.ts:21:1]

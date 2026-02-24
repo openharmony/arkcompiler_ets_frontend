@@ -707,4 +707,3 @@
     }
   }
 }
-TypeError: Type 'void' is not assignable to type '{ } | { b: string; c: { a: number; b: boolean; }; } | { r: boolean; }'. [objectDestructuring20.ts:19:1]

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -91,11 +91,6 @@ void ForOfStatement::Compile(compiler::PandaGen *pg) const
 
     pg->Branch(this, labelTarget.ContinueTarget());
     pg->SetLabel(this, labelTarget.BreakTarget());
-}
-
-checker::Type *ForOfStatement::Check([[maybe_unused]] checker::Checker *checker) const
-{
-    return nullptr;
 }
 
 void ForOfStatement::UpdateSelf(const NodeUpdater &cb, binder::Binder *binder)

@@ -210,4 +210,3 @@
     }
   }
 }
-TypeError: Argument of type 'number' is not assignable to parameter of type 'string'. [functionCall_7.ts:21:6]

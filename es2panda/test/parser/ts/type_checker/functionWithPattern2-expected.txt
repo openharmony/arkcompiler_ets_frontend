@@ -359,4 +359,3 @@
     }
   }
 }
-TypeError: operator + cannot be applied to types ({ x, y }?: { x?: string; y?: string; }) => void and number [functionWithPattern2.ts:21:1]

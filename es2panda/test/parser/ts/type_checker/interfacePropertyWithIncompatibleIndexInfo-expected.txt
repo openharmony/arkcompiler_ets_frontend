@@ -154,4 +154,3 @@
     }
   }
 }
-TypeError: Property 'a' of type 'string' is not assignable to string index type 'boolean'. [interfacePropertyWithIncompatibleIndexInfo.ts:19:5]

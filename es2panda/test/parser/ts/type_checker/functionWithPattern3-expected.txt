@@ -496,4 +496,3 @@
     }
   }
 }
-TypeError: operator + cannot be applied to types ({ x: { asd }, y: { t, r } }: { x?: { asd: any; }; y?: { t: string; }; }) => void and number [functionWithPattern3.ts:21:1]

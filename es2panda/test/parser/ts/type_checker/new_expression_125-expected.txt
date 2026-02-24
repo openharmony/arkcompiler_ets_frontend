@@ -225,4 +225,3 @@
     }
   }
 }
-TypeError: Expected 2 arguments, but got 1. [new_expression_125.ts:18:9]

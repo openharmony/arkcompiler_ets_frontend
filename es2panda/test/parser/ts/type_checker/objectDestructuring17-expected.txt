@@ -408,4 +408,3 @@
     }
   }
 }
-TypeError: Type 'boolean' is not assignable to type 'number'. [objectDestructuring17.ts:17:68]

@@ -414,4 +414,3 @@
     }
   }
 }
-TypeError: Type 'number' is not assignable to type 'boolean | string'. [interfaceAssignment4.ts:22:37]
