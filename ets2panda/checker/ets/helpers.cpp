@@ -2838,6 +2838,23 @@ ir::ClassProperty *ETSChecker::ClassPropToImplementationProp(ir::ClassProperty *
     return classProp;
 }
 
+static void SetTypeAnnotationForSetterParam(ETSChecker *checker, ir::Identifier *paramIdent, ir::ClassProperty *field,
+                                            varbinder::FunctionParamScope *paramScope)
+{
+    ir::TypeNode *typeAnnotation = nullptr;
+    if (field->TypeAnnotation() != nullptr) {
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+        typeAnnotation = field->TypeAnnotation()->Clone(checker->ProgramAllocator(), paramIdent);
+    } else {
+        ES2PANDA_ASSERT(field->TsType() != nullptr);
+        typeAnnotation =
+            // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+            checker->ProgramAllocator()->New<ir::OpaqueTypeNode>(field->TsType(), checker->ProgramAllocator());
+    }
+    paramIdent->SetTypeAnnotation(typeAnnotation);
+    ReInitScopesForTypeAnnotation(checker, typeAnnotation, paramScope);
+}
+
 // CC-OFFNXT(huge_method[C++], G.FUN.01-CPP) solid logic
 void ETSChecker::GenerateGetterSetterBody(ArenaVector<ir::Statement *> &stmts, ArenaVector<ir::Expression *> &params,
                                           ir::ClassProperty *const field, varbinder::FunctionParamScope *paramScope,
@@ -2877,14 +2894,8 @@ void ETSChecker::GenerateGetterSetterBody(ArenaVector<ir::Statement *> &stmts, A
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *paramIdent = field->Key()->AsIdentifier()->Clone(ProgramAllocator(), nullptr);
-    if (field->TypeAnnotation() != nullptr) {
-        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        auto *const typeAnnotation = field->TypeAnnotation()->Clone(ProgramAllocator(), paramIdent);
-        paramIdent->SetTsTypeAnnotation(typeAnnotation);
-        ReInitScopesForTypeAnnotation(this, typeAnnotation, paramScope);
-    } else {
-        paramIdent->SetTsType(field->TsType());
-    }
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+    SetTypeAnnotationForSetterParam(this, paramIdent, field, paramScope);
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *paramExpression = ProgramAllocNode<ir::ETSParameterExpression>(paramIdent, false, ProgramAllocator());
