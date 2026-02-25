@@ -1,4 +1,6 @@
-# Compiler Core Component
+# Compiler Core Agent Guide
+
+Use this file for work under `compiler/core/` together with the repository-level `AGENTS.md`.
 
 ## Core Metadata
 
@@ -41,6 +43,19 @@ compiler/core/
 
 - **Used by**: driver, aot, LSP, etc.; no other ets2panda front-end modules depend on this directory’s internals.
 - **Depends on**: compiler/lowering, checker, varbinder, ir, util; interfaces with runtime/panda for bytecode output.
+
+## Codegen Guardrails
+
+- Do not move complex feature transformations into code generation; such rewrites belong to lowering phases.
+- Do not add extra boxing/casting/narrowing in codegen unless required by verifier/bytecode/platform limits and proven safe for valid programs.
+- Keep accumulator type consistent with expression type during compilation; add/assert invariants where needed.
+- Do not introduce optimization logic in code generation; keep output mapping straightforward and transparent.
+- Expression compilation should depend on semantic type information, not ad-hoc AST-kind pattern matching of subexpressions.
+
+## Register Allocator Guardrails
+
+- Changes in register allocation are uncommon and should be justified before implementation.
+- Keep register allocator language-agnostic; avoid language/type/signature-specific behavior.
 
 ## Extending or Modifying
 

@@ -1,33 +1,51 @@
-# Es2panda
+# es2panda
 
-All in one JavaScript/TypeScript parser and compiler.
+ArkTS/ETS frontend parser, checker, lowering pipeline, and bytecode compiler.
 
-## Usage
+## Specification Source of Truth
+
+- Latest technical preview release feed: <https://gitcode.com/igelhaus/arkcompiler_runtime_core/releases/>.
+- Frontend behavior changes must follow the latest technical preview specification.
+- Tests/apps/legacy behavior are not the source of truth when they conflict with spec.
+
+## CLI Usage
+
 ```sh
 es2panda [OPTIONS] [input file] -- [arguments]
 ```
 
-## Optional arguments
-[util/options.yaml](util/options.yaml)
+- Option definitions: `util/options.yaml`
+- Tail argument: `input` (input file)
 
-## Tail arguments
- - `input`: input file
+## Build/Run Smoke Flow
 
-## Running the tests
+Run from a build directory that contains `./bin`:
+
 ```sh
-pip install tqdm
+./bin/es2panda --extension=ets --opt-level=0 --output=out.abc fault.ets
+./bin/verifier --boot-panda-files=./plugins/ets/etsstdlib.abc --load-runtimes=ets out.abc
+./bin/ark --boot-panda-files=./plugins/ets/etsstdlib.abc --load-runtimes=ets --panda-files=out.abc out.abc fault.ETSGLOBAL::main
 ```
+
+## Running Frontend Test Suites
+
+Run from `static_core`:
+
 ```sh
-python3 test/runner.py [OPTIONS] [build_directory]
+static_core/tests/tests-u-runner/main.py --force-generate --ets-cts --build-dir .
 ```
 
-### Optional arguments
- - `--regression`: Run regression tests
- - `--test262`: Run test262
- - `--no-progress`: Don't show progress bar
+Useful options: `--processes 6`, `--verbose short`.
 
-### Tail arguments
- - `build_directory`: Path to panda build directory
+## Debugging Aids
 
-### Skip list
-Skip list for the runtime: `test/test262skiplist.txt, test/test262skiplist-long.txt`.
+- AST source dump: `node->DumpEtsSrc()`
+- Type dump: `type->ToString()`
+- Signature dump: `sig->ToString()`
+- Dump source after a phase: `--dump-ets-src-after-phases=<PhaseName>`
+
+## Documentation
+
+- Onboarding: `docs/frontend-onboarding.md`
+- Docs index: `docs/README.md`
+- Repository/component rules: `AGENTS.md`, `*/AGENTS.md`

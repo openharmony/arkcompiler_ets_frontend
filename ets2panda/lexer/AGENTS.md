@@ -1,4 +1,6 @@
-# Lexer Component
+# Lexer Agent Guide
+
+Use this file for work under `lexer/` together with the repository-level `AGENTS.md`.
 
 ## Core Metadata
 
@@ -40,3 +42,8 @@ lexer/
 
 - **New or changed token kind or keyword**: Update `scripts/tokens.yaml` or `scripts/keywords.yaml`, run the corresponding Ruby scripts to regenerate `.h`/`.cpp`, and run regression (Parser and later stages depend on the token stream).
 - **ETS lexing or keywords**: Change ETS-related tables and **ETSLexer**; extend ETS entries in `scripts/` if needed. Other language modes (TS/AS/JS) are out of scope; avoid changing this layer unless necessary.
+
+## Spec Alignment Rules
+
+- Token/keyword changes that affect language behavior must map to the latest technical-preview spec grammar.
+- If lexer changes imply parser grammar differences, keep parser/docs updates in the same patch.

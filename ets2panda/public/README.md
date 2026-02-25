@@ -4,6 +4,11 @@
 
 Automatic export of ArkTS public classes and methods into C API.
 
+## Frontend Review Guardrails
+
+- Keep plugin API changes minimal; prefer existing API when possible.
+- Any change in `public/es2panda_lib.h` must have a corresponding update in `public/es2panda_lib.idl.erb`.
+
 > I fixed CODECHECK and got a new failure "UNSUPPORTED TYPE".
 
 1) Check if your new method should be private and automatically excluded from C API, error will disappear.
