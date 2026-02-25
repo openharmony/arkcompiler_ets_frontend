@@ -61,7 +61,12 @@ static void CheckExport(ETSChecker *checker, checker::Type const *type)
             return;
         }
 
-        if (!util::Helpers::IsExported(decl)) {
+        // class AtomicInt {} need to write "export" qualifier (source
+        // ./runtime_core/static_core/plugins/ets/stdlib/std/containers/ConcurrencyHelpers.ets) class AtomicInt {} need
+        // to write "export" qualifier (source
+        // ./runtime_core/static_core/plugins/ets/stdlib/std/concurrency/ConcurrencyHelpers.ets) class AtomicInt {} has
+        // the same code in both sources after that need to remove util::Helpers::IsStdLib() condition
+        if (!util::Helpers::IsExported(decl) && !util::Helpers::IsStdLib(decl->Program())) {
             checker->LogError(diagnostic::USED_TYPE_IS_NOT_EXPORTED, {testType->ToString()}, decl->Start());
         }
     };
