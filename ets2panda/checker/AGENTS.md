@@ -1,4 +1,6 @@
-# Checker Component
+# Checker Agent Guide
+
+Use this file for work under `checker/` together with the repository-level `AGENTS.md`.
 
 ## Core Metadata
 
@@ -15,8 +17,20 @@
 
 ## Hard Constraint: No AST Tree Transformations
 
-- **The checker must not transform the AST tree** (e.g. add/remove/replace nodes or change tree shape). **Node contents** may be updated (e.g. set fields, flags).
+- **The checker must not transform the AST tree** (no add/remove/replace/reparent).
+- **The checker must not allocate new AST nodes**.
+- Checker updates are limited to semantic metadata: set node type info and resolved variable references.
 - Legacy code in the checker that mutates the AST tree is scheduled for refactor/removal. Do not add or keep AST tree transformations in the checker.
+
+## Type-Checking Rules (Spec-Aligned)
+
+- Use `TypeRelation` APIs (`IsSupertypeOf`, `IsIdenticalTo`, ...) for subtyping/compatibility/conversion logic.
+- Do not hardcode type names (for example `"escompat.Record"`) and do not compare types by pointer identity.
+- Avoid `Is<SomeType>` checks when subtype semantics are involved; express the rule through `TypeRelation`.
+- Avoid hard-coded AST-shape checks with `Is<SomeExpression>`/`Is<SomeStatement>` as semantic shortcuts.
+  - Limited accepted patterns are context-specific and rare (for example call-site `a.b()` member-call shape, numeric operand handling where required by semantics).
+- Do not introduce new checker state flags (`CheckerStatus`, `AstNodeFlags`, `ETSObjectFlags`, similar) as workaround logic; prefer relation/lowering-based designs.
+- If spec and implementation/tests diverge for type compatibility, report the mismatch and keep behavior spec-first.
 
 ## Directory Layout
 
@@ -65,8 +79,8 @@ checker/
 ## Responsibilities
 
 - **Type system**: ETS type hierarchy and relations in `types/`; ETS-related subtyping and assignment compatibility in `typeRelation`.
-- **Type checking**: `typeChecker/` and **ETSChecker** validate and infer types for expressions, statements, and declarations; node contents may be updated but the AST tree is not transformed.
-- **ETS semantics**: Boxing/unboxing, widening, arithmetic, assignment analysis, reachability, warnings in `ets/`; again, node contents may be updated, no tree transform.
+- **Type checking**: `typeChecker/` and **ETSChecker** validate and infer types for expressions, statements, and declarations; checker writes semantic metadata but does not transform AST shape.
+- **ETS semantics**: Boxing/unboxing, widening, arithmetic, assignment analysis, reachability, warnings in `ets/`; keep implementations relation-based and avoid AST rewrites.
 
 ## Dependencies
 
@@ -76,5 +90,5 @@ checker/
 ## Extending or Modifying
 
 - **New ETS type**: Add the type class under `types/ets/`, wire it into `typeRelation` and ETSChecker/ETS analysis.
-- **New ETS check rule**: Add branches in ETSAnalyzer/ETSChecker or `ets/` visitors and report diagnostics; node content may be updated and checkerContext extended as needed. **Do not transform the AST tree in the checker.**
+- **New ETS check rule**: Add branches in ETSAnalyzer/ETSChecker or `ets/` visitors and report diagnostics. Checker-side updates must stay metadata-only (types/variables), with no AST shape changes.
 - **New AST node kind**: In **ETSAnalyzer.h** declare `Check(ir::NodeType *node)` via `AST_NODE_MAPPING`; implement the check in **ETSAnalyzer.cpp** and recurse via the node’s `Check(checker)`.

@@ -1,4 +1,6 @@
-# Compiler Lowering Component
+# Lowering Agent Guide
+
+Use this file for work under `compiler/lowering/` together with the repository-level `AGENTS.md`.
 
 ## Core Metadata
 
@@ -55,6 +57,15 @@ Post-checker phases that **create new AST nodes** must run **scope setup, identi
 - **By role**: Core (TopLevelStatements, InitScopesPhaseETS, ResolveIdentifiers, CheckerPhase); desugaring (DefaultParametersLowering, OptionalLowering, SpreadConstructionPhase, …); code injection (ObjectLiteralLowering, UnboxPhase, UnionLowering, …); restructuring (LambdaConversionPhase, AsyncMethodLowering, GenericBridgesPhase, …).
 - **Plugins**: plugins-after-parse, plugins-after-bind, plugins-after-check, plugins-after-lowering.
 - **Debug helper**: `--dump-ets-src-before-phases=PhaseId`, `--dump-ets-src-after-phases=PhaseId`; 
+
+## Placement and Execution Rules
+
+- **Before checker**: limit to syntax desugaring and structural simplification that does not require inferred types.
+- **After checker**: use for type-dependent transforms; re-bind/re-check created or rewritten subtrees.
+- **Program coverage**:
+  - If a lowering only rewrites function bodies and does not change externally visible declarations, prefer body-only execution strategy (`PhaseForBodies`) except stdlib-special flows.
+  - If a lowering changes externally visible declarations, run it for main program and dependencies (`PhaseForDeclarations`).
+- **AST API usage**: prefer `Iterate*`/`TransformChildren*` traversal APIs, state explicit preconditions/postconditions, and keep checker free of structural AST mutations.
 
 ### Phase Quick Reference
 
