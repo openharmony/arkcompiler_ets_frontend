@@ -55,6 +55,11 @@ public:
         delete publicContext_->phaseManager;
     }
 
+    void EnableMetadataEmitting()
+    {
+        metadataEnabled = true;
+    }
+
     static void SetUpTestCase()
     {
         ark::es2panda::ScopedAllocatorsManager::Initialize();
@@ -182,6 +187,10 @@ public:
             return nullptr;
         }
 
+        if (metadataEnabled) {
+            options->SetEmitMetadata(true);
+        }
+
         ark::Logger::ComponentMask mask {};
         mask.set(ark::Logger::Component::ES2PANDA);
         ark::Logger::InitializeStdLogging(options->LogLevel(), mask);
@@ -241,6 +250,7 @@ private:
     std::string es2pandaPath_;
     util_alias::DiagnosticEngine diagnosticEngine_;
     checker_alias::ETSChecker checker_;
+    bool metadataEnabled = false;
 };
 
 }  // namespace test::utils

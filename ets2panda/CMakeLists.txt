@@ -385,6 +385,7 @@ set(ES2PANDA_LIB_SRC
   compiler/lowering/ets/annotationCopyPostLowering.cpp
   compiler/lowering/ets/primitiveConversionPhase.cpp
   compiler/lowering/ets/unboxLowering.cpp
+  compiler/metadata/metadataEmitter.cpp
   ir/astDump.cpp
   ir/srcDump.cpp
   ir/astNode.cpp
@@ -810,3 +811,13 @@ endif()
 if(PANDA_WITH_TESTS)
   add_subdirectory(test)
 endif()
+
+set(FLATBUFFERS_CXX_FLAGS "-Wno-error")
+set(FLATBUFFERS_DIR "${PANDA_THIRD_PARTY_SOURCES_DIR}/flatbuffers")
+set(METADATA_DIR "${ES2PANDA_ROOT}/compiler/metadata")
+set(METADATA_SCHEMA "${METADATA_DIR}/metadata.fbs")
+set(METADATA_TARGET_NAME "es2panda_generate_metadata_schema")
+set(FLATBUFFERS_BUILD_TESTS OFF)
+
+panda_target_include_directories(es2panda-lib PRIVATE ${FLATBUFFERS_DIR}/include/)
+add_subdirectory(${FLATBUFFERS_DIR} ${CMAKE_BINARY_DIR}/third_party/flatbuffers EXCLUDE_FROM_ALL)

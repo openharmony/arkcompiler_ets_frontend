@@ -500,6 +500,7 @@ pandasm::Program *Emitter::Finalize(bool dumpDebugInfo, std::string_view globalC
             prog_->recordTable.erase(it);
         }
     }
+    prog_->metadata = std::move(context_->metadata);
     auto *prog = prog_;
     prog_ = nullptr;
     return prog;

@@ -1,0 +1,183 @@
+/**
+ * Copyright (c) 2026 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+namespace Metadata;
+
+table Root {
+    classes:[ClassDecl];
+    interfaces:[InterfaceDecl];
+    enums:[EnumDecl];
+    annotations:[AnnotationDecl];
+    types:[TypeDecl];
+    functions:[FunctionDecl];
+    properties:[PropertyDecl];
+    variables:[VarDecl];
+}
+
+// Common entities
+
+union RefType {
+    class:ClassDecl,
+    interface:InterfaceDecl,
+    enum:EnumDecl,
+    annotation:AnnotationDecl,
+    type:TypeDecl,
+    typeParam:TypeParamDecl
+}
+
+union Type {
+    Builtin:BuiltinType,
+    RefInternal:InternalTypeRef,
+    RefExternal:ExternalTypeRef,
+    Function:FunctionType,
+    Tuple:TupleType,
+    Union:UnionType,
+    StringLiteral:StringLiteralType
+}
+
+// Class-like declarations
+
+table ClassDecl {
+    name:string (required);
+    methods:[FunctionDecl];
+    fields:[VarDecl];
+    properties:[PropertyDecl];
+    type_params:[TypeParamDecl];
+    extended_class:Type;
+    implemented_interfaces:[Type];
+}
+
+table InterfaceDecl {
+    name:string (required);
+    methods:[FunctionDecl];
+    properties:[PropertyDecl];
+    type_params:[TypeParamDecl];
+    implemented_interfaces:[Type];
+}
+
+table EnumDecl {
+    name:string (required);
+    entries:[string];
+}
+
+table AnnotationDecl {
+    name:string (required);
+}
+
+table TypeDecl {
+    type:Type (required);
+}
+
+// Callable declarations
+
+table FunctionDecl {
+    name:string (required);
+    return_type:Type;
+    value_params:[ValueParamDecl];
+    type_params:[TypeParamDecl];
+    overloads:[FunctionDecl];
+}
+
+table VarDecl {
+    name:string (required);
+    return_type:Type (required);
+}
+
+table PropertyDecl {
+    getter:FunctionDecl;
+    setter:FunctionDecl;
+}
+
+// Parameter declarations
+
+table ValueParamDecl {
+    name:string (required);
+    type:Type (required);
+    is_readonly:bool;
+}
+
+enum TypeParamVariance : byte {
+    INV = 0,
+    IN = 1,
+    OUT = 2
+}
+
+table TypeParamDecl {
+    name:string (required);
+    variance:TypeParamVariance;
+    constraint:Type;
+    default_type:Type;
+}
+
+// Types
+
+enum BuiltinTypeKind : byte {
+    byte = 0,
+    short = 1,
+    int = 2,
+    long = 3,
+    float = 4,
+    double = 5,
+    number = 6,
+    boolean = 7,
+    char = 8,
+    string = 9,
+    bigint = 10,
+    any = 11,
+    object = 12,
+    never = 13,
+    void = 14,
+    undefined = 15,
+    null = 16,
+    array = 17, // element type is the first type argument, the size (if fixed) is the second one (as a string literal type)
+}
+
+table BuiltinType {
+    kind:BuiltinTypeKind;
+    type_args:[Type];
+}
+
+table InternalTypeRef {
+    decl:RefType (required);
+}
+
+table ExternalTypeRef {
+    fqname:string (required);
+}
+
+table FunctionTypeParam {
+    name:string;
+    type:Type (required);
+}
+
+table FunctionType {
+    params:[FunctionTypeParam];
+    return_type:Type (required);
+}
+
+table TupleType {
+    elements:[Type];
+}
+
+table UnionType {
+    components:[Type] (required);
+}
+
+table StringLiteralType {
+    value:string (required);
+}
+
+
+root_type Root;
