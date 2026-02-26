@@ -1011,6 +1011,42 @@ HighlightSpanKind GetHightlightSpanKind(ir::AstNode *identifierDeclaration, ir::
     return HighlightSpanKind::REFERENCE;
 }
 
+static std::vector<HighlightSpan> MakeHighlightSpans(const std::vector<ir::AstNode *> &references,
+                                                     const std::string &fileName, bool isPrimitive,
+                                                     ir::AstNode *identifierDeclaration = nullptr)
+{
+    std::vector<HighlightSpan> highlightSpans;
+    for (const auto &reference : references) {
+        auto start = reference->Start().index;
+        auto length = isPrimitive ? (reference->End().index - reference->Start().index)
+                                  : reference->AsIdentifier()->Name().Length();
+        TextSpan textSpan = {start, length};
+        TextSpan contextSpan = {0, 0};
+        auto kind = isPrimitive ? HighlightSpanKind::REFERENCE
+                                : GetHightlightSpanKind(identifierDeclaration, reference->AsIdentifier());
+        highlightSpans.emplace_back(fileName, false, textSpan, contextSpan, kind);
+    }
+    return highlightSpans;
+}
+
+static ArenaVector<ir::AstNode *> FindPrimitiveTypeReferences(ir::AstNode *ast, ir::PrimitiveType primitiveType,
+                                                              ArenaAllocator *allocator)
+{
+    auto checkFunc = [&primitiveType](ir::AstNode *child) {
+        return child->IsETSPrimitiveType() && child->AsETSPrimitiveType()->GetPrimitiveType() == primitiveType;
+    };
+    auto references = ArenaVector<ir::AstNode *>(allocator->Adapter());
+    FindAllChild(ast, checkFunc, references);
+
+    auto uniqueReferences = RemoveRefDuplicates(references, allocator);
+
+    std::sort(uniqueReferences.begin(), uniqueReferences.end(), [](const ir::AstNode *a, const ir::AstNode *b) {
+        return (a->Start().index != b->Start().index) ? a->Start().index < b->Start().index
+                                                      : a->End().index < b->End().index;
+    });
+    return uniqueReferences;
+}
+
 DocumentHighlights GetSemanticDocumentHighlights(es2panda_Context *context, size_t position)
 {
     auto ctx = reinterpret_cast<public_lib::Context *>(context);
@@ -1021,39 +1057,41 @@ DocumentHighlights GetSemanticDocumentHighlights(es2panda_Context *context, size
     if (touchingToken == nullptr) {
         return DocumentHighlights(fileName, {});
     }
-    if (!touchingToken->IsIdentifier()) {
-        return DocumentHighlights(fileName, {});
-    }
-    auto decl = compiler::DeclarationFromIdentifier(touchingToken->AsIdentifier());
-    if (decl == nullptr) {
-        return DocumentHighlights(fileName, {});
-    }
-    auto checkFunc = [&touchingToken](ir::AstNode *child) {
-        return child->IsIdentifier() && child->AsIdentifier()->Name() == touchingToken->AsIdentifier()->Name();
-    };
-    // Find the identifier's declaration. We consider the first found to be the identifier's declaration.
-    auto identifierDeclaration = decl->FindChild(checkFunc);
-    if (identifierDeclaration == nullptr) {
-        // If the identifier is not found in the declaration, we try to find it in the AST.
-        // This is needed for cases like `import {Foo as foo} from './a';` where
-        // `foo` is a alias for the imported `Foo` identifier.
-        identifierDeclaration = ast->FindChild(checkFunc);
-    }
-    if (identifierDeclaration == nullptr) {
+
+    bool isPrimitive = touchingToken->Type() == ir::AstNodeType::ETS_PRIMITIVE_TYPE;
+    ir::AstNode *identifierDeclaration = nullptr;
+    std::vector<ir::AstNode *> references;
+
+    if (isPrimitive) {
+        auto primitiveType = touchingToken->AsETSPrimitiveType()->GetPrimitiveType();
+        auto primitiveReferences = FindPrimitiveTypeReferences(ast, primitiveType, ctx->allocator);
+        references.assign(primitiveReferences.begin(), primitiveReferences.end());
+    } else if (touchingToken->IsIdentifier()) {
+        auto decl = compiler::DeclarationFromIdentifier(touchingToken->AsIdentifier());
+        if (decl == nullptr) {
+            return DocumentHighlights(fileName, {});
+        }
+        auto checkFunc = [&touchingToken](ir::AstNode *child) {
+            return child->IsIdentifier() && child->AsIdentifier()->Name() == touchingToken->AsIdentifier()->Name();
+        };
+        // Find the identifier's declaration. We consider the first found to be the identifier's declaration.
+        identifierDeclaration = decl->FindChild(checkFunc);
+        if (identifierDeclaration == nullptr) {
+            // If the identifier is not found in the declaration, we try to find it in the AST.
+            // This is needed for cases like `import {Foo as foo} from './a';` where
+            // `foo` is a alias for the imported `Foo` identifier.
+            identifierDeclaration = ast->FindChild(checkFunc);
+        }
+        if (identifierDeclaration == nullptr) {
+            return DocumentHighlights(fileName, {});
+        }
+        auto idReferences = FindReferencesByName(ast, decl, touchingToken, ctx->allocator);
+        references.assign(idReferences.begin(), idReferences.end());
+    } else {
         return DocumentHighlights(fileName, {});
     }
 
-    auto references = FindReferencesByName(ast, decl, touchingToken, ctx->allocator);
-
-    auto highlightSpans = std::vector<HighlightSpan>();
-    for (const auto &reference : references) {
-        auto start = reference->Start().index;
-        auto length = reference->AsIdentifier()->Name().Length();
-        TextSpan textSpan = {start, length};
-        TextSpan contextSpan = {0, 0};
-        auto kind = GetHightlightSpanKind(identifierDeclaration, reference->AsIdentifier());
-        highlightSpans.emplace_back(fileName, false, textSpan, contextSpan, kind);
-    }
+    auto highlightSpans = MakeHighlightSpans(references, fileName, isPrimitive, identifierDeclaration);
     return DocumentHighlights(fileName, highlightSpans);
 }
 
