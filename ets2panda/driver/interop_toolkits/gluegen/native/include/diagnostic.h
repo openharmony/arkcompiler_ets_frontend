@@ -17,12 +17,15 @@
 #define APPS_GLUEGEN_NATIVE_INCLUDE_DIAGNOSTIC_H
 
 #include <cstdint>
+#include <iostream>
 #include <mutex>
 #include <ostream>
+#include <stdexcept>
 #include <string>
 #include <vector>
 #include "nlohmann/json.hpp"
 #include "libarkbase/macros.h"
+#include "parse_diagnostic_code.h"
 
 #define DIAGNOSTIC_CODE_BASE 11420000
 namespace ark::es2panda::gluegen {
@@ -63,7 +66,12 @@ inline void to_json(nlohmann::json &j, const Diagnostic &d)
 inline void from_json(const nlohmann::json &j, Diagnostic &d)
 {
     const auto codeStr = j.at("code").get<std::string>();
-    d.code = static_cast<uint32_t>(std::stoul(codeStr));
+    uint32_t code = 0;
+    if (!ParseDiagnosticCode(codeStr, code)) {
+        std::cerr << "[gluegen] invalid diagnostic code '" << codeStr << "'" << std::endl;
+        throw std::invalid_argument("invalid diagnostic code");
+    }
+    d.code = code;
     j.at("description").get_to(d.description);
     j.at("cause").get_to(d.cause);
     j.at("position").get_to(d.position);
